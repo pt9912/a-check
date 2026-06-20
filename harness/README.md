@@ -46,23 +46,25 @@ Acht Ränge ohne `docs/user`-Stratum (Pre-Release-Tool ohne Betriebs-Doku)
 ## Sensors (Feedback-Gates)
 
 Nur Targets, die im Makefile **existieren**, dürfen hier als real gelten.
-**Stand Increment 1: das Makefile existiert noch nicht** — die folgende
-Tabelle ist vollständig **geplant** (entsteht mit slice-003) und bindet
-die jeweils genannten Anforderungen. Bis dahin wird kein Gate als
+**Stand Bootstrap:** das Makefile enthält bislang nur `doc-check` (real,
+unten); die übrigen Targets sind **geplant** (entstehen mit slice-003) und
+binden die jeweils genannten Anforderungen. Kein geplantes Gate wird als
 ausgeführt behauptet.
 
 | Target | Vertrag | Bindung | Stand |
 |---|---|---|---|
+| `make doc-check` | Links/Anker/Kennungs-Linkpflicht/Referenzmatrix der Repo-Doku via `d-check` (Schwester-Tool, digest-gepinnt, `--network none`, read-only) | Harness-Prozess (Doku-Hygiene; Dogfooding des Stacks) | **real** (Bootstrap-Gate) |
 | `make lint` | golangci-lint mit Projekt-Profil; Inline-Suppressions verboten | Lint-Profil-ADR (geplant) | geplant (slice-003) |
 | `make test` | Akzeptanzkriterien der bezogenen `AC-FA-*` als Tests; Determinismus-Test | [`AC-QA-01`](../spec/lastenheft.md#ac-qa-01--determinismus) (AC-Bindung) | geplant (slice-003) |
 | `make arch-check` | Eigen-Architektur via `a-check` selbst (Dogfooding) | [`AC-QA-02`](../spec/lastenheft.md#ac-qa-02--hermetik-und-ehrliche-heuristik-grenze) (AC-Bindung) | geplant |
-| `make doc-check` | Links/Anker/Kennungen der Repo-Doku via `d-check` (stack-konform, `--network none`) | (AC-Bindung mit slice-003) | geplant |
 | `make gates` | aggregiert die inneren Gates; `record-gates` als letzter Schritt | — | geplant (slice-003) |
 
-**Aktueller Lauf-Status:** keiner — Bootstrap (Increment 1). Es existiert
-noch kein Makefile, kein Gate-Lauf.
-**Rote Gates:** keine (keine existieren).
-**Nicht behauptet:** alle obigen Targets (geplant, noch nicht angelegt).
+**Aktueller Lauf-Status:** `make doc-check` grün (5 Dateien, 0 Befunde;
+digest-gepinntes `d-check@sha256:6134b8bd…`). Übrige Gates: Bootstrap,
+noch nicht angelegt.
+**Rote Gates:** keine.
+**Nicht behauptet:** `make lint` / `make test` / `make arch-check` /
+`make gates` (geplant, slice-003).
 
 ## Traceability rules
 

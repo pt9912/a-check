@@ -82,16 +82,17 @@ ADR, kein PR-Kommentar.
 
 ## 4. Quality Gates
 
-Nur hier gelistete Targets existieren im Makefile (entsteht mit
-slice-003). Halluzinierte Gates sind die häufigste Form von
-Harness-Lüge. Bis slice-003 ist diese Tabelle als **geplant** zu lesen.
+Nur hier gelistete Targets existieren im Makefile. Halluzinierte Gates
+sind die häufigste Form von Harness-Lüge. Bislang ist nur `doc-check`
+real (Bootstrap-Gate); die übrigen entstehen mit slice-003 und sind als
+**geplant** zu lesen.
 
 | Target | Zweck | Stand |
 |---|---|---|
+| `make doc-check` | Doku-Links/Anker/Kennungen via `d-check` (Schwester-Tool, digest-gepinnt, netzlos, read-only) | **real** (Bootstrap) |
 | `make lint` | golangci-lint mit dem Projekt-Profil (§3.2) | geplant (slice-003) |
-| `make test` | `go test ./...` — Akzeptanzkriterien der `AC-FA-*` | geplant (slice-003) |
+| `make test` | Akzeptanzkriterien der `AC-FA-*` als Go-Tests | geplant (slice-003) |
 | `make arch-check` | Eigen-Architektur via `a-check` selbst (Dogfooding) | geplant |
-| `make doc-check` | Doku-Links/Anker/Kennungen via `d-check` (stack-konform) | geplant |
 | `make gates` | alle inneren Gates (mandatory vor Handoff) | geplant (slice-003) |
 
 ## 5. Dokumentations-Regeln

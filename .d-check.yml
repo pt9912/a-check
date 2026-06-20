@@ -1,0 +1,41 @@
+# .d-check.yml — a-check prüft seine eigene Doku mit dem Schwester-Tool d-check
+# (Dogfooding des Stacks). Erzeugt aus `d-check --suggest-config ai-harness-init`
+# (v0.19.0) und auf a-check angepasst: AC-Kennungen statt DC-, kein slice-Muster
+# (alle Slice-Erwähnungen sind Vorwärts-Referenzen). Baseline v1.3.0.
+#
+# Aktiv: links, anchors, ids (AC/ADR/MR-Linkpflicht), matrix (Spec-Straten
+# verweisen nie abwärts). DEFERRED bis slice-003: codepaths/spans/hostpaths —
+# sie prüfen Inline-Code-Pfade, von denen einige bewusst noch nicht existieren
+# (spec/spezifikation.md, spec/architecture.md, tools/, internal/, cmd/); sobald
+# die Struktur steht, werden sie wie in d-checks .d-check.yml aktiviert.
+scan:
+  roots: ["."]
+
+modules: [links, anchors, ids, matrix]
+
+ids:
+  patterns:
+    - regex: 'ADR-\d{4}'
+      target: docs/plan/adr/
+      link-policy: always
+      exempt-paths: [CHANGELOG.md, "docs/reviews/**"]
+    - regex: 'MR-\d{3}'
+      target: harness/conventions.md
+      link-policy: always
+      exempt-paths: [CHANGELOG.md, "docs/reviews/**"]
+    - regex: 'AC-(FA-[A-Z]+|QA)-\d+'
+      target: spec/lastenheft.md
+      link-policy: always
+      exempt-paths: [CHANGELOG.md, "docs/reviews/**"]
+
+matrix:
+  classes:
+    - {name: spec-straten, paths: [spec/lastenheft.md, spec/spezifikation.md, spec/architecture.md]}
+    - {name: adr, paths: ["docs/plan/adr/[0-9]*.md"]}
+    - {name: slice, paths: ["docs/plan/planning/**/slice-*.md"]}
+  rules:
+    - {from: spec-straten, to: adr, allow: false}
+    - {from: spec-straten, to: slice, allow: false}
+  status:
+    forbidden: [superseded, deprecated]
+  exclude-sections: [Historie, "7. Historie", Geschichte]
