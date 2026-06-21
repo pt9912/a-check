@@ -8,11 +8,10 @@ Konsequenz der Wellen-Schätzung, nicht als Treiber. Die Roadmap steht
 außerhalb der normativen Klammer: sie *orchestriert* Slices und Wellen,
 erzeugt aber keine Spezifikation (Regelwerk Modul 6).
 
-> **Hinweis zur Slice-Buchführung.** Dieses Repo führte die Slices bislang
-> ohne per-Slice-Dateien unter `open/next/done`; der Closure-Beleg jeder
-> abgeschlossenen Welle verweist deshalb auf die realen Artefakte (ADRs,
-> Review-Reports, CHANGELOG), nicht auf Slice-Plan-Dateien. Per-Slice-Dateien
-> nachzuziehen ist ein optionaler Folge-Schritt.
+> **Hinweis zur Slice-Buchführung.** Die abgeschlossenen Slices liegen als
+> Planning-Harness-Dateien unter `done/` (retroaktiv nachgezogen, Regelwerk
+> Modul 5) mit Closure-Notiz + Lerneintrag; ab `slice-004` entstehen sie
+> regulär über den Lifecycle (`open → next → in-progress → done`).
 
 ---
 
@@ -64,6 +63,6 @@ flowchart LR
 | Welle | Abschluss | Closure-Beleg |
 |---|---|---|
 | welle-00-bootstrap | 2026-06-20 | Harness-Trias + Lastenheft 0.1.0 + Doku-Gate `make doc-check` ([CHANGELOG](../../../../CHANGELOG.md)) |
-| welle-01-fundament | 2026-06-21 | `slice-001` — Fundament-ADRs [ADR-0001](../../adr/0001-go-impl-sprache.md)…[ADR-0004](../../adr/0004-distribution-image-mk.md) `Accepted` ([Review](../../../reviews/2026-06-21-adr-fundament-slice-001.md), [Re-Review](../../../reviews/2026-06-21-adr-fundament-slice-001-rereview.md)) |
-| welle-02-spec | 2026-06-21 | `slice-002` — Technik-Stratum `spec/spezifikation.md` (`SPEC-*`) + Sicht `spec/architecture.md` (`ARC-*`) ([Review](../../../reviews/2026-06-21-slice-002-spec-architektur.md)) |
-| welle-03-implementierung | 2026-06-21 | `slice-003` — Go-Implementierung + Gates; [ADR-0005](../../adr/0005-lint-profil.md)/[ADR-0006](../../adr/0006-coverage-gate.md) `Accepted` ([Review](../../../reviews/2026-06-21-slice-003-impl-gates.md)) |
+| welle-01-fundament | 2026-06-21 | [slice-001 §7](../done/slice-001-fundament-adrs.md#7-closure-notiz-nach-done) — Fundament-ADRs [ADR-0001](../../adr/0001-go-impl-sprache.md)…[ADR-0004](../../adr/0004-distribution-image-mk.md) `Accepted` |
+| welle-02-spec | 2026-06-21 | [slice-002 §7](../done/slice-002-architektur-spezifikation.md#7-closure-notiz-nach-done) — Technik-/Sicht-Stratum (`SPEC-*`/`ARC-*`) |
+| welle-03-implementierung | 2026-06-21 | [slice-003 §7](../done/slice-003-implementierung-gates.md#7-closure-notiz-nach-done) — Go-Implementierung + Gates; [ADR-0005](../../adr/0005-lint-profil.md)/[ADR-0006](../../adr/0006-coverage-gate.md) `Accepted` |
