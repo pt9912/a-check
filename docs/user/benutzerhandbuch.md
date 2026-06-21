@@ -1,7 +1,7 @@
 # Benutzerhandbuch: a-check
 
-**Handbuch-Version:** 1.0 · **Software-Version:** 0.1.0 (in Entwicklung) ·
-**Stand:** 2026-06-21
+**Handbuch-Version:** 1.1 · **Software-Version:** 0.1.0 (in Entwicklung) ·
+**Stand:** 2026-06-21 · **Autor:** pt9912 (Maintainer)
 
 ---
 
@@ -29,10 +29,12 @@ Docker und `make`; a-check-Interna müssen Sie nicht kennen.
 - Optional **GNU make**, wenn Sie a-check als `make`-Gate einbinden.
 - Ein Repository mit erkennbaren Schichten (z. B. `core`, `ports`, `adapters`).
 
-> **Hinweis zum Image.** Im Vorab-Stand (0.1.0) bauen Sie das Image lokal
-> (`make build` → `a-check:dev`, siehe [README](../../README.md)). Ab dem
+> **Hinweis zum Image.** Im Vorab-Stand (0.1.0) ist noch **kein GHCR-Image
+> veröffentlicht**. Bauen Sie es lokal mit `make build`
+> ([README](../../README.md)); das erzeugt den Tag **`a-check:dev`**. Ab dem
 > Release nutzen Sie das digest-gepinnte GHCR-Image. In allen Beispielen steht
-> `<a-check-image>` stellvertretend für beides.
+> `<a-check-image>` stellvertretend für beides — im Vorab-Stand also wörtlich
+> `a-check:dev`.
 
 ## 2. Erste Schritte
 
@@ -51,10 +53,11 @@ Docker und `make`; a-check-Interna müssen Sie nicht kennen.
 
 ### Das Ergebnis verstehen
 
-- **Exit-Code 0** — keine Verstöße. a-check gibt nichts auf der Standardausgabe aus.
-- **Exit-Code 1** — mindestens ein Befund. Jeder Befund steht auf der
-  Standardausgabe als `pfad:zeile: regel: meldung`; eine Zusammenfassung (Anzahl
-  je Regel) erscheint auf der Fehlerausgabe.
+- **Exit-Code 0** — keine Verstöße. Die Standardausgabe (stdout) bleibt leer;
+  auf der Fehlerausgabe (stderr) steht die Zusammenfassung `gesamt: 0 Befund(e)`.
+- **Exit-Code 1** — mindestens ein Befund. Jeder Befund steht auf stdout als
+  `pfad:zeile: regel: meldung`; die Zusammenfassung (Anzahl je Regel und
+  Gesamtzahl) steht auf stderr.
 - **Exit-Code 2** — Nutzungs- oder Konfigurationsfehler (z. B. fehlende oder
   ungültige `.a-check.yml`, unbekannte Option).
 
@@ -117,10 +120,15 @@ a-check prüft nie mit geratenen Standardwerten.
 **Ergebnis:** `make a-check` prüft das Repository netzlos und read-only und
 schlägt bei Befunden fehl (Exit-Code 1).
 
-**Hinweise:** Das Fragment pinnt das Image. Ab dem Release referenziert
-`A_CHECK_IMAGE` einen `@sha256:`-Digest; heben Sie den Pin bewusst per Commit an,
-damit CI-Läufe reproduzierbar bleiben. Vergleiche das mitgelieferte
-[`a-check.mk`](../../a-check.mk) dieses Repos.
+**Hinweise:** Das Fragment pinnt das Image über `A_CHECK_IMAGE`. **Im
+Vorab-Stand** (noch kein GHCR-Image) bauen Sie zuerst `make build` und
+überschreiben das Image beim Aufruf:
+```bash
+make a-check A_CHECK_IMAGE=a-check:dev
+```
+Ab dem Release referenziert `A_CHECK_IMAGE` einen `@sha256:`-Digest; heben Sie
+den Pin bewusst per Commit an, damit CI-Läufe reproduzierbar bleiben. Vergleiche
+das mitgelieferte [`a-check.mk`](../../a-check.mk) dieses Repos.
 
 ### 3.4 Befunde lesen und beheben
 
@@ -131,7 +139,7 @@ Jeder Befund nennt die Regel. Die fünf Regeln und ihre Behebung:
 | `core-impurity` | Der Kern importiert einen Adapter oder ein Framework/Tech. | Abhängigkeit über einen Port (Schnittstelle) umkehren; Tech nur im Adapter nutzen. |
 | `lateral-adapter` | Ein Adapter importiert einen anderen Adapter. | Gemeinsame Logik in die konfigurierte Senke (`adapter_sink`) ziehen oder über einen Port führen. |
 | `tech-leak` | Ein Framework/Tech erscheint außerhalb seines Adapters. | Den Tech-Zugriff in den zugeordneten Adapter kapseln. |
-| `port-impurity` | Ein Port importiert Kern/Adapter oder enthält ein verbotenes Konstrukt. | Den Port auf reine Abstraktionen reduzieren. |
+| `port-impurity` | Ein Port importiert Kern/Adapter oder enthält ein per `forbidden_constructs` (Abschnitt 4) verbotenes Konstrukt. | Den Port auf reine Abstraktionen reduzieren. |
 | `wrong-direction` | Ein Import läuft entgegen einer erlaubten Schicht-Kante. | Die Kante in `edges` aufnehmen (falls legitim) oder den Import umdrehen. |
 
 ### 3.5 Heuristik-Ausnahmen konfigurieren
@@ -144,6 +152,10 @@ framework-fremdes `Queue.h`). In diesem Fall tragen Sie es in die Allowlist ein:
 markers:
   ignore_symbols: ["Queue.h"]
 ```
+
+`ignore_symbols` wirkt auf erkannte **Importe** (z. B. falsch-positive
+`core-impurity`/`tech-leak`); ein per `forbidden_constructs` verbotenes Konstrukt
+wird davon nicht erfasst.
 
 ## 4. Konfiguration (`.a-check.yml`)
 
@@ -162,14 +174,20 @@ adapter_sink: driver-common       # gemeinsame Adapter-Senke (optional)
 tech:
   - {pattern: "net/http", adapter: http}   # Tech -> Adapter (optional)
 composition_root: ["cmd/**"]      # verdrahtet alles, von Regeln ausgenommen (optional)
+allow:                            # explizit erlaubte Sonderkanten/Re-Exports (optional)
+  - {from: ports, to: ports}
+forbidden_constructs:             # Schicht -> verbotene Text-Muster (Port-Disziplin, optional)
+  ports: ["impl "]
 markers:
   ignore_symbols: []              # Heuristik-Ausnahmen (optional)
 ```
 
-Pflichtblöcke: `version`, `languages`, `layers`, `edges`. Alle übrigen Blöcke
-sind optional; fehlt einer, entfällt die zugehörige Prüfung. Das vollständige
-Schema mit allen Schlüsseln und Defaults steht in der
-[Spezifikation](../../spec/spezifikation.md).
+**Pflichtblöcke:** `version`, `languages`, `layers`, `edges`.
+**Optionalblöcke:** `adapter_sink`, `tech`, `composition_root`, `allow`,
+`forbidden_constructs`, `markers`. Fehlt ein Optionalblock, entfällt die
+zugehörige Prüfung (kein stiller Standardwert) — fehlt z. B. `adapter_sink`,
+darf **kein** Adapter einen anderen importieren (strengere Auslegung). Das
+vollständige Schema steht in der [Spezifikation](../../spec/spezifikation.md).
 
 ## 5. Berechtigungen und Sicherheit
 
@@ -184,6 +202,15 @@ Rechten gelten Garantien:
 Geben Sie keine Zugangsdaten oder Tokens an a-check — es benötigt keine.
 
 ## 6. Fehlerbehebung
+
+### Fehler: Docker findet das Image nicht (`Unable to find image` / `pull access denied`)
+
+**Ursache:** Im Vorab-Stand (0.1.0) ist kein GHCR-Image veröffentlicht;
+`ghcr.io/pt9912/a-check:0.1.0` ist nicht abrufbar.
+
+**Lösung:** Bauen Sie das Image lokal mit `make build` und verwenden Sie
+`a-check:dev` — in `docker run`-Aufrufen als `<a-check-image>`, im Gate über
+`make a-check A_CHECK_IMAGE=a-check:dev`.
 
 ### Fehler: a-check bricht mit Exit-Code 2 ab
 
@@ -228,6 +255,11 @@ Einträge unter `languages` ein.
 - **Port:** eine Schnittstelle/Abstraktion, über die der Kern mit der Außenwelt spricht.
 - **Adapter:** die konkrete Anbindung an Technik (Datenbank, HTTP, UI …).
 - **Composition Root:** der Ort, der konkrete Adapter an den Kern verdrahtet (z. B. `main`); von den Schicht-Regeln ausgenommen.
+- **Schicht:** eine über Pfad-Muster (`layers`) definierte Datei-Gruppe (z. B. `core`, `ports`, `adapters`).
+- **Kante (`edges`):** eine erlaubte gerichtete Abhängigkeit zwischen zwei Schichten (`from` → `to`).
+- **`adapter_sink`:** eine gemeinsame Senke, die alle Adapter importieren dürfen (Ausnahme von `lateral-adapter`).
+- **`forbidden_constructs`:** je Schicht konfigurierte verbotene Text-Muster (für `port-impurity`).
+- **Befund:** eine gemeldete Regelverletzung (Datei, Zeile, Regel, Meldung).
 - **`core-impurity` / `lateral-adapter` / `tech-leak` / `port-impurity` / `wrong-direction`:** die fünf geprüften Regeln (Abschnitt 3.4).
 - **Heuristik-Grenze:** a-check erkennt Importe per Textmuster, nicht per Parser; seltene Fehltreffer sind konfigurierbar ausnehmbar.
 - **Digest-Pin:** ein `@sha256:`-Verweis auf eine exakte Image-Version für reproduzierbare Läufe.
@@ -244,3 +276,4 @@ und die [Spezifikation](../../spec/spezifikation.md); ein Überblick steht in de
 | Handbuch-Version | Stand | Änderung |
 |---|---|---|
 | 1.0 | 2026-06-21 | Erstfassung zur Software-Version 0.1.0. |
+| 1.1 | 2026-06-21 | Review-Einarbeitung: Vorab-Image-Pfad fürs make-Gate (`A_CHECK_IMAGE=a-check:dev`), Config-Schlüssel `allow`/`forbidden_constructs`, Exit-0-stderr-Klarstellung, Image-Fehlerfall, Glossar, Autor. |
