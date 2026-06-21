@@ -1,6 +1,6 @@
 # ADR-0004 — Distribution: digest-gepinntes GHCR-Image + `--print-mk`/`a-check.mk`
 
-- **Status:** Proposed
+- **Status:** Accepted
 - **Datum:** 2026-06-21
 - **Bezug:** [AC-FA-DIST-001](../../../spec/lastenheft.md#ac-fa-dist-001--distribution-image---print-mk-a-checkmk), [AC-QA-03](../../../spec/lastenheft.md#ac-qa-03--reproduzierbarkeit), [AC-QA-02](../../../spec/lastenheft.md#ac-qa-02--hermetik-und-ehrliche-heuristik-grenze)
 - **Schärft:** [SPEC-DIST-001](../../../spec/spezifikation.md#spec-dist-001--laufzeitform-und-distribution) — macht die statische/distroless Laufzeitform, den digest-Pin und `--print-mk`/`a-check.mk` verbindlich.

@@ -15,11 +15,12 @@ Technik-Stratum [`spec/spezifikation.md`](../../../spec/spezifikation.md)
 (slice-002) formalisiert. Ihr `**Schärft:**`-Feld zeigt nun aufwärts auf die
 jeweilige `SPEC-*`-Stelle; [ADR-0001](0001-go-impl-sprache.md) bleibt `—`
 (die Spezifikation ist sprachneutral, die Sprachwahl koppelt an keine
-Spec-§). Status `Proposed` bis zum Acceptance-Sign-off (Acceptance-Trigger).
+Spec-§). Status **`Accepted`** (Acceptance-Sign-off 2026-06-21); ab jetzt
+immutable — Korrekturen nur via Folge-ADR mit `Supersedes`.
 
 | ID | Titel | Status | Datum | Bezug |
 |---|---|---|---|---|
-| [ADR-0001](0001-go-impl-sprache.md) | Go als Implementierungssprache | Proposed | 2026-06-21 | [AC-QA-01](../../../spec/lastenheft.md#ac-qa-01--determinismus), [AC-QA-02](../../../spec/lastenheft.md#ac-qa-02--hermetik-und-ehrliche-heuristik-grenze), [AC-QA-03](../../../spec/lastenheft.md#ac-qa-03--reproduzierbarkeit), [AC-FA-DIST-001](../../../spec/lastenheft.md#ac-fa-dist-001--distribution-image---print-mk-a-checkmk) |
-| [ADR-0002](0002-text-heuristische-extraktion.md) | Text-heuristische Import-Extraktion | Proposed | 2026-06-21 | [AC-FA-EXTRACT-001](../../../spec/lastenheft.md#ac-fa-extract-001--sprach-backends-für-die-import-extraktion), [AC-QA-02](../../../spec/lastenheft.md#ac-qa-02--hermetik-und-ehrliche-heuristik-grenze), [AC-QA-01](../../../spec/lastenheft.md#ac-qa-01--determinismus) |
-| [ADR-0003](0003-config-modell-a-check-yml.md) | Config-Modell `.a-check.yml` | Proposed | 2026-06-21 | [AC-FA-CONF-001](../../../spec/lastenheft.md#ac-fa-conf-001--konfigurationsdatei-a-checkyml), [AC-FA-CLI-001](../../../spec/lastenheft.md#ac-fa-cli-001--aufruf-scan-wurzel-und-exit-codes) |
-| [ADR-0004](0004-distribution-image-mk.md) | Distribution: Image + `--print-mk`/`a-check.mk` | Proposed | 2026-06-21 | [AC-FA-DIST-001](../../../spec/lastenheft.md#ac-fa-dist-001--distribution-image---print-mk-a-checkmk), [AC-QA-03](../../../spec/lastenheft.md#ac-qa-03--reproduzierbarkeit), [AC-QA-02](../../../spec/lastenheft.md#ac-qa-02--hermetik-und-ehrliche-heuristik-grenze) |
+| [ADR-0001](0001-go-impl-sprache.md) | Go als Implementierungssprache | Accepted | 2026-06-21 | [AC-QA-01](../../../spec/lastenheft.md#ac-qa-01--determinismus), [AC-QA-02](../../../spec/lastenheft.md#ac-qa-02--hermetik-und-ehrliche-heuristik-grenze), [AC-QA-03](../../../spec/lastenheft.md#ac-qa-03--reproduzierbarkeit), [AC-FA-DIST-001](../../../spec/lastenheft.md#ac-fa-dist-001--distribution-image---print-mk-a-checkmk) |
+| [ADR-0002](0002-text-heuristische-extraktion.md) | Text-heuristische Import-Extraktion | Accepted | 2026-06-21 | [AC-FA-EXTRACT-001](../../../spec/lastenheft.md#ac-fa-extract-001--sprach-backends-für-die-import-extraktion), [AC-QA-02](../../../spec/lastenheft.md#ac-qa-02--hermetik-und-ehrliche-heuristik-grenze), [AC-QA-01](../../../spec/lastenheft.md#ac-qa-01--determinismus) |
+| [ADR-0003](0003-config-modell-a-check-yml.md) | Config-Modell `.a-check.yml` | Accepted | 2026-06-21 | [AC-FA-CONF-001](../../../spec/lastenheft.md#ac-fa-conf-001--konfigurationsdatei-a-checkyml), [AC-FA-CLI-001](../../../spec/lastenheft.md#ac-fa-cli-001--aufruf-scan-wurzel-und-exit-codes) |
+| [ADR-0004](0004-distribution-image-mk.md) | Distribution: Image + `--print-mk`/`a-check.mk` | Accepted | 2026-06-21 | [AC-FA-DIST-001](../../../spec/lastenheft.md#ac-fa-dist-001--distribution-image---print-mk-a-checkmk), [AC-QA-03](../../../spec/lastenheft.md#ac-qa-03--reproduzierbarkeit), [AC-QA-02](../../../spec/lastenheft.md#ac-qa-02--hermetik-und-ehrliche-heuristik-grenze) |

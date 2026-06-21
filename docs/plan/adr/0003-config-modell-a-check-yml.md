@@ -1,6 +1,6 @@
 # ADR-0003 — Config-Modell `.a-check.yml` (deklarativ, strict-decode, fail-closed)
 
-- **Status:** Proposed
+- **Status:** Accepted
 - **Datum:** 2026-06-21
 - **Bezug:** [AC-FA-CONF-001](../../../spec/lastenheft.md#ac-fa-conf-001--konfigurationsdatei-a-checkyml), [AC-FA-CLI-001](../../../spec/lastenheft.md#ac-fa-cli-001--aufruf-scan-wurzel-und-exit-codes)
 - **Schärft:** [SPEC-CONF-001](../../../spec/spezifikation.md#spec-conf-001--konfigurationsschema) — macht strict-decode/fail-closed des YAML-Schemas verbindlich.

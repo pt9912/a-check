@@ -1,6 +1,6 @@
 # ADR-0001 — Go als Implementierungssprache
 
-- **Status:** Proposed
+- **Status:** Accepted
 - **Datum:** 2026-06-21
 - **Bezug:** [AC-QA-01](../../../spec/lastenheft.md#ac-qa-01--determinismus), [AC-QA-02](../../../spec/lastenheft.md#ac-qa-02--hermetik-und-ehrliche-heuristik-grenze), [AC-QA-03](../../../spec/lastenheft.md#ac-qa-03--reproduzierbarkeit), [AC-FA-DIST-001](../../../spec/lastenheft.md#ac-fa-dist-001--distribution-image---print-mk-a-checkmk)
 - **Schärft:** — (die Spezifikation ist sprachneutral; die Sprachwahl koppelt an keine Spec-§ — würde sie geändert, bliebe das Technik-Stratum unverändert. Diese ADR realisiert die in [SPEC-DIST-001](../../../spec/spezifikation.md#spec-dist-001--laufzeitform-und-distribution) geforderte — und durch [ADR-0004](0004-distribution-image-mk.md) verbindlich gemachte — statische/distroless Laufzeitform, ohne dass die Spezifikation die Sprache nennt; die ADR ist die Begründungs-Schicht *unter* den Spec-Straten.)
