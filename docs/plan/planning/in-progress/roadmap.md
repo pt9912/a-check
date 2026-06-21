@@ -33,6 +33,7 @@ Auftraggeber).
 |---|---|---|---|
 | welle-05-release | Image-Veröffentlichung | erstes GHCR-Release + `@sha256:`-Digest-Pin in `a-check.mk`/Image-Referenz ([AC-FA-DIST-001](../../../../spec/lastenheft.md#ac-fa-dist-001--distribution-image---print-mk-a-checkmk), [AC-QA-03](../../../../spec/lastenheft.md#ac-qa-03--reproduzierbarkeit)); Pilot-Einbindung in ein Konsumenten-Repo | geplant |
 | welle-06-sprach-backends | Bedarf | Ausbau/Härtung der Extraktion je Zielsprache; opt-in toolchain-gestützte Backends ([AC-FA-EXTRACT-001](../../../../spec/lastenheft.md#ac-fa-extract-001--sprach-backends-für-die-import-extraktion) Out-of-Scope-Re-Eval) | offen |
+| welle-07-command-guard | Priorisierung | dritter Durchsetzungsschicht-Bindepunkt: PreToolUse-Command-Guard (Host-Toolchain fail-closed blocken, AGENTS §3.1; [AC-QA-02](../../../../spec/lastenheft.md#ac-qa-02--hermetik-und-ehrliche-heuristik-grenze)/[AC-QA-03](../../../../spec/lastenheft.md#ac-qa-03--reproduzierbarkeit)) — d-check-Parität; Backlog: [slice-005](../open/slice-005-command-guard.md) | offen |
 
 _(Kein fixer Termin — Wellen feuern auf Trigger.)_
 
