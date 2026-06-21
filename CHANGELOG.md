@@ -36,3 +36,7 @@ Noch kein getaggtes Release; das GHCR-Image folgt. Das Lastenheft steht bei
   Harness-Lügen, schützt die doc-check-Beweisaussage AC-QA-02) und
   `make record-gates` (inhaltsbasierter Working-Tree-Hash-Nachweis) plus
   `.claude`-Stop-Hook als Handoff-Gate (fail-closed, loop-guarded, bootstrap-aware).
+- slice-005 — Durchsetzungsschicht vollständig: PreToolUse-Command-Guard
+  (`.claude/hooks/pretooluse-command-guard.sh`) lehnt Host-Toolchain/-Paketmanager
+  (go/golangci-lint/pip/npm/cargo/apt/brew/…) vor der Ausführung fail-closed ab
+  (Tool-Call-Gate, AGENTS §3.1); Selbsttest `make guard-selftest` (in `make gates`).

@@ -57,6 +57,12 @@ braucht nur `git`, GNU `make`, `bash` und Docker.
 
 **Begründung:** Toolchain-Reproduzierbarkeit + Supply-Chain-Defense.
 
+**Durchsetzung:** Ein PreToolUse-Command-Guard
+(`.claude/hooks/pretooluse-command-guard.sh`, slice-005) lehnt Host-Toolchain-
+und Paketmanager-Aufrufe (`go`/`golangci-lint`/`pip`/`npm`/`cargo`/`apt`/`brew`/…)
+**vor** der Ausführung fail-closed ab (Tool-Call-Gate der Durchsetzungsschicht);
+`make gates` belegt ihn über `make guard-selftest`.
+
 ### 3.2 Suppression-Verbot
 
 Inline-Suppressions sind verboten (`//nolint` o. Ä.). Ausnahmen leben
@@ -91,9 +97,10 @@ ADR, kein PR-Kommentar.
 
 Nur hier gelistete Targets existieren im Makefile. Halluzinierte Gates
 sind die häufigste Form von Harness-Lüge. `doc-check` (Bootstrap),
-`lint`/`test`/`coverage-gate`/`arch-check` (slice-003) und die Meta-Gates
-`gate-consistency`/`record-gates` (slice-004) sind **real** und grün; die
-Code-Gates sind Dockerfile-Stages, die Meta-Gates laufen als Host-Bash.
+`lint`/`test`/`coverage-gate`/`arch-check` (slice-003), die Meta-Gates
+`gate-consistency`/`record-gates` (slice-004) und `guard-selftest`
+(slice-005) sind **real** und grün; die Code-Gates sind Dockerfile-Stages,
+die Meta-Gates laufen als Host-Bash.
 
 | Target | Zweck | Stand |
 |---|---|---|
@@ -104,6 +111,7 @@ Code-Gates sind Dockerfile-Stages, die Meta-Gates laufen als Host-Bash.
 | `make arch-check` | Eigen-Architektur via `a-check` selbst (Dogfooding) | **real** (slice-003) |
 | `make gate-consistency` | Meta-Gate: dokumentierte Targets ↔ Makefile, `.d-check.yml`-Module (Harness-Lügen-Schutz) | **real** (slice-004) |
 | `make record-gates` | Gate-Nachweis (Working-Tree-Hash) für den Stop-Hook | **real** (slice-004) |
+| `make guard-selftest` | Selbsttest des PreToolUse-Command-Guard (Tool-Call-Gate §3.1) | **real** (slice-005) |
 | `make gates` | alle inneren Gates (mandatory vor Handoff) | **real** (slice-003) |
 
 ## 5. Dokumentations-Regeln

@@ -27,7 +27,7 @@ NO_CACHE_FILTER_COV  := --no-cache-filter coverage
 
 .DEFAULT_GOAL := help
 
-.PHONY: help compile lint test coverage-gate build arch-check gate-consistency record-gates gates
+.PHONY: help compile lint test coverage-gate build arch-check gate-consistency guard-selftest record-gates gates
 
 # Gates seriell: unter `make -j` liefen die Sub-Gates sonst parallel und die
 # Reihenfolge/der Abbruch bei rotem Gate wären nicht garantiert.
@@ -59,7 +59,10 @@ arch-check: build ## Eigen-Architektur via a-check selbst (Dogfooding, AC-QA-02)
 gate-consistency: ## Meta-Gate: dokumentierte Targets ↔ Makefile, .d-check.yml-Module (Harness-Lügen-Schutz).
 	@bash tools/gate-consistency.sh
 
+guard-selftest: ## Selbsttest des PreToolUse-Command-Guard (Denylist greift, Host-Toolchain blockiert).
+	@bash .claude/hooks/pretooluse-command-guard.sh --selftest
+
 record-gates: ## Gate-Nachweis (Working-Tree-Hash) für den Stop-Hook schreiben.
 	@bash tools/harness/record-gates.sh
 
-gates: lint test coverage-gate arch-check doc-check gate-consistency record-gates ## alle inneren Gates (mandatory vor Handoff).
+gates: lint test coverage-gate arch-check doc-check gate-consistency guard-selftest record-gates ## alle inneren Gates (mandatory vor Handoff).

@@ -18,14 +18,14 @@ erzeugt aber keine Spezifikation (Regelwerk Modul 6).
 ## Aktuelle Welle
 
 **Keine aktive Welle — wartet auf Trigger.** Zuletzt abgeschlossen:
-welle-04-durchsetzungsschicht (`slice-004` — Meta-Gates `gate-consistency` +
-`record-gates` + `.claude`-Stop-Hook;
-[slice-004 §4](../done/slice-004-durchsetzungsschicht.md#4-closure-notiz-nach-done)).
+welle-07-command-guard (`slice-005` — PreToolUse-Command-Guard; damit ist die
+Durchsetzungsschicht vollständig: Tool-Call- + Handoff- + Meta-Gate;
+[slice-005 §4](../done/slice-005-command-guard.md#4-closure-notiz-nach-done)).
 Alle inneren Gates sind real und grün (`make gates`: lint/test/coverage-gate
-≥ 90 %/arch-check/doc-check/gate-consistency + `record-gates`-Nachweis). Noch
-**kein getaggtes GHCR-Release** (Status 0.1.0). Die nächste Welle wartet auf
+≥ 90 %/arch-check/doc-check/gate-consistency/guard-selftest + `record-gates`-Nachweis).
+Noch **kein getaggtes GHCR-Release** (Status 0.1.0). Die nächste Welle wartet auf
 ihren Trigger (Change Request im Lastenheft oder Priorisierung durch den
-Auftraggeber).
+Auftraggeber) — Kandidat: `welle-05-release`.
 
 ## Nächste Wellen
 
@@ -33,7 +33,6 @@ Auftraggeber).
 |---|---|---|---|
 | welle-05-release | Image-Veröffentlichung | erstes GHCR-Release + `@sha256:`-Digest-Pin in `a-check.mk`/Image-Referenz ([AC-FA-DIST-001](../../../../spec/lastenheft.md#ac-fa-dist-001--distribution-image---print-mk-a-checkmk), [AC-QA-03](../../../../spec/lastenheft.md#ac-qa-03--reproduzierbarkeit)); Pilot-Einbindung in ein Konsumenten-Repo | geplant |
 | welle-06-sprach-backends | Bedarf | Ausbau/Härtung der Extraktion je Zielsprache; opt-in toolchain-gestützte Backends ([AC-FA-EXTRACT-001](../../../../spec/lastenheft.md#ac-fa-extract-001--sprach-backends-für-die-import-extraktion) Out-of-Scope-Re-Eval) | offen |
-| welle-07-command-guard | Priorisierung | dritter Durchsetzungsschicht-Bindepunkt: PreToolUse-Command-Guard (Host-Toolchain fail-closed blocken, AGENTS §3.1; [AC-QA-02](../../../../spec/lastenheft.md#ac-qa-02--hermetik-und-ehrliche-heuristik-grenze)/[AC-QA-03](../../../../spec/lastenheft.md#ac-qa-03--reproduzierbarkeit)) — d-check-Parität; Backlog: [slice-005](../open/slice-005-command-guard.md) | offen |
 
 _(Kein fixer Termin — Wellen feuern auf Trigger.)_
 
@@ -68,3 +67,4 @@ flowchart LR
 | welle-02-spec | 2026-06-21 | [slice-002 §7](../done/slice-002-architektur-spezifikation.md#7-closure-notiz-nach-done) — Technik-/Sicht-Stratum (`SPEC-*`/`ARC-*`) |
 | welle-03-implementierung | 2026-06-21 | [slice-003 §7](../done/slice-003-implementierung-gates.md#7-closure-notiz-nach-done) — Go-Implementierung + Gates; [ADR-0005](../../adr/0005-lint-profil.md)/[ADR-0006](../../adr/0006-coverage-gate.md) `Accepted` |
 | welle-04-durchsetzungsschicht | 2026-06-21 | [slice-004 §4](../done/slice-004-durchsetzungsschicht.md#4-closure-notiz-nach-done) — Meta-Gates `gate-consistency`/`record-gates` + `.claude`-Stop-Hook |
+| welle-07-command-guard | 2026-06-21 | [slice-005 §4](../done/slice-005-command-guard.md#4-closure-notiz-nach-done) — PreToolUse-Command-Guard (Tool-Call-Gate); Durchsetzungsschicht vollständig |
