@@ -55,7 +55,7 @@ Spec-Straten (slice-002) standen; die Implementierung konnte spec-treu folgen.
 ## 6. Risiken und offene Punkte
 
 Heuristik-Grenzen (Text-Extraktion, kein Parser) bewusst, [`AC-QA-02`](../../../../spec/lastenheft.md#ac-qa-02--hermetik-und-ehrliche-heuristik-grenze)-ausgewiesen;
-Stack-Paritäts-Meta-Gates offen → [slice-004](../open/slice-004-durchsetzungsschicht.md).
+Stack-Paritäts-Meta-Gates offen → [slice-004](../done/slice-004-durchsetzungsschicht.md).
 
 ## 7. Closure-Notiz (nach `done/`)
 
@@ -74,7 +74,7 @@ arch-check 0 Befunde, doc-check grün.
   `port-impurity`-Eigenkollision aufgelöst; `spec/architecture.md` nachgezogen.
 - *Benannte Spec-Lücke / Folge-Slice:* Stack-Paritäts-Meta-Gates
   `gate-consistency` (Doku ↔ Makefile) und `record-gates` (Working-Tree-Hash)
-  fehlen → Backlog [slice-004](../open/slice-004-durchsetzungsschicht.md).
+  fehlen → Backlog [slice-004](../done/slice-004-durchsetzungsschicht.md).
 - *Prozess-Lücke (meta):* Bis hierher liefen die Slices **ohne
   Planning-Harness-Dateien** (Regelwerk-Verstoß gegen Modul 5 / [`AGENTS.md`](../../../../AGENTS.md)
   §5). Retroaktiv behoben (diese `done/`-Dateien mit Lerneinträgen);

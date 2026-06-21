@@ -1,46 +1,74 @@
 # slice-004 — Durchsetzungsschicht: gate-consistency + record-gates
 
-**Status:** open (Backlog; wartet auf Trigger/Priorisierung).
+**Status:** done.
 **Welle:** welle-04-durchsetzungsschicht.
 **Bezug:** [`AGENTS.md`](../../../../AGENTS.md) §3.6 (Gate-Disziplin) + §4 (`make gates`);
 [ADR-0005](../../adr/0005-lint-profil.md)/[ADR-0006](../../adr/0006-coverage-gate.md)
-(bestehende Gates); Stack-Vorbild `d-check` (`gate-consistency`/`record-gates`).
+(bestehende Gates); Stack-Vorbild `d-check`.
+**Autor:** pt9912. **Datum:** 2026-06-21.
 
-## Ziel
+---
 
-Die im Review zu [slice-003](../../../reviews/2026-06-21-slice-003-impl-gates.md)
-(Befund B-M4) aufgedeckte Stack-Paritäts-Lücke schließen — die zwei
-computational-Bindepunkte der Durchsetzungsschicht (Regelwerk-Grundlagen
-§Durchsetzungsschicht), die a-check ggü. `d-check` noch fehlen:
+## 1. Ziel
 
-- **gate-consistency** (Meta-Gate, *computational feedback*): prüft maschinell,
-  dass die in [`AGENTS.md`](../../../../AGENTS.md) §4 und
-  [`harness/README.md`](../../../../harness/README.md) §Sensors dokumentierten
-  Targets ↔ Makefile übereinstimmen (Schutz gegen Doku-/Gate-Drift — genau die
-  Klasse, die im slice-003-Review als Reviewer-Halluzination *und* als reale
-  „real/geplant"-Drift auftrat).
-- **record-gates** (Handoff-Gate-Nachweis): inhaltsbasierter
-  Working-Tree-Hash-Nachweis, dass die Gates auf genau diesem Stand liefen —
-  Grundlage für einen `.claude`-Stop-Hook; fail-closed, loop-guarded,
-  bootstrap-aware (Regelwerk §Durchsetzungsschicht, vier Design-Eigenschaften).
+Die zwei computational-Bindepunkte der Durchsetzungsschicht (Regelwerk-Grundlagen
+§Durchsetzungsschicht), die a-check ggü. `d-check` fehlten, sind geschlossen:
+`gate-consistency` (Doku ↔ Makefile) und `record-gates` (inhaltsbasierter
+Working-Tree-Hash-Nachweis) inklusive `.claude`-Stop-Hook (Handoff-Gate).
 
-## Definition of Done
+## 2. Definition of Done
 
-- `make gate-consistency` existiert und bricht bei Drift zwischen dokumentierten
-  Targets und Makefile ab.
-- `make record-gates` erzeugt den Nachweis nach grünen Gates; als letzter
-  Schritt in `make gates` eingehängt (Reihenfolge via `.NOTPARALLEL` gesichert).
-- Nachweis-Ablage `.harness/state/` (bereits in `.gitignore` vorgesehen).
-- Optional: `.claude`-Stop-Hook, der den Nachweis vor „fertig" erzwingt.
-- [`harness/README.md`](../../../../harness/README.md) §Sensors +
-  [`AGENTS.md`](../../../../AGENTS.md) §4 um die neuen Gates ergänzt.
-- Beleg: `make gates` grün inkl. der neuen Gates.
+- [x] `make gate-consistency` existiert, bricht bei Drift ab, mit Selbsttest (Phantom-Target feuert).
+- [x] `make record-gates` schreibt den Nachweis; in `make gates` als letzter Schritt (Reihenfolge via `.NOTPARALLEL`).
+- [x] Nachweis-Ablage `.harness/state/` (in `.gitignore`).
+- [x] `.claude`-Stop-Hook (`stop-require-gates.sh` + `settings.json`) erzwingt den Nachweis vor „fertig" (loop-guarded, bootstrap-aware).
+- [x] [`AGENTS.md`](../../../../AGENTS.md) §4 + [`harness/README.md`](../../../../harness/README.md) §Sensors um beide Gates ergänzt.
+- [x] `make gates` grün inkl. der neuen Gates.
 
-## Offene Fragen
+## 3. Umsetzung
 
-- `record-gates`: eigenes Skript unter `tools/` vs. `.claude`-Hook-Verdrahtung —
-  Reihenfolge der Einführung.
-- `gate-consistency`: Markdown-Parser für die Sensors-Tabellen vs. einfache
-  Target-Listen-Diff.
-- Ob ein eigener `MR-*`-Adaptionseintrag nötig ist (analog d-checks
-  Parallelitäts-Regel für den Nachweis).
+- `tools/gate-consistency.sh` — Doku ↔ Makefile bidirektional (inkl. `d-check.mk`); Utility-Allowlist `help`/`build`/`compile`; `.d-check.yml`-Modulprüfung ([AC-QA-02](../../../../spec/lastenheft.md#ac-qa-02--hermetik-und-ehrliche-heuristik-grenze)); Selbsttest.
+- `tools/harness/working-tree-hash.sh` + `tools/harness/record-gates.sh` — inhaltsbasierter Nachweis (gemeinsame Hash-Quelle).
+- `.claude/hooks/stop-require-gates.sh` + `.claude/settings.json` — Stop-Hook (Handoff-Gate).
+- `Makefile` — zwei Targets + `make gates`-Erweiterung (`record-gates` zuletzt).
+
+## 4. Closure-Notiz (nach `done/`)
+
+**Belege:** `make gates` grün — `gate-consistency` ok (Selbsttest gefeuert),
+`record-gates` Nachweis geschrieben, übrige Gates grün; `make doc-check` grün.
+
+**Lerneintrag (Steering-Loop):**
+
+- *Neuer Sensor:* `gate-consistency` schließt die im
+  [slice-003-Review](../../../reviews/2026-06-21-slice-003-impl-gates.md)
+  (Befund B-M4) benannte Drift-Klasse maschinell — genau die „real/geplant"-
+  Doku-Drift und die mehrfach halluzinierte Datei-/Target-Existenz werden jetzt
+  fail-closed gefangen.
+- *Geschärfte Regel:* `AGENTS.md` §4 ist die **vollständige** Gate-Liste;
+  Utility-Targets (`help`/`build`/`compile`) sind explizit als Nicht-Gates
+  allowlisted — die Bidirektionalität (kein halluziniertes *und* kein
+  undokumentiertes Gate) ist erzwungen.
+- *Handoff-Gate:* `record-gates` + Stop-Hook machen „ich hab die Gates laufen
+  lassen" inhaltsbasiert prüfbar (Regelwerk §Durchsetzungsschicht: fail-closed,
+  Inhalts-Nachweis, Loop-Guard, bootstrap-aware).
+
+**Offene Fragen — aufgelöst:**
+
+- Eigener `MR-*`-Eintrag? **Nein** — die Mechanik ist Baseline-Konformität
+  (Regelwerk §Durchsetzungsschicht), keine Adaption ggü. der Baseline; keine
+  stille Setzung.
+- Skript vs. Hook-Reihenfolge: beide angelegt — das Skript schreibt, der Hook
+  prüft denselben Hash (eine Quelle).
+
+**Folge-Kandidat (open):** der dritte Bindepunkt — der **PreToolUse-
+Command-Guard** (Docker-only Tool-Call-Gate) — ist noch nicht adoptiert.
+
+## 5. Sub-Area-Modus-Begründung
+
+### Sub-Area: Harness-Durchsetzungsschicht
+
+- **Modus:** GF — die Mechanik wird neu angelegt (Skript/Doc führt), kein Bestand zu inventarisieren.
+- **Konventionen-Dichte:** hoch (Regelwerk §Durchsetzungsschicht + `d-check`-Vorbild).
+- **Phase-Reife:** Phase 5 — Gates erzwingen, `make gates` grün.
+- **Evidenz-/Diskrepanz-Risiko:** niedrig (Greenfield).
+- **Reconciliation-Aufwand:** keiner; Folge-Option Command-Guard.

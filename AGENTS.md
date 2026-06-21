@@ -90,9 +90,10 @@ ADR, kein PR-Kommentar.
 ## 4. Quality Gates
 
 Nur hier gelistete Targets existieren im Makefile. Halluzinierte Gates
-sind die häufigste Form von Harness-Lüge. `doc-check` (Bootstrap) sowie
-`lint`/`test`/`coverage-gate`/`arch-check`/`gates` (slice-003) sind **real**
-und grün; jede Gate ist eine Dockerfile-Stage.
+sind die häufigste Form von Harness-Lüge. `doc-check` (Bootstrap),
+`lint`/`test`/`coverage-gate`/`arch-check` (slice-003) und die Meta-Gates
+`gate-consistency`/`record-gates` (slice-004) sind **real** und grün; die
+Code-Gates sind Dockerfile-Stages, die Meta-Gates laufen als Host-Bash.
 
 | Target | Zweck | Stand |
 |---|---|---|
@@ -101,6 +102,8 @@ und grün; jede Gate ist eine Dockerfile-Stage.
 | `make test` | Akzeptanzkriterien der `AC-FA-*` als Go-Tests | **real** (slice-003) |
 | `make coverage-gate` | Gesamt-Coverage ≥ 90 % über `./internal/...` ([ADR-0006](docs/plan/adr/0006-coverage-gate.md)) | **real** (slice-003) |
 | `make arch-check` | Eigen-Architektur via `a-check` selbst (Dogfooding) | **real** (slice-003) |
+| `make gate-consistency` | Meta-Gate: dokumentierte Targets ↔ Makefile, `.d-check.yml`-Module (Harness-Lügen-Schutz) | **real** (slice-004) |
+| `make record-gates` | Gate-Nachweis (Working-Tree-Hash) für den Stop-Hook | **real** (slice-004) |
 | `make gates` | alle inneren Gates (mandatory vor Handoff) | **real** (slice-003) |
 
 ## 5. Dokumentations-Regeln

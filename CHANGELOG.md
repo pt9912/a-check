@@ -31,3 +31,8 @@ Noch kein getaggtes Release; das GHCR-Image folgt. Das Lastenheft steht bei
   (Dockerfile-Stages, Muster d-check/u-boot); `a-check.mk` via `--print-mk`.
   Lint-Profil golangci-lint v2 (ADR-0005); Coverage-Gate 90 % (ADR-0006, Ist 92,6 %).
   Dogfooding: a-check prüft seine eigene Hexagon-Architektur (AC-QA-02), 0 Befunde.
+- slice-004 — Durchsetzungsschicht: Meta-Gates `make gate-consistency`
+  (dokumentierte Targets ↔ Makefile + `.d-check.yml`-Module; Schutz gegen
+  Harness-Lügen, schützt die doc-check-Beweisaussage AC-QA-02) und
+  `make record-gates` (inhaltsbasierter Working-Tree-Hash-Nachweis) plus
+  `.claude`-Stop-Hook als Handoff-Gate (fail-closed, loop-guarded, bootstrap-aware).
