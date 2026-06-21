@@ -6,8 +6,14 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
-Noch kein getaggtes Release; das GHCR-Image folgt. Das Lastenheft steht bei
-0.1.0; die folgenden Inkremente sind im Repo abgeschlossen.
+Keine ausstehenden Änderungen.
+
+## [0.1.0] - 2026-06-21
+
+Erstes Release: a-check als sprach-agnostischer Hexagonal-Architektur-Checker
+(text-heuristisch, netzlos, distroless/static) inkl. Harness, Quality-Gates,
+Durchsetzungsschicht und CI-/Release-Pipeline. Distribution als digest-gepinntes
+GHCR-Image + `--print-mk`/`a-check.mk`.
 
 ### Added
 
@@ -48,5 +54,8 @@ Noch kein getaggtes Release; das GHCR-Image folgt. Das Lastenheft steht bei
 - slice-007 — Release-Pipeline `.github/workflows/release.yml` (auf `v*`-Tags,
   SHA-gepinnt): SemVer-Validate → `make ci VERSION=` → GHCR-Login → Tag (`:latest`
   nur stabil, ADR-0007) → OCI-Label-Verify → Push → GitHub-Release mit Digest-Pin.
-  `:latest`-Tag-Politik in ADR-0007 (Proposed); `releasing.md` auf die reale
-  Pipeline aktualisiert. (Erster getaggter Release + Pilot: welle-05-Restarbeit.)
+  `:latest`-Tag-Politik in ADR-0007 (Accepted); `releasing.md` auf die reale
+  Pipeline aktualisiert.
+- slice-008 — lokaler `commit-msg`-Hook (`.githooks/commit-msg` + `make hooks`):
+  ruft `trace-check` vor dem Commit (AGENTS §5), opt-in pro Klon; dieselbe
+  Wahrheit wie CI/`make trace-check`.
