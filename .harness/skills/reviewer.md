@@ -1,6 +1,6 @@
 # Reviewer-Skill — a-check
 
-- **Status:** Proposed
+- **Status:** Accepted
 - **Gilt für:** Plan-/Design-/Code-Review der Doku- und (ab slice-003)
   Code-Artefakte dieses Repos.
 - **Bezug:** [`AGENTS.md`](../../AGENTS.md) §3 (Hard Rules) + §5 (Traceability);

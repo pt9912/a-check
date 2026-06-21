@@ -47,8 +47,9 @@ unterstützt netzlosen Lauf und byte-deterministische Ausgabe
 trägt [ADR-0004](0004-distribution-image-mk.md). Die **Sprachwahl** Go ist
 zudem konsistent mit dem Schwester-Tool
 [`d-check`](https://github.com/pt9912/d-check), das ebenfalls in Go geschrieben
-ist und dessen Harness-Form `a-check` adoptiert
-([`harness/conventions.md`](../../../harness/conventions.md)).
+ist und dessen Harness-Form `a-check` adoptiert — beides in-Repo belegt in
+[`harness/conventions.md`](../../../harness/conventions.md)
+(§Adoptierte Konventions-Quellen).
 
 ## Konsequenzen
 
