@@ -17,22 +17,22 @@ erzeugt aber keine Spezifikation (Regelwerk Modul 6).
 
 ## Aktuelle Welle
 
-**Keine aktive Welle — wartet auf Trigger.** Zuletzt abgeschlossen:
-welle-08-ci (`slice-006` — PR-/Push-CI `.github/workflows/ci.yml`: `make ci`
-+ `make trace-check`; schließt die Stop-Hook-„frischer-Klon"-Restlücke;
+**`welle-05-release` teils geliefert — Pipeline steht, wartet auf den ersten Tag.**
+Zuletzt abgeschlossen: [slice-007 §4](../done/slice-007-release-pipeline.md#4-closure-notiz-nach-done)
+(Release-Pipeline `.github/workflows/release.yml` + [ADR-0007](../../adr/0007-latest-tag-politik.md)
+`Proposed`); davor welle-08-ci (`slice-006` — PR-/Push-CI;
 [slice-006 §4](../done/slice-006-ci-pipeline.md#4-closure-notiz-nach-done)).
-Alle inneren Gates sind real und grün (`make gates`: lint/test/coverage-gate
-≥ 90 %/arch-check/doc-check/gate-consistency/guard-selftest + `record-gates`-Nachweis);
-zusätzlich `make ci` (+ `image-test`) und `make trace-check` grün.
-Noch **kein getaggtes GHCR-Release** (Status 0.1.0). Die nächste Welle wartet auf
-ihren Trigger (Change Request im Lastenheft oder Priorisierung durch den
-Auftraggeber) — Kandidat: `welle-05-release` (nutzt die in slice-006 gelegten OCI-Labels).
+Alle inneren Gates sind real und grün (`make ci` = `gates` + `image-test`;
+`make trace-check` grün). Noch **kein getaggtes GHCR-Release** (Status 0.1.0):
+der erste `v*`-Tag und die Pilot-Einbindung brauchen ein GitHub-Remote/GHCR und
+bleiben offene Restarbeit von `welle-05-release`; offen außerdem der
+[ADR-0007](../../adr/0007-latest-tag-politik.md)-Sign-off.
 
 ## Nächste Wellen
 
 | Welle | Trigger | Wichtigste Inhalte | Status |
 |---|---|---|---|
-| welle-05-release | Image-Veröffentlichung | erstes GHCR-Release + `@sha256:`-Digest-Pin in `a-check.mk`/Image-Referenz ([AC-FA-DIST-001](../../../../spec/lastenheft.md#ac-fa-dist-001--distribution-image---print-mk-a-checkmk), [AC-QA-03](../../../../spec/lastenheft.md#ac-qa-03--reproduzierbarkeit)); Pilot-Einbindung in ein Konsumenten-Repo. Pipeline: [slice-007](../open/slice-007-release-pipeline.md) | geplant |
+| welle-05-release | Image-Veröffentlichung | **Pipeline geliefert** ([slice-007](../done/slice-007-release-pipeline.md): `release.yml` + [ADR-0007](../../adr/0007-latest-tag-politik.md)). Offen: erster getaggter GHCR-Release + `@sha256:`-Digest-Pin in `a-check.mk` ([AC-FA-DIST-001](../../../../spec/lastenheft.md#ac-fa-dist-001--distribution-image---print-mk-a-checkmk), [AC-QA-03](../../../../spec/lastenheft.md#ac-qa-03--reproduzierbarkeit)); Pilot-Einbindung in ein Konsumenten-Repo | teils geliefert |
 | welle-06-sprach-backends | Bedarf | Ausbau/Härtung der Extraktion je Zielsprache; opt-in toolchain-gestützte Backends ([AC-FA-EXTRACT-001](../../../../spec/lastenheft.md#ac-fa-extract-001--sprach-backends-für-die-import-extraktion) Out-of-Scope-Re-Eval) | offen |
 
 _(Kein fixer Termin — Wellen feuern auf Trigger.)_

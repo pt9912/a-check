@@ -45,3 +45,8 @@ Noch kein getaggtes Release; das GHCR-Image folgt. Das Lastenheft steht bei
   AC-FA-DIST-001 `--print-mk`/`--print-config`/unbekanntes Flag + nativ==Container-
   Determinismus, AC-QA-02) und `make trace-check` (AC-/ADR-/MR-/slice-ID je Commit,
   AGENTS §5). Dockerfile-OCI-Labels (`org.opencontainers.image.*`) + `VERSION`-Build-Arg.
+- slice-007 — Release-Pipeline `.github/workflows/release.yml` (auf `v*`-Tags,
+  SHA-gepinnt): SemVer-Validate → `make ci VERSION=` → GHCR-Login → Tag (`:latest`
+  nur stabil, ADR-0007) → OCI-Label-Verify → Push → GitHub-Release mit Digest-Pin.
+  `:latest`-Tag-Politik in ADR-0007 (Proposed); `releasing.md` auf die reale
+  Pipeline aktualisiert. (Erster getaggter Release + Pilot: welle-05-Restarbeit.)
