@@ -1,7 +1,7 @@
 # Benutzerhandbuch: a-check
 
-**Handbuch-Version:** 1.2 · **Software-Version:** 0.1.0 (in Entwicklung) ·
-**Stand:** 2026-06-21 · **Autor:** pt9912 (Maintainer)
+**Handbuch-Version:** 1.3 · **Software-Version:** 0.1.0 · **Stand:** 2026-06-21 ·
+**Autor:** pt9912 (Maintainer)
 
 ---
 
@@ -184,6 +184,10 @@ markers:
 ```
 
 **Pflichtblöcke:** `version`, `languages`, `layers`, `edges`.
+**Gültige `languages`-Schlüssel:** genau `go`, `cpp`, `rust`, `kotlin` — exakt so
+zu schreiben (z. B. `cpp`, **nicht** `c++`); andere Schlüssel werden ignoriert
+(keine Extraktion). Jeder Schlüssel bildet auf eine Liste von Datei-Globs ab,
+z. B. `cpp: ["**/*.h", "**/*.cpp"]`, `rust: ["**/*.rs"]`, `kotlin: ["**/*.kt"]`.
 **Optionalblöcke:** `adapter_sink`, `tech`, `composition_root`, `allow`,
 `forbidden_constructs`, `markers`. Fehlt ein Optionalblock, entfällt die
 zugehörige Prüfung (kein stiller Standardwert) — fehlt z. B. `adapter_sink`,
@@ -279,3 +283,4 @@ und die [Spezifikation](../../spec/spezifikation.md); ein Überblick steht in de
 | 1.0 | 2026-06-21 | Erstfassung zur Software-Version 0.1.0. |
 | 1.1 | 2026-06-21 | Review-Einarbeitung: Vorab-Image-Pfad fürs make-Gate (`A_CHECK_IMAGE=a-check:dev`), Config-Schlüssel `allow`/`forbidden_constructs`, Exit-0-stderr-Klarstellung, Image-Fehlerfall, Glossar, Autor. |
 | 1.2 | 2026-06-21 | Quer-Verweis aus §3.3 auf den neuen Release-Leitfaden [`releasing.md`](releasing.md). |
+| 1.3 | 2026-06-21 | §4: die vier gültigen `languages`-Schlüssel (`go`/`cpp`/`rust`/`kotlin`) explizit gelistet; Software-Version 0.1.0 veröffentlicht. |
