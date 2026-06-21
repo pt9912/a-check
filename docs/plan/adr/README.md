@@ -10,10 +10,14 @@ Architecture Decision Records dieses Repos. Konventionen:
   Spec-Stelle sie verbindlich macht (nie das Lastenheft).
 - Neue ADRs werden in der Tabelle unten ergänzt.
 
-Noch keine ADRs. Die Fundament-ADRs (Implementierungssprache Go;
-text-heuristische Extraktion; Config-Modell `.a-check.yml`; Distribution
-inkl. `a-check.mk`/`--print-mk`) entstehen mit **slice-001**.
+Die **Fundament-ADRs** (slice-001) legen die technische Basis fest, aus
+der `spec/spezifikation.md` (slice-002) formalisiert wird; bis das
+Technik-Stratum existiert, steht ihr `**Schärft:**`-Feld auf `—`. Status
+`Proposed` bis zum Acceptance-Sign-off (Acceptance-Trigger).
 
 | ID | Titel | Status | Datum | Bezug |
 |---|---|---|---|---|
-| — | — | — | — | — |
+| [ADR-0001](0001-go-impl-sprache.md) | Go als Implementierungssprache | Proposed | 2026-06-21 | [AC-QA-01](../../../spec/lastenheft.md#ac-qa-01--determinismus), [AC-QA-02](../../../spec/lastenheft.md#ac-qa-02--hermetik-und-ehrliche-heuristik-grenze), [AC-QA-03](../../../spec/lastenheft.md#ac-qa-03--reproduzierbarkeit), [AC-FA-DIST-001](../../../spec/lastenheft.md#ac-fa-dist-001--distribution-image---print-mk-a-checkmk) |
+| [ADR-0002](0002-text-heuristische-extraktion.md) | Text-heuristische Import-Extraktion | Proposed | 2026-06-21 | [AC-FA-EXTRACT-001](../../../spec/lastenheft.md#ac-fa-extract-001--sprach-backends-für-die-import-extraktion), [AC-QA-02](../../../spec/lastenheft.md#ac-qa-02--hermetik-und-ehrliche-heuristik-grenze), [AC-QA-01](../../../spec/lastenheft.md#ac-qa-01--determinismus) |
+| [ADR-0003](0003-config-modell-a-check-yml.md) | Config-Modell `.a-check.yml` | Proposed | 2026-06-21 | [AC-FA-CONF-001](../../../spec/lastenheft.md#ac-fa-conf-001--konfigurationsdatei-a-checkyml), [AC-FA-CLI-001](../../../spec/lastenheft.md#ac-fa-cli-001--aufruf-scan-wurzel-und-exit-codes) |
+| [ADR-0004](0004-distribution-image-mk.md) | Distribution: Image + `--print-mk`/`a-check.mk` | Proposed | 2026-06-21 | [AC-FA-DIST-001](../../../spec/lastenheft.md#ac-fa-dist-001--distribution-image---print-mk-a-checkmk), [AC-QA-03](../../../spec/lastenheft.md#ac-qa-03--reproduzierbarkeit), [AC-QA-02](../../../spec/lastenheft.md#ac-qa-02--hermetik-und-ehrliche-heuristik-grenze) |
