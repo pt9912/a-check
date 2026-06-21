@@ -5,25 +5,23 @@ Release-Prozess für `ghcr.io/pt9912/a-check`
 [ADR-0004](../plan/adr/0004-distribution-image-mk.md),
 [ADR-0007](../plan/adr/0007-latest-tag-politik.md)). Die Pipeline ist
 [`.github/workflows/release.yml`](../../.github/workflows/release.yml) (seit
-slice-007); ein **getaggter GHCR-Release** steht noch aus (braucht ein
-GitHub-Remote/GHCR-Trigger) — siehe
-[Roadmap](../plan/planning/in-progress/roadmap.md).
+slice-007). **Erstes Release: `v0.1.0` ist veröffentlicht** —
+[GitHub-Release](https://github.com/pt9912/a-check/releases/tag/v0.1.0),
+GHCR-Tags `v0.1.0` + `latest`.
 
-## Stand heute (vor dem ersten Release)
+## Aktueller Stand
 
-Es gibt **noch kein getaggtes GHCR-Release** (die Pipeline steht, wartet aber
-auf den ersten `v*`-Tag). Wer heute baut/prüft, nutzt das lokal gebaute Image:
+`v0.1.0` ist auf GHCR verfügbar; Konsumenten pinnen den **Digest**
+([Konsum](#konsum-digest-pin)). Das mitgelieferte
+[`a-check.mk`](../../a-check.mk) und `a-check --print-mk`
+([AC-FA-DIST-001](../../spec/lastenheft.md#ac-fa-dist-001--distribution-image---print-mk-a-checkmk))
+sind auf `@sha256:13459f44…` digest-gepinnt. Für lokale Entwicklung gegen
+ungetaggte Stände dient weiterhin das lokal gebaute Image:
 
 ```sh
-make build                       # baut a-check:dev (static/distroless, digest-gepinnte Bases)
+make build                               # baut a-check:dev (static/distroless)
 make a-check A_CHECK_IMAGE=a-check:dev   # Konsum-Aufruf gegen das lokale Image
 ```
-
-Das `a-check`-Target und das einbindbare Fragment liefert
-`a-check --print-mk` ([AC-FA-DIST-001](../../spec/lastenheft.md#ac-fa-dist-001--distribution-image---print-mk-a-checkmk)),
-siehe [`a-check.mk`](../../a-check.mk) dieses Repos. Solange kein GHCR-Image
-veröffentlicht ist, wird `A_CHECK_IMAGE` beim Aufruf überschrieben
-([Benutzerhandbuch §3.3](benutzerhandbuch.md#33-a-check-als-make--oder-ci-gate-einbinden)).
 
 ## Versionsquelle
 

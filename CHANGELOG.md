@@ -6,7 +6,12 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
-Keine ausstehenden Änderungen.
+### Changed
+
+- `--print-mk`/`a-check.mk` und der `aCheckImage`-Default sind auf den
+  v0.1.0-Release **digest-gepinnt**
+  (`ghcr.io/pt9912/a-check@sha256:13459f44…`) statt auf die Tag-Form — Pin-Hebung
+  nach dem ersten Release (AC-QA-03, ADR-0004/ADR-0007).
 
 ## [0.1.0] - 2026-06-21
 
