@@ -33,7 +33,11 @@ die kanonische Quelle (Source Precedence, siehe
 - **Extern (Agenten-Destillat):**
   [`agents-regelwerk.md`](https://raw.githubusercontent.com/pt9912/ai-harness-course/v1.3.0/kurs/de/agents-regelwerk.md)
   — operatives Regelwerk für Code-Agenten ohne Didaktik; derivativ,
-  bei Konflikt gilt das Lehrmaterial.
+  bei Konflikt gilt das Lehrmaterial. Lese-Form: das nach Modulen und
+  Grundlagen-Abschnitten aufgeteilte Release-Bundle
+  [`lab-regelwerk.zip`](https://github.com/pt9912/ai-harness-course/releases/download/v1.3.0/lab-regelwerk.zip)
+  (`v1.3.0`), damit ein Agent einzelne Abschnitte laden kann, ohne das
+  gesamte Regelwerk im Kontext zu halten.
 - **Konventions-Vorbild (Harness-Form):**
   [`d-check`](https://github.com/pt9912/d-check) — Schwester-Tool im
   selben Stack; Harness-Form (`AGENTS.md`/`harness/`-Trias),
