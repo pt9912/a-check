@@ -1,3 +1,4 @@
+# syntax=docker/dockerfile:1.7
 # Dockerfile — a-check (Muster: d-check/u-boot, gleiche Build-Familie).
 # Jede Gate ist eine Stage (`docker build --target …`); Bases sind
 # digest-gepinnt (AC-QA-03 Reproduzierbarkeit). Das Laufzeit-Image ist

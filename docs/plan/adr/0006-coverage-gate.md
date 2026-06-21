@@ -1,6 +1,6 @@
 # ADR-0006 — Coverage-Gate: Gesamt-Schwelle 90 % (Kalibrierungs-Bindung)
 
-- **Status:** Proposed
+- **Status:** Accepted
 - **Datum:** 2026-06-21
 - **Bezug:** [`AGENTS.md`](../../../AGENTS.md) §3.6 (Schwellen = ADR), §4 (`make gates`); [ADR-0005](0005-lint-profil.md) (Schwester-Gate Maintainability)
 - **Schärft:** — (Gate-/Tooling-Entscheidung; koppelt an keine Spec-§. Sie *realisiert* das Coverage-Gate, das die Spec-Straten nicht selbst beschreiben.)

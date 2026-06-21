@@ -29,6 +29,10 @@ NO_CACHE_FILTER_COV  := --no-cache-filter coverage
 
 .PHONY: help compile lint test coverage-gate build arch-check gates
 
+# Gates seriell: unter `make -j` liefen die Sub-Gates sonst parallel und die
+# Reihenfolge/der Abbruch bei rotem Gate wären nicht garantiert.
+.NOTPARALLEL:
+
 help: ## Diese Hilfe anzeigen.
 	@grep -hE '^[a-zA-Z_-]+:.*?## ' $(MAKEFILE_LIST) | sort | awk 'BEGIN{FS=":.*?## "}{printf "  \033[36m%-14s\033[0m %s\n",$$1,$$2}'
 

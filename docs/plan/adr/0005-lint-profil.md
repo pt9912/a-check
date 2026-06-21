@@ -1,6 +1,6 @@
 # ADR-0005 — Lint-Profil: golangci-lint v2, SOLID-nahe Linter ohne `//nolint`
 
-- **Status:** Proposed
+- **Status:** Accepted
 - **Datum:** 2026-06-21
 - **Bezug:** [`AGENTS.md`](../../../AGENTS.md) §3.2 (Suppression-Verbot), §3.6 (Prüfregeln/Lockerungen = ADR), §4 (`make lint`); [ADR-0003](0003-config-modell-a-check-yml.md) (Dependency-Fläche YAML)
 - **Schärft:** — (Tooling-/Prozess-Entscheidung; koppelt an keine Spec-§. Sie *realisiert* das `make lint`-Gate, das die Spec-Straten nicht selbst beschreiben.)

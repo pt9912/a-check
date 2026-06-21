@@ -53,7 +53,7 @@ flowchart TD
 | Kennung | Komponente | Rolle |
 |---|---|---|
 | **ARC-001** | Kern (Regel-Engine) | wertet die fünf Regeln auf einem abstrakten Import-/Schicht-Modell aus ([SPEC-RULE-001](spezifikation.md#spec-rule-001--regel-auswertung)); **rein** — keine I/O, kein Tech, keine Zielsprach-Kenntnis. |
-| **ARC-002** | Ports | reine Abstraktionen `ConfigPort` / `ExtractionPort` / `ReportPort`; Dependency-Senke (importieren weder Kern noch Adapter). |
+| **ARC-002** | Ports | reine Abstraktionen `ConfigPort` / `ExtractionPort` / `ReportPort`, als Go-Interfaces **im Kern-Paket (ARC-001) co-lokiert** (Go-Idiom: Ports sind Teil des Domänen-Kerns); sie referenzieren nur Domänentypen, keine Adapter. Im Eigen-[`.a-check.yml`](../.a-check.yml) sind sie damit Teil der `core`-Schicht — ein Projekt mit separatem Ports-Paket deklariert eine eigene `ports`-Schicht. |
 | **ARC-003** | Extraktions-Adapter (je Zielsprache) | implementieren `ExtractionPort` text-heuristisch ([SPEC-EXTRACT-001](spezifikation.md#spec-extract-001--import-extraktion)); je ein Adapter pro **Zielsprache** (C++/Go/Rust/Kotlin — Problemdomäne, nicht Implementierungstechnik). |
 | **ARC-004** | Konfigurations-Adapter | lädt und dekodiert `.a-check.yml` strikt ([SPEC-CONF-001](spezifikation.md#spec-conf-001--konfigurationsschema)); implementiert `ConfigPort`. |
 | **ARC-005** | Report-Adapter | formatiert Befunde und Zusammenfassung und bestimmt den **Befund-Exit-Code** (`0`/`1`, [SPEC-CLI-001](spezifikation.md#spec-cli-001--aufruf-scan-wurzel-und-exit-codes)); implementiert `ReportPort`. |

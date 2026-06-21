@@ -82,12 +82,14 @@ gewählte Backend die Menge der importierten Symbole/Module:
    - **Go:** `import "…"` sowie Block-Form `import ( … )`
    - **Rust:** `use …;` und `extern crate …;` inkl. Alias-Form (`use x as y;` → `x`)
    - **Kotlin:** `import …`
-3. Import-ähnliche Zeilen innerhalb von Zeilen-/Block-Kommentaren und
-   String-Literalen werden, soweit text-heuristisch erkennbar, **nicht**
-   gewertet. Wo die Heuristik an ihre Grenze stößt (z. B. ein
-   framework-fremdes `Queue.h` unter einem `Q[A-Za-z]`-Muster), wird die
-   Grenze **ausgewiesen**, nicht verschwiegen; `markers.ignore_symbols`
-   erlaubt eine dokumentierte Ausnahme.
+3. Import-ähnliche Zeilen in Zeilen-/Block-Kommentaren werden **nicht**
+   gewertet (`//` und `/* */` werden entfernt). Import-ähnliche Zeilen in
+   **String-Literalen** sind eine **ausgewiesene Heuristik-Grenze** (0.1.0:
+   reines Kommentar-Stripping, keine String-Awareness). Wo die Heuristik an
+   ihre Grenze stößt (z. B. ein framework-fremdes `Queue.h` unter einem
+   `Q[A-Za-z]`-Muster oder ein Treffer in einem String), wird die Grenze
+   ausgewiesen, nicht verschwiegen; `markers.ignore_symbols` erlaubt eine
+   dokumentierte Ausnahme.
 4. Ergebnis je Datei: eine **deduplizierte, stabil sortierte** Symbolmenge
    (siehe [SPEC-DET-001](#spec-det-001--determinismus-vertrag)).
 
@@ -119,6 +121,13 @@ Meldung); ≥ 1 Befund ⇒ Exit-Code 1.
 Die Schicht einer Datei ergibt sich aus dem ersten passenden `layers`-Glob;
 Symbole werden über die `layers`-Globs des Zielpfads bzw. die `tech`-Muster
 aufgelöst.
+
+Pro (Datei, Import) gilt **deterministische Erst-Treffer-Reihenfolge** in der
+Tabellen-Reihenfolge (`core-impurity` → `port-impurity` → `lateral-adapter` →
+`tech-leak` → `wrong-direction`); ein Import erzeugt höchstens einen Befund.
+Dateien unter `composition_root` sind als Verdrahtungspunkt von **allen**
+Schicht-Regeln **und** `tech-leak` ausgenommen — sie importieren
+bestimmungsgemäß quer über die Schichten.
 
 ## SPEC-CLI-001 — Aufruf, Scan-Wurzel und Exit-Codes
 
