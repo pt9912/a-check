@@ -33,6 +33,7 @@ Auftraggeber) — Kandidat: `welle-05-release`.
 |---|---|---|---|
 | welle-05-release | Image-Veröffentlichung | erstes GHCR-Release + `@sha256:`-Digest-Pin in `a-check.mk`/Image-Referenz ([AC-FA-DIST-001](../../../../spec/lastenheft.md#ac-fa-dist-001--distribution-image---print-mk-a-checkmk), [AC-QA-03](../../../../spec/lastenheft.md#ac-qa-03--reproduzierbarkeit)); Pilot-Einbindung in ein Konsumenten-Repo | geplant |
 | welle-06-sprach-backends | Bedarf | Ausbau/Härtung der Extraktion je Zielsprache; opt-in toolchain-gestützte Backends ([AC-FA-EXTRACT-001](../../../../spec/lastenheft.md#ac-fa-extract-001--sprach-backends-für-die-import-extraktion) Out-of-Scope-Re-Eval) | offen |
+| welle-08-ci | Priorisierung | PR-/Push-CI (`.github/workflows/ci.yml`): `make ci` (gates + `image-test`, [AC-FA-DIST-001](../../../../spec/lastenheft.md#ac-fa-dist-001--distribution-image---print-mk-a-checkmk)) + `make trace-check` (`AC-*`/`ADR-*`-ID je Commit, AGENTS §5) + Dockerfile-OCI-Labels; schließt die Stop-Hook-„frischer-Klon"-Restlücke. Backlog: [slice-006](../open/slice-006-ci-pipeline.md) | geplant |
 
 _(Kein fixer Termin — Wellen feuern auf Trigger.)_
 
