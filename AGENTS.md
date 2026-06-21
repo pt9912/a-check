@@ -35,7 +35,7 @@ In dieser Reihenfolge:
 2. [`spec/spezifikation.md`](spec/spezifikation.md) — technisch verbindlich, fortschreibbar.
 3. [`spec/architecture.md`](spec/architecture.md) — Komponenten- und Sequenzsicht (sprach-/meilensteinfrei).
 4. [`docs/plan/adr/README.md`](docs/plan/adr/README.md) — ADR-Index.
-5. `docs/plan/planning/in-progress/roadmap.md` — aktuelle Welle (geplant, entsteht mit slice-001).
+5. [`docs/plan/planning/in-progress/roadmap.md`](docs/plan/planning/in-progress/roadmap.md) — aktuelle Welle.
 6. [`README.md`](README.md) — Projekt-Überblick.
 7. **AGENTS.md (diese Datei).**
 8. [`harness/README.md`](harness/README.md) — Harness-Einstieg.

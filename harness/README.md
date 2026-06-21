@@ -22,7 +22,7 @@ Diese Datei dupliziert sie nicht.
 | 2 | [`spec/spezifikation.md`](../spec/spezifikation.md) | technisch verbindlich, fortschreibbar |
 | 3 | [`spec/architecture.md`](../spec/architecture.md) | Komponenten/Sequenzen, meilensteinfrei |
 | 4 | [`docs/plan/adr/`](../docs/plan/adr/) | Architekturentscheidungen |
-| 5 | `docs/plan/planning/in-progress/roadmap.md` | aktuelle Welle (geplant, entsteht mit slice-001) |
+| 5 | [`docs/plan/planning/in-progress/roadmap.md`](../docs/plan/planning/in-progress/roadmap.md) | aktuelle Welle |
 | 6 | [`README.md`](../README.md) | Projekt-Überblick |
 | 7 | [`AGENTS.md`](../AGENTS.md) | Agent-Briefing |
 | 8 | diese Datei | Harness-Einstieg |
