@@ -23,12 +23,14 @@ Diese Datei dupliziert sie nicht.
 | 3 | [`spec/architecture.md`](../spec/architecture.md) | Komponenten/Sequenzen, meilensteinfrei |
 | 4 | [`docs/plan/adr/`](../docs/plan/adr/) | Architekturentscheidungen |
 | 5 | [`docs/plan/planning/in-progress/roadmap.md`](../docs/plan/planning/in-progress/roadmap.md) | aktuelle Welle |
-| 6 | [`README.md`](../README.md) | Projekt-Überblick |
-| 7 | [`AGENTS.md`](../AGENTS.md) | Agent-Briefing |
-| 8 | diese Datei | Harness-Einstieg |
+| 6 | [`docs/user/`](../docs/user/) | Benutzer-/Betriebs-Doku ([Benutzerhandbuch](../docs/user/benutzerhandbuch.md)) |
+| 7 | [`README.md`](../README.md) | Projekt-Überblick |
+| 8 | [`AGENTS.md`](../AGENTS.md) | Agent-Briefing |
+| 9 | diese Datei | Harness-Einstieg |
 
-Acht Ränge ohne `docs/user`-Stratum (Pre-Release-Tool ohne Betriebs-Doku)
-— deklariert als [`MR-003`](conventions.md#mr-003--source-precedence-ohne-docsuser-rang).
+Neun Ränge inkl. `docs/user`-Stratum (Benutzerhandbuch); der zuvor ausgelassene
+Rang ist mit [`MR-003`](conventions.md#mr-003--source-precedence-ohne-docsuser-rang)
+(aufgelöst) eingefügt.
 
 ## Guides (Feedforward-Quellen)
 

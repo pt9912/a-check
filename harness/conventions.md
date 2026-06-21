@@ -127,6 +127,10 @@ die kanonische Quelle (Source Precedence, siehe
 - **Auflösungs-Trigger:** mit der Release-Pipeline entsteht Betriebs-/
   Releasing-Doku; der `docs/user`-Rang wird dann eingefügt und dieser
   Eintrag als aufgelöst markiert.
+- **Aufgelöst (2026-06-21):** Mit dem
+  [Benutzerhandbuch](../docs/user/benutzerhandbuch.md) existiert Nutzer-/
+  Betriebs-Doku; der `docs/user`-Rang ist als Rang 6 (vor `README.md`)
+  eingefügt — die Source Precedence führt jetzt neun Ränge.
 
 ### MR-004 — Spezifikation und Architektur: Strata und ID-Schemata
 

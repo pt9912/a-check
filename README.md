@@ -120,6 +120,7 @@ ein lebendes Beispiel ist die [Selbstkonfiguration dieses Repos](.a-check.yml).
 
 | Dokument | Inhalt |
 |---|---|
+| [`docs/user/benutzerhandbuch.md`](docs/user/benutzerhandbuch.md) | **Benutzerhandbuch** — Installation, Nutzung, `.a-check.yml`, Fehlerbehebung |
 | [`spec/lastenheft.md`](spec/lastenheft.md) | Anforderungen (`AC-FA-*`, `AC-QA-*`), Akzeptanzkriterien |
 | [`spec/spezifikation.md`](spec/spezifikation.md) | Algorithmen, `.a-check.yml`-Schema, Exit-Codes (`SPEC-*`) |
 | [`spec/architecture.md`](spec/architecture.md) | Hexagon-Komponenten und Rollen (`ARC-*`) |
