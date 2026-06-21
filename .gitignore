@@ -1,0 +1,9 @@
+# Harness-Laufzustand (lokaler Gate-Nachweis für einen künftigen Stop-Hook;
+# .harness/skills/ ist versionierte Harness-Mechanik und bleibt getrackt).
+.harness/state/
+
+# Defensive: bei lokalem Lauf entgegen der Docker/make-only-Regel (AGENTS.md
+# §3.1) entstehende Go-Artefakte nie committen.
+/a-check
+*.test
+*.out
