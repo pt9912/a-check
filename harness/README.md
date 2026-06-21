@@ -19,8 +19,8 @@ Diese Datei dupliziert sie nicht.
 | Rang | Datei | Charakter |
 |---|---|---|
 | 1 | [`spec/lastenheft.md`](../spec/lastenheft.md) | vertraglich abnahmebindend |
-| 2 | `spec/spezifikation.md` | technisch fortschreibbar (geplant, entsteht mit slice-002) |
-| 3 | `spec/architecture.md` | Komponenten/Sequenzen, meilensteinfrei (geplant, entsteht mit slice-002) |
+| 2 | [`spec/spezifikation.md`](../spec/spezifikation.md) | technisch verbindlich, fortschreibbar |
+| 3 | [`spec/architecture.md`](../spec/architecture.md) | Komponenten/Sequenzen, meilensteinfrei |
 | 4 | [`docs/plan/adr/`](../docs/plan/adr/) | Architekturentscheidungen |
 | 5 | `docs/plan/planning/in-progress/roadmap.md` | aktuelle Welle (geplant, entsteht mit slice-001) |
 | 6 | `README.md` | Projekt-Überblick (geplant) |
@@ -35,8 +35,8 @@ Acht Ränge ohne `docs/user`-Stratum (Pre-Release-Tool ohne Betriebs-Doku)
 | Quelle | Inhalt |
 |---|---|
 | [`spec/lastenheft.md`](../spec/lastenheft.md) | Anforderungen (`AC-FA-*`, `AC-QA-*`), Akzeptanzkriterien |
-| `spec/spezifikation.md` | Algorithmen, Schemas (`.a-check.yml`, `--json`), Defaults, Exit-Codes (geplant) |
-| `spec/architecture.md` | Hexagon-Schnitt (Rollen), Zugriffs-Constraints, Sequenzen (geplant) |
+| [`spec/spezifikation.md`](../spec/spezifikation.md) | `.a-check.yml`-Schema, Extraktions-Algorithmus, Regel-Semantik, Defaults, Exit-Codes (`SPEC-*`) |
+| [`spec/architecture.md`](../spec/architecture.md) | Hexagon-Komponenten/Rollen, Zugriffs-Constraints, Scan-Sequenz (`ARC-*`) |
 | [`docs/plan/adr/`](../docs/plan/adr/) | Architekturentscheidungen |
 | [`docs/plan/planning/`](../docs/plan/planning/) | Slice-Pläne und Roadmap |
 | [`AGENTS.md`](../AGENTS.md) | Hard Rules, Source Precedence, Workflow |

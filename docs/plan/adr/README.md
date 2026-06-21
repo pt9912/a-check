@@ -10,10 +10,12 @@ Architecture Decision Records dieses Repos. Konventionen:
   Spec-Stelle sie verbindlich macht (nie das Lastenheft).
 - Neue ADRs werden in der Tabelle unten ergänzt.
 
-Die **Fundament-ADRs** (slice-001) legen die technische Basis fest, aus
-der `spec/spezifikation.md` (slice-002) formalisiert wird; bis das
-Technik-Stratum existiert, steht ihr `**Schärft:**`-Feld auf `—`. Status
-`Proposed` bis zum Acceptance-Sign-off (Acceptance-Trigger).
+Die **Fundament-ADRs** (slice-001) legen die technische Basis fest, die das
+Technik-Stratum [`spec/spezifikation.md`](../../../spec/spezifikation.md)
+(slice-002) formalisiert. Ihr `**Schärft:**`-Feld zeigt nun aufwärts auf die
+jeweilige `SPEC-*`-Stelle; [ADR-0001](0001-go-impl-sprache.md) bleibt `—`
+(die Spezifikation ist sprachneutral, die Sprachwahl koppelt an keine
+Spec-§). Status `Proposed` bis zum Acceptance-Sign-off (Acceptance-Trigger).
 
 | ID | Titel | Status | Datum | Bezug |
 |---|---|---|---|---|

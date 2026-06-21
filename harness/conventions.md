@@ -86,9 +86,9 @@ die kanonische Quelle (Source Precedence, siehe
 - **Adaption:** Die Source-Precedence-Tabelle führt
   `spec/spezifikation.md` als eigenen **Rang 2** zwischen Lastenheft
   (Rang 1) und Architektur (Rang 3). Der Kurs-Default setzt zwei
-  Spec-Ränge; dieses Repo nutzt drei. Die Dateien der Ränge 2–3 entstehen
-  mit slice-002; bis dahin sind sie in den Tabellen als „geplant"
-  markiert und nicht verlinkt.
+  Spec-Ränge; dieses Repo nutzt drei. Die Dateien der Ränge 2–3 sind mit
+  slice-002 angelegt und in den Tabellen verlinkt; Stratum- und
+  ID-Schema-Deklaration: [`MR-004`](#mr-004--spezifikation-und-architektur-strata-und-id-schemata).
 - **Begründung:** Spec-Stratifizierung mit drei Spec-Dateien; die
   ADR-Schärfungs-Regel („ADR darf Spezifikation schärfen, nicht
   Lastenheft") soll strukturell sichtbar sein. Konsistent mit dem
@@ -127,6 +127,30 @@ die kanonische Quelle (Source Precedence, siehe
 - **Auflösungs-Trigger:** mit der Release-Pipeline entsteht Betriebs-/
   Releasing-Doku; der `docs/user`-Rang wird dann eingefügt und dieser
   Eintrag als aufgelöst markiert.
+
+### MR-004 — Spezifikation und Architektur: Strata und ID-Schemata
+
+- **Datum:** 2026-06-21
+- **Geltungsbereich:** [`spec/spezifikation.md`](../spec/spezifikation.md), [`spec/architecture.md`](../spec/architecture.md)
+- **Adaption:** Die mit [`MR-001`](#mr-001--source-precedence-mit-eigener-spezifikations-schicht)
+  angekündigten Ränge 2–3 sind angelegt. Stratum-Platzierung und ID-Schema
+  werden hier deklariert (sonst stille Setzung):
+  - **Technik-Stratum** = `spec/spezifikation.md`; ID-Präfix
+    `SPEC-<BEREICH>-<NNN>` (Bereiche initial `CONF`/`EXTRACT`/`RULE`/`CLI`/
+    `DET`/`DIST`). Präzisiert das Lastenheft, erweitert es nie; sprachneutral.
+  - **Sicht-Stratum** = `spec/architecture.md`; ID-Präfix `ARC-<NNN>` für
+    *Struktur*-Kennungen (Komponenten/Schnittstellen), **keine** eigenen
+    Anforderungen; sprach- und meilensteinfrei.
+- **Begründung:** Ein Spec-Dokument ohne deklariertes Stratum/ID-Schema ist
+  eine stille Setzung (gleiche Harness-Lüge-Klasse wie ein undeklariertes
+  Gate) und nicht normativ zitierbar. Die Schemata spiegeln die
+  Bereichskürzel des Lastenhefts
+  ([`MR-002`](#mr-002--id-schema-mit-bereichskürzeln-ab-initialer-fassung))
+  für durchgängige Traceability.
+- **Auflösungs-Trigger:** permanent. Die maschinelle Kennungs-Linkpflicht
+  (`ids`-Muster für `SPEC-*`/`ARC-*` in [`.d-check.yml`](../.d-check.yml))
+  folgt mit dem Implementierungs-Slice, der die übrigen `d-check`-Module
+  aktiviert (konsistent mit der dortigen Deferred-Politik).
 
 ## Anforderungs-Anlege-Prozess
 

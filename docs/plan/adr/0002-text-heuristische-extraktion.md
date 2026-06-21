@@ -3,7 +3,7 @@
 - **Status:** Proposed
 - **Datum:** 2026-06-21
 - **Bezug:** [AC-FA-EXTRACT-001](../../../spec/lastenheft.md#ac-fa-extract-001--sprach-backends-für-die-import-extraktion), [AC-QA-02](../../../spec/lastenheft.md#ac-qa-02--hermetik-und-ehrliche-heuristik-grenze), [AC-QA-01](../../../spec/lastenheft.md#ac-qa-01--determinismus)
-- **Schärft:** — (`spec/spezifikation.md` entsteht mit slice-002; siehe [ADR-Index](README.md))
+- **Schärft:** [SPEC-EXTRACT-001](../../../spec/spezifikation.md#spec-extract-001--import-extraktion) — macht die text-heuristische Extraktion gegenüber dem AST-Ansatz verbindlich.
 - **Supersedes:** —
 
 ## Kontext

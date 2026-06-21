@@ -32,8 +32,8 @@ bei Konflikt gilt die Quelldatei, über ihr die kanonischen Quellen
 In dieser Reihenfolge:
 
 1. [`spec/lastenheft.md`](spec/lastenheft.md) — vertraglich abnahmebindend.
-2. `spec/spezifikation.md` — technisch verbindlich, fortschreibbar (geplant, entsteht mit slice-002).
-3. `spec/architecture.md` — Komponenten- und Sequenzsicht (geplant, entsteht mit slice-002).
+2. [`spec/spezifikation.md`](spec/spezifikation.md) — technisch verbindlich, fortschreibbar.
+3. [`spec/architecture.md`](spec/architecture.md) — Komponenten- und Sequenzsicht (sprach-/meilensteinfrei).
 4. [`docs/plan/adr/README.md`](docs/plan/adr/README.md) — ADR-Index.
 5. `docs/plan/planning/in-progress/roadmap.md` — aktuelle Welle (geplant, entsteht mit slice-001).
 6. `README.md` — Projekt-Überblick (geplant).
