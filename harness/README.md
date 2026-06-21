@@ -88,7 +88,9 @@ Stop-Hook-„frischer-Klon"-Restlücke.
 
 - PRs/Commits **müssen** mindestens eine `AC-*`- oder `ADR-*`-ID nennen
   (`MR-*`/`slice-NNN` gelten ebenso) — erzwungen durch `make trace-check`
-  (lokal `HEAD`, CI über den Commit-Range, slice-006).
+  (lokal `HEAD`, CI über den Commit-Range, slice-006). Optional pro Klon:
+  `make hooks` installiert den lokalen `commit-msg`-Hook (`.githooks`,
+  slice-008), der dieselbe Prüfung schon vor dem Commit feuert.
 - Neue oder geänderte Anforderungen brauchen einen Beleg: Test, Gate, Demo oder ADR.
 - Neue ADRs müssen im [ADR-Index](../docs/plan/adr/README.md) ergänzt werden.
 - Änderungen an Planning-Dokumenten folgen den Lifecycle-Regeln

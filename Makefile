@@ -32,7 +32,7 @@ NO_CACHE_FILTER_COV  := --no-cache-filter coverage
 
 .DEFAULT_GOAL := help
 
-.PHONY: help compile lint test coverage-gate build arch-check gate-consistency guard-selftest record-gates gates image-test ci trace-check
+.PHONY: help compile lint test coverage-gate build arch-check gate-consistency guard-selftest record-gates gates image-test ci trace-check hooks
 
 # Gates seriell: unter `make -j` liefen die Sub-Gates sonst parallel und die
 # Reihenfolge/der Abbruch bei rotem Gate wären nicht garantiert.
@@ -80,3 +80,7 @@ ci: gates image-test ## CI-äquivalenter Lauf: gates + image-test (AC-FA-DIST-00
 
 trace-check: ## Traceability-Gate: AC-/ADR-/MR-/slice-ID in Commits (Selbsttest + HEAD; RANGE=a..b für CI). AGENTS §5.
 	@bash tools/trace-check.sh $(if $(RANGE),--range $(RANGE),)
+
+hooks: ## git-Hooks installieren (core.hooksPath -> .githooks; commit-msg Traceability). AGENTS §5.
+	@git config core.hooksPath .githooks
+	@echo "[hooks] core.hooksPath=.githooks — commit-msg Traceability-Gate aktiv"

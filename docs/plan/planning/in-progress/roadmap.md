@@ -32,7 +32,6 @@ ein Konsumenten-Repo bleibt offene Restarbeit von `welle-05-release`.
 |---|---|---|---|
 | welle-05-release | Image-Veröffentlichung | **Pipeline geliefert** ([slice-007](../done/slice-007-release-pipeline.md): `release.yml` + [ADR-0007](../../adr/0007-latest-tag-politik.md)). Offen: erster getaggter GHCR-Release + `@sha256:`-Digest-Pin in `a-check.mk` ([AC-FA-DIST-001](../../../../spec/lastenheft.md#ac-fa-dist-001--distribution-image---print-mk-a-checkmk), [AC-QA-03](../../../../spec/lastenheft.md#ac-qa-03--reproduzierbarkeit)); Pilot-Einbindung in ein Konsumenten-Repo | teils geliefert |
 | welle-06-sprach-backends | Bedarf | Ausbau/Härtung der Extraktion je Zielsprache; opt-in toolchain-gestützte Backends ([AC-FA-EXTRACT-001](../../../../spec/lastenheft.md#ac-fa-extract-001--sprach-backends-für-die-import-extraktion) Out-of-Scope-Re-Eval) | offen |
-| welle-09-commit-hook | Priorisierung | lokaler `commit-msg`-Hook (`.githooks` + `make hooks`) ruft `trace-check` vor dem Commit (AGENTS §5); löst den slice-006-Folge-Kandidaten. Backlog: [slice-008](../open/slice-008-commit-msg-hook.md) | geplant |
 
 _(Kein fixer Termin — Wellen feuern auf Trigger.)_
 
@@ -69,3 +68,4 @@ flowchart LR
 | welle-04-durchsetzungsschicht | 2026-06-21 | [slice-004 §4](../done/slice-004-durchsetzungsschicht.md#4-closure-notiz-nach-done) — Meta-Gates `gate-consistency`/`record-gates` + `.claude`-Stop-Hook |
 | welle-07-command-guard | 2026-06-21 | [slice-005 §4](../done/slice-005-command-guard.md#4-closure-notiz-nach-done) — PreToolUse-Command-Guard (Tool-Call-Gate); Durchsetzungsschicht vollständig |
 | welle-08-ci | 2026-06-21 | [slice-006 §4](../done/slice-006-ci-pipeline.md#4-closure-notiz-nach-done) — PR-/Push-CI (`ci.yml`): `make ci` (+ `image-test`) + `make trace-check`; Dockerfile-OCI-Labels |
+| welle-09-commit-hook | 2026-06-21 | [slice-008 §4](../done/slice-008-commit-msg-hook.md#4-closure-notiz-nach-done) — lokaler `commit-msg`-Hook (`.githooks` + `make hooks`) |
