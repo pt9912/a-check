@@ -1,6 +1,6 @@
 # Benutzerhandbuch: a-check
 
-**Handbuch-Version:** 1.1 · **Software-Version:** 0.1.0 (in Entwicklung) ·
+**Handbuch-Version:** 1.2 · **Software-Version:** 0.1.0 (in Entwicklung) ·
 **Stand:** 2026-06-21 · **Autor:** pt9912 (Maintainer)
 
 ---
@@ -128,7 +128,8 @@ make a-check A_CHECK_IMAGE=a-check:dev
 ```
 Ab dem Release referenziert `A_CHECK_IMAGE` einen `@sha256:`-Digest; heben Sie
 den Pin bewusst per Commit an, damit CI-Läufe reproduzierbar bleiben. Vergleiche
-das mitgelieferte [`a-check.mk`](../../a-check.mk) dieses Repos.
+das mitgelieferte [`a-check.mk`](../../a-check.mk) dieses Repos. Den
+Release-Prozess (Tagging, Digest-Pin, GHCR) beschreibt [`releasing.md`](releasing.md).
 
 ### 3.4 Befunde lesen und beheben
 
@@ -277,3 +278,4 @@ und die [Spezifikation](../../spec/spezifikation.md); ein Überblick steht in de
 |---|---|---|
 | 1.0 | 2026-06-21 | Erstfassung zur Software-Version 0.1.0. |
 | 1.1 | 2026-06-21 | Review-Einarbeitung: Vorab-Image-Pfad fürs make-Gate (`A_CHECK_IMAGE=a-check:dev`), Config-Schlüssel `allow`/`forbidden_constructs`, Exit-0-stderr-Klarstellung, Image-Fehlerfall, Glossar, Autor. |
+| 1.2 | 2026-06-21 | Quer-Verweis aus §3.3 auf den neuen Release-Leitfaden [`releasing.md`](releasing.md). |
