@@ -20,13 +20,11 @@ erzeugt aber keine Spezifikation (Regelwerk Modul 6).
 **`welle-05-release` teils geliefert — Pipeline steht, wartet auf den ersten Tag.**
 Zuletzt abgeschlossen: [slice-007 §4](../done/slice-007-release-pipeline.md#4-closure-notiz-nach-done)
 (Release-Pipeline `.github/workflows/release.yml` + [ADR-0007](../../adr/0007-latest-tag-politik.md)
-`Proposed`); davor welle-08-ci (`slice-006` — PR-/Push-CI;
+`Accepted`); davor welle-08-ci (`slice-006` — PR-/Push-CI;
 [slice-006 §4](../done/slice-006-ci-pipeline.md#4-closure-notiz-nach-done)).
 Alle inneren Gates sind real und grün (`make ci` = `gates` + `image-test`;
-`make trace-check` grün). Noch **kein getaggtes GHCR-Release** (Status 0.1.0):
-der erste `v*`-Tag und die Pilot-Einbindung brauchen ein GitHub-Remote/GHCR und
-bleiben offene Restarbeit von `welle-05-release`; offen außerdem der
-[ADR-0007](../../adr/0007-latest-tag-politik.md)-Sign-off.
+`make trace-check` grün); die CI läuft grün auf GitHub. Die Pilot-Einbindung in
+ein Konsumenten-Repo bleibt offene Restarbeit von `welle-05-release`.
 
 ## Nächste Wellen
 

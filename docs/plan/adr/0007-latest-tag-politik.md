@@ -1,6 +1,6 @@
 # ADR-0007 — `:latest`-Tag-Politik für stabile Releases
 
-- **Status:** Proposed
+- **Status:** Accepted
 - **Datum:** 2026-06-21
 - **Autor:** pt9912
 - **Bezug:** [AC-FA-DIST-001](../../../spec/lastenheft.md#ac-fa-dist-001--distribution-image---print-mk-a-checkmk) (GHCR-Image/Tagging), [AC-QA-03](../../../spec/lastenheft.md#ac-qa-03--reproduzierbarkeit) (Digest-Pin-Reproduzierbarkeit), [AC-QA-02](../../../spec/lastenheft.md#ac-qa-02--hermetik-und-ehrliche-heuristik-grenze)
@@ -73,3 +73,4 @@ solange Konsumenten verbindlich per Digest pinnen, gefährdet ein beweglicher
 | Datum | Ereignis |
 |---|---|
 | 2026-06-21 | Proposed — Release-Pipeline (slice-007); frische Tagging-Politik (a-checks ADR-0004 trifft keine Tag-Aussage). |
+| 2026-06-21 | Proposed → Accepted (Sign-off Auftraggeber). Ab jetzt immutable; Ablösung nur via Folge-ADR mit `Supersedes`. |
