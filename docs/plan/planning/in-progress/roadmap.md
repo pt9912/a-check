@@ -32,7 +32,7 @@ Auftraggeber) — Kandidat: `welle-05-release` (nutzt die in slice-006 gelegten 
 
 | Welle | Trigger | Wichtigste Inhalte | Status |
 |---|---|---|---|
-| welle-05-release | Image-Veröffentlichung | erstes GHCR-Release + `@sha256:`-Digest-Pin in `a-check.mk`/Image-Referenz ([AC-FA-DIST-001](../../../../spec/lastenheft.md#ac-fa-dist-001--distribution-image---print-mk-a-checkmk), [AC-QA-03](../../../../spec/lastenheft.md#ac-qa-03--reproduzierbarkeit)); Pilot-Einbindung in ein Konsumenten-Repo | geplant |
+| welle-05-release | Image-Veröffentlichung | erstes GHCR-Release + `@sha256:`-Digest-Pin in `a-check.mk`/Image-Referenz ([AC-FA-DIST-001](../../../../spec/lastenheft.md#ac-fa-dist-001--distribution-image---print-mk-a-checkmk), [AC-QA-03](../../../../spec/lastenheft.md#ac-qa-03--reproduzierbarkeit)); Pilot-Einbindung in ein Konsumenten-Repo. Pipeline: [slice-007](../open/slice-007-release-pipeline.md) | geplant |
 | welle-06-sprach-backends | Bedarf | Ausbau/Härtung der Extraktion je Zielsprache; opt-in toolchain-gestützte Backends ([AC-FA-EXTRACT-001](../../../../spec/lastenheft.md#ac-fa-extract-001--sprach-backends-für-die-import-extraktion) Out-of-Scope-Re-Eval) | offen |
 
 _(Kein fixer Termin — Wellen feuern auf Trigger.)_
