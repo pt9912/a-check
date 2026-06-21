@@ -63,5 +63,15 @@ RUN CGO_ENABLED=0 go build -trimpath -ldflags="-s -w" -o /out/a-check ./cmd/a-ch
 
 # ---- runtime ---------------------------------------------------------------
 FROM gcr.io/distroless/static-debian12:nonroot@sha256:d093aa3e30dbadd3efe1310db061a14da60299baff8450a17fe0ccc514a16639 AS runtime
+# VERSION fließt ins OCI-Label org.opencontainers.image.version; die spätere
+# Release-Pipeline (welle-05-release) setzt sie aus dem Git-Tag und verifiziert
+# die Übereinstimmung (make build VERSION=…). Default für lokale Builds.
+ARG VERSION=0.0.0-dev
+LABEL org.opencontainers.image.source="https://github.com/pt9912/a-check" \
+      org.opencontainers.image.description="a-check — sprach-agnostischer Hexagonal-Architektur-Checker (text-heuristisch, netzlos)." \
+      org.opencontainers.image.title="a-check" \
+      org.opencontainers.image.vendor="pt9912" \
+      org.opencontainers.image.licenses="MIT" \
+      org.opencontainers.image.version="${VERSION}"
 COPY --from=build /out/a-check /a-check
 ENTRYPOINT ["/a-check"]

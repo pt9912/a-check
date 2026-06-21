@@ -40,3 +40,8 @@ Noch kein getaggtes Release; das GHCR-Image folgt. Das Lastenheft steht bei
   (`.claude/hooks/pretooluse-command-guard.sh`) lehnt Host-Toolchain/-Paketmanager
   (go/golangci-lint/pip/npm/cargo/apt/brew/…) vor der Ausführung fail-closed ab
   (Tool-Call-Gate, AGENTS §3.1); Selbsttest `make guard-selftest` (in `make gates`).
+- slice-006 — CI: PR-/Push-Workflow `.github/workflows/ci.yml` (SHA-gepinnt,
+  `permissions: {}`, Tags ausgenommen) fährt `make ci` (= `gates` + `make image-test`:
+  AC-FA-DIST-001 `--print-mk`/`--print-config`/unbekanntes Flag + nativ==Container-
+  Determinismus, AC-QA-02) und `make trace-check` (AC-/ADR-/MR-/slice-ID je Commit,
+  AGENTS §5). Dockerfile-OCI-Labels (`org.opencontainers.image.*`) + `VERSION`-Build-Arg.

@@ -48,13 +48,16 @@ Rang ist mit [`MR-003`](conventions.md#mr-003--source-precedence-ohne-docsuser-r
 ## Sensors (Feedback-Gates)
 
 Nur Targets, die im Makefile **existieren**, dürfen hier als real gelten.
-**Stand slice-005:** `doc-check` (Bootstrap), `lint`, `test`,
+**Stand slice-006:** `doc-check` (Bootstrap), `lint`, `test`,
 `coverage-gate`, `arch-check` (slice-003), die Meta-Gates
-`gate-consistency`/`record-gates` (slice-004) und `guard-selftest`
-(slice-005, Selbsttest des PreToolUse-Command-Guard) sind real und grün. Die
-Code-Gates sind Dockerfile-Stages (Muster d-check/u-boot, digest-gepinnte
-Bases); die Meta-Gates laufen als Host-Bash. Damit ist die Durchsetzungsschicht
-vollständig (Tool-Call-Gate + Handoff-Gate + Meta-Gate).
+`gate-consistency`/`record-gates` (slice-004), `guard-selftest`
+(slice-005) und `image-test`/`ci`/`trace-check` (slice-006) sind real und
+grün. Die Code-Gates sind Dockerfile-Stages (Muster d-check/u-boot,
+digest-gepinnte Bases); die Meta-/Harness-Gates laufen als Host-Bash. Die
+Durchsetzungsschicht ist vollständig (Tool-Call- + Handoff- + Meta-Gate); die
+PR-/Push-CI ([`.github/workflows/ci.yml`](../.github/workflows/ci.yml)) zieht
+`make ci` + `make trace-check` auf jede Integration und schließt die
+Stop-Hook-„frischer-Klon"-Restlücke.
 
 | Target | Vertrag | Bindung | Stand |
 |---|---|---|---|
@@ -67,18 +70,25 @@ vollständig (Tool-Call-Gate + Handoff-Gate + Meta-Gate).
 | `make record-gates` | inhaltsbasierter Working-Tree-Hash-Nachweis für den `.claude`-Stop-Hook (Handoff-Gate) | Harness-Prozess (Durchsetzungsschicht) | **real** (slice-004) |
 | `make guard-selftest` | Selbsttest des PreToolUse-Command-Guard (`.claude/hooks/`): Host-Toolchain fail-closed geblockt, `make`/`git`/`docker` durchgelassen | Harness-Prozess (Tool-Call-Gate; [`AGENTS.md` §3.1](../AGENTS.md#31-dockermake-only)) | **real** (slice-005) |
 | `make gates` | aggregiert die inneren Gates (lint/test/coverage-gate/arch-check/doc-check/gate-consistency/guard-selftest) + `record-gates` als letzter Schritt | — | **real** (slice-004) |
+| `make image-test` | Distributions-Akzeptanz (`--print-mk`/`--print-config`/unbekanntes Flag) + nativ==Container-Determinismus eines Scans gegen das gebaute Image | [`AC-FA-DIST-001`](../spec/lastenheft.md#ac-fa-dist-001--distribution-image---print-mk-a-checkmk)/[`AC-QA-02`](../spec/lastenheft.md#ac-qa-02--hermetik-und-ehrliche-heuristik-grenze) | **real** (slice-006) |
+| `make ci` | CI-äquivalent: `gates` + `image-test` (Engine des Workflows `.github/workflows/ci.yml`) | — | **real** (slice-006) |
+| `make trace-check` | Traceability: jede Commit-Message nennt `AC-*`/`ADR-*`/`MR-*`/`slice-NNN` (Selbsttest + `HEAD`; `RANGE=` für CI) | Harness-Prozess ([`AGENTS.md` §5](../AGENTS.md#5-dokumentations-regeln)) | **real** (slice-006) |
 
 **Aktueller Lauf-Status:** `make gates` grün — `lint` 0 issues, `test` ok,
 `coverage-gate` 92,60 % (≥ 90 %), `arch-check` 0 Befunde (Dogfooding),
 `doc-check` 0 Befunde, `gate-consistency` ok, `guard-selftest` ok,
-`record-gates` Nachweis geschrieben.
+`record-gates` Nachweis geschrieben. `make ci` (gates + `image-test`:
+`--print-mk`/`--print-config`/unbekanntes Flag + nativ==Container) und
+`make trace-check` grün.
 **Rote Gates:** keine.
 **Kalibrierungs-Historie Coverage:** 90 % seit 2026-06-21
 (Bootstrap-Kalibrierung, Ist 92,60 %); Anhebung jederzeit, Senkung nur per ADR.
 
 ## Traceability rules
 
-- PRs/Commits **müssen** mindestens eine `AC-*`- oder `ADR-*`-ID nennen.
+- PRs/Commits **müssen** mindestens eine `AC-*`- oder `ADR-*`-ID nennen
+  (`MR-*`/`slice-NNN` gelten ebenso) — erzwungen durch `make trace-check`
+  (lokal `HEAD`, CI über den Commit-Range, slice-006).
 - Neue oder geänderte Anforderungen brauchen einen Beleg: Test, Gate, Demo oder ADR.
 - Neue ADRs müssen im [ADR-Index](../docs/plan/adr/README.md) ergänzt werden.
 - Änderungen an Planning-Dokumenten folgen den Lifecycle-Regeln

@@ -18,14 +18,15 @@ erzeugt aber keine Spezifikation (Regelwerk Modul 6).
 ## Aktuelle Welle
 
 **Keine aktive Welle — wartet auf Trigger.** Zuletzt abgeschlossen:
-welle-07-command-guard (`slice-005` — PreToolUse-Command-Guard; damit ist die
-Durchsetzungsschicht vollständig: Tool-Call- + Handoff- + Meta-Gate;
-[slice-005 §4](../done/slice-005-command-guard.md#4-closure-notiz-nach-done)).
+welle-08-ci (`slice-006` — PR-/Push-CI `.github/workflows/ci.yml`: `make ci`
++ `make trace-check`; schließt die Stop-Hook-„frischer-Klon"-Restlücke;
+[slice-006 §4](../done/slice-006-ci-pipeline.md#4-closure-notiz-nach-done)).
 Alle inneren Gates sind real und grün (`make gates`: lint/test/coverage-gate
-≥ 90 %/arch-check/doc-check/gate-consistency/guard-selftest + `record-gates`-Nachweis).
+≥ 90 %/arch-check/doc-check/gate-consistency/guard-selftest + `record-gates`-Nachweis);
+zusätzlich `make ci` (+ `image-test`) und `make trace-check` grün.
 Noch **kein getaggtes GHCR-Release** (Status 0.1.0). Die nächste Welle wartet auf
 ihren Trigger (Change Request im Lastenheft oder Priorisierung durch den
-Auftraggeber) — Kandidat: `welle-05-release`.
+Auftraggeber) — Kandidat: `welle-05-release` (nutzt die in slice-006 gelegten OCI-Labels).
 
 ## Nächste Wellen
 
@@ -33,7 +34,6 @@ Auftraggeber) — Kandidat: `welle-05-release`.
 |---|---|---|---|
 | welle-05-release | Image-Veröffentlichung | erstes GHCR-Release + `@sha256:`-Digest-Pin in `a-check.mk`/Image-Referenz ([AC-FA-DIST-001](../../../../spec/lastenheft.md#ac-fa-dist-001--distribution-image---print-mk-a-checkmk), [AC-QA-03](../../../../spec/lastenheft.md#ac-qa-03--reproduzierbarkeit)); Pilot-Einbindung in ein Konsumenten-Repo | geplant |
 | welle-06-sprach-backends | Bedarf | Ausbau/Härtung der Extraktion je Zielsprache; opt-in toolchain-gestützte Backends ([AC-FA-EXTRACT-001](../../../../spec/lastenheft.md#ac-fa-extract-001--sprach-backends-für-die-import-extraktion) Out-of-Scope-Re-Eval) | offen |
-| welle-08-ci | Priorisierung | PR-/Push-CI (`.github/workflows/ci.yml`): `make ci` (gates + `image-test`, [AC-FA-DIST-001](../../../../spec/lastenheft.md#ac-fa-dist-001--distribution-image---print-mk-a-checkmk)) + `make trace-check` (`AC-*`/`ADR-*`-ID je Commit, AGENTS §5) + Dockerfile-OCI-Labels; schließt die Stop-Hook-„frischer-Klon"-Restlücke. Backlog: [slice-006](../open/slice-006-ci-pipeline.md) | geplant |
 
 _(Kein fixer Termin — Wellen feuern auf Trigger.)_
 
@@ -69,3 +69,4 @@ flowchart LR
 | welle-03-implementierung | 2026-06-21 | [slice-003 §7](../done/slice-003-implementierung-gates.md#7-closure-notiz-nach-done) — Go-Implementierung + Gates; [ADR-0005](../../adr/0005-lint-profil.md)/[ADR-0006](../../adr/0006-coverage-gate.md) `Accepted` |
 | welle-04-durchsetzungsschicht | 2026-06-21 | [slice-004 §4](../done/slice-004-durchsetzungsschicht.md#4-closure-notiz-nach-done) — Meta-Gates `gate-consistency`/`record-gates` + `.claude`-Stop-Hook |
 | welle-07-command-guard | 2026-06-21 | [slice-005 §4](../done/slice-005-command-guard.md#4-closure-notiz-nach-done) — PreToolUse-Command-Guard (Tool-Call-Gate); Durchsetzungsschicht vollständig |
+| welle-08-ci | 2026-06-21 | [slice-006 §4](../done/slice-006-ci-pipeline.md#4-closure-notiz-nach-done) — PR-/Push-CI (`ci.yml`): `make ci` (+ `image-test`) + `make trace-check`; Dockerfile-OCI-Labels |

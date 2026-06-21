@@ -1,0 +1,72 @@
+name: ci
+
+# PR-/Push-CI (slice-006; AGENTS.md §5, AC-FA-DIST-001, AC-QA-02).
+#
+# Zieht denselben Vertrag wie ein späterer Release-Workflow auf jede
+# Integration (pre-integration statt nur Release): `make ci` (gates +
+# image-test) mit der Docker/make-only-Toolchain (AGENTS §3.1) -> lokal =
+# PR = CI; schließt die Stop-Hook-Restlücke "frischer Klon ohne Gate-State"
+# über CI als Netz. Zusätzlich das Traceability-Gate (`make trace-check`)
+# über den Commit-Range: jede Commit-Message muss eine AC-/ADR-/MR-/slice-ID
+# nennen (AGENTS §5).
+#
+# Tag-Pushes (`v*`) bleiben dem späteren release.yml (welle-05) vorbehalten
+# -> hier per tags-ignore ausgenommen, keine Doppelläufe.
+#
+# Action-Pinning (Supply-Chain-Härtung, Stack-Konvention): `uses:` ist
+# SHA-gepinnt mit Tag-Kommentar.
+
+on:
+  pull_request:
+  push:
+    branches:
+      - '**'
+    tags-ignore:
+      - '**'
+
+# Top-level: alles entziehen; der Job lockert nur, was er braucht.
+permissions: {}
+
+jobs:
+  ci:
+    name: gates + image-test + traceability
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+    env:
+      DOCKER_BUILDKIT: '1'
+      CI: '1'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          # Volle Historie für den Commit-Range des Traceability-Gates.
+          fetch-depth: 0
+
+      # Traceability ZUERST (billig, fail-fast vor dem teuren Docker-Build).
+      - name: Traceability-Gate (AC-/ADR-/MR-/slice-ID in Commits)
+        env:
+          EVENT: ${{ github.event_name }}
+          PR_BASE: ${{ github.event.pull_request.base.sha }}
+          PUSH_BEFORE: ${{ github.event.before }}
+          HEAD_SHA: ${{ github.sha }}
+          DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
+        run: |
+          set -euo pipefail
+          if [[ "$EVENT" == "pull_request" ]]; then
+            RANGE="$PR_BASE..$HEAD_SHA"
+          elif [[ "$PUSH_BEFORE" =~ ^0+$ ]]; then
+            # Neuer Branch (kein before-Commit): gegen den Default-Branch
+            # prüfen statt nur HEAD (sonst Silent-Green).
+            git fetch --no-tags origin "+refs/heads/$DEFAULT_BRANCH:refs/remotes/origin/$DEFAULT_BRANCH" 2>/dev/null || true
+            RANGE="origin/$DEFAULT_BRANCH..$HEAD_SHA"
+          else
+            RANGE="$PUSH_BEFORE..$HEAD_SHA"
+          fi
+          echo "Prüfe Commit-Range: $RANGE"
+          make trace-check RANGE="$RANGE"
+
+      # Volle Gates + Image-Integrationstests (identische Engine wie lokal).
+      - name: Gates + Image-Integrationstests (make ci)
+        run: make ci

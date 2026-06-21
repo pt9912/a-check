@@ -10,6 +10,11 @@ GO_VERSION            ?= 1.26.4
 GOLANGCI_LINT_VERSION ?= v2.12.2
 IMAGE                 ?= a-check
 
+# VERSION fließt ins OCI-Label org.opencontainers.image.version (Dockerfile
+# runtime-Stage). Die Release-Pipeline (welle-05) setzt sie aus dem Git-Tag
+# (make ci VERSION=…); lokal der dev-Default.
+VERSION               ?= 0.0.0-dev
+
 # Kalibrierungs-Bindung (harness/README.md §Sensors): 90 % seit
 # 2026-06-21 (Bootstrap-Kalibrierung). Override: `make coverage-gate
 # THRESHOLD=…`; Senkung nur per ADR (AGENTS.md §3.6, ADR-0006).
@@ -27,7 +32,7 @@ NO_CACHE_FILTER_COV  := --no-cache-filter coverage
 
 .DEFAULT_GOAL := help
 
-.PHONY: help compile lint test coverage-gate build arch-check gate-consistency guard-selftest record-gates gates
+.PHONY: help compile lint test coverage-gate build arch-check gate-consistency guard-selftest record-gates gates image-test ci trace-check
 
 # Gates seriell: unter `make -j` liefen die Sub-Gates sonst parallel und die
 # Reihenfolge/der Abbruch bei rotem Gate wären nicht garantiert.
@@ -51,7 +56,7 @@ coverage-gate: ## Coverage-Schwelle (Kalibrierungs-Bindung: $(THRESHOLD) %, ADR-
 	    --target coverage -t $(IMAGE):coverage .
 
 build: ## a-check-Image bauen (static/distroless, digest-gepinnte Bases).
-	$(DOCKER_BUILD) -t $(IMAGE):dev .
+	$(DOCKER_BUILD) --build-arg VERSION=$(VERSION) -t $(IMAGE):dev .
 
 arch-check: build ## Eigen-Architektur via a-check selbst (Dogfooding, AC-QA-02).
 	docker run --rm --network none -v "$(CURDIR)":/src:ro $(IMAGE):dev /src
@@ -66,3 +71,12 @@ record-gates: ## Gate-Nachweis (Working-Tree-Hash) für den Stop-Hook schreiben.
 	@bash tools/harness/record-gates.sh
 
 gates: lint test coverage-gate arch-check doc-check gate-consistency guard-selftest record-gates ## alle inneren Gates (mandatory vor Handoff).
+
+image-test: build ## AC-FA-DIST-001 + nativ==Container-Akzeptanz gegen das gebaute Image.
+	@IMAGE=$(IMAGE) bash tools/image-test.sh
+
+ci: gates image-test ## CI-äquivalenter Lauf: gates + image-test (AC-FA-DIST-001).
+	@echo "[ci] gates + image-test grün"
+
+trace-check: ## Traceability-Gate: AC-/ADR-/MR-/slice-ID in Commits (Selbsttest + HEAD; RANGE=a..b für CI). AGENTS §5.
+	@bash tools/trace-check.sh $(if $(RANGE),--range $(RANGE),)

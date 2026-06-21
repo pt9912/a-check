@@ -98,9 +98,10 @@ ADR, kein PR-Kommentar.
 Nur hier gelistete Targets existieren im Makefile. Halluzinierte Gates
 sind die häufigste Form von Harness-Lüge. `doc-check` (Bootstrap),
 `lint`/`test`/`coverage-gate`/`arch-check` (slice-003), die Meta-Gates
-`gate-consistency`/`record-gates` (slice-004) und `guard-selftest`
-(slice-005) sind **real** und grün; die Code-Gates sind Dockerfile-Stages,
-die Meta-Gates laufen als Host-Bash.
+`gate-consistency`/`record-gates` (slice-004), `guard-selftest`
+(slice-005) und `image-test`/`ci`/`trace-check` (slice-006) sind **real**
+und grün; die Code-Gates sind Dockerfile-Stages, die Meta-Gates laufen als
+Host-Bash.
 
 | Target | Zweck | Stand |
 |---|---|---|
@@ -113,13 +114,19 @@ die Meta-Gates laufen als Host-Bash.
 | `make record-gates` | Gate-Nachweis (Working-Tree-Hash) für den Stop-Hook | **real** (slice-004) |
 | `make guard-selftest` | Selbsttest des PreToolUse-Command-Guard (Tool-Call-Gate §3.1) | **real** (slice-005) |
 | `make gates` | alle inneren Gates (mandatory vor Handoff) | **real** (slice-003) |
+| `make image-test` | [AC-FA-DIST-001](spec/lastenheft.md#ac-fa-dist-001--distribution-image---print-mk-a-checkmk) + nativ==Container-Akzeptanz gegen das gebaute Image | **real** (slice-006) |
+| `make ci` | CI-äquivalent: `gates` + `image-test` (Workflow `.github/workflows/ci.yml`) | **real** (slice-006) |
+| `make trace-check` | Traceability: `AC-*`/`ADR-*`/`MR-*`/`slice`-ID je Commit (§5; `RANGE=` für CI) | **real** (slice-006) |
 
 ## 5. Dokumentations-Regeln
 
-- Commits/PRs müssen mindestens eine `AC-*`- oder `ADR-*`-ID nennen.
-  IDs werden nur beim Spec-/ADR-Schreiben nach dem deklarierten Schema
-  vergeben (siehe [`harness/conventions.md`](harness/conventions.md)) —
-  nie ad hoc im Commit/PR; Agenten referenzieren IDs, sie erfinden keine.
+- Commits/PRs müssen mindestens eine `AC-*`- oder `ADR-*`-ID nennen
+  (auch `MR-*`/`slice-NNN` gelten). Durchgesetzt durch `make trace-check`
+  (slice-006) — lokal über `HEAD`, in der CI über den Commit-Range
+  ([`.github/workflows/ci.yml`](.github/workflows/ci.yml)). IDs werden nur
+  beim Spec-/ADR-Schreiben nach dem deklarierten Schema vergeben (siehe
+  [`harness/conventions.md`](harness/conventions.md)) — nie ad hoc im
+  Commit/PR; Agenten referenzieren IDs, sie erfinden keine.
 - Neue oder geänderte `AC-*`-Anforderungen entstehen nur in
   [`spec/lastenheft.md`](spec/lastenheft.md) — nie per ADR (ADRs schärfen
   die Spezifikation, nicht das Lastenheft).
