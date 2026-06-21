@@ -27,6 +27,14 @@ ids:
       target: spec/lastenheft.md
       link-policy: always
       exempt-paths: [CHANGELOG.md, "docs/reviews/**"]
+    - regex: 'SPEC-[A-Z]+-\d+'
+      target: spec/spezifikation.md
+      link-policy: always
+      exempt-paths: [CHANGELOG.md, "docs/reviews/**"]
+    - regex: 'ARC-\d{3}'
+      target: spec/architecture.md
+      link-policy: always
+      exempt-paths: [CHANGELOG.md, "docs/reviews/**"]
 
 matrix:
   classes:

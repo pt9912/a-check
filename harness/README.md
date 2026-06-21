@@ -46,25 +46,26 @@ Acht Ränge ohne `docs/user`-Stratum (Pre-Release-Tool ohne Betriebs-Doku)
 ## Sensors (Feedback-Gates)
 
 Nur Targets, die im Makefile **existieren**, dürfen hier als real gelten.
-**Stand Bootstrap:** das Makefile enthält bislang nur `doc-check` (real,
-unten); die übrigen Targets sind **geplant** (entstehen mit slice-003) und
-binden die jeweils genannten Anforderungen. Kein geplantes Gate wird als
-ausgeführt behauptet.
+**Stand slice-003:** `doc-check` (Bootstrap) sowie `lint`, `test`,
+`coverage-gate`, `arch-check` und der Aggregat `gates` sind real und grün
+(Go-Implementierung). Jede Gate ist eine Dockerfile-Stage (Muster
+d-check/u-boot, digest-gepinnte Bases).
 
 | Target | Vertrag | Bindung | Stand |
 |---|---|---|---|
 | `make doc-check` | Links/Anker/Kennungs-Linkpflicht/Referenzmatrix der Repo-Doku via `d-check` (Schwester-Tool, digest-gepinnt, `--network none`, read-only) | Harness-Prozess (Doku-Hygiene; Dogfooding des Stacks) | **real** (Bootstrap-Gate) |
-| `make lint` | golangci-lint mit Projekt-Profil; Inline-Suppressions verboten | Lint-Profil-ADR (geplant) | geplant (slice-003) |
-| `make test` | Akzeptanzkriterien der bezogenen `AC-FA-*` als Tests; Determinismus-Test | [`AC-QA-01`](../spec/lastenheft.md#ac-qa-01--determinismus) (AC-Bindung) | geplant (slice-003) |
-| `make arch-check` | Eigen-Architektur via `a-check` selbst (Dogfooding) | [`AC-QA-02`](../spec/lastenheft.md#ac-qa-02--hermetik-und-ehrliche-heuristik-grenze) (AC-Bindung) | geplant |
-| `make gates` | aggregiert die inneren Gates; `record-gates` als letzter Schritt | — | geplant (slice-003) |
+| `make lint` | golangci-lint mit Projekt-Profil; Inline-Suppressions verboten | [`ADR-0005`](../docs/plan/adr/0005-lint-profil.md) (Lint-Profil) | **real** (slice-003) |
+| `make test` | Akzeptanzkriterien der bezogenen `AC-FA-*` als Tests; Determinismus-Test | [`AC-QA-01`](../spec/lastenheft.md#ac-qa-01--determinismus) (AC-Bindung) | **real** (slice-003) |
+| `make coverage-gate` | Gesamt-Coverage ≥ Schwelle über `./internal/...` (`-coverpkg`, `tools/coverage-gate.sh`) | Kalibrierungs-Bindung **90 %** seit 2026-06-21 ([`ADR-0006`](../docs/plan/adr/0006-coverage-gate.md)) | **real** (slice-003) |
+| `make arch-check` | Eigen-Architektur via `a-check` selbst (Dogfooding) | [`AC-QA-02`](../spec/lastenheft.md#ac-qa-02--hermetik-und-ehrliche-heuristik-grenze) (AC-Bindung) | **real** (slice-003) |
+| `make gates` | aggregiert die inneren Gates (lint/test/coverage-gate/arch-check/doc-check) | — | **real** (slice-003) |
 
-**Aktueller Lauf-Status:** `make doc-check` grün (5 Dateien, 0 Befunde;
-digest-gepinntes `d-check@sha256:6134b8bd…`). Übrige Gates: Bootstrap,
-noch nicht angelegt.
+**Aktueller Lauf-Status:** `make gates` grün — `lint` 0 issues, `test` ok,
+`coverage-gate` 92,60 % (≥ 90 %), `arch-check` 0 Befunde (Dogfooding),
+`doc-check` 0 Befunde.
 **Rote Gates:** keine.
-**Nicht behauptet:** `make lint` / `make test` / `make arch-check` /
-`make gates` (geplant, slice-003).
+**Kalibrierungs-Historie Coverage:** 90 % seit 2026-06-21
+(Bootstrap-Kalibrierung, Ist 92,60 %); Anhebung jederzeit, Senkung nur per ADR.
 
 ## Traceability rules
 

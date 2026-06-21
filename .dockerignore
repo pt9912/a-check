@@ -1,0 +1,10 @@
+.git
+docs
+harness
+spec
+*.md
+*.mk
+Makefile
+.d-check.yml
+.a-check.yml
+.claude

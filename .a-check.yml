@@ -1,0 +1,18 @@
+# .a-check.yml — a-check prüft seine eigene Hexagon-Architektur (Dogfooding,
+# AC-QA-02). Schichten gemäß spec/architecture.md (ARC-001..006): der Kern
+# (inkl. Port-Interfaces) ist rein, Adapter hängen nur am Kern, die
+# Composition Root (cmd/) verdrahtet und ist von der Schichtprüfung ausgenommen.
+version: 1
+languages:
+  go: ["**/*.go"]
+layers:
+  core:     ["internal/core/**"]
+  adapters: ["internal/adapters/**"]
+edges:
+  - {from: adapters, to: core}
+adapter_sink: driver-common
+tech:
+  - {pattern: "gopkg.in/yaml", adapter: "adapters/config"}
+composition_root: ["cmd/**", "internal/cli/**"]
+markers:
+  ignore_symbols: []

@@ -89,17 +89,18 @@ ADR, kein PR-Kommentar.
 ## 4. Quality Gates
 
 Nur hier gelistete Targets existieren im Makefile. Halluzinierte Gates
-sind die häufigste Form von Harness-Lüge. Bislang ist nur `doc-check`
-real (Bootstrap-Gate); die übrigen entstehen mit slice-003 und sind als
-**geplant** zu lesen.
+sind die häufigste Form von Harness-Lüge. `doc-check` (Bootstrap) sowie
+`lint`/`test`/`coverage-gate`/`arch-check`/`gates` (slice-003) sind **real**
+und grün; jede Gate ist eine Dockerfile-Stage.
 
 | Target | Zweck | Stand |
 |---|---|---|
 | `make doc-check` | Doku-Links/Anker/Kennungen via `d-check` (Schwester-Tool, digest-gepinnt, netzlos, read-only) | **real** (Bootstrap) |
-| `make lint` | golangci-lint mit dem Projekt-Profil (§3.2) | geplant (slice-003) |
-| `make test` | Akzeptanzkriterien der `AC-FA-*` als Go-Tests | geplant (slice-003) |
-| `make arch-check` | Eigen-Architektur via `a-check` selbst (Dogfooding) | geplant |
-| `make gates` | alle inneren Gates (mandatory vor Handoff) | geplant (slice-003) |
+| `make lint` | golangci-lint mit dem Projekt-Profil (§3.2, [ADR-0005](docs/plan/adr/0005-lint-profil.md)) | **real** (slice-003) |
+| `make test` | Akzeptanzkriterien der `AC-FA-*` als Go-Tests | **real** (slice-003) |
+| `make coverage-gate` | Gesamt-Coverage ≥ 90 % über `./internal/...` ([ADR-0006](docs/plan/adr/0006-coverage-gate.md)) | **real** (slice-003) |
+| `make arch-check` | Eigen-Architektur via `a-check` selbst (Dogfooding) | **real** (slice-003) |
+| `make gates` | alle inneren Gates (mandatory vor Handoff) | **real** (slice-003) |
 
 ## 5. Dokumentations-Regeln
 
