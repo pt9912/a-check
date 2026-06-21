@@ -3,10 +3,11 @@
 Sprachübergreifender Hexagon-Architektur-Checker — deterministisch,
 seiteneffektfrei, text-heuristisch, ausgeliefert als Container-Image.
 
-**Status: in Entwicklung (0.1.0).** Lastenheft, Spezifikation, Architektur
-und die Go-Implementierung stehen; alle inneren Gates sind grün. Ein
-getaggtes GHCR-Release folgt. Verbindlich ist das
-[Lastenheft](spec/lastenheft.md); die Versionshistorie führt die
+**Status: `v0.1.0` veröffentlicht.** Lastenheft, Spezifikation, Architektur,
+Go-Implementierung, Durchsetzungsschicht (Meta-/Tool-Call-/Handoff-Gates) und
+CI-/Release-Pipeline stehen; alle Gates sind grün. Das Image liegt auf GHCR
+(`ghcr.io/pt9912/a-check`, Tags `v0.1.0` + `latest`, digest-gepinnt). Verbindlich
+ist das [Lastenheft](spec/lastenheft.md); die Versionshistorie führt die
 [CHANGELOG.md](CHANGELOG.md).
 
 ## Was ist a-check?
@@ -82,19 +83,27 @@ konfigurierbar
 
 ## Nutzung
 
-Lokal (Dogfooding, läuft heute):
+Gegen das veröffentlichte Image (digest-gepinnt, netzlos, read-only):
 
 ```bash
-make build        # static/distroless Image bauen
-make arch-check   # a-check prüft sich selbst (netzlos, read-only)
+docker run --rm --network none -v "$PWD:/src:ro" \
+  ghcr.io/pt9912/a-check@sha256:13459f44ba8a1e962787565806996c9923ecf8801576f77121f9adad35a9a769 /src
 ```
 
 Konsumenten binden a-check als `make a-check`-Gate ein — **ohne
 Skript-Kopie**: das mitgelieferte [`a-check.mk`](a-check.mk) (von
 `a-check --print-mk` erzeugt) wird `include`-t, dazu ein `.a-check.yml`.
-Ab dem GHCR-Release wird `A_CHECK_IMAGE` per `@sha256:`-Digest gepinnt
+`A_CHECK_IMAGE` ist auf den `@sha256:`-Digest des Releases gepinnt
 ([AC-FA-DIST-001](spec/lastenheft.md#ac-fa-dist-001--distribution-image---print-mk-a-checkmk),
-[AC-QA-03](spec/lastenheft.md#ac-qa-03--reproduzierbarkeit)).
+[AC-QA-03](spec/lastenheft.md#ac-qa-03--reproduzierbarkeit)); die Pin-Hebung ist
+ein bewusster Commit. Den Release-Prozess beschreibt [`docs/user/releasing.md`](docs/user/releasing.md).
+
+Lokal (Dogfooding, ohne Pull):
+
+```bash
+make build        # static/distroless Image bauen
+make arch-check   # a-check prüft sich selbst (netzlos, read-only)
+```
 
 ## Konfiguration (`.a-check.yml`)
 
@@ -121,6 +130,7 @@ ein lebendes Beispiel ist die [Selbstkonfiguration dieses Repos](.a-check.yml).
 | Dokument | Inhalt |
 |---|---|
 | [`docs/user/benutzerhandbuch.md`](docs/user/benutzerhandbuch.md) | **Benutzerhandbuch** — Installation, Nutzung, `.a-check.yml`, Fehlerbehebung |
+| [`docs/user/releasing.md`](docs/user/releasing.md) | Release-Prozess — Tagging, GHCR, Digest-Pin |
 | [`spec/lastenheft.md`](spec/lastenheft.md) | Anforderungen (`AC-FA-*`, `AC-QA-*`), Akzeptanzkriterien |
 | [`spec/spezifikation.md`](spec/spezifikation.md) | Algorithmen, `.a-check.yml`-Schema, Exit-Codes (`SPEC-*`) |
 | [`spec/architecture.md`](spec/architecture.md) | Hexagon-Komponenten und Rollen (`ARC-*`) |
@@ -136,7 +146,8 @@ Der Host braucht nur `git`, GNU `make`, `bash` und Docker
 
 ```bash
 make help     # verfügbare Targets
-make gates    # alle inneren Gates (lint/test/coverage-gate/arch-check/doc-check)
+make gates    # alle inneren Gates (lint/test/coverage-gate/arch-check/doc-check/gate-consistency/guard-selftest)
+make ci       # gates + image-test (CI-äquivalent); make trace-check prüft Commit-IDs
 ```
 
 ## Lizenz
