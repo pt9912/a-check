@@ -18,7 +18,7 @@ erzeugt aber keine Spezifikation (Regelwerk Modul 6).
 ## Aktuelle Welle
 
 **`welle-10-regel-engine-generalisierung` läuft — die Inkremente a, b1 und b2a sind
-gemergt und auf `origin/main` gepusht; offen ist nur noch b2b.** Die Reinheits-Regeln
+gemergt und in `v0.2.0` veröffentlicht; offen ist nur noch b2b.** Die Reinheits-Regeln
 dispatchen nicht mehr über Layer-**Namen**, sondern über eine Layer-**Rolle**, und das
 Modell ist auf vier Schichten ausgebaut:
 
@@ -31,11 +31,11 @@ längster-Präfix (Symmetrie zu `targetLayer`). Re-Evaluierungs-Trigger in
 [ADR-0011](../../adr/0011-domain-application-trennung-rolle-app.md). Alle Gates real und
 grün (`make gates`; Dogfooding 0 Befunde).
 
-**Parallel offen — `welle-05-release`:** `v0.1.0` ist veröffentlicht
+**Parallel offen — `welle-05-release`:** `v0.1.0` und **`v0.2.0`** sind veröffentlicht
 ([slice-007 §4](../done/slice-007-release-pipeline.md#4-closure-notiz-nach-done),
 [ADR-0007](../../adr/0007-latest-tag-politik.md) `Accepted`; GHCR
-`@sha256:13459f44…` digest-gepinnt in `a-check.mk`); nur die **Pilot-Einbindung**
-in ein Konsumenten-Repo bleibt.
+`@sha256:4132a7af…` (aktuell v0.2.0) digest-gepinnt in `a-check.mk`); nur die
+**Pilot-Einbindung** in ein Konsumenten-Repo bleibt.
 
 ## Nächste Wellen
 
