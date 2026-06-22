@@ -1,6 +1,6 @@
 # Benutzerhandbuch: a-check
 
-**Handbuch-Version:** 1.5 · **Software-Version:** 0.1.0 · **Stand:** 2026-06-22 ·
+**Handbuch-Version:** 1.6 · **Software-Version:** 0.1.0 · **Stand:** 2026-06-22 ·
 **Autor:** pt9912 (Maintainer)
 
 ---
@@ -29,12 +29,12 @@ Docker und `make`; a-check-Interna müssen Sie nicht kennen.
 - Optional **GNU make**, wenn Sie a-check als `make`-Gate einbinden.
 - Ein Repository mit erkennbaren Schichten (z. B. `core`, `ports`, `adapters`).
 
-> **Hinweis zum Image.** Im Vorab-Stand (0.1.0) ist noch **kein GHCR-Image
-> veröffentlicht**. Bauen Sie es lokal mit `make build`
-> ([README](../../README.md)); das erzeugt den Tag **`a-check:dev`**. Ab dem
-> Release nutzen Sie das digest-gepinnte GHCR-Image. In allen Beispielen steht
-> `<a-check-image>` stellvertretend für beides — im Vorab-Stand also wörtlich
-> `a-check:dev`.
+> **Hinweis zum Image.** Das veröffentlichte GHCR-Image ist **digest-gepinnt**
+> (`a-check.mk` / `a-check --print-mk`); Konsumenten pinnen den `@sha256:`-Digest
+> statt beweglicher Tags. Für lokale Entwicklung gegen einen ungetaggten Stand bauen
+> Sie es mit `make build` ([README](../../README.md)) — Tag **`a-check:dev`**. In allen
+> Beispielen steht `<a-check-image>` stellvertretend für beides (das digest-gepinnte
+> GHCR-Image oder lokal `a-check:dev`).
 
 ## 2. Erste Schritte
 
@@ -90,7 +90,7 @@ Absicht — a-check braucht keinen Schreibzugriff und keine Netzverbindung.
    docker run --rm <a-check-image> --print-config > .a-check.yml
    ```
 2. Tragen Sie unter `languages` Ihre Sprache(n) und Datei-Globs ein.
-3. Beschreiben Sie unter `layers` Ihre Schichten mit Pfad-Mustern.
+3. Beschreiben Sie unter `layers` Ihre Schichten mit Pfad-Mustern — optional je Schicht mit einer **Rolle** (`domain`/`app`/`port`/`adapter`, Abschnitt 4).
 4. Legen Sie unter `edges` die erlaubten Schicht-Kanten fest.
 
 **Ergebnis:** Eine gültige `.a-check.yml` in der Repo-Wurzel. Details zu jedem
@@ -120,14 +120,14 @@ a-check prüft nie mit geratenen Standardwerten.
 **Ergebnis:** `make a-check` prüft das Repository netzlos und read-only und
 schlägt bei Befunden fehl (Exit-Code 1).
 
-**Hinweise:** Das Fragment pinnt das Image über `A_CHECK_IMAGE`. **Im
-Vorab-Stand** (noch kein GHCR-Image) bauen Sie zuerst `make build` und
-überschreiben das Image beim Aufruf:
+**Hinweise:** Das Fragment pinnt das veröffentlichte Image über `A_CHECK_IMAGE`
+(`@sha256:`-Digest). Für lokale Entwicklung gegen einen ungetaggten Stand bauen Sie
+zuerst `make build` und überschreiben das Image beim Aufruf:
 ```bash
 make a-check A_CHECK_IMAGE=a-check:dev
 ```
-Ab dem Release referenziert `A_CHECK_IMAGE` einen `@sha256:`-Digest; heben Sie
-den Pin bewusst per Commit an, damit CI-Läufe reproduzierbar bleiben. Vergleiche
+Heben Sie den `@sha256:`-Digest-Pin bewusst per Commit an, damit CI-Läufe
+reproduzierbar bleiben. Vergleiche
 das mitgelieferte [`a-check.mk`](../../a-check.mk) dieses Repos. Den
 Release-Prozess (Tagging, Digest-Pin, GHCR) beschreibt [`releasing.md`](releasing.md).
 
@@ -198,6 +198,33 @@ zugehörige Prüfung (kein stiller Standardwert) — fehlt z. B. `adapter_sink`,
 darf **kein** Adapter einen anderen importieren (strengere Auslegung). Das
 vollständige Schema steht in der [Spezifikation](../../spec/spezifikation.md).
 
+**Schicht-Rollen (`role`).** Ein `layers`-Eintrag ist **entweder** eine Glob-Liste
+(`name: [globs]`) **oder** ein Objekt `{globs: [...], role: <rolle>}`. Die Rolle steuert,
+welche Reinheits-Regel auf die Schicht greift — **unabhängig vom Namen**:
+
+- `domain` — innerste Schicht; importiert nur sich selbst (keinen Port, keine `app`-/Adapter-Schicht, kein Tech) → sonst `core-impurity`.
+- `app` — Application-/Use-Case-Schicht; darf `domain` **und** `port` nutzen, aber keinen Adapter/Tech → sonst `app-impurity`.
+- `port` — Abstraktionen; dürfen `domain` referenzieren, aber keinen Adapter/Tech → sonst `port-impurity`.
+- `adapter` — Technik-Anbindung; importiert keinen fremden Adapter (außer der `adapter_sink`) → sonst `lateral-adapter`.
+
+Fehlt `role`, wird sie aus konventionellen Namen abgeleitet (`core`→`domain`,
+`ports`→`port`, `adapters`→`adapter`, `application`/`app`→`app`); eine explizite `role:`
+hat **Vorrang**. Eine Schicht ohne Rolle (weder deklariert noch ableitbar) wird nur
+kanten-geprüft. So lässt sich ein feineres Vier-Schichten-Hexagon
+(`domain ← app ← port ← adapter`) mit **beliebigen** Schicht-Namen modellieren:
+
+```yaml
+layers:
+  domain:   ["src/domain/**"]                                  # Rolle per Inferenz (domain)
+  usecase:  {globs: ["src/app/**"], role: app}                 # fremder Name -> explizite Rolle
+  ports:    ["src/ports/**"]
+  geometry: {globs: ["src/adapters/geometry/**"], role: adapter}
+edges:
+  - {from: usecase, to: domain}   # app darf die Domäne orchestrieren
+  - {from: usecase, to: ports}    # ... und über Ports nach außen sprechen
+  - {from: ports,   to: domain}   # Ports sprechen die Sprache der Domäne
+```
+
 ## 5. Berechtigungen und Sicherheit
 
 a-check kennt keine Benutzerrollen — es ist ein Kommandozeilen-Werkzeug. Statt
@@ -214,12 +241,14 @@ Geben Sie keine Zugangsdaten oder Tokens an a-check — es benötigt keine.
 
 ### Fehler: Docker findet das Image nicht (`Unable to find image` / `pull access denied`)
 
-**Ursache:** Im Vorab-Stand (0.1.0) ist kein GHCR-Image veröffentlicht;
-`ghcr.io/pt9912/a-check:0.1.0` ist nicht abrufbar.
+**Ursache:** Entweder ist das lokale Dev-Image `a-check:dev` noch nicht gebaut, oder
+es wird ein nicht existierender Tag referenziert — das veröffentlichte GHCR-Image wird
+per `@sha256:`-Digest konsumiert (nicht über einen `:0.1.0`-artigen Tag).
 
-**Lösung:** Bauen Sie das Image lokal mit `make build` und verwenden Sie
-`a-check:dev` — in `docker run`-Aufrufen als `<a-check-image>`, im Gate über
-`make a-check A_CHECK_IMAGE=a-check:dev`.
+**Lösung:** Für lokale Entwicklung das Image mit `make build` bauen und `a-check:dev`
+verwenden — in `docker run`-Aufrufen als `<a-check-image>`, im Gate über
+`make a-check A_CHECK_IMAGE=a-check:dev`. Für das veröffentlichte Image den
+digest-gepinnten Verweis aus `a-check.mk` bzw. `a-check --print-mk` nutzen.
 
 ### Fehler: a-check bricht mit Exit-Code 2 ab
 
@@ -265,6 +294,7 @@ Einträge unter `languages` ein.
 - **Adapter:** die konkrete Anbindung an Technik (Datenbank, HTTP, UI …).
 - **Composition Root:** der Ort, der konkrete Adapter an den Kern verdrahtet (z. B. `main`); von den Schicht-Regeln ausgenommen.
 - **Schicht:** eine über Pfad-Muster (`layers`) definierte Datei-Gruppe (z. B. `core`, `ports`, `adapters`).
+- **Rolle (`role`):** die Funktion einer Schicht (`domain`/`app`/`port`/`adapter`), die bestimmt, welche Reinheits-Regel greift — explizit per `role:` oder aus dem Schicht-Namen abgeleitet (Abschnitt 4).
 - **Kante (`edges`):** eine erlaubte gerichtete Abhängigkeit zwischen zwei Schichten (`from` → `to`).
 - **`adapter_sink`:** eine gemeinsame Senke, die alle Adapter importieren dürfen (Ausnahme von `lateral-adapter`).
 - **`forbidden_constructs`:** je Schicht konfigurierte verbotene Text-Muster (für `port-impurity`).
@@ -290,3 +320,4 @@ und die [Spezifikation](../../spec/spezifikation.md); ein Überblick steht in de
 | 1.3 | 2026-06-21 | §4: die vier gültigen `languages`-Schlüssel (`go`/`cpp`/`rust`/`kotlin`) explizit gelistet; Software-Version 0.1.0 veröffentlicht. |
 | 1.4 | 2026-06-22 | §3.4/§4 an Lastenheft 0.2.0 angeglichen: `port-impurity` — Ports dürfen Domänentypen des Kerns referenzieren (verboten bleiben Adapter/Tech); `ports`-Schicht + `ports → core`-Kante im Beispiel. |
 | 1.5 | 2026-06-22 | §3.4/Glossar an Lastenheft 0.5.0 angeglichen: neue Regel `app-impurity` (Rolle `app`); `core-impurity` verschärft — die Domäne kennt keine Ports (`domain↛port` kategorisch); sechs Regeln. |
+| 1.6 | 2026-06-22 | §3.2/§4/Glossar: die Schicht-`role` dokumentiert (`domain`/`app`/`port`/`adapter`, Objektform `{globs, role}`, Namens-Inferenz, Vorrang, Vier-Schichten-`app`-Modell) — Nachtrag zur Rollen-/`app`-Einführung (Lastenheft 0.3.0–0.5.0). |
