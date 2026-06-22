@@ -6,8 +6,21 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-06-22
+
+Zweite Welle: das Regel-Modell dispatcht über Layer-**Rollen** statt -Namen und ist
+auf vier Schichten (`domain`/`app`/`port`/`adapter`) ausgebaut; Ports dürfen
+Domänentypen referenzieren. Lastenheft 0.1.0 → 0.5.0.
+
 ### Added
 
+- **`AC-FA-RULE-006` (Lastenheft 0.2.0→0.4.0):** Schicht-**Rollen** — die
+  Reinheits-Regeln dispatchen über eine Layer-Rolle (`domain`/`port`/`adapter`, aus
+  `role:` oder Namens-Inferenz) statt über die Namen `core`/`ports`/`adapters`; fremd
+  benannte Schichten sind voll prüfbar. `layers`-Eintrag als Glob-Liste **oder**
+  `{globs, role}`; `lateral-adapter` cross-layer + kategorisch. ADR-0009; b1 (ADR-0010)
+  macht `adapterSeg`/`targetLayer` vollständig namensunabhängig (längster,
+  segment-bewusster Präfix). welle-10a/b1.
 - **`AC-FA-RULE-007` (Lastenheft 0.4.0→0.5.0):** neue Schicht-Rolle `app`
   (Application-/Use-Case-Schicht) — darf `domain`+`port` referenzieren, aber keinen
   Adapter/Tech: neuer Befund `app-impurity`. Zugleich `domain` verschärft (Import auf
@@ -17,6 +30,8 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
   (vorher per deklarierter Kante grün) — Migration: Port-/Use-Case-Nutzung in eine
   `role: app`-Schicht heben. a-checks Eigen-Dogfooding bleibt unverändert grün;
   Multi-Linsen-Review.
+- Benutzerhandbuch 1.6: die Schicht-`role` dokumentiert (Objektform `{globs, role}`,
+  Rollen, Namens-Inferenz, Vorrang, Vier-Schichten-`app`-Modell).
 
 ### Changed
 
