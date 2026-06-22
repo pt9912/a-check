@@ -21,7 +21,7 @@ func Evaluate(m Model, files []FileImports) []Finding {
 				fs = append(fs, find)
 			}
 		}
-		if f.Layer == "ports" {
+		if roleOf(f.Layer, m) == "port" {
 			for _, c := range f.Constructs {
 				fs = append(fs, Finding{Path: f.Path, Line: c.Line, Rule: "port-impurity", Msg: "verbotenes Konstrukt: " + c.Symbol})
 			}
@@ -32,19 +32,21 @@ func Evaluate(m Model, files []FileImports) []Finding {
 }
 
 // ruleFor returns the most specific rule violation for one import (first match),
-// or ok=false if the import is clean.
+// or ok=false if the import is clean. The purity rules dispatch on the layer's
+// ROLE, not its name (AC-FA-RULE-006).
 func ruleFor(m Model, f FileImports, imp Import) (Finding, bool) {
 	tl := targetLayer(imp.Symbol, m.Layers)
+	srcRole := roleOf(f.Layer, m)
+	tgtRole := roleOf(tl, m)
 	tech, isTech := matchTech(imp.Symbol, m.Techs)
 	switch {
-	case f.Layer == "core" && (tl == "adapters" || isTech):
+	// domain/port reference the domain freely but never adapters or tech; ports->core
+	// is edge-governed (ADR-0008) and falls to wrong-direction below.
+	case srcRole == "domain" && (tgtRole == "adapter" || isTech):
 		return Finding{f.Path, imp.Line, "core-impurity", "Kern importiert " + imp.Symbol}, true
-	// port-impurity: ports speak the domain's language — core references are fine and
-	// edge-governed (ADR-0008); ports must not import adapters or tech. Symmetric to
-	// core-impurity above.
-	case f.Layer == "ports" && (tl == "adapters" || isTech):
+	case srcRole == "port" && (tgtRole == "adapter" || isTech):
 		return Finding{f.Path, imp.Line, "port-impurity", "Port importiert " + imp.Symbol}, true
-	case f.Layer == "adapters" && tl == "adapters" && lateral(m, f, imp):
+	case srcRole == "adapter" && tgtRole == "adapter" && lateral(m, f, imp, tl):
 		return Finding{f.Path, imp.Line, "lateral-adapter", "Adapter importiert anderen Adapter " + imp.Symbol}, true
 	case isTech && !strings.Contains(f.Path, tech.Adapter):
 		return Finding{f.Path, imp.Line, "tech-leak", "Tech " + tech.Pattern + " außerhalb " + tech.Adapter}, true
@@ -54,8 +56,48 @@ func ruleFor(m Model, f FileImports, imp Import) (Finding, bool) {
 	return Finding{}, false
 }
 
-func lateral(m Model, f FileImports, imp Import) bool {
-	return adapterSeg(f.Path) != adapterSeg(imp.Symbol) && !contains(imp.Symbol, m.AdapterSink)
+// roleOf returns a layer's role: the explicit role: (AC-FA-RULE-006), else the
+// name inference, else "" (the layer is only edge-checked).
+func roleOf(name string, m Model) string {
+	for _, l := range m.Layers {
+		if l.Name == name {
+			if l.Role != "" {
+				return l.Role
+			}
+			return inferRole(name)
+		}
+	}
+	return ""
+}
+
+// inferRole maps the conventional layer names to roles (Rückwärtskompatibilität).
+func inferRole(name string) string {
+	switch name {
+	case "core":
+		return "domain"
+	case "ports":
+		return "port"
+	case "adapters":
+		return "adapter"
+	default:
+		return ""
+	}
+}
+
+// lateral reports a forbidden adapter->adapter import (AC-FA-RULE-006). It is
+// categorical — only adapter_sink exempts, not edges/allow — and fires across
+// different adapter layers (layer identity). Within one layer it falls back to
+// adapterSeg, which only distinguishes sub-units under a literal "adapters" path
+// segment; name-generalising that intra-layer check is a later increment (R6).
+// The caller guarantees both ends resolve to role adapter.
+func lateral(m Model, f FileImports, imp Import, tl string) bool {
+	if contains(imp.Symbol, m.AdapterSink) {
+		return false
+	}
+	if tl != f.Layer {
+		return true
+	}
+	return adapterSeg(f.Path) != adapterSeg(imp.Symbol)
 }
 
 func wrongDirection(m Model, f FileImports, tl string) bool {

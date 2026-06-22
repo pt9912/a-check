@@ -1,6 +1,6 @@
 # slice-009 — Rollen-Dispatch (welle-10a)
 
-**Status:** next.
+**Status:** done.
 **Welle:** welle-10-regel-engine-generalisierung (Inkrement **a**).
 **Bezug:** Re-Evaluierungs-Trigger aus [ADR-0008](../../adr/0008-ports-duerfen-domaenen-typen-referenzieren.md); generalisiert die Anwendung von [AC-FA-RULE-001](../../../../spec/lastenheft.md#ac-fa-rule-001--kern-reinheit-regel-core-impurity)/[AC-FA-RULE-002](../../../../spec/lastenheft.md#ac-fa-rule-002--keine-lateralen-adapter-kanten-regel-lateral-adapter)/[AC-FA-RULE-004](../../../../spec/lastenheft.md#ac-fa-rule-004--port-disziplin-regel-port-impurity) und erweitert [AC-FA-CONF-001](../../../../spec/lastenheft.md#ac-fa-conf-001--konfigurationsdatei-a-checkyml); [Roadmap welle-10](../in-progress/roadmap.md).
 
@@ -181,12 +181,12 @@ Lastenheft **0.2.0 → 0.3.0** (neue Regel-Anforderung *Schicht-Rollen* + CONF-S
 
 ## 5. Definition of Done
 
-- [ ] Neue Regel-Anforderung *Schicht-Rollen* in `spec/lastenheft.md` (3 AC + Out-of-Scope, „Generalisiert"-Zeile, kategorisches Cross-Layer-`lateral`), Bump 0.3.0 + Historie.
-- [ ] Folge-ADR `Accepted` + ADR-Index.
-- [ ] [SPEC-RULE-001](../../../../spec/spezifikation.md#spec-rule-001--regel-auswertung)/[SPEC-CONF-001](../../../../spec/spezifikation.md#spec-conf-001--konfigurationsschema) rollen-basiert nachgezogen.
-- [ ] Engine dispatcht über Rolle (inkl. Konstrukt-`port-impurity` + kategorisches Cross-Layer-`lateral`); `make arch-check` (Dogfooding) **ohne** Änderung der Eigen-`.a-check.yml` grün.
-- [ ] Tests: fremd-benannte Rollen, Inferenz-Boundary (inkl. Konstrukt + Intra-`adapterSeg`), Negative je Rolle, Cross-Layer-`lateral` trotz `allow`.
-- [ ] Multi-Linsen-Review bestanden.
+- [x] Neue Regel-Anforderung *Schicht-Rollen* in `spec/lastenheft.md` (3 AC + Out-of-Scope, „Generalisiert"-Zeile, kategorisches Cross-Layer-`lateral`), Bump 0.3.0 + Historie.
+- [x] Folge-ADR `Accepted` + ADR-Index.
+- [x] [SPEC-RULE-001](../../../../spec/spezifikation.md#spec-rule-001--regel-auswertung)/[SPEC-CONF-001](../../../../spec/spezifikation.md#spec-conf-001--konfigurationsschema) rollen-basiert nachgezogen.
+- [x] Engine dispatcht über Rolle (inkl. Konstrukt-`port-impurity` + kategorisches Cross-Layer-`lateral`); `make arch-check` (Dogfooding) **ohne** Änderung der Eigen-`.a-check.yml` grün.
+- [x] Tests: fremd-benannte Rollen, Inferenz-Boundary (inkl. Konstrukt + Intra-`adapterSeg`), Negative je Rolle, Cross-Layer-`lateral` trotz `allow`.
+- [x] Multi-Linsen-Review bestanden.
 
 ## 6. Offen / Risiken
 
@@ -207,3 +207,26 @@ Lastenheft **0.2.0 → 0.3.0** (neue Regel-Anforderung *Schicht-Rollen* + CONF-S
   `adapter/driven`, nicht `adapters`) — die Intra-Prüfung ist dort ein No-Op (10b).
 - **Befund-Namen bleiben stabil** (`core-impurity` etc.) — keine Output-Brüche.
 - **R5** (Boundary-AC-Nuance aus dem Erst-Review zu (I)) optional mitnehmen.
+
+## 7. Closure-Notiz (nach `done/`)
+
+**Belege:** `make gates` grün — `lint`/`test`/`coverage-gate`; `arch-check` 0 Befunde
+(a-check prüft sich selbst rollen-basiert via Inferenz, **ohne** Änderung der
+Eigen-`.a-check.yml`); `doc-check` 0. [AC-FA-RULE-006](../../../../spec/lastenheft.md#ac-fa-rule-006--schicht-rollen-generische-regel-anwendung)
+(Lastenheft 0.3.0) + [ADR-0009](../../adr/0009-rollen-basierter-regel-dispatch.md)
+`Accepted`; Spezifikation 0.3.0 rollen-basiert. Engine: `config.go` (Union-Decode
++ Rolle, yaml-Gotcha), `model.go` (`Layer.Role`), `rules.go` (Rollen-Dispatch +
+kategorisches Cross-Layer-`lateral` + Konstrukt-`port-impurity`). Multi-Linsen-Review
+(4 Linsen) bestanden, T1–T4/K1 geschlossen.
+
+**Lerneintrag:**
+
+- *Inferenz in `roleOf`, nicht im Config-Adapter:* direkt gebaute Test-Modelle (ohne
+  Decode) und Bestands-Configs greifen gleichermaßen — Rückwärtskompat ohne Sonderfall.
+- *Differenzialer Test schlägt Präsenz-Test:* der erste „kategorisch"-Test war
+  tautologisch (`hasRule`); erst `len==1` + `allow`/`edge`-Tabelle beweist die Invariante.
+- *yaml-Gotcha:* `KnownFields(true)` erbt nicht durch `yaml.Node.Decode` — strikte
+  Schlüsselprüfung im Objekt-Zweig von Hand.
+
+**Folge (späteres Inkrement):** `app`-Rolle, `driving`/`driven`-Ports,
+`adapterSeg`-Namens-Generalisierung (R6), `targetLayer` längster-Präfix-Match.

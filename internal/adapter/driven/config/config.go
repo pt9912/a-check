@@ -29,17 +29,24 @@ type yamlMarkers struct {
 	IgnoreSymbols []string `yaml:"ignore_symbols"`
 }
 
+// yamlLayer is the object form of a layers entry (`{globs, role}`, AC-FA-RULE-006);
+// the glob-list short form is decoded separately (see decodeLayer).
+type yamlLayer struct {
+	Globs []string `yaml:"globs"`
+	Role  string   `yaml:"role"`
+}
+
 type yamlConfig struct {
-	Version         int                 `yaml:"version"`
-	Languages       map[string][]string `yaml:"languages"`
-	Layers          map[string][]string `yaml:"layers"`
-	Edges           []yamlEdge          `yaml:"edges"`
-	AdapterSink     string              `yaml:"adapter_sink"`
-	Tech            []yamlTech          `yaml:"tech"`
-	CompositionRoot []string            `yaml:"composition_root"`
-	Allow           []yamlEdge          `yaml:"allow"`
-	Markers         *yamlMarkers        `yaml:"markers"`
-	Forbidden       map[string][]string `yaml:"forbidden_constructs"`
+	Version         int                  `yaml:"version"`
+	Languages       map[string][]string  `yaml:"languages"`
+	Layers          map[string]yaml.Node `yaml:"layers"`
+	Edges           []yamlEdge           `yaml:"edges"`
+	AdapterSink     string               `yaml:"adapter_sink"`
+	Tech            []yamlTech           `yaml:"tech"`
+	CompositionRoot []string             `yaml:"composition_root"`
+	Allow           []yamlEdge           `yaml:"allow"`
+	Markers         *yamlMarkers         `yaml:"markers"`
+	Forbidden       map[string][]string  `yaml:"forbidden_constructs"`
 }
 
 // Adapter implements port.ConfigPort.
@@ -74,7 +81,11 @@ func (Adapter) Load(path string) (core.Model, error) {
 		Forbidden:       yc.Forbidden,
 	}
 	for _, name := range sortedKeys(yc.Layers) {
-		m.Layers = append(m.Layers, core.Layer{Name: name, Globs: yc.Layers[name]})
+		globs, role, lerr := decodeLayer(yc.Layers[name], name, path)
+		if lerr != nil {
+			return core.Model{}, lerr
+		}
+		m.Layers = append(m.Layers, core.Layer{Name: name, Globs: globs, Role: role})
 	}
 	for _, e := range yc.Edges {
 		m.Edges = append(m.Edges, core.Edge{From: e.From, To: e.To})
@@ -91,7 +102,38 @@ func (Adapter) Load(path string) (core.Model, error) {
 	return m, nil
 }
 
-func sortedKeys(m map[string][]string) []string {
+// decodeLayer reads a layers entry: a glob list (`name: [globs]`) or an object
+// (`{globs, role}`, AC-FA-RULE-006). The object branch is strict by hand —
+// KnownFields(true) on the decoder is NOT inherited by yaml.Node.Decode, so
+// unknown keys are rejected explicitly (SPEC-CONF-001).
+func decodeLayer(node yaml.Node, name, path string) ([]string, string, error) {
+	switch node.Kind {
+	case yaml.SequenceNode:
+		var globs []string
+		if err := node.Decode(&globs); err != nil {
+			return nil, "", fmt.Errorf("%s: Schicht %q: %w", path, name, err)
+		}
+		return globs, "", nil
+	case yaml.MappingNode:
+		for i := 0; i+1 < len(node.Content); i += 2 {
+			if k := node.Content[i].Value; k != "globs" && k != "role" {
+				return nil, "", fmt.Errorf("%s: Schicht %q: unbekannter Schlüssel %q", path, name, k)
+			}
+		}
+		var yl yamlLayer
+		if err := node.Decode(&yl); err != nil {
+			return nil, "", fmt.Errorf("%s: Schicht %q: %w", path, name, err)
+		}
+		if yl.Role != "" && yl.Role != "domain" && yl.Role != "port" && yl.Role != "adapter" {
+			return nil, "", fmt.Errorf("%s: Schicht %q: ungültige role %q (domain|port|adapter)", path, name, yl.Role)
+		}
+		return yl.Globs, yl.Role, nil
+	default:
+		return nil, "", fmt.Errorf("%s: Schicht %q: erwarte Glob-Liste oder {globs, role}", path, name)
+	}
+}
+
+func sortedKeys[V any](m map[string]V) []string {
 	ks := make([]string, 0, len(m))
 	for k := range m {
 		ks = append(ks, k)

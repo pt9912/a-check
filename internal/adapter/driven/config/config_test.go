@@ -61,3 +61,55 @@ func TestWrongVersion(t *testing.T) {
 		t.Fatal("expected error on unsupported version")
 	}
 }
+
+func TestLayerObjectFormWithRole(t *testing.T) { // AC-FA-RULE-006 / AC-FA-CONF-001: Objektform mit role
+	body := "version: 1\nlanguages:\n  go: [\"**/*.go\"]\nlayers:\n  geometry: {globs: [\"geometry/**\"], role: adapter}\n  core: [\"core/**\"]\nedges:\n  - {from: geometry, to: core}\n"
+	m, err := New().Load(write(t, body))
+	if err != nil {
+		t.Fatalf("object-form layer failed: %v", err)
+	}
+	got := ""
+	for _, l := range m.Layers {
+		if l.Name == "geometry" {
+			got = l.Role
+		}
+	}
+	if got != "adapter" {
+		t.Fatalf("expected geometry role 'adapter', got %q (%+v)", got, m.Layers)
+	}
+}
+
+func TestLayerObjectUnknownKeyFailsClosed(t *testing.T) { // SPEC-CONF-001: strict auch im Objekt (yaml.Node-Gotcha)
+	body := "version: 1\nlanguages:\n  go: [\"**/*.go\"]\nlayers:\n  core: {globs: [\"core/**\"], bogus: 1}\nedges:\n  - {from: core, to: core}\n"
+	if _, err := New().Load(write(t, body)); err == nil {
+		t.Fatal("expected error on unknown key inside a layer object (fail-closed)")
+	}
+}
+
+func TestLayerInvalidRoleFailsClosed(t *testing.T) { // AC-FA-RULE-006: role nur domain|port|adapter
+	body := "version: 1\nlanguages:\n  go: [\"**/*.go\"]\nlayers:\n  core: {globs: [\"core/**\"], role: domainx}\nedges:\n  - {from: core, to: core}\n"
+	if _, err := New().Load(write(t, body)); err == nil {
+		t.Fatal("expected error on invalid role")
+	}
+}
+
+func TestLayerScalarFailsClosed(t *testing.T) { // SPEC-CONF-001: Scalar-Layer ist weder Glob-Liste noch Objekt
+	body := "version: 1\nlanguages:\n  go: [\"**/*.go\"]\nlayers:\n  core: \"core/**\"\nedges:\n  - {from: core, to: core}\n"
+	if _, err := New().Load(write(t, body)); err == nil {
+		t.Fatal("expected error for scalar layer value")
+	}
+}
+
+func TestLayerSeqBadElementFailsClosed(t *testing.T) { // Glob-Liste mit Nicht-String-Element
+	body := "version: 1\nlanguages:\n  go: [\"**/*.go\"]\nlayers:\n  core: [{x: 1}]\nedges:\n  - {from: core, to: core}\n"
+	if _, err := New().Load(write(t, body)); err == nil {
+		t.Fatal("expected error for non-string glob element")
+	}
+}
+
+func TestLayerObjectBadGlobsTypeFailsClosed(t *testing.T) { // globs im Objekt muss eine Liste sein
+	body := "version: 1\nlanguages:\n  go: [\"**/*.go\"]\nlayers:\n  core: {globs: \"core/**\", role: domain}\nedges:\n  - {from: core, to: core}\n"
+	if _, err := New().Load(write(t, body)); err == nil {
+		t.Fatal("expected error for non-list globs in object form")
+	}
+}

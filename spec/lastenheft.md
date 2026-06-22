@@ -1,6 +1,6 @@
 # Lastenheft — a-check
 
-**Version:** 0.2.0
+**Version:** 0.3.0
 
 **Status:** Draft
 
@@ -133,6 +133,32 @@ der Richtung ist ein Befund.
 
 **Out-of-Scope:** automatische Ableitung der Schichten ohne Config.
 
+### AC-FA-RULE-006 — Schicht-Rollen (generische Regel-Anwendung)
+
+**Generalisiert:** [AC-FA-RULE-001](#ac-fa-rule-001--kern-reinheit-regel-core-impurity) / [AC-FA-RULE-002](#ac-fa-rule-002--keine-lateralen-adapter-kanten-regel-lateral-adapter) / [AC-FA-RULE-004](#ac-fa-rule-004--port-disziplin-regel-port-impurity) (namens- → rollen-basiert).
+
+**Beschreibung:** Die Reinheits-Regeln `core-impurity`, `port-impurity` (import-
+**und** konstrukt-basiert) und `lateral-adapter` werden über die **Rolle** einer
+Schicht angewandt, nicht über ihren Namen. Eine Schicht trägt optional eine Rolle
+∈ {`domain`, `port`, `adapter`}; fehlt sie, wird sie aus konventionellen Namen
+abgeleitet (`core`→`domain`, `ports`→`port`, `adapters`→`adapter`). Eine explizite
+`role:` hat **Vorrang** vor der Inferenz; ein konventionell benannter Layer bekommt
+zwangsläufig eine Rolle (Rückwärtskompatibilität). Eine Schicht ohne Rolle (weder
+deklariert noch ableitbar) unterliegt nur den kanten-basierten Regeln
+(`wrong-direction`/`tech-leak`). Rollen-Mapping: `domain`→`core-impurity`,
+`port`→`port-impurity`, `adapter`→`lateral-adapter`. `lateral-adapter` feuert für
+Importe zwischen **verschiedenen** `role: adapter`-Schichten (Layer-Identität,
+namensunabhängig) und ist **kategorisch** — nur `adapter_sink` hebt auf, nicht
+`allow`/`edges`. Befund-**Namen** bleiben unverändert.
+
+**Akzeptanzkriterien:**
+
+- **Happy:** Given zwei verschiedene Schichten mit `role: adapter`, when die eine die andere importiert (auch bei deklarierter `allow`-Kante), then ein Befund (`lateral-adapter`) — namensunabhängig und kategorisch.
+- **Boundary:** Given eine Config mit klassischen Namen `core`/`ports`/`adapters` **ohne** `role`, when `a-check` läuft, then identisches Verhalten wie 0.2.0 (inkl. konstrukt-basierter `port-impurity` und Intra-`adapters`-Unterscheidung).
+- **Negative:** Given (a) ein `role: domain`-Layer importiert einen `role: adapter`-Layer **oder** (b) ein `role: port`-Layer mit fremdem Namen (mit deklarierten `forbidden_constructs`) enthält ein verbotenes Konstrukt, when `a-check` läuft, then ein Befund (a) `core-impurity` bzw. (b) `port-impurity` und Exit-Code 1.
+
+**Out-of-Scope:** feinere Rollen (`app`, `driving`/`driven`); Namens-Generalisierung der `adapterSeg`-Intra-Schicht-Unterscheidung (späteres Inkrement).
+
 ### AC-FA-EXTRACT-001 — Sprach-Backends für die Import-Extraktion
 
 **Beschreibung:** Pro Sprache liefert ein Backend die Menge „welche
@@ -167,8 +193,11 @@ Zusammenfassung auf stderr (analog `d-check`).
 
 **Beschreibung:** `.a-check.yml` deklariert: die Sprache(n) + Datei-Globs je
 Schicht, die Schichten (`core`/`ports`/`adapters`/…) mit Pfad-Mustern, die
-erlaubten Kanten, die Tech→Adapter-Zuordnungen und die gemeinsame Adapter-Senke.
-Striktes Decoding, fail-closed (Exit 2 bei unbekanntem Schlüssel).
+erlaubten Kanten, die Tech→Adapter-Zuordnungen und die gemeinsame Adapter-Senke. Ein `layers`-Eintrag
+ist **entweder** eine Glob-Liste (`name: [globs]`, Rolle per Namens-Inferenz)
+**oder** ein Objekt `{globs: [...], role: domain|port|adapter}`
+([AC-FA-RULE-006](#ac-fa-rule-006--schicht-rollen-generische-regel-anwendung)).
+Striktes Decoding, fail-closed (Exit 2 bei unbekanntem Schlüssel — auch im Objekt).
 
 **Akzeptanzkriterien:**
 
@@ -221,3 +250,4 @@ Konsumenten-Repos).
 |---|---|---|
 | 0.1.0 | 2026-06-20 | Erstfassung (Bootstrap): Zweck/Inventur, fünf universelle Hexagon-Regeln (`AC-FA-RULE-001…005`), Sprach-Extraktion, CLI, Config, Distribution (`--print-mk`/`a-check.mk`); NFAs Determinismus/Hermetik/Reproduzierbarkeit. |
 | 0.2.0 | 2026-06-22 | `AC-FA-RULE-004` neu gefasst: Ports **dürfen** Domänen-/Kern-Typen referenzieren (Sprache des Kerns; `ports → core` per deklarierter Kante), `port-impurity` trennt scharf gegen Adapter-/Tech-Importe. Motiviert durch die Vier-Repo-Evidenz (b-cad/d-migrate-Ports referenzieren die Domäne). |
+| 0.3.0 | 2026-06-22 | Neu `AC-FA-RULE-006` (Schicht-Rollen): die Reinheits-Regeln dispatchen über eine Layer-Rolle (`domain`/`port`/`adapter`, aus `role:` oder Namens-Inferenz) — generalisiert `AC-FA-RULE-001`/`AC-FA-RULE-002`/`AC-FA-RULE-004` namens-unabhängig (welle-10a). `AC-FA-CONF-001`-Schema: `layers`-Eintrag als Glob-Liste **oder** `{globs, role}`. |

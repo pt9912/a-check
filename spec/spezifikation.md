@@ -1,6 +1,6 @@
 # Spezifikation — a-check
 
-**Version:** 0.2.0
+**Version:** 0.3.0
 
 **Status:** Draft
 
@@ -66,6 +66,7 @@ forbidden_constructs:           # Schicht → verbotene Text-Muster (Port-Diszip
   - `allow` → konfigurativ erlaubte Sonderkante/Re-Export ([AC-FA-RULE-005](lastenheft.md#ac-fa-rule-005--schicht-richtung-regel-wrong-direction) / [AC-FA-RULE-004](lastenheft.md#ac-fa-rule-004--port-disziplin-regel-port-impurity) Boundary).
   - `markers` → dokumentierte Heuristik-Ausnahme ([AC-QA-02](lastenheft.md#ac-qa-02--hermetik-und-ehrliche-heuristik-grenze)).
   - `forbidden_constructs` → schichtbezogen verbotene Konstrukte ([AC-FA-RULE-004](lastenheft.md#ac-fa-rule-004--port-disziplin-regel-port-impurity)); als Text-Muster geprüft (siehe [SPEC-EXTRACT-001](#spec-extract-001--import-extraktion)).
+- **Schicht-Rollen** ([AC-FA-RULE-006](lastenheft.md#ac-fa-rule-006--schicht-rollen-generische-regel-anwendung)): ein `layers`-Eintrag ist **entweder** eine Glob-Liste (`name: [globs]`) **oder** ein Objekt `{globs: [...], role: domain|port|adapter}`. Fehlt `role`, wird es aus konventionellen Namen abgeleitet (`core`→`domain`, `ports`→`port`, `adapters`→`adapter`); `role:` hat Vorrang. Die Reinheits-Regeln (`core-impurity`/`port-impurity`/`lateral-adapter`) greifen über die Rolle, nicht den Namen — fremd benannte Schichten sind damit voll prüfbar.
 - Kein Include/Vererbung zwischen Config-Dateien (Lastenheft-Out-of-Scope).
 
 ## SPEC-EXTRACT-001 — Import-Extraktion
@@ -104,7 +105,8 @@ Import); sie speist die `port-impurity`-Regel
 
 ## SPEC-RULE-001 — Regel-Auswertung
 
-Präzisiert die fünf Hexagon-Regeln `AC-FA-RULE-*`. Eingabe: die
+Präzisiert die fünf Hexagon-Regeln `AC-FA-RULE-*`; ihre Anwendung über
+**Layer-Rollen** statt Namen regelt [AC-FA-RULE-006](lastenheft.md#ac-fa-rule-006--schicht-rollen-generische-regel-anwendung). Eingabe: die
 Symbolmengen je Datei ([SPEC-EXTRACT-001](#spec-extract-001--import-extraktion))
 und das Schicht-/Kanten-/Tech-Modell ([SPEC-CONF-001](#spec-conf-001--konfigurationsschema)).
 Jede verletzende Datei erzeugt einen Befund (Datei, Zeile, Regelname,
@@ -112,15 +114,17 @@ Meldung); ≥ 1 Befund ⇒ Exit-Code 1.
 
 | Regelname | Auswertung | präzisiert |
 |---|---|---|
-| `core-impurity` | Datei in `core` importiert ein Symbol, das auf einen `adapters`-Layer oder ein `tech`-Muster auflöst | [AC-FA-RULE-001](lastenheft.md#ac-fa-rule-001--kern-reinheit-regel-core-impurity) |
-| `lateral-adapter` | Datei in einem `adapters`-Layer importiert einen *anderen* Adapter (nicht `adapter_sink`) | [AC-FA-RULE-002](lastenheft.md#ac-fa-rule-002--keine-lateralen-adapter-kanten-regel-lateral-adapter) |
+| `core-impurity` | Datei mit Rolle `domain` importiert ein Symbol, das auf eine `adapter`-Rolle oder ein `tech`-Muster auflöst | [AC-FA-RULE-001](lastenheft.md#ac-fa-rule-001--kern-reinheit-regel-core-impurity) |
+| `lateral-adapter` | Datei mit Rolle `adapter` importiert eine *andere* `adapter`-Schicht (Layer-Identität) oder — in derselben Schicht — einen anderen Adapter (`adapterSeg`); nicht `adapter_sink`. **Kategorisch** (nicht über `edges`/`allow` aufhebbar) | [AC-FA-RULE-002](lastenheft.md#ac-fa-rule-002--keine-lateralen-adapter-kanten-regel-lateral-adapter) |
 | `tech-leak` | ein `tech`-Muster erscheint außerhalb seines zugeordneten Adapters (und außerhalb `composition_root`, falls konfiguriert) | [AC-FA-RULE-003](lastenheft.md#ac-fa-rule-003--tech-kapselung-regel-tech-leak) |
-| `port-impurity` | Datei in `ports` importiert einen `adapters`-Layer oder ein `tech`-Muster **oder** enthält ein `forbidden_constructs`-Muster (text-heuristisch erkannt). **Kern-Referenzen sind erlaubt** (Ports sprechen die Sprache des Kerns) und werden über `edges`/`allow` regiert — eine undeklarierte `ports → core`-Kante fällt unter `wrong-direction` | [AC-FA-RULE-004](lastenheft.md#ac-fa-rule-004--port-disziplin-regel-port-impurity) |
+| `port-impurity` | Datei mit Rolle `port` importiert eine `adapter`-Rolle oder ein `tech`-Muster **oder** enthält ein `forbidden_constructs`-Muster (text-heuristisch erkannt). **Kern-Referenzen sind erlaubt** (Ports sprechen die Sprache des Kerns) und werden über `edges`/`allow` regiert — eine undeklarierte `ports → core`-Kante fällt unter `wrong-direction` | [AC-FA-RULE-004](lastenheft.md#ac-fa-rule-004--port-disziplin-regel-port-impurity) |
 | `wrong-direction` | ein Import quert eine Schicht-Kante entgegen `edges`/`allow` | [AC-FA-RULE-005](lastenheft.md#ac-fa-rule-005--schicht-richtung-regel-wrong-direction) |
 
-Die Schicht einer Datei ergibt sich aus dem ersten passenden `layers`-Glob;
+Die Schicht einer Datei ergibt sich aus dem ersten passenden `layers`-Glob, ihre
+**Rolle** aus `role:` (Vorrang) oder Namens-Inferenz ([AC-FA-RULE-006](lastenheft.md#ac-fa-rule-006--schicht-rollen-generische-regel-anwendung)).
 Symbole werden über die `layers`-Globs des Zielpfads bzw. die `tech`-Muster
-aufgelöst.
+aufgelöst — die Ziel-Rolle ist die **des aufgelösten Layers**; die Reinheits-Regeln
+dispatchen über die Rolle, nicht den Namen.
 
 Pro (Datei, Import) gilt **deterministische Erst-Treffer-Reihenfolge** in der
 Tabellen-Reihenfolge (`core-impurity` → `port-impurity` → `lateral-adapter` →
@@ -179,3 +183,4 @@ und [AC-QA-03](lastenheft.md#ac-qa-03--reproduzierbarkeit).
 |---|---|---|
 | 0.1.0 | 2026-06-21 | Erstfassung (Technik-Stratum): `SPEC-CONF/EXTRACT/RULE/CLI/DET/DIST-001` präzisieren die Lastenheft-Verträge (Config-Schema, Extraktions-Algorithmus, Regel-Auswertung, CLI/Exit-Codes, Determinismus, Laufzeit-/Distributionsform). Sprachneutral. |
 | 0.2.0 | 2026-06-22 | `SPEC-RULE-001` `port-impurity` nachgezogen: Port-Befund bei Adapter-/`tech`-Import statt bei Kern-Import; `ports → core` ist edge-regiert. Folgt [`AC-FA-RULE-004`](lastenheft.md#ac-fa-rule-004--port-disziplin-regel-port-impurity) 0.2.0. |
+| 0.3.0 | 2026-06-22 | `SPEC-RULE-001`/`SPEC-CONF-001` rollen-basiert: die Reinheits-Regeln dispatchen über eine Layer-Rolle (`domain`/`port`/`adapter`, aus `role:` oder Namens-Inferenz); `lateral-adapter` cross-layer + kategorisch; `layers`-Eintrag als Glob-Liste oder `{globs, role}`. Folgt [`AC-FA-RULE-006`](lastenheft.md#ac-fa-rule-006--schicht-rollen-generische-regel-anwendung) 0.3.0. |
