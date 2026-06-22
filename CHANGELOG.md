@@ -6,6 +6,12 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
+### Changed
+
+- `--print-mk`/`a-check.mk` und der `aCheckImage`-Default sind auf den
+  v0.2.0-Release **digest-gepinnt** (`ghcr.io/pt9912/a-check@sha256:4132a7af…`) —
+  Pin-Hebung nach dem Release (AC-QA-03, ADR-0004/ADR-0007).
+
 ## [0.2.0] - 2026-06-22
 
 Zweite Welle: das Regel-Modell dispatcht über Layer-**Rollen** statt -Namen und ist
