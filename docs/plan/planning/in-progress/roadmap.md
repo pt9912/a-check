@@ -27,9 +27,12 @@ Modell ist auf vier Schichten ausgebaut:
 - **b2a** ([slice-011](../done/slice-011-app-rolle.md), [ADR-0011](../../adr/0011-domain-application-trennung-rolle-app.md) `Accepted`, [AC-FA-RULE-007](../../../../spec/lastenheft.md#ac-fa-rule-007--rolle-app-und-strenge-domain)): Rolle `app` (→ Befund `app-impurity`) + strenge `domain` (`domain↛port` kategorisch). Lastenheft/Spezifikation **0.5.0**.
 
 **Offen (b2b):** `driving`/`driven`-Port-Subtypen mit feineren Kanten; `LayerOf`
-längster-Präfix (Symmetrie zu `targetLayer`). Re-Evaluierungs-Trigger in
-[ADR-0011](../../adr/0011-domain-application-trennung-rolle-app.md). Alle Gates real und
-grün (`make gates`; Dogfooding 0 Befunde).
+längster-Präfix (Symmetrie zu `targetLayer`). **Entwurf liegt vor**
+([slice-012](slice-012-driving-driven-layerof.md)) — Umsetzung wartet auf die
+§6-Entscheidungen (v. a. den Bedarfs-Gate: an einem Konsumenten-Repo belegen, dass
+getrennte `driving`/`driven`-Ports gebraucht werden; sonst nur Teil B `LayerOf`).
+Re-Evaluierungs-Trigger in [ADR-0011](../../adr/0011-domain-application-trennung-rolle-app.md).
+Alle Gates real und grün (`make gates`; Dogfooding 0 Befunde).
 
 **Parallel offen — `welle-05-release`:** `v0.1.0` und **`v0.2.0`** sind veröffentlicht
 ([slice-007 §4](../done/slice-007-release-pipeline.md#4-closure-notiz-nach-done),
