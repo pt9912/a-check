@@ -39,7 +39,10 @@ func ruleFor(m Model, f FileImports, imp Import) (Finding, bool) {
 	switch {
 	case f.Layer == "core" && (tl == "adapters" || isTech):
 		return Finding{f.Path, imp.Line, "core-impurity", "Kern importiert " + imp.Symbol}, true
-	case f.Layer == "ports" && (tl == "adapters" || tl == "core"):
+	// port-impurity: ports speak the domain's language — core references are fine and
+	// edge-governed (ADR-0008); ports must not import adapters or tech. Symmetric to
+	// core-impurity above.
+	case f.Layer == "ports" && (tl == "adapters" || isTech):
 		return Finding{f.Path, imp.Line, "port-impurity", "Port importiert " + imp.Symbol}, true
 	case f.Layer == "adapters" && tl == "adapters" && lateral(m, f, imp):
 		return Finding{f.Path, imp.Line, "lateral-adapter", "Adapter importiert anderen Adapter " + imp.Symbol}, true

@@ -78,8 +78,8 @@ linters:
         - anon
         - stdlib
         - generic
-        # a-check-Kern-Ports (ARC-002): New() liefert die Port-Schnittstelle.
-        - github.com/pt9912/a-check/internal/core\..*
+        # a-check-Ports (ARC-002): New() liefert die Port-Schnittstelle.
+        - github.com/pt9912/a-check/internal/hexagon/port\..*
 
     maintidx:
       under: 20

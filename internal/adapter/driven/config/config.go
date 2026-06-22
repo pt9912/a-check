@@ -9,7 +9,8 @@ import (
 	"os"
 	"sort"
 
-	"github.com/pt9912/a-check/internal/core"
+	"github.com/pt9912/a-check/internal/hexagon/core"
+	"github.com/pt9912/a-check/internal/hexagon/port"
 	"gopkg.in/yaml.v3"
 )
 
@@ -41,11 +42,11 @@ type yamlConfig struct {
 	Forbidden       map[string][]string `yaml:"forbidden_constructs"`
 }
 
-// Adapter implements core.ConfigPort.
+// Adapter implements port.ConfigPort.
 type Adapter struct{}
 
 // New returns a configuration adapter.
-func New() core.ConfigPort { return Adapter{} }
+func New() port.ConfigPort { return Adapter{} }
 
 // Load reads and strictly decodes the config at path.
 func (Adapter) Load(path string) (core.Model, error) {

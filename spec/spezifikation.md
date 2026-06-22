@@ -1,6 +1,6 @@
 # Spezifikation — a-check
 
-**Version:** 0.1.0
+**Version:** 0.2.0
 
 **Status:** Draft
 
@@ -41,7 +41,7 @@ layers:                         # Schicht → Pfad-Muster (Globs, repo-relativ)
   adapters: ["hexagon/adapters/**"]
 edges:                          # erlaubte gerichtete Schicht-Kanten (from → to)
   - {from: adapters, to: ports}
-  - {from: ports,    to: core}
+  - {from: ports,    to: core}  # Ports dürfen Domänentypen referenzieren (AC-FA-RULE-004)
 adapter_sink: driver-common     # gemeinsame Senke, die Adapter importieren dürfen (optional)
 tech:                           # Tech-/Framework-Muster → zugeordneter Adapter (optional)
   - {pattern: "net/http", adapter: http}
@@ -115,7 +115,7 @@ Meldung); ≥ 1 Befund ⇒ Exit-Code 1.
 | `core-impurity` | Datei in `core` importiert ein Symbol, das auf einen `adapters`-Layer oder ein `tech`-Muster auflöst | [AC-FA-RULE-001](lastenheft.md#ac-fa-rule-001--kern-reinheit-regel-core-impurity) |
 | `lateral-adapter` | Datei in einem `adapters`-Layer importiert einen *anderen* Adapter (nicht `adapter_sink`) | [AC-FA-RULE-002](lastenheft.md#ac-fa-rule-002--keine-lateralen-adapter-kanten-regel-lateral-adapter) |
 | `tech-leak` | ein `tech`-Muster erscheint außerhalb seines zugeordneten Adapters (und außerhalb `composition_root`, falls konfiguriert) | [AC-FA-RULE-003](lastenheft.md#ac-fa-rule-003--tech-kapselung-regel-tech-leak) |
-| `port-impurity` | Datei in `ports` importiert Adapter/Kern **oder** enthält ein `forbidden_constructs`-Muster (text-heuristisch erkannt) | [AC-FA-RULE-004](lastenheft.md#ac-fa-rule-004--port-disziplin-regel-port-impurity) |
+| `port-impurity` | Datei in `ports` importiert einen `adapters`-Layer oder ein `tech`-Muster **oder** enthält ein `forbidden_constructs`-Muster (text-heuristisch erkannt). **Kern-Referenzen sind erlaubt** (Ports sprechen die Sprache des Kerns) und werden über `edges`/`allow` regiert — eine undeklarierte `ports → core`-Kante fällt unter `wrong-direction` | [AC-FA-RULE-004](lastenheft.md#ac-fa-rule-004--port-disziplin-regel-port-impurity) |
 | `wrong-direction` | ein Import quert eine Schicht-Kante entgegen `edges`/`allow` | [AC-FA-RULE-005](lastenheft.md#ac-fa-rule-005--schicht-richtung-regel-wrong-direction) |
 
 Die Schicht einer Datei ergibt sich aus dem ersten passenden `layers`-Glob;
@@ -178,3 +178,4 @@ und [AC-QA-03](lastenheft.md#ac-qa-03--reproduzierbarkeit).
 | Version | Datum | Änderung |
 |---|---|---|
 | 0.1.0 | 2026-06-21 | Erstfassung (Technik-Stratum): `SPEC-CONF/EXTRACT/RULE/CLI/DET/DIST-001` präzisieren die Lastenheft-Verträge (Config-Schema, Extraktions-Algorithmus, Regel-Auswertung, CLI/Exit-Codes, Determinismus, Laufzeit-/Distributionsform). Sprachneutral. |
+| 0.2.0 | 2026-06-22 | `SPEC-RULE-001` `port-impurity` nachgezogen: Port-Befund bei Adapter-/`tech`-Import statt bei Kern-Import; `ports → core` ist edge-regiert. Folgt [`AC-FA-RULE-004`](lastenheft.md#ac-fa-rule-004--port-disziplin-regel-port-impurity) 0.2.0. |

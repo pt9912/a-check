@@ -22,7 +22,7 @@ universelle Regeln, je eine Anforderung im [Lastenheft](spec/lastenheft.md):
   ([AC-FA-RULE-002](spec/lastenheft.md#ac-fa-rule-002--keine-lateralen-adapter-kanten-regel-lateral-adapter))
 - `tech-leak` — ein Framework/Tech erscheint nur in seinem Adapter
   ([AC-FA-RULE-003](spec/lastenheft.md#ac-fa-rule-003--tech-kapselung-regel-tech-leak))
-- `port-impurity` — Ports sind reine Abstraktionen
+- `port-impurity` — ein Port importiert keinen Adapter und kein Framework/Tech (Domänentypen des Kerns darf er referenzieren)
   ([AC-FA-RULE-004](spec/lastenheft.md#ac-fa-rule-004--port-disziplin-regel-port-impurity))
 - `wrong-direction` — Schicht-Kanten sind einbahnig
   ([AC-FA-RULE-005](spec/lastenheft.md#ac-fa-rule-005--schicht-richtung-regel-wrong-direction))
@@ -115,9 +115,12 @@ languages:
   go: ["**/*.go"]
 layers:
   core:     ["internal/core/**"]
+  ports:    ["internal/ports/**"]
   adapters: ["internal/adapters/**"]
 edges:
-  - {from: adapters, to: core}
+  - {from: adapters, to: ports}
+  - {from: ports,    to: core}     # Ports dürfen Domänentypen referenzieren
+  # - {from: adapters, to: core}   # falls Adapter Domänentypen direkt referenzieren
 ```
 
 Das vollständige Schema steht in der

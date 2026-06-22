@@ -1,8 +1,9 @@
 // Package core is the dependency-free kernel of a-check (ARC-001): the
-// architecture model, the port interfaces (ARC-002, realized as Go interfaces
-// co-located with the domain) and the rule engine (SPEC-RULE-001). It imports
-// nothing outside the standard library — its purity is what `make arch-check`
-// (Dogfooding, AC-QA-02) enforces on a-check itself.
+// architecture model and the rule engine (SPEC-RULE-001). It imports nothing
+// outside the standard library — its purity is what `make arch-check`
+// (Dogfooding, AC-QA-02) enforces on a-check itself. The driven port interfaces
+// (ARC-002) live in the sibling package `port`, which references these domain
+// types.
 package core
 
 // Import is one extracted import or construct hit with its source line.
@@ -58,19 +59,4 @@ type Finding struct {
 	Line int
 	Rule string
 	Msg  string
-}
-
-// ConfigPort loads and strictly decodes the configuration (ARC-004).
-type ConfigPort interface {
-	Load(path string) (Model, error)
-}
-
-// ExtractionPort yields the imports per source file under root (ARC-003).
-type ExtractionPort interface {
-	Extract(root string, m Model) ([]FileImports, error)
-}
-
-// ReportPort renders findings and yields the finding exit code 0/1 (ARC-005).
-type ReportPort interface {
-	Report(findings []Finding) int
 }

@@ -3,7 +3,7 @@ package extract
 import (
 	"testing"
 
-	"github.com/pt9912/a-check/internal/core"
+	"github.com/pt9912/a-check/internal/hexagon/core"
 )
 
 func syms(imps []core.Import) []string {

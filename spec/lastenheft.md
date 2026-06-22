@@ -1,6 +1,6 @@
 # Lastenheft — a-check
 
-**Version:** 0.1.0
+**Version:** 0.2.0
 
 **Status:** Draft
 
@@ -97,16 +97,25 @@ ggf. der Composition Root).
 
 ### AC-FA-RULE-004 — Port-Disziplin (Regel `port-impurity`)
 
-**Beschreibung:** Ports sind reine Abstraktionen und Dependency-Senke: sie
-importieren weder Adapter noch Kern und tragen — sprachabhängig konfigurierbar
-— keine implementierungs-/dialekt-spezifischen Konstrukte (z. B. Rust `impl`,
-dialekt-typisierte Felder).
+**Beschreibung:** Ports drücken die **Sprache des Kerns** aus und **dürfen
+Domänen-/Kern-Typen referenzieren** (über eine deklarierte
+`{from: ports, to: core}`-Kante) — das ist erwünscht, nicht nur geduldet, weil
+ein Port die Domäne in seiner Signatur spricht. Sie importieren aber **keinen
+Adapter** und **kein als Framework/Tech deklariertes Symbol**
+(Persistence, Messaging, Vendor-Bibliotheken …) und tragen — sprachabhängig konfigurierbar — keine
+implementierungs-/dialekt-spezifischen Konstrukte (z. B. Rust `impl`). *Prüf-Test:*
+Ließe sich der Adapter komplett austauschen, ohne Port **und** Domäne zu ändern?
+Wenn nein, leakt der Port Infrastruktur. Eine `ports → core`-Kante **ohne**
+Deklaration bleibt eine Richtungsverletzung
+([AC-FA-RULE-005](#ac-fa-rule-005--schicht-richtung-regel-wrong-direction)); das
+Kern-/Adapter-Verbot der Domäne selbst regelt
+[AC-FA-RULE-001](#ac-fa-rule-001--kern-reinheit-regel-core-impurity).
 
 **Akzeptanzkriterien:**
 
-- **Happy:** Given ein Port mit nur Abstraktions-Definitionen, when `a-check` läuft, then kein Befund.
-- **Boundary:** Given ein Port mit konfigurativ erlaubtem Re-Export, when `a-check` läuft, then kein Befund.
-- **Negative:** Given ein Port, der einen Adapter importiert oder ein verbotenes Konstrukt enthält, when `a-check` läuft, then ein Befund (`port-impurity`) und Exit-Code 1.
+- **Happy:** Given ein Port, der nur Domänen-/Kern-Typen referenziert (deklarierte `{from: ports, to: core}`-Kante), when `a-check` läuft, then kein Befund.
+- **Boundary:** Given ein Port mit konfigurativ erlaubtem `ports → ports`-Re-Export, when `a-check` läuft, then kein Befund.
+- **Negative:** Given ein Port, der einen **Adapter** oder ein **Tech-/Framework-Symbol** importiert oder ein verbotenes Konstrukt enthält, when `a-check` läuft, then ein Befund (`port-impurity`) und Exit-Code 1.
 
 **Out-of-Scope:** Typ-Inferenz über das deklarierte Pattern hinaus.
 
@@ -211,3 +220,4 @@ Konsumenten-Repos).
 | Version | Datum | Änderung |
 |---|---|---|
 | 0.1.0 | 2026-06-20 | Erstfassung (Bootstrap): Zweck/Inventur, fünf universelle Hexagon-Regeln (`AC-FA-RULE-001…005`), Sprach-Extraktion, CLI, Config, Distribution (`--print-mk`/`a-check.mk`); NFAs Determinismus/Hermetik/Reproduzierbarkeit. |
+| 0.2.0 | 2026-06-22 | `AC-FA-RULE-004` neu gefasst: Ports **dürfen** Domänen-/Kern-Typen referenzieren (Sprache des Kerns; `ports → core` per deklarierter Kante), `port-impurity` trennt scharf gegen Adapter-/Tech-Importe. Motiviert durch die Vier-Repo-Evidenz (b-cad/d-migrate-Ports referenzieren die Domäne). |

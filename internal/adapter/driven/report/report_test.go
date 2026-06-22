@@ -5,8 +5,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/pt9912/a-check/internal/adapters/report"
-	"github.com/pt9912/a-check/internal/core"
+	"github.com/pt9912/a-check/internal/adapter/driven/report"
+	"github.com/pt9912/a-check/internal/hexagon/core"
 )
 
 func TestReportFindings(t *testing.T) {

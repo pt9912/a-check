@@ -1,6 +1,6 @@
 # Architektur — a-check
 
-**Version:** 0.1.0
+**Version:** 0.2.0
 
 **Status:** Draft
 
@@ -41,9 +41,12 @@ flowchart TD
     CLI --> CFG --> CP
     CLI --> EXT --> EP
     CLI --> CORE
-    CORE --> CP
-    CORE --> EP
-    CORE --> RP
+    CP --> CORE
+    EP --> CORE
+    RP --> CORE
+    CFG --> CORE
+    EXT --> CORE
+    REP --> CORE
     REP --> RP
     CLI --> REP
     style CORE fill:#fff4d6,stroke:#d4a017
@@ -53,7 +56,7 @@ flowchart TD
 | Kennung | Komponente | Rolle |
 |---|---|---|
 | **ARC-001** | Kern (Regel-Engine) | wertet die fünf Regeln auf einem abstrakten Import-/Schicht-Modell aus ([SPEC-RULE-001](spezifikation.md#spec-rule-001--regel-auswertung)); **rein** — keine I/O, kein Tech, keine Zielsprach-Kenntnis. |
-| **ARC-002** | Ports | reine Abstraktionen `ConfigPort` / `ExtractionPort` / `ReportPort`, als Go-Interfaces **im Kern-Paket (ARC-001) co-lokiert** (Go-Idiom: Ports sind Teil des Domänen-Kerns); sie referenzieren nur Domänentypen, keine Adapter. Im Eigen-[`.a-check.yml`](../.a-check.yml) sind sie damit Teil der `core`-Schicht — ein Projekt mit separatem Ports-Paket deklariert eine eigene `ports`-Schicht. |
+| **ARC-002** | Ports | reine Abstraktionen `ConfigPort` / `ExtractionPort` / `ReportPort`: sie **referenzieren Domänentypen** des Kerns (die Sprache des Kerns), importieren aber **keinen Adapter und kein Tech**. a-check führt sie als **eigene `ports`-Schicht** mit deklarierter `{from: ports, to: core}`-Kante (Eigen-[`.a-check.yml`](../.a-check.yml)). Ein Projekt mit reinen Ports (eigene DTOs, importiert nichts) lässt die Kante weg. |
 | **ARC-003** | Extraktions-Adapter (je Zielsprache) | implementieren `ExtractionPort` text-heuristisch ([SPEC-EXTRACT-001](spezifikation.md#spec-extract-001--import-extraktion)); je ein Adapter pro **Zielsprache** (C++/Go/Rust/Kotlin — Problemdomäne, nicht Implementierungstechnik). |
 | **ARC-004** | Konfigurations-Adapter | lädt und dekodiert `.a-check.yml` strikt ([SPEC-CONF-001](spezifikation.md#spec-conf-001--konfigurationsschema)); implementiert `ConfigPort`. |
 | **ARC-005** | Report-Adapter | formatiert Befunde und Zusammenfassung und bestimmt den **Befund-Exit-Code** (`0`/`1`, [SPEC-CLI-001](spezifikation.md#spec-cli-001--aufruf-scan-wurzel-und-exit-codes)); implementiert `ReportPort`. |
@@ -68,9 +71,9 @@ flowchart LR
 
 - Der **Kern** importiert nichts nach außen (weder Ports-Implementierungen
   noch Adapter noch Tech).
-- **Ports** sind reine Abstraktionen und Dependency-Senke.
-- **Adapter** hängen ausschließlich von Ports ab, nie voneinander (außer der
-  konfigurierten gemeinsamen Senke).
+- **Ports** sind reine Abstraktionen: sie referenzieren Domänentypen des Kerns, importieren aber keinen Adapter und kein Tech.
+- **Adapter** hängen von Ports und Domänentypen des Kerns ab, nie voneinander
+  (außer der konfigurierten gemeinsamen Senke).
 - Nur die **Composition Root** (ARC-006) verdrahtet konkrete Adapter an die
   Ports.
 
@@ -112,3 +115,4 @@ geprüften Repos.
 | Version | Datum | Änderung |
 |---|---|---|
 | 0.1.0 | 2026-06-21 | Erstfassung (Sicht-Stratum): Hexagon-Komponenten `ARC-001…006` (Kern/Ports/Extraktions-/Config-/Report-Adapter/Composition Root), Schicht-Richtung und Scan-Sequenz; sprach-/meilensteinfrei, visualisiert Lastenheft + Spezifikation. |
+| 0.2.0 | 2026-06-22 | ARC-002 nachgezogen: Ports sind eigene `ports`-Schicht, die Domänentypen referenziert (statt Co-Location im Kern-Paket); §2-Abhängigkeitsrichtung Ports→Kern korrigiert. |

@@ -1,6 +1,6 @@
 # Roadmap
 
-**Status:** Aktiv. **Letzte Änderung:** 2026-06-21.
+**Status:** Aktiv. **Letzte Änderung:** 2026-06-22.
 
 **Format-Regel:** Die Roadmap ist eine Reihenfolge von **Wellen**, keine
 Reihenfolge von Terminen. Termine erscheinen — falls überhaupt — als
@@ -32,6 +32,7 @@ GitHub-CI grün). **Offen:** Pilot-Einbindung in ein Konsumenten-Repo.
 |---|---|---|---|
 | welle-05-release | Image-Veröffentlichung | **`v0.1.0` veröffentlicht** ([slice-007](../done/slice-007-release-pipeline.md): `release.yml` + [ADR-0007](../../adr/0007-latest-tag-politik.md)); GHCR digest-gepinnt in `a-check.mk` ([AC-FA-DIST-001](../../../../spec/lastenheft.md#ac-fa-dist-001--distribution-image---print-mk-a-checkmk), [AC-QA-03](../../../../spec/lastenheft.md#ac-qa-03--reproduzierbarkeit)). **Offen:** Pilot-Einbindung in ein Konsumenten-Repo | fast fertig |
 | welle-06-sprach-backends | Bedarf | Ausbau/Härtung der Extraktion je Zielsprache; opt-in toolchain-gestützte Backends ([AC-FA-EXTRACT-001](../../../../spec/lastenheft.md#ac-fa-extract-001--sprach-backends-für-die-import-extraktion) Out-of-Scope-Re-Eval) | offen |
+| welle-10-regel-engine-generalisierung | Mehr-Layer-Modelle der Konsumenten (b-cad/d-migrate: feinere `domain`/`application`/`port`-Schichten) | Reinheit **pro Layer deklarierbar** statt an die Namen `core`/`ports`/`adapters` gebunden (`core-impurity`/`port-impurity`/`lateral-adapter` generisch); feine `domain`/`application`-Trennung + `driving`/`driven`-Ports mit voller Durchsetzung; `adapterSeg`-Generalisierung. Braucht neue Lastenheft-Anforderung + Folge-ADR. Folgt aus dem Re-Evaluierungs-Trigger von [ADR-0008](../../adr/0008-ports-duerfen-domaenen-typen-referenzieren.md) | offen |
 
 _(Kein fixer Termin — Wellen feuern auf Trigger.)_
 

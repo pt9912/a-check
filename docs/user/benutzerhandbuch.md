@@ -1,6 +1,6 @@
 # Benutzerhandbuch: a-check
 
-**Handbuch-Version:** 1.3 · **Software-Version:** 0.1.0 · **Stand:** 2026-06-21 ·
+**Handbuch-Version:** 1.4 · **Software-Version:** 0.1.0 · **Stand:** 2026-06-22 ·
 **Autor:** pt9912 (Maintainer)
 
 ---
@@ -140,7 +140,7 @@ Jeder Befund nennt die Regel. Die fünf Regeln und ihre Behebung:
 | `core-impurity` | Der Kern importiert einen Adapter oder ein Framework/Tech. | Abhängigkeit über einen Port (Schnittstelle) umkehren; Tech nur im Adapter nutzen. |
 | `lateral-adapter` | Ein Adapter importiert einen anderen Adapter. | Gemeinsame Logik in die konfigurierte Senke (`adapter_sink`) ziehen oder über einen Port führen. |
 | `tech-leak` | Ein Framework/Tech erscheint außerhalb seines Adapters. | Den Tech-Zugriff in den zugeordneten Adapter kapseln. |
-| `port-impurity` | Ein Port importiert Kern/Adapter oder enthält ein per `forbidden_constructs` (Abschnitt 4) verbotenes Konstrukt. | Den Port auf reine Abstraktionen reduzieren. |
+| `port-impurity` | Ein Port importiert einen Adapter oder ein Framework/Tech, oder enthält ein per `forbidden_constructs` (Abschnitt 4) verbotenes Konstrukt. Domänentypen des Kerns darf ein Port referenzieren. | Den Port von Adapter-/Tech-Importen befreien (Kern-Referenzen sind erlaubt). |
 | `wrong-direction` | Ein Import läuft entgegen einer erlaubten Schicht-Kante. | Die Kante in `edges` aufnehmen (falls legitim) oder den Import umdrehen. |
 
 ### 3.5 Heuristik-Ausnahmen konfigurieren
@@ -168,9 +168,12 @@ languages:
   go: ["**/*.go"]                 # Sprache -> Datei-Globs
 layers:
   core:     ["internal/core/**"]  # Schicht -> Pfad-Muster
+  ports:    ["internal/ports/**"]
   adapters: ["internal/adapters/**"]
 edges:
-  - {from: adapters, to: core}    # erlaubte gerichtete Kante
+  - {from: adapters, to: ports}   # erlaubte gerichtete Kante
+  - {from: ports,    to: core}    # Ports dürfen Domänentypen referenzieren
+  # - {from: adapters, to: core}  # falls Adapter Domänentypen direkt referenzieren
 adapter_sink: driver-common       # gemeinsame Adapter-Senke (optional)
 tech:
   - {pattern: "net/http", adapter: http}   # Tech -> Adapter (optional)
@@ -284,3 +287,4 @@ und die [Spezifikation](../../spec/spezifikation.md); ein Überblick steht in de
 | 1.1 | 2026-06-21 | Review-Einarbeitung: Vorab-Image-Pfad fürs make-Gate (`A_CHECK_IMAGE=a-check:dev`), Config-Schlüssel `allow`/`forbidden_constructs`, Exit-0-stderr-Klarstellung, Image-Fehlerfall, Glossar, Autor. |
 | 1.2 | 2026-06-21 | Quer-Verweis aus §3.3 auf den neuen Release-Leitfaden [`releasing.md`](releasing.md). |
 | 1.3 | 2026-06-21 | §4: die vier gültigen `languages`-Schlüssel (`go`/`cpp`/`rust`/`kotlin`) explizit gelistet; Software-Version 0.1.0 veröffentlicht. |
+| 1.4 | 2026-06-22 | §3.4/§4 an Lastenheft 0.2.0 angeglichen: `port-impurity` — Ports dürfen Domänentypen des Kerns referenzieren (verboten bleiben Adapter/Tech); `ports`-Schicht + `ports → core`-Kante im Beispiel. |

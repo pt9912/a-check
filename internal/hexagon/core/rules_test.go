@@ -80,12 +80,30 @@ func TestTechInOwnAdapter(t *testing.T) { // AC-FA-RULE-003 boundary
 	}
 }
 
-func TestPortImpurityImport(t *testing.T) { // AC-FA-RULE-004 negative (import)
+func TestPortDomainAllowed(t *testing.T) { // AC-FA-RULE-004 happy: Ports dürfen die Domäne referenzieren
 	fs := Evaluate(testModel(), []FileImports{
 		{Path: "ports/p.go", Layer: "ports", Imports: []Import{{Symbol: "core/x", Line: 2}}},
 	})
+	if len(fs) != 0 {
+		t.Fatalf("ports may reference the domain (edge ports->core declared), got %v", fs)
+	}
+}
+
+func TestPortImpurityAdapter(t *testing.T) { // AC-FA-RULE-004 negative: Port importiert Adapter
+	fs := Evaluate(testModel(), []FileImports{
+		{Path: "ports/p.go", Layer: "ports", Imports: []Import{{Symbol: "adapters/http/client", Line: 2}}},
+	})
 	if !hasRule(fs, "port-impurity") {
-		t.Fatalf("expected port-impurity, got %v", fs)
+		t.Fatalf("expected port-impurity (port imports adapter), got %v", fs)
+	}
+}
+
+func TestPortImpurityTech(t *testing.T) { // AC-FA-RULE-004 negative: Port importiert Tech/Framework
+	fs := Evaluate(testModel(), []FileImports{
+		{Path: "ports/p.go", Layer: "ports", Imports: []Import{{Symbol: "net/http", Line: 2}}},
+	})
+	if !hasRule(fs, "port-impurity") {
+		t.Fatalf("expected port-impurity (port imports tech), got %v", fs)
 	}
 }
 
@@ -95,6 +113,20 @@ func TestPortImpurityConstruct(t *testing.T) { // AC-FA-RULE-004 negative (const
 	})
 	if !hasRule(fs, "port-impurity") {
 		t.Fatalf("expected port-impurity from forbidden construct, got %v", fs)
+	}
+}
+
+func TestPortToCoreWithoutEdge(t *testing.T) { // AC-FA-RULE-004/005: ports->core ist edge-regiert, nicht port-impurity
+	m := testModel()
+	m.Edges = []Edge{{From: "adapters", To: "ports"}} // {ports->core}-Kante entfernt
+	fs := Evaluate(m, []FileImports{
+		{Path: "ports/p.go", Layer: "ports", Imports: []Import{{Symbol: "core/x", Line: 2}}},
+	})
+	if hasRule(fs, "port-impurity") {
+		t.Fatalf("ports->core darf NIE port-impurity sein (Kern-Referenz erlaubt), got %v", fs)
+	}
+	if !hasRule(fs, "wrong-direction") {
+		t.Fatalf("ports->core ohne deklarierte Kante muss wrong-direction sein, got %v", fs)
 	}
 }
 

@@ -8,6 +8,13 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
 ### Changed
 
+- **`AC-FA-RULE-004` (Lastenheft 0.1.0→0.2.0):** Ports dürfen jetzt Domänen-/
+  Kern-Typen referenzieren (`ports → core` per deklarierter Kante); `port-impurity`
+  feuert nur noch bei Adapter-/Tech-Import, nicht mehr bei Kern-Import. Motiviert
+  durch die Vier-Repo-Evidenz (b-cad/d-migrate-Ports referenzieren die Domäne);
+  ADR-0008 (Accepted). a-check selbst auf eine echte `ports`-Schicht umgebaut
+  (`internal/hexagon/{core,port}`, `internal/adapter/driven/*`), Dogfooding grün
+  (AC-QA-02); Multi-Linsen-Review (`docs/reviews/2026-06-22-…`).
 - `--print-mk`/`a-check.mk` und der `aCheckImage`-Default sind auf den
   v0.1.0-Release **digest-gepinnt**
   (`ghcr.io/pt9912/a-check@sha256:13459f44…`) statt auf die Tag-Form — Pin-Hebung

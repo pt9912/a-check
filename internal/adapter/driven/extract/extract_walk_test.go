@@ -5,7 +5,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/pt9912/a-check/internal/core"
+	"github.com/pt9912/a-check/internal/hexagon/core"
 )
 
 func TestExtractWalk(t *testing.T) { // SPEC-EXTRACT-001: Walker + Layer + Konstrukte

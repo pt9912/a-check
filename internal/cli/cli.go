@@ -12,10 +12,10 @@ import (
 	"io"
 	"path/filepath"
 
-	"github.com/pt9912/a-check/internal/adapters/config"
-	"github.com/pt9912/a-check/internal/adapters/extract"
-	"github.com/pt9912/a-check/internal/adapters/report"
-	"github.com/pt9912/a-check/internal/core"
+	"github.com/pt9912/a-check/internal/adapter/driven/config"
+	"github.com/pt9912/a-check/internal/adapter/driven/extract"
+	"github.com/pt9912/a-check/internal/adapter/driven/report"
+	"github.com/pt9912/a-check/internal/hexagon/core"
 )
 
 // Run parses args, runs the architecture check and returns the process exit
@@ -79,9 +79,12 @@ languages:
   go: ["**/*.go"]
 layers:
   core:     ["internal/core/**"]
+  ports:    ["internal/ports/**"]
   adapters: ["internal/adapters/**"]
 edges:
-  - {from: adapters, to: core}
+  - {from: adapters, to: ports}
+  - {from: ports,    to: core}
+  # - {from: adapters, to: core}   # falls Adapter Domänentypen direkt referenzieren
 adapter_sink: driver-common
 tech:
   - {pattern: "gopkg.in/yaml", adapter: "adapters/config"}

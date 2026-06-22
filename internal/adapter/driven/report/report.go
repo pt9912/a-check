@@ -9,17 +9,18 @@ import (
 	"io"
 	"sort"
 
-	"github.com/pt9912/a-check/internal/core"
+	"github.com/pt9912/a-check/internal/hexagon/core"
+	"github.com/pt9912/a-check/internal/hexagon/port"
 )
 
-// Adapter implements core.ReportPort.
+// Adapter implements port.ReportPort.
 type Adapter struct {
 	out io.Writer
 	err io.Writer
 }
 
 // New returns a reporting adapter writing to out (findings) and err (summary).
-func New(out, err io.Writer) core.ReportPort { return Adapter{out: out, err: err} }
+func New(out, err io.Writer) port.ReportPort { return Adapter{out: out, err: err} }
 
 // Report prints findings deterministically and returns the exit code 0/1.
 func (a Adapter) Report(findings []core.Finding) int {

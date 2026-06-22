@@ -13,10 +13,11 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/pt9912/a-check/internal/core"
+	"github.com/pt9912/a-check/internal/hexagon/core"
+	"github.com/pt9912/a-check/internal/hexagon/port"
 )
 
-// Adapter implements core.ExtractionPort. Its compiled patterns live on the
+// Adapter implements port.ExtractionPort. Its compiled patterns live on the
 // value (not as package globals) to satisfy the lint profile (ADR-0005).
 type Adapter struct {
 	goSingle, goBlock, goQuoted     *regexp.Regexp
@@ -26,7 +27,7 @@ type Adapter struct {
 }
 
 // New returns an extraction adapter.
-func New() core.ExtractionPort { return newAdapter() }
+func New() port.ExtractionPort { return newAdapter() }
 
 func newAdapter() Adapter {
 	return Adapter{
