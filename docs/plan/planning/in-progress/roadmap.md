@@ -17,14 +17,25 @@ erzeugt aber keine Spezifikation (Regelwerk Modul 6).
 
 ## Aktuelle Welle
 
-**`welle-05-release` fast vollständig — `v0.1.0` ist veröffentlicht; nur die
-Pilot-Einbindung bleibt offen.** Release-Pipeline ([slice-007 §4](../done/slice-007-release-pipeline.md#4-closure-notiz-nach-done),
-[ADR-0007](../../adr/0007-latest-tag-politik.md) `Accepted`) hat den ersten
-GHCR-Release erzeugt: `ghcr.io/pt9912/a-check@sha256:13459f44…` (Tags `v0.1.0`
-+ `latest`), [GitHub-Release](https://github.com/pt9912/a-check/releases/tag/v0.1.0);
-`--print-mk`/`a-check.mk` sind darauf digest-gepinnt. Davor: welle-09-commit-hook
-(`slice-008`), welle-08-ci (`slice-006`). Alle Gates real und grün (`make ci`;
-GitHub-CI grün). **Offen:** Pilot-Einbindung in ein Konsumenten-Repo.
+**`welle-10-regel-engine-generalisierung` läuft — die Inkremente a, b1 und b2a sind
+gemergt und auf `origin/main` gepusht; offen ist nur noch b2b.** Die Reinheits-Regeln
+dispatchen nicht mehr über Layer-**Namen**, sondern über eine Layer-**Rolle**, und das
+Modell ist auf vier Schichten ausgebaut:
+
+- **a** ([slice-009](../done/slice-009-rollen-dispatch.md), [ADR-0009](../../adr/0009-rollen-basierter-regel-dispatch.md) `Accepted`, [AC-FA-RULE-006](../../../../spec/lastenheft.md#ac-fa-rule-006--schicht-rollen-generische-regel-anwendung)): Rollen-Dispatch {`domain`, `port`, `adapter`} + Namens-Inferenz, rückwärtskompatibel.
+- **b1** ([slice-010](../done/slice-010-adapterseg-targetlayer.md), [ADR-0010](../../adr/0010-layer-relativer-adapterseg-laengster-praefix.md) `Accepted`): `adapterSeg` layer-relativ + `targetLayer` längster-Präfix, segment-bewusst.
+- **b2a** ([slice-011](../done/slice-011-app-rolle.md), [ADR-0011](../../adr/0011-domain-application-trennung-rolle-app.md) `Accepted`, [AC-FA-RULE-007](../../../../spec/lastenheft.md#ac-fa-rule-007--rolle-app-und-strenge-domain)): Rolle `app` (→ Befund `app-impurity`) + strenge `domain` (`domain↛port` kategorisch). Lastenheft/Spezifikation **0.5.0**.
+
+**Offen (b2b):** `driving`/`driven`-Port-Subtypen mit feineren Kanten; `LayerOf`
+längster-Präfix (Symmetrie zu `targetLayer`). Re-Evaluierungs-Trigger in
+[ADR-0011](../../adr/0011-domain-application-trennung-rolle-app.md). Alle Gates real und
+grün (`make gates`; Dogfooding 0 Befunde).
+
+**Parallel offen — `welle-05-release`:** `v0.1.0` ist veröffentlicht
+([slice-007 §4](../done/slice-007-release-pipeline.md#4-closure-notiz-nach-done),
+[ADR-0007](../../adr/0007-latest-tag-politik.md) `Accepted`; GHCR
+`@sha256:13459f44…` digest-gepinnt in `a-check.mk`); nur die **Pilot-Einbindung**
+in ein Konsumenten-Repo bleibt.
 
 ## Nächste Wellen
 
@@ -32,7 +43,7 @@ GitHub-CI grün). **Offen:** Pilot-Einbindung in ein Konsumenten-Repo.
 |---|---|---|---|
 | welle-05-release | Image-Veröffentlichung | **`v0.1.0` veröffentlicht** ([slice-007](../done/slice-007-release-pipeline.md): `release.yml` + [ADR-0007](../../adr/0007-latest-tag-politik.md)); GHCR digest-gepinnt in `a-check.mk` ([AC-FA-DIST-001](../../../../spec/lastenheft.md#ac-fa-dist-001--distribution-image---print-mk-a-checkmk), [AC-QA-03](../../../../spec/lastenheft.md#ac-qa-03--reproduzierbarkeit)). **Offen:** Pilot-Einbindung in ein Konsumenten-Repo | fast fertig |
 | welle-06-sprach-backends | Bedarf | Ausbau/Härtung der Extraktion je Zielsprache; opt-in toolchain-gestützte Backends ([AC-FA-EXTRACT-001](../../../../spec/lastenheft.md#ac-fa-extract-001--sprach-backends-für-die-import-extraktion) Out-of-Scope-Re-Eval) | offen |
-| welle-10-regel-engine-generalisierung | Mehr-Layer-Modelle der Konsumenten (b-cad/d-migrate: feinere `domain`/`application`/`port`-Schichten) | Reinheit **pro Layer deklarierbar** statt an die Namen `core`/`ports`/`adapters` gebunden (`core-impurity`/`port-impurity`/`lateral-adapter` generisch); feine `domain`/`application`-Trennung + `driving`/`driven`-Ports mit voller Durchsetzung; `adapterSeg`-Generalisierung. Braucht neue Lastenheft-Anforderung + Folge-ADR. Folgt aus dem Re-Evaluierungs-Trigger von [ADR-0008](../../adr/0008-ports-duerfen-domaenen-typen-referenzieren.md) | offen |
+| welle-10-regel-engine-generalisierung | Mehr-Layer-Modelle der Konsumenten (b-cad/d-migrate) | Reinheit pro Layer-**Rolle** statt an Namen gebunden; 4-Schichten-Modell (`domain`/`app`/`port`/`adapter`). **a/b1/b2a abgeschlossen** (s. Aktuelle Welle); **b2b** (`driving`/`driven`-Ports, `LayerOf` längster-Präfix) offen. Folgt aus dem Re-Evaluierungs-Trigger von [ADR-0008](../../adr/0008-ports-duerfen-domaenen-typen-referenzieren.md) | läuft |
 
 _(Kein fixer Termin — Wellen feuern auf Trigger.)_
 
@@ -54,8 +65,9 @@ flowchart LR
     W3[welle-03-implementierung]
     W4[welle-04-durchsetzungsschicht]
     W5[welle-05-release]
+    W10[welle-10-regel-engine-generalisierung]
 
-    W0 --> W1 --> W2 --> W3 --> W4 --> W5
+    W0 --> W1 --> W2 --> W3 --> W4 --> W5 --> W10
 ```
 
 ## Abgeschlossene Wellen
