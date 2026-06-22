@@ -66,7 +66,7 @@ hebt den Befund nicht auf.
 
 - **Happy:** Given ein Kern-Modul, das nur erlaubte Imports nutzt, when `a-check` läuft, then kein Befund für dieses Modul.
 - **Boundary:** Given ein Kern-Modul, das nur andere Kern-/Domänen-Module (gleiche Rolle) und reine Standardbibliothek nutzt, when `a-check` läuft, then kein Befund.
-- **Negative:** Given ein Kern-Modul, das einen Adapter oder ein Tech-Symbol importiert, when `a-check` läuft, then ein Befund (Grund `core-impurity`) und Exit-Code 1.
+- **Negative:** Given ein Kern-Modul, das einen Adapter, einen Port, eine `app`-Schicht oder ein Tech-Symbol importiert, when `a-check` läuft, then ein Befund (Grund `core-impurity`) und Exit-Code 1.
 
 **Out-of-Scope:** transitive Import-Analyse über Modulgrenzen hinweg in 0.1.0 (nur direkte Imports).
 
