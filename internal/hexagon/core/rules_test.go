@@ -319,15 +319,67 @@ func TestInferenceBoundaryClassicNames(t *testing.T) { // AC-FA-RULE-006 boundar
 	}
 }
 
-func TestForeignAdapterIntraNoLateral10a(t *testing.T) { // AC-FA-RULE-006 Out-of-Scope: adapterSeg-Namens-Generalisierung ist späteres Inkrement
+func TestForeignAdapterIntraLateral(t *testing.T) { // ADR-0010 (b1): adapterSeg layer-relativ -> Intra-Unterscheidung fremder Namen
 	// Ein einziger role:adapter-Layer mit fremdem Namen (kein "adapters"-Segment):
-	// adapterSeg liefert beide Male "" -> die Intra-Unterscheidung greift in 10a NICHT.
-	// Regression-Pin, damit das spätere Inkrement diesen Scope-Schnitt nicht still kippt.
+	// die Sub-Einheit wird relativ zum Glob-Präfix der Schicht bestimmt, also greift
+	// die Intra-Unterscheidung jetzt namensunabhängig (kehrt den 10a-Regression-Pin um).
 	m := Model{Layers: []Layer{{Name: "io", Globs: []string{"io/**"}, Role: "adapter"}}}
 	fs := Evaluate(m, []FileImports{
-		{Path: "io/a.go", Layer: "io", Imports: []Import{{Symbol: "io/b", Line: 1}}},
+		{Path: "io/a/x.go", Layer: "io", Imports: []Import{{Symbol: "io/b/y", Line: 1}}},
+	})
+	if !hasRule(fs, "lateral-adapter") {
+		t.Fatalf("b1: fremd benannte Intra-Adapter-Sub-Einheiten müssen lateral-adapter sein, got %v", fs)
+	}
+}
+
+func TestTargetLayerLongestPrefix(t *testing.T) { // ADR-0010 (b1): spezifischster (längster) Glob-Präfix gewinnt
+	layers := []Layer{
+		{Name: "core", Globs: []string{"internal/core/**"}},
+		{Name: "legacy", Globs: []string{"internal/core/legacy/**"}},
+	}
+	if got := targetLayer("x/internal/core/legacy/db", layers); got != "legacy" {
+		t.Fatalf("expected longest-prefix 'legacy', got %q", got)
+	}
+	if got := targetLayer("x/internal/core/svc", layers); got != "core" {
+		t.Fatalf("expected 'core', got %q", got)
+	}
+	// Reihenfolge-unabhängig: legacy vor core deklariert.
+	rev := []Layer{
+		{Name: "legacy", Globs: []string{"internal/core/legacy/**"}},
+		{Name: "core", Globs: []string{"internal/core/**"}},
+	}
+	if got := targetLayer("x/internal/core/legacy/db", rev); got != "legacy" {
+		t.Fatalf("longest-prefix muss reihenfolge-unabhängig sein, got %q", got)
+	}
+	// Segment-bewusst: 'io'-Präfix matcht nicht in 'audio'.
+	if got := targetLayer("audio/codec", []Layer{{Name: "io", Globs: []string{"io/**"}}}); got != "" {
+		t.Fatalf("segment-bewusst: 'io' darf nicht in 'audio' matchen, got %q", got)
+	}
+	// Kernzweck: modul-qualifizierter Import, Präfix mitten im String.
+	mod := []Layer{{Name: "core", Globs: []string{"internal/hexagon/core/**"}}}
+	if got := targetLayer("github.com/x/a-check/internal/hexagon/core/model", mod); got != "core" {
+		t.Fatalf("modul-qualifiziert: erwarte 'core', got %q", got)
+	}
+	// Präfix am Pfadende.
+	if got := targetLayer("github.com/x/a-check/internal/hexagon/core", mod); got != "core" {
+		t.Fatalf("Präfix am Pfadende: erwarte 'core', got %q", got)
+	}
+	// Tie-Break: bei gleichlangem Präfix gewinnt der zuerst deklarierte Layer.
+	tie := []Layer{
+		{Name: "first", Globs: []string{"a/b/**"}},
+		{Name: "second", Globs: []string{"a/b/**"}},
+	}
+	if got := targetLayer("a/b/c", tie); got != "first" {
+		t.Fatalf("Tie-Break: zuerst deklarierter gewinnt, erwarte 'first', got %q", got)
+	}
+}
+
+func TestSameAdapterSubunitNoLateral(t *testing.T) { // ADR-0010 (b1): gleiche Sub-Einheit -> kein lateral
+	m := Model{Layers: []Layer{{Name: "io", Globs: []string{"io/**"}, Role: "adapter"}}}
+	fs := Evaluate(m, []FileImports{
+		{Path: "io/a/x.go", Layer: "io", Imports: []Import{{Symbol: "io/a/z", Line: 1}}},
 	})
 	if hasRule(fs, "lateral-adapter") {
-		t.Fatalf("10a: Intra-Unterscheidung fremd benannter Adapter ohne 'adapters'-Segment greift nicht — kein lateral erwartet, got %v", fs)
+		t.Fatalf("gleiche Sub-Einheit darf kein lateral-adapter sein, got %v", fs)
 	}
 }
