@@ -113,3 +113,20 @@ func TestLayerObjectBadGlobsTypeFailsClosed(t *testing.T) { // globs im Objekt m
 		t.Fatal("expected error for non-list globs in object form")
 	}
 }
+
+func TestLayerRoleAppAccepted(t *testing.T) { // AC-FA-RULE-007: role: app wird akzeptiert (Positiv-Test)
+	body := "version: 1\nlanguages:\n  go: [\"**/*.go\"]\nlayers:\n  application: {globs: [\"application/**\"], role: app}\n  core: [\"core/**\"]\nedges:\n  - {from: application, to: core}\n"
+	m, err := New().Load(write(t, body))
+	if err != nil {
+		t.Fatalf("role: app sollte akzeptiert werden, got %v", err)
+	}
+	got := ""
+	for _, l := range m.Layers {
+		if l.Name == "application" {
+			got = l.Role
+		}
+	}
+	if got != "app" {
+		t.Fatalf("expected application role 'app', got %q (%+v)", got, m.Layers)
+	}
+}

@@ -124,8 +124,8 @@ func decodeLayer(node yaml.Node, name, path string) ([]string, string, error) {
 		if err := node.Decode(&yl); err != nil {
 			return nil, "", fmt.Errorf("%s: Schicht %q: %w", path, name, err)
 		}
-		if yl.Role != "" && yl.Role != "domain" && yl.Role != "port" && yl.Role != "adapter" {
-			return nil, "", fmt.Errorf("%s: Schicht %q: ungültige role %q (domain|port|adapter)", path, name, yl.Role)
+		if yl.Role != "" && yl.Role != "domain" && yl.Role != "app" && yl.Role != "port" && yl.Role != "adapter" {
+			return nil, "", fmt.Errorf("%s: Schicht %q: ungültige role %q (domain|app|port|adapter)", path, name, yl.Role)
 		}
 		return yl.Globs, yl.Role, nil
 	default:

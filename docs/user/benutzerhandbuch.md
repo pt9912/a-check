@@ -1,6 +1,6 @@
 # Benutzerhandbuch: a-check
 
-**Handbuch-Version:** 1.4 · **Software-Version:** 0.1.0 · **Stand:** 2026-06-22 ·
+**Handbuch-Version:** 1.5 · **Software-Version:** 0.1.0 · **Stand:** 2026-06-22 ·
 **Autor:** pt9912 (Maintainer)
 
 ---
@@ -133,11 +133,12 @@ Release-Prozess (Tagging, Digest-Pin, GHCR) beschreibt [`releasing.md`](releasin
 
 ### 3.4 Befunde lesen und beheben
 
-Jeder Befund nennt die Regel. Die fünf Regeln und ihre Behebung:
+Jeder Befund nennt die Regel. Die sechs Regeln und ihre Behebung:
 
 | Regel | Bedeutung | Behebung |
 |---|---|---|
-| `core-impurity` | Der Kern importiert einen Adapter oder ein Framework/Tech. | Abhängigkeit über einen Port (Schnittstelle) umkehren; Tech nur im Adapter nutzen. |
+| `core-impurity` | Der Kern (`role: domain`) importiert einen Port, eine `app`- oder Adapter-Schicht oder ein Framework/Tech — die Domäne ist die innerste Schicht. | Domäne rein halten; Port-/Use-Case-Orchestrierung in eine `app`-Schicht, Tech nur im Adapter. |
+| `app-impurity` | Die Application-Schicht (`role: app`) importiert einen Adapter oder ein Framework/Tech (Domäne + Ports darf sie nutzen). | Tech/Adapter hinter einen Port legen; die App spricht nur Domäne + Ports. |
 | `lateral-adapter` | Ein Adapter importiert einen anderen Adapter. | Gemeinsame Logik in die konfigurierte Senke (`adapter_sink`) ziehen oder über einen Port führen. |
 | `tech-leak` | Ein Framework/Tech erscheint außerhalb seines Adapters. | Den Tech-Zugriff in den zugeordneten Adapter kapseln. |
 | `port-impurity` | Ein Port importiert einen Adapter oder ein Framework/Tech, oder enthält ein per `forbidden_constructs` (Abschnitt 4) verbotenes Konstrukt. Domänentypen des Kerns darf ein Port referenzieren. | Den Port von Adapter-/Tech-Importen befreien (Kern-Referenzen sind erlaubt). |
@@ -259,7 +260,7 @@ Einträge unter `languages` ein.
 
 ## 8. Glossar
 
-- **Kern (core):** die reine Domänenlogik ohne I/O oder Framework.
+- **Kern (core):** die reine Domänenlogik ohne I/O, Framework oder Ports (innerste Schicht — kennt nur sich selbst).
 - **Port:** eine Schnittstelle/Abstraktion, über die der Kern mit der Außenwelt spricht.
 - **Adapter:** die konkrete Anbindung an Technik (Datenbank, HTTP, UI …).
 - **Composition Root:** der Ort, der konkrete Adapter an den Kern verdrahtet (z. B. `main`); von den Schicht-Regeln ausgenommen.
@@ -268,7 +269,7 @@ Einträge unter `languages` ein.
 - **`adapter_sink`:** eine gemeinsame Senke, die alle Adapter importieren dürfen (Ausnahme von `lateral-adapter`).
 - **`forbidden_constructs`:** je Schicht konfigurierte verbotene Text-Muster (für `port-impurity`).
 - **Befund:** eine gemeldete Regelverletzung (Datei, Zeile, Regel, Meldung).
-- **`core-impurity` / `lateral-adapter` / `tech-leak` / `port-impurity` / `wrong-direction`:** die fünf geprüften Regeln (Abschnitt 3.4).
+- **`core-impurity` / `app-impurity` / `lateral-adapter` / `tech-leak` / `port-impurity` / `wrong-direction`:** die sechs geprüften Regeln (Abschnitt 3.4).
 - **Heuristik-Grenze:** a-check erkennt Importe per Textmuster, nicht per Parser; seltene Fehltreffer sind konfigurierbar ausnehmbar.
 - **Digest-Pin:** ein `@sha256:`-Verweis auf eine exakte Image-Version für reproduzierbare Läufe.
 
@@ -288,3 +289,4 @@ und die [Spezifikation](../../spec/spezifikation.md); ein Überblick steht in de
 | 1.2 | 2026-06-21 | Quer-Verweis aus §3.3 auf den neuen Release-Leitfaden [`releasing.md`](releasing.md). |
 | 1.3 | 2026-06-21 | §4: die vier gültigen `languages`-Schlüssel (`go`/`cpp`/`rust`/`kotlin`) explizit gelistet; Software-Version 0.1.0 veröffentlicht. |
 | 1.4 | 2026-06-22 | §3.4/§4 an Lastenheft 0.2.0 angeglichen: `port-impurity` — Ports dürfen Domänentypen des Kerns referenzieren (verboten bleiben Adapter/Tech); `ports`-Schicht + `ports → core`-Kante im Beispiel. |
+| 1.5 | 2026-06-22 | §3.4/Glossar an Lastenheft 0.5.0 angeglichen: neue Regel `app-impurity` (Rolle `app`); `core-impurity` verschärft — die Domäne kennt keine Ports (`domain↛port` kategorisch); sechs Regeln. |

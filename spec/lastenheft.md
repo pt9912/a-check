@@ -1,6 +1,6 @@
 # Lastenheft — a-check
 
-**Version:** 0.4.0
+**Version:** 0.5.0
 
 **Status:** Draft
 
@@ -19,7 +19,7 @@ Schwester-Repositories, die heute dieselben Hexagon-Regeln je Repo neu
 erfinden: C++ über `#include`-Heuristik (`b-cad`), Go über `go list`
 (`d-check`), Rust über `use`-Heuristik (`grid-guide`), Kotlin über
 Gradle-Modulgrenzen (`d-migrate`) — vier Sprachen, vier Mechanismen,
-dieselben fünf Regeln.
+dieselben sechs Regeln.
 
 Das Tool wird als Docker-Image über GHCR verteilt, per `.a-check.yml`
 pro Repo konfiguriert und über ein bereitgestelltes `a-check.mk` als
@@ -54,14 +54,18 @@ Import-Ebene, kein vollständiger Sprach-Parser (siehe `AC-QA-02`).
 
 ### AC-FA-RULE-001 — Kern-Reinheit (Regel `core-impurity`)
 
-**Beschreibung:** Der Kern (konfigurierte Schicht, z. B. `hexagon/core`)
-importiert weder einen Adapter noch ein in der Config als „Framework/Tech"
-deklariertes Symbol. Verstoß ⇒ Befund mit Datei, Zeile und verletzter Regel.
+**Beschreibung:** Der Kern (innerste Schicht, z. B. `hexagon/core`) importiert
+weder einen Adapter, einen Port oder eine Application-Schicht noch ein in der
+Config als „Framework/Tech" deklariertes Symbol — die Domäne kennt nur sich
+selbst. Verstoß ⇒ Befund mit Datei, Zeile und verletzter Regel.
+[AC-FA-RULE-007](#ac-fa-rule-007--rolle-app-und-strenge-domain) verschärft dies
+**kategorisch**: auch eine deklarierte Kante auf einen Port oder eine `app`-Schicht
+hebt den Befund nicht auf.
 
 **Akzeptanzkriterien:**
 
 - **Happy:** Given ein Kern-Modul, das nur erlaubte Imports nutzt, when `a-check` läuft, then kein Befund für dieses Modul.
-- **Boundary:** Given ein Kern-Modul, das einen `driver-common`-artigen, in der Config erlaubten gemeinsamen Port nutzt, when `a-check` läuft, then kein Befund (erlaubte Kante).
+- **Boundary:** Given ein Kern-Modul, das nur andere Kern-/Domänen-Module (gleiche Rolle) und reine Standardbibliothek nutzt, when `a-check` läuft, then kein Befund.
 - **Negative:** Given ein Kern-Modul, das einen Adapter oder ein Tech-Symbol importiert, when `a-check` läuft, then ein Befund (Grund `core-impurity`) und Exit-Code 1.
 
 **Out-of-Scope:** transitive Import-Analyse über Modulgrenzen hinweg in 0.1.0 (nur direkte Imports).
@@ -140,7 +144,7 @@ der Richtung ist ein Befund.
 **Beschreibung:** Die Reinheits-Regeln `core-impurity`, `port-impurity` (import-
 **und** konstrukt-basiert) und `lateral-adapter` werden über die **Rolle** einer
 Schicht angewandt, nicht über ihren Namen. Eine Schicht trägt optional eine Rolle
-∈ {`domain`, `port`, `adapter`}; fehlt sie, wird sie aus konventionellen Namen
+∈ {`domain`, `port`, `adapter`} (in [AC-FA-RULE-007](#ac-fa-rule-007--rolle-app-und-strenge-domain) um `app` erweitert); fehlt sie, wird sie aus konventionellen Namen
 abgeleitet (`core`→`domain`, `ports`→`port`, `adapters`→`adapter`). Eine explizite
 `role:` hat **Vorrang** vor der Inferenz; ein konventionell benannter Layer bekommt
 zwangsläufig eine Rolle (Rückwärtskompatibilität). Eine Schicht ohne Rolle (weder
@@ -159,7 +163,27 @@ bleiben unverändert.
 - **Boundary:** Given eine Config mit klassischen Namen `core`/`ports`/`adapters` **ohne** `role`, when `a-check` läuft, then identisches Verhalten wie 0.2.0 (inkl. konstrukt-basierter `port-impurity` und Intra-`adapters`-Unterscheidung).
 - **Negative:** Given (a) ein `role: domain`-Layer importiert einen `role: adapter`-Layer **oder** (b) ein `role: port`-Layer mit fremdem Namen (mit deklarierten `forbidden_constructs`) enthält ein verbotenes Konstrukt, when `a-check` läuft, then ein Befund (a) `core-impurity` bzw. (b) `port-impurity` und Exit-Code 1.
 
-**Out-of-Scope:** feinere Rollen (`app`, `driving`/`driven`).
+**Out-of-Scope:** `driving`/`driven`-Port-Subtypen; die Rolle `app` ist in [AC-FA-RULE-007](#ac-fa-rule-007--rolle-app-und-strenge-domain) ergänzt.
+
+### AC-FA-RULE-007 — Rolle `app` und strenge `domain`
+
+**Erweitert:** [AC-FA-RULE-006](#ac-fa-rule-006--schicht-rollen-generische-regel-anwendung) (Rollen-Menge um `app`). **Schärft:** [AC-FA-RULE-001](#ac-fa-rule-001--kern-reinheit-regel-core-impurity) (`core-impurity`).
+
+**Beschreibung:** Das Rollen-Modell aus [AC-FA-RULE-006](#ac-fa-rule-006--schicht-rollen-generische-regel-anwendung) wird um die Rolle `app` (Application-/Use-Case-Schicht) erweitert; die Rolle `domain` wird verschärft. Rollen-Menge: {`domain`, `app`, `port`, `adapter`}. Die Namens-Inferenz ergänzt `application`→`app` und `app`→`app`; eine explizite `role:` behält Vorrang.
+
+- **Rolle `app`:** darf `domain` **und** `port` importieren (Use-Cases orchestrieren über Ports), aber **keine** Adapter-/Tech-Typen — Verstoß ⇒ Befund `app-impurity` (neu). Die Schicht-**Richtung** (`app → domain`, `app → port`) bleibt kanten-geregelt (`wrong-direction`); die **Reinheit** ist **kategorisch**.
+- **Rolle `domain` (verschärft):** die innerste Schicht ist die strengste — ein Import auf eine `app`-, `port`- oder `adapter`-Schicht **oder** ein `tech`-Muster ist `core-impurity`, **kategorisch** (auch bei deklarierter Kante). Rollenlose Ziel-Schichten bleiben kanten-geregelt. Bisher war `domain → port` nur kanten-geregelt; jetzt gilt die harte Invariante „Domäne kennt keine Ports".
+
+Rollen-Mapping (Ergänzung): `app`→`app-impurity`. Befund-**Namen** der übrigen Regeln bleiben unverändert.
+
+**Akzeptanzkriterien:**
+
+- **Happy:** Given eine `role: app`-Schicht mit deklarierten Kanten `app → domain` und `app → port`, when sie eine `domain`- und eine `port`-Schicht importiert, then kein Befund.
+- **Negative (app):** Given eine `role: app`-Schicht, when sie eine `adapter`-Schicht **oder** ein `tech`-Muster importiert (auch bei deklarierter Kante), then ein Befund (`app-impurity`) und Exit-Code 1.
+- **Negative (domain):** Given eine `role: domain`-Schicht, when sie eine `port`- (oder `app`-/`adapter`-)Schicht importiert (auch bei deklarierter Kante), then ein Befund (`core-impurity`) und Exit-Code 1.
+- **Boundary:** Given eine Config ohne `role:` und ohne Layer `application`/`app` (klassisch `core`/`ports`/`adapters`), when `a-check` läuft, then identisches Verhalten wie 0.4.0.
+
+**Out-of-Scope:** `driving`/`driven`-Port-Subtypen; feinere `app`-interne Struktur.
 
 ### AC-FA-EXTRACT-001 — Sprach-Backends für die Import-Extraktion
 
@@ -254,3 +278,4 @@ Konsumenten-Repos).
 | 0.2.0 | 2026-06-22 | `AC-FA-RULE-004` neu gefasst: Ports **dürfen** Domänen-/Kern-Typen referenzieren (Sprache des Kerns; `ports → core` per deklarierter Kante), `port-impurity` trennt scharf gegen Adapter-/Tech-Importe. Motiviert durch die Vier-Repo-Evidenz (b-cad/d-migrate-Ports referenzieren die Domäne). |
 | 0.3.0 | 2026-06-22 | Neu `AC-FA-RULE-006` (Schicht-Rollen): die Reinheits-Regeln dispatchen über eine Layer-Rolle (`domain`/`port`/`adapter`, aus `role:` oder Namens-Inferenz) — generalisiert `AC-FA-RULE-001`/`AC-FA-RULE-002`/`AC-FA-RULE-004` namens-unabhängig (welle-10a). `AC-FA-CONF-001`-Schema: `layers`-Eintrag als Glob-Liste **oder** `{globs, role}`. |
 | 0.4.0 | 2026-06-22 | `AC-FA-RULE-006`: `lateral-adapter` jetzt **vollständig** namensunabhängig — Adapter-Sub-Einheiten werden relativ zum Schicht-Glob-Präfix unterschieden (statt am Literal `adapters`); `adapterSeg`-Generalisierung aus dem Out-of-Scope eingelöst (welle-10b). |
+| 0.5.0 | 2026-06-22 | Neu `AC-FA-RULE-007` (Rolle `app` + strenge `domain`): `app` darf `domain`+`port`, aber keinen Adapter/Tech (neuer Befund `app-impurity`); `domain` verschärft — Import auf `app`/`port`/`adapter`/Tech ist `core-impurity`, kategorisch („Domäne kennt keine Ports"). Erweitert `AC-FA-RULE-006`, schärft `AC-FA-RULE-001` (welle-10b). |

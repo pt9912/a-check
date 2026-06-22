@@ -1,13 +1,14 @@
 # slice-011 — `app`-Rolle + strenge `domain` (welle-10b / b2a)
 
-**Status:** in-progress (Entwurf zur Abnahme).
+**Status:** done.
 **Welle:** welle-10-regel-engine-generalisierung (Inkrement **b2a**).
-**Bezug:** Re-Evaluierungs-Trigger aus [ADR-0009](../../adr/0009-rollen-basierter-regel-dispatch.md)/[ADR-0010](../../adr/0010-layer-relativer-adapterseg-laengster-praefix.md); erweitert den Rollen-Mechanismus [AC-FA-RULE-006](../../../../spec/lastenheft.md#ac-fa-rule-006--schicht-rollen-generische-regel-anwendung) und schärft [AC-FA-RULE-001](../../../../spec/lastenheft.md#ac-fa-rule-001--kern-reinheit-regel-core-impurity); [Roadmap welle-10](roadmap.md).
+**Bezug:** Re-Evaluierungs-Trigger aus [ADR-0009](../../adr/0009-rollen-basierter-regel-dispatch.md)/[ADR-0010](../../adr/0010-layer-relativer-adapterseg-laengster-praefix.md); erweitert den Rollen-Mechanismus [AC-FA-RULE-006](../../../../spec/lastenheft.md#ac-fa-rule-006--schicht-rollen-generische-regel-anwendung) und schärft [AC-FA-RULE-001](../../../../spec/lastenheft.md#ac-fa-rule-001--kern-reinheit-regel-core-impurity); [Roadmap welle-10](../in-progress/roadmap.md).
 
-> **Hinweis:** Dieses Dokument hält den **Entwurf** zur Abnahme. Die in Code-Fences
-> gesetzten Anforderungs-/ADR-Texte sind Vorlagen — verbindlich erst nach Freigabe in
-> [`spec/lastenheft.md`](../../../../spec/lastenheft.md) bzw. einer neuen ADR. Die
-> DoD-Haken in §5 sind noch **offen**.
+> **Hinweis:** Umgesetzt, reviewt und abgenommen (2026-06-22). Die in §3 als Vorlage
+> gesetzten Anforderungs-/ADR-Texte sind nun verbindlich in
+> [`spec/lastenheft.md`](../../../../spec/lastenheft.md) und
+> [ADR-0011](../../adr/0011-domain-application-trennung-rolle-app.md). Dieses Dokument
+> hält Entwurf + Closure (§7).
 
 ---
 
@@ -188,15 +189,15 @@ Spezifikation **0.5.0**; `CHANGELOG.md` `[Unreleased]` (neuer Befund + Bump, F6)
 
 ## 5. Definition of Done
 
-- [ ] Neue Anforderung *Domain/Application-Trennung* in `spec/lastenheft.md` (4 AC + Out-of-Scope, „Erweitert"/„Schärft"-Zeilen), Bump 0.5.0 + Historie.
-- [ ] Folge-ADR `Proposed → Accepted` (bei Merge) + ADR-Index.
-- [ ] [SPEC-RULE-001](../../../../spec/spezifikation.md#spec-rule-001--regel-auswertung) (Rollen-Tabelle: `app` + strenge `domain`; Erst-Treffer-Reihenfolge `:130` um `app-impurity`) + Schema-Enum `:69` (`app`) nachgezogen, Spezifikation 0.5.0.
-- [ ] **„Fünf → sechs"-Sweep vollständig** (F1): `rules.go:9`-Comment, `spezifikation.md:108`, `architecture.md`-Kern-Zeile, `benutzerhandbuch.md:136`/Tabelle `140-144`/`:271`, `README.md:16-17`/`:42` (inkl. F7-Entschärfung der 1:1-Aussage).
-- [ ] `config.go`: `role`-Whitelist um `app`; `model.go`: Inferenz `application`/`app`→`app`; `rules.go`: `domain`-Schärfung (`↛app/port/adapter`) + `app-impurity`-Zweig.
-- [ ] Engine: `app-impurity` (kategorisch) + `domain↛port` (kategorisch); `make arch-check` (Dogfooding) **ohne** Änderung der Eigen-`.a-check.yml` grün.
-- [ ] Tests (kategorisch, `len==1`+Regelname): `app` happy (Kanten gesetzt), `app→adapter`, `app→Tech`, `domain→port`, `domain→app`, `domain→adapter`-Pin, Inferenz `application`/`app`, `config_test` Positiv-`role: app`, Boundary klassisch.
-- [ ] `CHANGELOG.md` `[Unreleased]`: neuer Befund `app-impurity` + 0.5.0-Bump (F6).
-- [ ] Multi-Linsen-Review bestanden.
+- [x] Neue Anforderung *Domain/Application-Trennung* in `spec/lastenheft.md` (4 AC + Out-of-Scope, „Erweitert"/„Schärft"-Zeilen), Bump 0.5.0 + Historie.
+- [x] Folge-ADR `Proposed → Accepted` (bei Merge) + ADR-Index.
+- [x] [SPEC-RULE-001](../../../../spec/spezifikation.md#spec-rule-001--regel-auswertung) (Rollen-Tabelle: `app` + strenge `domain`; Erst-Treffer-Reihenfolge `:130` um `app-impurity`) + Schema-Enum `:69` (`app`) nachgezogen, Spezifikation 0.5.0.
+- [x] **„Fünf → sechs"-Sweep vollständig** (F1): `rules.go:9`-Comment, `spezifikation.md:108`, `architecture.md`-Kern-Zeile, `benutzerhandbuch.md:136`/Tabelle `140-144`/`:271`, `README.md:16-17`/`:42` (inkl. F7-Entschärfung der 1:1-Aussage).
+- [x] `config.go`: `role`-Whitelist um `app`; `model.go`: Inferenz `application`/`app`→`app`; `rules.go`: `domain`-Schärfung (`↛app/port/adapter`) + `app-impurity`-Zweig.
+- [x] Engine: `app-impurity` (kategorisch) + `domain↛port` (kategorisch); `make arch-check` (Dogfooding) **ohne** Änderung der Eigen-`.a-check.yml` grün.
+- [x] Tests (kategorisch, `len==1`+Regelname): `app` happy (Kanten gesetzt), `app→adapter`, `app→Tech`, `domain→port`, `domain→app`, `domain→adapter`-Pin, Inferenz `application`/`app`, `config_test` Positiv-`role: app`, Boundary klassisch.
+- [x] `CHANGELOG.md` `[Unreleased]`: neuer Befund `app-impurity` + 0.5.0-Bump (F6).
+- [x] Multi-Linsen-Review bestanden.
 
 ## 6. Offen / Risiken — Entscheidungen zur Abnahme
 
@@ -225,5 +226,29 @@ Spezifikation **0.5.0**; `CHANGELOG.md` `[Unreleased]` (neuer Befund + Bump, F6)
 
 ## 7. Closure-Notiz (nach `done/`)
 
-_(wird beim Abschluss gefüllt: `make gates`-Beleg, `arch-check` 0 unverändert,
-Review-Runden, Lerneintrag, Folge b2b.)_
+**Belege:** `make gates` grün — lint/test/coverage; `arch-check` 0 (Dogfooding
+unverändert, **ohne** Änderung der Eigen-`.a-check.yml`); `doc-check` 0/45.
+[AC-FA-RULE-007](../../../../spec/lastenheft.md#ac-fa-rule-007--rolle-app-und-strenge-domain)
+(Lastenheft 0.5.0) + [ADR-0011](../../adr/0011-domain-application-trennung-rolle-app.md)
+`Accepted`; Spezifikation 0.5.0. Engine: `config.go` (`role`-Whitelist um `app`),
+`rules.go` (`impurityFinding`-Extraktion: `app`-Zweig + `domain`-Schärfung, gocyclo-bedingt
+herausgezogen) + `inferRole` (`application`/`app`). „Fünf→sechs"-Sweep über
+Specs/Handbuch/README/CHANGELOG/Code-Comment. Multi-Linsen-Review (4 Linsen) + Delta
+bestanden ([Review-Doc](../../../reviews/2026-06-22-slice-011-app-rolle.md)).
+Abnahme-Entscheidungen: A = neue Anforderung, B = volle `domain`-Schärfung.
+
+**Lerneintrag:**
+
+- *Eine Schärfung trifft die definierende Anforderung mit:* ein neuer Befund
+  (`app-impurity`) macht JEDE Regel-Zählung stale (sechs Stellen) UND die definierende
+  Kern-Reinheits-Anforderung intern widersprüchlich (ihr Boundary erlaubte den jetzt
+  verbotenen `domain→port`-Import). `make gates` fängt weder Zählung noch Wortlaut — nur
+  der getracter Sweep + die Vertrag-Linse fanden beides (eine Zähl-Stelle übersahen sogar
+  alle vier Linsen, erst der eigene Grep fand sie).
+- *gocyclo erzwingt die ehrlichere Struktur:* die Domain-seitige Reinheits-Dispatch-Tabelle
+  als eigener Helfer (`impurityFinding`) ist lint-konform UND die klarere Modellierung.
+- *Differenzial schlägt Präsenz (erneut):* der `domain→adapter`-Pin musste die Kante setzen
+  und `len==1` asserten, sonst beweist er die Kategorik nicht.
+
+**Folge (welle-10b/b2b):** `driving`/`driven`-Port-Subtypen; `LayerOf` längster-Präfix
+(Asymmetrie zu `targetLayer`).

@@ -6,7 +6,7 @@ import (
 	"strings"
 )
 
-// Evaluate runs the five hexagon rules (SPEC-RULE-001) on the extracted files
+// Evaluate runs the six hexagon rules (SPEC-RULE-001) on the extracted files
 // against the model and returns a stably sorted finding list (SPEC-DET-001).
 // Per (file, import) the most specific rule wins (first match), so an import is
 // reported once.
@@ -33,19 +33,16 @@ func Evaluate(m Model, files []FileImports) []Finding {
 
 // ruleFor returns the most specific rule violation for one import (first match),
 // or ok=false if the import is clean. The purity rules dispatch on the layer's
-// ROLE, not its name (AC-FA-RULE-006).
+// ROLE, not its name (AC-FA-RULE-006/007).
 func ruleFor(m Model, f FileImports, imp Import) (Finding, bool) {
 	tl := targetLayer(imp.Symbol, m.Layers)
 	srcRole := roleOf(f.Layer, m)
 	tgtRole := roleOf(tl, m)
 	tech, isTech := matchTech(imp.Symbol, m.Techs)
+	if find, ok := impurityFinding(f, imp, srcRole, tgtRole, isTech); ok {
+		return find, true // core-/app-/port-impurity (domain-seitig, kategorisch)
+	}
 	switch {
-	// domain/port reference the domain freely but never adapters or tech; ports->core
-	// is edge-governed (ADR-0008) and falls to wrong-direction below.
-	case srcRole == "domain" && (tgtRole == "adapter" || isTech):
-		return Finding{f.Path, imp.Line, "core-impurity", "Kern importiert " + imp.Symbol}, true
-	case srcRole == "port" && (tgtRole == "adapter" || isTech):
-		return Finding{f.Path, imp.Line, "port-impurity", "Port importiert " + imp.Symbol}, true
 	case srcRole == "adapter" && tgtRole == "adapter" && lateral(m, f, imp, tl):
 		return Finding{f.Path, imp.Line, "lateral-adapter", "Adapter importiert anderen Adapter " + imp.Symbol}, true
 	case isTech && !strings.Contains(f.Path, tech.Adapter):
@@ -54,6 +51,34 @@ func ruleFor(m Model, f FileImports, imp Import) (Finding, bool) {
 		return Finding{f.Path, imp.Line, "wrong-direction", f.Layer + " -> " + tl + " (" + imp.Symbol + ")"}, true
 	}
 	return Finding{}, false
+}
+
+// impurityFinding reports a purity violation for a domain/app/port source (the
+// domain-side roles), or ok=false. domain is innermost — importing app/port/adapter
+// or a tech is core-impurity (AC-FA-RULE-007). app may use domain+port but no
+// adapter/tech; port may use domain but no adapter/tech. All categorical; the
+// direction (port->core, app->port) is edge-governed (ADR-0008) and falls to
+// wrong-direction in ruleFor.
+func impurityFinding(f FileImports, imp Import, srcRole, tgtRole string, isTech bool) (Finding, bool) {
+	var rule, who string
+	switch srcRole {
+	case "domain":
+		if tgtRole == "app" || tgtRole == "port" || tgtRole == "adapter" || isTech {
+			rule, who = "core-impurity", "Kern importiert "
+		}
+	case "app":
+		if tgtRole == "adapter" || isTech {
+			rule, who = "app-impurity", "Application importiert "
+		}
+	case "port":
+		if tgtRole == "adapter" || isTech {
+			rule, who = "port-impurity", "Port importiert "
+		}
+	}
+	if rule == "" {
+		return Finding{}, false
+	}
+	return Finding{f.Path, imp.Line, rule, who + imp.Symbol}, true
 }
 
 // roleOf returns a layer's role: the explicit role: (AC-FA-RULE-006), else the
@@ -84,6 +109,8 @@ func inferRole(name string) string {
 	switch name {
 	case "core":
 		return "domain"
+	case "application", "app":
+		return "app"
 	case "ports":
 		return "port"
 	case "adapters":

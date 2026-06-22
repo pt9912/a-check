@@ -6,6 +6,18 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
+### Added
+
+- **`AC-FA-RULE-007` (Lastenheft 0.4.0→0.5.0):** neue Schicht-Rolle `app`
+  (Application-/Use-Case-Schicht) — darf `domain`+`port` referenzieren, aber keinen
+  Adapter/Tech: neuer Befund `app-impurity`. Zugleich `domain` verschärft (Import auf
+  `app`/`port`/`adapter`/Tech ⇒ `core-impurity`, kategorisch — „Domäne kennt keine
+  Ports"); `role`-Schema um `app`. ADR-0011. **Breaking für geprüfte Repos:** eine
+  `role: domain`-Schicht, die einen `port`/`app`-Layer importiert, wird jetzt rot
+  (vorher per deklarierter Kante grün) — Migration: Port-/Use-Case-Nutzung in eine
+  `role: app`-Schicht heben. a-checks Eigen-Dogfooding bleibt unverändert grün;
+  Multi-Linsen-Review.
+
 ### Changed
 
 - **`AC-FA-RULE-004` (Lastenheft 0.1.0→0.2.0):** Ports dürfen jetzt Domänen-/

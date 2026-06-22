@@ -22,9 +22,10 @@ type FileImports struct {
 }
 
 // Layer is a named architectural layer with repo-relative path globs and an
-// optional role (domain|port|adapter, AC-FA-RULE-006) that drives the purity
-// rules; a blank role falls back to name inference (core/ports/adapters), and a
-// layer resolving to no role is only edge-checked.
+// optional role (domain|app|port|adapter, AC-FA-RULE-006/007) that drives the
+// purity rules; a blank role falls back to name inference
+// (core/ports/adapters/application), and a layer resolving to no role is only
+// edge-checked.
 type Layer struct {
 	Name  string
 	Globs []string

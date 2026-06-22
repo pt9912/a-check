@@ -383,3 +383,128 @@ func TestSameAdapterSubunitNoLateral(t *testing.T) { // ADR-0010 (b1): gleiche S
 		t.Fatalf("gleiche Sub-Einheit darf kein lateral-adapter sein, got %v", fs)
 	}
 }
+
+// --- AC-FA-RULE-007 / ADR-0011: Rolle app + strenge domain (welle-10b/b2a) ---
+
+// appModel: domain/app/port/adapter mit FREMDEN Namen + expliziten Rollen und den
+// Kanten app->dom, app->prt, prt->dom (namensunabhängig).
+func appModel() Model {
+	return Model{
+		Layers: []Layer{
+			{Name: "dom", Globs: []string{"dom/**"}, Role: "domain"},
+			{Name: "app", Globs: []string{"app/**"}, Role: "app"},
+			{Name: "prt", Globs: []string{"prt/**"}, Role: "port"},
+			{Name: "adp", Globs: []string{"adp/**"}, Role: "adapter"},
+		},
+		Edges: []Edge{
+			{From: "app", To: "dom"},
+			{From: "app", To: "prt"},
+			{From: "prt", To: "dom"},
+		},
+		Techs: []Tech{{Pattern: "net/http", Adapter: "adp"}},
+	}
+}
+
+func TestAppHappyDomainAndPort(t *testing.T) { // AC-FA-RULE-007 happy: app darf domain+port
+	fs := Evaluate(appModel(), []FileImports{
+		{Path: "app/u.go", Layer: "app", Imports: []Import{
+			{Symbol: "dom/entity", Line: 1},
+			{Symbol: "prt/repo", Line: 2},
+		}},
+	})
+	if len(fs) != 0 {
+		t.Fatalf("app darf domain+port importieren (kein Befund), got %v", fs)
+	}
+}
+
+func TestAppImportsAdapterCategorical(t *testing.T) { // AC-FA-RULE-007 negative (app): app->adapter, kategorisch
+	m := appModel()
+	m.Edges = append(m.Edges, Edge{From: "app", To: "adp"}) // sogar mit erlaubter Kante
+	fs := Evaluate(m, []FileImports{
+		{Path: "app/u.go", Layer: "app", Imports: []Import{{Symbol: "adp/sql", Line: 3}}},
+	})
+	if len(fs) != 1 || fs[0].Rule != "app-impurity" {
+		t.Fatalf("app->adapter ist app-impurity, kategorisch (genau ein Befund trotz Kante), got %v", fs)
+	}
+}
+
+func TestAppImportsTech(t *testing.T) { // AC-FA-RULE-007 negative (app): zweiter Arm app->tech (vor tech-leak)
+	fs := Evaluate(appModel(), []FileImports{
+		{Path: "app/u.go", Layer: "app", Imports: []Import{{Symbol: "net/http", Line: 4}}},
+	})
+	if len(fs) != 1 || fs[0].Rule != "app-impurity" {
+		t.Fatalf("app->tech ist app-impurity (genau ein Befund), got %v", fs)
+	}
+}
+
+func TestDomainImportsPortCategorical(t *testing.T) { // AC-FA-RULE-007 negative (domain): domain->port, kategorisch
+	m := appModel()
+	m.Edges = append(m.Edges, Edge{From: "dom", To: "prt"}) // Kante hebt nicht auf
+	fs := Evaluate(m, []FileImports{
+		{Path: "dom/e.go", Layer: "dom", Imports: []Import{{Symbol: "prt/repo", Line: 5}}},
+	})
+	if len(fs) != 1 || fs[0].Rule != "core-impurity" {
+		t.Fatalf("domain->port ist core-impurity, kategorisch (genau ein Befund trotz Kante), got %v", fs)
+	}
+}
+
+func TestDomainImportsAppCategorical(t *testing.T) { // AC-FA-RULE-007: Schärfung deckt app, nicht nur port
+	m := appModel()
+	m.Edges = append(m.Edges, Edge{From: "dom", To: "app"})
+	fs := Evaluate(m, []FileImports{
+		{Path: "dom/e.go", Layer: "dom", Imports: []Import{{Symbol: "app/u", Line: 6}}},
+	})
+	if len(fs) != 1 || fs[0].Rule != "core-impurity" {
+		t.Fatalf("domain->app ist core-impurity, kategorisch, got %v", fs)
+	}
+}
+
+func TestInferAppRole(t *testing.T) { // AC-FA-RULE-007: Namens-Inferenz application/app -> app
+	for _, name := range []string{"application", "app"} {
+		t.Run(name, func(t *testing.T) {
+			m := Model{Layers: []Layer{
+				{Name: name, Globs: []string{name + "/**"}}, // KEINE role -> Inferenz
+				{Name: "adp", Globs: []string{"adp/**"}, Role: "adapter"},
+			}}
+			fs := Evaluate(m, []FileImports{
+				{Path: name + "/u.go", Layer: name, Imports: []Import{{Symbol: "adp/x", Line: 1}}},
+			})
+			if !hasRule(fs, "app-impurity") {
+				t.Fatalf("%q sollte zu role app inferieren (app-impurity erwartet), got %v", name, fs)
+			}
+		})
+	}
+}
+
+func TestExplicitRoleBeatsAppInference(t *testing.T) { // AC-FA-RULE-007: explizite role: schlägt Inferenz
+	m := Model{Layers: []Layer{
+		{Name: "app", Globs: []string{"app/**"}, Role: "domain"}, // Name app, aber role domain
+		{Name: "prt", Globs: []string{"prt/**"}, Role: "port"},
+	}}
+	fs := Evaluate(m, []FileImports{
+		{Path: "app/d.go", Layer: "app", Imports: []Import{{Symbol: "prt/p", Line: 1}}},
+	})
+	if !hasRule(fs, "core-impurity") || hasRule(fs, "app-impurity") {
+		t.Fatalf("role: domain schlägt app-Inferenz -> core-impurity (kein app-impurity), got %v", fs)
+	}
+}
+
+func TestDomainImportsAdapterCategorical(t *testing.T) { // AC-FA-RULE-007: domain->adapter kategorisch (Pin mit Kante)
+	m := appModel()
+	m.Edges = append(m.Edges, Edge{From: "dom", To: "adp"}) // Kante hebt nicht auf
+	fs := Evaluate(m, []FileImports{
+		{Path: "dom/e.go", Layer: "dom", Imports: []Import{{Symbol: "adp/sql", Line: 7}}},
+	})
+	if len(fs) != 1 || fs[0].Rule != "core-impurity" {
+		t.Fatalf("domain->adapter ist core-impurity, kategorisch (genau ein Befund trotz Kante), got %v", fs)
+	}
+}
+
+func TestDomainImportsTech(t *testing.T) { // AC-FA-RULE-007: domain->tech ist core-impurity (vor tech-leak)
+	fs := Evaluate(appModel(), []FileImports{
+		{Path: "dom/e.go", Layer: "dom", Imports: []Import{{Symbol: "net/http", Line: 8}}},
+	})
+	if len(fs) != 1 || fs[0].Rule != "core-impurity" {
+		t.Fatalf("domain->tech ist core-impurity (genau ein Befund, vor tech-leak), got %v", fs)
+	}
+}
