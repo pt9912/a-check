@@ -6,6 +6,14 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
+### Added
+
+- **`AC-FA-EXTRACT-001` (Lastenheft 0.6.0→0.7.0):** fünftes Sprach-Backend **Java**
+  (`languages`-Schlüssel `java`; `import …;` inkl. `import static …;` — das `static`
+  übersprungen, `;` ignoriert, Wildcard heuristisch). Text-heuristisch wie die übrigen
+  Backends, innerhalb ADR-0002 (kein neuer ADR); getrieben vom Konsumenten-Bedarf
+  (belief-agent). welle-06; slice-014.
+
 ### Changed
 
 - `--print-mk`/`a-check.mk` und der `aCheckImage`-Default sind auf den
