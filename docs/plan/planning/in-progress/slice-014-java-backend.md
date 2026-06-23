@@ -6,7 +6,7 @@
 um Java; innerhalb [ADR-0002](../../adr/0002-text-heuristische-extraktion.md)
 (text-heuristisch, **kein** neuer ADR); schärft
 [SPEC-EXTRACT-001](../../../../spec/spezifikation.md#spec-extract-001--import-extraktion).
-[Roadmap welle-06](roadmap.md). **Trigger:** `/Development/KI/belief-agent` (Java-Repo
+[Roadmap welle-06](../in-progress/roadmap.md). **Trigger:** `/Development/KI/belief-agent` (Java-Repo
 in Spec-Phase) braucht a-check; v0.3.0 kennt nur C++/Go/Rust/Kotlin.
 
 > **Hinweis:** Entwurf zur Abnahme. Die in §3 als Code-Fence gesetzten AC-Texte sind
@@ -79,13 +79,13 @@ Software-Version v0.4.0). `vier → fünf Sprachen` über die Doku.
 
 ## 5. Definition of Done
 
-- [ ] [AC-FA-EXTRACT-001](../../../../spec/lastenheft.md#ac-fa-extract-001--sprach-backends-für-die-import-extraktion) um Java erweitert (Happy + Boundary-static AC + Out-of-Scope),
+- [x] [AC-FA-EXTRACT-001](../../../../spec/lastenheft.md#ac-fa-extract-001--sprach-backends-für-die-import-extraktion) um Java erweitert (Happy + Boundary-static AC + Out-of-Scope),
       Bump 0.7.0 + Historie; [SPEC-EXTRACT-001](../../../../spec/spezifikation.md#spec-extract-001--import-extraktion) nachgezogen.
-- [ ] `extract.go`: `javaImp` + `case "java"`; `make arch-check` (Dogfooding) grün.
-- [ ] Tests: Java-Happy / `import static` / `;`-Toleranz / Kommentar-Grenze.
-- [ ] „vier → fünf Sprachen"-Sweep vollständig (README, architecture, Benutzerhandbuch — **ohne** [ADR-0002](../../adr/0002-text-heuristische-extraktion.md), immutable).
-- [ ] `make gates` grün; 4-Linsen-Review bestanden (schriftlich → `docs/reviews/`); Verifikation gegen DoD/Spec.
-- [ ] Closure: **reiner** `git mv` nach `done/` (§3.3, getrennt von Inhalts-Edits); **2 beobachtbare Kriterien** (`make gates`-Beleg + Java-Happy/`static`-Tests im §7 verlinkt) + **Lerneintrag**.
+- [x] `extract.go`: `javaImp` + `case "java"`; `make arch-check` (Dogfooding) grün.
+- [x] Tests: Java-Happy / `import static` / `;`-Toleranz / Kommentar-Grenze.
+- [x] „vier → fünf Sprachen"-Sweep vollständig (README, architecture, Benutzerhandbuch — **ohne** [ADR-0002](../../adr/0002-text-heuristische-extraktion.md), immutable).
+- [x] `make gates` grün; 4-Linsen-Review bestanden (schriftlich → `docs/reviews/`); Verifikation gegen DoD/Spec.
+- [x] Closure: **reiner** `git mv` nach `done/` (§3.3, getrennt von Inhalts-Edits); **2 beobachtbare Kriterien** (`make gates`-Beleg + Java-Happy/`static`-Tests im §7 verlinkt) + **Lerneintrag**.
 
 ## 6. Offen / Entscheidungen zur Abnahme
 
@@ -110,5 +110,29 @@ Software-Version v0.4.0). `vier → fünf Sprachen` über die Doku.
 
 ## 7. Closure-Notiz
 
-_(wird beim Abschluss gefüllt: `make gates`-Beleg, `arch-check` 0, Review-/Verifikations-
-Runden, Lerneintrag.)_
+**Abschluss (2026-06-23).** slice-014 (welle-06 — erstes Sprach-Backend nach dem Bootstrap)
+umgesetzt und gate-belegt.
+
+- **Gate-Beleg:** `make gates` grün — Lint (gofmt-Alignment), `make test` (6 Java-Tests +
+  Coverage), `make arch-check` **0** (Dogfooding), `doc-check` 51/0,
+  gate-consistency/guard-selftest/record-gates ok.
+- **Code:** `javaImp`-Regex `^\s*import\s+(?:static\s+)?(…)` + `case "java"` in
+  `importsFromSource`; Java teilt die Kotlin-Punkt-Pfad-Form, überspringt das optionale `static`.
+- **Review (4 Linsen):** Plan-Review (Vertrag/Spec + Regelwerk — die Accepted-ADR-Immutabilität
+  im Sweep gefangen) + **unabhängige** adversarische Code-Linse (empirisch via `make test`).
+  Befunde: **MAJOR** Test-Abdeckung (Regex-Mutanten überlebten) → 3 Mutanten-Tests
+  (`com.static.Foo`, Mehrfach-Whitespace-`static`, Wildcard); **MINOR** Wildcard-Trailing-Dot
+  → Spec-Notiz + Test; **MINOR** Multi-Import/Zeile → dokumentierte Heuristik-Grenze.
+  Doc: [Review](../../../reviews/2026-06-23-slice-014-java-backend.md). Kein BLOCKER.
+- **Verifikation (gegen DoD/Spec):** alle DoD-Haken erfüllt; die Java-Akzeptanzkriterien
+  (Happy/Boundary-`static`/Negative) sind durch Tests gepinnt; Lastenheft/Spezifikation 0.7.0 konsistent.
+- **2 beobachtbare Kriterien:** (1) `make gates`-Beleg grün; (2) die Java-Tests
+  `TestJavaImport`/`…StaticImport`/`…CommentNotCounted`/`…StaticInPath`/`…StaticMultiWhitespace`/`…Wildcard`
+  in `extract_test.go`.
+- **Lerneintrag (geschärfte Regel):** Die Minimal-3-Akzeptanzkriterien ließen mehrere
+  Regex-Mutanten durch (`static\s*` vs `\s+`, `static`-im-Pfad); erst die **unabhängige**
+  Review-Linse deckte es auf. Konvention geschärft: **Regex-Backends brauchen Boundary-Tests
+  gegen die spezifischen Mutanten** (Whitespace-Klasse, Keyword-als-Pfad-Segment), nicht nur
+  den Happy-Path.
+- welle-06 bleibt **offen** (weitere Sprach-Härtung/Toolchain-Backends); slice-014 ist ihr
+  erstes Inkrement.
