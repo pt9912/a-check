@@ -229,7 +229,7 @@ Config (Sprache + Datei-Globs) gewählt.
 - **Happy (Java):** Given `import com.foo.Bar;`, when das Java-Backend läuft, then liefert es das Symbol `com.foo.Bar` (das `;` wird ignoriert).
 - **Boundary (Java static):** Given `import static com.foo.Bar.baz;`, when das Java-Backend läuft, then liefert es `com.foo.Bar.baz` — das `static`-Schlüsselwort wird übersprungen, nicht als Symbol gewertet.
 
-**Out-of-Scope:** vollständiges AST-Parsing; Toolchain-gestützte Backends (`go list`, `javac`/`jdeps`, Bytecode) sind ein opt-in-Re-Eval, nicht 0.1.0; Java-Wildcard-Imports (`import com.foo.*;`) werden heuristisch gegriffen, nicht expandiert.
+**Out-of-Scope:** vollständiges AST-Parsing; Toolchain-gestützte Backends (`go list`, `javac`/`jdeps`, Bytecode) sind ein opt-in-Re-Eval, nicht 0.1.0; Java-Wildcard-Imports (`import com.foo.*;`) werden heuristisch gegriffen (Symbol `com.foo.` mit Trailing-Dot), nicht expandiert; mehrere `import`-Statements auf **einer** Zeile werden nur einmal gegriffen (dokumentierte Heuristik-Grenze, `AC-QA-02`).
 
 ### AC-FA-CLI-001 — Aufruf, Scan-Wurzel und Exit-Codes
 

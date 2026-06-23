@@ -84,3 +84,27 @@ func TestJavaCommentNotCounted(t *testing.T) { // AC-FA-EXTRACT-001 negative (sp
 		t.Fatalf("realer java import fehlt: %v", got)
 	}
 }
+
+func TestJavaStaticInPath(t *testing.T) { // AC-FA-EXTRACT-001: `static` nur direkt nach `import ` übersprungen, nicht im Pfad
+	got := syms(newAdapter().importsFromSource("java", stripComments("import com.static.Foo;\n")))
+	if !has(got, "com.static.Foo") {
+		t.Fatalf("'static' als Pfad-Segment muss erhalten bleiben: %v", got)
+	}
+	if has(got, "static") {
+		t.Fatalf("'static' darf hier nicht als eigenes Symbol auftauchen: %v", got)
+	}
+}
+
+func TestJavaStaticMultiWhitespace(t *testing.T) { // AC-FA-EXTRACT-001: `import static` mit Mehrfach-Whitespace
+	got := syms(newAdapter().importsFromSource("java", stripComments("import   static   com.x;\n")))
+	if !has(got, "com.x") || has(got, "static") {
+		t.Fatalf("import static mit Mehrfach-Whitespace: erwarte com.x ohne 'static', got %v", got)
+	}
+}
+
+func TestJavaWildcard(t *testing.T) { // AC-FA-EXTRACT-001 Out-of-Scope: Wildcard heuristisch gegriffen (Trailing-Dot-Symbol)
+	got := syms(newAdapter().importsFromSource("java", stripComments("import com.foo.*;\n")))
+	if !has(got, "com.foo.") {
+		t.Fatalf("Wildcard heuristisch: erwarte Symbol 'com.foo.' (Trailing-Dot, nicht expandiert), got %v", got)
+	}
+}
