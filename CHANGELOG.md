@@ -6,8 +6,20 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
+### Added
+
+- **`AC-FA-RULE-008` (Lastenheft 0.5.0→0.6.0):** Driving/Driven-Port-Richtung —
+  optionale Schicht-`direction` (`driving`/`driven`), **orthogonal** zur Rolle; neue
+  Regel `port-direction-mismatch` (ein Adapter spricht nur Ports **seiner** Richtung),
+  **kategorisch** (über `edges`/`allow` nicht aufhebbar). Ohne `direction` keine Prüfung
+  (rückwärtskompatibel). `layers`-Objektform um `direction` (und das in 0.5.0 fehlende
+  `app`) erweitert. ADR-0012; slice-012.
+
 ### Changed
 
+- **`LayerOf` (ADR-0013):** die Schicht-Zuordnung einer Datei nimmt den
+  spezifischsten/längsten Glob-Präfix (Angleichung an `targetLayer`) statt des
+  Erst-Treffers — Verhaltensänderung nur bei verschachtelten Schicht-Globs. slice-012.
 - `--print-mk`/`a-check.mk` und der `aCheckImage`-Default sind auf den
   v0.2.0-Release **digest-gepinnt** (`ghcr.io/pt9912/a-check@sha256:4132a7af…`) —
   Pin-Hebung nach dem Release (AC-QA-03, ADR-0004/ADR-0007).

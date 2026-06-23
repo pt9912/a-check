@@ -13,7 +13,7 @@ ist das [Lastenheft](spec/lastenheft.md); die Versionshistorie führt die
 ## Was ist a-check?
 
 **a-check** erzwingt die hexagonale Schicht-Architektur eines Repositories
-**sprachübergreifend**, gesteuert über eine Konfigurationsdatei. Sechs
+**sprachübergreifend**, gesteuert über eine Konfigurationsdatei. Sieben
 universelle Regeln, je eine Anforderung im [Lastenheft](spec/lastenheft.md):
 
 - `core-impurity` — der Kern (Domäne, innerste Schicht) importiert weder Port, Adapter noch Framework/Tech
@@ -28,6 +28,8 @@ universelle Regeln, je eine Anforderung im [Lastenheft](spec/lastenheft.md):
   ([AC-FA-RULE-005](spec/lastenheft.md#ac-fa-rule-005--schicht-richtung-regel-wrong-direction))
 - `app-impurity` — die Application-Schicht importiert keinen Adapter und kein Framework/Tech (Domäne und Ports darf sie nutzen)
   ([AC-FA-RULE-007](spec/lastenheft.md#ac-fa-rule-007--rolle-app-und-strenge-domain))
+- `port-direction-mismatch` — ein Adapter spricht nur Ports **seiner** Richtung (optionale Dimension `driving`/`driven`, orthogonal zur Rolle)
+  ([AC-FA-RULE-008](spec/lastenheft.md#ac-fa-rule-008--driving-driven-port-richtung-regel-port-direction-mismatch))
 
 Die Imports werden **text-heuristisch** je Sprache (C++/Go/Rust/Kotlin)
 extrahiert ([AC-FA-EXTRACT-001](spec/lastenheft.md#ac-fa-extract-001--sprach-backends-für-die-import-extraktion)).
@@ -41,7 +43,7 @@ Vier funktional überlappende `arch-check.sh`-Varianten sind in den
 Schwester-Repositories gewachsen — C++ über `#include`-Heuristik (`b-cad`),
 Go über `go list` (`d-check`), Rust über `use`-Heuristik (`grid-guide`),
 Kotlin über Gradle-Modulgrenzen (`d-migrate`): vier Sprachen, vier
-Mechanismen, dieselben sechs Regeln. a-check ersetzt sie durch **ein** Tool:
+Mechanismen, dieselben sieben Regeln. a-check ersetzt sie durch **ein** Tool:
 
 - **Konfiguration statt Fork:** repo-spezifische Schicht-/Tech-Regeln leben
   deklarativ in `.a-check.yml`

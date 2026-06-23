@@ -1,6 +1,6 @@
 # Benutzerhandbuch: a-check
 
-**Handbuch-Version:** 1.7 · **Software-Version:** 0.2.0 · **Stand:** 2026-06-22 ·
+**Handbuch-Version:** 1.8 · **Software-Version:** 0.2.0 · **Stand:** 2026-06-23 ·
 **Autor:** pt9912 (Maintainer)
 
 ---
@@ -133,7 +133,7 @@ Release-Prozess (Tagging, Digest-Pin, GHCR) beschreibt [`releasing.md`](releasin
 
 ### 3.4 Befunde lesen und beheben
 
-Jeder Befund nennt die Regel. Die sechs Regeln und ihre Behebung:
+Jeder Befund nennt die Regel. Die sieben Regeln und ihre Behebung:
 
 | Regel | Bedeutung | Behebung |
 |---|---|---|
@@ -142,6 +142,7 @@ Jeder Befund nennt die Regel. Die sechs Regeln und ihre Behebung:
 | `lateral-adapter` | Ein Adapter importiert einen anderen Adapter. | Gemeinsame Logik in die konfigurierte Senke (`adapter_sink`) ziehen oder über einen Port führen. |
 | `tech-leak` | Ein Framework/Tech erscheint außerhalb seines Adapters. | Den Tech-Zugriff in den zugeordneten Adapter kapseln. |
 | `port-impurity` | Ein Port importiert einen Adapter oder ein Framework/Tech, oder enthält ein per `forbidden_constructs` (Abschnitt 4) verbotenes Konstrukt. Domänentypen des Kerns darf ein Port referenzieren. | Den Port von Adapter-/Tech-Importen befreien (Kern-Referenzen sind erlaubt). |
+| `port-direction-mismatch` | Ein Adapter mit Richtung `driving`/`driven` importiert einen Port der *anderen* Richtung (beide deklariert) — Treiber-Adapter sprechen nur `driving`-Ports, getriebene nur `driven`-Ports. **Kategorisch** (Kante hebt nicht auf). | Den Import über die passende Richtung führen (z. B. über die `app`-Schicht), oder die Schicht-`direction` korrigieren. Ohne `direction` greift die Regel nicht. |
 | `wrong-direction` | Ein Import läuft entgegen einer erlaubten Schicht-Kante. | Die Kante in `edges` aufnehmen (falls legitim) oder den Import umdrehen. |
 
 ### 3.5 Heuristik-Ausnahmen konfigurieren
@@ -299,7 +300,7 @@ Einträge unter `languages` ein.
 - **`adapter_sink`:** eine gemeinsame Senke, die alle Adapter importieren dürfen (Ausnahme von `lateral-adapter`).
 - **`forbidden_constructs`:** je Schicht konfigurierte verbotene Text-Muster (für `port-impurity`).
 - **Befund:** eine gemeldete Regelverletzung (Datei, Zeile, Regel, Meldung).
-- **`core-impurity` / `app-impurity` / `lateral-adapter` / `tech-leak` / `port-impurity` / `wrong-direction`:** die sechs geprüften Regeln (Abschnitt 3.4).
+- **`core-impurity` / `app-impurity` / `lateral-adapter` / `tech-leak` / `port-impurity` / `port-direction-mismatch` / `wrong-direction`:** die sieben geprüften Regeln (Abschnitt 3.4).
 - **Heuristik-Grenze:** a-check erkennt Importe per Textmuster, nicht per Parser; seltene Fehltreffer sind konfigurierbar ausnehmbar.
 - **Digest-Pin:** ein `@sha256:`-Verweis auf eine exakte Image-Version für reproduzierbare Läufe.
 
@@ -322,3 +323,4 @@ und die [Spezifikation](../../spec/spezifikation.md); ein Überblick steht in de
 | 1.5 | 2026-06-22 | §3.4/Glossar an Lastenheft 0.5.0 angeglichen: neue Regel `app-impurity` (Rolle `app`); `core-impurity` verschärft — die Domäne kennt keine Ports (`domain↛port` kategorisch); sechs Regeln. |
 | 1.6 | 2026-06-22 | §3.2/§4/Glossar: die Schicht-`role` dokumentiert (`domain`/`app`/`port`/`adapter`, Objektform `{globs, role}`, Namens-Inferenz, Vorrang, Vier-Schichten-`app`-Modell) — Nachtrag zur Rollen-/`app`-Einführung (Lastenheft 0.3.0–0.5.0). |
 | 1.7 | 2026-06-22 | Software-Version **0.2.0** (GHCR-Release `v0.2.0` veröffentlicht, digest-gepinnt `@sha256:4132a7af…`). |
+| 1.8 | 2026-06-23 | §3.4/Glossar an Lastenheft 0.6.0 angeglichen: neue Regel `port-direction-mismatch` (optionale Schicht-`direction` `driving`/`driven`, orthogonal zur Rolle; ein Adapter spricht nur Ports seiner Richtung, kategorisch); sieben Regeln. |
