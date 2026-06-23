@@ -25,11 +25,14 @@ type FileImports struct {
 // optional role (domain|app|port|adapter, AC-FA-RULE-006/007) that drives the
 // purity rules; a blank role falls back to name inference
 // (core/ports/adapters/application), and a layer resolving to no role is only
-// edge-checked.
+// edge-checked. Direction (driving|driven, AC-FA-RULE-008) is an OPTIONAL
+// dimension ORTHOGONAL to the role: it governs only port-direction-mismatch and
+// is never inferred from the name; a blank direction opts the layer out.
 type Layer struct {
-	Name  string
-	Globs []string
-	Role  string
+	Name      string
+	Globs     []string
+	Role      string
+	Direction string
 }
 
 // Edge is a directed, allowed dependency between layers (from imports to).

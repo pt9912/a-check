@@ -130,3 +130,25 @@ func TestLayerRoleAppAccepted(t *testing.T) { // AC-FA-RULE-007: role: app wird 
 		t.Fatalf("expected application role 'app', got %q (%+v)", got, m.Layers)
 	}
 }
+
+func TestLayerDirectionAccepted(t *testing.T) { // AC-FA-RULE-008: {role, direction} akzeptiert + dekodiert
+	body := "version: 1\nlanguages:\n  go: [\"**/*.go\"]\nlayers:\n  cli: {globs: [\"cli/**\"], role: adapter, direction: driving}\n  api: {globs: [\"api/**\"], role: port, direction: driven}\nedges:\n  - {from: cli, to: api}\n"
+	m, err := New().Load(write(t, body))
+	if err != nil {
+		t.Fatalf("{role, direction} sollte akzeptiert werden, got %v", err)
+	}
+	got := map[string]string{}
+	for _, l := range m.Layers {
+		got[l.Name] = l.Direction
+	}
+	if got["cli"] != "driving" || got["api"] != "driven" {
+		t.Fatalf("direction nicht dekodiert: %+v", m.Layers)
+	}
+}
+
+func TestLayerInvalidDirectionFailsClosed(t *testing.T) { // AC-FA-RULE-008: direction nur driving|driven
+	body := "version: 1\nlanguages:\n  go: [\"**/*.go\"]\nlayers:\n  cli: {globs: [\"cli/**\"], role: adapter, direction: sideways}\nedges:\n  - {from: cli, to: cli}\n"
+	if _, err := New().Load(write(t, body)); err == nil {
+		t.Fatal("expected error on invalid direction (driving|driven)")
+	}
+}

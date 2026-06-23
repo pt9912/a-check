@@ -6,7 +6,7 @@ import (
 	"strings"
 )
 
-// Evaluate runs the six hexagon rules (SPEC-RULE-001) on the extracted files
+// Evaluate runs the seven hexagon rules (SPEC-RULE-001) on the extracted files
 // against the model and returns a stably sorted finding list (SPEC-DET-001).
 // Per (file, import) the most specific rule wins (first match), so an import is
 // reported once.
@@ -47,6 +47,8 @@ func ruleFor(m Model, f FileImports, imp Import) (Finding, bool) {
 		return Finding{f.Path, imp.Line, "lateral-adapter", "Adapter importiert anderen Adapter " + imp.Symbol}, true
 	case isTech && !strings.Contains(f.Path, tech.Adapter):
 		return Finding{f.Path, imp.Line, "tech-leak", "Tech " + tech.Pattern + " außerhalb " + tech.Adapter}, true
+	case srcRole == "adapter" && tgtRole == "port" && directionMismatch(m, f.Layer, tl):
+		return Finding{f.Path, imp.Line, "port-direction-mismatch", f.Layer + " (" + dirOf(f.Layer, m) + ") -> " + tl + " (" + dirOf(tl, m) + "): " + imp.Symbol}, true
 	case tl != "" && wrongDirection(m, f, tl):
 		return Finding{f.Path, imp.Line, "wrong-direction", f.Layer + " -> " + tl + " (" + imp.Symbol + ")"}, true
 	}
@@ -92,6 +94,12 @@ func roleOf(name string, m Model) string {
 	default:
 		return inferRole(name)
 	}
+}
+
+// dirOf returns a layer's explicit direction (driving|driven) or "". Unlike
+// roleOf there is NO name inference — direction is declared only (AC-FA-RULE-008).
+func dirOf(name string, m Model) string {
+	return layerByName(name, m).Direction
 }
 
 // layerByName returns the layer with the given name, or a zero Layer if none.
@@ -140,6 +148,15 @@ func wrongDirection(m Model, f FileImports, tl string) bool {
 	return tl != f.Layer && !edgeAllowed(f.Layer, tl, m)
 }
 
+// directionMismatch reports an adapter->port import across opposite directions
+// when BOTH sides declare one — categorical and edge-independent (AC-FA-RULE-008,
+// it sits before wrong-direction in ruleFor). The caller guarantees src role
+// adapter and target role port.
+func directionMismatch(m Model, srcLayer, tgtLayer string) bool {
+	sd, td := dirOf(srcLayer, m), dirOf(tgtLayer, m)
+	return sd != "" && td != "" && sd != td
+}
+
 func sortFindings(fs []Finding) {
 	sort.Slice(fs, func(i, j int) bool {
 		if fs[i].Path != fs[j].Path {
@@ -155,15 +172,36 @@ func sortFindings(fs []Finding) {
 // MatchGlobs reports whether the repo-relative path matches any of the globs.
 func MatchGlobs(path string, globs []string) bool { return matchesAny(path, globs) }
 
-// LayerOf returns the name of the first layer whose glob matches the
-// repo-relative path, or "" if none.
+// LayerOf returns the name of the most specific layer whose glob matches the
+// repo-relative path: the longest matching glob prefix wins (consistent with
+// targetLayer, ADR-0013), the first declared layer on an equal-length tie, or
+// "" if none. The match stays full-glob (matchesAny semantics, inner ** ok);
+// only the choice among several matching layers switched from first-match to
+// longest-prefix.
 func LayerOf(relPath string, layers []Layer) string {
+	best, bestLen := "", -1
 	for _, l := range layers {
-		if matchesAny(relPath, l.Globs) {
-			return l.Name
+		if n, ok := matchSpecificity(relPath, l.Globs); ok && n > bestLen {
+			best, bestLen = l.Name, n
 		}
 	}
-	return ""
+	return best
+}
+
+// matchSpecificity reports whether any of the globs matches the path and, if so,
+// the longest literal prefix length among the MATCHING globs — the per-glob
+// specificity score that mirrors targetLayer's glob loop (ADR-0013).
+func matchSpecificity(path string, globs []string) (int, bool) {
+	best, matched := -1, false
+	for _, g := range globs {
+		if globToRegexp(g).MatchString(path) {
+			matched = true
+			if n := len(globPrefix(g)); n > best {
+				best = n
+			}
+		}
+	}
+	return best, matched
 }
 
 // targetLayer resolves an import string to a layer by testing whether a layer

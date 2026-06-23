@@ -29,11 +29,13 @@ type yamlMarkers struct {
 	IgnoreSymbols []string `yaml:"ignore_symbols"`
 }
 
-// yamlLayer is the object form of a layers entry (`{globs, role}`, AC-FA-RULE-006);
-// the glob-list short form is decoded separately (see decodeLayer).
+// yamlLayer is the object form of a layers entry (`{globs, role, direction}`,
+// AC-FA-RULE-006/008); the glob-list short form is decoded separately (see
+// decodeLayer). direction is optional and orthogonal to role.
 type yamlLayer struct {
-	Globs []string `yaml:"globs"`
-	Role  string   `yaml:"role"`
+	Globs     []string `yaml:"globs"`
+	Role      string   `yaml:"role"`
+	Direction string   `yaml:"direction"`
 }
 
 type yamlConfig struct {
@@ -81,11 +83,11 @@ func (Adapter) Load(path string) (core.Model, error) {
 		Forbidden:       yc.Forbidden,
 	}
 	for _, name := range sortedKeys(yc.Layers) {
-		globs, role, lerr := decodeLayer(yc.Layers[name], name, path)
+		globs, role, direction, lerr := decodeLayer(yc.Layers[name], name, path)
 		if lerr != nil {
 			return core.Model{}, lerr
 		}
-		m.Layers = append(m.Layers, core.Layer{Name: name, Globs: globs, Role: role})
+		m.Layers = append(m.Layers, core.Layer{Name: name, Globs: globs, Role: role, Direction: direction})
 	}
 	for _, e := range yc.Edges {
 		m.Edges = append(m.Edges, core.Edge{From: e.From, To: e.To})
@@ -103,35 +105,53 @@ func (Adapter) Load(path string) (core.Model, error) {
 }
 
 // decodeLayer reads a layers entry: a glob list (`name: [globs]`) or an object
-// (`{globs, role}`, AC-FA-RULE-006). The object branch is strict by hand —
-// KnownFields(true) on the decoder is NOT inherited by yaml.Node.Decode, so
-// unknown keys are rejected explicitly (SPEC-CONF-001).
-func decodeLayer(node yaml.Node, name, path string) ([]string, string, error) {
+// (`{globs, role, direction}`, AC-FA-RULE-006/008). Returns globs, role and the
+// (optional) direction.
+func decodeLayer(node yaml.Node, name, path string) ([]string, string, string, error) {
 	switch node.Kind {
 	case yaml.SequenceNode:
 		var globs []string
 		if err := node.Decode(&globs); err != nil {
-			return nil, "", fmt.Errorf("%s: Schicht %q: %w", path, name, err)
+			return nil, "", "", fmt.Errorf("%s: Schicht %q: %w", path, name, err)
 		}
-		return globs, "", nil
+		return globs, "", "", nil
 	case yaml.MappingNode:
-		for i := 0; i+1 < len(node.Content); i += 2 {
-			if k := node.Content[i].Value; k != "globs" && k != "role" {
-				return nil, "", fmt.Errorf("%s: Schicht %q: unbekannter Schlüssel %q", path, name, k)
-			}
-		}
-		var yl yamlLayer
-		if err := node.Decode(&yl); err != nil {
-			return nil, "", fmt.Errorf("%s: Schicht %q: %w", path, name, err)
-		}
-		if yl.Role != "" && yl.Role != "domain" && yl.Role != "app" && yl.Role != "port" && yl.Role != "adapter" {
-			return nil, "", fmt.Errorf("%s: Schicht %q: ungültige role %q (domain|app|port|adapter)", path, name, yl.Role)
-		}
-		return yl.Globs, yl.Role, nil
+		return decodeLayerObject(node, name, path)
 	default:
-		return nil, "", fmt.Errorf("%s: Schicht %q: erwarte Glob-Liste oder {globs, role}", path, name)
+		return nil, "", "", fmt.Errorf("%s: Schicht %q: erwarte Glob-Liste oder {globs, role, direction}", path, name)
 	}
 }
+
+// decodeLayerObject decodes the strict object form {globs, role, direction}. It
+// is strict by hand — KnownFields(true) on the decoder is NOT inherited by
+// yaml.Node.Decode, so unknown keys and invalid enums are rejected explicitly
+// (SPEC-CONF-001).
+func decodeLayerObject(node yaml.Node, name, path string) ([]string, string, string, error) {
+	for i := 0; i+1 < len(node.Content); i += 2 {
+		if k := node.Content[i].Value; !knownLayerKey(k) {
+			return nil, "", "", fmt.Errorf("%s: Schicht %q: unbekannter Schlüssel %q", path, name, k)
+		}
+	}
+	var yl yamlLayer
+	if err := node.Decode(&yl); err != nil {
+		return nil, "", "", fmt.Errorf("%s: Schicht %q: %w", path, name, err)
+	}
+	if !validRole(yl.Role) {
+		return nil, "", "", fmt.Errorf("%s: Schicht %q: ungültige role %q (domain|app|port|adapter)", path, name, yl.Role)
+	}
+	if !validDirection(yl.Direction) {
+		return nil, "", "", fmt.Errorf("%s: Schicht %q: ungültige direction %q (driving|driven)", path, name, yl.Direction)
+	}
+	return yl.Globs, yl.Role, yl.Direction, nil
+}
+
+func knownLayerKey(k string) bool { return k == "globs" || k == "role" || k == "direction" }
+
+func validRole(r string) bool {
+	return r == "" || r == "domain" || r == "app" || r == "port" || r == "adapter"
+}
+
+func validDirection(d string) bool { return d == "" || d == "driving" || d == "driven" }
 
 func sortedKeys[V any](m map[string]V) []string {
 	ks := make([]string, 0, len(m))

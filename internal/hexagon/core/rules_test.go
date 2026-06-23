@@ -215,28 +215,34 @@ func TestRoleCrossLayerLateral(t *testing.T) { // AC-FA-RULE-006 happy: fremde N
 	}
 }
 
-func TestRoleCrossLayerLateralCategorical(t *testing.T) { // AC-FA-RULE-006: kategorisch — weder allow NOCH edges heben auf
-	// Differenzial: dieselbe Kante als allow UND als edge darf lateral nicht
-	// unterdrücken. Wäre lateral edge-regiert, fiele der Import wegen der
-	// erlaubten Kante auf KEINEN Befund (len 0) -> der len==1-Assert würde rot.
+// assertCategorical proves a rule is edge-independent: neither an allow nor an
+// edge for the (from,to) pair may suppress it — exactly one finding of wantRule
+// must remain. Wäre die Regel edge-regiert, fiele der Import mit der erlaubten
+// Kante auf KEINEN Befund und der len==1-Assert würde rot.
+func assertCategorical(t *testing.T, base func() Model, from, to string, file FileImports, wantRule string) {
+	t.Helper()
 	for _, tc := range []struct {
 		name string
 		mod  func(*Model)
 	}{
-		{"allow", func(m *Model) { m.Allow = []Edge{{From: "geometry", To: "persistence"}} }},
-		{"edge", func(m *Model) { m.Edges = append(m.Edges, Edge{From: "geometry", To: "persistence"}) }},
+		{"allow", func(m *Model) { m.Allow = []Edge{{From: from, To: to}} }},
+		{"edge", func(m *Model) { m.Edges = append(m.Edges, Edge{From: from, To: to}) }},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
-			m := roleModel()
+			m := base()
 			tc.mod(&m)
-			fs := Evaluate(m, []FileImports{
-				{Path: "geometry/g.go", Layer: "geometry", Imports: []Import{{Symbol: "persistence/p", Line: 3}}},
-			})
-			if len(fs) != 1 || fs[0].Rule != "lateral-adapter" {
-				t.Fatalf("lateral ist kategorisch (%s darf nicht aufheben; genau ein lateral-adapter erwartet), got %v", tc.name, fs)
+			fs := Evaluate(m, []FileImports{file})
+			if len(fs) != 1 || fs[0].Rule != wantRule {
+				t.Fatalf("%s ist kategorisch (%s darf nicht aufheben), got %v", wantRule, tc.name, fs)
 			}
 		})
 	}
+}
+
+func TestRoleCrossLayerLateralCategorical(t *testing.T) { // AC-FA-RULE-006: kategorisch — weder allow NOCH edges heben auf
+	assertCategorical(t, roleModel, "geometry", "persistence",
+		FileImports{Path: "geometry/g.go", Layer: "geometry", Imports: []Import{{Symbol: "persistence/p", Line: 3}}},
+		"lateral-adapter")
 }
 
 func TestRoleDomainImportsAdapter(t *testing.T) { // AC-FA-RULE-006 negative (a): role:domain -> role:adapter
@@ -506,5 +512,124 @@ func TestDomainImportsTech(t *testing.T) { // AC-FA-RULE-007: domain->tech ist c
 	})
 	if len(fs) != 1 || fs[0].Rule != "core-impurity" {
 		t.Fatalf("domain->tech ist core-impurity (genau ein Befund, vor tech-leak), got %v", fs)
+	}
+}
+
+// --- AC-FA-RULE-008 / ADR-0012: Driving/Driven-Port-Richtung (welle-10b/b2b) ---
+
+// dirModel: getrennte driving/driven Adapter- und Port-Schichten mit expliziten
+// Richtungen. Die Kante cli->api erlaubt den happy-Fall, ohne wrong-direction.
+func dirModel() Model {
+	return Model{
+		Layers: []Layer{
+			{Name: "cli", Globs: []string{"cli/**"}, Role: "adapter", Direction: "driving"},
+			{Name: "api", Globs: []string{"api/**"}, Role: "port", Direction: "driving"},
+			{Name: "store", Globs: []string{"store/**"}, Role: "port", Direction: "driven"},
+		},
+		Edges: []Edge{{From: "cli", To: "api"}},
+	}
+}
+
+func TestPortDirectionHappy(t *testing.T) { // AC-FA-RULE-008 happy: driving-Adapter -> driving-Port
+	fs := Evaluate(dirModel(), []FileImports{
+		{Path: "cli/c.go", Layer: "cli", Imports: []Import{{Symbol: "api/u", Line: 1}}},
+	})
+	if len(fs) != 0 {
+		t.Fatalf("driving-Adapter -> driving-Port: kein Befund erwartet, got %v", fs)
+	}
+}
+
+func TestPortDirectionMismatch(t *testing.T) { // AC-FA-RULE-008 negative: driving-Adapter -> driven-Port
+	fs := Evaluate(dirModel(), []FileImports{
+		{Path: "cli/c.go", Layer: "cli", Imports: []Import{{Symbol: "store/s", Line: 2}}},
+	})
+	if len(fs) != 1 || fs[0].Rule != "port-direction-mismatch" {
+		t.Fatalf("driving-Adapter -> driven-Port: genau ein port-direction-mismatch erwartet, got %v", fs)
+	}
+}
+
+func TestPortDirectionMismatchCategorical(t *testing.T) { // AC-FA-RULE-008: kategorisch — edges/allow heben nicht auf
+	assertCategorical(t, dirModel, "cli", "store",
+		FileImports{Path: "cli/c.go", Layer: "cli", Imports: []Import{{Symbol: "store/s", Line: 2}}},
+		"port-direction-mismatch")
+}
+
+func TestPortDirectionOnlyOneSide(t *testing.T) { // AC-FA-RULE-008: nur EINE Seite mit direction -> keine Prüfung
+	m := dirModel()
+	for i := range m.Layers { // store verliert die Richtung -> tgt ohne direction
+		if m.Layers[i].Name == "store" {
+			m.Layers[i].Direction = ""
+		}
+	}
+	m.Edges = append(m.Edges, Edge{From: "cli", To: "store"}) // Kante: auch wrong-direction schweigt
+	fs := Evaluate(m, []FileImports{
+		{Path: "cli/c.go", Layer: "cli", Imports: []Import{{Symbol: "store/s", Line: 2}}},
+	})
+	if hasRule(fs, "port-direction-mismatch") {
+		t.Fatalf("nur eine Seite mit direction -> kein port-direction-mismatch, got %v", fs)
+	}
+}
+
+func TestPortDirectionBoundaryNoDirection(t *testing.T) { // AC-FA-RULE-008 boundary: ohne direction == Verhalten 0.5.0
+	m := Model{ // klassische role:adapter/port OHNE direction, Kante erlaubt
+		Layers: []Layer{
+			{Name: "adp", Globs: []string{"adp/**"}, Role: "adapter"},
+			{Name: "prt", Globs: []string{"prt/**"}, Role: "port"},
+		},
+		Edges: []Edge{{From: "adp", To: "prt"}},
+	}
+	fs := Evaluate(m, []FileImports{
+		{Path: "adp/a.go", Layer: "adp", Imports: []Import{{Symbol: "prt/p", Line: 1}}},
+	})
+	if len(fs) != 0 {
+		t.Fatalf("ohne direction: adapter->port mit Kante ist kein Befund (wie 0.5.0), got %v", fs)
+	}
+}
+
+// --- ADR-0013: LayerOf längster-Präfix (Angleichung an targetLayer) ---
+
+func TestLayerOfLongestPrefix(t *testing.T) { // ADR-0013: spezifischster (längster) Glob-Präfix gewinnt
+	layers := []Layer{
+		{Name: "all", Globs: []string{"src/**"}},
+		{Name: "app", Globs: []string{"src/app/**"}},
+	}
+	if got := LayerOf("src/app/u.go", layers); got != "app" {
+		t.Fatalf("verschachtelt: erwarte spezifischste Schicht 'app', got %q", got)
+	}
+	if got := LayerOf("src/other/x.go", layers); got != "all" {
+		t.Fatalf("nur src/** matcht -> 'all', got %q", got)
+	}
+	rev := []Layer{ // reihenfolge-unabhängig: app vor all
+		{Name: "app", Globs: []string{"src/app/**"}},
+		{Name: "all", Globs: []string{"src/**"}},
+	}
+	if got := LayerOf("src/app/u.go", rev); got != "app" {
+		t.Fatalf("längster-Präfix muss reihenfolge-unabhängig sein, got %q", got)
+	}
+}
+
+func TestLayerOfTieBreakFirstDeclared(t *testing.T) { // ADR-0013: Gleichstand -> zuerst deklariert
+	layers := []Layer{
+		{Name: "first", Globs: []string{"a/b/**"}},
+		{Name: "second", Globs: []string{"a/b/**"}},
+	}
+	if got := LayerOf("a/b/c.go", layers); got != "first" {
+		t.Fatalf("Tie-Break: zuerst deklarierter gewinnt, erwarte 'first', got %q", got)
+	}
+}
+
+func TestLayerOfMultiGlobLayer(t *testing.T) { // ADR-0013: Auswahl über den längsten MATCHENDEN Glob je Layer
+	// "broad" hat zwei Globs; für src/app/special/f.go matcht der längere
+	// (src/app/special) -> "broad" schlägt das zuerst deklarierte "app" — die
+	// per-Glob-Spezifität spiegelt targetLayers Glob-Schleife (nicht per-Layer).
+	layers := []Layer{
+		{Name: "app", Globs: []string{"src/app/**"}},
+		{Name: "broad", Globs: []string{"src/**", "src/app/special/**"}},
+	}
+	if got := LayerOf("src/app/special/f.go", layers); got != "broad" {
+		t.Fatalf("Mehr-Glob: längster matchender Glob (src/app/special) gewinnt -> 'broad', got %q", got)
+	}
+	if got := LayerOf("src/app/other/f.go", layers); got != "app" { // hier matcht in broad nur src/**
+		t.Fatalf("nur src/** matcht in broad -> 'app' (src/app) spezifischer, got %q", got)
 	}
 }
