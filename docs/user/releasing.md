@@ -28,7 +28,7 @@ make a-check A_CHECK_IMAGE=a-check:dev   # Konsum-Aufruf gegen das lokale Image
 Versionen folgen SemVer; die menschlich kuratierte Begründung jedes Releases ist
 der zugehörige Abschnitt in [`CHANGELOG.md`](../../CHANGELOG.md). Vor dem Tag
 wird dort der `[Unreleased]`-Stand unter die neue Version geschnitten. Das
-Lastenheft steht bei 0.5.0.
+Lastenheft steht bei 0.6.0.
 
 ## Release auslösen
 

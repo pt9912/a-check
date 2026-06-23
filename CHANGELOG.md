@@ -6,6 +6,11 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-06-23
+
+Dritte Welle: `welle-10b/b2b` — Driving/Driven-Port-Richtung + `LayerOf`-Angleichung an
+`targetLayer`. Lastenheft/Spezifikation 0.5.0 → 0.6.0; **sieben** Regeln.
+
 ### Added
 
 - **`AC-FA-RULE-008` (Lastenheft 0.5.0→0.6.0):** Driving/Driven-Port-Richtung —
@@ -17,9 +22,9 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
 ### Changed
 
-- **`LayerOf` (ADR-0013):** die Schicht-Zuordnung einer Datei nimmt den
-  spezifischsten/längsten Glob-Präfix (Angleichung an `targetLayer`) statt des
-  Erst-Treffers — Verhaltensänderung nur bei verschachtelten Schicht-Globs. slice-012.
+- **`LayerOf` (ADR-0013):** die Schicht-Zuordnung einer Datei nimmt den spezifischsten/
+  längsten **literalen** Glob-Präfix (`litPrefixLen`, Angleichung an `targetLayer`) statt
+  des Erst-Treffers — Verhaltensänderung nur bei verschachtelten Schicht-Globs. slice-012.
 - `--print-mk`/`a-check.mk` und der `aCheckImage`-Default sind auf den
   v0.2.0-Release **digest-gepinnt** (`ghcr.io/pt9912/a-check@sha256:4132a7af…`) —
   Pin-Hebung nach dem Release (AC-QA-03, ADR-0004/ADR-0007).
