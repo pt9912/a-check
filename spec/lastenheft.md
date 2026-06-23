@@ -1,6 +1,6 @@
 # Lastenheft — a-check
 
-**Version:** 0.5.0
+**Version:** 0.6.0
 
 **Status:** Draft
 
@@ -19,7 +19,7 @@ Schwester-Repositories, die heute dieselben Hexagon-Regeln je Repo neu
 erfinden: C++ über `#include`-Heuristik (`b-cad`), Go über `go list`
 (`d-check`), Rust über `use`-Heuristik (`grid-guide`), Kotlin über
 Gradle-Modulgrenzen (`d-migrate`) — vier Sprachen, vier Mechanismen,
-dieselben sechs Regeln.
+dieselben sieben Regeln.
 
 Das Tool wird als Docker-Image über GHCR verteilt, per `.a-check.yml`
 pro Repo konfiguriert und über ein bereitgestelltes `a-check.mk` als
@@ -183,7 +183,35 @@ Rollen-Mapping (Ergänzung): `app`→`app-impurity`. Befund-**Namen** der übrig
 - **Negative (domain):** Given eine `role: domain`-Schicht, when sie eine `port`- (oder `app`-/`adapter`-)Schicht importiert (auch bei deklarierter Kante), then ein Befund (`core-impurity`) und Exit-Code 1.
 - **Boundary:** Given eine Config ohne `role:` und ohne Layer `application`/`app` (klassisch `core`/`ports`/`adapters`), when `a-check` läuft, then identisches Verhalten wie 0.4.0.
 
-**Out-of-Scope:** `driving`/`driven`-Port-Subtypen; feinere `app`-interne Struktur.
+**Out-of-Scope:** feinere `app`-interne Struktur; die `driving`/`driven`-**Richtung** als orthogonales Attribut (kein Port-Subtyp) liefert [AC-FA-RULE-008](#ac-fa-rule-008--driving-driven-port-richtung-regel-port-direction-mismatch).
+
+### AC-FA-RULE-008 — Driving-Driven-Port-Richtung (Regel `port-direction-mismatch`)
+
+**Verfeinert:** [AC-FA-RULE-006](#ac-fa-rule-006--schicht-rollen-generische-regel-anwendung) um eine **orthogonale** Richtungs-Dimension (`direction`).
+
+**Beschreibung:** Eine `port`- oder `adapter`-Schicht trägt optional eine Richtung
+`direction` ∈ {`driving`, `driven`}. `driving` = primär/inbound (Use-Case-Schnittstelle,
+vom Treiber-Adapter aufgerufen); `driven` = sekundär/outbound (vom Kern/App definiert,
+vom getriebenen Adapter implementiert). Die Richtung ist **orthogonal** zur Rolle: die
+Reinheits-Regeln (`core-impurity`/`app-impurity`/`port-impurity`/`lateral-adapter`)
+bleiben rollen-basiert unverändert. Neue Regel `port-direction-mismatch`: ein
+`role: adapter` mit Richtung X, der eine `role: port`-Schicht mit Richtung Y (Y ≠ X,
+**beide gesetzt**) importiert, ist ein Befund (**kategorisch** — `edges`/`allow` heben
+nicht auf, wie `lateral-adapter`; nur `composition_root` befreit): ein Treiber-Adapter
+spricht nur `driving`-Ports, ein getriebener Adapter nur `driven`-Ports. Schichten **ohne**
+`direction` unterliegen der Regel **nicht** (Rückwärtskompatibilität: ohne Deklaration
+ändert sich nichts). Die `app`-Schicht ist richtungs-agnostisch (nutzt `driven`-Ports,
+implementiert `driving`-Ports) und wird nicht erfasst. Befund-**Namen** der übrigen
+Regeln bleiben unverändert.
+
+**Akzeptanzkriterien:**
+
+- **Happy:** Given ein `role: adapter`, `direction: driving`, when er eine `role: port`, `direction: driving`-Schicht importiert, then kein Befund.
+- **Negative:** Given ein `role: adapter`, `direction: driving`, when er eine `role: port`, `direction: driven`-Schicht importiert, then ein Befund (`port-direction-mismatch`) und Exit-Code 1.
+- **Negative (kategorisch):** Given ein `role: adapter`, `direction: driving` **und eine deklarierte `allow`-Kante** auf die `role: port`, `direction: driven`-Schicht, when er sie importiert, then **dennoch** ein Befund (`port-direction-mismatch`) und Exit-Code 1 — die Richtung ist nicht über `edges`/`allow` aufhebbar.
+- **Boundary:** Given Schichten **ohne** `direction` (klassisch `role: port`/`adapter`), when `a-check` läuft, then identisches Verhalten wie 0.5.0.
+
+**Out-of-Scope:** Auto-Inferenz der Richtung aus Namen/Pfad (`driving`/`driven` im Pfad); Richtungs-Regeln zwischen Ports untereinander — späteres Inkrement.
 
 ### AC-FA-EXTRACT-001 — Sprach-Backends für die Import-Extraktion
 
@@ -221,9 +249,9 @@ Zusammenfassung auf stderr (analog `d-check`).
 Schicht, die Schichten (`core`/`ports`/`adapters`/…) mit Pfad-Mustern, die
 erlaubten Kanten, die Tech→Adapter-Zuordnungen und die gemeinsame Adapter-Senke. Ein `layers`-Eintrag
 ist **entweder** eine Glob-Liste (`name: [globs]`, Rolle per Namens-Inferenz)
-**oder** ein Objekt `{globs: [...], role: domain|port|adapter}`
-([AC-FA-RULE-006](#ac-fa-rule-006--schicht-rollen-generische-regel-anwendung)).
-Striktes Decoding, fail-closed (Exit 2 bei unbekanntem Schlüssel — auch im Objekt).
+**oder** ein Objekt `{globs: [...], role: domain|app|port|adapter, direction: driving|driven}`
+([AC-FA-RULE-006](#ac-fa-rule-006--schicht-rollen-generische-regel-anwendung), [AC-FA-RULE-008](#ac-fa-rule-008--driving-driven-port-richtung-regel-port-direction-mismatch)); `direction` ist optional.
+Striktes Decoding, fail-closed (Exit 2 bei unbekanntem Schlüssel oder ungültiger `role`/`direction` — auch im Objekt).
 
 **Akzeptanzkriterien:**
 
@@ -279,3 +307,4 @@ Konsumenten-Repos).
 | 0.3.0 | 2026-06-22 | Neu `AC-FA-RULE-006` (Schicht-Rollen): die Reinheits-Regeln dispatchen über eine Layer-Rolle (`domain`/`port`/`adapter`, aus `role:` oder Namens-Inferenz) — generalisiert `AC-FA-RULE-001`/`AC-FA-RULE-002`/`AC-FA-RULE-004` namens-unabhängig (welle-10a). `AC-FA-CONF-001`-Schema: `layers`-Eintrag als Glob-Liste **oder** `{globs, role}`. |
 | 0.4.0 | 2026-06-22 | `AC-FA-RULE-006`: `lateral-adapter` jetzt **vollständig** namensunabhängig — Adapter-Sub-Einheiten werden relativ zum Schicht-Glob-Präfix unterschieden (statt am Literal `adapters`); `adapterSeg`-Generalisierung aus dem Out-of-Scope eingelöst (welle-10b). |
 | 0.5.0 | 2026-06-22 | Neu `AC-FA-RULE-007` (Rolle `app` + strenge `domain`): `app` darf `domain`+`port`, aber keinen Adapter/Tech (neuer Befund `app-impurity`); `domain` verschärft — Import auf `app`/`port`/`adapter`/Tech ist `core-impurity`, kategorisch („Domäne kennt keine Ports"). Erweitert `AC-FA-RULE-006`, schärft `AC-FA-RULE-001` (welle-10b). |
+| 0.6.0 | 2026-06-23 | Neu `AC-FA-RULE-008` (Driving/Driven-Port-Richtung): optionale `direction` ∈ {`driving`, `driven`} auf `port`-/`adapter`-Schichten, **orthogonal** zur Rolle; neuer Befund `port-direction-mismatch` (ein Adapter spricht nur Ports seiner Richtung). Ohne `direction` keine Prüfung (rückwärtskompatibel). `AC-FA-CONF-001`-Schema: Objekt-Form um `direction` (und das in 0.5.0 fehlende `app`) ergänzt. Verfeinert `AC-FA-RULE-006` (welle-10b/b2b). |
