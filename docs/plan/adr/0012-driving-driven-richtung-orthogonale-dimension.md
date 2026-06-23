@@ -60,6 +60,11 @@ die bestehenden Regeln bleiben unberührt.
   (Eigen-`.a-check.yml` ohne Richtung) bleibt grün. Die Richtung ist *opt-in und inert*.
 - **Config-Schema:** Objekt-Form `{globs, role, direction}`, `direction ∈ {driving, driven}`,
   strict-decode (Exit 2 sonst).
+- **`direction` ohne `role: adapter`/`port` ist inert:** die Regel braucht
+  `srcRole==adapter`/`tgtRole==port`; auf einer rollenlosen oder `domain`/`app`-Schicht
+  hat `direction` keine Wirkung. Der Decoder validiert nur das Enum (`driving|driven`) und
+  erzwingt **keine** Rolle — eine Cross-Feld-Pflicht wäre mit der Namens-Inferenz der
+  Rolle inkonsistent (die Rolle kann fehlen und inferiert werden).
 - Lastenheft 0.5.0 → **0.6.0**.
 
 ## Fitness Function

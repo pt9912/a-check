@@ -152,3 +152,16 @@ func TestLayerInvalidDirectionFailsClosed(t *testing.T) { // AC-FA-RULE-008: dir
 		t.Fatal("expected error on invalid direction (driving|driven)")
 	}
 }
+
+func TestLayerDirectionWithoutRoleAccepted(t *testing.T) { // AC-FA-RULE-008: direction ohne role lädt (inert — die Regel braucht role adapter/port)
+	body := "version: 1\nlanguages:\n  go: [\"**/*.go\"]\nlayers:\n  x: {globs: [\"x/**\"], direction: driving}\n  core: [\"core/**\"]\nedges:\n  - {from: x, to: core}\n"
+	m, err := New().Load(write(t, body))
+	if err != nil {
+		t.Fatalf("direction ohne role sollte laden (inert), got %v", err)
+	}
+	for _, l := range m.Layers {
+		if l.Name == "x" && (l.Direction != "driving" || l.Role != "") {
+			t.Fatalf("x: erwarte direction=driving, role=\"\" (inert), got %+v", l)
+		}
+	}
+}

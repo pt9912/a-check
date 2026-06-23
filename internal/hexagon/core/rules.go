@@ -189,19 +189,37 @@ func LayerOf(relPath string, layers []Layer) string {
 }
 
 // matchSpecificity reports whether any of the globs matches the path and, if so,
-// the longest literal prefix length among the MATCHING globs — the per-glob
+// the longest LITERAL prefix length among the MATCHING globs — the per-glob
 // specificity score that mirrors targetLayer's glob loop (ADR-0013).
 func matchSpecificity(path string, globs []string) (int, bool) {
 	best, matched := -1, false
 	for _, g := range globs {
 		if globToRegexp(g).MatchString(path) {
 			matched = true
-			if n := len(globPrefix(g)); n > best {
+			if n := litPrefixLen(g); n > best {
 				best = n
 			}
 		}
 	}
 	return best, matched
+}
+
+// litPrefixLen is the byte length of a glob's literal path prefix — the part
+// before the first segment that contains a wildcard (* or ?). It is the
+// specificity yardstick that keeps LayerOf consistent with targetLayer, which
+// can only resolve literal prefixes (segIndex): a wildcard-bearing prefix like
+// "src/*/x" scores as its literal head "src", never its raw string length, and
+// "**/foo" scores 0.
+func litPrefixLen(g string) int {
+	p := globPrefix(g)
+	if i := strings.IndexAny(p, "*?"); i >= 0 {
+		if j := strings.LastIndexByte(p[:i], '/'); j >= 0 {
+			p = p[:j]
+		} else {
+			p = ""
+		}
+	}
+	return len(p)
 }
 
 // targetLayer resolves an import string to a layer by testing whether a layer

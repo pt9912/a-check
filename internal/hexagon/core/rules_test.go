@@ -633,3 +633,89 @@ func TestLayerOfMultiGlobLayer(t *testing.T) { // ADR-0013: Auswahl über den l�
 		t.Fatalf("nur src/** matcht in broad -> 'app' (src/app) spezifischer, got %q", got)
 	}
 }
+
+func TestLayerOfLiteralBeatsWildcardPrefix(t *testing.T) { // ADR-0013: literale Segment-Tiefe schlägt Wildcard-Präfix (litPrefixLen)
+	// src/*/handlers (litPräfix "src", Tiefe 3) darf den literalen src/app (7)
+	// NICHT überstimmen — sonst mäße matchSpecificity rohe Stringlänge (14 > 7).
+	layers := []Layer{
+		{Name: "wild", Globs: []string{"src/*/handlers/**"}},
+		{Name: "app", Globs: []string{"src/app/**"}},
+	}
+	if got := LayerOf("src/app/handlers/x.go", layers); got != "app" {
+		t.Fatalf("literaler Präfix (src/app) muss Wildcard-Präfix (src/*/handlers) schlagen, got %q", got)
+	}
+	// **/foo hat Spezifität 0 und verliert gegen jeden literalen Präfix.
+	star := []Layer{
+		{Name: "anyfoo", Globs: []string{"**/foo/**"}},
+		{Name: "src", Globs: []string{"src/**"}},
+	}
+	if got := LayerOf("src/foo/x.go", star); got != "src" {
+		t.Fatalf("**/foo (Spezifität 0) darf src/** (3) nicht schlagen, got %q", got)
+	}
+}
+
+func TestPortDirectionPortToPortNotCaught(t *testing.T) { // AC-FA-RULE-008: port->port (Gegenrichtung) ist OUT-OF-SCOPE (Rollen-Guard)
+	// api(driving) und store(driven) sind BEIDE role:port. Ein port->port-Import
+	// mit Gegenrichtung erfüllt zwar directionMismatch, aber der Rollen-Guard
+	// (srcRole==adapter ∧ tgtRole==port) schließt ihn aus -> kein Befund.
+	m := dirModel()
+	m.Edges = append(m.Edges, Edge{From: "api", To: "store"}) // damit auch wrong-direction schweigt
+	fs := Evaluate(m, []FileImports{
+		{Path: "api/p.go", Layer: "api", Imports: []Import{{Symbol: "store/s", Line: 1}}},
+	})
+	if hasRule(fs, "port-direction-mismatch") {
+		t.Fatalf("port->port ist out-of-scope (Rollen-Guard) -> kein port-direction-mismatch, got %v", fs)
+	}
+}
+
+func TestPortDirectionSymmetric(t *testing.T) { // AC-FA-RULE-008: driven-Adapter -> driving-Port feuert spiegelbildlich
+	m := dirModel()
+	m.Layers = append(m.Layers, Layer{Name: "repo", Globs: []string{"repo/**"}, Role: "adapter", Direction: "driven"})
+	fs := Evaluate(m, []FileImports{
+		{Path: "repo/r.go", Layer: "repo", Imports: []Import{{Symbol: "api/u", Line: 1}}}, // driven-Adapter -> driving-Port
+	})
+	if len(fs) != 1 || fs[0].Rule != "port-direction-mismatch" {
+		t.Fatalf("driven-Adapter -> driving-Port: symmetrisch genau ein port-direction-mismatch, got %v", fs)
+	}
+}
+
+func TestPortDirectionSourceNoDirection(t *testing.T) { // AC-FA-RULE-008: nur das ZIEL trägt direction (sd=="") -> keine Prüfung
+	m := dirModel()
+	for i := range m.Layers { // cli(driving) verliert die Richtung; store(driven) behält
+		if m.Layers[i].Name == "cli" {
+			m.Layers[i].Direction = ""
+		}
+	}
+	m.Edges = append(m.Edges, Edge{From: "cli", To: "store"}) // Kante: auch wrong-direction schweigt
+	fs := Evaluate(m, []FileImports{
+		{Path: "cli/c.go", Layer: "cli", Imports: []Import{{Symbol: "store/s", Line: 2}}},
+	})
+	if hasRule(fs, "port-direction-mismatch") {
+		t.Fatalf("Quelle ohne direction (sd==\"\") -> kein port-direction-mismatch, got %v", fs)
+	}
+}
+
+func TestPortDirectionTechLeakPrecedence(t *testing.T) { // AC-FA-RULE-008 / SPEC-RULE-001: tech-leak steht VOR port-direction-mismatch
+	// Ein driving-Adapter importiert einen driven-Port, dessen Pfad zufällig ein
+	// tech-Muster trägt und außerhalb des Tech-Adapters liegt: die dokumentierte
+	// Erst-Treffer-Kette meldet bewusst tech-leak (nicht port-direction-mismatch).
+	m := dirModel()
+	m.Techs = []Tech{{Pattern: "store/grpc", Adapter: "store/grpc-adapter"}}
+	fs := Evaluate(m, []FileImports{
+		{Path: "cli/c.go", Layer: "cli", Imports: []Import{{Symbol: "store/grpc/client", Line: 1}}},
+	})
+	if len(fs) != 1 || fs[0].Rule != "tech-leak" {
+		t.Fatalf("tech-leak hat Präzedenz vor port-direction-mismatch (SPEC-RULE-001-Kette), got %v", fs)
+	}
+}
+
+func TestDeterministicOrderWithDirection(t *testing.T) { // AC-QA-01: der neue Befund fügt sich in die stabile Sortierung
+	files := []FileImports{
+		{Path: "cli/b.go", Layer: "cli", Imports: []Import{{Symbol: "store/s", Line: 2}}},
+		{Path: "cli/a.go", Layer: "cli", Imports: []Import{{Symbol: "store/s", Line: 9}}},
+	}
+	fs := Evaluate(dirModel(), files)
+	if len(fs) != 2 || fs[0].Path != "cli/a.go" || fs[1].Path != "cli/b.go" {
+		t.Fatalf("port-direction-mismatch-Befunde nicht stabil nach Pfad sortiert: %v", fs)
+	}
+}

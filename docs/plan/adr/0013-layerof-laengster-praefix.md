@@ -24,26 +24,34 @@ als Re-Evaluierungs-Trigger fest.
 
 ## Entscheidung
 
-`LayerOf` wählt die **spezifischste** passende Schicht (längster Glob-Präfix), konsistent
-mit `targetLayer`, statt des Erst-Treffers; bei Gleichstand die **zuerst deklarierte**.
+`LayerOf` wählt die **spezifischste** passende Schicht (längster **literaler** Präfix),
+konsistent mit `targetLayer`, statt des Erst-Treffers; bei Gleichstand die **zuerst
+deklarierte**.
 
 Das **Match-Prädikat bleibt** `matchesAny` (volle Glob-Semantik für echte Pfade, inkl.
 `**`); **nur die Auswahl** unter mehreren Treffern wechselt vom Erst-Treffer auf den
-längsten `globPrefix` (Helfer `globPrefix` wiederverwendet). Globs ohne literalen Präfix
-(`**/…`) haben Spezifität 0 und verlieren gegen jeden Präfix-Treffer.
+längsten literalen Präfix. Die Spezifität misst `litPrefixLen` — die **literale
+Pfad-Tiefe vor dem ersten Wildcard-Segment**, NICHT die rohe Glob-Stringlänge: ein
+Wildcard-Präfix wie `src/*/x` zählt als sein literaler Kopf `src`, ein `**/…`-Glob hat
+Spezifität 0. Das spiegelt `targetLayer`, das via `segIndex` ohnehin nur literale
+Präfixe auflöst — so kann ein Wildcard-Präfix einen tieferen literalen nie überstimmen.
 
 ## Konsequenzen
 
 - **Verhaltensänderung nur bei verschachtelten Schicht-Globs.** Wo höchstens ein Glob je
   Datei matcht (der Normalfall, u. a. a-checks Eigen-`.a-check.yml`), bleibt das Ergebnis
   identisch → `make arch-check` unverändert grün.
-- **Für Globs mit literalem Präfix** klassifizieren Quelle (`LayerOf`) und Ziel
-  (`targetLayer`) dieselbe Datei konsistent — keine rollen-abhängige Asymmetrie mehr.
-- **Bekannte Restdivergenz:** Globs mit Binnen-Wildcard (`src/*/handlers/**`) löst
-  `targetLayer` als **Ziel** gar nicht auf — `globPrefix` liefert einen Präfix mit `*`,
-  den `segIndex` in echten Pfaden nie findet —, während `LayerOf`s `matchesAny` sie als
-  **Quelle** erfasst; dort bleibt die Asymmetrie bestehen (analog zur Spezifität-0-Klausel
-  der `**/…`-Globs). a-check nutzt keine Binnen-Wildcards.
+- **Spezifität literal-segment-basiert** (`litPrefixLen`): Quelle (`LayerOf`) und Ziel
+  (`targetLayer`) gewichten denselben literalen Präfix; ein Wildcard-Präfix kann einen
+  tieferen literalen Präfix **nicht** mehr überstimmen (rohe Stringlänge zählt nicht).
+  Keine rollen-abhängige Fehlordnung **innerhalb** `LayerOf` mehr.
+- **Verbleibende Asymmetrie (nur Match-Prädikat):** `LayerOf` matcht via `matchesAny`
+  (volle Glob-Regex) auch Globs mit Wildcard-Präfix als **Quelle**, während `targetLayer`
+  solche Schichten via `segIndex` als **Ziel** gar nicht auflöst. Trägt eine Datei *nur*
+  ein Wildcard-Präfix-Glob (z. B. `src/*/x/**`), kann sie als Quelle einer Schicht
+  zugeordnet sein, die als Importziel nie resolvt — die Spezifität (literaler Kopf)
+  gewichtet beide aber gleich. a-check nutzt nur literale `<pfad>/**`-Globs; dort sind
+  Quelle und Ziel deckungsgleich.
 - **Art der Änderung:** weil `f.Layer` aus `LayerOf` stammt und `srcRole = roleOf(f.Layer)`,
   verschiebt der längste-Präfix bei verschachtelten Globs die **anzuwendende
   Reinheits-Regel und die `wrong-direction`-Quelle** — nicht nur das Klassifikations-

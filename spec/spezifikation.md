@@ -123,8 +123,8 @@ Meldung); ≥ 1 Befund ⇒ Exit-Code 1.
 | `wrong-direction` | ein Import quert eine Schicht-Kante entgegen `edges`/`allow` | [AC-FA-RULE-005](lastenheft.md#ac-fa-rule-005--schicht-richtung-regel-wrong-direction) |
 
 Die Schicht einer Datei ergibt sich aus dem **spezifischsten** passenden `layers`-Glob
-(längster Glob-Präfix, konsistent mit der Symbol-Auflösung unten; bei Gleichstand die
-zuerst deklarierte Schicht), ihre
+(längster **literaler** Präfix vor dem ersten Wildcard-Segment, konsistent mit der
+Symbol-Auflösung unten; bei Gleichstand die zuerst deklarierte Schicht), ihre
 **Rolle** aus `role:` (Vorrang) oder Namens-Inferenz ([AC-FA-RULE-006](lastenheft.md#ac-fa-rule-006--schicht-rollen-generische-regel-anwendung)).
 Symbole werden über die `layers`-Globs des Zielpfads bzw. die `tech`-Muster
 aufgelöst (**spezifischster/längster** Präfix gewinnt) — die Ziel-Rolle ist die **des aufgelösten Layers**; die Reinheits-Regeln
