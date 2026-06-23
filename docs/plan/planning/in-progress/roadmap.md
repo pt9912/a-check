@@ -17,21 +17,22 @@ erzeugt aber keine Spezifikation (Regelwerk Modul 6).
 
 ## Aktuelle Welle
 
-**`welle-10-regel-engine-generalisierung` läuft — die Inkremente a, b1 und b2a sind
-gemergt und in `v0.2.0` veröffentlicht; offen ist nur noch b2b.** Die Reinheits-Regeln
+**`welle-10-regel-engine-generalisierung` abgeschlossen — alle Inkremente a, b1, b2a
+(in `v0.2.0` veröffentlicht) und b2b (slice-012, Lastenheft 0.6.0, noch unveröffentlicht)
+gemergt.** Die Reinheits-Regeln
 dispatchen nicht mehr über Layer-**Namen**, sondern über eine Layer-**Rolle**, und das
 Modell ist auf vier Schichten ausgebaut:
 
 - **a** ([slice-009](../done/slice-009-rollen-dispatch.md), [ADR-0009](../../adr/0009-rollen-basierter-regel-dispatch.md) `Accepted`, [AC-FA-RULE-006](../../../../spec/lastenheft.md#ac-fa-rule-006--schicht-rollen-generische-regel-anwendung)): Rollen-Dispatch {`domain`, `port`, `adapter`} + Namens-Inferenz, rückwärtskompatibel.
 - **b1** ([slice-010](../done/slice-010-adapterseg-targetlayer.md), [ADR-0010](../../adr/0010-layer-relativer-adapterseg-laengster-praefix.md) `Accepted`): `adapterSeg` layer-relativ + `targetLayer` längster-Präfix, segment-bewusst.
 - **b2a** ([slice-011](../done/slice-011-app-rolle.md), [ADR-0011](../../adr/0011-domain-application-trennung-rolle-app.md) `Accepted`, [AC-FA-RULE-007](../../../../spec/lastenheft.md#ac-fa-rule-007--rolle-app-und-strenge-domain)): Rolle `app` (→ Befund `app-impurity`) + strenge `domain` (`domain↛port` kategorisch). Lastenheft/Spezifikation **0.5.0**.
+- **b2b** ([slice-012](../done/slice-012-driving-driven-layerof.md), [ADR-0012](../../adr/0012-driving-driven-richtung-orthogonale-dimension.md)/[ADR-0013](../../adr/0013-layerof-laengster-praefix.md) `Accepted`, [AC-FA-RULE-008](../../../../spec/lastenheft.md#ac-fa-rule-008--driving-driven-port-richtung-regel-port-direction-mismatch)): optionale Richtung `direction` (`driving`/`driven`, orthogonal zur Rolle) + Regel `port-direction-mismatch` (kategorisch); `LayerOf` längster-literaler-Präfix (Angleichung an `targetLayer`). Lastenheft/Spezifikation **0.6.0**.
 
-**Offen (b2b):** `driving`/`driven`-Port-Subtypen mit feineren Kanten; `LayerOf`
-längster-Präfix (Symmetrie zu `targetLayer`). **Entwurf liegt vor**
-([slice-012](../done/slice-012-driving-driven-layerof.md)) — Umsetzung wartet auf die
-§6-Entscheidungen (v. a. den Bedarfs-Gate: an einem Konsumenten-Repo belegen, dass
-getrennte `driving`/`driven`-Ports gebraucht werden; sonst nur Teil B `LayerOf`).
-Re-Evaluierungs-Trigger in [ADR-0011](../../adr/0011-domain-application-trennung-rolle-app.md).
+**Carry-forward (b2b):** Die Richtung ist *opt-in und inert ohne `direction`* —
+mindestens ein Konsument (b-cad/d-check/d-migrate) soll getrennte `driving`/`driven`-
+Adapter- **und** -Port-Schichten real aktivieren, sonst bleibt Teil A geliefert-aber-
+ungenutzt. Port→Port-Richtungsregeln und Auto-Inferenz der Richtung bleiben out-of-scope
+(späteres Inkrement).
 Alle Gates real und grün (`make gates`; Dogfooding 0 Befunde).
 
 **Parallel offen — `welle-05-release`:** `v0.1.0` und **`v0.2.0`** sind veröffentlicht
