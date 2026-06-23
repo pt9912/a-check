@@ -6,7 +6,7 @@
 um Java; innerhalb [ADR-0002](../../adr/0002-text-heuristische-extraktion.md)
 (text-heuristisch, **kein** neuer ADR); schärft
 [SPEC-EXTRACT-001](../../../../spec/spezifikation.md#spec-extract-001--import-extraktion).
-[Roadmap welle-06](../in-progress/roadmap.md). **Trigger:** `/Development/KI/belief-agent` (Java-Repo
+[Roadmap welle-06](../in-progress/roadmap.md). **Trigger:** `belief-agent` (Java-Repo
 in Spec-Phase) braucht a-check; v0.3.0 kennt nur C++/Go/Rust/Kotlin.
 
 > **Hinweis:** Entwurf zur Abnahme. Die in §3 als Code-Fence gesetzten AC-Texte sind

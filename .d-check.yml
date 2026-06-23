@@ -11,7 +11,7 @@
 scan:
   roots: ["."]
 
-modules: [links, anchors, ids, matrix]
+modules: [links, anchors, ids, matrix, hostpaths]
 
 ids:
   patterns:
@@ -38,12 +38,16 @@ ids:
 
 matrix:
   classes:
-    - {name: spec-straten, paths: [spec/lastenheft.md, spec/spezifikation.md, spec/architecture.md]}
-    - {name: adr, paths: ["docs/plan/adr/[0-9]*.md"]}
-    - {name: slice, paths: ["docs/plan/planning/**/slice-*.md"]}
+    - {
+        name: spec-straten,
+        paths:
+          [spec/lastenheft.md, spec/spezifikation.md, spec/architecture.md],
+      }
+    - { name: adr, paths: ["docs/plan/adr/[0-9]*.md"] }
+    - { name: slice, paths: ["docs/plan/planning/**/slice-*.md"] }
   rules:
-    - {from: spec-straten, to: adr, allow: false}
-    - {from: spec-straten, to: slice, allow: false}
+    - { from: spec-straten, to: adr, allow: false }
+    - { from: spec-straten, to: slice, allow: false }
   status:
     forbidden: [superseded, deprecated]
   exclude-sections: [Historie, "7. Historie", Geschichte]
