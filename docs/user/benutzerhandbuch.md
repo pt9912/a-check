@@ -1,6 +1,6 @@
 # Benutzerhandbuch: a-check
 
-**Handbuch-Version:** 1.9 · **Software-Version:** 0.3.0 · **Stand:** 2026-06-23 ·
+**Handbuch-Version:** 1.10 · **Software-Version:** 0.3.0 · **Stand:** 2026-06-23 ·
 **Autor:** pt9912 (Maintainer)
 
 ---
@@ -10,7 +10,7 @@
 ### Zweck der Software
 
 **a-check** prüft, ob ein Repository seine **hexagonale Schicht-Architektur**
-einhält — sprachübergreifend (C++, Go, Rust, Kotlin), gesteuert über eine
+einhält — sprachübergreifend (C++, Go, Rust, Kotlin, Java), gesteuert über eine
 Konfigurationsdatei. a-check liest Ihren Quellcode, meldet Architektur-Verstöße
 mit Datei und Zeile und liefert einen Exit-Code, mit dem Sie es als Gate in CI
 oder `make` einsetzen. a-check **repariert nichts** und **schreibt nie** in Ihr
@@ -189,10 +189,10 @@ markers:
 ```
 
 **Pflichtblöcke:** `version`, `languages`, `layers`, `edges`.
-**Gültige `languages`-Schlüssel:** genau `go`, `cpp`, `rust`, `kotlin` — exakt so
+**Gültige `languages`-Schlüssel:** genau `go`, `cpp`, `rust`, `kotlin`, `java` — exakt so
 zu schreiben (z. B. `cpp`, **nicht** `c++`); andere Schlüssel werden ignoriert
 (keine Extraktion). Jeder Schlüssel bildet auf eine Liste von Datei-Globs ab,
-z. B. `cpp: ["**/*.h", "**/*.cpp"]`, `rust: ["**/*.rs"]`, `kotlin: ["**/*.kt"]`.
+z. B. `cpp: ["**/*.h", "**/*.cpp"]`, `rust: ["**/*.rs"]`, `kotlin: ["**/*.kt"]`, `java: ["**/*.java"]`.
 **Optionalblöcke:** `adapter_sink`, `tech`, `composition_root`, `allow`,
 `forbidden_constructs`, `markers`. Fehlt ein Optionalblock, entfällt die
 zugehörige Prüfung (kein stiller Standardwert) — fehlt z. B. `adapter_sink`,
@@ -336,3 +336,4 @@ und die [Spezifikation](../../spec/spezifikation.md); ein Überblick steht in de
 | 1.7 | 2026-06-22 | Software-Version **0.2.0** (GHCR-Release `v0.2.0` veröffentlicht, digest-gepinnt `@sha256:4132a7af…`). |
 | 1.8 | 2026-06-23 | §3.4/§4/Glossar an Lastenheft 0.6.0 angeglichen: neue Regel `port-direction-mismatch` + Config-Schlüssel `direction` (optionale Schicht-Richtung `driving`/`driven`, orthogonal zur Rolle; ein Adapter spricht nur Ports seiner Richtung, kategorisch); sieben Regeln. |
 | 1.9 | 2026-06-23 | Software-Version **0.3.0** (GHCR-Release `v0.3.0` veröffentlicht, digest-gepinnt `@sha256:93be49a6…`). |
+| 1.10 | 2026-06-23 | §1/§4 an Lastenheft 0.7.0: fünftes Sprach-Backend **Java** (`languages`-Schlüssel `java`, `import`/`import static`); Sprach-Aufzählung + `languages`-Enum/Beispiel ergänzt. |
