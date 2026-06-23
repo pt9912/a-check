@@ -57,3 +57,30 @@ func TestKotlinImport(t *testing.T) {
 		t.Fatalf("kotlin import missing: %v", got)
 	}
 }
+
+func TestJavaImport(t *testing.T) { // AC-FA-EXTRACT-001 happy (Java): dotted import, `;` toleriert
+	got := syms(newAdapter().importsFromSource("java", stripComments("package x;\nimport com.foo.Bar;\n")))
+	if !has(got, "com.foo.Bar") {
+		t.Fatalf("java import missing: %v", got)
+	}
+}
+
+func TestJavaStaticImport(t *testing.T) { // AC-FA-EXTRACT-001 boundary (Java): import static -> static übersprungen
+	got := syms(newAdapter().importsFromSource("java", stripComments("import static com.foo.Bar.baz;\n")))
+	if !has(got, "com.foo.Bar.baz") {
+		t.Fatalf("java static import nicht als Pfad extrahiert: %v", got)
+	}
+	if has(got, "static") {
+		t.Fatalf("'static' darf nicht als Symbol gegriffen werden: %v", got)
+	}
+}
+
+func TestJavaCommentNotCounted(t *testing.T) { // AC-FA-EXTRACT-001 negative (sprach-agnostisch, Java)
+	got := syms(newAdapter().importsFromSource("java", stripComments("// import com.evil.X;\nimport com.real.Y;\n")))
+	if has(got, "com.evil.X") {
+		t.Fatalf("java import im Kommentar muss ignoriert werden: %v", got)
+	}
+	if !has(got, "com.real.Y") {
+		t.Fatalf("realer java import fehlt: %v", got)
+	}
+}

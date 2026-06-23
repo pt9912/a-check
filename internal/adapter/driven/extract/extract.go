@@ -23,7 +23,7 @@ type Adapter struct {
 	goSingle, goBlock, goQuoted     *regexp.Regexp
 	cppInclude                      *regexp.Regexp
 	rustUse, rustCrate              *regexp.Regexp
-	kotlinImp                       *regexp.Regexp
+	kotlinImp, javaImp              *regexp.Regexp
 }
 
 // New returns an extraction adapter.
@@ -38,6 +38,7 @@ func newAdapter() Adapter {
 		rustUse:    regexp.MustCompile(`^\s*use\s+([A-Za-z_][A-Za-z0-9_]*)`),
 		rustCrate:  regexp.MustCompile(`^\s*extern\s+crate\s+([A-Za-z_][A-Za-z0-9_]*)`),
 		kotlinImp:  regexp.MustCompile(`^\s*import\s+([A-Za-z_][A-Za-z0-9_.]*)`),
+		javaImp:    regexp.MustCompile(`^\s*import\s+(?:static\s+)?([A-Za-z_][A-Za-z0-9_.]*)`),
 	}
 }
 
@@ -110,6 +111,8 @@ func (a Adapter) importsFromSource(lang, src string) []core.Import {
 		return dedupeSort(lineMatches(src, a.rustUse, a.rustCrate))
 	case "kotlin":
 		return dedupeSort(lineMatches(src, a.kotlinImp))
+	case "java":
+		return dedupeSort(lineMatches(src, a.javaImp))
 	default:
 		return nil
 	}
