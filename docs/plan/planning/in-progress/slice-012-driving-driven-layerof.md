@@ -165,13 +165,13 @@ Lastenheft **0.5.0 → 0.6.0** (Teil A: neue Anforderung *Driving/Driven-Richtun
 
 ## 5. Definition of Done
 
-- [ ] Neue Anforderung *Driving/Driven-Richtung* in `spec/lastenheft.md` (3 AC + Out-of-Scope), Bump 0.6.0 + Historie.
-- [ ] Folge-ADRs (Richtung + `LayerOf`) `Proposed → Accepted` + ADR-Index; [SPEC-RULE-001](../../../../spec/spezifikation.md#spec-rule-001--regel-auswertung)/[SPEC-CONF-001](../../../../spec/spezifikation.md#spec-conf-001--konfigurationsschema) nachgezogen.
-- [ ] `config.go`: `direction`-Whitelist; `model.go`: `Layer.Direction`; `rules.go`: `port-direction-mismatch` + `LayerOf` längster-Präfix.
-- [ ] „Sechs→sieben"-Sweep vollständig (Regel-Zählungen/Befund-Listen) — vollständig wie der b2a-Sweep.
-- [ ] Engine: `port-direction-mismatch` (kategorisch); `make arch-check` (Dogfooding) **ohne** Änderung der Eigen-`.a-check.yml` grün (a-check hat keine `direction`).
-- [ ] Tests: Richtung happy/Mismatch/Boundary; `LayerOf` verschachtelt.
-- [ ] Multi-Linsen-Review bestanden.
+- [x] Neue Anforderung *Driving/Driven-Richtung* in `spec/lastenheft.md` (4 AC inkl. kategorisch + Out-of-Scope), Bump 0.6.0 + Historie.
+- [x] Folge-ADRs (Richtung + `LayerOf`) `Proposed → Accepted` + ADR-Index; [SPEC-RULE-001](../../../../spec/spezifikation.md#spec-rule-001--regel-auswertung)/[SPEC-CONF-001](../../../../spec/spezifikation.md#spec-conf-001--konfigurationsschema) nachgezogen.
+- [x] `config.go`: `direction`-Whitelist; `model.go`: `Layer.Direction`; `rules.go`: `port-direction-mismatch` + `LayerOf` längster-Präfix (`litPrefixLen`).
+- [x] „Sechs→sieben"-Sweep vollständig (README, architecture, Benutzerhandbuch, CHANGELOG, `rules.go`-Doc-String, beide Specs).
+- [x] Engine: `port-direction-mismatch` (kategorisch); `make arch-check` (Dogfooding) **ohne** Änderung der Eigen-`.a-check.yml` grün (a-check hat keine `direction`).
+- [x] Tests: Richtung happy/Mismatch/Boundary/kategorisch/Symmetrie/nur-eine-Seite; `LayerOf` verschachtelt/Tie-Break/Mehr-Glob/Wildcard-Spezifität.
+- [x] Multi-Linsen-Review bestanden (3 Linsen, alle Befunde gefixt).
 
 ## 6. Beschlüsse zur Abnahme
 
@@ -198,7 +198,29 @@ Die §6-Entscheidungen sind getroffen (Stand: zur Freigabe). Begründungen knapp
   alles grün; die `LayerOf`-Änderung greift nur bei verschachtelten Globs (a-check:
   keine) → `make arch-check` unverändert.
 
-## 7. Closure-Notiz (nach `done/`)
+## 7. Closure-Notiz
 
-_(wird beim Abschluss gefüllt: `make gates`-Beleg, `arch-check` 0 unverändert,
-Review-Runden, Lerneintrag; schließt welle-10 ab.)_
+**Abschluss-Stand (2026-06-23).** slice-012 (welle-10b/b2b) umgesetzt und gate-belegt.
+
+- **Gate-Beleg:** `make gates` durchgängig grün — Lint (gocyclo/dupl), `make test`
+  (alle Akzeptanzkriterien + 7 Review-Pins), Coverage ≥ 90 %, `make arch-check` **0
+  Befunde unverändert** (Eigen-`.a-check.yml` ohne `direction` → Rückwärtskompat belegt),
+  `doc-check` 0, `gate-consistency`/`guard-selftest`/`record-gates` ok.
+- **Commit-Kette:** `6a2298e` (§6-Beschlüsse, §4 geschärft) → `6b81a75` (Spec/ADR 0.6.0)
+  → `9c6377b` (Code: `port-direction-mismatch` + `LayerOf`) → `1d87a05`
+  (sechs→sieben-Sweep) → `a50bfea` (Review-Härtung) → `3ee6bb7` (ADR-Sign-off Accepted).
+- **Review-Runden:** (1) adversarisches ADR-Review des Auftraggebers → acht Präzisierungen
+  (kategorisch in Spec + `allow`-Override-AC, Adapter-Schicht-Trennung, Spezifitäts-
+  Konsistenz, Determinismus-Bezug). (2) Multi-Linsen-Code-Review (drei Linsen, eine
+  empirisch via `make test`) → `matchSpecificity` auf literale Segment-Tiefe
+  (`litPrefixLen`) gehärtet + sieben Test-Pins (Rollen-Guard, Symmetrie, `tech-leak`-
+  Präzedenz, Determinismus, Wildcard-Spezifität, `direction`-inert).
+- **Lerneintrag:** (a) `doc-check` verlangt für **jede** Cross-Doc-Kennung einen Link —
+  Backticks/Code-Spans befreien nicht (kostete drei Runden). (b) `globPrefix`-Stringlänge
+  ist als Spezifitäts-Maß falsch, sobald Wildcards im Präfix stehen (`src/*/x`, `**/foo`,
+  Single-`*`); literal-segment-basiert (`litPrefixLen`) macht `LayerOf` ↔ `targetLayer`
+  echt konsistent.
+- **Carry-forward (Entscheid 0):** Die Richtung ist inert ausgeliefert. ⚠️ Folge-Arbeit:
+  mindestens ein Konsument (b-cad/d-check/d-migrate) sollte getrennte `driving`/`driven`-
+  Adapter- **und** -Port-Schichten aktivieren, sonst bleibt Teil A geliefert-aber-ungenutzt.
+- Schließt **welle-10** (Regel-Engine-Generalisierung) ab.
