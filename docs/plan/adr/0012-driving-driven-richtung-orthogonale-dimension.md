@@ -1,6 +1,6 @@
 # ADR-0012 — Driving/Driven-Richtung als orthogonale Schicht-Dimension
 
-- **Status:** Proposed
+- **Status:** Accepted
 - **Datum:** 2026-06-23
 - **Autor:** pt9912
 - **Bezug:** [AC-FA-RULE-008](../../../spec/lastenheft.md#ac-fa-rule-008--driving-driven-port-richtung-regel-port-direction-mismatch) (neu; Lastenheft 0.5.0→0.6.0), [AC-FA-RULE-006](../../../spec/lastenheft.md#ac-fa-rule-006--schicht-rollen-generische-regel-anwendung) (Rollen-Mechanismus)
@@ -87,3 +87,4 @@ die bestehenden Regeln bleiben unberührt.
 | Datum | Ereignis |
 |---|---|
 | 2026-06-23 | Proposed — welle-10b (b2b); `direction` als orthogonale Dimension + Regel `port-direction-mismatch` (Entscheid A: Attribut, B: minimal `adapter→port`). |
+| 2026-06-23 | Proposed → Accepted (Sign-off Auftraggeber; Multi-Linsen-Review bestanden — kategorisch in Spec + `allow`-Override-AC, Adapter-Schicht-Trennung und `direction`-inert nachgezogen). Ab jetzt immutable; Ablösung nur via Folge-ADR mit `Supersedes`. |

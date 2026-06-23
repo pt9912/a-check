@@ -1,6 +1,6 @@
 # ADR-0013 — `LayerOf` längster-Präfix (Angleichung an `targetLayer`)
 
-- **Status:** Proposed
+- **Status:** Accepted
 - **Datum:** 2026-06-23
 - **Autor:** pt9912
 - **Bezug:** [AC-QA-01](../../../spec/lastenheft.md#ac-qa-01--determinismus) (Determinismus) — der eigentliche Treiber ist jedoch die **Quelle↔Ziel-Konsistenz** der Schicht-Auflösung (siehe Kontext); Determinismus ist hier die schwächere Achse, da der Erst-Treffer bereits deterministisch war.
@@ -73,3 +73,4 @@ Präfixe auflöst — so kann ein Wildcard-Präfix einen tieferen literalen nie 
 | Datum | Ereignis |
 |---|---|
 | 2026-06-23 | Proposed — welle-10b (b2b); `LayerOf` längster-Präfix (Angleichung an `targetLayer`, ADR-0010). |
+| 2026-06-23 | Proposed → Accepted (Sign-off Auftraggeber; Multi-Linsen-Review bestanden — Spezifität auf `litPrefixLen`/literale Segment-Tiefe gehärtet, verbleibende Match-Prädikat-Asymmetrie benannt). Ab jetzt immutable; Ablösung nur via Folge-ADR mit `Supersedes`. |
