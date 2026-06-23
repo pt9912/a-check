@@ -28,7 +28,7 @@ Modell ist auf vier Schichten ausgebaut:
 
 **Offen (b2b):** `driving`/`driven`-Port-Subtypen mit feineren Kanten; `LayerOf`
 längster-Präfix (Symmetrie zu `targetLayer`). **Entwurf liegt vor**
-([slice-012](slice-012-driving-driven-layerof.md)) — Umsetzung wartet auf die
+([slice-012](../done/slice-012-driving-driven-layerof.md)) — Umsetzung wartet auf die
 §6-Entscheidungen (v. a. den Bedarfs-Gate: an einem Konsumenten-Repo belegen, dass
 getrennte `driving`/`driven`-Ports gebraucht werden; sonst nur Teil B `LayerOf`).
 Re-Evaluierungs-Trigger in [ADR-0011](../../adr/0011-domain-application-trennung-rolle-app.md).

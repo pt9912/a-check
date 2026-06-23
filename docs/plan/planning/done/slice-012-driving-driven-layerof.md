@@ -2,7 +2,7 @@
 
 **Status:** in-progress (Entwurf zur Abnahme).
 **Welle:** welle-10-regel-engine-generalisierung (Inkrement **b2b**, Abschluss).
-**Bezug:** Re-Evaluierungs-Trigger aus [ADR-0010](../../adr/0010-layer-relativer-adapterseg-laengster-praefix.md) (`LayerOf`) und [ADR-0011](../../adr/0011-domain-application-trennung-rolle-app.md) (`driving`/`driven`-Ports); verfeinert den Rollen-Mechanismus [AC-FA-RULE-006](../../../../spec/lastenheft.md#ac-fa-rule-006--schicht-rollen-generische-regel-anwendung); [Roadmap welle-10](roadmap.md).
+**Bezug:** Re-Evaluierungs-Trigger aus [ADR-0010](../../adr/0010-layer-relativer-adapterseg-laengster-praefix.md) (`LayerOf`) und [ADR-0011](../../adr/0011-domain-application-trennung-rolle-app.md) (`driving`/`driven`-Ports); verfeinert den Rollen-Mechanismus [AC-FA-RULE-006](../../../../spec/lastenheft.md#ac-fa-rule-006--schicht-rollen-generische-regel-anwendung); [Roadmap welle-10](../in-progress/roadmap.md).
 
 > **Hinweis:** Dieses Dokument hält den **Entwurf** zur Abnahme. Die in §3 als
 > Vorlage in Code-Fences gesetzten Anforderungs-/ADR-Texte sind unverbindlich —
