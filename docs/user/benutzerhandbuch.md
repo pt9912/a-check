@@ -200,8 +200,9 @@ darf **kein** Adapter einen anderen importieren (strengere Auslegung). Das
 vollständige Schema steht in der [Spezifikation](../../spec/spezifikation.md).
 
 **Schicht-Rollen (`role`).** Ein `layers`-Eintrag ist **entweder** eine Glob-Liste
-(`name: [globs]`) **oder** ein Objekt `{globs: [...], role: <rolle>}`. Die Rolle steuert,
-welche Reinheits-Regel auf die Schicht greift — **unabhängig vom Namen**:
+(`name: [globs]`) **oder** ein Objekt `{globs: [...], role: <rolle>, direction: <richtung>}`
+(`direction` optional, siehe unten). Die Rolle steuert, welche Reinheits-Regel auf die
+Schicht greift — **unabhängig vom Namen**:
 
 - `domain` — innerste Schicht; importiert nur sich selbst (keinen Port, keine `app`-/Adapter-Schicht, kein Tech) → sonst `core-impurity`.
 - `app` — Application-/Use-Case-Schicht; darf `domain` **und** `port` nutzen, aber keinen Adapter/Tech → sonst `app-impurity`.
@@ -225,6 +226,16 @@ edges:
   - {from: usecase, to: ports}    # ... und über Ports nach außen sprechen
   - {from: ports,   to: domain}   # Ports sprechen die Sprache der Domäne
 ```
+
+**Richtung (`direction`).** Eine `port`- oder `adapter`-Schicht trägt **optional** eine
+Richtung `direction: driving` oder `direction: driven` — **orthogonal** zur Rolle.
+`driving` = primär/inbound (Use-Case-Schnittstelle, vom Treiber-Adapter aufgerufen),
+`driven` = sekundär/outbound (vom Kern/App definiert, vom getriebenen Adapter
+implementiert). Ein `role: adapter` spricht dann nur Ports **seiner** Richtung; importiert
+ein driving-Adapter einen driven-Port (oder umgekehrt, beide Seiten deklariert), ist das
+`port-direction-mismatch` (kategorisch — `edges`/`allow` heben nicht auf). Tragen die
+Schichten **keine** `direction`, ändert sich nichts — die Dimension ist rein additiv und
+braucht getrennte `driving`/`driven`-**Adapter- und -Port**-Schichten, um zu greifen.
 
 ## 5. Berechtigungen und Sicherheit
 
@@ -323,4 +334,4 @@ und die [Spezifikation](../../spec/spezifikation.md); ein Überblick steht in de
 | 1.5 | 2026-06-22 | §3.4/Glossar an Lastenheft 0.5.0 angeglichen: neue Regel `app-impurity` (Rolle `app`); `core-impurity` verschärft — die Domäne kennt keine Ports (`domain↛port` kategorisch); sechs Regeln. |
 | 1.6 | 2026-06-22 | §3.2/§4/Glossar: die Schicht-`role` dokumentiert (`domain`/`app`/`port`/`adapter`, Objektform `{globs, role}`, Namens-Inferenz, Vorrang, Vier-Schichten-`app`-Modell) — Nachtrag zur Rollen-/`app`-Einführung (Lastenheft 0.3.0–0.5.0). |
 | 1.7 | 2026-06-22 | Software-Version **0.2.0** (GHCR-Release `v0.2.0` veröffentlicht, digest-gepinnt `@sha256:4132a7af…`). |
-| 1.8 | 2026-06-23 | §3.4/Glossar an Lastenheft 0.6.0 angeglichen: neue Regel `port-direction-mismatch` (optionale Schicht-`direction` `driving`/`driven`, orthogonal zur Rolle; ein Adapter spricht nur Ports seiner Richtung, kategorisch); sieben Regeln. |
+| 1.8 | 2026-06-23 | §3.4/§4/Glossar an Lastenheft 0.6.0 angeglichen: neue Regel `port-direction-mismatch` + Config-Schlüssel `direction` (optionale Schicht-Richtung `driving`/`driven`, orthogonal zur Rolle; ein Adapter spricht nur Ports seiner Richtung, kategorisch); sieben Regeln. |
