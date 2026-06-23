@@ -7,8 +7,8 @@
 > **Hinweis:** Dieses Dokument hält den **Entwurf** zur Abnahme. Die in §3 als
 > Vorlage in Code-Fences gesetzten Anforderungs-/ADR-Texte sind unverbindlich —
 > gültig erst nach Freigabe in [`spec/lastenheft.md`](../../../../spec/lastenheft.md)
-> bzw. neuen ADRs. Die DoD-Haken in §5 sind offen; die Entscheidungen in §6 sind
-> **vor** der Umsetzung zu treffen.
+> bzw. neuen ADRs. Die DoD-Haken in §5 sind offen; die Beschlüsse in §6 sind
+> getroffen (zur Freigabe) — die Umsetzung folgt dem Plan in §4.
 
 ---
 
@@ -126,24 +126,35 @@ Lastenheft **0.5.0 → 0.6.0** (Teil A: neue Anforderung *Driving/Driven-Richtun
 ## 4. Umsetzungsplan
 
 ### 4.1 Teil A — Richtung
-1. `internal/adapter/driven/config/config.go` (`decodeLayer`) — Whitelist um
-   `direction`; `yamlLayer.Direction`; Validierung `{driving, driven}`; fail-closed.
+1. `internal/adapter/driven/config/config.go` (`decodeLayer`) — Whitelist
+   `{globs, role, direction}`; `yamlLayer.Direction`; Validierung `direction ∈
+   {driving, driven}` (sonst Exit 2); fail-closed. Rückgabe um die Richtung erweitern
+   (heute `([]string, string, error)`) → liefert zusätzlich `direction`; der Aufrufer
+   setzt `core.Layer{… Direction: direction}`.
 2. `internal/hexagon/core/model.go` — `Layer.Direction string`.
-3. `internal/hexagon/core/rules.go` (`ruleFor`) — neue Regel **vor** `wrong-direction`:
+3. `internal/hexagon/core/rules.go` (`ruleFor`) — neue `case` in den Switch, **vor**
+   `wrong-direction` (so gewinnt die spezifischere Regel, falls die `adapter→port`-Kante
+   nicht in `edges`/`allow` steht und sonst `wrong-direction` zöge):
    ```
-   srcRole==adapter ∧ tgtRole==port ∧ dir(src)≠"" ∧ dir(tl)≠"" ∧ dir(src)≠dir(tl)
+   srcRole==adapter ∧ tgtRole==port ∧ dirOf(f.Layer)≠"" ∧ dirOf(tl)≠"" ∧ dirOf(f.Layer)≠dirOf(tl)
      ⇒ port-direction-mismatch
    ```
-   `dirOf(name)` analog `roleOf` (Helfer, gocyclo beachten — ggf. in `impurityFinding`-
-   Stil auslagern). Befund-Namen sonst stabil.
+   `dirOf(name) = layerByName(name, m).Direction` — **ohne** Namens-Inferenz (anders als
+   `roleOf`; Auto-Inferenz ist out-of-scope, §3.1). Als Prädikat-Helfer
+   `directionMismatch(m, f.Layer, tl)` auslagern (gocyclo). Dokumentierte Regel-Kette:
+   `… → tech-leak → port-direction-mismatch → wrong-direction` ([SPEC-RULE-001](../../../../spec/spezifikation.md#spec-rule-001--regel-auswertung)). Befund-
+   Namen sonst stabil.
 4. Tests: driving→driving happy; driving→driven ⇒ `port-direction-mismatch` (kategorisch,
    `len==1`); Boundary (ohne `direction` unverändert); fremde Namen.
 
 ### 4.2 Teil B — `LayerOf`
-5. `internal/hexagon/core/rules.go` (`LayerOf`) — auf längster-Glob-Präfix umstellen
-   (Helfer mit `targetLayer`/`adapterSeg` teilen: `globPrefix`/`segIndex`). Tie-Break
-   zuerst-deklariert. Tests: verschachtelte Globs (`src/app/**` ⊂ `src/**`) → Datei
-   landet in der spezifischsten Schicht.
+5. `internal/hexagon/core/rules.go` (`LayerOf`) — Match-Prädikat bleibt `matchesAny`
+   (volle Glob-Semantik für echte Pfade, inkl. `**`); **nur die Auswahl** unter mehreren
+   Treffern wechselt vom Erst-Treffer auf den längsten `globPrefix` (Helfer `globPrefix`
+   wiederverwendet, konsistent mit `targetLayer`/`adapterSeg`). Globs ohne literalen
+   Präfix (`**/…`) haben Spezifität 0 und verlieren gegen jeden Präfix-Treffer. Tie-Break:
+   zuerst deklariert. Tests: verschachtelte Globs (`src/app/**` ⊂ `src/**`) → Datei landet
+   in der spezifischsten Schicht; Gleichstand → zuerst deklariert.
 
 ### 4.3 Abschluss
 6. `spec/lastenheft.md` (neue Anforderung *Driving/Driven-Richtung*, 0.6.0), `spec/spezifikation.md`
@@ -162,24 +173,30 @@ Lastenheft **0.5.0 → 0.6.0** (Teil A: neue Anforderung *Driving/Driven-Richtun
 - [ ] Tests: Richtung happy/Mismatch/Boundary; `LayerOf` verschachtelt.
 - [ ] Multi-Linsen-Review bestanden.
 
-## 6. Offen / Risiken — Entscheidungen zur Abnahme
+## 6. Beschlüsse zur Abnahme
 
-- **Entscheid 0 — Bedarf bestätigen (Gate):** vor der Umsetzung an **mindestens
-  einem** Konsumenten-Repo belegen, dass getrennte `driving`/`driven`-Ports existieren
-  **und** die Trennung durchgesetzt werden soll. Sonst ist Teil A spekulativ →
-  zurückstellen, nur Teil B (`LayerOf`) ziehen. *(Empfehlung: erst prüfen.)*
-- **Entscheid A — Modellierung:** `direction`-Attribut (orthogonal, **Empfehlung**)
-  vs. Subtyp-Rollen (`port_driving`/`port_driven`/…). *Empfehlung Attribut* — die
-  Reinheits-Regeln bleiben unberührt, nur eine neue Connectivity-Regel kommt hinzu.
-- **Entscheid B — Regel-Umfang:** nur `adapter→port`-Richtungsabgleich (Empfehlung)
-  vs. zusätzlich Port→Port-Richtungsregeln. *Empfehlung minimal* (`adapter→port`).
-- **Entscheid C — Befund-Name:** `port-direction-mismatch` (7. Befund) — Output-
-  Konsumenten (CI-Parser) berücksichtigen; analog `app-impurity` ein Doku-Sweep nötig.
-- **Entscheid D — Slice-Schnitt:** Teil B (`LayerOf`) ist klein, risikoarm und
-  **unabhängig** — vorab als eigener kleiner Slice ziehen, oder mit Teil A bündeln?
-  *(Empfehlung: B zuerst separat, A nach Bedarfs-Bestätigung.)*
-- **Rückwärtskompat DoD-kritisch:** ohne `direction` (Eigen-`.a-check.yml`) bleibt
-  alles grün; `LayerOf`-Änderung greift nur bei verschachtelten Globs (a-check: keine).
+Die §6-Entscheidungen sind getroffen (Stand: zur Freigabe). Begründungen knapp:
+
+- **Entscheid 0 — Bedarf (Gate): PROCEED mit Inertheits-Sicherung.** Die Richtung ist
+  *opt-in und inert ohne `direction`* (Boundary-AC §3.1 + Rückwärtskompat-DoD §5): ohne
+  Deklaration ändert sich für a-check und alle Bestands-Konsumenten **nichts**, das
+  „spekulativ"-Risiko ist damit gekappt (geliefert-aber-ungenutzt schadet nicht).
+  Begründet über die Roadmap-Einordnung (welle-10b, b2b-Einstiegspunkt) und die
+  Konsumenten b-cad/d-check/d-migrate mit getrennten `driving`/`driven`-Port-Modulen (§1).
+  ⚠️ *Offen für den Freigebenden:* mindestens ein Konsument soll die Trennung tatsächlich
+  aktivieren wollen — sonst bleibt Teil A bewusst inert ausgeliefert.
+- **Entscheid A — Modellierung: Attribut `direction`** (orthogonal zur Rolle). Subtyp-
+  Rollen (`port_driving`/…) verworfen — blähen Rollen-Enum + jede Reinheits-Prüfung auf;
+  die orthogonale Dimension lässt die Reinheits-Regeln unberührt ([ADR-0012](../../adr/0012-driving-driven-richtung-orthogonale-dimension.md)).
+- **Entscheid B — Regel-Umfang: minimal `adapter→port`.** Port→Port-Richtungsregeln
+  ausdrücklich out-of-scope (späteres Inkrement, §3.1).
+- **Entscheid C — Befund-Name: `port-direction-mismatch`** (7. Befund). Doku-Sweep
+  „sechs→sieben" zwingend (§4.3); Output-Konsumenten (CI-Parser) im Sweep mitgeführt.
+- **Entscheid D — Slice-Schnitt: A+B gebündelt** in slice-012 (Freigabe-Anweisung).
+  Teil B bleibt im Code unabhängig (eigene Commits möglich, falls gewünscht).
+- **Rückwärtskompat (DoD-kritisch):** ohne `direction` (Eigen-`.a-check.yml`) bleibt
+  alles grün; die `LayerOf`-Änderung greift nur bei verschachtelten Globs (a-check:
+  keine) → `make arch-check` unverändert.
 
 ## 7. Closure-Notiz (nach `done/`)
 
