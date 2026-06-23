@@ -101,11 +101,14 @@ sind die häufigste Form von Harness-Lüge. `doc-check` (Bootstrap),
 `gate-consistency`/`record-gates` (slice-004), `guard-selftest`
 (slice-005) und `image-test`/`ci`/`trace-check` (slice-006) sind **real**
 und grün; die Code-Gates sind Dockerfile-Stages, die Meta-Gates laufen als
-Host-Bash.
+Host-Bash. `doc-trace`/`doc-complete` sind advisory `d-check`-Targets
+(DC-FA-CLI-009/011, nicht im mandatory `gates`-Aggregat).
 
 | Target | Zweck | Stand |
 |---|---|---|
 | `make doc-check` | Doku-Links/Anker/Kennungen via `d-check` (Schwester-Tool, digest-gepinnt, netzlos, read-only) | **real** (Bootstrap) |
+| `make doc-trace` | advisory Requirements Traceability Matrix via `d-check` (DC-FA-CLI-009; `TRACE_FLAGS=--json`) | **advisory** (d-check v0.24.0) |
+| `make doc-complete` | Vollständigkeits-Gate: Requirements-Waise ⇒ Exit 1 (DC-FA-CLI-011) | **advisory** (d-check v0.24.0) |
 | `make lint` | golangci-lint mit dem Projekt-Profil (§3.2, [ADR-0005](docs/plan/adr/0005-lint-profil.md)) | **real** (slice-003) |
 | `make test` | Akzeptanzkriterien der `AC-FA-*` als Go-Tests | **real** (slice-003) |
 | `make coverage-gate` | Gesamt-Coverage ≥ 90 % über `./internal/...` ([ADR-0006](docs/plan/adr/0006-coverage-gate.md)) | **real** (slice-003) |
