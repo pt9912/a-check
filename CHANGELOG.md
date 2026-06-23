@@ -6,6 +6,12 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
+### Changed
+
+- `--print-mk`/`a-check.mk` und der `aCheckImage`-Default sind auf den
+  **v0.3.0**-Release **digest-gepinnt** (`ghcr.io/pt9912/a-check@sha256:93be49a6…`) —
+  Pin-Hebung nach dem Release (AC-QA-03, ADR-0004/ADR-0007).
+
 ## [0.3.0] - 2026-06-23
 
 Dritte Welle: `welle-10b/b2b` — Driving/Driven-Port-Richtung + `LayerOf`-Angleichung an

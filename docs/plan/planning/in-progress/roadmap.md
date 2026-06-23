@@ -35,10 +35,10 @@ ungenutzt. Port→Port-Richtungsregeln und Auto-Inferenz der Richtung bleiben ou
 (späteres Inkrement).
 Alle Gates real und grün (`make gates`; Dogfooding 0 Befunde).
 
-**Parallel offen — `welle-05-release`:** `v0.1.0` und **`v0.2.0`** sind veröffentlicht
+**Parallel offen — `welle-05-release`:** `v0.1.0`, `v0.2.0` und **`v0.3.0`** sind veröffentlicht
 ([slice-007 §4](../done/slice-007-release-pipeline.md#4-closure-notiz-nach-done),
 [ADR-0007](../../adr/0007-latest-tag-politik.md) `Accepted`; GHCR
-`@sha256:4132a7af…` (aktuell v0.2.0) digest-gepinnt in `a-check.mk`); nur die
+`@sha256:93be49a6…` (aktuell v0.3.0) digest-gepinnt in `a-check.mk`); nur die
 **Pilot-Einbindung** in ein Konsumenten-Repo bleibt.
 
 ## Nächste Wellen

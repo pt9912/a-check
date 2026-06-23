@@ -5,17 +5,17 @@ Release-Prozess für `ghcr.io/pt9912/a-check`
 [ADR-0004](../plan/adr/0004-distribution-image-mk.md),
 [ADR-0007](../plan/adr/0007-latest-tag-politik.md)). Die Pipeline ist
 [`.github/workflows/release.yml`](../../.github/workflows/release.yml) (seit
-slice-007). **Aktuelles Release: `v0.2.0`** (erstes: `v0.1.0`) —
-[GitHub-Release](https://github.com/pt9912/a-check/releases/tag/v0.2.0),
-GHCR-Tags `v0.2.0` + `latest`.
+slice-007). **Aktuelles Release: `v0.3.0`** (Vorgänger `v0.2.0`, erstes `v0.1.0`) —
+[GitHub-Release](https://github.com/pt9912/a-check/releases/tag/v0.3.0),
+GHCR-Tags `v0.3.0` + `latest`.
 
 ## Aktueller Stand
 
-`v0.2.0` ist auf GHCR verfügbar; Konsumenten pinnen den **Digest**
+`v0.3.0` ist auf GHCR verfügbar; Konsumenten pinnen den **Digest**
 ([Konsum](#konsum-digest-pin)). Das mitgelieferte
 [`a-check.mk`](../../a-check.mk) und `a-check --print-mk`
 ([AC-FA-DIST-001](../../spec/lastenheft.md#ac-fa-dist-001--distribution-image---print-mk-a-checkmk))
-sind auf `@sha256:4132a7af…` digest-gepinnt. Für lokale Entwicklung gegen
+sind auf `@sha256:93be49a6…` digest-gepinnt. Für lokale Entwicklung gegen
 ungetaggte Stände dient weiterhin das lokal gebaute Image:
 
 ```sh
@@ -33,8 +33,8 @@ Lastenheft steht bei 0.6.0.
 ## Release auslösen
 
 ```sh
-git tag v0.2.0
-git push origin v0.2.0
+git tag v0.3.0
+git push origin v0.3.0
 ```
 
 Die Pipeline ([`release.yml`](../../.github/workflows/release.yml)) läuft bei
