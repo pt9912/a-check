@@ -1,6 +1,6 @@
 # ADR-0014 — Resolution-Roots: Import-Auflösung gegen konfigurierbare Wurzeln
 
-- **Status:** Proposed
+- **Status:** Accepted
 - **Datum:** 2026-06-23
 - **Autor:** pt9912
 - **Bezug:** [AC-FA-EXTRACT-001](../../../spec/lastenheft.md#ac-fa-extract-001--sprach-backends-für-die-import-extraktion), [AC-FA-CONF-001](../../../spec/lastenheft.md#ac-fa-conf-001--konfigurationsdatei-a-checkyml), [AC-QA-02](../../../spec/lastenheft.md#ac-qa-02--hermetik-und-ehrliche-heuristik-grenze) — **Re-Evaluierung** von [ADR-0002](0002-text-heuristische-extraktion.md) (erweitert, kein Supersede).
@@ -87,3 +87,4 @@ Das Build-System bleibt die **grobe** Grenze; a-check die **paket-/pfad-feine** 
 | Datum | Ereignis |
 |---|---|
 | 2026-06-23 | Proposed — welle-06, aus dem x-wal/b-cad-Pilot (JVM-Auflösungslücke); Weg A (Resolution-Roots) gegen tree-sitter/Modul-Graph. |
+| 2026-06-23 | Proposed → Accepted (Sign-off Auftraggeber: Weg A als JVM-Auflösungs-*Richtung*; tree-sitter/Modul-Graph verworfen). Ab jetzt immutable; die Umsetzung (Schema-`resolution`-Block) bleibt **gated** ([slice-015](../planning/open/slice-015-resolution-roots.md)) — die Spec-Schärfung folgt dort. Ablösung nur via Folge-ADR mit `Supersedes`. |
