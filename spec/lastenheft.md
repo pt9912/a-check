@@ -1,6 +1,6 @@
 # Lastenheft — a-check
 
-**Version:** 0.6.0
+**Version:** 0.7.0
 
 **Status:** Draft
 
@@ -218,15 +218,18 @@ Regeln bleiben unverändert.
 **Beschreibung:** Pro Sprache liefert ein Backend die Menge „welche
 Symbole/Module importiert diese Datei" — text-heuristisch über konfigurierbare
 Muster: C++ (`#include`), Go (`import`), Rust (`use`/`extern crate`), Kotlin
-(`import`). Das Backend wird über die Config (Sprache + Datei-Globs) gewählt.
+(`import`), Java (`import`, inkl. `import static`). Das Backend wird über die
+Config (Sprache + Datei-Globs) gewählt.
 
 **Akzeptanzkriterien:**
 
 - **Happy:** Given eine Go-Datei mit zwei Imports, when das Go-Backend läuft, then liefert es genau diese zwei Importpfade.
 - **Boundary:** Given eine Rust-Alias-Form (`use tauri as t;`), when das Rust-Backend läuft, then wird `tauri` erkannt.
 - **Negative:** Given eine in einem Kommentar/String stehende Import-ähnliche Zeile, when das Backend läuft, then wird sie nicht als Import gewertet (oder als bewusste, dokumentierte Heuristik-Grenze gemeldet — `AC-QA-02`).
+- **Happy (Java):** Given `import com.foo.Bar;`, when das Java-Backend läuft, then liefert es das Symbol `com.foo.Bar` (das `;` wird ignoriert).
+- **Boundary (Java static):** Given `import static com.foo.Bar.baz;`, when das Java-Backend läuft, then liefert es `com.foo.Bar.baz` — das `static`-Schlüsselwort wird übersprungen, nicht als Symbol gewertet.
 
-**Out-of-Scope:** vollständiges AST-Parsing; Toolchain-gestützte Backends (`go list`, Bytecode) sind ein opt-in-Re-Eval, nicht 0.1.0.
+**Out-of-Scope:** vollständiges AST-Parsing; Toolchain-gestützte Backends (`go list`, `javac`/`jdeps`, Bytecode) sind ein opt-in-Re-Eval, nicht 0.1.0; Java-Wildcard-Imports (`import com.foo.*;`) werden heuristisch gegriffen, nicht expandiert.
 
 ### AC-FA-CLI-001 — Aufruf, Scan-Wurzel und Exit-Codes
 
@@ -308,3 +311,4 @@ Konsumenten-Repos).
 | 0.4.0 | 2026-06-22 | `AC-FA-RULE-006`: `lateral-adapter` jetzt **vollständig** namensunabhängig — Adapter-Sub-Einheiten werden relativ zum Schicht-Glob-Präfix unterschieden (statt am Literal `adapters`); `adapterSeg`-Generalisierung aus dem Out-of-Scope eingelöst (welle-10b). |
 | 0.5.0 | 2026-06-22 | Neu `AC-FA-RULE-007` (Rolle `app` + strenge `domain`): `app` darf `domain`+`port`, aber keinen Adapter/Tech (neuer Befund `app-impurity`); `domain` verschärft — Import auf `app`/`port`/`adapter`/Tech ist `core-impurity`, kategorisch („Domäne kennt keine Ports"). Erweitert `AC-FA-RULE-006`, schärft `AC-FA-RULE-001` (welle-10b). |
 | 0.6.0 | 2026-06-23 | Neu `AC-FA-RULE-008` (Driving/Driven-Port-Richtung): optionale `direction` ∈ {`driving`, `driven`} auf `port`-/`adapter`-Schichten, **orthogonal** zur Rolle; neuer Befund `port-direction-mismatch` (ein Adapter spricht nur Ports seiner Richtung). Ohne `direction` keine Prüfung (rückwärtskompatibel). `AC-FA-CONF-001`-Schema: Objekt-Form um `direction` (und das in 0.5.0 fehlende `app`) ergänzt. Verfeinert `AC-FA-RULE-006` (welle-10b/b2b). |
+| 0.7.0 | 2026-06-23 | `AC-FA-EXTRACT-001` um **Java** erweitert (`import`, inkl. `import static` — das `static`-Schlüsselwort übersprungen, `;` ignoriert) — fünftes Sprach-Backend neben C++/Go/Rust/Kotlin, text-heuristisch (welle-06, slice-014). |

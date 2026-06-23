@@ -1,6 +1,6 @@
 # Spezifikation — a-check
 
-**Version:** 0.6.0
+**Version:** 0.7.0
 
 **Status:** Draft
 
@@ -83,6 +83,7 @@ gewählte Backend die Menge der importierten Symbole/Module:
    - **Go:** `import "…"` sowie Block-Form `import ( … )`
    - **Rust:** `use …;` und `extern crate …;` inkl. Alias-Form (`use x as y;` → `x`)
    - **Kotlin:** `import …`
+   - **Java:** `import …;` inkl. `import static …;` (das `static` wird übersprungen, das `;` ignoriert)
 3. Import-ähnliche Zeilen in Zeilen-/Block-Kommentaren werden **nicht**
    gewertet (`//` und `/* */` werden entfernt). Import-ähnliche Zeilen in
    **String-Literalen** sind eine **ausgewiesene Heuristik-Grenze** (0.1.0:
@@ -191,3 +192,4 @@ und [AC-QA-03](lastenheft.md#ac-qa-03--reproduzierbarkeit).
 | 0.4.0 | 2026-06-22 | `SPEC-RULE-001`: `adapterSeg` layer-relativ (Adapter-Sub-Einheit nach dem Schicht-Glob-Präfix, namensunabhängig) + `targetLayer` längster-Präfix-Auflösung. Folgt [`AC-FA-RULE-006`](lastenheft.md#ac-fa-rule-006--schicht-rollen-generische-regel-anwendung) 0.4.0. |
 | 0.5.0 | 2026-06-22 | `SPEC-RULE-001`: neue Rolle `app` (Befund `app-impurity` bei Adapter-/`tech`-Import) + `core-impurity` verschärft (`domain` importiert nur `domain`, kategorisch); Schema-Enum `role` um `app`. Folgt [`AC-FA-RULE-007`](lastenheft.md#ac-fa-rule-007--rolle-app-und-strenge-domain) 0.5.0. |
 | 0.6.0 | 2026-06-23 | `SPEC-RULE-001`: neue Regel `port-direction-mismatch` (Adapter-Richtung ≠ Ziel-Port-Richtung, beide gesetzt; in der Erst-Treffer-Kette vor `wrong-direction`) + Schicht-Zuordnung einer Datei auf **spezifischsten/längsten** Glob-Präfix umgestellt (Angleichung an `targetLayer`); `SPEC-CONF-001`-Schema: Objekt-Form um `direction` (und das fehlende `app`) ergänzt. Folgt [`AC-FA-RULE-008`](lastenheft.md#ac-fa-rule-008--driving-driven-port-richtung-regel-port-direction-mismatch) 0.6.0. |
+| 0.7.0 | 2026-06-23 | `SPEC-EXTRACT-001`: Java-Muster (`import …;`, inkl. `import static …;` — `static` übersprungen) als fünftes Backend. Folgt [`AC-FA-EXTRACT-001`](lastenheft.md#ac-fa-extract-001--sprach-backends-für-die-import-extraktion) 0.7.0. |
