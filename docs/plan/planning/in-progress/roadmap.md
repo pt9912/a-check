@@ -47,7 +47,7 @@ Alle Gates real und grün (`make gates`; Dogfooding 0 Befunde).
 |---|---|---|---|
 | welle-05-release | Image-Veröffentlichung | **`v0.1.0` veröffentlicht** ([slice-007](../done/slice-007-release-pipeline.md): `release.yml` + [ADR-0007](../../adr/0007-latest-tag-politik.md)); GHCR digest-gepinnt in `a-check.mk` ([AC-FA-DIST-001](../../../../spec/lastenheft.md#ac-fa-dist-001--distribution-image---print-mk-a-checkmk), [AC-QA-03](../../../../spec/lastenheft.md#ac-qa-03--reproduzierbarkeit)). **Offen:** Pilot-Einbindung in ein Konsumenten-Repo | fast fertig |
 | welle-06-sprach-backends | Bedarf | Ausbau/Härtung der Extraktion je Zielsprache; opt-in toolchain-gestützte Backends ([AC-FA-EXTRACT-001](../../../../spec/lastenheft.md#ac-fa-extract-001--sprach-backends-für-die-import-extraktion) Out-of-Scope-Re-Eval) | offen |
-| welle-10-regel-engine-generalisierung | Mehr-Layer-Modelle der Konsumenten (b-cad/d-migrate) | Reinheit pro Layer-**Rolle** statt an Namen gebunden; 4-Schichten-Modell (`domain`/`app`/`port`/`adapter`). **a/b1/b2a abgeschlossen** (s. Aktuelle Welle); **b2b** (`driving`/`driven`-Ports, `LayerOf` längster-Präfix) offen. Folgt aus dem Re-Evaluierungs-Trigger von [ADR-0008](../../adr/0008-ports-duerfen-domaenen-typen-referenzieren.md) | läuft |
+| driving/driven-Vertiefung | Konsumenten-Bedarf (Gate) | Port→Port-Richtungsregeln + Auto-Inferenz der Richtung aus Pfad/Namen ([ADR-0012](../../adr/0012-driving-driven-richtung-orthogonale-dimension.md) Out-of-Scope); Backlog-Entwurf [slice-013](../open/slice-013-driving-driven-vertiefung.md) — Carry-forward aus welle-10b/b2b | offen (schlafend bis Bedarf) |
 
 _(Kein fixer Termin — Wellen feuern auf Trigger.)_
 
@@ -86,3 +86,4 @@ flowchart LR
 | welle-07-command-guard | 2026-06-21 | [slice-005 §4](../done/slice-005-command-guard.md#4-closure-notiz-nach-done) — PreToolUse-Command-Guard (Tool-Call-Gate); Durchsetzungsschicht vollständig |
 | welle-08-ci | 2026-06-21 | [slice-006 §4](../done/slice-006-ci-pipeline.md#4-closure-notiz-nach-done) — PR-/Push-CI (`ci.yml`): `make ci` (+ `image-test`) + `make trace-check`; Dockerfile-OCI-Labels |
 | welle-09-commit-hook | 2026-06-21 | [slice-008 §4](../done/slice-008-commit-msg-hook.md#4-closure-notiz-nach-done) — lokaler `commit-msg`-Hook (`.githooks` + `make hooks`) |
+| welle-10-regel-engine-generalisierung | 2026-06-23 | [slice-012 §7](../done/slice-012-driving-driven-layerof.md) — Rollen-Dispatch + 4-Schichten-Modell + `driving`/`driven`-Richtung + `LayerOf` längster-literaler-Präfix; [ADR-0009](../../adr/0009-rollen-basierter-regel-dispatch.md)…[ADR-0013](../../adr/0013-layerof-laengster-praefix.md) `Accepted`. Carry-forward: [slice-013](../open/slice-013-driving-driven-vertiefung.md) |
