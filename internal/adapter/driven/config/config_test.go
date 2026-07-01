@@ -3,6 +3,7 @@ package config
 import (
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 )
 
@@ -214,9 +215,12 @@ func TestTechUnknownKeyFailsClosed(t *testing.T) { // AC-FA-CONF-001 negative: u
 	}
 }
 
-// resBody baut eine minimale gültige Config mit einem resolution-Eintrag.
+// resBody baut eine minimale gültige Config mit einem resolution-Eintrag. Es
+// deklariert bewusst mehrere languages (config.Load prüft die Backend-Menge
+// nicht — das tut extract), damit der resolution-Key-gegen-languages-Check
+// (ADR-0016) nur bei absichtlich nicht-deklarierten Keys greift.
 func resBody(entry string) string {
-	return "version: 1\nlanguages:\n  go: [\"**/*.go\"]\nlayers:\n  core: [\"core/**\"]\nedges:\n  - {from: core, to: core}\nresolution:\n  " + entry + "\n"
+	return "version: 1\nlanguages:\n  go: [\"**/*.go\"]\n  cpp: [\"**/*.h\"]\n  kotlin: [\"**/*.kt\"]\n  typescript: [\"**/*.ts\"]\n  csharp: [\"**/*.cs\"]\nlayers:\n  core: [\"core/**\"]\nedges:\n  - {from: core, to: core}\nresolution:\n  " + entry + "\n"
 }
 
 func TestResolutionFixedRootValid(t *testing.T) { // AC-FA-CONF-001 / ADR-0016: fixed-root lädt + wird dekodiert
@@ -230,12 +234,50 @@ func TestResolutionFixedRootValid(t *testing.T) { // AC-FA-CONF-001 / ADR-0016: 
 	}
 }
 
-func TestResolutionReservedModeFailsClosed(t *testing.T) { // ADR-0016: reservierter mode (relative/namespace) -> Exit 2
-	if _, err := New().Load(write(t, resBody(`typescript: {mode: relative}`))); err == nil {
-		t.Fatal("reservierter mode 'relative' muss brechen (fail-closed)")
+func TestResolutionReservedModeFailsClosed(t *testing.T) { // ADR-0016: reservierter mode (relative/namespace) -> Exit 2, Meldung nennt "reserviert"
+	_, err := New().Load(write(t, resBody(`typescript: {mode: relative}`)))
+	if err == nil || !strings.Contains(err.Error(), "reserviert") {
+		t.Fatalf("mode 'relative' muss als reserviert brechen, got %v", err)
 	}
-	if _, err := New().Load(write(t, resBody(`csharp: {mode: namespace}`))); err == nil {
-		t.Fatal("reservierter mode 'namespace' muss brechen (fail-closed)")
+	if _, err := New().Load(write(t, resBody(`csharp: {mode: namespace}`))); err == nil || !strings.Contains(err.Error(), "reserviert") {
+		t.Fatalf("mode 'namespace' muss als reserviert brechen, got %v", err)
+	}
+}
+
+func TestResolutionUndeclaredLanguageFailsClosed(t *testing.T) { // ADR-0016: resolution-Key ohne languages-Deklaration -> Exit 2 (kein stiller No-Op)
+	if _, err := New().Load(write(t, resBody(`rust: {mode: path}`))); err == nil {
+		t.Fatal("resolution für nicht deklarierte Sprache (rust) muss brechen — sonst Tippfehler = false-green")
+	}
+}
+
+func TestResolutionPathWithRootsFailsClosed(t *testing.T) { // ADR-0016 (LOW): mode path duldet kein roots/package_base
+	if _, err := New().Load(write(t, resBody(`go: {mode: path, roots: ["src"]}`))); err == nil {
+		t.Fatal("mode: path mit roots muss brechen (roots würden still ignoriert)")
+	}
+}
+
+func TestResolutionDegenerateFixedRootFailsClosed(t *testing.T) { // ADR-0016 (LOW): fixed-root ohne roots UND ohne package_base = No-Op -> Exit 2
+	if _, err := New().Load(write(t, resBody(`go: {mode: fixed-root}`))); err == nil {
+		t.Fatal("fixed-root ohne roots/package_base ist ein stiller No-Op und muss brechen")
+	}
+}
+
+func TestResolutionEmptyRootFailsClosed(t *testing.T) { // ADR-0016 (LOW): leerer root -> Exit 2
+	if _, err := New().Load(write(t, resBody(`cpp: {mode: fixed-root, roots: [""]}`))); err == nil {
+		t.Fatal("leerer root muss brechen")
+	}
+}
+
+func TestResolutionUnknownKeyFailsClosed(t *testing.T) { // ADR-0016 (F2): unbekannter Schlüssel im resolution-Eintrag -> Exit 2 (strict-decode)
+	if _, err := New().Load(write(t, resBody(`go: {mode: path, bogus: 1}`))); err == nil {
+		t.Fatal("unbekannter Schlüssel im resolution-Eintrag muss brechen (KnownFields)")
+	}
+}
+
+func TestResolutionTrailingSlashRootNormalized(t *testing.T) { // ADR-0016 (LOW): "src/" wird zu "src" normalisiert
+	m, err := New().Load(write(t, resBody(`cpp: {mode: fixed-root, roots: ["src/"]}`)))
+	if err != nil || len(m.Resolution["cpp"].Roots) != 1 || m.Resolution["cpp"].Roots[0] != "src" {
+		t.Fatalf("Trailing-Slash-Root muss zu 'src' normalisiert werden, got %v / %+v", err, m.Resolution)
 	}
 }
 

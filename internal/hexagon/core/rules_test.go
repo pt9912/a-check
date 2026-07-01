@@ -864,23 +864,59 @@ func TestTargetLayerFixedRootCpp(t *testing.T) { // ADR-0016: C++ src-Root -> La
 	}
 }
 
-func TestMonoRepoResolutionPerLanguage(t *testing.T) { // ADR-0016: Kotlin fixed-root löst pro Sprache; Kontrolle ohne resolution
+func TestMonoRepoResolutionPerLanguage(t *testing.T) { // ADR-0016 (F1): jede Datei zieht die Auflösung IHRER Sprache
 	m := Model{
 		Layers: []Layer{
-			{Name: "ktmodel", Globs: []string{"hexagon/model/**"}, Role: "domain"},
+			{Name: "ktdom", Globs: []string{"hexagon/model/**"}, Role: "domain"},
 			{Name: "ktadp", Globs: []string{"adapters/**"}, Role: "adapter"},
+			{Name: "cppdom", Globs: []string{"src/model/**"}, Role: "domain"},
+			{Name: "cppadp", Globs: []string{"src/io/**"}, Role: "adapter"},
 		},
-		Resolution: map[string]ResolutionConfig{"kotlin": {Mode: "fixed-root", PackageBase: "com.x"}},
+		Resolution: map[string]ResolutionConfig{
+			"kotlin": {Mode: "fixed-root", PackageBase: "com.x"},   // gepunktet (.->/ )
+			"cpp":    {Mode: "fixed-root", Roots: []string{"src"}}, // src-gewurzelt, KEINE Punkt-Ersetzung
+		},
 	}
-	// Kotlin-Domäne importiert einen Adapter -> nach Auflösung (com.x.adapters.Db -> adapters/Db) core-impurity.
-	viol := []FileImports{{Path: "hexagon/model/R.kt", Layer: "ktmodel", Language: "kotlin",
+	files := []FileImports{
+		// Kotlin-Domäne -> Adapter: com.x.adapters.Db -> adapters/Db -> core-impurity.
+		{Path: "hexagon/model/R.kt", Layer: "ktdom", Language: "kotlin", Imports: []Import{{Symbol: "com.x.adapters.Db", Line: 1}}},
+		// C++-Domäne -> Adapter: io/writer.h -> src/io/writer.h -> core-impurity (`.h` bleibt erhalten).
+		{Path: "src/model/r.h", Layer: "cppdom", Language: "cpp", Imports: []Import{{Symbol: "io/writer.h", Line: 1}}},
+	}
+	n := 0
+	for _, f := range Evaluate(m, files) {
+		if f.Rule == "core-impurity" {
+			n++
+		}
+	}
+	if n != 2 {
+		t.Fatalf("beide Sprachen müssen je über IHREN Modus auflösen -> 2× core-impurity, got %d", n)
+	}
+	// Beweis der Schlüssel-Selektion: eine Datei mit Sprache OHNE resolution-Eintrag bleibt unaufgelöst.
+	noRes := []FileImports{{Path: "hexagon/model/R.kt", Layer: "ktdom", Language: "go",
 		Imports: []Import{{Symbol: "com.x.adapters.Db", Line: 1}}}}
-	if fs := Evaluate(m, viol); !hasRule(fs, "core-impurity") {
-		t.Fatalf("Kotlin fixed-root muss com.x.adapters.Db auf den Adapter auflösen -> core-impurity, got %v", fs)
+	if fs := Evaluate(m, noRes); len(fs) != 0 {
+		t.Fatalf("Sprache 'go' ohne resolution-Eintrag: gepunktetes Symbol bleibt unaufgelöst -> kein Befund, got %v", fs)
 	}
-	// Kontrolle: OHNE resolution bleibt der gepunktete Import unaufgelöst -> kein Befund.
-	m.Resolution = nil
-	if fs := Evaluate(m, viol); len(fs) != 0 {
-		t.Fatalf("ohne resolution bleibt com.x.adapters.Db unaufgelöst -> kein Befund, got %v", fs)
+}
+
+func TestResolveImportFixedRootMultipleRoots(t *testing.T) { // ADR-0016 (F3): ein Kandidat je root
+	got := resolveImport("hexagon/model/room.h", ResolutionConfig{Mode: "fixed-root", Roots: []string{"src", "include"}})
+	if len(got) != 2 || got[0] != "src/hexagon/model/room.h" || got[1] != "include/hexagon/model/room.h" {
+		t.Fatalf("erwarte je root einen Kandidaten, got %v", got)
+	}
+}
+
+func TestResolveImportFixedRootDottedWithRoots(t *testing.T) { // ADR-0016 (F4): package_base-Strip + .->/ DANN root voran
+	got := resolveImport("com.x.a.B", ResolutionConfig{Mode: "fixed-root", PackageBase: "com.x", Roots: []string{"src/main/kotlin"}})
+	if len(got) != 1 || got[0] != "src/main/kotlin/a/B" {
+		t.Fatalf("erwarte [src/main/kotlin/a/B], got %v", got)
+	}
+}
+
+func TestResolveImportPackageBaseNoMatch(t *testing.T) { // ADR-0016 (F7): Import ohne package_base-Präfix -> kein Strip, aber .->/ (dotted)
+	got := resolveImport("org.other.Foo", ResolutionConfig{Mode: "fixed-root", PackageBase: "com.x"})
+	if len(got) != 1 || got[0] != "org/other/Foo" {
+		t.Fatalf("paket-fremder Import: erwarte [org/other/Foo], got %v", got)
 	}
 }

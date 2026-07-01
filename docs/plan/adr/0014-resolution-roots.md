@@ -87,4 +87,4 @@ Das Build-System bleibt die **grobe** Grenze; a-check die **paket-/pfad-feine** 
 | Datum | Ereignis |
 |---|---|
 | 2026-06-23 | Proposed — welle-06, aus dem x-wal/b-cad-Pilot (JVM-Auflösungslücke); Weg A (Resolution-Roots) gegen tree-sitter/Modul-Graph. |
-| 2026-06-23 | Proposed → Accepted (Sign-off Auftraggeber: Weg A als JVM-Auflösungs-*Richtung*; tree-sitter/Modul-Graph verworfen). Ab jetzt immutable; die Umsetzung (Schema-`resolution`-Block) bleibt **gated** ([slice-015](../planning/open/slice-015-resolution-roots.md)) — die Spec-Schärfung folgt dort. Ablösung nur via Folge-ADR mit `Supersedes`. |
+| 2026-06-23 | Proposed → Accepted (Sign-off Auftraggeber: Weg A als JVM-Auflösungs-*Richtung*; tree-sitter/Modul-Graph verworfen). Ab jetzt immutable; die Umsetzung (Schema-`resolution`-Block) bleibt **gated** ([slice-015](../planning/done/slice-015-resolution-roots.md)) — die Spec-Schärfung folgt dort. Ablösung nur via Folge-ADR mit `Supersedes`. |

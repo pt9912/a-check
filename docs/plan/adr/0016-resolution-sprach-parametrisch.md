@@ -82,4 +82,4 @@ gelten unverändert *innerhalb* einer Sprach-Config):
 
 | Datum | Ereignis |
 |---|---|
-| 2026-07-01 | Proposed → Accepted (Sign-off Auftraggeber: Weg A — Sprach-Map + `mode` + Threading, estate-weit; erweitert ADR-0014, `Supersedes: —`). Umsetzung [slice-015](../planning/open/slice-015-resolution-roots.md). Ab jetzt immutable; Ablösung nur via Folge-ADR mit `Supersedes`. |
+| 2026-07-01 | Proposed → Accepted (Sign-off Auftraggeber: Weg A — Sprach-Map + `mode` + Threading, estate-weit; erweitert ADR-0014, `Supersedes: —`). Umsetzung [slice-015](../planning/done/slice-015-resolution-roots.md). Ab jetzt immutable; Ablösung nur via Folge-ADR mit `Supersedes`. |

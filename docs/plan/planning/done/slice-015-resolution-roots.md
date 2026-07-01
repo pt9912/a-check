@@ -1,6 +1,8 @@
 # slice-015 — Resolution-Roots: Import-Auflösung gegen konfigurierbare Wurzeln (sprach-parametrisch)
 
-**Status:** open (Entwurf zur Abnahme — **Abnahme-Gate §5 offen**, blockiert die DoD).
+**Status:** done (2026-07-01). Umsetzung + `make gates` + Multi-Linsen-Review (3 Linsen) + Delta erledigt;
+Synthese [`docs/reviews/2026-07-01-slice-015-resolution-roots.md`](../../../reviews/2026-07-01-slice-015-resolution-roots.md).
+Abnahme-Gate §5 aufgelöst (§7).
 **Bezug:** setzt [ADR-0014](../../adr/0014-resolution-roots.md) um und **erweitert** ihn per
 **Folge-ADR** (§3.0; Sprach-Map + Sprach-Threading, `Supersedes: —`); erweitert
 [AC-FA-CONF-001](../../../../spec/lastenheft.md#ac-fa-conf-001--konfigurationsdatei-a-checkyml)
@@ -45,7 +47,7 @@ namespace) sind andere Auflösungs-Signale und bekommen je einen eigenen Folge-A
   (`FileImports.Language` **neu**; `targetLayer`/`ruleFor` sprach-bewusst), `internal/adapter/driven/extract`
   (setzt `FileImports.Language` aus `langFor`).
 - **Version:** Lastenheft/Spezifikation → **nächste freie Minor** (0.10.0, falls slice-015 vor
-  [slice-013](slice-013-driving-driven-vertiefung.md) landet — beide sind Entwurf; wer zuerst mergt,
+  [slice-013](../open/slice-013-driving-driven-vertiefung.md) landet — beide sind Entwurf; wer zuerst mergt,
   nimmt 0.10.0).
 - **Gates:** `make gates` → `make ci`.
 
@@ -97,23 +99,50 @@ namespace) sind andere Auflösungs-Signale und bekommen je einen eigenen Folge-A
 - **Paket-spiegelt-Verzeichnis** ist die ehrliche Auflösungs-Grenze (§3.3), keine offene Frage.
 - **Default bleibt** Import-als-Pfad ohne `resolution` — kein Bruch, Dogfooding 0 ([ADR-0014](../../adr/0014-resolution-roots.md) Fitness Function).
 
-## 5. Abnahme-Gate (blockierend — **vor** der DoD zu lösen)
+## 5. Abnahme-Gate (aufgelöst — §7)
 
-- **Folge-ADR erforderlich** (B1): [ADR-0014](../../adr/0014-resolution-roots.md) ist immutable; die
-  Sprach-Map + das Threading dürfen **nicht** als Historiennotiz dort, sondern nur als erweiternder
-  Folge-ADR (`Supersedes: —`) fallen. §3.0.
-- **x-wal-Grenze** (B3): das reale x-wal-Layout gegen die „Paket==Verzeichnis"-Grenze (§3.3) prüfen —
-  spiegeln x-wals Verzeichnisse die `driving`/`driven`-Pakete? Falls **nein**, deckt der fester-Wurzel-Modus
-  x-wal **nicht** (eigener Mechanismus, z. B. Paket→Verzeichnis-Map — dann eigener Slice/ADR). Der JVM-Test
-  bleibt bewusst innerhalb der Grenze (Paket==Verzeichnis), sonst testet er ein künstliches Layout.
-- **Cross-Sprach-Importe**: Default (unaufgelöst → keine Regel) als ehrliche Grenze bestätigen.
+- **Folge-ADR erforderlich** (B1): **gelöst** — [ADR-0016](../../adr/0016-resolution-sprach-parametrisch.md)
+  (Accepted) erweitert [ADR-0014](../../adr/0014-resolution-roots.md) (`Supersedes: —`) um Sprach-Map +
+  Threading; keine Historiennotiz im immutable Original.
+- **x-wal-Grenze** (B3): **als ehrliche Grenze dokumentiert** (§3.3, [AC-QA-02](../../../../spec/lastenheft.md#ac-qa-02--hermetik-und-ehrliche-heuristik-grenze)) — der Kern greift bei
+  Paket==Verzeichnis. Die *empirische* Prüfung von x-wals realem Layout ist **vertagt** (x-wal pilotiert
+  noch nicht) und blockiert den Kern **nicht**; falls x-wals Verzeichnisse die Pakete nicht spiegeln, ist
+  das ein eigenes Inkrement (Paket→Verzeichnis-Map). Der JVM-Test bleibt bewusst innerhalb der Grenze.
+- **Cross-Sprach-Importe**: bestätigt — Default (unaufgelöst → keine schicht-basierte Regel) ist die
+  ehrliche Grenze.
 
-## 6. Definition of Done (erst nach §5-Gate)
+## 6. Definition of Done
 
-- [ ] **Folge-ADR** Accepted + Index; §5-Gate gelöst (x-wal-Grenze empirisch geklärt).
-- [ ] Lastenheft + Spezifikation (nächste Minor): `resolution`-Map-Schema, Symbol→Layer sprach-bewusst
-  **inkl. Paket==Verzeichnis-Grenze**, je Historie-Zeile.
-- [ ] Code: `resolution`-Decode; `FileImports.Language` + Threading; `targetLayer` sprach-bewusst; Default unverändert.
-- [ ] Tests: Kotlin/Java-dotted→Layer; C++-`src`-Root; **Mono-Repo Go+Kotlin**; `go: {}`==weggelassen;
-  Rückwärtskompat; Dogfooding 0.
-- [ ] `make gates` + `make ci` grün; Multi-Linsen-Review; Merge auf Wort.
+- [x] **[ADR-0016](../../adr/0016-resolution-sprach-parametrisch.md)** Accepted + Index; §5-Gate aufgelöst
+  (x-wal-Grenze dokumentiert + vertagt, §5/§7).
+- [x] Lastenheft + Spezifikation **0.10.0**: `resolution`-Map-Schema, Symbol→Layer sprach-bewusst
+  inkl. Paket==Verzeichnis-Grenze, je Historie-Zeile.
+- [x] Code: `resolution`-Decode (+ Sprach-/Feld-Validierung, fail-closed); `FileImports.Language` +
+  Threading; `targetLayer` sprach-bewusst; Default unverändert.
+- [x] Tests: Kotlin-dotted + C++-`src`-Root; **Mono-Repo (kotlin+cpp, per-Sprache-Dispatch)**;
+  `mode: path`==weggelassen; reserved/undeclared/degenerate → Exit 2; Rückwärtskompat; Dogfooding 0.
+- [x] `make gates` + `make ci` grün; Multi-Linsen-Review (3 Linsen) + Delta; Merge auf Wort (offen).
+
+## 7. Closure-Notiz
+
+**Gate-Beleg:** `make gates` grün — `arch-check` (Dogfooding) 0, `doc-check` 0, alle Test-Pakete `ok`
+(inkl. Mono-Repo-2-Sprach + Resolution-Validierungen); `record-gates` geschrieben.
+
+**2 beobachtbare Kriterien:**
+1. `resolution: {kotlin: {mode: fixed-root, package_base: com.x}}` löst `com.x.adapters.Db` auf
+   `adapters/Db` → eine Kotlin-Domäne, die das importiert, wird `core-impurity` (statt vorher
+   unaufgelöst/kein Befund). C++ `{mode: fixed-root, roots: [src]}` löst `io/writer.h` → `src/io/writer.h`
+   **ohne** die `.h`-Endung zu zerstören.
+2. Fail-closed: reservierter `mode` (`relative`/`namespace`), nicht deklarierte Sprache, degeneriertes
+   `fixed-root`, `path` mit `roots`, leerer `root` → **Exit 2** (kein stiller No-Op).
+
+**Lerneintrag:**
+- Der **Kern-Umbau** war das **Sprach-Threading** (`FileImports.Language` → `targetLayer`): ohne die
+  Quelldatei-Sprache kann a-check in einem Mono-Repo nicht wissen, welchen Auflösungs-Modus ein Import
+  braucht. Das Review deckte auf, dass der erste Mono-Repo-Test das gar nicht bewies (nur 1 Sprache).
+- Die `.`→`/`-Ersetzung an **`package_base`** zu binden (statt unbedingt) war der Fix eines echten Bugs
+  (C++ `room.h` → `room/h`); gepunktete Sprache signalisiert sich über `package_base`.
+- **„kein stiller No-Op" konsequent:** ein `resolution`-Key ohne `languages`-Deklaration (Tippfehler)
+  bricht jetzt mit Exit 2 — dieselbe Ethos-Linie wie slice-017.
+- **x-wal ≠ Blocker:** der estate-weite Kern (Paket==Verzeichnis) steht unabhängig; x-wals evtl.
+  Paket≠Verzeichnis-Divergenz ist ein eigenes, vertagtes Inkrement.

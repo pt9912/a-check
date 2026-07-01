@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"os"
 	"sort"
+	"strings"
 
 	"github.com/pt9912/a-check/internal/hexagon/core"
 	"github.com/pt9912/a-check/internal/hexagon/port"
@@ -47,14 +48,14 @@ type yamlLayer struct {
 }
 
 type yamlConfig struct {
-	Version         int                  `yaml:"version"`
-	Languages       map[string][]string  `yaml:"languages"`
-	Layers          map[string]yaml.Node `yaml:"layers"`
-	Edges           []yamlEdge           `yaml:"edges"`
-	AdapterSink     string               `yaml:"adapter_sink"`
-	Tech            []yamlTech           `yaml:"tech"`
-	CompositionRoot []string             `yaml:"composition_root"`
-	Allow           []yamlEdge           `yaml:"allow"`
+	Version         int                       `yaml:"version"`
+	Languages       map[string][]string       `yaml:"languages"`
+	Layers          map[string]yaml.Node      `yaml:"layers"`
+	Edges           []yamlEdge                `yaml:"edges"`
+	AdapterSink     string                    `yaml:"adapter_sink"`
+	Tech            []yamlTech                `yaml:"tech"`
+	CompositionRoot []string                  `yaml:"composition_root"`
+	Allow           []yamlEdge                `yaml:"allow"`
 	Markers         *yamlMarkers              `yaml:"markers"`
 	Forbidden       map[string][]string       `yaml:"forbidden_constructs"`
 	Resolution      map[string]yamlResolution `yaml:"resolution"`
@@ -114,7 +115,7 @@ func (Adapter) Load(path string) (core.Model, error) {
 	if yc.Markers != nil {
 		m.IgnoreSymbols = yc.Markers.IgnoreSymbols
 	}
-	res, rerr := decodeResolution(yc.Resolution, path)
+	res, rerr := decodeResolution(yc.Resolution, yc.Languages, path)
 	if rerr != nil {
 		return core.Model{}, rerr
 	}
@@ -122,28 +123,69 @@ func (Adapter) Load(path string) (core.Model, error) {
 	return m, nil
 }
 
-// decodeResolution maps the resolution block to the core model and validates
-// each mode (ADR-0016): path/fixed-root are live, relative/namespace are
-// reserved (→ exit 2), anything else is invalid. A blank mode defaults to path.
-func decodeResolution(res map[string]yamlResolution, path string) (map[string]core.ResolutionConfig, error) {
+// decodeResolution maps the resolution block to the core model (ADR-0016),
+// validating each entry (see resolutionEntry). A blank block yields nil.
+func decodeResolution(res map[string]yamlResolution, langs map[string][]string, path string) (map[string]core.ResolutionConfig, error) {
 	if len(res) == 0 {
 		return nil, nil
 	}
 	out := make(map[string]core.ResolutionConfig, len(res))
 	for _, lang := range sortedKeys(res) {
-		r := res[lang]
-		mode := r.Mode
-		if mode == "" {
-			mode = "path"
+		cfg, err := resolutionEntry(lang, res[lang], langs, path)
+		if err != nil {
+			return nil, err
 		}
-		switch mode {
-		case "path", "fixed-root":
-		case "relative", "namespace":
-			return nil, fmt.Errorf("%s: resolution[%q].mode %q ist reserviert (Folge-ADR, noch nicht implementiert)", path, lang, mode)
-		default:
-			return nil, fmt.Errorf("%s: resolution[%q].mode %q ungültig (path|fixed-root)", path, lang, mode)
+		out[lang] = cfg
+	}
+	return out, nil
+}
+
+// resolutionEntry validates + normalizes one resolution entry (ADR-0016): the
+// key must be a declared language (no silent no-op for typos); path duldet kein
+// roots/package_base; fixed-root braucht mindestens eines; relative/namespace
+// sind reserviert (→ exit 2). A blank mode defaults to path.
+func resolutionEntry(lang string, r yamlResolution, langs map[string][]string, path string) (core.ResolutionConfig, error) {
+	if _, ok := langs[lang]; !ok {
+		return core.ResolutionConfig{}, fmt.Errorf("%s: resolution[%q]: keine unter languages deklarierte Sprache", path, lang)
+	}
+	mode := r.Mode
+	if mode == "" {
+		mode = "path"
+	}
+	switch mode {
+	case "path":
+		if len(r.Roots) > 0 || r.PackageBase != "" {
+			return core.ResolutionConfig{}, fmt.Errorf("%s: resolution[%q]: mode path duldet kein roots/package_base", path, lang)
 		}
-		out[lang] = core.ResolutionConfig{Mode: mode, Roots: r.Roots, PackageBase: r.PackageBase}
+	case "fixed-root":
+		if len(r.Roots) == 0 && r.PackageBase == "" {
+			return core.ResolutionConfig{}, fmt.Errorf("%s: resolution[%q]: mode fixed-root braucht roots und/oder package_base", path, lang)
+		}
+	case "relative", "namespace":
+		return core.ResolutionConfig{}, fmt.Errorf("%s: resolution[%q].mode %q ist reserviert (Folge-ADR, noch nicht implementiert)", path, lang, mode)
+	default:
+		return core.ResolutionConfig{}, fmt.Errorf("%s: resolution[%q].mode %q ungültig (path|fixed-root)", path, lang, mode)
+	}
+	roots, err := cleanRoots(r.Roots, lang, path)
+	if err != nil {
+		return core.ResolutionConfig{}, err
+	}
+	return core.ResolutionConfig{Mode: mode, Roots: roots, PackageBase: r.PackageBase}, nil
+}
+
+// cleanRoots trims trailing slashes and rejects empty roots (config footgun,
+// sonst „src/" → „src//x" bzw. „" → „/x", die still nichts matchen).
+func cleanRoots(roots []string, lang, path string) ([]string, error) {
+	if len(roots) == 0 {
+		return nil, nil
+	}
+	out := make([]string, 0, len(roots))
+	for _, r := range roots {
+		t := strings.TrimRight(r, "/")
+		if t == "" {
+			return nil, fmt.Errorf("%s: resolution[%q]: leerer root", path, lang)
+		}
+		out = append(out, t)
 	}
 	return out, nil
 }

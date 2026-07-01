@@ -1,6 +1,8 @@
 package extract
 
 import (
+	"os"
+	"path/filepath"
 	"sort"
 	"strings"
 	"testing"
@@ -155,5 +157,19 @@ func TestCheckLanguagesMixedUnsupported(t *testing.T) { // slice-017: Mono-Repo 
 func TestCheckLanguagesSupported(t *testing.T) { // slice-017: nur unterstützte Sprachen (Mono-Repo go+cpp) -> kein Fehler
 	if err := newAdapter().checkLanguages(map[string][]string{"go": {"**/*.go"}, "cpp": {"**/*.cpp"}}); err != nil {
 		t.Fatalf("go+cpp (beide unterstützt) müssen akzeptiert werden, got %v", err)
+	}
+}
+
+func TestExtractSetsLanguage(t *testing.T) { // ADR-0016 (F5): Extract markiert jede Datei mit ihrer Sprache (fürs Threading)
+	dir := t.TempDir()
+	if err := os.WriteFile(filepath.Join(dir, "x.go"), []byte("package x\n"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	files, err := newAdapter().Extract(dir, core.Model{Languages: map[string][]string{"go": {"**/*.go"}}})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(files) != 1 || files[0].Language != "go" {
+		t.Fatalf("Extract muss Language='go' setzen (Threading-Quelle), got %+v", files)
 	}
 }
