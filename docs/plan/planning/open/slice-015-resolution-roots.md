@@ -36,13 +36,19 @@ Der Trigger feuert also **pro Konsument**, sobald dessen Import-Form nicht „Pf
 1. **`resolution`-Block** in `.a-check.yml`
    ([SPEC-CONF-001](../../../../spec/spezifikation.md#spec-conf-001--konfigurationsschema)):
    `roots` (Auflösungs-Wurzeln) + `package_base` (gepunktete Pakete normalisieren); strict-decode.
-   Deckt **Modus fester-Wurzel** ab (Go bleibt Default, JVM/Python/C++-`src` via `roots`/`package_base`).
+   **Als Map Sprache → Config** (Mono-Repo-tauglich, §3), nicht ein globaler Modus. Deckt
+   **Modus fester-Wurzel** ab (Go bleibt Default, JVM/Python/C++-`src` via `roots`/`package_base`).
 2. **Separator-agnostische Auflösung** in `rules.go` (`targetLayer`/`segIndex`): `.` wie `/`,
    wurzel-relativ; **Default unverändert** (Import-als-Pfad) ohne `resolution`-Block.
 3. Tests: JVM-Paket→Layer; C++ `src`-Root; Default-Rückwärtskompat (Go/C++).
 
 ## 3. Vor der Umsetzung zu klären
 
+- **Mono-Repos (mehrere Sprachen in einem Repo, z. B. Go + TypeScript):** `resolution` muss **pro
+  Sprache** wählbar sein — Go löst über den Modulpfad auf, TypeScript relativ-zum-File. Der Block ist
+  also eine **Map Sprache → Auflösungs-Config** (analog zum `languages`-Map-Muster), nicht ein
+  globaler Modus. Die *Deklaration* mehrerer Sprachen + je-Key-Validierung ist bereits erledigt
+  ([slice-017](../done/slice-017-unbekannte-sprache-exit2.md)); offen ist allein die per-Sprache-*Auflösung*.
 - **Zwei weitere Auflösungs-Modi jenseits von [ADR-0014](../../adr/0014-resolution-roots.md)** —
   brauchen vermutlich je einen **Folge-ADR**, wenn ihr Pilot feuert: (a) *relativ-zum-File* (TypeScript,
   quoted C++), (b) *Namespace-Index* (C#). Beide sind kein reines `roots`/`package_base`.
