@@ -2,16 +2,18 @@
 # Makefile des konsumierenden Repos. Stack-konforme Integration ohne
 # Skript-Kopie: nur dieses Fragment + die repo-eigene .d-check.yml.
 #
-# Erzeugt aus `d-check --print-mk` (DC-FA-CLI-010, v0.24.0) und an die
-# Repo-Politik angepasst: Image digest-gepinnt statt Tag (Pin-Politik
-# sinngemäß AC-QA-03) sowie `## `-Help-Annotation je Target (make help).
-# Refresh: `docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:vX --print-mk`,
-# dann Digest neu pinnen.
+# Erzeugt aus `d-check --print-mk` (DC-FA-CLI-010) und an die Repo-Politik
+# angepasst: Image digest-gepinnt statt Tag (Pin-Politik sinngemäß AC-QA-03),
+# `## `-Help-Annotation je Target (make help), und bewusst nur die von a-check
+# genutzten Targets (doc-check/-trace/-complete). v0.35.0 bietet zusätzlich
+# doc-doctor/-repair/-immutable/-commits/-help — hier weggelassen, weil jedes
+# reale d-check.mk-Target sonst in AGENTS §4 stehen müsste (gate-consistency).
+# Refresh: `docker run --rm ghcr.io/pt9912/d-check:vX --print-mk`, dann Digest neu pinnen.
 
-# d-check-Image, digest-gepinnt (v0.24.0) — Reproduzierbarkeit (Pin-Politik
+# d-check-Image, digest-gepinnt (v0.35.0) — Reproduzierbarkeit (Pin-Politik
 # sinngemäß AC-QA-03). `?=` erlaubt Override; für strikte Reproduzierbarkeit
 # bleibt der Digest gepinnt.
-DCHECK_IMAGE ?= ghcr.io/pt9912/d-check@sha256:1c28a2b7e0e624763577ecba75b027f384692ecaa8a78a6e353a1a0c1889a4f8
+DCHECK_IMAGE ?= ghcr.io/pt9912/d-check@sha256:9d7b23ac82b94a97bc98e36b748e48644dff7adc6702cb608f13402d309e6558
 
 # TRACE_FLAGS: optionale Flags für die advisory RTM-Targets (z. B. --json).
 TRACE_FLAGS ?=
