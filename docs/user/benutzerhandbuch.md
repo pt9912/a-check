@@ -1,6 +1,6 @@
 # Benutzerhandbuch: a-check
 
-**Handbuch-Version:** 1.11 · **Software-Version:** 0.3.0 · **Stand:** 2026-07-01 ·
+**Handbuch-Version:** 1.12 · **Software-Version:** 0.4.0 · **Stand:** 2026-07-01 ·
 **Autor:** pt9912 (Maintainer)
 
 ---
@@ -206,8 +206,6 @@ Symbol den Text enthält; `match: regex` interpretiert `pattern` als **RE2-Regex
 (unverankert) — nötig, wenn ein Framework nur als Muster fassbar ist, etwa Qt-Header
 `Q[A-Za-z]`. Ein unbekannter `match`-Wert oder eine ungültige Regex bricht mit
 Exit-Code 2 ab. Treffen mehrere Muster dasselbe Symbol, greift das **zuerst notierte**.
-*(`match` ist ab dem nächsten Release (v0.4.0) verfügbar; das aktuell gepinnte v0.3.0-Image
-kennt den Schlüssel noch nicht und bricht bei `match` mit Exit-Code 2 ab.)*
 
 **Schicht-Rollen (`role`).** Ein `layers`-Eintrag ist **entweder** eine Glob-Liste
 (`name: [globs]`) **oder** ein Objekt `{globs: [...], role: <rolle>, direction: <richtung>}`
@@ -348,3 +346,4 @@ und die [Spezifikation](../../spec/spezifikation.md); ein Überblick steht in de
 | 1.9 | 2026-06-23 | Software-Version **0.3.0** (GHCR-Release `v0.3.0` veröffentlicht, digest-gepinnt `@sha256:93be49a6…`). |
 | 1.10 | 2026-06-23 | §1/§4 an Lastenheft 0.7.0: fünftes Sprach-Backend **Java** (`languages`-Schlüssel `java`, `import`/`import static`); Sprach-Aufzählung + `languages`-Enum/Beispiel ergänzt. |
 | 1.11 | 2026-07-01 | §3.4/§4 an Lastenheft 0.8.0: `tech`-Muster optional als **RE2-Regex** (`match: substring\|regex`, Standard `substring`) — nötig für nur als Muster fassbare Frameworks (Qt `Q[A-Za-z]`); Mehrfach-Treffer nach Deklarationsreihenfolge (erstes Muster gewinnt); Exit 2 bei ungültigem `match`/leerer bzw. ungültiger Regex. |
+| 1.12 | 2026-07-01 | Software-Version **0.4.0** (GHCR-Release `v0.4.0` veröffentlicht, digest-gepinnt `@sha256:b0d6e33c…`) — `match: regex` + Java-Backend jetzt im veröffentlichten Image; die v0.3.0-Verfügbarkeitsnotiz zu `match` entfällt. |

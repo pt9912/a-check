@@ -30,9 +30,8 @@ Bringt `match: regex` (b-cad-Regel E) und das Java-Backend ins veröffentlichte 
 
 - **doc-check-Pin** (Schwester-Tool `d-check`) von **v0.24.0** auf **v0.35.0**
   (`@sha256:9d7b23ac…`) gehoben — Gate-Tooling, netzlos; a-checks aktive Module unverändert.
-- **Selbst-Pin** (`--print-mk`/`a-check.mk`/`cli.go`-`aCheckImage`): die Pin-Hebung auf den
-  **v0.4.0**-Digest folgt **nach** dem Release (Digest existiert erst nach dem CI-Build;
-  AC-QA-03, ADR-0004/ADR-0007). Bis dahin bleibt der v0.3.0-Digest (`@sha256:93be49a6…`) gepinnt.
+- **Selbst-Pin** (`--print-mk`/`a-check.mk`/`cli.go`-`aCheckImage`) auf den **v0.4.0**-Digest
+  `@sha256:b0d6e33c…` gehoben (AC-QA-03, ADR-0004/ADR-0007).
 
 ## [0.3.0] - 2026-06-23
 

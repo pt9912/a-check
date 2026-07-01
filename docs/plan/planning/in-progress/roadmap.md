@@ -35,10 +35,10 @@ ungenutzt. Port→Port-Richtungsregeln und Auto-Inferenz der Richtung bleiben ou
 (späteres Inkrement).
 Alle Gates real und grün (`make gates`; Dogfooding 0 Befunde).
 
-**Parallel offen — `welle-05-release`:** `v0.1.0`, `v0.2.0` und **`v0.3.0`** sind veröffentlicht
+**Parallel offen — `welle-05-release`:** `v0.1.0`, `v0.2.0`, `v0.3.0` und **`v0.4.0`** sind veröffentlicht
 ([slice-007 §4](../done/slice-007-release-pipeline.md#4-closure-notiz-nach-done),
 [ADR-0007](../../adr/0007-latest-tag-politik.md) `Accepted`; GHCR
-`@sha256:93be49a6…` (aktuell v0.3.0) digest-gepinnt in `a-check.mk`); nur die
+`@sha256:b0d6e33c…` (aktuell v0.4.0) digest-gepinnt in `a-check.mk`); nur die
 **Pilot-Einbindung** in ein Konsumenten-Repo bleibt. Für den b-cad-Pilot liefert
 [slice-016](../done/slice-016-regex-tech-muster.md) ([ADR-0015](../../adr/0015-regex-tech-muster.md),
 Lastenheft/Spezifikation 0.8.0) die letzte fehlende a-check-Fähigkeit — `tech`-Muster als opt-in

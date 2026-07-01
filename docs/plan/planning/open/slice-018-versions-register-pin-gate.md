@@ -22,7 +22,7 @@ diese Klasse erzwingen könnten (in `.d-check.yml` aktuell **nicht** aktiv).
 ## 2. Geplanter Umfang
 
 1. **`version.md`** (Repo-Wurzel, Muster von d-check): Versions-Koordinaten (Tag + Datum + Release-Link)
-   für `v0.1.0`–`v0.3.0`; **kein** Duplikat der CHANGELOG-Details. Anker `#vX.Y.Z` **nur** auf der
+   für `v0.1.0`–`v0.4.0`; **kein** Duplikat der CHANGELOG-Details. Anker `#vX.Y.Z` **nur** auf der
    aktuellen Version (wandert beim Release → stale Pins brechen als `anchor-missing`).
 2. **Versions-Erwähnungen umhängen**: README-Status + Handbuch-Software-Version verlinken auf
    `version.md#aktuell` statt Nummer/Digest hart zu setzen.

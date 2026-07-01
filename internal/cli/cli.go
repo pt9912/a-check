@@ -57,10 +57,10 @@ func Run(args []string, out, errw io.Writer) int {
 	return report.New(out, errw).Report(core.Evaluate(m, files))
 }
 
-// aCheckImage is the distributed image reference, digest-pinned to the v0.3.0
+// aCheckImage is the distributed image reference, digest-pinned to the v0.4.0
 // release (AC-QA-03, ADR-0007): consumers pin the immutable digest, not a
 // moving tag. Pin-Hebung is a conscious commit (ADR-0004).
-const aCheckImage = "ghcr.io/pt9912/a-check@sha256:93be49a66979f6dcb2b9094559d99900050f463fd0272d2e8706299431adf206"
+const aCheckImage = "ghcr.io/pt9912/a-check@sha256:b0d6e33cb5ecd8377f68f80fb11be7cd7071c7aadbe877ac69fce483619cb21c"
 
 const mkFragment = `# a-check.mk — Architektur-Gate via a-check, zum ` + "`include`" + ` in das
 # Makefile des konsumierenden Repos. Erzeugt von ` + "`a-check --print-mk`" + `.
