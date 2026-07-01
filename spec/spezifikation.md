@@ -1,6 +1,6 @@
 # Spezifikation — a-check
 
-**Version:** 0.9.0
+**Version:** 0.10.0
 
 **Status:** Draft
 
@@ -54,6 +54,10 @@ markers:                        # Heuristik-Grenze: Allowlist/Marker-Ausnahmen (
   ignore_symbols: ["Queue.h"]
 forbidden_constructs:           # Schicht → verbotene Text-Muster (Port-Disziplin, optional)
   ports: ["impl "]
+resolution:                     # Symbol→Layer-Auflösung je Sprache (optional)
+  go:     {mode: path}                          # Default (== weggelassen)
+  cpp:    {mode: fixed-root, roots: ["src"]}
+  kotlin: {mode: fixed-root, roots: ["src/main/kotlin"], package_base: "com.x"}
 ```
 
 - **Pflichtblöcke:** `version`, `languages`, `layers`, `edges`. Die `languages`-Schlüssel müssen aus
@@ -61,7 +65,7 @@ forbidden_constructs:           # Schicht → verbotene Text-Muster (Port-Diszip
   unbekannter Schlüssel → Exit 2 (die Menge steht **normativ nur** dort, hier bloß verwiesen —
   **kein Duplikat**).
 - **Optionalblöcke:** `adapter_sink`, `tech`, `composition_root`, `allow`,
-  `markers`, `forbidden_constructs`. Fehlt ein Optionalblock, entfällt die
+  `markers`, `forbidden_constructs`, `resolution`. Fehlt ein Optionalblock, entfällt die
   zugehörige Prüfung — nicht still, sondern bewusst nicht-konfiguriert. Die je
   Block präzisierte Anforderung:
   - `adapter_sink` → gemeinsame Senke aus [AC-FA-RULE-002](lastenheft.md#ac-fa-rule-002--keine-lateralen-adapter-kanten-regel-lateral-adapter); fehlt sie, darf **kein** Adapter einen anderen importieren (strengere Auslegung).
@@ -70,6 +74,7 @@ forbidden_constructs:           # Schicht → verbotene Text-Muster (Port-Diszip
   - `allow` → konfigurativ erlaubte Sonderkante/Re-Export ([AC-FA-RULE-005](lastenheft.md#ac-fa-rule-005--schicht-richtung-regel-wrong-direction) / [AC-FA-RULE-004](lastenheft.md#ac-fa-rule-004--port-disziplin-regel-port-impurity) Boundary).
   - `markers` → dokumentierte Heuristik-Ausnahme ([AC-QA-02](lastenheft.md#ac-qa-02--hermetik-und-ehrliche-heuristik-grenze)).
   - `forbidden_constructs` → schichtbezogen verbotene Konstrukte ([AC-FA-RULE-004](lastenheft.md#ac-fa-rule-004--port-disziplin-regel-port-impurity)); als Text-Muster geprüft (siehe [SPEC-EXTRACT-001](#spec-extract-001--import-extraktion)).
+  - `resolution` → Symbol→Layer-Auflösung **je Sprache** (Map Sprache → `{mode, roots, package_base}`); `mode ∈ {path (Default), fixed-root}`, `relative`/`namespace` **reserviert** → Exit 2. `fixed-root`: `roots` vorangestellt; **bei gesetztem `package_base`** (gepunktete Sprache) zusätzlich Präfix-Strip + `.`→`/` (eine Pfad-Sprache wie C++ behält ihre `.`-Endungen). Greift nur, wenn der Paket-Baum den Verzeichnis-Baum spiegelt ([AC-QA-02](lastenheft.md#ac-qa-02--hermetik-und-ehrliche-heuristik-grenze)). Fehlt es (oder eine Sprache) → Import-als-Pfad. Nutzt die Quelldatei-Sprache ([SPEC-RULE-001](#spec-rule-001--regel-auswertung)/[SPEC-EXTRACT-001](#spec-extract-001--import-extraktion)).
 - **Schicht-Rollen** ([AC-FA-RULE-006](lastenheft.md#ac-fa-rule-006--schicht-rollen-generische-regel-anwendung)): ein `layers`-Eintrag ist **entweder** eine Glob-Liste (`name: [globs]`) **oder** ein Objekt `{globs: [...], role: domain|app|port|adapter, direction: driving|driven}` (`direction` optional). Fehlt `role`, wird es aus konventionellen Namen abgeleitet (`core`→`domain`, `ports`→`port`, `adapters`→`adapter`, `application`/`app`→`app`); `role:` hat Vorrang. Die Reinheits-Regeln (`core-impurity`/`app-impurity`/`port-impurity`/`lateral-adapter`) greifen über die Rolle, nicht den Namen — fremd benannte Schichten sind damit voll prüfbar. Optional trägt eine `port`-/`adapter`-Schicht zusätzlich `direction` ∈ {`driving`, `driven`} (**orthogonal** zur Rolle, [AC-FA-RULE-008](lastenheft.md#ac-fa-rule-008--driving-driven-port-richtung-regel-port-direction-mismatch)); die Connectivity-Regel `port-direction-mismatch` prüft, dass ein Adapter nur Ports **seiner** Richtung importiert — ohne `direction` keine Prüfung.
 - Kein Include/Vererbung zwischen Config-Dateien (Lastenheft-Out-of-Scope).
 
@@ -138,7 +143,10 @@ Die Schicht einer Datei ergibt sich aus dem **spezifischsten** passenden `layers
 (längster **literaler** Präfix vor dem ersten Wildcard-Segment, konsistent mit der
 Symbol-Auflösung unten; bei Gleichstand die zuerst deklarierte Schicht), ihre
 **Rolle** aus `role:` (Vorrang) oder Namens-Inferenz ([AC-FA-RULE-006](lastenheft.md#ac-fa-rule-006--schicht-rollen-generische-regel-anwendung)).
-Symbole werden über die `layers`-Globs des Zielpfads aufgelöst
+Vor der Auflösung wird ein Import-Symbol gemäß dem `resolution`-`mode` seiner **Quelldatei-Sprache**
+normalisiert (`fixed-root`: `roots` voran; bei gesetztem `package_base` zusätzlich Präfix-Strip + `.`→`/`;
+`path`/Default: unverändert) — so lösen gepunktete (JVM/Python) oder `src`-gewurzelte (C++) Importe auf, sofern der
+Paket-Baum den Verzeichnis-Baum spiegelt. Dann werden Symbole über die `layers`-Globs des Zielpfads aufgelöst
 (**spezifischster/längster** literaler Präfix gewinnt) — die Ziel-Rolle ist die **des aufgelösten Layers**; die Reinheits-Regeln
 dispatchen über die Rolle, nicht den Namen. Die **`tech`-Muster** dagegen lösen in
 **Deklarationsreihenfolge** auf (**Erst-Treffer** gewinnt, `matchTech`) — uniform für
@@ -209,4 +217,5 @@ und [AC-QA-03](lastenheft.md#ac-qa-03--reproduzierbarkeit).
 | 0.6.0 | 2026-06-23 | `SPEC-RULE-001`: neue Regel `port-direction-mismatch` (Adapter-Richtung ≠ Ziel-Port-Richtung, beide gesetzt; in der Erst-Treffer-Kette vor `wrong-direction`) + Schicht-Zuordnung einer Datei auf **spezifischsten/längsten** Glob-Präfix umgestellt (Angleichung an `targetLayer`); `SPEC-CONF-001`-Schema: Objekt-Form um `direction` (und das fehlende `app`) ergänzt. Folgt [`AC-FA-RULE-008`](lastenheft.md#ac-fa-rule-008--driving-driven-port-richtung-regel-port-direction-mismatch) 0.6.0. |
 | 0.7.0 | 2026-06-23 | `SPEC-EXTRACT-001`: Java-Muster (`import …;`, inkl. `import static …;` — `static` übersprungen) als fünftes Backend. Folgt [`AC-FA-EXTRACT-001`](lastenheft.md#ac-fa-extract-001--sprach-backends-für-die-import-extraktion) 0.7.0. |
 | 0.8.0 | 2026-07-01 | `SPEC-CONF-001`: `tech`-Eintrag um optionales `match: substring\|regex` (Default `substring`; `regex` = RE2, unverankert, gegen das extrahierte Symbol); unbekannter Wert/nicht kompilierbare Regex → Exit 2. `SPEC-RULE-001`: Präzedenz der `tech`-Muster als **Deklarationsreihenfolge/Erst-Treffer** richtiggestellt (kein „längster Präfix" für `tech` — das gilt nur für `layers`-Globs; `matchTech` liefert real schon Erst-Treffer). Folgt [`AC-FA-RULE-003`](lastenheft.md#ac-fa-rule-003--tech-kapselung-regel-tech-leak)/[`AC-FA-CONF-001`](lastenheft.md#ac-fa-conf-001--konfigurationsdatei-a-checkyml) 0.8.0. |
+| 0.10.0 | 2026-07-01 | `SPEC-CONF-001`: `resolution`-Block (Map Sprache → `{mode, roots, package_base}`; `mode ∈ {path, fixed-root}`, `relative`/`namespace` reserviert → Exit 2). `SPEC-RULE-001`: Import-Symbol wird **vor** der Layer-Auflösung gemäß dem `mode` seiner **Quelldatei-Sprache** normalisiert (`fixed-root`: `package_base` strippen, `.`→`/`, wurzel-relativ) — Grenze Paket==Verzeichnis. Folgt [`AC-FA-CONF-001`](lastenheft.md#ac-fa-conf-001--konfigurationsdatei-a-checkyml) 0.10.0. |
 | 0.9.0 | 2026-07-01 | `SPEC-EXTRACT-001` nennt die zulässige Backend-Menge `{cpp,go,rust,kotlin,java}` **normativ** (Owner) + Validierung der `languages`-Schlüssel gegen die Backend-Registry (unbekannt → Exit 2, kein stiller No-Op); `SPEC-CONF-001` **verweist** darauf (kein Duplikat). Folgt [`AC-FA-CONF-001`](lastenheft.md#ac-fa-conf-001--konfigurationsdatei-a-checkyml) 0.9.0. |

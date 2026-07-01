@@ -17,8 +17,18 @@ type Import struct {
 type FileImports struct {
 	Path       string
 	Layer      string
+	Language   string // source-language of this file (drives resolution, ADR-0016)
 	Imports    []Import
 	Constructs []Import
+}
+
+// ResolutionConfig is how one language's import symbols resolve to layers
+// (ADR-0016). Mode "" / "path" leaves the import unchanged (Import = Pfad);
+// "fixed-root" strips PackageBase, maps "." to "/" and roots the import.
+type ResolutionConfig struct {
+	Mode        string
+	Roots       []string
+	PackageBase string
 }
 
 // Layer is a named architectural layer with repo-relative path globs and an
@@ -59,9 +69,10 @@ type Model struct {
 	Allow           []Edge // explicit extra allowed edges
 	AdapterSink     string // shared adapter sink (path fragment), optional
 	Techs           []Tech
-	CompositionRoot []string            // globs, exempt from layering + tech-leak
-	Forbidden       map[string][]string // layer name -> forbidden text patterns
-	IgnoreSymbols   []string            // heuristic-boundary allowlist (markers)
+	CompositionRoot []string                    // globs, exempt from layering + tech-leak
+	Forbidden       map[string][]string         // layer name -> forbidden text patterns
+	IgnoreSymbols   []string                    // heuristic-boundary allowlist (markers)
+	Resolution      map[string]ResolutionConfig // language -> import resolution (ADR-0016)
 }
 
 // Finding is one rule violation. Its fields define the stable sort order

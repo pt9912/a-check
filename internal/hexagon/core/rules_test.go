@@ -343,10 +343,10 @@ func TestTargetLayerLongestPrefix(t *testing.T) { // ADR-0010 (b1): spezifischst
 		{Name: "core", Globs: []string{"internal/core/**"}},
 		{Name: "legacy", Globs: []string{"internal/core/legacy/**"}},
 	}
-	if got := targetLayer("x/internal/core/legacy/db", layers); got != "legacy" {
+	if got := targetLayer("x/internal/core/legacy/db", layers, ResolutionConfig{}); got != "legacy" {
 		t.Fatalf("expected longest-prefix 'legacy', got %q", got)
 	}
-	if got := targetLayer("x/internal/core/svc", layers); got != "core" {
+	if got := targetLayer("x/internal/core/svc", layers, ResolutionConfig{}); got != "core" {
 		t.Fatalf("expected 'core', got %q", got)
 	}
 	// Reihenfolge-unabhängig: legacy vor core deklariert.
@@ -354,20 +354,20 @@ func TestTargetLayerLongestPrefix(t *testing.T) { // ADR-0010 (b1): spezifischst
 		{Name: "legacy", Globs: []string{"internal/core/legacy/**"}},
 		{Name: "core", Globs: []string{"internal/core/**"}},
 	}
-	if got := targetLayer("x/internal/core/legacy/db", rev); got != "legacy" {
+	if got := targetLayer("x/internal/core/legacy/db", rev, ResolutionConfig{}); got != "legacy" {
 		t.Fatalf("longest-prefix muss reihenfolge-unabhängig sein, got %q", got)
 	}
 	// Segment-bewusst: 'io'-Präfix matcht nicht in 'audio'.
-	if got := targetLayer("audio/codec", []Layer{{Name: "io", Globs: []string{"io/**"}}}); got != "" {
+	if got := targetLayer("audio/codec", []Layer{{Name: "io", Globs: []string{"io/**"}}}, ResolutionConfig{}); got != "" {
 		t.Fatalf("segment-bewusst: 'io' darf nicht in 'audio' matchen, got %q", got)
 	}
 	// Kernzweck: modul-qualifizierter Import, Präfix mitten im String.
 	mod := []Layer{{Name: "core", Globs: []string{"internal/hexagon/core/**"}}}
-	if got := targetLayer("github.com/x/a-check/internal/hexagon/core/model", mod); got != "core" {
+	if got := targetLayer("github.com/x/a-check/internal/hexagon/core/model", mod, ResolutionConfig{}); got != "core" {
 		t.Fatalf("modul-qualifiziert: erwarte 'core', got %q", got)
 	}
 	// Präfix am Pfadende.
-	if got := targetLayer("github.com/x/a-check/internal/hexagon/core", mod); got != "core" {
+	if got := targetLayer("github.com/x/a-check/internal/hexagon/core", mod, ResolutionConfig{}); got != "core" {
 		t.Fatalf("Präfix am Pfadende: erwarte 'core', got %q", got)
 	}
 	// Tie-Break: bei gleichlangem Präfix gewinnt der zuerst deklarierte Layer.
@@ -375,7 +375,7 @@ func TestTargetLayerLongestPrefix(t *testing.T) { // ADR-0010 (b1): spezifischst
 		{Name: "first", Globs: []string{"a/b/**"}},
 		{Name: "second", Globs: []string{"a/b/**"}},
 	}
-	if got := targetLayer("a/b/c", tie); got != "first" {
+	if got := targetLayer("a/b/c", tie, ResolutionConfig{}); got != "first" {
 		t.Fatalf("Tie-Break: zuerst deklarierter gewinnt, erwarte 'first', got %q", got)
 	}
 }
@@ -827,5 +827,60 @@ func TestTechLeakRegexDeterministicOrder(t *testing.T) { // AC-QA-01: ≥2 regex
 	}
 	if fs[0].Rule != "tech-leak" || fs[1].Rule != "tech-leak" {
 		t.Fatalf("erwarte zwei tech-leak, got %v", fs)
+	}
+}
+
+func TestResolveImportFixedRootDotted(t *testing.T) { // ADR-0016: gepunktetes Symbol -> Pfad via package_base + .->/
+	got := resolveImport("com.x.hexagon.model.Room", ResolutionConfig{Mode: "fixed-root", PackageBase: "com.x"})
+	if len(got) != 1 || got[0] != "hexagon/model/Room" {
+		t.Fatalf("erwarte [hexagon/model/Room], got %v", got)
+	}
+}
+
+func TestResolveImportFixedRootRoots(t *testing.T) { // ADR-0016: roots werden vorangestellt (C++ src)
+	got := resolveImport("hexagon/model/room.h", ResolutionConfig{Mode: "fixed-root", Roots: []string{"src"}})
+	if len(got) != 1 || got[0] != "src/hexagon/model/room.h" {
+		t.Fatalf("erwarte [src/hexagon/model/room.h], got %v", got)
+	}
+}
+
+func TestResolveImportPathDefaultUnchanged(t *testing.T) { // ADR-0016: path/Default lässt unverändert (Go-Modulpfad mit Punkten)
+	if got := resolveImport("github.com/x/core", ResolutionConfig{}); len(got) != 1 || got[0] != "github.com/x/core" {
+		t.Fatalf("Default (leerer mode) muss unverändert lassen, got %v", got)
+	}
+	if got := resolveImport("github.com/x/core", ResolutionConfig{Mode: "path"}); got[0] != "github.com/x/core" {
+		t.Fatalf("mode: path darf Punkte NICHT ersetzen (Go-Modulpfad), got %v", got)
+	}
+}
+
+func TestTargetLayerFixedRootCpp(t *testing.T) { // ADR-0016: C++ src-Root -> Layer (b-cad-Fall)
+	layers := []Layer{{Name: "model", Globs: []string{"src/hexagon/model/**"}}}
+	if got := targetLayer("hexagon/model/room.h", layers, ResolutionConfig{Mode: "fixed-root", Roots: []string{"src"}}); got != "model" {
+		t.Fatalf("src-gewurzelter Include muss auf 'model' auflösen, got %q", got)
+	}
+	// Ohne resolution (Default): der src-fremde Include löst NICHT auf — die Falle, die ADR-0016 schließt.
+	if got := targetLayer("hexagon/model/room.h", layers, ResolutionConfig{}); got != "" {
+		t.Fatalf("ohne resolution löst der Include nicht auf, got %q", got)
+	}
+}
+
+func TestMonoRepoResolutionPerLanguage(t *testing.T) { // ADR-0016: Kotlin fixed-root löst pro Sprache; Kontrolle ohne resolution
+	m := Model{
+		Layers: []Layer{
+			{Name: "ktmodel", Globs: []string{"hexagon/model/**"}, Role: "domain"},
+			{Name: "ktadp", Globs: []string{"adapters/**"}, Role: "adapter"},
+		},
+		Resolution: map[string]ResolutionConfig{"kotlin": {Mode: "fixed-root", PackageBase: "com.x"}},
+	}
+	// Kotlin-Domäne importiert einen Adapter -> nach Auflösung (com.x.adapters.Db -> adapters/Db) core-impurity.
+	viol := []FileImports{{Path: "hexagon/model/R.kt", Layer: "ktmodel", Language: "kotlin",
+		Imports: []Import{{Symbol: "com.x.adapters.Db", Line: 1}}}}
+	if fs := Evaluate(m, viol); !hasRule(fs, "core-impurity") {
+		t.Fatalf("Kotlin fixed-root muss com.x.adapters.Db auf den Adapter auflösen -> core-impurity, got %v", fs)
+	}
+	// Kontrolle: OHNE resolution bleibt der gepunktete Import unaufgelöst -> kein Befund.
+	m.Resolution = nil
+	if fs := Evaluate(m, viol); len(fs) != 0 {
+		t.Fatalf("ohne resolution bleibt com.x.adapters.Db unaufgelöst -> kein Befund, got %v", fs)
 	}
 }

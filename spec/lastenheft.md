@@ -1,6 +1,6 @@
 # Lastenheft — a-check
 
-**Version:** 0.9.0
+**Version:** 0.10.0
 
 **Status:** Draft
 
@@ -263,9 +263,13 @@ ist **entweder** eine Glob-Liste (`name: [globs]`, Rolle per Namens-Inferenz)
 ([AC-FA-RULE-006](#ac-fa-rule-006--schicht-rollen-generische-regel-anwendung), [AC-FA-RULE-008](#ac-fa-rule-008--driving-driven-port-richtung-regel-port-direction-mismatch)); `direction` ist optional.
 Ein `tech`-Eintrag ist `{pattern, adapter}` mit optionalem `match: substring|regex`
 (Default `substring`; `regex` = RE2, [AC-FA-RULE-003](#ac-fa-rule-003--tech-kapselung-regel-tech-leak)).
+Ein optionaler `resolution`-Block deklariert **je Sprache**, wie Import-Symbole auf Schichten
+aufgelöst werden — Map Sprache → `{mode, roots, package_base}`, `mode ∈ {path (Default), fixed-root}`
+(`relative`/`namespace` reserviert); fehlt er (oder eine Sprache darin), gilt Import-als-Pfad.
 Striktes Decoding, fail-closed (Exit 2 bei unbekanntem Schlüssel, ungültiger `role`/`direction`,
-unbekanntem `match`-Wert, einer als Regex nicht kompilierbaren `pattern` oder einem `languages`-Schlüssel
-außerhalb der unterstützten Backends aus [AC-FA-EXTRACT-001](#ac-fa-extract-001--sprach-backends-für-die-import-extraktion)).
+unbekanntem `match`-Wert, einer als Regex nicht kompilierbaren `pattern`, einem `languages`-Schlüssel
+außerhalb der unterstützten Backends aus [AC-FA-EXTRACT-001](#ac-fa-extract-001--sprach-backends-für-die-import-extraktion)
+oder einem reservierten/unbekannten `resolution.mode`).
 
 **Akzeptanzkriterien:**
 
@@ -274,6 +278,8 @@ außerhalb der unterstützten Backends aus [AC-FA-EXTRACT-001](#ac-fa-extract-00
 - **Negative:** Given ein Tippfehler im Schlüssel, when `a-check` läuft, then Exit-Code 2 (kein stiller Default).
 - **Negative (`match`):** Given ein `tech.match` mit einem anderen Wert als `substring`/`regex` **oder** ein `match: regex` mit leerer bzw. nicht kompilierbarer `pattern`, when `a-check` lädt, then Exit-Code 2.
 - **Negative (Sprache):** Given ein `languages`-Schlüssel außerhalb der von [AC-FA-EXTRACT-001](#ac-fa-extract-001--sprach-backends-für-die-import-extraktion) definierten unterstützten Backends, when `a-check` lädt, then Exit-Code 2 — **statt** stiller Nicht-Extraktion (falsch-grün).
+- **Happy (Auflösung):** Given ein `resolution` mit `{mode: fixed-root, roots, package_base}` für eine Sprache und ein gepunktetes Symbol dieser Sprache, when `a-check` läuft, then löst das Symbol wurzel-relativ auf seine Schicht auf (statt unaufgelöst zu bleiben) — sofern der Paket-Baum den Verzeichnis-Baum spiegelt (`AC-QA-02`-Grenze).
+- **Negative (`resolution`):** Given ein `resolution.mode` außerhalb `{path, fixed-root}` (inkl. der reservierten `relative`/`namespace`), when `a-check` lädt, then Exit-Code 2.
 
 **Out-of-Scope:** Vererbung/Includes zwischen Config-Dateien.
 
@@ -327,3 +333,4 @@ Konsumenten-Repos).
 | 0.7.0 | 2026-06-23 | `AC-FA-EXTRACT-001` um **Java** erweitert (`import`, inkl. `import static` — das `static`-Schlüsselwort übersprungen, `;` ignoriert) — fünftes Sprach-Backend neben C++/Go/Rust/Kotlin, text-heuristisch (welle-06, slice-014). |
 | 0.8.0 | 2026-07-01 | `AC-FA-RULE-003`/`AC-FA-CONF-001`: `tech`-Muster optional als **RE2-Regex** (`match: substring\|regex`, Default `substring`) statt nur Substring — macht ein nur als Muster fassbares Tech wie Qt (`Q[A-Za-z]`) ausdrückbar; Mehrfach-Treffer lösen in Deklarationsreihenfolge (Erst-Treffer, kein „längster Präfix" für `tech`). Unbekanntes `match`/nicht kompilierbare Regex → Exit 2. Rückwärtskompatibel (ohne `match` byte-identisch). welle-05/-06, b-cad-Pilot (Regel E); slice-016. |
 | 0.9.0 | 2026-07-01 | `AC-FA-CONF-001`: ein `languages`-Schlüssel außerhalb der unterstützten Backends (`cpp`/`go`/`rust`/`kotlin`/`java`, `AC-FA-EXTRACT-001`) bricht mit **Exit 2** ab — schließt die stille Nicht-Extraktion (falsch-grün) für nicht unterstützte Sprachen. slice-017. |
+| 0.10.0 | 2026-07-01 | `AC-FA-CONF-001`: optionaler `resolution`-Block — Map **Sprache → `{mode, roots, package_base}`** (`mode ∈ {path, fixed-root}`, `relative`/`namespace` reserviert → Exit 2), löst gepunktete/wurzel-fremde Importe **pro Sprache** auf ihre Schicht auf (Mono-Repo-tauglich); Default (ohne Block) = Import-als-Pfad, rückwärtskompatibel. Grenze: Paket==Verzeichnis (`AC-QA-02`). welle-06 (Polyglot-Bestand); slice-015. |

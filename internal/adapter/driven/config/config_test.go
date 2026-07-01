@@ -213,3 +213,45 @@ func TestTechUnknownKeyFailsClosed(t *testing.T) { // AC-FA-CONF-001 negative: u
 		t.Fatal("expected error on unknown key in tech entry (strict decode)")
 	}
 }
+
+// resBody baut eine minimale gültige Config mit einem resolution-Eintrag.
+func resBody(entry string) string {
+	return "version: 1\nlanguages:\n  go: [\"**/*.go\"]\nlayers:\n  core: [\"core/**\"]\nedges:\n  - {from: core, to: core}\nresolution:\n  " + entry + "\n"
+}
+
+func TestResolutionFixedRootValid(t *testing.T) { // AC-FA-CONF-001 / ADR-0016: fixed-root lädt + wird dekodiert
+	m, err := New().Load(write(t, resBody(`kotlin: {mode: fixed-root, roots: ["src"], package_base: "com.x"}`)))
+	if err != nil {
+		t.Fatalf("fixed-root muss laden, got %v", err)
+	}
+	r := m.Resolution["kotlin"]
+	if r.Mode != "fixed-root" || r.PackageBase != "com.x" || len(r.Roots) != 1 || r.Roots[0] != "src" {
+		t.Fatalf("resolution nicht dekodiert: %+v", r)
+	}
+}
+
+func TestResolutionReservedModeFailsClosed(t *testing.T) { // ADR-0016: reservierter mode (relative/namespace) -> Exit 2
+	if _, err := New().Load(write(t, resBody(`typescript: {mode: relative}`))); err == nil {
+		t.Fatal("reservierter mode 'relative' muss brechen (fail-closed)")
+	}
+	if _, err := New().Load(write(t, resBody(`csharp: {mode: namespace}`))); err == nil {
+		t.Fatal("reservierter mode 'namespace' muss brechen (fail-closed)")
+	}
+}
+
+func TestResolutionUnknownModeFailsClosed(t *testing.T) { // ADR-0016: unbekannter mode -> Exit 2
+	if _, err := New().Load(write(t, resBody(`go: {mode: bogus}`))); err == nil {
+		t.Fatal("unbekannter mode muss brechen (fail-closed)")
+	}
+}
+
+func TestResolutionPathEqualsOmitted(t *testing.T) { // ADR-0016: mode: path == weggelassen (beide -> mode path)
+	m, err := New().Load(write(t, resBody(`go: {mode: path}`)))
+	if err != nil || m.Resolution["go"].Mode != "path" {
+		t.Fatalf("mode: path muss laden (mode=path), got %v / %+v", err, m.Resolution)
+	}
+	m2, err := New().Load(write(t, resBody(`go: {}`)))
+	if err != nil || m2.Resolution["go"].Mode != "path" {
+		t.Fatalf("resolution go: {} muss als mode=path laden, got %v / %+v", err, m2.Resolution)
+	}
+}

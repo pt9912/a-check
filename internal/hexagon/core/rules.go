@@ -36,7 +36,7 @@ func Evaluate(m Model, files []FileImports) []Finding {
 // or ok=false if the import is clean. The purity rules dispatch on the layer's
 // ROLE, not its name (AC-FA-RULE-006/007).
 func ruleFor(m Model, f FileImports, imp Import) (Finding, bool) {
-	tl := targetLayer(imp.Symbol, m.Layers)
+	tl := targetLayer(imp.Symbol, m.Layers, m.Resolution[f.Language])
 	srcRole := roleOf(f.Layer, m)
 	tgtRole := roleOf(tl, m)
 	tech, isTech := matchTech(imp.Symbol, m.Techs)
@@ -228,16 +228,43 @@ func litPrefixLen(g string) int {
 // as github.com/x/internal/core). The most specific (longest) matching prefix
 // wins — the first declared layer on an equal-length tie — so nested layers
 // resolve correctly (ADR-0010).
-func targetLayer(imp string, layers []Layer) string {
+func targetLayer(imp string, layers []Layer, res ResolutionConfig) string {
 	best, bestLen := "", -1
-	for _, l := range layers {
-		for _, g := range l.Globs {
-			if p := globPrefix(g); p != "" && segIndex(imp, p) >= 0 && len(p) > bestLen {
-				best, bestLen = l.Name, len(p)
+	for _, cand := range resolveImport(imp, res) {
+		for _, l := range layers {
+			for _, g := range l.Globs {
+				if p := globPrefix(g); p != "" && segIndex(cand, p) >= 0 && len(p) > bestLen {
+					best, bestLen = l.Name, len(p)
+				}
 			}
 		}
 	}
 	return best
+}
+
+// resolveImport normalizes an import symbol into the layer-glob namespace per
+// the source language's resolution (ADR-0016). "path"/"" (Default) leaves it
+// unchanged. "fixed-root" prepends each root (one candidate per root); a set
+// PackageBase marks a DOTTED language — its prefix is stripped and "." mapped to
+// "/" (a path language like C++ keeps its "." as file extensions). Reserved/
+// unknown modes never reach here — the config adapter rejects them (Exit 2).
+func resolveImport(imp string, res ResolutionConfig) []string {
+	if res.Mode != "fixed-root" {
+		return []string{imp}
+	}
+	s := imp
+	if res.PackageBase != "" { // dotted language (JVM/Python): package -> path
+		s = strings.TrimPrefix(s, res.PackageBase+".")
+		s = strings.ReplaceAll(s, ".", "/")
+	}
+	if len(res.Roots) == 0 {
+		return []string{s}
+	}
+	out := make([]string, 0, len(res.Roots))
+	for _, r := range res.Roots {
+		out = append(out, r+"/"+s)
+	}
+	return out
 }
 
 // globPrefix is the literal path prefix of a glob (before a trailing /** or /*),

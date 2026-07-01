@@ -30,6 +30,13 @@ type yamlMarkers struct {
 	IgnoreSymbols []string `yaml:"ignore_symbols"`
 }
 
+// yamlResolution is one language's import-resolution config (ADR-0016).
+type yamlResolution struct {
+	Mode        string   `yaml:"mode"`
+	Roots       []string `yaml:"roots"`
+	PackageBase string   `yaml:"package_base"`
+}
+
 // yamlLayer is the object form of a layers entry (`{globs, role, direction}`,
 // AC-FA-RULE-006/008); the glob-list short form is decoded separately (see
 // decodeLayer). direction is optional and orthogonal to role.
@@ -48,8 +55,9 @@ type yamlConfig struct {
 	Tech            []yamlTech           `yaml:"tech"`
 	CompositionRoot []string             `yaml:"composition_root"`
 	Allow           []yamlEdge           `yaml:"allow"`
-	Markers         *yamlMarkers         `yaml:"markers"`
-	Forbidden       map[string][]string  `yaml:"forbidden_constructs"`
+	Markers         *yamlMarkers              `yaml:"markers"`
+	Forbidden       map[string][]string       `yaml:"forbidden_constructs"`
+	Resolution      map[string]yamlResolution `yaml:"resolution"`
 }
 
 // Adapter implements port.ConfigPort.
@@ -106,7 +114,38 @@ func (Adapter) Load(path string) (core.Model, error) {
 	if yc.Markers != nil {
 		m.IgnoreSymbols = yc.Markers.IgnoreSymbols
 	}
+	res, rerr := decodeResolution(yc.Resolution, path)
+	if rerr != nil {
+		return core.Model{}, rerr
+	}
+	m.Resolution = res
 	return m, nil
+}
+
+// decodeResolution maps the resolution block to the core model and validates
+// each mode (ADR-0016): path/fixed-root are live, relative/namespace are
+// reserved (→ exit 2), anything else is invalid. A blank mode defaults to path.
+func decodeResolution(res map[string]yamlResolution, path string) (map[string]core.ResolutionConfig, error) {
+	if len(res) == 0 {
+		return nil, nil
+	}
+	out := make(map[string]core.ResolutionConfig, len(res))
+	for _, lang := range sortedKeys(res) {
+		r := res[lang]
+		mode := r.Mode
+		if mode == "" {
+			mode = "path"
+		}
+		switch mode {
+		case "path", "fixed-root":
+		case "relative", "namespace":
+			return nil, fmt.Errorf("%s: resolution[%q].mode %q ist reserviert (Folge-ADR, noch nicht implementiert)", path, lang, mode)
+		default:
+			return nil, fmt.Errorf("%s: resolution[%q].mode %q ungültig (path|fixed-root)", path, lang, mode)
+		}
+		out[lang] = core.ResolutionConfig{Mode: mode, Roots: r.Roots, PackageBase: r.PackageBase}
+	}
+	return out, nil
 }
 
 // decodeLayer reads a layers entry: a glob list (`name: [globs]`) or an object

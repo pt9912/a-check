@@ -89,9 +89,10 @@ func (a Adapter) Extract(root string, m core.Model) ([]core.FileImports, error) 
 		}
 		src := stripComments(string(data))
 		fi := core.FileImports{
-			Path:    rel,
-			Layer:   core.LayerOf(rel, m.Layers),
-			Imports: filterIgnored(a.importsFromSource(lang, src), m.IgnoreSymbols),
+			Path:     rel,
+			Layer:    core.LayerOf(rel, m.Layers),
+			Language: lang,
+			Imports:  filterIgnored(a.importsFromSource(lang, src), m.IgnoreSymbols),
 		}
 		if pats := m.Forbidden[fi.Layer]; len(pats) > 0 {
 			fi.Constructs = constructsFromSource(src, pats)
