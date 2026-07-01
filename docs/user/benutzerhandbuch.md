@@ -206,6 +206,8 @@ Symbol den Text enthält; `match: regex` interpretiert `pattern` als **RE2-Regex
 (unverankert) — nötig, wenn ein Framework nur als Muster fassbar ist, etwa Qt-Header
 `Q[A-Za-z]`. Ein unbekannter `match`-Wert oder eine ungültige Regex bricht mit
 Exit-Code 2 ab. Treffen mehrere Muster dasselbe Symbol, greift das **zuerst notierte**.
+*(`match` ist ab dem nächsten Release (v0.4.0) verfügbar; das aktuell gepinnte v0.3.0-Image
+kennt den Schlüssel noch nicht und bricht bei `match` mit Exit-Code 2 ab.)*
 
 **Schicht-Rollen (`role`).** Ein `layers`-Eintrag ist **entweder** eine Glob-Liste
 (`name: [globs]`) **oder** ein Objekt `{globs: [...], role: <rolle>, direction: <richtung>}`
