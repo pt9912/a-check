@@ -6,6 +6,11 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
+## [0.4.0] - 2026-07-01
+
+Regel-Engine-Schärfung + Sprach-Backend seit `v0.3.0`; Lastenheft/Spezifikation 0.6.0 → 0.8.0.
+Bringt `match: regex` (b-cad-Regel E) und das Java-Backend ins veröffentlichte Image.
+
 ### Added
 
 - **`AC-FA-RULE-003`/`AC-FA-CONF-001` (Lastenheft/Spezifikation 0.7.0→0.8.0):** `tech`-Muster
@@ -23,9 +28,11 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
 ### Changed
 
-- `--print-mk`/`a-check.mk` und der `aCheckImage`-Default sind auf den
-  **v0.3.0**-Release **digest-gepinnt** (`ghcr.io/pt9912/a-check@sha256:93be49a6…`) —
-  Pin-Hebung nach dem Release (AC-QA-03, ADR-0004/ADR-0007).
+- **doc-check-Pin** (Schwester-Tool `d-check`) von **v0.24.0** auf **v0.35.0**
+  (`@sha256:9d7b23ac…`) gehoben — Gate-Tooling, netzlos; a-checks aktive Module unverändert.
+- **Selbst-Pin** (`--print-mk`/`a-check.mk`/`cli.go`-`aCheckImage`): die Pin-Hebung auf den
+  **v0.4.0**-Digest folgt **nach** dem Release (Digest existiert erst nach dem CI-Build;
+  AC-QA-03, ADR-0004/ADR-0007). Bis dahin bleibt der v0.3.0-Digest (`@sha256:93be49a6…`) gepinnt.
 
 ## [0.3.0] - 2026-06-23
 
