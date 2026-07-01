@@ -95,3 +95,64 @@ func TestMissingConfig(t *testing.T) { // SPEC-CLI-001: Exit 2 bei fehlender Con
 		t.Fatalf("expected 2, got %d", code)
 	}
 }
+
+// cfgRegexTech: C++-Repo mit Qt-Muster als RE2-Regex auf dem ui-Adapter (ADR-0015).
+const cfgRegexTech = `version: 1
+languages:
+  cpp: ["**/*.cpp", "**/*.h"]
+layers:
+  ui:  {globs: ["adapters/ui/**"], role: adapter}
+  geo: {globs: ["adapters/geometry/**"], role: adapter}
+edges:
+  - {from: geo, to: ui}
+tech:
+  - {pattern: "Q[A-Za-z]", adapter: "adapters/ui", match: regex}
+`
+
+func TestTechRegexLeakExit1(t *testing.T) { // AC-FA-RULE-003 / ADR-0015: regex-tech-leak erreicht Exit-Code 1
+	dir := writeRepo(t, map[string]string{
+		".a-check.yml":            cfgRegexTech,
+		"adapters/geometry/g.cpp": "#include <QWidget>\n",
+	})
+	var out, errb bytes.Buffer
+	if code := cli.Run([]string{dir}, &out, &errb); code != 1 {
+		t.Fatalf("expected 1, got %d (out=%q)", code, out.String())
+	}
+	if !strings.Contains(out.String(), "tech-leak") {
+		t.Fatalf("expected tech-leak in output: %q", out.String())
+	}
+}
+
+func TestTechRegexInvalidMatchExit2(t *testing.T) { // AC-FA-CONF-001 / ADR-0015: ungültiges match erreicht Exit-Code 2
+	badCfg := strings.Replace(cfgRegexTech, "match: regex", "match: glob", 1)
+	dir := writeRepo(t, map[string]string{
+		".a-check.yml":      badCfg,
+		"adapters/ui/w.cpp": "#include <QWidget>\n",
+	})
+	var out, errb bytes.Buffer
+	if code := cli.Run([]string{dir}, &out, &errb); code != 2 {
+		t.Fatalf("expected 2, got %d", code)
+	}
+}
+
+func TestTechRegexIgnoreSymbols(t *testing.T) { // AC-QA-02 / ADR-0015: markers.ignore_symbols unterdrückt den Q[A-Za-z]/Queue.h-False-Positive
+	// Q[A-Za-z] trifft "Queue.h" (der dokumentierte FP); der Marker unterdrückt ihn.
+	withMarker := map[string]string{
+		".a-check.yml":            cfgRegexTech + "markers:\n  ignore_symbols: [\"Queue.h\"]\n",
+		"adapters/geometry/g.cpp": "#include \"Queue.h\"\n",
+	}
+	var out, errb bytes.Buffer
+	if code := cli.Run([]string{writeRepo(t, withMarker)}, &out, &errb); code != 0 {
+		t.Fatalf("ignore_symbols muss den Queue.h-FP unterdrücken (Exit 0), got %d (out=%q)", code, out.String())
+	}
+	// Ohne den Marker schlägt derselbe FP als tech-leak an (Exit 1) — die Heuristik-Grenze ist ausgewiesen, nicht verschwiegen.
+	withoutMarker := map[string]string{
+		".a-check.yml":            cfgRegexTech,
+		"adapters/geometry/g.cpp": "#include \"Queue.h\"\n",
+	}
+	out.Reset()
+	errb.Reset()
+	if code := cli.Run([]string{writeRepo(t, withoutMarker)}, &out, &errb); code != 1 {
+		t.Fatalf("ohne ignore_symbols erwarte tech-leak (Exit 1), got %d (out=%q)", code, out.String())
+	}
+}

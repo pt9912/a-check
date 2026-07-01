@@ -719,3 +719,113 @@ func TestDeterministicOrderWithDirection(t *testing.T) { // AC-QA-01: der neue B
 		t.Fatalf("port-direction-mismatch-Befunde nicht stabil nach Pfad sortiert: %v", fs)
 	}
 }
+
+// regexTechModel: zwei Adapter (ui/geometry) + ein Qt-Muster als RE2-Regex auf ui.
+func regexTechModel(t *testing.T) Model {
+	t.Helper()
+	qt, err := NewTech("Q[A-Za-z]", "adapters/ui", "regex")
+	if err != nil {
+		t.Fatal(err)
+	}
+	return Model{
+		Layers: []Layer{
+			{Name: "ui", Globs: []string{"adapters/ui/**"}, Role: "adapter"},
+			{Name: "geo", Globs: []string{"adapters/geometry/**"}, Role: "adapter"},
+		},
+		Techs:           []Tech{qt},
+		CompositionRoot: []string{"main.cpp"},
+	}
+}
+
+func TestTechLeakRegexNegative(t *testing.T) { // AC-FA-RULE-003 / ADR-0015: match: regex meldet außerhalb des Adapters
+	fs := Evaluate(regexTechModel(t), []FileImports{
+		{Path: "adapters/geometry/g.cpp", Layer: "geo", Imports: []Import{{Symbol: "QWidget", Line: 3}}},
+	})
+	if len(fs) != 1 || fs[0].Rule != "tech-leak" {
+		t.Fatalf("regex Q[A-Za-z] soll QWidget außerhalb adapters/ui als tech-leak melden, got %v", fs)
+	}
+}
+
+func TestTechLeakRegexHappy(t *testing.T) { // AC-FA-RULE-003 / ADR-0015: Qt im eigenen Adapter erlaubt
+	fs := Evaluate(regexTechModel(t), []FileImports{
+		{Path: "adapters/ui/w.cpp", Layer: "ui", Imports: []Import{{Symbol: "QString", Line: 3}}},
+	})
+	if len(fs) != 0 {
+		t.Fatalf("Qt im eigenen ui-Adapter erlaubt, got %v", fs)
+	}
+}
+
+func TestTechLeakRegexComposition(t *testing.T) { // AC-FA-RULE-003 / ADR-0015: Composition Root ausgenommen
+	fs := Evaluate(regexTechModel(t), []FileImports{
+		{Path: "main.cpp", Layer: "", Imports: []Import{{Symbol: "QApplication", Line: 1}}},
+	})
+	if len(fs) != 0 {
+		t.Fatalf("Qt in der Composition Root ausgenommen, got %v", fs)
+	}
+}
+
+func TestTechPrecedenceDeclarationOrder(t *testing.T) { // AC-FA-RULE-003 / ADR-0015: Erst-Treffer in Deklarationsreihenfolge
+	first, err := NewTech("Q[A-Za-z]", "adapters/ui", "regex")
+	if err != nil {
+		t.Fatal(err)
+	}
+	second, err := NewTech("Queue", "adapters/persistence", "substring")
+	if err != nil {
+		t.Fatal(err)
+	}
+	m := Model{Layers: []Layer{{Name: "ui", Globs: []string{"adapters/ui/**"}, Role: "adapter"}}}
+	file := []FileImports{{Path: "adapters/ui/x.cpp", Layer: "ui", Imports: []Import{{Symbol: "Queue.h", Line: 1}}}}
+
+	// "Queue.h" trifft beide Muster; der erste (regex → adapters/ui) gewinnt → kein Befund
+	// (die Datei liegt in adapters/ui). Griffe der zweite, wäre es ein tech-leak.
+	m.Techs = []Tech{first, second}
+	if fs := Evaluate(m, file); len(fs) != 0 {
+		t.Fatalf("Erst-Treffer (regex → adapters/ui) muss gewinnen → kein Befund, got %v", fs)
+	}
+	// Umgekehrte Reihenfolge: der substring-Eintrag (→ persistence) greift zuerst → tech-leak.
+	m.Techs = []Tech{second, first}
+	if fs := Evaluate(m, file); len(fs) != 1 || fs[0].Rule != "tech-leak" {
+		t.Fatalf("bei umgekehrter Reihenfolge greift substring→persistence → tech-leak, got %v", fs)
+	}
+}
+
+func TestNewTechBackCompatSubstring(t *testing.T) { // AC-FA-RULE-003 / ADR-0015: NewTech(p,a,"") verhält sich wie das Literal Tech (Substring)
+	built, err := NewTech("net/http", "adapters/http", "")
+	if err != nil {
+		t.Fatal(err)
+	}
+	literal := Tech{Pattern: "net/http", Adapter: "adapters/http"}
+	if !built.matches("net/http/client") || !literal.matches("net/http/client") {
+		t.Fatalf("beide müssen den Substring-Treffer melden")
+	}
+	if built.matches("os/exec") || literal.matches("os/exec") {
+		t.Fatalf("Nicht-Treffer muss für beide false sein")
+	}
+}
+
+func TestNewTechSubstringNotRegex(t *testing.T) { // AC-FA-RULE-003 / ADR-0015: match: substring nimmt das Muster wörtlich, nicht als Regex
+	sub, err := NewTech("Q[A-Za-z]", "adapters/ui", "substring")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if sub.matches("QWidget") {
+		t.Fatalf("match: substring darf Q[A-Za-z] NICHT als Regex behandeln (QWidget ist kein Substring von \"Q[A-Za-z]\")")
+	}
+	if !sub.matches("x Q[A-Za-z] y") {
+		t.Fatalf("match: substring muss das wörtliche Muster als Teilstring treffen")
+	}
+}
+
+func TestTechLeakRegexDeterministicOrder(t *testing.T) { // AC-QA-01: ≥2 regex-tech-leak-Befunde stabil nach Pfad sortiert
+	files := []FileImports{
+		{Path: "adapters/geometry/b.cpp", Layer: "geo", Imports: []Import{{Symbol: "QWidget", Line: 2}}},
+		{Path: "adapters/geometry/a.cpp", Layer: "geo", Imports: []Import{{Symbol: "QString", Line: 9}}},
+	}
+	fs := Evaluate(regexTechModel(t), files)
+	if len(fs) != 2 || fs[0].Path != "adapters/geometry/a.cpp" || fs[1].Path != "adapters/geometry/b.cpp" {
+		t.Fatalf("regex-tech-leak-Befunde nicht stabil nach Pfad sortiert: %v", fs)
+	}
+	if fs[0].Rule != "tech-leak" || fs[1].Rule != "tech-leak" {
+		t.Fatalf("erwarte zwei tech-leak, got %v", fs)
+	}
+}

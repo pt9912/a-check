@@ -88,6 +88,7 @@ edges:
 adapter_sink: driver-common
 tech:
   - {pattern: "gopkg.in/yaml", adapter: "adapters/config"}
+  # - {pattern: "Q[A-Za-z]", adapter: "adapters/ui", match: regex}  # RE2 statt Substring (Default: substring)
 composition_root: ["cmd/**", "internal/cli/**"]
 forbidden_constructs:
   ports: ["impl "]

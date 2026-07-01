@@ -8,6 +8,13 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
 ### Added
 
+- **`AC-FA-RULE-003`/`AC-FA-CONF-001` (Lastenheft/Spezifikation 0.7.0→0.8.0):** `tech`-Muster
+  optional als **RE2-Regex** — `match: substring|regex` je Eintrag (Default `substring`,
+  rückwärtskompatibel/byte-identisch ohne `match`). Macht ein nur als Muster fassbares Framework
+  wie Qt (`Q[A-Za-z]`) ausdrückbar (schließt die letzte Lücke zum b-cad-`arch-check.sh`-Ersatz,
+  Regel E). Mehrfach-Treffer lösen in **Deklarationsreihenfolge** (Erst-Treffer) — die Spec-Aussage
+  „längster Präfix" galt für `tech` nie und ist richtiggestellt. Unbekanntes `match`/nicht
+  kompilierbare Regex → Exit 2. ADR-0015; welle-05/-06 (b-cad-Pilot); slice-016.
 - **`AC-FA-EXTRACT-001` (Lastenheft 0.6.0→0.7.0):** fünftes Sprach-Backend **Java**
   (`languages`-Schlüssel `java`; `import …;` inkl. `import static …;` — das `static`
   übersprungen, `;` ignoriert, Wildcard heuristisch). Text-heuristisch wie die übrigen

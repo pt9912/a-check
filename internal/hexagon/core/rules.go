@@ -1,6 +1,7 @@
 package core
 
 import (
+	"fmt"
 	"regexp"
 	"sort"
 	"strings"
@@ -273,9 +274,42 @@ func segIndex(s, p string) int {
 	return -1
 }
 
+// NewTech builds a Tech, compiling pattern as an unanchored RE2 regexp when
+// match=="regex". An empty match defaults to substring. It returns an error for
+// an unknown match mode or an uncompilable regex, which the config adapter maps
+// to exit code 2 (SPEC-CONF-001 / ADR-0015).
+func NewTech(pattern, adapter, match string) (Tech, error) {
+	switch match {
+	case "", "substring":
+		return Tech{Pattern: pattern, Adapter: adapter}, nil
+	case "regex":
+		if pattern == "" {
+			return Tech{}, fmt.Errorf("tech-Muster: leeres regex-Pattern unzulässig (match: regex würde jeden Import treffen)")
+		}
+		re, err := regexp.Compile(pattern)
+		if err != nil {
+			return Tech{}, fmt.Errorf("tech-Muster %q: ungültige Regex: %w", pattern, err)
+		}
+		return Tech{Pattern: pattern, Adapter: adapter, match: re.MatchString}, nil
+	default:
+		return Tech{}, fmt.Errorf("tech-Muster %q: ungültiges match %q (substring|regex)", pattern, match)
+	}
+}
+
+// matches reports whether imp hits this tech pattern: the compiled regexp when
+// set, otherwise a substring test on Pattern (default / literal Tech).
+func (t Tech) matches(imp string) bool {
+	if t.match != nil {
+		return t.match(imp)
+	}
+	return t.Pattern != "" && strings.Contains(imp, t.Pattern)
+}
+
+// matchTech returns the first tech (in declaration order, ADR-0015) whose
+// pattern matches imp; declaration order is the tie-breaker, not longest prefix.
 func matchTech(imp string, techs []Tech) (Tech, bool) {
 	for _, t := range techs {
-		if t.Pattern != "" && strings.Contains(imp, t.Pattern) {
+		if t.matches(imp) {
 			return t, true
 		}
 	}

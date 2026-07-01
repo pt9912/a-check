@@ -42,9 +42,13 @@ type Edge struct {
 }
 
 // Tech maps a framework/tech pattern to the path fragment of its owning adapter.
+// The pattern matches an imported symbol as a substring (default) or, when built
+// via NewTech with match=="regex", as an unanchored RE2 regexp (ADR-0015). A
+// literal Tech (zero match) matches as substring — backward compatible.
 type Tech struct {
 	Pattern string
 	Adapter string
+	match   func(string) bool // compiled matcher; nil ⇒ substring on Pattern
 }
 
 // Model is the resolved architecture model decoded from `.a-check.yml`.

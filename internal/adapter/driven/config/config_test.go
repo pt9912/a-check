@@ -165,3 +165,44 @@ func TestLayerDirectionWithoutRoleAccepted(t *testing.T) { // AC-FA-RULE-008: di
 		}
 	}
 }
+
+// techBody baut eine minimale gültige Config mit einem tech-Eintrag.
+func techBody(entry string) string {
+	return "version: 1\nlanguages:\n  go: [\"**/*.go\"]\nlayers:\n  core: [\"core/**\"]\n  adapters: [\"adapters/**\"]\nedges:\n  - {from: adapters, to: core}\ntech:\n  - " + entry + "\n"
+}
+
+func TestTechMatchRegexValid(t *testing.T) { // AC-FA-CONF-001 / ADR-0015: match: regex mit gültiger Regex lädt
+	if _, err := New().Load(write(t, techBody(`{pattern: "Q[A-Za-z]", adapter: "adapters/ui", match: regex}`))); err != nil {
+		t.Fatalf("match: regex mit gültiger Regex muss laden, got %v", err)
+	}
+}
+
+func TestTechMatchSubstringExplicitValid(t *testing.T) { // AC-FA-CONF-001: explizites match: substring lädt
+	if _, err := New().Load(write(t, techBody(`{pattern: "net/http", adapter: "adapters/http", match: substring}`))); err != nil {
+		t.Fatalf("match: substring muss laden, got %v", err)
+	}
+}
+
+func TestTechMatchUnknownFailsClosed(t *testing.T) { // AC-FA-CONF-001 negative: unbekannter match-Wert -> Exit 2
+	if _, err := New().Load(write(t, techBody(`{pattern: "x", adapter: "adapters/ui", match: glob}`))); err == nil {
+		t.Fatal("expected error on unknown match value (fail-closed)")
+	}
+}
+
+func TestTechMatchInvalidRegexFailsClosed(t *testing.T) { // AC-FA-CONF-001 negative: nicht kompilierbare Regex -> Exit 2
+	if _, err := New().Load(write(t, techBody(`{pattern: "Q[A-Za-z", adapter: "adapters/ui", match: regex}`))); err == nil {
+		t.Fatal("expected error on uncompilable regex (fail-closed)")
+	}
+}
+
+func TestTechMatchEmptyRegexFailsClosed(t *testing.T) { // AC-FA-CONF-001 negative: leeres regex-Pattern -> Exit 2 (würde jeden Import treffen)
+	if _, err := New().Load(write(t, techBody(`{pattern: "", adapter: "adapters/ui", match: regex}`))); err == nil {
+		t.Fatal("expected error on empty regex pattern (fail-closed)")
+	}
+}
+
+func TestTechUnknownKeyFailsClosed(t *testing.T) { // AC-FA-CONF-001 negative: unbekannter Schlüssel im tech-Eintrag -> Exit 2
+	if _, err := New().Load(write(t, techBody(`{pattern: "x", adapter: "adapters/ui", bogus: 1}`))); err == nil {
+		t.Fatal("expected error on unknown key in tech entry (strict decode)")
+	}
+}

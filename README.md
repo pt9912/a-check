@@ -125,6 +125,9 @@ edges:
   - {from: adapters, to: ports}
   - {from: ports,    to: core}     # Ports dürfen Domänentypen referenzieren
   # - {from: adapters, to: core}   # falls Adapter Domänentypen direkt referenzieren
+tech:
+  - {pattern: "net/http", adapter: adapters/http}                 # Substring (Default)
+  # - {pattern: "Q[A-Za-z]", adapter: adapters/ui, match: regex}  # RE2-Regex (z. B. Qt)
 ```
 
 Das vollständige Schema steht in der

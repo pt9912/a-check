@@ -1,6 +1,6 @@
 # Benutzerhandbuch: a-check
 
-**Handbuch-Version:** 1.10 · **Software-Version:** 0.3.0 · **Stand:** 2026-06-23 ·
+**Handbuch-Version:** 1.11 · **Software-Version:** 0.3.0 · **Stand:** 2026-07-01 ·
 **Autor:** pt9912 (Maintainer)
 
 ---
@@ -140,7 +140,7 @@ Jeder Befund nennt die Regel. Die sieben Regeln und ihre Behebung:
 | `core-impurity` | Der Kern (`role: domain`) importiert einen Port, eine `app`- oder Adapter-Schicht oder ein Framework/Tech — die Domäne ist die innerste Schicht. | Domäne rein halten; Port-/Use-Case-Orchestrierung in eine `app`-Schicht, Tech nur im Adapter. |
 | `app-impurity` | Die Application-Schicht (`role: app`) importiert einen Adapter oder ein Framework/Tech (Domäne + Ports darf sie nutzen). | Tech/Adapter hinter einen Port legen; die App spricht nur Domäne + Ports. |
 | `lateral-adapter` | Ein Adapter importiert einen anderen Adapter. | Gemeinsame Logik in die konfigurierte Senke (`adapter_sink`) ziehen oder über einen Port führen. |
-| `tech-leak` | Ein Framework/Tech erscheint außerhalb seines Adapters. | Den Tech-Zugriff in den zugeordneten Adapter kapseln. |
+| `tech-leak` | Ein Framework/Tech (Muster als Substring oder Regex, `match`) erscheint außerhalb seines Adapters. | Den Tech-Zugriff in den zugeordneten Adapter kapseln. |
 | `port-impurity` | Ein Port importiert einen Adapter oder ein Framework/Tech, oder enthält ein per `forbidden_constructs` (Abschnitt 4) verbotenes Konstrukt. Domänentypen des Kerns darf ein Port referenzieren. | Den Port von Adapter-/Tech-Importen befreien (Kern-Referenzen sind erlaubt). |
 | `port-direction-mismatch` | Ein Adapter mit Richtung `driving`/`driven` importiert einen Port der *anderen* Richtung (beide deklariert) — Treiber-Adapter sprechen nur `driving`-Ports, getriebene nur `driven`-Ports. **Kategorisch** (Kante hebt nicht auf). | Den Import über die passende Richtung führen (z. B. über die `app`-Schicht), oder die Schicht-`direction` korrigieren. Ohne `direction` greift die Regel nicht. |
 | `wrong-direction` | Ein Import läuft entgegen einer erlaubten Schicht-Kante. | Die Kante in `edges` aufnehmen (falls legitim) oder den Import umdrehen. |
@@ -179,6 +179,7 @@ edges:
 adapter_sink: driver-common       # gemeinsame Adapter-Senke (optional)
 tech:
   - {pattern: "net/http", adapter: http}   # Tech -> Adapter (optional)
+  # - {pattern: "Q[A-Za-z]", adapter: adapters/ui, match: regex}  # RE2 statt Substring
 composition_root: ["cmd/**"]      # verdrahtet alles, von Regeln ausgenommen (optional)
 allow:                            # explizit erlaubte Sonderkanten/Re-Exports (optional)
   - {from: ports, to: ports}
@@ -198,6 +199,13 @@ z. B. `cpp: ["**/*.h", "**/*.cpp"]`, `rust: ["**/*.rs"]`, `kotlin: ["**/*.kt"]`,
 zugehörige Prüfung (kein stiller Standardwert) — fehlt z. B. `adapter_sink`,
 darf **kein** Adapter einen anderen importieren (strengere Auslegung). Das
 vollständige Schema steht in der [Spezifikation](../../spec/spezifikation.md).
+
+**Tech-Muster (`match`).** Ein `tech`-Eintrag ist `{pattern, adapter}` mit optionalem
+`match: substring|regex` (Standard `substring`). `substring` prüft, ob das importierte
+Symbol den Text enthält; `match: regex` interpretiert `pattern` als **RE2-Regex**
+(unverankert) — nötig, wenn ein Framework nur als Muster fassbar ist, etwa Qt-Header
+`Q[A-Za-z]`. Ein unbekannter `match`-Wert oder eine ungültige Regex bricht mit
+Exit-Code 2 ab. Treffen mehrere Muster dasselbe Symbol, greift das **zuerst notierte**.
 
 **Schicht-Rollen (`role`).** Ein `layers`-Eintrag ist **entweder** eine Glob-Liste
 (`name: [globs]`) **oder** ein Objekt `{globs: [...], role: <rolle>, direction: <richtung>}`
@@ -337,3 +345,4 @@ und die [Spezifikation](../../spec/spezifikation.md); ein Überblick steht in de
 | 1.8 | 2026-06-23 | §3.4/§4/Glossar an Lastenheft 0.6.0 angeglichen: neue Regel `port-direction-mismatch` + Config-Schlüssel `direction` (optionale Schicht-Richtung `driving`/`driven`, orthogonal zur Rolle; ein Adapter spricht nur Ports seiner Richtung, kategorisch); sieben Regeln. |
 | 1.9 | 2026-06-23 | Software-Version **0.3.0** (GHCR-Release `v0.3.0` veröffentlicht, digest-gepinnt `@sha256:93be49a6…`). |
 | 1.10 | 2026-06-23 | §1/§4 an Lastenheft 0.7.0: fünftes Sprach-Backend **Java** (`languages`-Schlüssel `java`, `import`/`import static`); Sprach-Aufzählung + `languages`-Enum/Beispiel ergänzt. |
+| 1.11 | 2026-07-01 | §3.4/§4 an Lastenheft 0.8.0: `tech`-Muster optional als **RE2-Regex** (`match: substring\|regex`, Standard `substring`) — nötig für nur als Muster fassbare Frameworks (Qt `Q[A-Za-z]`); Mehrfach-Treffer nach Deklarationsreihenfolge (erstes Muster gewinnt); Exit 2 bei ungültigem `match`/leerer bzw. ungültiger Regex. |

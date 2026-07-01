@@ -1,6 +1,6 @@
 # Spezifikation — a-check
 
-**Version:** 0.7.0
+**Version:** 0.8.0
 
 **Status:** Draft
 
@@ -46,6 +46,7 @@ adapter_sink: driver-common     # gemeinsame Senke, die Adapter importieren dür
 tech:                           # Tech-/Framework-Muster → zugeordneter Adapter (optional)
   - {pattern: "net/http", adapter: http}
   - {pattern: "sqlite3*", adapter: persistence}
+  - {pattern: "Q[A-Za-z]", adapter: ui, match: regex}  # RE2 statt Substring (Default: match: substring)
 composition_root: ["hexagon/main/**"]   # deklarierte Ausnahme für tech-leak (optional)
 allow:                          # explizit erlaubte Sonderkanten/Re-Exports (optional)
   - {from: ports, to: ports, reason: "Re-Export"}
@@ -61,7 +62,7 @@ forbidden_constructs:           # Schicht → verbotene Text-Muster (Port-Diszip
   zugehörige Prüfung — nicht still, sondern bewusst nicht-konfiguriert. Die je
   Block präzisierte Anforderung:
   - `adapter_sink` → gemeinsame Senke aus [AC-FA-RULE-002](lastenheft.md#ac-fa-rule-002--keine-lateralen-adapter-kanten-regel-lateral-adapter); fehlt sie, darf **kein** Adapter einen anderen importieren (strengere Auslegung).
-  - `tech` → [AC-FA-RULE-003](lastenheft.md#ac-fa-rule-003--tech-kapselung-regel-tech-leak); fehlt es, entfällt `tech-leak` (gedeckt durch die Boundary von [AC-FA-CONF-001](lastenheft.md#ac-fa-conf-001--konfigurationsdatei-a-checkyml)).
+  - `tech` → [AC-FA-RULE-003](lastenheft.md#ac-fa-rule-003--tech-kapselung-regel-tech-leak); fehlt es, entfällt `tech-leak` (gedeckt durch die Boundary von [AC-FA-CONF-001](lastenheft.md#ac-fa-conf-001--konfigurationsdatei-a-checkyml)). Je Eintrag optional `match: substring|regex` (Default `substring`): `substring` = Teilstring-Vergleich, `regex` = **RE2**, unverankerter Suchlauf (`regexp.MatchString`) gegen das extrahierte Symbol ([SPEC-EXTRACT-001](#spec-extract-001--import-extraktion)). Unbekannter `match`-Wert, leere oder nicht kompilierbare Regex → Exit 2 (strict-decode; ein leeres Regex-Muster würde jeden Import treffen und ist unzulässig). RE2 ist linear und deterministisch ([SPEC-DET-001](#spec-det-001--determinismus-vertrag)).
   - `composition_root` → deklarierte `tech-leak`-Ausnahme ([AC-FA-RULE-003](lastenheft.md#ac-fa-rule-003--tech-kapselung-regel-tech-leak) Boundary).
   - `allow` → konfigurativ erlaubte Sonderkante/Re-Export ([AC-FA-RULE-005](lastenheft.md#ac-fa-rule-005--schicht-richtung-regel-wrong-direction) / [AC-FA-RULE-004](lastenheft.md#ac-fa-rule-004--port-disziplin-regel-port-impurity) Boundary).
   - `markers` → dokumentierte Heuristik-Ausnahme ([AC-QA-02](lastenheft.md#ac-qa-02--hermetik-und-ehrliche-heuristik-grenze)).
@@ -118,7 +119,7 @@ Meldung); ≥ 1 Befund ⇒ Exit-Code 1.
 | `core-impurity` | Datei mit Rolle `domain` importiert ein Symbol, das auf eine `app`-, `port`- oder `adapter`-Rolle oder ein `tech`-Muster auflöst — `domain` ist die innerste Schicht, **kategorisch** | [AC-FA-RULE-001](lastenheft.md#ac-fa-rule-001--kern-reinheit-regel-core-impurity) |
 | `app-impurity` | Datei mit Rolle `app` importiert eine `adapter`-Rolle oder ein `tech`-Muster; `domain`- und `port`-Referenzen sind erlaubt (Richtung edge-regiert) | [AC-FA-RULE-007](lastenheft.md#ac-fa-rule-007--rolle-app-und-strenge-domain) |
 | `lateral-adapter` | Datei mit Rolle `adapter` importiert eine *andere* `adapter`-Schicht (Layer-Identität) oder — in derselben Schicht — eine andere Adapter-Sub-Einheit (relativ zum Schicht-Glob-Präfix); nicht `adapter_sink`. **Kategorisch** (nicht über `edges`/`allow` aufhebbar) | [AC-FA-RULE-002](lastenheft.md#ac-fa-rule-002--keine-lateralen-adapter-kanten-regel-lateral-adapter) |
-| `tech-leak` | ein `tech`-Muster erscheint außerhalb seines zugeordneten Adapters (und außerhalb `composition_root`, falls konfiguriert) | [AC-FA-RULE-003](lastenheft.md#ac-fa-rule-003--tech-kapselung-regel-tech-leak) |
+| `tech-leak` | ein `tech`-Muster (Substring oder RE2-Regex, je `match`) erscheint außerhalb seines zugeordneten Adapters (und außerhalb `composition_root`, falls konfiguriert) | [AC-FA-RULE-003](lastenheft.md#ac-fa-rule-003--tech-kapselung-regel-tech-leak) |
 | `port-impurity` | Datei mit Rolle `port` importiert eine `adapter`-Rolle oder ein `tech`-Muster **oder** enthält ein `forbidden_constructs`-Muster (text-heuristisch erkannt). **Kern-Referenzen sind erlaubt** (Ports sprechen die Sprache des Kerns) und werden über `edges`/`allow` regiert — eine undeklarierte `ports → core`-Kante fällt unter `wrong-direction` | [AC-FA-RULE-004](lastenheft.md#ac-fa-rule-004--port-disziplin-regel-port-impurity) |
 | `port-direction-mismatch` | Datei mit Rolle `adapter` und Richtung `direction` X importiert eine `port`-Rolle mit Richtung Y (X ≠ Y, **beide gesetzt**) — ein Treiber-Adapter spricht nur `driving`-Ports, ein getriebener nur `driven`-Ports; **orthogonal** zur Rolle, ohne `direction` keine Prüfung. **Kategorisch** (nicht über `edges`/`allow` aufhebbar, wie `lateral-adapter`) | [AC-FA-RULE-008](lastenheft.md#ac-fa-rule-008--driving-driven-port-richtung-regel-port-direction-mismatch) |
 | `wrong-direction` | ein Import quert eine Schicht-Kante entgegen `edges`/`allow` | [AC-FA-RULE-005](lastenheft.md#ac-fa-rule-005--schicht-richtung-regel-wrong-direction) |
@@ -127,9 +128,12 @@ Die Schicht einer Datei ergibt sich aus dem **spezifischsten** passenden `layers
 (längster **literaler** Präfix vor dem ersten Wildcard-Segment, konsistent mit der
 Symbol-Auflösung unten; bei Gleichstand die zuerst deklarierte Schicht), ihre
 **Rolle** aus `role:` (Vorrang) oder Namens-Inferenz ([AC-FA-RULE-006](lastenheft.md#ac-fa-rule-006--schicht-rollen-generische-regel-anwendung)).
-Symbole werden über die `layers`-Globs des Zielpfads bzw. die `tech`-Muster
-aufgelöst (**spezifischster/längster** Präfix gewinnt) — die Ziel-Rolle ist die **des aufgelösten Layers**; die Reinheits-Regeln
-dispatchen über die Rolle, nicht den Namen.
+Symbole werden über die `layers`-Globs des Zielpfads aufgelöst
+(**spezifischster/längster** literaler Präfix gewinnt) — die Ziel-Rolle ist die **des aufgelösten Layers**; die Reinheits-Regeln
+dispatchen über die Rolle, nicht den Namen. Die **`tech`-Muster** dagegen lösen in
+**Deklarationsreihenfolge** auf (**Erst-Treffer** gewinnt, `matchTech`) — uniform für
+`match: substring` und `match: regex`; es gibt für `tech` **kein** „längster Präfix"
+([AC-FA-RULE-003](lastenheft.md#ac-fa-rule-003--tech-kapselung-regel-tech-leak)).
 
 Pro (Datei, Import) gilt **deterministische Erst-Treffer-Reihenfolge** in der
 Tabellen-Reihenfolge (`core-impurity` → `app-impurity` → `port-impurity` →
@@ -193,3 +197,4 @@ und [AC-QA-03](lastenheft.md#ac-qa-03--reproduzierbarkeit).
 | 0.5.0 | 2026-06-22 | `SPEC-RULE-001`: neue Rolle `app` (Befund `app-impurity` bei Adapter-/`tech`-Import) + `core-impurity` verschärft (`domain` importiert nur `domain`, kategorisch); Schema-Enum `role` um `app`. Folgt [`AC-FA-RULE-007`](lastenheft.md#ac-fa-rule-007--rolle-app-und-strenge-domain) 0.5.0. |
 | 0.6.0 | 2026-06-23 | `SPEC-RULE-001`: neue Regel `port-direction-mismatch` (Adapter-Richtung ≠ Ziel-Port-Richtung, beide gesetzt; in der Erst-Treffer-Kette vor `wrong-direction`) + Schicht-Zuordnung einer Datei auf **spezifischsten/längsten** Glob-Präfix umgestellt (Angleichung an `targetLayer`); `SPEC-CONF-001`-Schema: Objekt-Form um `direction` (und das fehlende `app`) ergänzt. Folgt [`AC-FA-RULE-008`](lastenheft.md#ac-fa-rule-008--driving-driven-port-richtung-regel-port-direction-mismatch) 0.6.0. |
 | 0.7.0 | 2026-06-23 | `SPEC-EXTRACT-001`: Java-Muster (`import …;`, inkl. `import static …;` — `static` übersprungen) als fünftes Backend. Folgt [`AC-FA-EXTRACT-001`](lastenheft.md#ac-fa-extract-001--sprach-backends-für-die-import-extraktion) 0.7.0. |
+| 0.8.0 | 2026-07-01 | `SPEC-CONF-001`: `tech`-Eintrag um optionales `match: substring\|regex` (Default `substring`; `regex` = RE2, unverankert, gegen das extrahierte Symbol); unbekannter Wert/nicht kompilierbare Regex → Exit 2. `SPEC-RULE-001`: Präzedenz der `tech`-Muster als **Deklarationsreihenfolge/Erst-Treffer** richtiggestellt (kein „längster Präfix" für `tech` — das gilt nur für `layers`-Globs; `matchTech` liefert real schon Erst-Treffer). Folgt [`AC-FA-RULE-003`](lastenheft.md#ac-fa-rule-003--tech-kapselung-regel-tech-leak)/[`AC-FA-CONF-001`](lastenheft.md#ac-fa-conf-001--konfigurationsdatei-a-checkyml) 0.8.0. |

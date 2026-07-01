@@ -23,6 +23,7 @@ type yamlEdge struct {
 type yamlTech struct {
 	Pattern string `yaml:"pattern"`
 	Adapter string `yaml:"adapter"`
+	Match   string `yaml:"match"` // "substring" (default) or "regex" (ADR-0015)
 }
 
 type yamlMarkers struct {
@@ -96,7 +97,11 @@ func (Adapter) Load(path string) (core.Model, error) {
 		m.Allow = append(m.Allow, core.Edge{From: e.From, To: e.To})
 	}
 	for _, t := range yc.Tech {
-		m.Techs = append(m.Techs, core.Tech{Pattern: t.Pattern, Adapter: t.Adapter})
+		tech, terr := core.NewTech(t.Pattern, t.Adapter, t.Match)
+		if terr != nil {
+			return core.Model{}, fmt.Errorf("%s: %w", path, terr)
+		}
+		m.Techs = append(m.Techs, tech)
 	}
 	if yc.Markers != nil {
 		m.IgnoreSymbols = yc.Markers.IgnoreSymbols

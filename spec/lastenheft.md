@@ -1,6 +1,6 @@
 # Lastenheft — a-check
 
-**Version:** 0.7.0
+**Version:** 0.8.0
 
 **Status:** Draft
 
@@ -89,13 +89,20 @@ in `d-migrate` real existierende, heute nur per Review erzwungene Regel.
 **Beschreibung:** Ein in der Config einem Adapter zugeordnetes Framework/Tech
 (z. B. `*.hxx` → Geometrie-Adapter, `sqlite3*` → Persistenz-Adapter, `Qt` →
 UI-Adapter, `net/http` → http-Adapter) erscheint **nur** in seinem Adapter (und
-ggf. der Composition Root).
+ggf. der Composition Root). Das Muster matcht das importierte Symbol als
+**Substring** (Default) **oder** — via `match: regex` — als **RE2-Regex**
+(unverankerter Suchlauf); so wird ein nur als Muster fassbares Tech wie Qt
+(`Q[A-Za-z]`) ausdrückbar. Treffen mehrere Muster dasselbe Symbol, greift der
+**in Deklarationsreihenfolge erste** (deterministisch; kein „längster Präfix" für `tech`).
 
 **Akzeptanzkriterien:**
 
 - **Happy:** Given ein Tech-Symbol nur in seinem zugeordneten Adapter, when `a-check` läuft, then kein Befund.
 - **Boundary:** Given dasselbe Symbol in der konfigurierten Composition Root, when `a-check` läuft, then kein Befund (deklarierte Ausnahme).
 - **Negative:** Given das Symbol außerhalb seines Adapters, when `a-check` läuft, then ein Befund (`tech-leak`) und Exit-Code 1.
+- **Regex:** Given ein `match: regex`-Muster, das ein Symbol trifft, das außerhalb seines Adapters liegt, when `a-check` läuft, then ein Befund (`tech-leak`) und Exit-Code 1; liegt es nur im Adapter/der Composition Root, kein Befund.
+- **Präzedenz:** Given mehrere `tech`-Muster (substring und/oder regex), die dasselbe Symbol treffen, when `a-check` läuft, then greift der in Deklarationsreihenfolge erste Treffer (deterministisch).
+- **Rückwärtskompat:** Given ein `tech`-Eintrag **ohne** `match`, when `a-check` läuft, then Substring-Semantik wie bisher (byte-identische Ausgabe).
 
 **Out-of-Scope:** semantische Unterscheidung gleichnamiger, aber framework-fremder Symbole (Heuristik-Grenze, siehe `AC-QA-02`).
 
@@ -254,13 +261,17 @@ erlaubten Kanten, die Tech→Adapter-Zuordnungen und die gemeinsame Adapter-Senk
 ist **entweder** eine Glob-Liste (`name: [globs]`, Rolle per Namens-Inferenz)
 **oder** ein Objekt `{globs: [...], role: domain|app|port|adapter, direction: driving|driven}`
 ([AC-FA-RULE-006](#ac-fa-rule-006--schicht-rollen-generische-regel-anwendung), [AC-FA-RULE-008](#ac-fa-rule-008--driving-driven-port-richtung-regel-port-direction-mismatch)); `direction` ist optional.
-Striktes Decoding, fail-closed (Exit 2 bei unbekanntem Schlüssel oder ungültiger `role`/`direction` — auch im Objekt).
+Ein `tech`-Eintrag ist `{pattern, adapter}` mit optionalem `match: substring|regex`
+(Default `substring`; `regex` = RE2, [AC-FA-RULE-003](#ac-fa-rule-003--tech-kapselung-regel-tech-leak)).
+Striktes Decoding, fail-closed (Exit 2 bei unbekanntem Schlüssel, ungültiger `role`/`direction`,
+unbekanntem `match`-Wert oder einer als Regex nicht kompilierbaren `pattern`).
 
 **Akzeptanzkriterien:**
 
 - **Happy:** Given eine gültige `.a-check.yml`, when `a-check` läuft, then werden die deklarierten Regeln angewandt.
 - **Boundary:** Given eine Config ohne optionale Tech-Zuordnungen, when `a-check` läuft, then laufen nur die Schicht-/Lateral-Regeln (kein `tech-leak`).
 - **Negative:** Given ein Tippfehler im Schlüssel, when `a-check` läuft, then Exit-Code 2 (kein stiller Default).
+- **Negative (`match`):** Given ein `tech.match` mit einem anderen Wert als `substring`/`regex` **oder** ein `match: regex` mit leerer bzw. nicht kompilierbarer `pattern`, when `a-check` lädt, then Exit-Code 2.
 
 **Out-of-Scope:** Vererbung/Includes zwischen Config-Dateien.
 
@@ -312,3 +323,4 @@ Konsumenten-Repos).
 | 0.5.0 | 2026-06-22 | Neu `AC-FA-RULE-007` (Rolle `app` + strenge `domain`): `app` darf `domain`+`port`, aber keinen Adapter/Tech (neuer Befund `app-impurity`); `domain` verschärft — Import auf `app`/`port`/`adapter`/Tech ist `core-impurity`, kategorisch („Domäne kennt keine Ports"). Erweitert `AC-FA-RULE-006`, schärft `AC-FA-RULE-001` (welle-10b). |
 | 0.6.0 | 2026-06-23 | Neu `AC-FA-RULE-008` (Driving/Driven-Port-Richtung): optionale `direction` ∈ {`driving`, `driven`} auf `port`-/`adapter`-Schichten, **orthogonal** zur Rolle; neuer Befund `port-direction-mismatch` (ein Adapter spricht nur Ports seiner Richtung). Ohne `direction` keine Prüfung (rückwärtskompatibel). `AC-FA-CONF-001`-Schema: Objekt-Form um `direction` (und das in 0.5.0 fehlende `app`) ergänzt. Verfeinert `AC-FA-RULE-006` (welle-10b/b2b). |
 | 0.7.0 | 2026-06-23 | `AC-FA-EXTRACT-001` um **Java** erweitert (`import`, inkl. `import static` — das `static`-Schlüsselwort übersprungen, `;` ignoriert) — fünftes Sprach-Backend neben C++/Go/Rust/Kotlin, text-heuristisch (welle-06, slice-014). |
+| 0.8.0 | 2026-07-01 | `AC-FA-RULE-003`/`AC-FA-CONF-001`: `tech`-Muster optional als **RE2-Regex** (`match: substring\|regex`, Default `substring`) statt nur Substring — macht ein nur als Muster fassbares Tech wie Qt (`Q[A-Za-z]`) ausdrückbar; Mehrfach-Treffer lösen in Deklarationsreihenfolge (Erst-Treffer, kein „längster Präfix" für `tech`). Unbekanntes `match`/nicht kompilierbare Regex → Exit 2. Rückwärtskompatibel (ohne `match` byte-identisch). welle-05/-06, b-cad-Pilot (Regel E); slice-016. |
