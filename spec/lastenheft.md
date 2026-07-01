@@ -1,6 +1,6 @@
 # Lastenheft — a-check
 
-**Version:** 0.8.0
+**Version:** 0.9.0
 
 **Status:** Draft
 
@@ -264,7 +264,8 @@ ist **entweder** eine Glob-Liste (`name: [globs]`, Rolle per Namens-Inferenz)
 Ein `tech`-Eintrag ist `{pattern, adapter}` mit optionalem `match: substring|regex`
 (Default `substring`; `regex` = RE2, [AC-FA-RULE-003](#ac-fa-rule-003--tech-kapselung-regel-tech-leak)).
 Striktes Decoding, fail-closed (Exit 2 bei unbekanntem Schlüssel, ungültiger `role`/`direction`,
-unbekanntem `match`-Wert oder einer als Regex nicht kompilierbaren `pattern`).
+unbekanntem `match`-Wert, einer als Regex nicht kompilierbaren `pattern` oder einem `languages`-Schlüssel
+außerhalb der unterstützten Backends aus [AC-FA-EXTRACT-001](#ac-fa-extract-001--sprach-backends-für-die-import-extraktion)).
 
 **Akzeptanzkriterien:**
 
@@ -272,6 +273,7 @@ unbekanntem `match`-Wert oder einer als Regex nicht kompilierbaren `pattern`).
 - **Boundary:** Given eine Config ohne optionale Tech-Zuordnungen, when `a-check` läuft, then laufen nur die Schicht-/Lateral-Regeln (kein `tech-leak`).
 - **Negative:** Given ein Tippfehler im Schlüssel, when `a-check` läuft, then Exit-Code 2 (kein stiller Default).
 - **Negative (`match`):** Given ein `tech.match` mit einem anderen Wert als `substring`/`regex` **oder** ein `match: regex` mit leerer bzw. nicht kompilierbarer `pattern`, when `a-check` lädt, then Exit-Code 2.
+- **Negative (Sprache):** Given ein `languages`-Schlüssel außerhalb der unterstützten Backends (`cpp`/`go`/`rust`/`kotlin`/`java`, [AC-FA-EXTRACT-001](#ac-fa-extract-001--sprach-backends-für-die-import-extraktion)), when `a-check` lädt, then Exit-Code 2 — **statt** stiller Nicht-Extraktion (falsch-grün).
 
 **Out-of-Scope:** Vererbung/Includes zwischen Config-Dateien.
 
@@ -324,3 +326,4 @@ Konsumenten-Repos).
 | 0.6.0 | 2026-06-23 | Neu `AC-FA-RULE-008` (Driving/Driven-Port-Richtung): optionale `direction` ∈ {`driving`, `driven`} auf `port`-/`adapter`-Schichten, **orthogonal** zur Rolle; neuer Befund `port-direction-mismatch` (ein Adapter spricht nur Ports seiner Richtung). Ohne `direction` keine Prüfung (rückwärtskompatibel). `AC-FA-CONF-001`-Schema: Objekt-Form um `direction` (und das in 0.5.0 fehlende `app`) ergänzt. Verfeinert `AC-FA-RULE-006` (welle-10b/b2b). |
 | 0.7.0 | 2026-06-23 | `AC-FA-EXTRACT-001` um **Java** erweitert (`import`, inkl. `import static` — das `static`-Schlüsselwort übersprungen, `;` ignoriert) — fünftes Sprach-Backend neben C++/Go/Rust/Kotlin, text-heuristisch (welle-06, slice-014). |
 | 0.8.0 | 2026-07-01 | `AC-FA-RULE-003`/`AC-FA-CONF-001`: `tech`-Muster optional als **RE2-Regex** (`match: substring\|regex`, Default `substring`) statt nur Substring — macht ein nur als Muster fassbares Tech wie Qt (`Q[A-Za-z]`) ausdrückbar; Mehrfach-Treffer lösen in Deklarationsreihenfolge (Erst-Treffer, kein „längster Präfix" für `tech`). Unbekanntes `match`/nicht kompilierbare Regex → Exit 2. Rückwärtskompatibel (ohne `match` byte-identisch). welle-05/-06, b-cad-Pilot (Regel E); slice-016. |
+| 0.9.0 | 2026-07-01 | `AC-FA-CONF-001`: ein `languages`-Schlüssel außerhalb der unterstützten Backends (`cpp`/`go`/`rust`/`kotlin`/`java`, `AC-FA-EXTRACT-001`) bricht mit **Exit 2** ab — schließt die stille Nicht-Extraktion (falsch-grün) für nicht unterstützte Sprachen. slice-017. |

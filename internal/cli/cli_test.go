@@ -156,3 +156,36 @@ func TestTechRegexIgnoreSymbols(t *testing.T) { // AC-QA-02 / ADR-0015: markers.
 		t.Fatalf("ohne ignore_symbols erwarte tech-leak (Exit 1), got %d (out=%q)", code, out.String())
 	}
 }
+
+func TestUnknownLanguageExit2(t *testing.T) { // AC-FA-CONF-001 / slice-017: unbekannte Sprache -> Exit 2 statt still falsch-grün
+	cfg := "version: 1\nlanguages:\n  python: [\"**/*.py\"]\nlayers:\n  core: [\"core/**\"]\nedges:\n  - {from: core, to: core}\n"
+	dir := writeRepo(t, map[string]string{".a-check.yml": cfg, "core/x.py": "import os\n"})
+	var out, errb bytes.Buffer
+	if code := cli.Run([]string{dir}, &out, &errb); code != 2 {
+		t.Fatalf("unbekannte Sprache muss Exit 2 liefern, got %d", code)
+	}
+	if !strings.Contains(errb.String(), "unbekannte Sprache") || !strings.Contains(errb.String(), "python") {
+		t.Fatalf("Meldung soll die Sprache nennen: %q", errb.String())
+	}
+}
+
+func TestMonoRepoMixedUnsupportedExit2(t *testing.T) { // slice-017: Mono-Repo go+typescript(unsupported) -> Exit 2, go rettet nicht
+	cfg := "version: 1\nlanguages:\n  go: [\"**/*.go\"]\n  typescript: [\"**/*.ts\"]\nlayers:\n  core: [\"core/**\"]\nedges:\n  - {from: core, to: core}\n"
+	dir := writeRepo(t, map[string]string{".a-check.yml": cfg, "core/x.go": "package core\n"})
+	var out, errb bytes.Buffer
+	if code := cli.Run([]string{dir}, &out, &errb); code != 2 {
+		t.Fatalf("gemischte Sprachen mit unsupported -> Exit 2, got %d", code)
+	}
+	if !strings.Contains(errb.String(), "typescript") {
+		t.Fatalf("Meldung soll die unsupported Sprache nennen: %q", errb.String())
+	}
+}
+
+func TestMonoRepoMultiSupportedRuns(t *testing.T) { // slice-017: Mono-Repo mit nur unterstützten Sprachen (go+cpp) läuft
+	cfg := "version: 1\nlanguages:\n  go: [\"**/*.go\"]\n  cpp: [\"**/*.h\", \"**/*.cpp\"]\nlayers:\n  core: [\"core/**\"]\nedges:\n  - {from: core, to: core}\n"
+	dir := writeRepo(t, map[string]string{".a-check.yml": cfg, "core/x.go": "package core\n"})
+	var out, errb bytes.Buffer
+	if code := cli.Run([]string{dir}, &out, &errb); code != 0 {
+		t.Fatalf("go+cpp (beide unterstützt) muss laufen (Exit 0), got %d (err=%q)", code, errb.String())
+	}
+}

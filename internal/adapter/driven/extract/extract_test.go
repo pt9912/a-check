@@ -1,6 +1,8 @@
 package extract
 
 import (
+	"sort"
+	"strings"
 	"testing"
 
 	"github.com/pt9912/a-check/internal/hexagon/core"
@@ -106,5 +108,39 @@ func TestJavaWildcard(t *testing.T) { // AC-FA-EXTRACT-001 Out-of-Scope: Wildcar
 	got := syms(newAdapter().importsFromSource("java", stripComments("import com.foo.*;\n")))
 	if !has(got, "com.foo.") {
 		t.Fatalf("Wildcard heuristisch: erwarte Symbol 'com.foo.' (Trailing-Dot, nicht expandiert), got %v", got)
+	}
+}
+
+func TestBackendRegistrySet(t *testing.T) { // slice-017: Registry ist die Single Source — genau {cpp,go,rust,kotlin,java}
+	got := make([]string, 0)
+	for n := range newAdapter().backends {
+		got = append(got, n)
+	}
+	sort.Strings(got)
+	if strings.Join(got, ",") != "cpp,go,java,kotlin,rust" {
+		t.Fatalf("Backend-Registry = %v, erwarte cpp/go/java/kotlin/rust", got)
+	}
+}
+
+func TestCheckLanguagesUnknown(t *testing.T) { // slice-017: unbekannte Sprache -> Fehler, Meldung nennt Name + Menge
+	err := newAdapter().checkLanguages(map[string][]string{"python": {"**/*.py"}})
+	if err == nil {
+		t.Fatal("erwarte Fehler für unbekannte Sprache")
+	}
+	if !strings.Contains(err.Error(), `"python"`) || !strings.Contains(err.Error(), "cpp|go|java|kotlin|rust") {
+		t.Fatalf("Meldung soll Name + Menge aus der Registry nennen: %q", err.Error())
+	}
+}
+
+func TestCheckLanguagesMixedUnsupported(t *testing.T) { // slice-017: Mono-Repo go+unsupported -> Fehler (go rettet nicht)
+	err := newAdapter().checkLanguages(map[string][]string{"go": {"**/*.go"}, "typescript": {"**/*.ts"}})
+	if err == nil || !strings.Contains(err.Error(), "typescript") {
+		t.Fatalf("gemischte Sprachen: die unsupported (typescript) muss brechen, got %v", err)
+	}
+}
+
+func TestCheckLanguagesSupported(t *testing.T) { // slice-017: nur unterstützte Sprachen (Mono-Repo go+cpp) -> kein Fehler
+	if err := newAdapter().checkLanguages(map[string][]string{"go": {"**/*.go"}, "cpp": {"**/*.cpp"}}); err != nil {
+		t.Fatalf("go+cpp (beide unterstützt) müssen akzeptiert werden, got %v", err)
 	}
 }

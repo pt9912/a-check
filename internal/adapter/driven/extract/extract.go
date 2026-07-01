@@ -6,6 +6,7 @@
 package extract
 
 import (
+	"fmt"
 	"io/fs"
 	"os"
 	"path/filepath"
@@ -17,20 +18,27 @@ import (
 	"github.com/pt9912/a-check/internal/hexagon/port"
 )
 
+// extractFn yields a file's imports for one language backend.
+type extractFn func(src string) []core.Import
+
 // Adapter implements port.ExtractionPort. Its compiled patterns live on the
 // value (not as package globals) to satisfy the lint profile (ADR-0005).
 type Adapter struct {
-	goSingle, goBlock, goQuoted     *regexp.Regexp
-	cppInclude                      *regexp.Regexp
-	rustUse, rustCrate              *regexp.Regexp
-	kotlinImp, javaImp              *regexp.Regexp
+	goSingle, goBlock, goQuoted *regexp.Regexp
+	cppInclude                  *regexp.Regexp
+	rustUse, rustCrate          *regexp.Regexp
+	kotlinImp, javaImp          *regexp.Regexp
+	// backends maps a language to its extractor; its keys are the single
+	// source of the supported-backend set (SPEC-EXTRACT-001). A new backend is
+	// one entry — dispatch and language validation share this one map.
+	backends map[string]extractFn
 }
 
 // New returns an extraction adapter.
 func New() port.ExtractionPort { return newAdapter() }
 
 func newAdapter() Adapter {
-	return Adapter{
+	a := Adapter{
 		goSingle:   regexp.MustCompile(`^\s*import\s+(?:[\w.]+\s+)?"([^"]+)"`),
 		goBlock:    regexp.MustCompile(`^\s*import\s*\(\s*$`),
 		goQuoted:   regexp.MustCompile(`^\s*(?:[\w.]+\s+)?"([^"]+)"`),
@@ -40,10 +48,21 @@ func newAdapter() Adapter {
 		kotlinImp:  regexp.MustCompile(`^\s*import\s+([A-Za-z_][A-Za-z0-9_.]*)`),
 		javaImp:    regexp.MustCompile(`^\s*import\s+(?:static\s+)?([A-Za-z_][A-Za-z0-9_.]*)`),
 	}
+	a.backends = map[string]extractFn{
+		"go":     func(src string) []core.Import { return dedupeSort(a.goImports(src)) },
+		"cpp":    func(src string) []core.Import { return dedupeSort(lineMatches(src, a.cppInclude)) },
+		"rust":   func(src string) []core.Import { return dedupeSort(lineMatches(src, a.rustUse, a.rustCrate)) },
+		"kotlin": func(src string) []core.Import { return dedupeSort(lineMatches(src, a.kotlinImp)) },
+		"java":   func(src string) []core.Import { return dedupeSort(lineMatches(src, a.javaImp)) },
+	}
+	return a
 }
 
 // Extract walks root and returns the imports per source file, stably ordered.
 func (a Adapter) Extract(root string, m core.Model) ([]core.FileImports, error) {
+	if err := a.checkLanguages(m.Languages); err != nil {
+		return nil, err
+	}
 	var out []core.FileImports
 	err := filepath.WalkDir(root, func(p string, d fs.DirEntry, walkErr error) error {
 		if walkErr != nil {
@@ -101,21 +120,41 @@ func langFor(rel string, langs map[string][]string) string {
 	return ""
 }
 
-func (a Adapter) importsFromSource(lang, src string) []core.Import {
-	switch lang {
-	case "go":
-		return dedupeSort(a.goImports(src))
-	case "cpp":
-		return dedupeSort(lineMatches(src, a.cppInclude))
-	case "rust":
-		return dedupeSort(lineMatches(src, a.rustUse, a.rustCrate))
-	case "kotlin":
-		return dedupeSort(lineMatches(src, a.kotlinImp))
-	case "java":
-		return dedupeSort(lineMatches(src, a.javaImp))
-	default:
-		return nil
+// checkLanguages rejects a `languages` key outside the backend registry with a
+// config error (SPEC-EXTRACT-001; the CLI maps it to exit code 2). This closes
+// the silent no-op — every declared language must resolve to a real backend, so
+// an unsupported/typo'd language (e.g. `python`, `pythn`) fails loudly instead
+// of extracting nothing (false-green). Deterministic order for a stable message.
+func (a Adapter) checkLanguages(langs map[string][]string) error {
+	names := make([]string, 0, len(langs))
+	for n := range langs {
+		names = append(names, n)
 	}
+	sort.Strings(names)
+	for _, name := range names {
+		if _, ok := a.backends[name]; !ok {
+			return fmt.Errorf("unbekannte Sprache %q (%s)", name, a.supportedList())
+		}
+	}
+	return nil
+}
+
+// supportedList is the sorted backend set from the registry keys — the single
+// source, so the message never drifts from the actual dispatch.
+func (a Adapter) supportedList() string {
+	names := make([]string, 0, len(a.backends))
+	for n := range a.backends {
+		names = append(names, n)
+	}
+	sort.Strings(names)
+	return strings.Join(names, "|")
+}
+
+// importsFromSource dispatches to the language backend via the registry. There
+// is no silent default: after checkLanguages, lang is always registered; an
+// unregistered lang would nil-panic (loud), never extract nothing (false-green).
+func (a Adapter) importsFromSource(lang, src string) []core.Import {
+	return a.backends[lang](src)
 }
 
 func (a Adapter) goImports(src string) []core.Import {

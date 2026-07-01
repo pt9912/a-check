@@ -1,6 +1,6 @@
 # Spezifikation — a-check
 
-**Version:** 0.8.0
+**Version:** 0.9.0
 
 **Status:** Draft
 
@@ -56,7 +56,10 @@ forbidden_constructs:           # Schicht → verbotene Text-Muster (Port-Diszip
   ports: ["impl "]
 ```
 
-- **Pflichtblöcke:** `version`, `languages`, `layers`, `edges`.
+- **Pflichtblöcke:** `version`, `languages`, `layers`, `edges`. Die `languages`-Schlüssel müssen aus
+  der Backend-Menge von [SPEC-EXTRACT-001](#spec-extract-001--import-extraktion) stammen
+  (`cpp`/`go`/`rust`/`kotlin`/`java`); ein unbekannter Schlüssel → Exit 2 (dort normativ, hier nur
+  verwiesen — **kein Duplikat**).
 - **Optionalblöcke:** `adapter_sink`, `tech`, `composition_root`, `allow`,
   `markers`, `forbidden_constructs`. Fehlt ein Optionalblock, entfällt die
   zugehörige Prüfung — nicht still, sondern bewusst nicht-konfiguriert. Die je
@@ -98,6 +101,13 @@ gewählte Backend die Menge der importierten Symbole/Module:
 
 Nur direkte Imports (keine transitive Auflösung über Modulgrenzen);
 Toolchain-gestützte Backends sind Lastenheft-Out-of-Scope.
+
+**Zulässige Backend-Menge** (normativ, Owner dieser Spec): genau `{cpp, go, rust, kotlin, java}`.
+Ein `languages`-Schlüssel außerhalb dieser Menge ist ein **Konfigurationsfehler** (Exit 2,
+[SPEC-CLI-001](#spec-cli-001--aufruf-scan-wurzel-und-exit-codes)) — der Extraktions-Adapter
+validiert die `languages`-Schlüssel gegen seine Backend-Registry, **bevor** er Dateien liest
+(kein stiller No-Op / falsch-grün für nicht unterstützte Sprachen). Ein neues Backend erweitert
+die Registry — die Menge lebt an **einer** Stelle.
 
 Neben Importen erkennt das Backend optionale `forbidden_constructs`-Muster
 ([SPEC-CONF-001](#spec-conf-001--konfigurationsschema)) text-heuristisch je
@@ -198,3 +208,4 @@ und [AC-QA-03](lastenheft.md#ac-qa-03--reproduzierbarkeit).
 | 0.6.0 | 2026-06-23 | `SPEC-RULE-001`: neue Regel `port-direction-mismatch` (Adapter-Richtung ≠ Ziel-Port-Richtung, beide gesetzt; in der Erst-Treffer-Kette vor `wrong-direction`) + Schicht-Zuordnung einer Datei auf **spezifischsten/längsten** Glob-Präfix umgestellt (Angleichung an `targetLayer`); `SPEC-CONF-001`-Schema: Objekt-Form um `direction` (und das fehlende `app`) ergänzt. Folgt [`AC-FA-RULE-008`](lastenheft.md#ac-fa-rule-008--driving-driven-port-richtung-regel-port-direction-mismatch) 0.6.0. |
 | 0.7.0 | 2026-06-23 | `SPEC-EXTRACT-001`: Java-Muster (`import …;`, inkl. `import static …;` — `static` übersprungen) als fünftes Backend. Folgt [`AC-FA-EXTRACT-001`](lastenheft.md#ac-fa-extract-001--sprach-backends-für-die-import-extraktion) 0.7.0. |
 | 0.8.0 | 2026-07-01 | `SPEC-CONF-001`: `tech`-Eintrag um optionales `match: substring\|regex` (Default `substring`; `regex` = RE2, unverankert, gegen das extrahierte Symbol); unbekannter Wert/nicht kompilierbare Regex → Exit 2. `SPEC-RULE-001`: Präzedenz der `tech`-Muster als **Deklarationsreihenfolge/Erst-Treffer** richtiggestellt (kein „längster Präfix" für `tech` — das gilt nur für `layers`-Globs; `matchTech` liefert real schon Erst-Treffer). Folgt [`AC-FA-RULE-003`](lastenheft.md#ac-fa-rule-003--tech-kapselung-regel-tech-leak)/[`AC-FA-CONF-001`](lastenheft.md#ac-fa-conf-001--konfigurationsdatei-a-checkyml) 0.8.0. |
+| 0.9.0 | 2026-07-01 | `SPEC-EXTRACT-001` nennt die zulässige Backend-Menge `{cpp,go,rust,kotlin,java}` **normativ** (Owner) + Validierung der `languages`-Schlüssel gegen die Backend-Registry (unbekannt → Exit 2, kein stiller No-Op); `SPEC-CONF-001` **verweist** darauf (kein Duplikat). Folgt [`AC-FA-CONF-001`](lastenheft.md#ac-fa-conf-001--konfigurationsdatei-a-checkyml) 0.9.0. |
