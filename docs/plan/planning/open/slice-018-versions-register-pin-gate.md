@@ -19,6 +19,11 @@ war — **kein Gate** hat das gemeldet. Das widerspricht dem „Invarianten als 
 Ethos. Das a-check nun gepinnte **d-check v0.35.0** bringt die Module `versions`/`pins` mit, die genau
 diese Klasse erzwingen könnten (in `.d-check.yml` aktuell **nicht** aktiv).
 
+Hinzu kommt `d-check.mk` (Pin des **Schwester-Tools**): heute eine Digest-Koordinate (driftfrei);
+nach [slice-019](slice-019-dcheck-mk-print-mk-angleichung.md) **Tag + Digest**, die gegeneinander
+driften können. Dessen **Tag↔Digest-Konsistenz** gehört dann in dieses Gate — **oder** wird explizit
+exemptiert; hier zu entscheiden, damit slice-019 keine Drift-Quelle schafft, die das Gate nicht sieht.
+
 ## 2. Geplanter Umfang
 
 1. **`version.md`** (Repo-Wurzel, Muster von d-check): Versions-Koordinaten (Tag + Datum + Release-Link)
