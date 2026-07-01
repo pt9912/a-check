@@ -44,7 +44,9 @@ Alle Gates real und grün (`make gates`; Dogfooding 0 Befunde).
 Lastenheft/Spezifikation 0.8.0) die letzte fehlende a-check-Fähigkeit — `tech`-Muster als opt-in
 RE2-Regex (`match: regex`), womit arch-check.shs Qt-**Regel E** (`Q[A-Za-z]`) ausdrückbar und
 `arch-check.sh` **vollständig** ersetzbar wird; der eigentliche Ersatz in b-cad folgt nach einem
-neuen Release + Digest-Re-Pin.
+neuen Release + Digest-Re-Pin. Als Release-Hygiene ist [slice-018](../open/slice-018-versions-register-pin-gate.md)
+vorgemerkt (Versions-Register `version.md` + `versions`/`pins`-Gate), nachdem ein stale README-Pin
+nur per Zufalls-Audit auffiel.
 
 ## Nächste Wellen
 
