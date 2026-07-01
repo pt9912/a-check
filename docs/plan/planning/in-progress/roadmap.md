@@ -1,6 +1,6 @@
 # Roadmap
 
-**Status:** Aktiv. **Letzte Änderung:** 2026-06-22.
+**Status:** Aktiv. **Letzte Änderung:** 2026-07-01.
 
 **Format-Regel:** Die Roadmap ist eine Reihenfolge von **Wellen**, keine
 Reihenfolge von Terminen. Termine erscheinen — falls überhaupt — als
@@ -39,16 +39,21 @@ Alle Gates real und grün (`make gates`; Dogfooding 0 Befunde).
 ([slice-007 §4](../done/slice-007-release-pipeline.md#4-closure-notiz-nach-done),
 [ADR-0007](../../adr/0007-latest-tag-politik.md) `Accepted`; GHCR
 `@sha256:93be49a6…` (aktuell v0.3.0) digest-gepinnt in `a-check.mk`); nur die
-**Pilot-Einbindung** in ein Konsumenten-Repo bleibt.
+**Pilot-Einbindung** in ein Konsumenten-Repo bleibt. Für den b-cad-Pilot liefert
+[slice-016](../done/slice-016-regex-tech-muster.md) ([ADR-0015](../../adr/0015-regex-tech-muster.md),
+Lastenheft/Spezifikation 0.8.0) die letzte fehlende a-check-Fähigkeit — `tech`-Muster als opt-in
+RE2-Regex (`match: regex`), womit arch-check.shs Qt-**Regel E** (`Q[A-Za-z]`) ausdrückbar und
+`arch-check.sh` **vollständig** ersetzbar wird; der eigentliche Ersatz in b-cad folgt nach einem
+neuen Release + Digest-Re-Pin.
 
 ## Nächste Wellen
 
 | Welle | Trigger | Wichtigste Inhalte | Status |
 |---|---|---|---|
 | welle-05-release | Image-Veröffentlichung | **`v0.1.0` veröffentlicht** ([slice-007](../done/slice-007-release-pipeline.md): `release.yml` + [ADR-0007](../../adr/0007-latest-tag-politik.md)); GHCR digest-gepinnt in `a-check.mk` ([AC-FA-DIST-001](../../../../spec/lastenheft.md#ac-fa-dist-001--distribution-image---print-mk-a-checkmk), [AC-QA-03](../../../../spec/lastenheft.md#ac-qa-03--reproduzierbarkeit)). **Offen:** Pilot-Einbindung in ein Konsumenten-Repo | fast fertig |
-| welle-06-sprach-backends | Konsumenten-Bedarf (Java/belief-agent) | **Java-Backend** geliefert ([slice-014](../done/slice-014-java-backend.md), [AC-FA-EXTRACT-001](../../../../spec/lastenheft.md#ac-fa-extract-001--sprach-backends-für-die-import-extraktion) 0.7.0; fünftes Backend); weiter offen: Ausbau/Härtung je Zielsprache + opt-in toolchain-Backends | läuft |
+| welle-06-sprach-backends | Konsumenten-Bedarf (Java/belief-agent) | **Java-Backend** geliefert ([slice-014](../done/slice-014-java-backend.md), [AC-FA-EXTRACT-001](../../../../spec/lastenheft.md#ac-fa-extract-001--sprach-backends-für-die-import-extraktion) 0.7.0; fünftes Backend). **Offene Kandidaten** aus dem Polyglot-Bestand: **Python** / **TypeScript** / **C#** (Go ✓ vorhanden) — je Extraktions-Backend (billig) **plus** ein Auflösungs-Modus (siehe Resolution-Zeile). Härtung: [slice-017](../open/slice-017-unbekannte-sprache-exit2.md) — unbekannter `languages`-Schlüssel bricht heute **still** durch (falsch-grün) → Exit 2. | läuft |
 | driving/driven-Vertiefung | Konsumenten-Bedarf (Gate) | Port→Port-Richtungsregeln + Auto-Inferenz der Richtung aus **Namen** (Glob/Pfad bleibt out) ([ADR-0012](../../adr/0012-driving-driven-richtung-orthogonale-dimension.md) Out-of-Scope); Entwurf [slice-013](../open/slice-013-driving-driven-vertiefung.md) — Carry-forward aus welle-10b/b2b; x-wal als Struktur-Kandidat | Entwurf in Abnahme |
-| JVM-Import-Auflösung (Resolution-Roots) | JVM-Konsumenten-Adoption | [ADR-0014](../../adr/0014-resolution-roots.md) (Re-Eval von [ADR-0002](../../adr/0002-text-heuristische-extraktion.md)): Import gegen konfigurierbare Resolution-Roots (dotted-aware), Build-Manifest als optionaler Hinweis; Entwurf [slice-015](../open/slice-015-resolution-roots.md). x-wal/b-cad-Pilot-Evidenz | offen (gated) |
+| Import-Auflösung (Resolution-Roots, **sprach-parametrisch**) | Konsument mit Import-Form ≠ „Pfad = Scan-Wurzel-relativ" (nicht mehr JVM-only) | [ADR-0014](../../adr/0014-resolution-roots.md) (Re-Eval von [ADR-0002](../../adr/0002-text-heuristische-extraktion.md)): Import gegen konfigurierbare Resolution-Roots (dotted-aware), Build-Manifest als optionaler Hinweis; Entwurf [slice-015](../open/slice-015-resolution-roots.md). **Drei Auflösungs-Modi:** fester-Wurzel-dotted (Go ✓/JVM/Python/C++-`src`, der bereits entschiedene Modus) · relativ-zum-File (TypeScript, quoted C++) · Namespace-Index (C#) — die letzten beiden vermutlich je Folge-ADR. **Evidenz:** b-cad (C++ Scan-Wurzel = Include-Root) + x-wal (JVM) + Polyglot-Bestand | offen (gated) |
 
 _(Kein fixer Termin — Wellen feuern auf Trigger.)_
 
