@@ -6,6 +6,24 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
+### Added
+
+- **`AC-FA-CONF-001` (Lastenheft/Spezifikation 0.9.0→0.10.0):** optionaler `resolution`-Block — Map
+  **Sprache → `{mode, roots, package_base}`** (`mode ∈ {path, fixed-root}`; `relative`/`namespace`
+  reserviert → Exit 2). Löst gepunktete (JVM/Python) und `src`-gewurzelte (C++) Importe **pro Sprache**
+  auf ihre Schicht auf (Mono-Repo-tauglich) — Sprach-Threading via `FileImports.Language`; `.`→`/` an
+  `package_base` gebunden (Pfad-Sprachen behalten `.`-Endungen); Grenze Paket==Verzeichnis. Default
+  (ohne Block) unverändert, rückwärtskompatibel. Prerequisit fürs Python-Backend. ADR-0016 (erweitert
+  ADR-0014); slice-015.
+- **`AC-FA-CONF-001` (Lastenheft/Spezifikation 0.8.0→0.9.0):** ein `languages`-Schlüssel außerhalb der
+  unterstützten Backends (`cpp`/`go`/`rust`/`kotlin`/`java`) bricht mit **Exit 2** ab statt still nichts
+  zu extrahieren (falsch-grün); Backend-Registry als Single Source. slice-017.
+
+### Changed
+
+- **doc-check-Pin** (Schwester-Tool `d-check`) von v0.24.0 auf **v0.35.0** digest-gepinnt (`@sha256:9d7b23ac…`);
+  Gate-Tooling, netzlos, a-checks aktive Module unverändert.
+
 ## [0.4.0] - 2026-07-01
 
 Regel-Engine-Schärfung + Sprach-Backend seit `v0.3.0`; Lastenheft/Spezifikation 0.6.0 → 0.8.0.
