@@ -1,58 +1,119 @@
-# slice-015 — Resolution-Roots: Import-Auflösung gegen konfigurierbare Wurzeln (Backlog, gated)
+# slice-015 — Resolution-Roots: Import-Auflösung gegen konfigurierbare Wurzeln (sprach-parametrisch)
 
-**Status:** open (Backlog — gated; Trigger **je Konsument**, nicht mehr JVM-only, §1).
-**Bezug:** setzt [ADR-0014](../../adr/0014-resolution-roots.md) um; erweitert
+**Status:** open (Entwurf zur Abnahme — **Abnahme-Gate §5 offen**, blockiert die DoD).
+**Bezug:** setzt [ADR-0014](../../adr/0014-resolution-roots.md) um und **erweitert** ihn per
+**Folge-ADR** (§3.0; Sprach-Map + Sprach-Threading, `Supersedes: —`); erweitert
 [AC-FA-CONF-001](../../../../spec/lastenheft.md#ac-fa-conf-001--konfigurationsdatei-a-checkyml)
 (Schema) + [AC-FA-EXTRACT-001](../../../../spec/lastenheft.md#ac-fa-extract-001--sprach-backends-für-die-import-extraktion);
 ehrliche Heuristik-Grenze [AC-QA-02](../../../../spec/lastenheft.md#ac-qa-02--hermetik-und-ehrliche-heuristik-grenze).
-[Roadmap](../in-progress/roadmap.md). **Evidenz:** b-cad-Pilot (C++ — Scan-Wurzel muss = Include-Root
-`src/`, manuell/fehleranfällig, kollidiert mit dem `make a-check`-Gate) + x-wal (JVM, gepunktete
-Pakete) + Polyglot-Bestand (Go ✓, Python/TypeScript/C# offen).
-
-> **Backlog-Stub.** Kein Entwurf zur Abnahme — getrackte Folge-Arbeit zu
-> [ADR-0014](../../adr/0014-resolution-roots.md), damit die Auflösungsgrenze (über **alle** Sprachen)
-> nicht stille Annahme bleibt. Wird zum Slice ausgearbeitet, sobald der Trigger (§1) feuert.
+[Roadmap](../in-progress/roadmap.md). **Evidenz:** der **Polyglot-Bestand** (Repos in Go, C++, C#,
+Python, TypeScript) — nicht nur x-wal: b-cad (C++ `src`-Root), x-wal (JVM, gepunktete Pakete), plus
+Go/C#/Python/TS-Repos. Die Architektur (Sprach-Map + Threading + `mode`-Diskriminator) trägt **alle**;
+slice-015 füllt **einen** Modus, die zwei übrigen kommen additiv (§4).
 
 ## 1. Auslöser (Gate)
 
-Die heutige Auflösung nimmt „Import = wurzel-relativer Pfad" an. Das hält **nur** für Sprachen, deren
-Import *ist* der wurzel-relative Pfad (Go: Modulpfad) — und bricht in drei verschiedenen Formen:
+Die heutige Auflösung nimmt „Import = wurzel-relativer Pfad" an (`targetLayer`, `rules.go:231` —
+matcht den Import gegen die `layers`-Glob-Präfixe per `segIndex` auf `/`, `rules.go:256`). Das hält
+**nur** für Sprachen, deren Import *ist* der Pfad (Go: Modulpfad) — und bricht in vier Formen:
 
-- **Fester-Wurzel-dotted** (JVM, Python): `com.x.Y` / `a.b.c` sind gepunktet, kein `/`-Pfad — braucht
-  Wurzel + Separator-Normalisierung ([ADR-0014](../../adr/0014-resolution-roots.md) Kontext).
-- **Wurzel ≠ Scan-Wurzel** (C++): b-cads Includes sind `src/`-gewurzelt (`#include "hexagon/…"`); der
-  **b-cad-Pilot** zeigte, dass „C++ funktioniert schon ohne" nur gilt, wenn man Scan-Wurzel = `src/`
-  **von Hand** setzt — fehleranfällig und unvereinbar mit dem `make a-check`-Gate, das Repo-Root mountet.
-  Ein deklariertes `roots: ["src"]` löst das, ohne den Datei-Baum zu verrenken.
-- **Relativ zum importierenden File** (TypeScript: `./x`, `../lib/y`; C/C++-quoted): löst gegen den
-  *Ort des Files* auf, nicht die Wurzel — **anderes Modell** als oben.
-- **Namespace-entkoppelt** (C#): `using Foo.Bar;` bindet an einen Namespace, den jede Datei frei
-  deklariert — kein Pfad-Bezug; braucht einen Namespace→Datei-Index.
+- **Fester-Wurzel-dotted** (JVM, Python): `com.x.Y` / `a.b.c` sind gepunktet, kein `/` — `segIndex`
+  trifft nie. Braucht Wurzel + Separator-Normalisierung.
+- **Wurzel ≠ Scan-Wurzel** (C++, nur `<…>`/quoted-als-Pfad): b-cads Includes sind `src/`-gewurzelt;
+  `src/` deklarieren statt raten.
+- **Relativ zum File** (TypeScript `./x`; C++ **`"…"`-Includes** relativ zum importierenden File):
+  löst gegen den *Ort des Files* auf.
+- **Namespace-entkoppelt** (C#): `using Foo.Bar;` ohne Pfad-Bezug.
 
-Der Trigger feuert also **pro Konsument**, sobald dessen Import-Form nicht „Pfad = Wurzel-relativ" ist.
+Dieser Slice liefert **nur den ersten Modus** (fester-Wurzel-dotted). Die letzten beiden (relativ,
+namespace) sind andere Auflösungs-Signale und bekommen je einen eigenen Folge-ADR (§5).
 
-## 2. Geplanter Umfang (a-check-seitig) — sprach-parametrisch
+## 2. Betroffene Artefakte (vor der Implementierung benannt)
 
-1. **`resolution`-Block** in `.a-check.yml`
-   ([SPEC-CONF-001](../../../../spec/spezifikation.md#spec-conf-001--konfigurationsschema)):
-   `roots` (Auflösungs-Wurzeln) + `package_base` (gepunktete Pakete normalisieren); strict-decode.
-   **Als Map Sprache → Config** (Mono-Repo-tauglich, §3), nicht ein globaler Modus. Deckt
-   **Modus fester-Wurzel** ab (Go bleibt Default, JVM/Python/C++-`src` via `roots`/`package_base`).
-2. **Separator-agnostische Auflösung** in `rules.go` (`targetLayer`/`segIndex`): `.` wie `/`,
-   wurzel-relativ; **Default unverändert** (Import-als-Pfad) ohne `resolution`-Block.
-3. Tests: JVM-Paket→Layer; C++ `src`-Root; Default-Rückwärtskompat (Go/C++).
+- **Slice-ID:** slice-015.
+- **ADR:** **neu Folge-ADR** — erweitert [ADR-0014](../../adr/0014-resolution-roots.md) (Accepted, immutable)
+  um (a) die **Sprach-Map** und (b) das **Sprach-Threading**; nach dem Muster, mit dem der ADR selbst
+  [ADR-0002](../../adr/0002-text-heuristische-extraktion.md) erweiterte (`Supersedes: —`).
+- **AC:** [AC-FA-CONF-001](../../../../spec/lastenheft.md#ac-fa-conf-001--konfigurationsdatei-a-checkyml)
+  (Schema `resolution`), [AC-FA-EXTRACT-001](../../../../spec/lastenheft.md#ac-fa-extract-001--sprach-backends-für-die-import-extraktion)
+  (Symbol→Layer je Sprache).
+- **Spec:** [SPEC-CONF-001](../../../../spec/spezifikation.md#spec-conf-001--konfigurationsschema)
+  (`resolution`), [SPEC-RULE-001](../../../../spec/spezifikation.md#spec-rule-001--regel-auswertung)
+  (Symbol→Layer), [SPEC-EXTRACT-001](../../../../spec/spezifikation.md#spec-extract-001--import-extraktion)
+  (Sprache je Datei).
+- **Module:** `internal/adapter/driven/config` (`resolution`-Decode), `internal/hexagon/core`
+  (`FileImports.Language` **neu**; `targetLayer`/`ruleFor` sprach-bewusst), `internal/adapter/driven/extract`
+  (setzt `FileImports.Language` aus `langFor`).
+- **Version:** Lastenheft/Spezifikation → **nächste freie Minor** (0.10.0, falls slice-015 vor
+  [slice-013](slice-013-driving-driven-vertiefung.md) landet — beide sind Entwurf; wer zuerst mergt,
+  nimmt 0.10.0).
+- **Gates:** `make gates` → `make ci`.
 
-## 3. Vor der Umsetzung zu klären
+## 3. Umfang (Reihenfolge: ADR → Lastenheft → Spec → Code → Tests)
 
-- **Mono-Repos (mehrere Sprachen in einem Repo, z. B. Go + TypeScript):** `resolution` muss **pro
-  Sprache** wählbar sein — Go löst über den Modulpfad auf, TypeScript relativ-zum-File. Der Block ist
-  also eine **Map Sprache → Auflösungs-Config** (analog zum `languages`-Map-Muster), nicht ein
-  globaler Modus. Die *Deklaration* mehrerer Sprachen + je-Key-Validierung ist bereits erledigt
-  ([slice-017](../done/slice-017-unbekannte-sprache-exit2.md)); offen ist allein die per-Sprache-*Auflösung*.
-- **Zwei weitere Auflösungs-Modi jenseits von [ADR-0014](../../adr/0014-resolution-roots.md)** —
-  brauchen vermutlich je einen **Folge-ADR**, wenn ihr Pilot feuert: (a) *relativ-zum-File* (TypeScript,
-  quoted C++), (b) *Namespace-Index* (C#). Beide sind kein reines `roots`/`package_base`.
-- Manifest-Ableitung (CMake/gradle automatisch lesen) — dieses Inkrement oder später?
-  ([ADR-0014](../../adr/0014-resolution-roots.md) Re-Eval-Trigger.)
-- x-wals Paket↔Verzeichnis-Divergenz (`driving`/`driven` im *Verzeichnis*, nicht im Paket) —
-  wie mappt der `resolution`-Block das?
+0. **Folge-ADR** `Proposed → Accepted` (Sign-off): begründet Sprach-Map + Sprach-Threading als
+   Erweiterung (`Supersedes: —`); in den [ADR-Index](../../adr/README.md).
+1. **`resolution`-Block als Map Sprache → Config** mit **`mode`-Diskriminator** (Mono-Repo- **und**
+   estate-tauglich, §4):
+   ```yaml
+   resolution:                                        # Map Sprache -> Config
+     go:     {mode: path}                             # Import = Pfad (Default; == weggelassen)
+     cpp:    {mode: fixed-root, roots: ["src"]}       # Include-Root (b-cad), nur <…>-Includes
+     kotlin: {mode: fixed-root, roots: ["src/main/kotlin"], package_base: "com.xwal"}  # dotted
+     # typescript: {mode: relative}    # reserviert (C++-"…"/TS) -> Folge-ADR
+     # csharp:     {mode: namespace}   # reserviert (C#)         -> Folge-ADR
+   ```
+   strict-decode. **slice-015 implementiert `mode ∈ {path, fixed-root}`**; `relative`/`namespace` sind
+   **reserviert** und brechen bis zum jeweiligen Folge-ADR mit **Exit 2** (kein stiller No-Op — konsistent
+   mit slice-017). **Fehlt `resolution` (oder eine Sprache darin) → heutiges Verhalten** (Import-als-Pfad),
+   rückwärtskompatibel; `go: {mode: path}` und *weggelassen* sind verhaltens-identisch (Testfall §6).
+2. **`FileImports.Language`** (core, neu) — von `extract` aus `langFor` gesetzt; **durchgereicht** über
+   `ruleFor` (bekommt `f FileImports` bereits) bis `targetLayer`.
+3. **Sprach-bewusste `targetLayer`** (`rules.go`): normalisiert den Import gemäß der `resolution` der
+   **Import-Sprache** — `package_base`-Präfix strippen, `.`→`/`, wurzel-relativ — **dann** Glob-Präfix-Match
+   gegen die (verzeichnisbasierten) `layers`-Globs. Default unverändert.
+   **Grenze ([AC-QA-02](../../../../spec/lastenheft.md#ac-qa-02--hermetik-und-ehrliche-heuristik-grenze)):**
+   greift nur, wenn der **Paket-/Import-Baum den Verzeichnis-Baum spiegelt**
+   (Kotlin/Java-Konvention: Verzeichnisse folgen Paketen). Wo Paket ≠ Verzeichnis, löst der Import nicht
+   auf → kein Ziel-Layer → keine schicht-basierte Regel (ehrlich ausgewiesen, nicht still).
+4. **Tests** (dotted-Modus über **Kotlin/Java** — beide vorhanden **und** gepunktet, decken
+   „fester-Wurzel-dotted" exakt ab; **Python ist kein Backend**, slice-017 wiese es mit Exit 2 ab):
+   Kotlin/Java-Paket→Layer via `package_base` (Paket==Verzeichnis-Layout); C++ `src`-Root; **Mono-Repo
+   Go+Kotlin** (eine Go- **und** eine Kotlin-Datei in *einem* Repo, je eigener Modus); Default-Rückwärtskompat
+   (Go/C++ ohne `resolution`); `go: {}` == weggelassen.
+
+## 4. Design-Entscheidungen (Entwurf)
+
+- **`resolution` ist eine Map pro Sprache** (nicht global) — ein Mono-Repo (Go + Kotlin/C++) braucht
+  mehrere Modi gleichzeitig. Analog zum `languages`-Map-Muster. **Über [ADR-0014](../../adr/0014-resolution-roots.md) hinaus → Folge-ADR.**
+- **Sprach-Threading (der Kern):** die Auflösung eines Imports nutzt den Modus der **Quelldatei-Sprache**;
+  deshalb trägt `FileImports` die `Language`, durchgereicht bis `targetLayer`. **Über [ADR-0014](../../adr/0014-resolution-roots.md) hinaus → Folge-ADR.** Cross-Sprach-Importe (selten) → §5.
+- **`mode`-Diskriminator = estate-tauglich:** die drei Auflösungs-Modi des Bestands leben unter *einem*
+  Schema. slice-015 implementiert `path` + `fixed-root` (deckt Go/C++/JVM/Python); **relativ-zum-File**
+  (TS, C++-`"…"`) und **Namespace-Index** (C#) kommen je per Folge-ADR **additiv** dazu — dieselbe
+  Sprach-Map, dasselbe Threading, nur ein neuer `mode`-Wert; **kein Re-Architecting**. Bis dahin brechen
+  die reservierten Modi mit Exit 2 (§3.1). *(Anderes Signal: relativ braucht den importierenden
+  Dateipfad, namespace einen Namespace→Datei-Index — deshalb eigene ADRs, nicht dieser Slice.)*
+- **Paket-spiegelt-Verzeichnis** ist die ehrliche Auflösungs-Grenze (§3.3), keine offene Frage.
+- **Default bleibt** Import-als-Pfad ohne `resolution` — kein Bruch, Dogfooding 0 ([ADR-0014](../../adr/0014-resolution-roots.md) Fitness Function).
+
+## 5. Abnahme-Gate (blockierend — **vor** der DoD zu lösen)
+
+- **Folge-ADR erforderlich** (B1): [ADR-0014](../../adr/0014-resolution-roots.md) ist immutable; die
+  Sprach-Map + das Threading dürfen **nicht** als Historiennotiz dort, sondern nur als erweiternder
+  Folge-ADR (`Supersedes: —`) fallen. §3.0.
+- **x-wal-Grenze** (B3): das reale x-wal-Layout gegen die „Paket==Verzeichnis"-Grenze (§3.3) prüfen —
+  spiegeln x-wals Verzeichnisse die `driving`/`driven`-Pakete? Falls **nein**, deckt der fester-Wurzel-Modus
+  x-wal **nicht** (eigener Mechanismus, z. B. Paket→Verzeichnis-Map — dann eigener Slice/ADR). Der JVM-Test
+  bleibt bewusst innerhalb der Grenze (Paket==Verzeichnis), sonst testet er ein künstliches Layout.
+- **Cross-Sprach-Importe**: Default (unaufgelöst → keine Regel) als ehrliche Grenze bestätigen.
+
+## 6. Definition of Done (erst nach §5-Gate)
+
+- [ ] **Folge-ADR** Accepted + Index; §5-Gate gelöst (x-wal-Grenze empirisch geklärt).
+- [ ] Lastenheft + Spezifikation (nächste Minor): `resolution`-Map-Schema, Symbol→Layer sprach-bewusst
+  **inkl. Paket==Verzeichnis-Grenze**, je Historie-Zeile.
+- [ ] Code: `resolution`-Decode; `FileImports.Language` + Threading; `targetLayer` sprach-bewusst; Default unverändert.
+- [ ] Tests: Kotlin/Java-dotted→Layer; C++-`src`-Root; **Mono-Repo Go+Kotlin**; `go: {}`==weggelassen;
+  Rückwärtskompat; Dogfooding 0.
+- [ ] `make gates` + `make ci` grün; Multi-Linsen-Review; Merge auf Wort.
