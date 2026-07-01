@@ -167,6 +167,9 @@ func TestUnknownLanguageExit2(t *testing.T) { // AC-FA-CONF-001 / slice-017: unb
 	if !strings.Contains(errb.String(), "unbekannte Sprache") || !strings.Contains(errb.String(), "python") {
 		t.Fatalf("Meldung soll die Sprache nennen: %q", errb.String())
 	}
+	if out.Len() != 0 {
+		t.Fatalf("Config-Fehler gehört auf stderr, stdout muss leer sein: %q", out.String())
+	}
 }
 
 func TestMonoRepoMixedUnsupportedExit2(t *testing.T) { // slice-017: Mono-Repo go+typescript(unsupported) -> Exit 2, go rettet nicht

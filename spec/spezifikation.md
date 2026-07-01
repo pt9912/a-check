@@ -57,9 +57,9 @@ forbidden_constructs:           # Schicht → verbotene Text-Muster (Port-Diszip
 ```
 
 - **Pflichtblöcke:** `version`, `languages`, `layers`, `edges`. Die `languages`-Schlüssel müssen aus
-  der Backend-Menge von [SPEC-EXTRACT-001](#spec-extract-001--import-extraktion) stammen
-  (`cpp`/`go`/`rust`/`kotlin`/`java`); ein unbekannter Schlüssel → Exit 2 (dort normativ, hier nur
-  verwiesen — **kein Duplikat**).
+  der Backend-Menge von [SPEC-EXTRACT-001](#spec-extract-001--import-extraktion) stammen; ein
+  unbekannter Schlüssel → Exit 2 (die Menge steht **normativ nur** dort, hier bloß verwiesen —
+  **kein Duplikat**).
 - **Optionalblöcke:** `adapter_sink`, `tech`, `composition_root`, `allow`,
   `markers`, `forbidden_constructs`. Fehlt ein Optionalblock, entfällt die
   zugehörige Prüfung — nicht still, sondern bewusst nicht-konfiguriert. Die je
@@ -160,7 +160,8 @@ Präzisiert [AC-FA-CLI-001](lastenheft.md#ac-fa-cli-001--aufruf-scan-wurzel-und-
 - `.a-check.yml` wird aus der Scan-Wurzel gelesen.
 - **Exit-Codes:** `0` kein Befund · `1` ≥ 1 Befund · `2` Nutzungs-/
   Konfigurationsfehler (fehlende/ungültige Config, unbekanntes Flag); eine
-  ungültige Config wird **mit Zeilenangabe** gemeldet.
+  ungültige Config wird gemeldet — **mit Zeilenangabe, wo die Fehlerquelle eine
+  Zeile hat** (Schema-/Sprach-Validierungen ohne Positionsbezug melden ohne Zeile).
 - **Befunde** auf stdout, ein Datensatz je Zeile im Format
   `pfad:zeile: regelname: meldung`; **Zusammenfassung** (Anzahl je Regel,
   Gesamtzahl) auf stderr.

@@ -1,6 +1,7 @@
 # slice-017 — Unbekannter `languages`-Schlüssel → Exit 2 (falsch-grün-Falle schließen)
 
-**Status:** open (Entwurf zur Abnahme).
+**Status:** done (2026-07-01). Umsetzung + `make gates` + adversarisches Multi-Linsen-Review
+(3 Linsen) + Delta erledigt; Synthese [`docs/reviews/2026-07-01-slice-017-unbekannte-sprache-exit2.md`](../../../reviews/2026-07-01-slice-017-unbekannte-sprache-exit2.md).
 **Bezug:** schärft [AC-FA-CONF-001](../../../../spec/lastenheft.md#ac-fa-conf-001--konfigurationsdatei-a-checkyml)
 (Config-Validität) — die zulässige Backend-Menge **besitzt** [AC-FA-EXTRACT-001](../../../../spec/lastenheft.md#ac-fa-extract-001--sprach-backends-für-die-import-extraktion);
 Motiv [AC-QA-02](../../../../spec/lastenheft.md#ac-qa-02--hermetik-und-ehrliche-heuristik-grenze)
@@ -77,10 +78,33 @@ Python-Backend „mit-erledigt".
 
 ## 5. Definition of Done
 
-- [ ] Lastenheft 0.9.0 (neue Negative-AC im G/W/T-Stil + Historie) + Spezifikation 0.9.0
-  (Backend-Menge-Owner + Verweis statt Kopie + Historie) — Details §3.1/§3.2.
-- [ ] Code: Backend-Registry-Map (Single Source), Extract-Validierung, kein `default: return nil`;
+- [x] Lastenheft 0.9.0 (neue Negative-AC im G/W/T-Stil + Historie) + Spezifikation 0.9.0
+  (Backend-Menge-Owner + Verweis statt Kopie + Historie).
+- [x] Code: Backend-Registry-Map (Single Source), Extract-Validierung, kein `default: return nil`;
   Meldung aus den Registry-Keys.
-- [ ] Tests: unbekannt → Exit 2 (+ Meldung), unterstützte unverändert, Registry == `{cpp,go,rust,kotlin,java}`.
-- [ ] `make gates` + `make ci` grün; Multi-Linsen-Review (proportional); Merge auf Wort.
-- [ ] **Nicht** beim Python-Slice als „gedeckt" abräumen (§1: unabhängige Härtung).
+- [x] Tests: unbekannt → Exit 2 (+ exaktes Meldungs-Literal), unterstützte unverändert,
+  Registry == `{cpp,go,rust,kotlin,java}`, Mono-Repo-Fälle, Case-Sensitivität, stderr-nicht-stdout.
+- [x] `make gates` grün; Multi-Linsen-Review (3 Linsen) + Delta; Synthese unter `docs/reviews/`.
+- [ ] **Nicht** beim Python-Slice als „gedeckt" abräumen (§1: unabhängige Härtung) — Dauer-Merker.
+
+## 6. Closure-Notiz
+
+**Gate-Beleg:** `make gates` grün — `arch-check` (Dogfooding) 0, `doc-check` 0, alle Test-Pakete `ok`
+(inkl. 7 slice-017-Tests + Härtungen); `record-gates` geschrieben.
+
+**2 beobachtbare Kriterien:**
+1. `languages: {python: […]}` (oder Mono-Repo `go`+`typescript`) → **Exit 2**, Meldung
+   `unbekannte Sprache "python" (cpp|go|java|kotlin|rust)` auf stderr (`TestUnknownLanguageExit2`,
+   `TestMonoRepoMixedUnsupportedExit2`) — statt vorher still `0 Befunde`.
+2. `go`+`cpp` (beide unterstützt) → Exit 0 (`TestMonoRepoMultiSupportedRuns`).
+
+**Lerneintrag:**
+- Die **Registry-Map** löste zwei Review-Findings in einem: echte Single Source (Dispatch **und**
+  Validierung teilen die Keys) **und** Wegfall des stillen `default: return nil` — statt „Menge
+  validieren + Switch getrennt pflegen + Drift-Guard-Test".
+- Das Review deckte eine **vorbestehende Spec-Überzusage** auf: „Exit 2 **mit Zeilenangabe**" galt
+  für mehrere Config-Fehler (Version/Pflichtblöcke) nie — der neue Pfad vergrößerte sie; jetzt auf
+  „wo die Fehlerquelle eine Zeile hat" abgeschwächt.
+- **Mono-Repo-Nachbarschaft:** die Deklaration mehrerer Sprachen ist abgedeckt (`languages`-Map,
+  je-Key-Validierung); die *Auflösung* pro Sprache (Go Modulpfad + TS relativ) bleibt offen und
+  gehört in slice-015.

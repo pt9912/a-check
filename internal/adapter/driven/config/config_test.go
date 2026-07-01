@@ -56,6 +56,13 @@ func TestMissingRequiredBlock(t *testing.T) { // AC-FA-CONF-001 boundary
 	}
 }
 
+func TestMissingLanguagesBlock(t *testing.T) { // AC-FA-CONF-001 boundary: fehlender languages-Pflichtblock -> Fehler (Exit 2)
+	body := "version: 1\nlayers:\n  core: [\"core/**\"]\nedges:\n  - {from: core, to: core}\n"
+	if _, err := New().Load(write(t, body)); err == nil {
+		t.Fatal("expected error: 'languages' missing (Pflichtblock)")
+	}
+}
+
 func TestWrongVersion(t *testing.T) {
 	if _, err := New().Load(write(t, "version: 2\nlanguages:\n  go: [\"a\"]\nlayers:\n  c: [\"c\"]\nedges:\n  - {from: c, to: c}\n")); err == nil {
 		t.Fatal("expected error on unsupported version")

@@ -249,7 +249,7 @@ Zusammenfassung auf stderr (analog `d-check`).
 
 - **Happy:** Given ein konformes Repo, when `a-check` läuft, then Exit-Code 0.
 - **Boundary:** Given ein read-only gemountetes Repo, when `a-check` läuft, then vollständige Prüfung ohne Schreibzugriff.
-- **Negative:** Given eine fehlende/ungültige `.a-check.yml`, when `a-check` läuft, then Exit-Code 2 mit Zeilenangabe.
+- **Negative:** Given eine fehlende/ungültige `.a-check.yml`, when `a-check` läuft, then Exit-Code 2 (mit Zeilenangabe, wo die Fehlerquelle eine Zeile hat).
 
 **Out-of-Scope:** Auto-Fix/Reparatur von Architekturverstößen (es gibt keinen deterministisch ableitbaren Fix).
 
@@ -273,7 +273,7 @@ außerhalb der unterstützten Backends aus [AC-FA-EXTRACT-001](#ac-fa-extract-00
 - **Boundary:** Given eine Config ohne optionale Tech-Zuordnungen, when `a-check` läuft, then laufen nur die Schicht-/Lateral-Regeln (kein `tech-leak`).
 - **Negative:** Given ein Tippfehler im Schlüssel, when `a-check` läuft, then Exit-Code 2 (kein stiller Default).
 - **Negative (`match`):** Given ein `tech.match` mit einem anderen Wert als `substring`/`regex` **oder** ein `match: regex` mit leerer bzw. nicht kompilierbarer `pattern`, when `a-check` lädt, then Exit-Code 2.
-- **Negative (Sprache):** Given ein `languages`-Schlüssel außerhalb der unterstützten Backends (`cpp`/`go`/`rust`/`kotlin`/`java`, [AC-FA-EXTRACT-001](#ac-fa-extract-001--sprach-backends-für-die-import-extraktion)), when `a-check` lädt, then Exit-Code 2 — **statt** stiller Nicht-Extraktion (falsch-grün).
+- **Negative (Sprache):** Given ein `languages`-Schlüssel außerhalb der von [AC-FA-EXTRACT-001](#ac-fa-extract-001--sprach-backends-für-die-import-extraktion) definierten unterstützten Backends, when `a-check` lädt, then Exit-Code 2 — **statt** stiller Nicht-Extraktion (falsch-grün).
 
 **Out-of-Scope:** Vererbung/Includes zwischen Config-Dateien.
 

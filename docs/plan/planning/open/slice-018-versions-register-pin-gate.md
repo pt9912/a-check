@@ -42,5 +42,5 @@ exemptiert; hier zu entscheiden, damit slice-019 keine Drift-Quelle schafft, die
   `.d-check.yml`-Config stimmt und keine Falsch-Positiven in der Historie entstehen.
 - **Digest-Quelle der Wahrheit**: `a-check.mk`-`A_CHECK_IMAGE` und `cli.go`-`aCheckImage` sind die Pins;
   soll das Gate auch deren **Gleichheit** erzwingen (heute manuell)?
-- **Abgrenzung zu [slice-017](slice-017-unbekannte-sprache-exit2.md)**: unabhängig (dort Sprach-Backends,
+- **Abgrenzung zu [slice-017](../done/slice-017-unbekannte-sprache-exit2.md)**: unabhängig (dort Sprach-Backends,
   hier Release-Pins) — nur beide „stille falsch-grün/veraltet"-Klassen.

@@ -122,20 +122,33 @@ func TestBackendRegistrySet(t *testing.T) { // slice-017: Registry ist die Singl
 	}
 }
 
-func TestCheckLanguagesUnknown(t *testing.T) { // slice-017: unbekannte Sprache -> Fehler, Meldung nennt Name + Menge
+func TestCheckLanguagesUnknown(t *testing.T) { // slice-017: unbekannte Sprache -> Fehler; exaktes Meldungsformat gepinnt
 	err := newAdapter().checkLanguages(map[string][]string{"python": {"**/*.py"}})
 	if err == nil {
 		t.Fatal("erwarte Fehler für unbekannte Sprache")
 	}
-	if !strings.Contains(err.Error(), `"python"`) || !strings.Contains(err.Error(), "cpp|go|java|kotlin|rust") {
-		t.Fatalf("Meldung soll Name + Menge aus der Registry nennen: %q", err.Error())
+	if err.Error() != `unbekannte Sprache "python" (cpp|go|java|kotlin|rust)` {
+		t.Fatalf("Meldungsformat driftet (Name/Menge/Klammerung/Reihenfolge): %q", err.Error())
 	}
 }
 
-func TestCheckLanguagesMixedUnsupported(t *testing.T) { // slice-017: Mono-Repo go+unsupported -> Fehler (go rettet nicht)
+func TestCheckLanguagesCaseSensitive(t *testing.T) { // slice-017: Sprach-Keys sind case-sensitiv — "Go" != "go"
+	err := newAdapter().checkLanguages(map[string][]string{"Go": {"**/*.go"}})
+	if err == nil || !strings.Contains(err.Error(), `"Go"`) {
+		t.Fatalf("Case-Variante 'Go' muss brechen (Registry-Lookup ist case-sensitiv), got %v", err)
+	}
+}
+
+func TestCheckLanguagesMixedUnsupported(t *testing.T) { // slice-017: Mono-Repo go+unsupported -> Fehler (go rettet nicht), positions-unabhängig
+	// typescript sortiert NACH go — die unsupported bricht, obwohl go zuerst geprüft wird.
 	err := newAdapter().checkLanguages(map[string][]string{"go": {"**/*.go"}, "typescript": {"**/*.ts"}})
-	if err == nil || !strings.Contains(err.Error(), "typescript") {
-		t.Fatalf("gemischte Sprachen: die unsupported (typescript) muss brechen, got %v", err)
+	if err == nil || !strings.Contains(err.Error(), "typescript") || !strings.Contains(err.Error(), "unbekannte Sprache") {
+		t.Fatalf("gemischt (unsupported nach go): typescript muss brechen, got %v", err)
+	}
+	// csharp sortiert VOR go — auch die zuerst-sortierte unsupported bricht.
+	err = newAdapter().checkLanguages(map[string][]string{"csharp": {"**/*.cs"}, "go": {"**/*.go"}})
+	if err == nil || !strings.Contains(err.Error(), "csharp") {
+		t.Fatalf("gemischt (unsupported vor go): csharp muss brechen, got %v", err)
 	}
 }
 
