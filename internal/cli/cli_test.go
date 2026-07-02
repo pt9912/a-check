@@ -216,10 +216,12 @@ resolution:
   csharp: {mode: fixed-root, roots: ["src/MyApp"], package_base: "MyApp"}
 `
 	// Zeile 1: Direktive mit Mehrsegment-Rest `Adapters.Db` (pinnt .->/-Konvertierung);
-	// Zeile 2: Alias-Form end-to-end; Zeile 3: using-Statement darf keinen Befund erzeugen.
+	// Zeile 2: Alias-Form end-to-end; Zeile 3: using-DECLARATION mit qualifiziertem
+	// Adapter-Typ — ohne das Pflicht-; ergäbe sie einen 3. Befund (Review-R1: pinnt
+	// den ;-Kern-Mutanten auch end-to-end, ein `var`-Fehlsymbol löste auf keine Schicht).
 	dir := writeRepo(t, map[string]string{
 		".a-check.yml":                 csCfg,
-		"src/MyApp/Domain/Model.cs":    "using MyApp.Adapters.Db;\nusing Db2 = MyApp.Adapters.Db2;\nusing var f = File.Open(p);\n",
+		"src/MyApp/Domain/Model.cs":    "using MyApp.Adapters.Db;\nusing Db2 = MyApp.Adapters.Db2;\nusing MyApp.Adapters.Db t = Get();\n",
 		"src/MyApp/Adapters/Db/Db.cs":  "using System.Text;\n",
 		"src/MyApp/Adapters/Db2/D2.cs": "using System;\n",
 	})

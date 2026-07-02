@@ -1,6 +1,8 @@
 # slice-021 — C#-Sprach-Backend (welle-06-sprach-backends)
 
-**Status:** in-progress — Umsetzung auf Basis der Empfehlungen A–E (§6) gestartet;
+**Status:** in-progress — Umsetzung auf Basis der Empfehlungen A–E (§6) abgeschlossen;
+Multi-Linsen-Review (4 Linsen) + Fixes erledigt, Synthese
+[`docs/reviews/2026-07-02-slice-021-csharp-backend.md`](../../../reviews/2026-07-02-slice-021-csharp-backend.md).
 **Maintainer-Abnahme der Entscheide ausstehend** (Closure/`git mv`/Push erst nach Bestätigung).
 **Welle:** welle-06-sprach-backends (drittes Backend-Inkrement nach
 [slice-014](../done/slice-014-java-backend.md)/[slice-020](../done/slice-020-python-backend.md)).
@@ -136,16 +138,21 @@ wird **nicht** in diesem Slice gebaut (§6 Entscheid D).
 
 ## 5. Definition of Done
 
-- [ ] [AC-FA-EXTRACT-001](../../../../spec/lastenheft.md#ac-fa-extract-001--sprach-backends-für-die-import-extraktion)
+- [x] [AC-FA-EXTRACT-001](../../../../spec/lastenheft.md#ac-fa-extract-001--sprach-backends-für-die-import-extraktion)
       um C# erweitert (Happy/`static`+`global`/Alias/using-Statement-Negative +
       Out-of-Scope), Bump 0.12.0 + Historie; [SPEC-EXTRACT-001](../../../../spec/spezifikation.md#spec-extract-001--import-extraktion)
-      nachgezogen (Muster + Backend-Menge).
-- [ ] `extract.go`: `csUsing` + Registry-Eintrag; Dogfooding grün.
-- [ ] Tests: §4.2-Mutanten (insb. using-Statement-Ausschluss) + slice-017-Fixture-Umstellung
-      + CLI-Resolution-Integration (Mehrsegment).
-- [ ] „sechs → sieben Sprachen"-Sweep vollständig (README, Benutzerhandbuch,
-      [ARC-003](../../../../spec/architecture.md)).
-- [ ] `make gates` + `make ci` grün; Multi-Linsen-Review + Delta bestanden (→ `docs/reviews/`).
+      nachgezogen (Muster + Backend-Menge + [SPEC-RULE-001](../../../../spec/spezifikation.md#spec-rule-001--regel-auswertung)-dotted-Liste, Review-R1).
+- [x] `extract.go`: `csUsing` + Registry-Eintrag; Dogfooding grün (0 Befunde).
+- [x] Tests: §4.2-Mutanten (insb. using-Statement-Ausschluss; um Review-R1 erweitert:
+      `^`-Anker/String, `staticData`-Keyword-Präfix) + slice-017-Fixture-Umstellung
+      + CLI-Resolution-Integration (Mehrsegment; pinnt seit Review-R1 auch den
+      `;`-Kern-Mutanten end-to-end).
+- [x] „sechs → sieben Sprachen"-Sweep vollständig (README, Benutzerhandbuch,
+      [ARC-003](../../../../spec/architecture.md); Review-R1-Nachzug: stale
+      Vier-Sprachen-Zählstelle in `harness/README.md` §Safety geheilt).
+- [x] `make gates` + `make ci` grün; Multi-Linsen-Review (4 Linsen) + Delta bestanden
+      ([Synthese](../../../reviews/2026-07-02-slice-021-csharp-backend.md)).
+- [ ] **Maintainer-Abnahme der Entscheide A–E (§6)** — ausstehend.
 - [ ] Closure: reiner `git mv` nach `done/` (AGENTS §3.3); 2 beobachtbare Kriterien + Lerneintrag.
 
 ## 6. Offen / Entscheidungen zur Abnahme

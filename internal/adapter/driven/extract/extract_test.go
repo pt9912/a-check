@@ -290,6 +290,20 @@ func TestCsharpUnderscoreDigitsIndent(t *testing.T) { // Mutanten-Boundary: Zeic
 	}
 }
 
+func TestCsharpStringNotCounted(t *testing.T) { // Review-R1 (Test-Linse): ^-Anker gepinnt — using im String-Literal/mid-line matcht nie
+	got := syms(newAdapter().importsFromSource("csharp", prepSource("csharp", "var s = \"using Sneaky.Ns;\";\n        Log(\"using Evil.X;\");\n")))
+	if len(got) != 0 {
+		t.Fatalf("using im String/mid-line darf nicht matchen (^-Anker): %v", got)
+	}
+}
+
+func TestCsharpStaticKeywordPrefix(t *testing.T) { // Review-R1 (Test-Linse): static-Gruppe braucht \s+ — 'staticData' ist kein 'static'-Keyword
+	got := syms(newAdapter().importsFromSource("csharp", prepSource("csharp", "using staticData.X;\n")))
+	if !has(got, "staticData.X") || has(got, "Data.X") {
+		t.Fatalf("'static' als Segment-Präfix muss erhalten bleiben: %v", got)
+	}
+}
+
 func TestBackendRegistrySet(t *testing.T) { // slice-017: Registry ist die Single Source — genau {cpp,csharp,go,java,kotlin,python,rust}
 	got := make([]string, 0)
 	for n := range newAdapter().backends {

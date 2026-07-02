@@ -100,7 +100,7 @@ Stop-Hook-„frischer-Klon"-Restlücke.
 ## Safety and scope boundaries
 
 - `a-check` ist ein **Lese-Tool**: Es schreibt nie in das geprüfte
-  Repository — es liest *fremde* Quellbäume (C++/Go/Rust/Kotlin) und
+  Repository — es liest *fremde* Quellbäume (C++/Go/Rust/Kotlin/Java/Python/C#) und
   meldet Architektur-Verstöße (Kernvertrag
   [`AC-QA-02`](../spec/lastenheft.md#ac-qa-02--hermetik-und-ehrliche-heuristik-grenze)).
 - **Ehrliche Heuristik-Grenze:** die Extraktion ist text-/regex-basiert,

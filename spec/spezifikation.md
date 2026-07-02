@@ -164,7 +164,7 @@ Symbol-Auflösung unten; bei Gleichstand die zuerst deklarierte Schicht), ihre
 **Rolle** aus `role:` (Vorrang) oder Namens-Inferenz ([AC-FA-RULE-006](lastenheft.md#ac-fa-rule-006--schicht-rollen-generische-regel-anwendung)).
 Vor der Auflösung wird ein Import-Symbol gemäß dem `resolution`-`mode` seiner **Quelldatei-Sprache**
 normalisiert (`fixed-root`: `roots` voran; bei gesetztem `package_base` zusätzlich Präfix-Strip + `.`→`/`;
-`path`/Default: unverändert) — so lösen gepunktete (JVM/Python) oder `src`-gewurzelte (C++) Importe auf, sofern der
+`path`/Default: unverändert) — so lösen gepunktete (JVM/Python/C#) oder `src`-gewurzelte (C++) Importe auf, sofern der
 Paket-Baum den Verzeichnis-Baum spiegelt. Dann werden Symbole über die `layers`-Globs des Zielpfads aufgelöst
 (**spezifischster/längster** literaler Präfix gewinnt) — die Ziel-Rolle ist die **des aufgelösten Layers**; die Reinheits-Regeln
 dispatchen über die Rolle, nicht den Namen. Die **`tech`-Muster** dagegen lösen in
