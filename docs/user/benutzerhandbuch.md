@@ -1,6 +1,6 @@
 # Benutzerhandbuch: a-check
 
-**Handbuch-Version:** 1.15 · **Software-Version:** 0.5.0 · **Stand:** 2026-07-02 ·
+**Handbuch-Version:** 1.16 · **Software-Version:** 0.6.0 · **Stand:** 2026-07-02 ·
 **Autor:** pt9912 (Maintainer)
 
 ---
@@ -392,3 +392,4 @@ und die [Spezifikation](../../spec/spezifikation.md); ein Überblick steht in de
 | 1.13 | 2026-07-02 | §1/§4 an Lastenheft 0.11.0: sechstes Sprach-Backend **Python** (`languages`-Schlüssel `python`; `import` + `from … import` → Modulpfad, relative Importe dokumentierte Grenze) inkl. `resolution`-Rezept (`fixed-root` + `package_base`, Lastenheft 0.10.0 — der Block war hier noch undokumentiert); §4-Currency: ein unbekannter `languages`-Schlüssel bricht seit Lastenheft 0.9.0 mit Exit 2 (statt „wird ignoriert"). |
 | 1.14 | 2026-07-02 | Software-Version **0.5.0** (GHCR-Release `v0.5.0` veröffentlicht, digest-gepinnt `@sha256:81951e61…`) — Python-Backend, `resolution`-Block und die Exit-2-Härtung für unbekannte Sprachen jetzt im veröffentlichten Image. |
 | 1.15 | 2026-07-02 | §1/§4 an Lastenheft 0.12.0: siebtes Sprach-Backend **C#** (`languages`-Schlüssel `csharp`; `using`-Direktiven inkl. `global`/`static`/Alias-Ziel, `using`-Statements nie gewertet); `resolution`-Absatz um das C#-Rezept + Namespace==Verzeichnis-Grenze (reservierter `namespace`-Modus) erweitert. Noch nicht im veröffentlichten Image (folgt mit dem nächsten Release). |
+| 1.16 | 2026-07-02 | Software-Version **0.6.0** (GHCR-Release `v0.6.0` veröffentlicht, digest-gepinnt `@sha256:b349a150…`) — C#-Backend jetzt im veröffentlichten Image; die 1.15-Verfügbarkeitsnotiz entfällt. |
