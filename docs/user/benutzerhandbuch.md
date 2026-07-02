@@ -10,7 +10,7 @@
 ### Zweck der Software
 
 **a-check** prüft, ob ein Repository seine **hexagonale Schicht-Architektur**
-einhält — sprachübergreifend (C++, Go, Rust, Kotlin, Java), gesteuert über eine
+einhält — sprachübergreifend (C++, Go, Rust, Kotlin, Java, Python), gesteuert über eine
 Konfigurationsdatei. a-check liest Ihren Quellcode, meldet Architektur-Verstöße
 mit Datei und Zeile und liefert einen Exit-Code, mit dem Sie es als Gate in CI
 oder `make` einsetzen. a-check **repariert nichts** und **schreibt nie** in Ihr
@@ -190,10 +190,11 @@ markers:
 ```
 
 **Pflichtblöcke:** `version`, `languages`, `layers`, `edges`.
-**Gültige `languages`-Schlüssel:** genau `go`, `cpp`, `rust`, `kotlin`, `java` — exakt so
-zu schreiben (z. B. `cpp`, **nicht** `c++`); andere Schlüssel werden ignoriert
-(keine Extraktion). Jeder Schlüssel bildet auf eine Liste von Datei-Globs ab,
-z. B. `cpp: ["**/*.h", "**/*.cpp"]`, `rust: ["**/*.rs"]`, `kotlin: ["**/*.kt"]`, `java: ["**/*.java"]`.
+**Gültige `languages`-Schlüssel:** genau `go`, `cpp`, `rust`, `kotlin`, `java`, `python` —
+exakt so zu schreiben (z. B. `cpp`, **nicht** `c++`); ein anderer Schlüssel bricht mit
+Exit-Code 2 ab (kein stilles Ignorieren). Jeder Schlüssel bildet auf eine Liste von
+Datei-Globs ab, z. B. `cpp: ["**/*.h", "**/*.cpp"]`, `rust: ["**/*.rs"]`,
+`kotlin: ["**/*.kt"]`, `java: ["**/*.java"]`, `python: ["**/*.py"]`.
 **Optionalblöcke:** `adapter_sink`, `tech`, `composition_root`, `allow`,
 `forbidden_constructs`, `markers`. Fehlt ein Optionalblock, entfällt die
 zugehörige Prüfung (kein stiller Standardwert) — fehlt z. B. `adapter_sink`,
@@ -206,6 +207,27 @@ Symbol den Text enthält; `match: regex` interpretiert `pattern` als **RE2-Regex
 (unverankert) — nötig, wenn ein Framework nur als Muster fassbar ist, etwa Qt-Header
 `Q[A-Za-z]`. Ein unbekannter `match`-Wert oder eine ungültige Regex bricht mit
 Exit-Code 2 ab. Treffen mehrere Muster dasselbe Symbol, greift das **zuerst notierte**.
+
+**Python und gepunktete Importe (`resolution`).** Python-Importe sind gepunktete
+Modulpfade (`import myapp.adapters.db`, `from myapp.adapters import db` → Modulpfad
+`myapp.adapters`); damit sie auf Ihre verzeichnisbasierten `layers`-Globs auflösen,
+deklarieren Sie den optionalen `resolution`-Block. Rezept: `package_base` = Ihr
+Top-Package, `roots` = sein Verzeichnispfad:
+
+```yaml
+# src-Layout: src/myapp/{domain,ports,adapters}/…, Importe `myapp.…`
+resolution:
+  python: {mode: fixed-root, roots: ["src/myapp"], package_base: "myapp"}
+# flaches Layout (myapp/ direkt an der Repo-Wurzel):
+#   python: {mode: fixed-root, roots: ["myapp"], package_base: "myapp"}
+```
+
+Dasselbe Schema trägt JVM-Pakete (`package_base: com.example`) und fremdgewurzelte
+C++-Includes (`roots: ["src"]`, ohne `package_base`). Voraussetzung ist, dass der
+Paket-Baum den Verzeichnis-Baum spiegelt. **Relative** Python-Importe
+(`from . import x`, `from ..pkg import y`) werden **nicht** extrahiert — eine
+dokumentierte Heuristik-Grenze, bis der (heute reservierte) Auflösungs-Modus
+`relative` existiert; Architektur-Kanten prüfen Sie über absolute Importe.
 
 **Schicht-Rollen (`role`).** Ein `layers`-Eintrag ist **entweder** eine Glob-Liste
 (`name: [globs]`) **oder** ein Objekt `{globs: [...], role: <rolle>, direction: <richtung>}`
@@ -347,3 +369,4 @@ und die [Spezifikation](../../spec/spezifikation.md); ein Überblick steht in de
 | 1.10 | 2026-06-23 | §1/§4 an Lastenheft 0.7.0: fünftes Sprach-Backend **Java** (`languages`-Schlüssel `java`, `import`/`import static`); Sprach-Aufzählung + `languages`-Enum/Beispiel ergänzt. |
 | 1.11 | 2026-07-01 | §3.4/§4 an Lastenheft 0.8.0: `tech`-Muster optional als **RE2-Regex** (`match: substring\|regex`, Standard `substring`) — nötig für nur als Muster fassbare Frameworks (Qt `Q[A-Za-z]`); Mehrfach-Treffer nach Deklarationsreihenfolge (erstes Muster gewinnt); Exit 2 bei ungültigem `match`/leerer bzw. ungültiger Regex. |
 | 1.12 | 2026-07-01 | Software-Version **0.4.0** (GHCR-Release `v0.4.0` veröffentlicht, digest-gepinnt `@sha256:b0d6e33c…`) — `match: regex` + Java-Backend jetzt im veröffentlichten Image; die v0.3.0-Verfügbarkeitsnotiz zu `match` entfällt. |
+| 1.13 | 2026-07-02 | §1/§4 an Lastenheft 0.11.0: sechstes Sprach-Backend **Python** (`languages`-Schlüssel `python`; `import` + `from … import` → Modulpfad, relative Importe dokumentierte Grenze) inkl. `resolution`-Rezept (`fixed-root` + `package_base`, Lastenheft 0.10.0 — der Block war hier noch undokumentiert); §4-Currency: ein unbekannter `languages`-Schlüssel bricht seit Lastenheft 0.9.0 mit Exit 2 (statt „wird ignoriert"). |

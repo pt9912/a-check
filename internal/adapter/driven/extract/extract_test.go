@@ -113,23 +113,98 @@ func TestJavaWildcard(t *testing.T) { // AC-FA-EXTRACT-001 Out-of-Scope: Wildcar
 	}
 }
 
-func TestBackendRegistrySet(t *testing.T) { // slice-017: Registry ist die Single Source — genau {cpp,go,rust,kotlin,java}
+func TestPythonImport(t *testing.T) { // AC-FA-EXTRACT-001 happy (Python): dotted import
+	got := syms(newAdapter().importsFromSource("python", stripComments("import myapp.adapters.db\n")))
+	if !has(got, "myapp.adapters.db") {
+		t.Fatalf("python import fehlt: %v", got)
+	}
+}
+
+func TestPythonFromImport(t *testing.T) { // AC-FA-EXTRACT-001 boundary (Python from): Modulpfad nach `from`, Namen nicht expandiert
+	got := syms(newAdapter().importsFromSource("python", stripComments("from myapp.adapters import db\n")))
+	if !has(got, "myapp.adapters") {
+		t.Fatalf("python from-import: Modulpfad fehlt: %v", got)
+	}
+	if has(got, "db") || has(got, "myapp.adapters.db") {
+		t.Fatalf("python from-import: Namen dürfen nicht expandiert werden: %v", got)
+	}
+}
+
+func TestPythonImportAlias(t *testing.T) { // AC-FA-EXTRACT-001 boundary (Python Alias): `as x` nicht gewertet
+	got := syms(newAdapter().importsFromSource("python", stripComments("import myapp.adapters as ad\nfrom myapp import db as d\n")))
+	if !has(got, "myapp.adapters") || !has(got, "myapp") {
+		t.Fatalf("python alias: Modulpfade fehlen: %v", got)
+	}
+	if has(got, "ad") || has(got, "d") || has(got, "as") {
+		t.Fatalf("python alias darf nicht als Symbol gegriffen werden: %v", got)
+	}
+}
+
+func TestPythonRelativeNotCounted(t *testing.T) { // AC-FA-EXTRACT-001 Out-of-Scope: relative Importe = Signal des reservierten relative-Modus
+	got := syms(newAdapter().importsFromSource("python", stripComments("from . import x\nfrom ..pkg import y\nfrom .sibling import z\n")))
+	if len(got) != 0 {
+		t.Fatalf("relative Importe dürfen nicht extrahiert werden (reservierter relative-Modus), got %v", got)
+	}
+}
+
+func TestPythonImportKeywordPrefix(t *testing.T) { // Mutanten-Boundary (slice-014-Lerneintrag): `importlib.…` ist kein Import-Statement
+	got := syms(newAdapter().importsFromSource("python", stripComments("importlib.reload(x)\nimportant = 1\n")))
+	if len(got) != 0 {
+		t.Fatalf("Keyword-als-Präfix (importlib/important) darf nicht matchen: %v", got)
+	}
+}
+
+func TestPythonFromKeywordPrefix(t *testing.T) { // Mutanten-Boundary: `from` braucht Whitespace + `import`-Wortgrenze
+	got := syms(newAdapter().importsFromSource("python", stripComments("fromage import x\nfrom a.b\nfrom a.b importx\n")))
+	if len(got) != 0 {
+		t.Fatalf("fromage/`from a.b` ohne import/importx dürfen nicht matchen: %v", got)
+	}
+}
+
+func TestPythonHashCommentNotCounted(t *testing.T) { // AC-FA-EXTRACT-001 negative: #-Kommentarzeile matcht die verankerten Muster nie
+	got := syms(newAdapter().importsFromSource("python", stripComments("# import evil\n#import evil2\nimport real.mod\n")))
+	if has(got, "evil") || has(got, "evil2") {
+		t.Fatalf("python import im #-Kommentar muss ignoriert werden: %v", got)
+	}
+	if !has(got, "real.mod") {
+		t.Fatalf("realer python import fehlt: %v", got)
+	}
+}
+
+func TestPythonMultiImportFirstOnly(t *testing.T) { // AC-FA-EXTRACT-001 Out-of-Scope: `import a, b` -> Erst-Treffer
+	got := syms(newAdapter().importsFromSource("python", stripComments("import alpha, beta\n")))
+	if !has(got, "alpha") {
+		t.Fatalf("Erst-Treffer alpha fehlt: %v", got)
+	}
+	if has(got, "beta") {
+		t.Fatalf("Mehrfach-Import: beta ist dokumentierte Grenze, darf nicht gegriffen werden: %v", got)
+	}
+}
+
+func TestPythonMultiWhitespace(t *testing.T) { // Mutanten-Boundary: Mehrfach-Whitespace + Einrückung (funktionslokaler Import)
+	got := syms(newAdapter().importsFromSource("python", stripComments("    import   myapp.util\nfrom   myapp.core   import thing\n")))
+	if !has(got, "myapp.util") || !has(got, "myapp.core") {
+		t.Fatalf("Mehrfach-Whitespace/Einrückung muss matchen: %v", got)
+	}
+}
+
+func TestBackendRegistrySet(t *testing.T) { // slice-017: Registry ist die Single Source — genau {cpp,go,rust,kotlin,java,python}
 	got := make([]string, 0)
 	for n := range newAdapter().backends {
 		got = append(got, n)
 	}
 	sort.Strings(got)
-	if strings.Join(got, ",") != "cpp,go,java,kotlin,rust" {
-		t.Fatalf("Backend-Registry = %v, erwarte cpp/go/java/kotlin/rust", got)
+	if strings.Join(got, ",") != "cpp,go,java,kotlin,python,rust" {
+		t.Fatalf("Backend-Registry = %v, erwarte cpp/go/java/kotlin/python/rust", got)
 	}
 }
 
 func TestCheckLanguagesUnknown(t *testing.T) { // slice-017: unbekannte Sprache -> Fehler; exaktes Meldungsformat gepinnt
-	err := newAdapter().checkLanguages(map[string][]string{"python": {"**/*.py"}})
+	err := newAdapter().checkLanguages(map[string][]string{"ruby": {"**/*.rb"}})
 	if err == nil {
 		t.Fatal("erwarte Fehler für unbekannte Sprache")
 	}
-	if err.Error() != `unbekannte Sprache "python" (cpp|go|java|kotlin|rust)` {
+	if err.Error() != `unbekannte Sprache "ruby" (cpp|go|java|kotlin|python|rust)` {
 		t.Fatalf("Meldungsformat driftet (Name/Menge/Klammerung/Reihenfolge): %q", err.Error())
 	}
 }

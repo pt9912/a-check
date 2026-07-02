@@ -31,7 +31,7 @@ universelle Regeln, je eine Anforderung im [Lastenheft](spec/lastenheft.md):
 - `port-direction-mismatch` — ein Adapter spricht nur Ports **seiner** Richtung (optionale Dimension `driving`/`driven`, orthogonal zur Rolle)
   ([AC-FA-RULE-008](spec/lastenheft.md#ac-fa-rule-008--driving-driven-port-richtung-regel-port-direction-mismatch))
 
-Die Imports werden **text-heuristisch** je Sprache (C++/Go/Rust/Kotlin/Java)
+Die Imports werden **text-heuristisch** je Sprache (C++/Go/Rust/Kotlin/Java/Python)
 extrahiert ([AC-FA-EXTRACT-001](spec/lastenheft.md#ac-fa-extract-001--sprach-backends-für-die-import-extraktion)).
 Jeder Befund nennt Datei, Zeile, Regel und Grund; Exit-Codes: `0` sauber,
 `1` Befunde, `2` Nutzungs-/Konfigurationsfehler

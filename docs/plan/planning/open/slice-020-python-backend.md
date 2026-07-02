@@ -1,6 +1,6 @@
 # slice-020 — Python-Sprach-Backend (welle-06-sprach-backends)
 
-**Status:** open (Entwurf zur Abnahme).
+**Status:** in-progress — Abnahme erteilt (2026-07-02, Entscheide A–D gemäß Empfehlung bestätigt).
 **Welle:** welle-06-sprach-backends (zweites Backend-Inkrement nach
 [slice-014](../done/slice-014-java-backend.md)).
 **Bezug:** erweitert [AC-FA-EXTRACT-001](../../../../spec/lastenheft.md#ac-fa-extract-001--sprach-backends-für-die-import-extraktion)
@@ -154,6 +154,8 @@ Entscheid D).
       **2 beobachtbare Kriterien** + **Lerneintrag**.
 
 ## 6. Offen / Entscheidungen zur Abnahme
+
+> **Abnahme (2026-07-02):** Entscheide A–D gemäß Empfehlung bestätigt.
 
 - **Entscheid A — `from`-Import-Symbol:** Modulpfad nach `from` (`from a.b import c` →
   `a.b`; Empfehlung) vs. Modul+Namen expandieren (`a.b.c`, bei Listen mehrere Symbole).

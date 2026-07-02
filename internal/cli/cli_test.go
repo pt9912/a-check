@@ -158,17 +158,43 @@ func TestTechRegexIgnoreSymbols(t *testing.T) { // AC-QA-02 / ADR-0015: markers.
 }
 
 func TestUnknownLanguageExit2(t *testing.T) { // AC-FA-CONF-001 / slice-017: unbekannte Sprache -> Exit 2 statt still falsch-grün
-	cfg := "version: 1\nlanguages:\n  python: [\"**/*.py\"]\nlayers:\n  core: [\"core/**\"]\nedges:\n  - {from: core, to: core}\n"
-	dir := writeRepo(t, map[string]string{".a-check.yml": cfg, "core/x.py": "import os\n"})
+	cfg := "version: 1\nlanguages:\n  ruby: [\"**/*.rb\"]\nlayers:\n  core: [\"core/**\"]\nedges:\n  - {from: core, to: core}\n"
+	dir := writeRepo(t, map[string]string{".a-check.yml": cfg, "core/x.rb": "require 'json'\n"})
 	var out, errb bytes.Buffer
 	if code := cli.Run([]string{dir}, &out, &errb); code != 2 {
 		t.Fatalf("unbekannte Sprache muss Exit 2 liefern, got %d", code)
 	}
-	if !strings.Contains(errb.String(), "unbekannte Sprache") || !strings.Contains(errb.String(), "python") {
+	if !strings.Contains(errb.String(), "unbekannte Sprache") || !strings.Contains(errb.String(), "ruby") {
 		t.Fatalf("Meldung soll die Sprache nennen: %q", errb.String())
 	}
 	if out.Len() != 0 {
 		t.Fatalf("Config-Fehler gehört auf stderr, stdout muss leer sein: %q", out.String())
+	}
+}
+
+func TestPythonFixedRootResolution(t *testing.T) { // AC-FA-EXTRACT-001 (Python) + AC-FA-CONF-001 Happy-Auflösung: Backend + fixed-root-Rezept (slice-020 §3.3) greifen zusammen
+	pyCfg := `version: 1
+languages:
+  python: ["**/*.py"]
+layers:
+  core:     ["src/myapp/domain/**"]
+  adapters: ["src/myapp/adapters/**"]
+edges:
+  - {from: adapters, to: core}
+resolution:
+  python: {mode: fixed-root, roots: ["src/myapp"], package_base: "myapp"}
+`
+	dir := writeRepo(t, map[string]string{
+		".a-check.yml":              pyCfg,
+		"src/myapp/domain/model.py": "from myapp.adapters import db\n",
+		"src/myapp/adapters/db.py":  "import json\n",
+	})
+	var out, errb bytes.Buffer
+	if code := cli.Run([]string{dir}, &out, &errb); code != 1 {
+		t.Fatalf("Python-Domäne importiert Adapter-Modul: erwarte Exit 1, got %d (out=%q err=%q)", code, out.String(), errb.String())
+	}
+	if !strings.Contains(out.String(), "core-impurity") || !strings.Contains(out.String(), "src/myapp/domain/model.py") {
+		t.Fatalf("erwarte core-impurity-Befund für die Domänen-Datei: %q", out.String())
 	}
 }
 

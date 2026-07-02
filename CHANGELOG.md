@@ -8,6 +8,13 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
 ### Added
 
+- **`AC-FA-EXTRACT-001` (Lastenheft/Spezifikation 0.10.0→0.11.0):** sechstes Sprach-Backend
+  **Python** — `import a.b.c` (inkl. Alias) und `from a.b import c` → gepunkteter Modulpfad;
+  Schicht-Auflösung über den bereits gelieferten `fixed-root`-Modus (Rezept `package_base` =
+  Top-Package + `roots`, dokumentiert im Benutzerhandbuch §4). Relative Importe (`from .`) werden
+  nicht extrahiert — Signal des reservierten `relative`-Modus, dokumentierte Grenze (`AC-QA-02`).
+  Benutzerhandbuch-Currency: `resolution`-Block (slice-015) dort nachdokumentiert; „unbekannte
+  Sprache wird ignoriert" auf das Exit-2-Verhalten (0.9.0) richtiggestellt. slice-020.
 - **`AC-FA-CONF-001` (Lastenheft/Spezifikation 0.9.0→0.10.0):** optionaler `resolution`-Block — Map
   **Sprache → `{mode, roots, package_base}`** (`mode ∈ {path, fixed-root}`; `relative`/`namespace`
   reserviert → Exit 2). Löst gepunktete (JVM/Python) und `src`-gewurzelte (C++) Importe **pro Sprache**

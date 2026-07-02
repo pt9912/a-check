@@ -1,6 +1,6 @@
 # Lastenheft — a-check
 
-**Version:** 0.10.0
+**Version:** 0.11.0
 
 **Status:** Draft
 
@@ -225,8 +225,11 @@ Regeln bleiben unverändert.
 **Beschreibung:** Pro Sprache liefert ein Backend die Menge „welche
 Symbole/Module importiert diese Datei" — text-heuristisch über konfigurierbare
 Muster: C++ (`#include`), Go (`import`), Rust (`use`/`extern crate`), Kotlin
-(`import`), Java (`import`, inkl. `import static`). Das Backend wird über die
-Config (Sprache + Datei-Globs) gewählt.
+(`import`), Java (`import`, inkl. `import static`), Python (`import` und
+`from … import`). Beide Python-Formen liefern den gepunkteten Modulpfad; ein
+Alias (`as x`) und die hinter `from … import` stehenden Namen werden nicht als
+Symbol gewertet. Das Backend wird über die Config (Sprache + Datei-Globs)
+gewählt.
 
 **Akzeptanzkriterien:**
 
@@ -235,8 +238,11 @@ Config (Sprache + Datei-Globs) gewählt.
 - **Negative:** Given eine in einem Kommentar/String stehende Import-ähnliche Zeile, when das Backend läuft, then wird sie nicht als Import gewertet (oder als bewusste, dokumentierte Heuristik-Grenze gemeldet — `AC-QA-02`).
 - **Happy (Java):** Given `import com.foo.Bar;`, when das Java-Backend läuft, then liefert es das Symbol `com.foo.Bar` (das `;` wird ignoriert).
 - **Boundary (Java static):** Given `import static com.foo.Bar.baz;`, when das Java-Backend läuft, then liefert es `com.foo.Bar.baz` — das `static`-Schlüsselwort wird übersprungen, nicht als Symbol gewertet.
+- **Happy (Python import):** Given `import myapp.adapters.db`, when das Python-Backend läuft, then liefert es das Symbol `myapp.adapters.db`.
+- **Boundary (Python from):** Given `from myapp.adapters import db`, when das Python-Backend läuft, then liefert es `myapp.adapters` — den Modulpfad nach `from`; die importierten Namen werden nicht expandiert.
+- **Boundary (Python Alias):** Given `import myapp.adapters as ad`, when das Python-Backend läuft, then liefert es `myapp.adapters` (das `as ad` wird nicht gewertet).
 
-**Out-of-Scope:** vollständiges AST-Parsing; Toolchain-gestützte Backends (`go list`, `javac`/`jdeps`, Bytecode) sind ein opt-in-Re-Eval, nicht 0.1.0; Java-Wildcard-Imports (`import com.foo.*;`) werden heuristisch gegriffen (Symbol `com.foo.` mit Trailing-Dot), nicht expandiert; mehrere `import`-Statements auf **einer** Zeile werden nur einmal gegriffen (dokumentierte Heuristik-Grenze, `AC-QA-02`).
+**Out-of-Scope:** vollständiges AST-Parsing; Toolchain-gestützte Backends (`go list`, `javac`/`jdeps`, Bytecode) sind ein opt-in-Re-Eval, nicht 0.1.0; Java-Wildcard-Imports (`import com.foo.*;`) werden heuristisch gegriffen (Symbol `com.foo.` mit Trailing-Dot), nicht expandiert; mehrere `import`-Statements auf **einer** Zeile werden nur einmal gegriffen (dokumentierte Heuristik-Grenze, `AC-QA-02`); relative Python-Importe (`from .`/`from ..`) werden nicht extrahiert — sie sind das Auflösungs-Signal des reservierten `relative`-Modus ([AC-FA-CONF-001](#ac-fa-conf-001--konfigurationsdatei-a-checkyml)), dokumentierte Heuristik-Grenze (`AC-QA-02`); Python-Mehrfach-Import in **einem** Statement (`import a, b`) wird nur als Erst-Treffer (`a`) gegriffen; `__init__`-Re-Export-Semantik; import-ähnliche Zeilen in Docstrings (bestehende String-Grenze, `AC-QA-02`).
 
 ### AC-FA-CLI-001 — Aufruf, Scan-Wurzel und Exit-Codes
 
@@ -334,3 +340,4 @@ Konsumenten-Repos).
 | 0.8.0 | 2026-07-01 | `AC-FA-RULE-003`/`AC-FA-CONF-001`: `tech`-Muster optional als **RE2-Regex** (`match: substring\|regex`, Default `substring`) statt nur Substring — macht ein nur als Muster fassbares Tech wie Qt (`Q[A-Za-z]`) ausdrückbar; Mehrfach-Treffer lösen in Deklarationsreihenfolge (Erst-Treffer, kein „längster Präfix" für `tech`). Unbekanntes `match`/nicht kompilierbare Regex → Exit 2. Rückwärtskompatibel (ohne `match` byte-identisch). welle-05/-06, b-cad-Pilot (Regel E); slice-016. |
 | 0.9.0 | 2026-07-01 | `AC-FA-CONF-001`: ein `languages`-Schlüssel außerhalb der unterstützten Backends (`cpp`/`go`/`rust`/`kotlin`/`java`, `AC-FA-EXTRACT-001`) bricht mit **Exit 2** ab — schließt die stille Nicht-Extraktion (falsch-grün) für nicht unterstützte Sprachen. slice-017. |
 | 0.10.0 | 2026-07-01 | `AC-FA-CONF-001`: optionaler `resolution`-Block — Map **Sprache → `{mode, roots, package_base}`** (`mode ∈ {path, fixed-root}`, `relative`/`namespace` reserviert → Exit 2), löst gepunktete/wurzel-fremde Importe **pro Sprache** auf ihre Schicht auf (Mono-Repo-tauglich); Default (ohne Block) = Import-als-Pfad, rückwärtskompatibel. Grenze: Paket==Verzeichnis (`AC-QA-02`). welle-06 (Polyglot-Bestand); slice-015. |
+| 0.11.0 | 2026-07-02 | `AC-FA-EXTRACT-001` um **Python** erweitert (`import` und `from … import` → gepunkteter Modulpfad; Alias und importierte Namen nicht gewertet; relative Importe nicht extrahiert — Signal des reservierten `relative`-Modus, dokumentierte Grenze `AC-QA-02`) — sechstes Sprach-Backend, text-heuristisch (welle-06, slice-020). |

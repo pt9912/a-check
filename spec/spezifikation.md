@@ -1,6 +1,6 @@
 # Spezifikation — a-check
 
-**Version:** 0.10.0
+**Version:** 0.11.0
 
 **Status:** Draft
 
@@ -93,6 +93,13 @@ gewählte Backend die Menge der importierten Symbole/Module:
    - **Rust:** `use …;` und `extern crate …;` inkl. Alias-Form (`use x as y;` → `x`)
    - **Kotlin:** `import …`
    - **Java:** `import …;` inkl. `import static …;` (das `static` wird übersprungen, das `;` ignoriert)
+   - **Python:** `import a.b.c` (inkl. Alias-Form `import a.b as x` → `a.b`) sowie
+     `from a.b import c` → Modulpfad `a.b` (die importierten Namen werden nicht
+     expandiert); **relative** Importe (führender Punkt: `from . import x`,
+     `from ..pkg import y`) werden **nicht** gegriffen — sie sind das
+     Auflösungs-Signal des reservierten `relative`-Modus
+     ([SPEC-CONF-001](#spec-conf-001--konfigurationsschema)), dokumentierte
+     Heuristik-Grenze ([AC-QA-02](lastenheft.md#ac-qa-02--hermetik-und-ehrliche-heuristik-grenze))
 3. Import-ähnliche Zeilen in Zeilen-/Block-Kommentaren werden **nicht**
    gewertet (`//` und `/* */` werden entfernt). Import-ähnliche Zeilen in
    **String-Literalen** sind eine **ausgewiesene Heuristik-Grenze** (0.1.0:
@@ -107,7 +114,7 @@ gewählte Backend die Menge der importierten Symbole/Module:
 Nur direkte Imports (keine transitive Auflösung über Modulgrenzen);
 Toolchain-gestützte Backends sind Lastenheft-Out-of-Scope.
 
-**Zulässige Backend-Menge** (normativ, Owner dieser Spec): genau `{cpp, go, rust, kotlin, java}`.
+**Zulässige Backend-Menge** (normativ, Owner dieser Spec): genau `{cpp, go, rust, kotlin, java, python}`.
 Ein `languages`-Schlüssel außerhalb dieser Menge ist ein **Konfigurationsfehler** (Exit 2,
 [SPEC-CLI-001](#spec-cli-001--aufruf-scan-wurzel-und-exit-codes)) — der Extraktions-Adapter
 validiert die `languages`-Schlüssel gegen seine Backend-Registry, **bevor** er Dateien liest
@@ -219,3 +226,4 @@ und [AC-QA-03](lastenheft.md#ac-qa-03--reproduzierbarkeit).
 | 0.8.0 | 2026-07-01 | `SPEC-CONF-001`: `tech`-Eintrag um optionales `match: substring\|regex` (Default `substring`; `regex` = RE2, unverankert, gegen das extrahierte Symbol); unbekannter Wert/nicht kompilierbare Regex → Exit 2. `SPEC-RULE-001`: Präzedenz der `tech`-Muster als **Deklarationsreihenfolge/Erst-Treffer** richtiggestellt (kein „längster Präfix" für `tech` — das gilt nur für `layers`-Globs; `matchTech` liefert real schon Erst-Treffer). Folgt [`AC-FA-RULE-003`](lastenheft.md#ac-fa-rule-003--tech-kapselung-regel-tech-leak)/[`AC-FA-CONF-001`](lastenheft.md#ac-fa-conf-001--konfigurationsdatei-a-checkyml) 0.8.0. |
 | 0.9.0 | 2026-07-01 | `SPEC-EXTRACT-001` nennt die zulässige Backend-Menge `{cpp,go,rust,kotlin,java}` **normativ** (Owner) + Validierung der `languages`-Schlüssel gegen die Backend-Registry (unbekannt → Exit 2, kein stiller No-Op); `SPEC-CONF-001` **verweist** darauf (kein Duplikat). Folgt [`AC-FA-CONF-001`](lastenheft.md#ac-fa-conf-001--konfigurationsdatei-a-checkyml) 0.9.0. |
 | 0.10.0 | 2026-07-01 | `SPEC-CONF-001`: `resolution`-Block (Map Sprache → `{mode, roots, package_base}`; `mode ∈ {path, fixed-root}`, `relative`/`namespace` reserviert → Exit 2). `SPEC-RULE-001`: Import-Symbol wird **vor** der Layer-Auflösung gemäß dem `mode` seiner **Quelldatei-Sprache** normalisiert (`fixed-root`: `roots` voran, bei gesetztem `package_base` zusätzlich Strip + `.`→`/`) — Grenze Paket==Verzeichnis. Folgt [`AC-FA-CONF-001`](lastenheft.md#ac-fa-conf-001--konfigurationsdatei-a-checkyml) 0.10.0. |
+| 0.11.0 | 2026-07-02 | `SPEC-EXTRACT-001`: Python-Muster (`import a.b.c` inkl. Alias, `from a.b import c` → Modulpfad; relative Importe nicht gegriffen — reservierter `relative`-Modus) als sechstes Backend; Backend-Menge → `{cpp,go,rust,kotlin,java,python}`. Folgt [`AC-FA-EXTRACT-001`](lastenheft.md#ac-fa-extract-001--sprach-backends-für-die-import-extraktion) 0.11.0. |

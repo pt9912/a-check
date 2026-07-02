@@ -28,6 +28,7 @@ type Adapter struct {
 	cppInclude                  *regexp.Regexp
 	rustUse, rustCrate          *regexp.Regexp
 	kotlinImp, javaImp          *regexp.Regexp
+	pyImp, pyFrom               *regexp.Regexp
 	// backends maps a language to its extractor; its keys are the single
 	// source of the supported-backend set (SPEC-EXTRACT-001). A new backend is
 	// one entry — dispatch and language validation share this one map.
@@ -47,6 +48,11 @@ func newAdapter() Adapter {
 		rustCrate:  regexp.MustCompile(`^\s*extern\s+crate\s+([A-Za-z_][A-Za-z0-9_]*)`),
 		kotlinImp:  regexp.MustCompile(`^\s*import\s+([A-Za-z_][A-Za-z0-9_.]*)`),
 		javaImp:    regexp.MustCompile(`^\s*import\s+(?:static\s+)?([A-Za-z_][A-Za-z0-9_.]*)`),
+		// Python: both forms yield the dotted module path; relative imports
+		// (leading dot) never match [A-Za-z_] — the reserved `relative`
+		// resolution mode's signal, a documented boundary (SPEC-EXTRACT-001).
+		pyImp:  regexp.MustCompile(`^\s*import\s+([A-Za-z_][A-Za-z0-9_.]*)`),
+		pyFrom: regexp.MustCompile(`^\s*from\s+([A-Za-z_][A-Za-z0-9_.]*)\s+import\b`),
 	}
 	a.backends = map[string]extractFn{
 		"go":     func(src string) []core.Import { return dedupeSort(a.goImports(src)) },
@@ -54,6 +60,7 @@ func newAdapter() Adapter {
 		"rust":   func(src string) []core.Import { return dedupeSort(lineMatches(src, a.rustUse, a.rustCrate)) },
 		"kotlin": func(src string) []core.Import { return dedupeSort(lineMatches(src, a.kotlinImp)) },
 		"java":   func(src string) []core.Import { return dedupeSort(lineMatches(src, a.javaImp)) },
+		"python": func(src string) []core.Import { return dedupeSort(lineMatches(src, a.pyImp, a.pyFrom)) },
 	}
 	return a
 }
@@ -124,7 +131,7 @@ func langFor(rel string, langs map[string][]string) string {
 // checkLanguages rejects a `languages` key outside the backend registry with a
 // config error (SPEC-EXTRACT-001; the CLI maps it to exit code 2). This closes
 // the silent no-op — every declared language must resolve to a real backend, so
-// an unsupported/typo'd language (e.g. `python`, `pythn`) fails loudly instead
+// an unsupported/typo'd language (e.g. `ruby`, `pythn`) fails loudly instead
 // of extracting nothing (false-green). Deterministic order for a stable message.
 func (a Adapter) checkLanguages(langs map[string][]string) error {
 	names := make([]string, 0, len(langs))
