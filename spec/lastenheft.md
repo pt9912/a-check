@@ -1,6 +1,6 @@
 # Lastenheft — a-check
 
-**Version:** 0.11.0
+**Version:** 0.12.0
 
 **Status:** Draft
 
@@ -226,10 +226,15 @@ Regeln bleiben unverändert.
 Symbole/Module importiert diese Datei" — text-heuristisch über konfigurierbare
 Muster: C++ (`#include`), Go (`import`), Rust (`use`/`extern crate`), Kotlin
 (`import`), Java (`import`, inkl. `import static`), Python (`import` und
-`from … import`). Beide Python-Formen liefern den gepunkteten Modulpfad; ein
-Alias (`as x`) und die hinter `from … import` stehenden Namen werden nicht als
-Symbol gewertet. Das Backend wird über die Config (Sprache + Datei-Globs)
-gewählt.
+`from … import`), C# (`using`-Direktiven, Schlüssel `csharp`). Beide
+Python-Formen liefern den gepunkteten Modulpfad; ein Alias (`as x`) und die
+hinter `from … import` stehenden Namen werden nicht als Symbol gewertet.
+C#-`using`-Direktiven liefern den gepunkteten Namespace: `static`/`global`
+werden übersprungen, bei der Alias-Form (`using X = Ziel;`) wird das Ziel
+(rechte Seite) gewertet; das `;` direkt nach dem Namen ist Pflicht im Muster —
+`using`-**Statements** (`using var x = …;`, `using (…)`) sind keine Direktiven
+und werden nie gewertet. Das Backend wird über die Config (Sprache +
+Datei-Globs) gewählt.
 
 **Akzeptanzkriterien:**
 
@@ -241,8 +246,12 @@ gewählt.
 - **Happy (Python import):** Given `import myapp.adapters.db`, when das Python-Backend läuft, then liefert es das Symbol `myapp.adapters.db`.
 - **Boundary (Python from):** Given `from myapp.adapters import db`, when das Python-Backend läuft, then liefert es `myapp.adapters` — den Modulpfad nach `from`; die importierten Namen werden nicht expandiert.
 - **Boundary (Python Alias):** Given `import myapp.adapters as ad`, when das Python-Backend läuft, then liefert es `myapp.adapters` (das `as ad` wird nicht gewertet).
+- **Happy (C#):** Given `using MyApp.Adapters.Db;`, when das C#-Backend läuft, then liefert es das Symbol `MyApp.Adapters.Db`.
+- **Boundary (C# static/global):** Given `using static System.Math;` bzw. `global using MyApp.Core;`, when das C#-Backend läuft, then liefert es `System.Math` bzw. `MyApp.Core` — die Schlüsselwörter werden übersprungen, nicht als Symbol gewertet.
+- **Boundary (C# Alias):** Given `using Db = MyApp.Adapters.Db;`, when das C#-Backend läuft, then liefert es `MyApp.Adapters.Db` (das Ziel; der Alias-Name wird nie geliefert).
+- **Negative (C# using-Statement):** Given `using var f = File.Open(p);` oder `using (var f = File.Open(p))`, when das C#-Backend läuft, then wird **kein** Symbol geliefert (Ressourcen-Statement, keine Direktive).
 
-**Out-of-Scope:** vollständiges AST-Parsing; Toolchain-gestützte Backends (`go list`, `javac`/`jdeps`, Bytecode) sind ein opt-in-Re-Eval, nicht 0.1.0; Java-Wildcard-Imports (`import com.foo.*;`) werden heuristisch gegriffen (Symbol `com.foo.` mit Trailing-Dot), nicht expandiert; mehrere `import`-Statements auf **einer** Zeile werden nur einmal gegriffen (dokumentierte Heuristik-Grenze, `AC-QA-02`); relative Python-Importe (`from .`/`from ..`) werden nicht extrahiert — sie sind das Auflösungs-Signal des reservierten `relative`-Modus ([AC-FA-CONF-001](#ac-fa-conf-001--konfigurationsdatei-a-checkyml)), dokumentierte Heuristik-Grenze (`AC-QA-02`); Python-Mehrfach-Import in **einem** Statement (`import a, b`) wird nur als Erst-Treffer (`a`) gegriffen; die Subpaket-Form `from <paket> import <subpaket>` wird nur als `<paket>` gewertet und löst ggf. auf keine Schicht auf (dokumentierte Heuristik-Grenze, `AC-QA-02`); `__init__`-Re-Export-Semantik; import-ähnliche Zeilen in Docstrings (bestehende String-Grenze, `AC-QA-02`).
+**Out-of-Scope:** vollständiges AST-Parsing; Toolchain-gestützte Backends (`go list`, `javac`/`jdeps`, Bytecode) sind ein opt-in-Re-Eval, nicht 0.1.0; Java-Wildcard-Imports (`import com.foo.*;`) werden heuristisch gegriffen (Symbol `com.foo.` mit Trailing-Dot), nicht expandiert; mehrere `import`-Statements auf **einer** Zeile werden nur einmal gegriffen (dokumentierte Heuristik-Grenze, `AC-QA-02`); relative Python-Importe (`from .`/`from ..`) werden nicht extrahiert — sie sind das Auflösungs-Signal des reservierten `relative`-Modus ([AC-FA-CONF-001](#ac-fa-conf-001--konfigurationsdatei-a-checkyml)), dokumentierte Heuristik-Grenze (`AC-QA-02`); Python-Mehrfach-Import in **einem** Statement (`import a, b`) wird nur als Erst-Treffer (`a`) gegriffen; die Subpaket-Form `from <paket> import <subpaket>` wird nur als `<paket>` gewertet und löst ggf. auf keine Schicht auf (dokumentierte Heuristik-Grenze, `AC-QA-02`); `__init__`-Re-Export-Semantik; import-ähnliche Zeilen in Docstrings (bestehende String-Grenze, `AC-QA-02`); C#-Typ-Aliasse auf generische Typen (`using L = List<int>;` — kein Namespace-Import, nicht gegriffen), `extern alias` und `global::`-qualifizierte Aliasse; C#-Namespace-**Deklarationen** (`namespace X;`/`namespace X { }`) werden nicht als Import gewertet.
 
 ### AC-FA-CLI-001 — Aufruf, Scan-Wurzel und Exit-Codes
 
@@ -341,3 +350,4 @@ Konsumenten-Repos).
 | 0.9.0 | 2026-07-01 | `AC-FA-CONF-001`: ein `languages`-Schlüssel außerhalb der unterstützten Backends (`cpp`/`go`/`rust`/`kotlin`/`java`, `AC-FA-EXTRACT-001`) bricht mit **Exit 2** ab — schließt die stille Nicht-Extraktion (falsch-grün) für nicht unterstützte Sprachen. slice-017. |
 | 0.10.0 | 2026-07-01 | `AC-FA-CONF-001`: optionaler `resolution`-Block — Map **Sprache → `{mode, roots, package_base}`** (`mode ∈ {path, fixed-root}`, `relative`/`namespace` reserviert → Exit 2), löst gepunktete/wurzel-fremde Importe **pro Sprache** auf ihre Schicht auf (Mono-Repo-tauglich); Default (ohne Block) = Import-als-Pfad, rückwärtskompatibel. Grenze: Paket==Verzeichnis (`AC-QA-02`). welle-06 (Polyglot-Bestand); slice-015. |
 | 0.11.0 | 2026-07-02 | `AC-FA-EXTRACT-001` um **Python** erweitert (`import` und `from … import` → gepunkteter Modulpfad; Alias und importierte Namen nicht gewertet; relative Importe nicht extrahiert — Signal des reservierten `relative`-Modus, dokumentierte Grenze `AC-QA-02`) — sechstes Sprach-Backend, text-heuristisch (welle-06, slice-020). |
+| 0.12.0 | 2026-07-02 | `AC-FA-EXTRACT-001` um **C#** erweitert (Schlüssel `csharp`; `using`-Direktiven → gepunkteter Namespace, `static`/`global` übersprungen, Alias-**Ziel** gewertet, Pflicht-`;` schließt `using`-Statements aus) — siebtes Sprach-Backend. Schicht-Auflösung über den `fixed-root`-Modus unter Namespace==Verzeichnis (`AC-QA-02`-Grenze); der reservierte `namespace`-Modus bleibt Exit 2 (welle-06, slice-021). |

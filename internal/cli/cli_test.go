@@ -203,6 +203,38 @@ resolution:
 	}
 }
 
+func TestCsharpFixedRootResolution(t *testing.T) { // AC-FA-EXTRACT-001 (C#) + AC-FA-CONF-001 Happy-Auflösung: using-Backend + fixed-root-Rezept (slice-021 §3.3)
+	csCfg := `version: 1
+languages:
+  csharp: ["**/*.cs"]
+layers:
+  core:     ["src/MyApp/Domain/**"]
+  adapters: ["src/MyApp/Adapters/**"]
+edges:
+  - {from: adapters, to: core}
+resolution:
+  csharp: {mode: fixed-root, roots: ["src/MyApp"], package_base: "MyApp"}
+`
+	// Zeile 1: Direktive mit Mehrsegment-Rest `Adapters.Db` (pinnt .->/-Konvertierung);
+	// Zeile 2: Alias-Form end-to-end; Zeile 3: using-Statement darf keinen Befund erzeugen.
+	dir := writeRepo(t, map[string]string{
+		".a-check.yml":                 csCfg,
+		"src/MyApp/Domain/Model.cs":    "using MyApp.Adapters.Db;\nusing Db2 = MyApp.Adapters.Db2;\nusing var f = File.Open(p);\n",
+		"src/MyApp/Adapters/Db/Db.cs":  "using System.Text;\n",
+		"src/MyApp/Adapters/Db2/D2.cs": "using System;\n",
+	})
+	var out, errb bytes.Buffer
+	if code := cli.Run([]string{dir}, &out, &errb); code != 1 {
+		t.Fatalf("C#-Domäne nutzt Adapter-Namespaces: erwarte Exit 1, got %d (out=%q err=%q)", code, out.String(), errb.String())
+	}
+	if got := strings.Count(out.String(), "core-impurity"); got != 2 {
+		t.Fatalf("erwarte genau 2 core-impurity-Befunde (Direktive + Alias-Ziel, using-Statement keiner), got %d: %q", got, out.String())
+	}
+	if !strings.Contains(out.String(), "src/MyApp/Domain/Model.cs:1") || !strings.Contains(out.String(), "src/MyApp/Domain/Model.cs:2") {
+		t.Fatalf("erwarte Befunde auf Zeile 1 und 2 der Domänen-Datei: %q", out.String())
+	}
+}
+
 func TestMonoRepoMixedUnsupportedExit2(t *testing.T) { // slice-017: Mono-Repo go+typescript(unsupported) -> Exit 2, go rettet nicht
 	cfg := "version: 1\nlanguages:\n  go: [\"**/*.go\"]\n  typescript: [\"**/*.ts\"]\nlayers:\n  core: [\"core/**\"]\nedges:\n  - {from: core, to: core}\n"
 	dir := writeRepo(t, map[string]string{".a-check.yml": cfg, "core/x.go": "package core\n"})

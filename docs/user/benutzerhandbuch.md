@@ -1,6 +1,6 @@
 # Benutzerhandbuch: a-check
 
-**Handbuch-Version:** 1.14 · **Software-Version:** 0.5.0 · **Stand:** 2026-07-02 ·
+**Handbuch-Version:** 1.15 · **Software-Version:** 0.5.0 · **Stand:** 2026-07-02 ·
 **Autor:** pt9912 (Maintainer)
 
 ---
@@ -10,7 +10,7 @@
 ### Zweck der Software
 
 **a-check** prüft, ob ein Repository seine **hexagonale Schicht-Architektur**
-einhält — sprachübergreifend (C++, Go, Rust, Kotlin, Java, Python), gesteuert über eine
+einhält — sprachübergreifend (C++, Go, Rust, Kotlin, Java, Python, C#), gesteuert über eine
 Konfigurationsdatei. a-check liest Ihren Quellcode, meldet Architektur-Verstöße
 mit Datei und Zeile und liefert einen Exit-Code, mit dem Sie es als Gate in CI
 oder `make` einsetzen. a-check **repariert nichts** und **schreibt nie** in Ihr
@@ -190,11 +190,12 @@ markers:
 ```
 
 **Pflichtblöcke:** `version`, `languages`, `layers`, `edges`.
-**Gültige `languages`-Schlüssel:** genau `go`, `cpp`, `rust`, `kotlin`, `java`, `python` —
-exakt so zu schreiben (z. B. `cpp`, **nicht** `c++`); ein anderer Schlüssel bricht mit
-Exit-Code 2 ab (kein stilles Ignorieren). Jeder Schlüssel bildet auf eine Liste von
-Datei-Globs ab, z. B. `cpp: ["**/*.h", "**/*.cpp"]`, `rust: ["**/*.rs"]`,
-`kotlin: ["**/*.kt"]`, `java: ["**/*.java"]`, `python: ["**/*.py"]`.
+**Gültige `languages`-Schlüssel:** genau `go`, `cpp`, `rust`, `kotlin`, `java`, `python`,
+`csharp` — exakt so zu schreiben (z. B. `cpp`, **nicht** `c++`; `csharp`, **nicht** `c#`);
+ein anderer Schlüssel bricht mit Exit-Code 2 ab (kein stilles Ignorieren). Jeder Schlüssel
+bildet auf eine Liste von Datei-Globs ab, z. B. `cpp: ["**/*.h", "**/*.cpp"]`,
+`rust: ["**/*.rs"]`, `kotlin: ["**/*.kt"]`, `java: ["**/*.java"]`, `python: ["**/*.py"]`,
+`csharp: ["**/*.cs"]`.
 **Optionalblöcke:** `adapter_sink`, `tech`, `composition_root`, `allow`,
 `forbidden_constructs`, `markers`. Fehlt ein Optionalblock, entfällt die
 zugehörige Prüfung (kein stiller Standardwert) — fehlt z. B. `adapter_sink`,
@@ -208,23 +209,30 @@ Symbol den Text enthält; `match: regex` interpretiert `pattern` als **RE2-Regex
 `Q[A-Za-z]`. Ein unbekannter `match`-Wert oder eine ungültige Regex bricht mit
 Exit-Code 2 ab. Treffen mehrere Muster dasselbe Symbol, greift das **zuerst notierte**.
 
-**Python und gepunktete Importe (`resolution`).** Python-Importe sind gepunktete
-Modulpfade (`import myapp.adapters.db`, `from myapp.adapters import db` → Modulpfad
-`myapp.adapters`); damit sie auf Ihre verzeichnisbasierten `layers`-Globs auflösen,
+**Gepunktete Importe auflösen (`resolution`): Python, C#, JVM.** Python-Importe
+(`import myapp.adapters.db`, `from myapp.adapters import db` → Modulpfad
+`myapp.adapters`) und C#-`using`-Direktiven (`using MyApp.Adapters.Db;`) sind
+gepunktete Pfade; damit sie auf Ihre verzeichnisbasierten `layers`-Globs auflösen,
 deklarieren Sie den optionalen `resolution`-Block. Rezept: `package_base` = Ihr
-Top-Package, `roots` = sein Verzeichnispfad:
+Top-Package/-Namespace, `roots` = sein Verzeichnispfad:
 
 ```yaml
 # src-Layout: src/myapp/{domain,ports,adapters}/…, Importe `myapp.…`
 resolution:
   python: {mode: fixed-root, roots: ["src/myapp"], package_base: "myapp"}
+  # C# (.NET-Konvention Namespace == Verzeichnis):
+  # csharp: {mode: fixed-root, roots: ["src/MyApp"], package_base: "MyApp"}
 # flaches Layout (myapp/ direkt an der Repo-Wurzel):
 #   python: {mode: fixed-root, roots: ["myapp"], package_base: "myapp"}
 ```
 
 Dasselbe Schema trägt JVM-Pakete (`package_base: com.example`) und fremdgewurzelte
 C++-Includes (`roots: ["src"]`, ohne `package_base`). Voraussetzung ist, dass der
-Paket-Baum den Verzeichnis-Baum spiegelt. **Relative** Python-Importe
+Paket-/Namespace-Baum den Verzeichnis-Baum spiegelt — für C# ist das die verbreitete
+.NET-Konvention, aber **nicht** erzwungen: frei deklarierte Namespaces
+(Namespace ≠ Ordner) bleiben unaufgelöst (keine schicht-basierte Regel; die
+`tech`-Muster greifen unabhängig davon). Der Auflösungs-Modus `namespace`
+(Namespace→Datei-Index) ist dafür reserviert und noch nicht implementiert (Exit 2). **Relative** Python-Importe
 (`from . import x`, `from ..pkg import y`) werden **nicht** extrahiert — eine
 dokumentierte Heuristik-Grenze, bis der (heute reservierte) Auflösungs-Modus
 `relative` existiert; Architektur-Kanten prüfen Sie über absolute Importe.
@@ -383,3 +391,4 @@ und die [Spezifikation](../../spec/spezifikation.md); ein Überblick steht in de
 | 1.12 | 2026-07-01 | Software-Version **0.4.0** (GHCR-Release `v0.4.0` veröffentlicht, digest-gepinnt `@sha256:b0d6e33c…`) — `match: regex` + Java-Backend jetzt im veröffentlichten Image; die v0.3.0-Verfügbarkeitsnotiz zu `match` entfällt. |
 | 1.13 | 2026-07-02 | §1/§4 an Lastenheft 0.11.0: sechstes Sprach-Backend **Python** (`languages`-Schlüssel `python`; `import` + `from … import` → Modulpfad, relative Importe dokumentierte Grenze) inkl. `resolution`-Rezept (`fixed-root` + `package_base`, Lastenheft 0.10.0 — der Block war hier noch undokumentiert); §4-Currency: ein unbekannter `languages`-Schlüssel bricht seit Lastenheft 0.9.0 mit Exit 2 (statt „wird ignoriert"). |
 | 1.14 | 2026-07-02 | Software-Version **0.5.0** (GHCR-Release `v0.5.0` veröffentlicht, digest-gepinnt `@sha256:81951e61…`) — Python-Backend, `resolution`-Block und die Exit-2-Härtung für unbekannte Sprachen jetzt im veröffentlichten Image. |
+| 1.15 | 2026-07-02 | §1/§4 an Lastenheft 0.12.0: siebtes Sprach-Backend **C#** (`languages`-Schlüssel `csharp`; `using`-Direktiven inkl. `global`/`static`/Alias-Ziel, `using`-Statements nie gewertet); `resolution`-Absatz um das C#-Rezept + Namespace==Verzeichnis-Grenze (reservierter `namespace`-Modus) erweitert. Noch nicht im veröffentlichten Image (folgt mit dem nächsten Release). |

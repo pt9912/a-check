@@ -29,6 +29,7 @@ type Adapter struct {
 	rustUse, rustCrate          *regexp.Regexp
 	kotlinImp, javaImp          *regexp.Regexp
 	pyImp, pyFrom               *regexp.Regexp
+	csUsing                     *regexp.Regexp
 	// backends maps a language to its extractor; its keys are the single
 	// source of the supported-backend set (SPEC-EXTRACT-001). A new backend is
 	// one entry — dispatch and language validation share this one map.
@@ -53,6 +54,11 @@ func newAdapter() Adapter {
 		// resolution mode's signal, a documented boundary (SPEC-EXTRACT-001).
 		pyImp:  regexp.MustCompile(`^\s*import\s+([A-Za-z_][A-Za-z0-9_.]*)`),
 		pyFrom: regexp.MustCompile(`^\s*from\s+([A-Za-z_][A-Za-z0-9_.]*)\s+import\b`),
+		// C#: using DIRECTIVES only — `global`/`static` skipped, the alias form
+		// yields its target (right-hand side). The mandatory `;` right after the
+		// dotted name keeps using STATEMENTS (`using var x = …;`, `using (…)`,
+		// `using T x = …;`) from ever matching (SPEC-EXTRACT-001).
+		csUsing: regexp.MustCompile(`^\s*(?:global\s+)?using\s+(?:static\s+)?(?:[A-Za-z_][A-Za-z0-9_]*\s*=\s*)?([A-Za-z_][A-Za-z0-9_.]*)\s*;`),
 	}
 	a.backends = map[string]extractFn{
 		"go":     func(src string) []core.Import { return dedupeSort(a.goImports(src)) },
@@ -61,6 +67,7 @@ func newAdapter() Adapter {
 		"kotlin": func(src string) []core.Import { return dedupeSort(lineMatches(src, a.kotlinImp)) },
 		"java":   func(src string) []core.Import { return dedupeSort(lineMatches(src, a.javaImp)) },
 		"python": func(src string) []core.Import { return dedupeSort(lineMatches(src, a.pyImp, a.pyFrom)) },
+		"csharp": func(src string) []core.Import { return dedupeSort(lineMatches(src, a.csUsing)) },
 	}
 	return a
 }

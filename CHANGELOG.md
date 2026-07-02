@@ -6,6 +6,16 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
+### Added
+
+- **`AC-FA-EXTRACT-001` (Lastenheft/Spezifikation 0.11.0→0.12.0):** siebtes Sprach-Backend
+  **C#** (`languages`-Schlüssel `csharp`) — `using`-**Direktiven** → gepunkteter Namespace
+  (`global`/`static` übersprungen, Alias-Form liefert ihr **Ziel**); das Pflicht-`;` direkt nach
+  dem Namen schließt `using`-**Statements** (`using var …`, `using (…)`) kategorisch aus.
+  Schicht-Auflösung über den `fixed-root`-Modus unter der .NET-Konvention Namespace==Verzeichnis
+  (`AC-QA-02`-Grenze; frei deklarierte Namespaces bleiben unaufgelöst — der reservierte
+  `namespace`-Modus/Index bleibt Exit 2, eigener Folge-Slice). slice-021.
+
 ## [0.5.0] - 2026-07-02
 
 Sprach-Backend + Import-Auflösung seit `v0.4.0`; Lastenheft/Spezifikation 0.8.0 → 0.11.0.

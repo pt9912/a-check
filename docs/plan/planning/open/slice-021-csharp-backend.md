@@ -1,6 +1,7 @@
 # slice-021 — C#-Sprach-Backend (welle-06-sprach-backends)
 
-**Status:** open (Entwurf zur Abnahme).
+**Status:** in-progress — Umsetzung auf Basis der Empfehlungen A–E (§6) gestartet;
+**Maintainer-Abnahme der Entscheide ausstehend** (Closure/`git mv`/Push erst nach Bestätigung).
 **Welle:** welle-06-sprach-backends (drittes Backend-Inkrement nach
 [slice-014](../done/slice-014-java-backend.md)/[slice-020](../done/slice-020-python-backend.md)).
 **Bezug:** erweitert [AC-FA-EXTRACT-001](../../../../spec/lastenheft.md#ac-fa-extract-001--sprach-backends-für-die-import-extraktion)

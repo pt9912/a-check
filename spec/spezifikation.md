@@ -1,6 +1,6 @@
 # Spezifikation — a-check
 
-**Version:** 0.11.0
+**Version:** 0.12.0
 
 **Status:** Draft
 
@@ -100,6 +100,14 @@ gewählte Backend die Menge der importierten Symbole/Module:
      Auflösungs-Signal des reservierten `relative`-Modus
      ([SPEC-CONF-001](#spec-conf-001--konfigurationsschema)), dokumentierte
      Heuristik-Grenze ([AC-QA-02](lastenheft.md#ac-qa-02--hermetik-und-ehrliche-heuristik-grenze))
+   - **C#** (Schlüssel `csharp`): `using`-**Direktiven** → gepunkteter Namespace —
+     `using A.B;` (inkl. `global using …;` und `using static …;`, Schlüsselwörter
+     übersprungen) sowie Alias-Form `using X = A.B;` → `A.B` (das Ziel; der
+     Alias-Name wird nie geliefert). Das `;` **direkt nach** dem gepunkteten Namen
+     ist Teil des Musters — `using`-**Statements** (`using var x = …;`,
+     `using (…)`, `using T x = …;`) matchen dadurch nie. Typ-Aliasse auf
+     generische Typen, `extern alias`, `global::`-Qualifizierer und
+     `namespace`-Deklarationen werden nicht gegriffen
 3. Import-ähnliche Zeilen in Zeilen-/Block-Kommentaren werden **nicht**
    gewertet (`//` und `/* */` werden entfernt). Das C-artige Kommentar-Stripping
    gilt **nur für die C-Syntax-Sprachen**; **Python** wird nicht C-gestrippt —
@@ -118,7 +126,7 @@ gewählte Backend die Menge der importierten Symbole/Module:
 Nur direkte Imports (keine transitive Auflösung über Modulgrenzen);
 Toolchain-gestützte Backends sind Lastenheft-Out-of-Scope.
 
-**Zulässige Backend-Menge** (normativ, Owner dieser Spec): genau `{cpp, go, rust, kotlin, java, python}`.
+**Zulässige Backend-Menge** (normativ, Owner dieser Spec): genau `{cpp, go, rust, kotlin, java, python, csharp}`.
 Ein `languages`-Schlüssel außerhalb dieser Menge ist ein **Konfigurationsfehler** (Exit 2,
 [SPEC-CLI-001](#spec-cli-001--aufruf-scan-wurzel-und-exit-codes)) — der Extraktions-Adapter
 validiert die `languages`-Schlüssel gegen seine Backend-Registry, **bevor** er Dateien liest
@@ -231,3 +239,4 @@ und [AC-QA-03](lastenheft.md#ac-qa-03--reproduzierbarkeit).
 | 0.9.0 | 2026-07-01 | `SPEC-EXTRACT-001` nennt die zulässige Backend-Menge `{cpp,go,rust,kotlin,java}` **normativ** (Owner) + Validierung der `languages`-Schlüssel gegen die Backend-Registry (unbekannt → Exit 2, kein stiller No-Op); `SPEC-CONF-001` **verweist** darauf (kein Duplikat). Folgt [`AC-FA-CONF-001`](lastenheft.md#ac-fa-conf-001--konfigurationsdatei-a-checkyml) 0.9.0. |
 | 0.10.0 | 2026-07-01 | `SPEC-CONF-001`: `resolution`-Block (Map Sprache → `{mode, roots, package_base}`; `mode ∈ {path, fixed-root}`, `relative`/`namespace` reserviert → Exit 2). `SPEC-RULE-001`: Import-Symbol wird **vor** der Layer-Auflösung gemäß dem `mode` seiner **Quelldatei-Sprache** normalisiert (`fixed-root`: `roots` voran, bei gesetztem `package_base` zusätzlich Strip + `.`→`/`) — Grenze Paket==Verzeichnis. Folgt [`AC-FA-CONF-001`](lastenheft.md#ac-fa-conf-001--konfigurationsdatei-a-checkyml) 0.10.0. |
 | 0.11.0 | 2026-07-02 | `SPEC-EXTRACT-001`: Python-Muster (`import a.b.c` inkl. Alias, `from a.b import c` → Modulpfad; relative Importe nicht gegriffen — reservierter `relative`-Modus) als sechstes Backend; Backend-Menge → `{cpp,go,rust,kotlin,java,python}`. Folgt [`AC-FA-EXTRACT-001`](lastenheft.md#ac-fa-extract-001--sprach-backends-für-die-import-extraktion) 0.11.0. |
+| 0.12.0 | 2026-07-02 | `SPEC-EXTRACT-001`: C#-Muster (`using`-Direktiven inkl. `global`/`static`/Alias-Ziel; Pflicht-`;` nach dem Namen schließt `using`-Statements aus) als siebtes Backend; Backend-Menge → `{cpp,go,rust,kotlin,java,python,csharp}`. Folgt [`AC-FA-EXTRACT-001`](lastenheft.md#ac-fa-extract-001--sprach-backends-für-die-import-extraktion) 0.12.0. |

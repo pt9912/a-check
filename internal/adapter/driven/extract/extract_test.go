@@ -215,14 +215,89 @@ func TestPythonMultiWhitespace(t *testing.T) { // Mutanten-Boundary: Mehrfach-Wh
 	}
 }
 
-func TestBackendRegistrySet(t *testing.T) { // slice-017: Registry ist die Single Source — genau {cpp,go,rust,kotlin,java,python}
+func TestCsharpUsing(t *testing.T) { // AC-FA-EXTRACT-001 happy (C#): using-Direktive, dotted Namespace
+	got := syms(newAdapter().importsFromSource("csharp", prepSource("csharp", "using MyApp.Adapters.Db;\n")))
+	if !has(got, "MyApp.Adapters.Db") {
+		t.Fatalf("csharp using fehlt: %v", got)
+	}
+}
+
+func TestCsharpStaticGlobal(t *testing.T) { // AC-FA-EXTRACT-001 boundary (C#): static/global übersprungen, nicht als Symbol
+	got := syms(newAdapter().importsFromSource("csharp", prepSource("csharp", "using static System.Math;\nglobal using MyApp.Core;\nglobal   using   static   Ns.Util ;\n")))
+	for _, want := range []string{"System.Math", "MyApp.Core", "Ns.Util"} {
+		if !has(got, want) {
+			t.Fatalf("Namespace %q fehlt: %v", want, got)
+		}
+	}
+	if has(got, "static") || has(got, "global") {
+		t.Fatalf("'static'/'global' dürfen nicht als Symbol gegriffen werden: %v", got)
+	}
+}
+
+func TestCsharpStaticInNamespace(t *testing.T) { // Mutanten-Boundary (slice-014-Lerneintrag): Keyword als Namespace-Segment bleibt erhalten
+	got := syms(newAdapter().importsFromSource("csharp", prepSource("csharp", "using com.static.Foo;\n")))
+	if !has(got, "com.static.Foo") || has(got, "static") {
+		t.Fatalf("'static' als Segment muss erhalten bleiben, nie als Symbol: %v", got)
+	}
+}
+
+func TestCsharpAlias(t *testing.T) { // AC-FA-EXTRACT-001 boundary (C# Alias): Ziel (rechte Seite) gewertet, Alias nie
+	got := syms(newAdapter().importsFromSource("csharp", prepSource("csharp", "using Db = MyApp.Adapters.Db;\nusing X=Ns.Y;\n")))
+	if !has(got, "MyApp.Adapters.Db") || !has(got, "Ns.Y") {
+		t.Fatalf("Alias-Ziele fehlen: %v", got)
+	}
+	if has(got, "Db") || has(got, "X") {
+		t.Fatalf("Alias-Name darf nicht als Symbol gegriffen werden: %v", got)
+	}
+}
+
+func TestCsharpUsingStatementsNotCounted(t *testing.T) { // AC-FA-EXTRACT-001 negative (C#): Ressourcen-Statements sind keine Direktiven
+	src := "using var f = File.Open(p);\nusing (var g = File.Open(q))\nusing FileStream h = File.Open(r);\nusing(var k = m())\n"
+	got := syms(newAdapter().importsFromSource("csharp", prepSource("csharp", src)))
+	if len(got) != 0 {
+		t.Fatalf("using-Statements dürfen nie als Import gewertet werden: %v", got)
+	}
+}
+
+func TestCsharpSemicolonRequired(t *testing.T) { // Mutanten-Boundary: Pflicht-; direkt nach dem Namen (Kern-Anker gegen Statements)
+	got := syms(newAdapter().importsFromSource("csharp", prepSource("csharp", "using System.Text\nusings Ns.X;\nusingFoo.Y;\n")))
+	if len(got) != 0 {
+		t.Fatalf("fehlendes ';'/Keyword-Präfix dürfen nicht matchen: %v", got)
+	}
+}
+
+func TestCsharpCommentNotCounted(t *testing.T) { // AC-FA-EXTRACT-001 negative: C-Strip greift für C# (anders als Python)
+	got := syms(newAdapter().importsFromSource("csharp", prepSource("csharp", "// using Evil.X;\n/* using Blk.Y; */\nusing Real.Z;\n")))
+	if has(got, "Evil.X") || has(got, "Blk.Y") {
+		t.Fatalf("using im Kommentar muss ignoriert werden: %v", got)
+	}
+	if !has(got, "Real.Z") {
+		t.Fatalf("reales using fehlt: %v", got)
+	}
+}
+
+func TestCsharpGenericAliasNotCounted(t *testing.T) { // AC-FA-EXTRACT-001 Out-of-Scope: Typ-Alias auf generischen Typ / namespace-Deklaration
+	got := syms(newAdapter().importsFromSource("csharp", prepSource("csharp", "using L = List<int>;\nnamespace MyApp.Adapters;\n")))
+	if len(got) != 0 {
+		t.Fatalf("Typ-Alias auf Generic/namespace-Deklaration dürfen nicht matchen: %v", got)
+	}
+}
+
+func TestCsharpUnderscoreDigitsIndent(t *testing.T) { // Mutanten-Boundary: Zeichenklassen + Einrückung
+	got := syms(newAdapter().importsFromSource("csharp", prepSource("csharp", "    using _Internal.V2;\n")))
+	if !has(got, "_Internal.V2") {
+		t.Fatalf("Underscore-/Ziffern-Namespace (eingerückt) fehlt: %v", got)
+	}
+}
+
+func TestBackendRegistrySet(t *testing.T) { // slice-017: Registry ist die Single Source — genau {cpp,csharp,go,java,kotlin,python,rust}
 	got := make([]string, 0)
 	for n := range newAdapter().backends {
 		got = append(got, n)
 	}
 	sort.Strings(got)
-	if strings.Join(got, ",") != "cpp,go,java,kotlin,python,rust" {
-		t.Fatalf("Backend-Registry = %v, erwarte cpp/go/java/kotlin/python/rust", got)
+	if strings.Join(got, ",") != "cpp,csharp,go,java,kotlin,python,rust" {
+		t.Fatalf("Backend-Registry = %v, erwarte cpp/csharp/go/java/kotlin/python/rust", got)
 	}
 }
 
@@ -231,7 +306,7 @@ func TestCheckLanguagesUnknown(t *testing.T) { // slice-017: unbekannte Sprache 
 	if err == nil {
 		t.Fatal("erwarte Fehler für unbekannte Sprache")
 	}
-	if err.Error() != `unbekannte Sprache "ruby" (cpp|go|java|kotlin|python|rust)` {
+	if err.Error() != `unbekannte Sprache "ruby" (cpp|csharp|go|java|kotlin|python|rust)` {
 		t.Fatalf("Meldungsformat driftet (Name/Menge/Klammerung/Reihenfolge): %q", err.Error())
 	}
 }
@@ -249,10 +324,11 @@ func TestCheckLanguagesMixedUnsupported(t *testing.T) { // slice-017: Mono-Repo 
 	if err == nil || !strings.Contains(err.Error(), "typescript") || !strings.Contains(err.Error(), "unbekannte Sprache") {
 		t.Fatalf("gemischt (unsupported nach go): typescript muss brechen, got %v", err)
 	}
-	// csharp sortiert VOR go — auch die zuerst-sortierte unsupported bricht.
-	err = newAdapter().checkLanguages(map[string][]string{"csharp": {"**/*.cs"}, "go": {"**/*.go"}})
-	if err == nil || !strings.Contains(err.Error(), "csharp") {
-		t.Fatalf("gemischt (unsupported vor go): csharp muss brechen, got %v", err)
+	// fsharp sortiert VOR go — auch die zuerst-sortierte unsupported bricht.
+	// (csharp ist seit slice-021 ein Backend und taugt nicht mehr als Fixture.)
+	err = newAdapter().checkLanguages(map[string][]string{"fsharp": {"**/*.fs"}, "go": {"**/*.go"}})
+	if err == nil || !strings.Contains(err.Error(), "fsharp") {
+		t.Fatalf("gemischt (unsupported vor go): fsharp muss brechen, got %v", err)
 	}
 }
 
