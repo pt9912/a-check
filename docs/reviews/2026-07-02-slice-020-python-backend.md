@@ -1,6 +1,6 @@
 # Review — slice-020 Python-Sprach-Backend
 
-**Datum:** 2026-07-02 · **Slice:** [slice-020](../plan/planning/open/slice-020-python-backend.md) ·
+**Datum:** 2026-07-02 · **Slice:** [slice-020](../plan/planning/done/slice-020-python-backend.md) ·
 **Anforderung:** [AC-FA-EXTRACT-001](../../spec/lastenheft.md#ac-fa-extract-001--sprach-backends-für-die-import-extraktion)
 (Lastenheft/Spezifikation 0.11.0) · innerhalb [ADR-0002](../plan/adr/0002-text-heuristische-extraktion.md)
 (Extraktion) und [ADR-0016](../plan/adr/0016-resolution-sprach-parametrisch.md) (Auflösung, `fixed-root`-Rezept).
