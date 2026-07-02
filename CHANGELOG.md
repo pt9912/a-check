@@ -6,6 +6,12 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
+## [0.6.0] - 2026-07-02
+
+Sprach-Backend seit `v0.5.0`; Lastenheft/Spezifikation 0.11.0 → 0.12.0.
+Bringt das **C#-Backend** (`using`-Direktiven) ins veröffentlichte Image; die
+Schicht-Auflösung nutzt den bestehenden `resolution`-Block (`fixed-root`-Rezept).
+
 ### Added
 
 - **`AC-FA-EXTRACT-001` (Lastenheft/Spezifikation 0.11.0→0.12.0):** siebtes Sprach-Backend
@@ -15,6 +21,12 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
   Schicht-Auflösung über den `fixed-root`-Modus unter der .NET-Konvention Namespace==Verzeichnis
   (`AC-QA-02`-Grenze; frei deklarierte Namespaces bleiben unaufgelöst — der reservierte
   `namespace`-Modus/Index bleibt Exit 2, eigener Folge-Slice). slice-021.
+
+### Changed
+
+- **Selbst-Pin** (`--print-mk`/`a-check.mk`/`cli.go`-`aCheckImage`): die Pin-Hebung auf den
+  **v0.6.0**-Digest folgt **nach** dem Release (Digest existiert erst nach dem CI-Build;
+  AC-QA-03, ADR-0004/ADR-0007). Bis dahin bleibt der v0.5.0-Digest (`@sha256:81951e61…`) gepinnt.
 
 ## [0.5.0] - 2026-07-02
 
