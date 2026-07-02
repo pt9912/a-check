@@ -94,7 +94,7 @@ func (a Adapter) Extract(root string, m core.Model) ([]core.FileImports, error) 
 		if readErr != nil {
 			return readErr
 		}
-		src := stripComments(string(data))
+		src := prepSource(lang, string(data))
 		fi := core.FileImports{
 			Path:     rel,
 			Layer:    core.LayerOf(rel, m.Layers),
@@ -252,6 +252,19 @@ func dedupeSort(in []core.Import) []core.Import {
 		return out[i].Line < out[j].Line
 	})
 	return out
+}
+
+// prepSource neutralizes comments per language family: the C-syntax languages
+// get // and /* */ stripped. Python is NOT C-stripped — its # comment lines
+// never match the line-anchored patterns anyway, and a /*-like byte sequence
+// inside a Python string literal (e.g. the glob "**/*.py") would otherwise
+// swallow every real import up to the next */ — a silent false-green
+// (SPEC-EXTRACT-001, AC-QA-02).
+func prepSource(lang, raw string) string {
+	if lang == "python" {
+		return raw
+	}
+	return stripComments(raw)
 }
 
 // stripComments removes // line and /* */ block comments while preserving

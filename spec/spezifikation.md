@@ -101,7 +101,11 @@ gewählte Backend die Menge der importierten Symbole/Module:
      ([SPEC-CONF-001](#spec-conf-001--konfigurationsschema)), dokumentierte
      Heuristik-Grenze ([AC-QA-02](lastenheft.md#ac-qa-02--hermetik-und-ehrliche-heuristik-grenze))
 3. Import-ähnliche Zeilen in Zeilen-/Block-Kommentaren werden **nicht**
-   gewertet (`//` und `/* */` werden entfernt). Import-ähnliche Zeilen in
+   gewertet (`//` und `/* */` werden entfernt). Das C-artige Kommentar-Stripping
+   gilt **nur für die C-Syntax-Sprachen**; **Python** wird nicht C-gestrippt —
+   seine `#`-Kommentarzeilen werden von den zeilen-verankerten Mustern nie
+   gewertet, und eine `/*`-artige Bytefolge in einem Python-String-Literal
+   (z. B. das Glob `"**/*.py"`) darf keine echten Imports verschlucken. Import-ähnliche Zeilen in
    **String-Literalen** sind eine **ausgewiesene Heuristik-Grenze** (0.1.0:
    reines Kommentar-Stripping, keine String-Awareness). Wo die Heuristik an
    ihre Grenze stößt (z. B. ein framework-fremdes `Queue.h` unter einem

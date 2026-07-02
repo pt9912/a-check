@@ -1,6 +1,6 @@
 # Benutzerhandbuch: a-check
 
-**Handbuch-Version:** 1.12 · **Software-Version:** 0.4.0 · **Stand:** 2026-07-01 ·
+**Handbuch-Version:** 1.13 · **Software-Version:** 0.4.0 · **Stand:** 2026-07-02 ·
 **Autor:** pt9912 (Maintainer)
 
 ---
@@ -228,6 +228,18 @@ Paket-Baum den Verzeichnis-Baum spiegelt. **Relative** Python-Importe
 (`from . import x`, `from ..pkg import y`) werden **nicht** extrahiert — eine
 dokumentierte Heuristik-Grenze, bis der (heute reservierte) Auflösungs-Modus
 `relative` existiert; Architektur-Kanten prüfen Sie über absolute Importe.
+
+Zwei weitere dokumentierte Grenzen der Heuristik: (1) Die **Subpaket-Form**
+`from myapp import adapters` liefert nur den Modulpfad `myapp` und löst damit auf
+keine Schicht auf — schreiben Sie kanten-relevante Importe als
+`from myapp.adapters import db` bzw. `import myapp.adapters.db`. (2) Ein **fremdes
+Top-Level-Modul, das zufällig wie ein Schicht-Verzeichnis heißt** (z. B. ein
+Third-Party-Paket `adapters`), kann unter dem Rezept fälschlich auf diese Schicht
+auflösen. `markers.ignore_symbols` ist ein **Substring**-Filter — `"adapters"`
+würde auch jeden legitimen `myapp.adapters`-Import verschlucken (falsch-grün);
+eine Ausnahme braucht ein Fragment, das **nur** im Fremdsymbol vorkommt (z. B.
+ein Submodul wie `"adapters.vendorx"`). Gibt es keins, bleibt die Kollision eine
+dokumentierte Grenze der Paket==Verzeichnis-Voraussetzung.
 
 **Schicht-Rollen (`role`).** Ein `layers`-Eintrag ist **entweder** eine Glob-Liste
 (`name: [globs]`) **oder** ein Objekt `{globs: [...], role: <rolle>, direction: <richtung>}`

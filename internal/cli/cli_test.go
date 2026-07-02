@@ -184,17 +184,22 @@ edges:
 resolution:
   python: {mode: fixed-root, roots: ["src/myapp"], package_base: "myapp"}
 `
+	// Zeile 1: /*-Bytefolge im String (Review-R1: darf Folge-Imports nicht fressen);
+	// Zeile 3: Mehrsegment-Rest `adapters.db` pinnt die .->/-Konvertierung (Review-R1).
 	dir := writeRepo(t, map[string]string{
 		".a-check.yml":              pyCfg,
-		"src/myapp/domain/model.py": "from myapp.adapters import db\n",
+		"src/myapp/domain/model.py": "GLOB = \"**/*.py\"\nfrom myapp.adapters import db\nimport myapp.adapters.db\n",
 		"src/myapp/adapters/db.py":  "import json\n",
 	})
 	var out, errb bytes.Buffer
 	if code := cli.Run([]string{dir}, &out, &errb); code != 1 {
 		t.Fatalf("Python-Domäne importiert Adapter-Modul: erwarte Exit 1, got %d (out=%q err=%q)", code, out.String(), errb.String())
 	}
-	if !strings.Contains(out.String(), "core-impurity") || !strings.Contains(out.String(), "src/myapp/domain/model.py") {
-		t.Fatalf("erwarte core-impurity-Befund für die Domänen-Datei: %q", out.String())
+	if got := strings.Count(out.String(), "core-impurity"); got != 2 {
+		t.Fatalf("erwarte 2 core-impurity-Befunde (from-Form + Mehrsegment-dotted), got %d: %q", got, out.String())
+	}
+	if !strings.Contains(out.String(), "src/myapp/domain/model.py:2") || !strings.Contains(out.String(), "src/myapp/domain/model.py:3") {
+		t.Fatalf("erwarte Befunde auf Zeile 2 und 3 der Domänen-Datei: %q", out.String())
 	}
 }
 

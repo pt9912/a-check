@@ -1,6 +1,8 @@
 # slice-020 — Python-Sprach-Backend (welle-06-sprach-backends)
 
-**Status:** in-progress — Abnahme erteilt (2026-07-02, Entscheide A–D gemäß Empfehlung bestätigt).
+**Status:** done (2026-07-02). Abnahme erteilt (Entscheide A–D gemäß Empfehlung); Umsetzung +
+`make gates`/`make ci` + Multi-Linsen-Review (4 Linsen, R1) + Delta-Re-Review erledigt; Synthese
+[`docs/reviews/2026-07-02-slice-020-python-backend.md`](../../../reviews/2026-07-02-slice-020-python-backend.md).
 **Welle:** welle-06-sprach-backends (zweites Backend-Inkrement nach
 [slice-014](../done/slice-014-java-backend.md)).
 **Bezug:** erweitert [AC-FA-EXTRACT-001](../../../../spec/lastenheft.md#ac-fa-extract-001--sprach-backends-für-die-import-extraktion)
@@ -79,8 +81,9 @@ Import-aehnliche Zeilen in Docstrings (bestehende String-Grenze).
 ### 3.2 Versions-Bump
 
 Lastenheft + Spezifikation **0.10.0 → 0.11.0** (neue Sprach-Unterstützung, MINOR).
-`fünf → sechs Sprachen` über die Doku (README, Benutzerhandbuch, Architektur nur falls
-sie zählt).
+`fünf → sechs Sprachen` über die Doku (README, Benutzerhandbuch, **und**
+`spec/architecture.md` — [ARC-003](../../../../spec/architecture.md) zählt die Zielsprachen konkret auf; Review-R1 fing,
+dass die Entwurfs-Formulierung „nur falls sie zählt" genau dort zum Übersehen einlud).
 
 ### 3.3 Auflösung: kein Schema-Delta (Rezept dokumentieren)
 
@@ -131,7 +134,8 @@ Entscheid D).
    ([SPEC-EXTRACT-001](../../../../spec/spezifikation.md#spec-extract-001--import-extraktion):
    Python-Muster + Backend-Menge `{cpp, go, rust, kotlin, java, python}` + Bump).
 5. „fünf → sechs Sprachen"-Sweep: README (Sprach-Aufzählung), Benutzerhandbuch (§1/§4
-   `languages`-Enum + Python-Beispiel inkl. `resolution`-Rezept §3.3 + Historie-Zeile).
+   `languages`-Enum + Python-Beispiel inkl. `resolution`-Rezept §3.3 + Historie-Zeile),
+   `spec/architecture.md` ([ARC-003](../../../../spec/architecture.md)-Sprachliste — Review-R1-Nachtrag, slice-014-Präzedenz).
    **Nicht** [ADR-0002](../../adr/0002-text-heuristische-extraktion.md): `Accepted` ⇒
    immutable (AGENTS §3.5).
 6. `make gates`; **Multi-Linsen-Review** (Code · Vertrag/Spec · Test · Regelwerk)
@@ -140,18 +144,23 @@ Entscheid D).
 
 ## 5. Definition of Done
 
-- [ ] [AC-FA-EXTRACT-001](../../../../spec/lastenheft.md#ac-fa-extract-001--sprach-backends-für-die-import-extraktion)
-      um Python erweitert (Happy `import` + Boundary `from`/Alias + Out-of-Scope),
-      Bump 0.11.0 + Historie; [SPEC-EXTRACT-001](../../../../spec/spezifikation.md#spec-extract-001--import-extraktion)
-      nachgezogen (Muster + Backend-Menge).
-- [ ] `extract.go`: `pyImp`/`pyFrom` + Registry-Eintrag; `make arch-check` (Dogfooding) grün.
-- [ ] Tests: Happy/`from`/Alias + Mutanten-Boundary (§4.2) + Resolution-Integration (§4.3).
-- [ ] „fünf → sechs Sprachen"-Sweep vollständig (README, Benutzerhandbuch inkl.
-      `resolution`-Rezept — **ohne** [ADR-0002](../../adr/0002-text-heuristische-extraktion.md), immutable).
-- [ ] `make gates` grün; Multi-Linsen-Review bestanden (schriftlich → `docs/reviews/`);
-      Verifikation gegen DoD/Spec.
-- [ ] Closure: **reiner** `git mv` nach `done/` (AGENTS §3.3, getrennt von Inhalts-Edits);
-      **2 beobachtbare Kriterien** + **Lerneintrag**.
+- [x] [AC-FA-EXTRACT-001](../../../../spec/lastenheft.md#ac-fa-extract-001--sprach-backends-für-die-import-extraktion)
+      um Python erweitert (Happy `import` + Boundary `from`/Alias + Out-of-Scope inkl.
+      Subpaket-Form-Grenze), Bump 0.11.0 + Historie; [SPEC-EXTRACT-001](../../../../spec/spezifikation.md#spec-extract-001--import-extraktion)
+      nachgezogen (Muster + Backend-Menge + Python-nicht-C-gestrippt-Präzisierung).
+- [x] `extract.go`: `pyImp`/`pyFrom` + Registry-Eintrag + `prepSource` (Review-R1: kein
+      C-Strip für Python); `make arch-check` (Dogfooding) grün (0 Befunde).
+- [x] Tests: Happy/`from`/Alias + Mutanten-Boundary (§4.2, um Review-R1-Mutanten erweitert:
+      Anker/Zeichenklassen/Einrückung/Glob-String) + Resolution-Integration (§4.3, pinnt
+      `.`→`/` über Mehrsegment-Import).
+- [x] „fünf → sechs Sprachen"-Sweep vollständig (README, Benutzerhandbuch inkl.
+      `resolution`-Rezept, `spec/architecture.md` [ARC-003](../../../../spec/architecture.md) — **ohne**
+      [ADR-0002](../../adr/0002-text-heuristische-extraktion.md), immutable).
+- [x] `make gates` + `make ci` grün; Multi-Linsen-Review (4 Linsen) + Delta-Re-Review bestanden
+      ([Synthese](../../../reviews/2026-07-02-slice-020-python-backend.md)); Verifikation gegen
+      DoD/Spec (empirische Fixture-Gegenprobe).
+- [x] Closure: **reiner** `git mv` nach `done/` (AGENTS §3.3, getrennt von Inhalts-Edits);
+      **2 beobachtbare Kriterien** + **Lerneintrag** (§7).
 
 ## 6. Offen / Entscheidungen zur Abnahme
 
@@ -193,4 +202,37 @@ Entscheid D).
 
 ## 7. Closure-Notiz
 
-*(offen — nach Umsetzung.)*
+**Abschluss (2026-07-02).** slice-020 (welle-06 — zweites Sprach-Backend) umgesetzt und gate-belegt.
+
+- **Gate-Beleg:** `make gates` grün — `lint` 0 issues, alle Test-Pakete `ok`, `coverage-gate`
+  95,90 % (≥ 90 %), `arch-check` **0** (Dogfooding), `doc-check` 0,
+  gate-consistency/guard-selftest/record-gates ok; `make ci` (inkl. `image-test`) grün.
+- **Code:** `pyImp`/`pyFrom`-Regexes + Registry-Eintrag `"python"`; `prepSource` nimmt Python vom
+  C-Kommentar-Stripping aus (Review-R1-MAJOR: eine `/*`-Bytefolge in einem Python-String — z. B. das
+  Glob `"**/*.py"` — fraß sonst alle Folge-Imports, falsch-grün; empirisch reproduziert und
+  gegengeprobt). Auflösung unverändert über den gelieferten `fixed-root`-Modus
+  ([ADR-0016](../../adr/0016-resolution-sprach-parametrisch.md)) per `package_base`-Rezept.
+- **Review (4 Linsen + Delta):** Code · Vertrag/Spec · Test · Regelwerk, danach Delta-Re-Review des
+  Fix-Diffs — 5 × MAJOR, 5 × MINOR gefunden und gefixt (u. a. [ARC-003](../../../../spec/architecture.md)-Sweep-Lücke, staler
+  Handbuch-Header, ungepinnte `.`→`/`-Konvertierung). Kein BLOCKER.
+  Doc: [Review](../../../reviews/2026-07-02-slice-020-python-backend.md).
+- **Verifikation (gegen DoD/Spec):** alle DoD-Haken erfüllt; die Python-ACs
+  (Happy `import`/Boundary `from`/Boundary Alias) sind durch Tests gepinnt; Lastenheft/Spezifikation
+  0.11.0 konsistent; Benutzerhandbuch 1.13 dokumentiert Rezept + Grenzen (inkl. des
+  `resolution`-Nachtrags aus [slice-015](../done/slice-015-resolution-roots.md) und des
+  Exit-2-Currency-Fixes zu [slice-017](../done/slice-017-unbekannte-sprache-exit2.md)).
+- **2 beobachtbare Kriterien:** (1) `TestPythonFixedRootResolution` + Container-Gegenprobe — Python-Domäne
+  mit `GLOB = "**/*.py"`, `from myapp.adapters import db` und `import myapp.adapters.db` unter dem Rezept
+  ⇒ Exit 1 mit genau 2 × `core-impurity` (Zeile 2 + 3; pinnt Glob-String-Robustheit **und**
+  Mehrsegment-`.`→`/`). (2) `TestCheckLanguagesUnknown` — `languages: {ruby: …}` ⇒ Exit 2 mit
+  `unbekannte Sprache "ruby" (cpp|go|java|kotlin|python|rust)`; das gepinnte Meldungsformat beweist
+  `python` in der Backend-Menge.
+- **Lerneintrag (geschärfte Regel):** Ein neues Sprach-Backend reviewt auch die **geteilte
+  Vorverarbeitung**, nicht nur seine Regexes — das C-förmige `stripComments` lief unbedingt über alle
+  Sprachen und wurde erst durch das sechste Backend (andere Kommentar-/String-Syntax) zum
+  Falsch-grün-Kanal; Kommentar-Syntax ist eine **Sprach-Eigenschaft** (jetzt `prepSource`). Zweitens:
+  Sweep-Listen benennen die zählenden Stellen **explizit** („Architektur nur falls sie zählt" lud zum
+  Übersehen von [ARC-003](../../../../spec/architecture.md) ein). Der slice-014-Lerneintrag (Mutanten-Boundary-Tests) bestätigte sich
+  erneut: vier Linsen fanden fünf weitere überlebende Mutanten-Klassen.
+- welle-06 bleibt **offen** (Kandidaten C#/TypeScript, je mit eigenem Auflösungs-Modus per Folge-ADR);
+  slice-020 ist ihr zweites Inkrement.
