@@ -1,9 +1,8 @@
 # slice-021 — C#-Sprach-Backend (welle-06-sprach-backends)
 
-**Status:** in-progress — Umsetzung auf Basis der Empfehlungen A–E (§6) abgeschlossen;
-Multi-Linsen-Review (4 Linsen) + Fixes erledigt, Synthese
+**Status:** done (2026-07-02). Abnahme erteilt (Entscheide A–E gemäß Empfehlung, §6);
+Umsetzung + `make gates`/`make ci` + Multi-Linsen-Review (4 Linsen) + Fixes erledigt, Synthese
 [`docs/reviews/2026-07-02-slice-021-csharp-backend.md`](../../../reviews/2026-07-02-slice-021-csharp-backend.md).
-**Maintainer-Abnahme der Entscheide ausstehend** (Closure/`git mv`/Push erst nach Bestätigung).
 **Welle:** welle-06-sprach-backends (drittes Backend-Inkrement nach
 [slice-014](../done/slice-014-java-backend.md)/[slice-020](../done/slice-020-python-backend.md)).
 **Bezug:** erweitert [AC-FA-EXTRACT-001](../../../../spec/lastenheft.md#ac-fa-extract-001--sprach-backends-für-die-import-extraktion)
@@ -152,10 +151,14 @@ wird **nicht** in diesem Slice gebaut (§6 Entscheid D).
       Vier-Sprachen-Zählstelle in `harness/README.md` §Safety geheilt).
 - [x] `make gates` + `make ci` grün; Multi-Linsen-Review (4 Linsen) + Delta bestanden
       ([Synthese](../../../reviews/2026-07-02-slice-021-csharp-backend.md)).
-- [ ] **Maintainer-Abnahme der Entscheide A–E (§6)** — ausstehend.
-- [ ] Closure: reiner `git mv` nach `done/` (AGENTS §3.3); 2 beobachtbare Kriterien + Lerneintrag.
+- [x] **Maintainer-Abnahme der Entscheide A–E (§6)** — erteilt 2026-07-02 (Abnahme-Block §6).
+- [x] Closure: reiner `git mv` nach `done/` (AGENTS §3.3); 2 beobachtbare Kriterien + Lerneintrag (§7).
 
 ## 6. Offen / Entscheidungen zur Abnahme
+
+> **Abnahme (2026-07-02):** Entscheide A–E gemäß Empfehlung bestätigt (Maintainer-Wort,
+> nachträglich zur Empfehlungs-basierten Umsetzung — der Zwischenstand war als
+> „Abnahme ausstehend" deklariert, Closure/Push bis hierhin zurückgehalten).
 
 - **Entscheid A — Alias-`using`:** Ziel (rechte Seite) werten (`using Db = MyApp.X.Db;`
   → `MyApp.X.Db`; Empfehlung, Rust-Präzedenz `use x as y` → `x`) vs. Alias-Form gar
@@ -191,4 +194,36 @@ wird **nicht** in diesem Slice gebaut (§6 Entscheid D).
 
 ## 7. Closure-Notiz
 
-*(offen — nach Umsetzung.)*
+**Abschluss (2026-07-02).** slice-021 (welle-06 — drittes Sprach-Backend) umgesetzt, reviewt,
+abgenommen und gate-belegt.
+
+- **Gate-Beleg:** `make gates` grün — `lint` 0 issues, alle Test-Pakete `ok`, `coverage-gate`
+  96,00 % (≥ 90 %), `arch-check` **0** (Dogfooding), `doc-check` 67/0,
+  gate-consistency/guard-selftest/record-gates ok; `make ci` (inkl. `image-test` 4/4) grün.
+- **Code:** `csUsing`-Regex + Registry-Eintrag `"csharp"` (rein additiv; sechs Bestands-Backends
+  byte-identisch). Der Alias-Zweig matcht strukturell nur die echte Alias-Direktive (ein Token vor
+  `=`); das Pflicht-`;` direkt nach dem Namen schließt using-Statements/Declarations kategorisch
+  aus. C-Strip bleibt für C# an (`prepSource` — Lerneintrag [slice-020](../done/slice-020-python-backend.md)
+  angewandt und adversarisch bestätigt).
+- **Review (4 Linsen + Fixes):** Code-Linse ohne Befund; 1 MAJOR (ungepinnter `^`-Anker → 
+  String-/Mid-Line-Test) + 4 MINOR gefixt (Details:
+  [Synthese](../../../reviews/2026-07-02-slice-021-csharp-backend.md)). Kein BLOCKER.
+- **Prozess-Sonderfall dokumentiert:** Umsetzung lief nach dokumentierten Empfehlungen bei
+  ausstehender Abnahme (Timeout der Rückfrage); Closure/Push wurden zurückgehalten, der Zustand war
+  im Status deklariert; Abnahme nachträglich erteilt (§6-Block).
+- **2 beobachtbare Kriterien:** (1) `TestCsharpFixedRootResolution` + Container-Gegenprobe —
+  C#-Domäne mit `using MyApp.Adapters.Db;` + Alias `using Db2 = MyApp.Adapters.Db2;` unter dem
+  Rezept ⇒ Exit 1 mit genau 2 × `core-impurity` (Zeile 1 + 2), die using-Declaration
+  `using MyApp.Adapters.Db t = Get();` bleibt befundfrei (pinnt Alias-Ziel, Mehrsegment-`.`→`/`
+  **und** den `;`-Anker end-to-end). (2) `TestCheckLanguagesUnknown` —
+  `unbekannte Sprache "ruby" (cpp|csharp|go|java|kotlin|python|rust)`: das gepinnte Meldungsformat
+  beweist `csharp` in der Backend-Menge.
+- **Lerneintrag (geschärfte Regel):** Ein Integrationstest, der eine Negativ-Grenze „bewacht",
+  muss so konstruiert sein, dass der bewachte Mutant ihn **wirklich bricht** — die ursprüngliche
+  Fixture-Zeile `using var f = …` ließ den `;`-Kern-Mutanten durch, weil das Fehlsymbol `var` auf
+  keine Schicht auflöste (Befund T-3): Negativ-Zeilen so wählen, dass das Fehlsymbol auf eine
+  Schicht auflösen *würde*. Zweitens bewährt: bei ausstehender Abnahme ist das **Verzeichnis** die
+  autoritative Lifecycle-Quelle (Datei bleibt in `open/`), der Sonderzustand gehört explizit in die
+  Status-Zeile, und Closure/Push bleiben kategorisch zurückgehalten.
+- welle-06 bleibt **offen** (letzter Kandidat TypeScript — braucht den reservierten
+  `relative`-Modus per Folge-ADR); slice-021 ist ihr drittes Inkrement.
