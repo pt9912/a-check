@@ -1,6 +1,6 @@
 # Review — slice-021 C#-Sprach-Backend
 
-**Datum:** 2026-07-02 · **Slice:** [slice-021](../plan/planning/open/slice-021-csharp-backend.md) ·
+**Datum:** 2026-07-02 · **Slice:** [slice-021](../plan/planning/done/slice-021-csharp-backend.md) ·
 **Anforderung:** [AC-FA-EXTRACT-001](../../spec/lastenheft.md#ac-fa-extract-001--sprach-backends-für-die-import-extraktion)
 (Lastenheft/Spezifikation 0.12.0) · innerhalb [ADR-0002](../plan/adr/0002-text-heuristische-extraktion.md)
 (Extraktion) und [ADR-0016](../plan/adr/0016-resolution-sprach-parametrisch.md) (Auflösung via
