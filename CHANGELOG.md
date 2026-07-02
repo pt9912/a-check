@@ -39,9 +39,8 @@ Bringt das **Python-Backend** und den sprach-parametrischen **`resolution`-Block
 
 - **doc-check-Pin** (Schwester-Tool `d-check`) von v0.24.0 auf **v0.35.0** digest-gepinnt (`@sha256:9d7b23ac…`);
   Gate-Tooling, netzlos, a-checks aktive Module unverändert.
-- **Selbst-Pin** (`--print-mk`/`a-check.mk`/`cli.go`-`aCheckImage`): die Pin-Hebung auf den
-  **v0.5.0**-Digest folgt **nach** dem Release (Digest existiert erst nach dem CI-Build;
-  AC-QA-03, ADR-0004/ADR-0007). Bis dahin bleibt der v0.4.0-Digest (`@sha256:b0d6e33c…`) gepinnt.
+- **Selbst-Pin** (`--print-mk`/`a-check.mk`/`cli.go`-`aCheckImage`) auf den **v0.5.0**-Digest
+  `@sha256:81951e61…` gehoben (AC-QA-03, ADR-0004/ADR-0007).
 
 ## [0.4.0] - 2026-07-01
 
