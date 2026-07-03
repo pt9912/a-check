@@ -27,6 +27,14 @@ Bringt beides ins veröffentlichte Image.
   **leere** Kandidatenmenge (kein Geister-Match); `roots`/`package_base` bei `relative` →
   Exit 2; nur noch `namespace` reserviert.
 
+### Changed
+
+- **Selbst-Pin** (`--print-mk`/`a-check.mk`/`cli.go`-`aCheckImage`) auf den **v0.7.0**-Digest
+  `@sha256:41eb368e…` gehoben (AC-QA-03, ADR-0004/ADR-0007).
+- **`lateral-adapter`** prüft Sub-Einheit und `adapter_sink` auf dem gemäß `resolution`
+  **normalisierten Ziel-Kandidaten** statt am Roh-Symbol (Review-Fix slice-022; `path`-Modus
+  verhaltens-identisch — unter `resolution`-Modi `adapter_sink` als Pfad-Fragment schreiben).
+
 ## [0.6.0] - 2026-07-02
 
 Sprach-Backend seit `v0.5.0`; Lastenheft/Spezifikation 0.11.0 → 0.12.0.

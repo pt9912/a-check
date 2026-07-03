@@ -1,6 +1,6 @@
 # Benutzerhandbuch: a-check
 
-**Handbuch-Version:** 1.17 · **Software-Version:** 0.6.0 · **Stand:** 2026-07-03 ·
+**Handbuch-Version:** 1.18 · **Software-Version:** 0.7.0 · **Stand:** 2026-07-03 ·
 **Autor:** pt9912 (Maintainer)
 
 ---
@@ -433,3 +433,4 @@ und die [Spezifikation](../../spec/spezifikation.md); ein Überblick steht in de
 | 1.15 | 2026-07-02 | §1/§4 an Lastenheft 0.12.0: siebtes Sprach-Backend **C#** (`languages`-Schlüssel `csharp`; `using`-Direktiven inkl. `global`/`static`/Alias-Ziel, `using`-Statements nie gewertet); `resolution`-Absatz um das C#-Rezept + Namespace==Verzeichnis-Grenze (reservierter `namespace`-Modus) erweitert. Noch nicht im veröffentlichten Image (folgt mit dem nächsten Release). |
 | 1.16 | 2026-07-02 | Software-Version **0.6.0** (GHCR-Release `v0.6.0` veröffentlicht, digest-gepinnt `@sha256:b349a150…`) — C#-Backend jetzt im veröffentlichten Image; die 1.15-Verfügbarkeitsnotiz entfällt. |
 | 1.17 | 2026-07-03 | §1/§4 an Lastenheft 0.13.0: achtes Sprach-Backend **TypeScript** (`languages`-Schlüssel `typescript`; ES-Module-Importe/Re-Exports inkl. `import type` und mehrzeilig umbrochener Imports, Specifier in `'…'`/`"…"`) + neuer Auflösungs-Modus **`mode: relative`** (datei-relativ; Rezept + Warnung „`layers`-Globs verzeichnisbasiert halten"; Bare-Imports/tsconfig-Aliasse bleiben unaufgelöst). Noch nicht im veröffentlichten Image (folgt mit dem nächsten Release). |
+| 1.18 | 2026-07-03 | Software-Version **0.7.0** (GHCR-Release `v0.7.0` veröffentlicht, digest-gepinnt `@sha256:41eb368e…`) — TypeScript-Backend + `relative`-Modus jetzt im veröffentlichten Image; die 1.17-Verfügbarkeitsnotiz entfällt. |
