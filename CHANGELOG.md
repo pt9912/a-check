@@ -6,8 +6,11 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
+## [0.7.0] - 2026-07-03
+
 Lastenheft/Spezifikation 0.12.0 → 0.13.0: **TypeScript-Backend** plus der bislang
 reservierte **`relative`-Auflösungs-Modus** (ADR-0017, erweitert ADR-0016); slice-022.
+Bringt beides ins veröffentlichte Image.
 
 ### Added
 
