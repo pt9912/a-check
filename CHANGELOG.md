@@ -6,9 +6,11 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
+## [0.8.0] - 2026-07-03
+
 Spezifikation 0.13.0 → 0.14.0 (folgt dem Lastenheft-CR 0.14.0, **CR d-check-Pilot**,
 slice-023; ADR-0018): die drei Deltas, auf die d-check seine `arch-check`-Ablösung
-als Vorbedingung gestellt hat.
+als Vorbedingung gestellt hat — dieses Release entsperrt den dortigen Umbau.
 
 ### Added
 
