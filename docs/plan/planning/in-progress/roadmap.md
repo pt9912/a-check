@@ -44,7 +44,16 @@ Alle Gates real und grün (`make gates`; Dogfooding 0 Befunde).
 Lastenheft/Spezifikation 0.8.0) die letzte fehlende a-check-Fähigkeit — `tech`-Muster als opt-in
 RE2-Regex (`match: regex`), womit arch-check.shs Qt-**Regel E** (`Q[A-Za-z]`) ausdrückbar und
 `arch-check.sh` **vollständig** ersetzbar wird; mit **`v0.5.0`** (veröffentlicht, Digest-Re-Pin
-`@sha256:81951e61…`) ist diese Fähigkeit jetzt im Release — der b-cad-Umbau ist vollständig entgated. Als Release-/Tooling-Hygiene sind [slice-018](../open/slice-018-versions-register-pin-gate.md)
+`@sha256:81951e61…`) ist diese Fähigkeit jetzt im Release — der b-cad-Umbau ist vollständig entgated.
+**Pilot-Stand (2026-07-03):** b-cad hat seine zwei Struktur-Vorbedingungen geliefert (dortige
+slice-028/029: `services/geometry/`-Unterordner + `ui/command|view`-Richtungs-Split), und
+[slice-024](../done/slice-024-adapterseg-root-subeinheit.md) ([ADR-0019](../../adr/0019-adapterseg-root-subeinheit.md)
+`Accepted`, Lastenheft/Spez 0.15.0) hat die letzte a-check-Blockade getilgt (Root-Sub-Einheit/
+Blatt-Klassifikation — die Vollrichtungs-Config erzeugte 40 Falsch-Positive, jetzt verifiziert
+**0 Befunde** gegen `a-check:dev`). **Nächste Schritte:** v0.9.0-Cut (0.15.0 ins Image), dann
+Pilot-Schnitt in b-cad (verifizierte Vollrichtungs-Config + `a-check.mk`, `arch-check.sh` auf den
+P-Rest schrumpfen — dlopen-Aufrufmuster + feine P2-Allowlist) ⇒ **Meilenstein M3**.
+Als Release-/Tooling-Hygiene sind [slice-018](../open/slice-018-versions-register-pin-gate.md)
 (Versions-Register `version.md` + `versions`/`pins`-Gate, nachdem ein stale README-Pin nur per
 Zufalls-Audit auffiel) und [slice-019](../open/slice-019-dcheck-mk-print-mk-angleichung.md)
 (`d-check.mk` an das v0.35.0-`--print-mk` angleichen) vorgemerkt.
