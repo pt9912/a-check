@@ -31,6 +31,11 @@ als Vorbedingung gestellt hat — dieses Release entsperrt den dortigen Umbau.
   Exit 2; ohne Block byte-identisch. Evidenz: d-check (`**/*_test.go`) + m-trace
   (`node_modules/` je Workspace, `dist/`, `*.d.ts`-Suffix-Falle).
 
+### Changed
+
+- **Selbst-Pin** (`--print-mk`/`a-check.mk`/`cli.go`-`aCheckImage`) auf den **v0.8.0**-Digest
+  `@sha256:a1c9c4d6…` gehoben (AC-QA-03, ADR-0004/ADR-0007).
+
 ## [0.7.0] - 2026-07-03
 
 Lastenheft/Spezifikation 0.12.0 → 0.13.0: **TypeScript-Backend** plus der bislang

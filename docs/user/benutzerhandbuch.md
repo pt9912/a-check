@@ -1,6 +1,6 @@
 # Benutzerhandbuch: a-check
 
-**Handbuch-Version:** 1.19 · **Software-Version:** 0.7.0 · **Stand:** 2026-07-03 ·
+**Handbuch-Version:** 1.20 · **Software-Version:** 0.8.0 · **Stand:** 2026-07-03 ·
 **Autor:** pt9912 (Maintainer)
 
 ---
@@ -464,3 +464,4 @@ und die [Spezifikation](../../spec/spezifikation.md); ein Überblick steht in de
 | 1.17 | 2026-07-03 | §1/§4 an Lastenheft 0.13.0: achtes Sprach-Backend **TypeScript** (`languages`-Schlüssel `typescript`; ES-Module-Importe/Re-Exports inkl. `import type` und mehrzeilig umbrochener Imports, Specifier in `'…'`/`"…"`) + neuer Auflösungs-Modus **`mode: relative`** (datei-relativ; Rezept + Warnung „`layers`-Globs verzeichnisbasiert halten"; Bare-Imports/tsconfig-Aliasse bleiben unaufgelöst). Noch nicht im veröffentlichten Image (folgt mit dem nächsten Release). |
 | 1.18 | 2026-07-03 | Software-Version **0.7.0** (GHCR-Release `v0.7.0` veröffentlicht, digest-gepinnt `@sha256:41eb368e…`) — TypeScript-Backend + `relative`-Modus jetzt im veröffentlichten Image; die 1.17-Verfügbarkeitsnotiz entfällt. |
 | 1.19 | 2026-07-03 | §4 an Lastenheft 0.14.0 (CR d-check-Pilot): `tech.adapter` auch als Pfad-**Liste** (Symbol in jedem gelisteten Adapter erlaubt) + `composition_root: allow\|forbid` je `tech`-Eintrag + neuer Abschnitt „Dateien vom Scan ausnehmen (`exclude`)" (Top-Level-Datei-Globs vor der Extraktion; `.d.ts`-Hinweis). Noch nicht im veröffentlichten Image (folgt mit dem nächsten Release). |
+| 1.20 | 2026-07-03 | Software-Version **0.8.0** (GHCR-Release `v0.8.0` veröffentlicht, digest-gepinnt `@sha256:a1c9c4d6…`) — d-check-Pilot-Deltas (`tech.adapter`-Liste, `composition_root: allow\|forbid`, `exclude`) jetzt im veröffentlichten Image; die 1.19-Verfügbarkeitsnotiz entfällt. |
