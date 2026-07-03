@@ -43,18 +43,26 @@ Sprach-Map, Sprach-Threading und `mode`-Diskriminator gelten unverändert):
 
 1. **`mode: relative` wird gültig** (dritter Modus neben `path`/`fixed-root`); `namespace`
    bleibt als einziger Wert reserviert → Exit 2.
-2. **Auflösungs-Semantik:** Nur Specifier mit führendem `./` oder `../` werden aufgelöst —
-   lexikalische Normalisierung von `dir(Quelldatei) + "/" + Specifier` (Slash-Pfade,
-   `path.Clean`-Semantik). Das Ergebnis ist der wurzel-relative Kandidat für den bestehenden
-   Glob-Präfix-Match. **Endungs-agnostisch:** der Match läuft über Layer-Glob-Präfixe auf
-   Segmentgrenzen; ob `./db` die Datei `db.ts` oder das Verzeichnis `db/` meint, ändert den
-   Ziel-Layer nicht.
-3. **Nicht-relative Specifier** (Bare-Imports wie `react`, `fs`) bleiben unter `mode: relative`
-   **unaufgelöst** → kein Ziel-Layer → keine schicht-basierte Regel; `tech`-Muster greifen
-   unabhängig am Roh-Symbol. tsconfig-`paths`/`baseUrl`-Aliasse: Re-Evaluierungs-Trigger, kein
-   Teil dieses ADR.
-4. **Wurzel-Escape:** normalisiert ein Specifier über die Scan-Wurzel hinaus (führendes `..`
-   nach der Normalisierung), bleibt das Symbol unaufgelöst — ausgewiesene Grenze
+2. **Auflösungs-Semantik:** Ein Specifier ist **relativ**, wenn er `.` oder `..` ist oder mit
+   `./` bzw. `../` beginnt (Barrel-Import `from '.'` inklusive). Nur relative Specifier werden
+   aufgelöst — lexikalische Normalisierung von `dir(Quelldatei) + "/" + Specifier`
+   (Slash-Pfade, `path.Clean`-Semantik). Das Ergebnis ist der wurzel-relative Kandidat für den
+   bestehenden Glob-Präfix-Match. **Endungs-agnostisch:** der Match läuft über
+   Layer-Glob-Präfixe auf Segmentgrenzen; ob `./db` die Datei `db.ts`, `db.js`
+   (NodeNext-Schreibweise) oder das Verzeichnis `db/` meint, ändert den Ziel-Layer nicht —
+   **solange** der Glob-Präfix oberhalb der Dateiebene endet (verzeichnisbasierte
+   `layers`-Globs); bei datei-tiefen Globs kippt eine Specifier-Endung den Match
+   (dokumentierte Grenze).
+3. **Nicht-relative Specifier** (Bare-Imports wie `react`, `fs`, `@actions/core`) liefern
+   unter `mode: relative` die **leere Kandidatenmenge** — das Roh-Symbol wird ausdrücklich
+   **nicht** als Pfad-Kandidat weitergereicht (anders als der `path`-Default): sonst matchte
+   `@actions/core` auf Segmentgrenze gegen einen `core/**`-Glob — ein Geister-Befund. Kein
+   Ziel-Layer → keine schicht-basierte Regel; `tech`-Muster greifen unabhängig am Roh-Symbol.
+   tsconfig-`paths`/`baseUrl`-Aliasse: Re-Evaluierungs-Trigger, kein Teil dieses ADR.
+4. **Wurzel-Escape:** behält ein Specifier **nach** der Normalisierung ein führendes `..`
+   (Beispiel: `../../../x` aus `src/core/`; dagegen normalisiert `../../x` von dort auf `x` —
+   exakt Wurzelebene, aufgelöst), liefert er ebenfalls die leere Kandidatenmenge —
+   ausgewiesene Grenze
    ([AC-QA-02](../../../spec/lastenheft.md#ac-qa-02--hermetik-und-ehrliche-heuristik-grenze)),
    kein Fehler.
 5. **Quellpfad-Threading:** `targetLayer` erhält zusätzlich den Pfad der importierenden Datei
@@ -81,10 +89,12 @@ Sprach-Map, Sprach-Threading und `mode`-Diskriminator gelten unverändert):
 
 ## Fitness Function
 
-- `make test`: `./`/`../`-Auflösung inkl. `..`-Normalisierung über Segmentgrenzen;
-  Wurzel-Escape → unaufgelöst; Bare-Import → unaufgelöst (`tech` greift am Roh-Symbol);
-  Mono-Repo Go+TypeScript (je eigener `mode`); `relative` mit `roots`/`package_base` → Exit 2;
-  `namespace` weiterhin Exit 2.
+- `make test`: `./`/`../`-Auflösung inkl. `..`-Normalisierung über Segmentgrenzen und
+  Barrel-`.`; Grenz-Testpaar `../../x` (exakt Wurzel, aufgelöst) vs. `../../../x` (Escape →
+  leer); **adversarisch** `@actions/core` gegen Layer-Glob `core/**` → leer, kein
+  Geister-Befund (pinnt die Leere-Kandidatenmenge-Semantik gegen Roh-Durchreichung);
+  Bare-Import → leer (`tech` greift am Roh-Symbol); Mono-Repo Go+TypeScript (je eigener
+  `mode`); `relative` mit `roots`/`package_base` → Exit 2; `namespace` weiterhin Exit 2.
 - `make arch-check` (Dogfooding, [AC-QA-02](../../../spec/lastenheft.md#ac-qa-02--hermetik-und-ehrliche-heuristik-grenze)):
   unverändert 0 (a-check deklariert kein `resolution` → `path`).
 
@@ -102,3 +112,4 @@ Sprach-Map, Sprach-Threading und `mode`-Diskriminator gelten unverändert):
 | Datum | Ereignis |
 |---|---|
 | 2026-07-03 | Proposed — Entwurf mit [slice-022](../planning/open/slice-022-typescript-backend.md); Sign-off Auftraggeber ausstehend. |
+| 2026-07-03 | Entwurf nach adversarischem Review geschärft: leere Kandidatenmenge statt Roh-Durchreichung (Geister-Match `@actions/core`↔`core/**`), Barrel-`.`/`..` als relativ, Escape scharf definiert (führendes `..` nach Normalisierung), Endungs-Agnostik an verzeichnisbasierte Globs gebunden. |
