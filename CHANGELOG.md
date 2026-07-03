@@ -6,6 +6,21 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
+Lastenheft/Spezifikation 0.14.0 → 0.15.0 (slice-024; ADR-0019, b-cad-Pilot-Evidenz).
+
+### Changed
+
+- **`AC-FA-RULE-002` (0.14.0→0.15.0):** `lateral-adapter`-Sub-Einheiten präzisiert —
+  **Blatt-Klassifikation**: ein datei-förmiges Blatt (`.`) direkt im Layer-**Root**
+  gehört zur Root-Sub-Einheit (Sub-Einheiten sind **Verzeichnisse**, keine
+  Dateinamen), ein verzeichnis-förmiges Blatt (Go-Paket-Pfad) **ist** die
+  Sub-Einheit; Root↔Root same-layer meldet nicht mehr, Root↔Unterverzeichnis,
+  Cross-Paket und Cross-Layer unverändert kategorisch. Bewusste Gate-Lockerung per
+  ADR-0019: die b-cad-Vollrichtungs-Config erzeugte 40 Falsch-Positive der Klasse
+  `x.cpp → x.h` bei 0 echten Verstößen; pro-Adapter-Layer (Voraussetzung der
+  `direction`-Modellierung) sind damit falsch-positiv-frei. Endungslose
+  Datei-Specifier (TS `./b`) bleiben dokumentierte Grenze (`AC-QA-02`).
+
 ## [0.8.0] - 2026-07-03
 
 Spezifikation 0.13.0 → 0.14.0 (folgt dem Lastenheft-CR 0.14.0, **CR d-check-Pilot**,

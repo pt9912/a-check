@@ -319,6 +319,36 @@ resolution:
 	}
 }
 
+func TestFlatAdapterRootSubunit(t *testing.T) { // AC-FA-RULE-002 0.15.0 / ADR-0019: flacher Adapter (b-cad-Form) — x.cpp->x.h kein lateral, Cross-Layer bleibt
+	cfg := `version: 1
+languages:
+  cpp: ["**/*.cpp", "**/*.h"]
+layers:
+  io: {globs: ["adapters/io/**"], role: adapter}
+  ui: {globs: ["adapters/ui/**"], role: adapter}
+edges:
+  - {from: io, to: io}
+`
+	dir := writeRepo(t, map[string]string{
+		".a-check.yml": cfg,
+		// Zeile 1: eigener Header (Root<->Root) -> KEIN Befund (ADR-0019);
+		// Zeile 2: fremder Adapter -> lateral-adapter (kategorisch, unveraendert).
+		"adapters/io/dxf_reader.cpp": "#include \"adapters/io/dxf_reader.h\"\n#include \"adapters/ui/window.h\"\n",
+		"adapters/io/dxf_reader.h":   "#pragma once\n",
+		"adapters/ui/window.h":       "#pragma once\n",
+	})
+	var out, errb bytes.Buffer
+	if code := cli.Run([]string{dir}, &out, &errb); code != 1 {
+		t.Fatalf("erwarte Exit 1 (genau der Cross-Layer-Befund), got %d (out=%q err=%q)", code, out.String(), errb.String())
+	}
+	if got := strings.Count(out.String(), "lateral-adapter"); got != 1 {
+		t.Fatalf("erwarte genau 1 lateral-adapter (Cross-Layer; Root<->Root keiner), got %d: %q", got, out.String())
+	}
+	if !strings.Contains(out.String(), "adapters/ui/window.h") || strings.Contains(out.String(), "dxf_reader.h") {
+		t.Fatalf("nur der ui-Import darf melden, nie der eigene Header: %q", out.String())
+	}
+}
+
 func TestDcheckPilotDeltas(t *testing.T) { // slice-023 end-to-end (AC-FA-RULE-003/AC-FA-CONF-001 0.14.0): adapter-Liste + composition_root: forbid + exclude
 	cfg := `version: 1
 languages:

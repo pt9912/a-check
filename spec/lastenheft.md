@@ -1,6 +1,6 @@
 # Lastenheft — a-check
 
-**Version:** 0.14.0
+**Version:** 0.15.0
 
 **Status:** Draft
 
@@ -75,14 +75,28 @@ hebt den Befund nicht auf.
 **Beschreibung:** Ein Adapter importiert keinen anderen Adapter, außer einer
 in der Config benannten gemeinsamen Senke (z. B. `driver-common`). Erfasst die
 in `d-migrate` real existierende, heute nur per Review erzwungene Regel.
+Innerhalb einer Schicht werden Adapter-Sub-Einheiten relativ zum
+Schicht-Glob-Präfix unterschieden; enthält der Pfad-Rest nach dem Präfix
+**kein weiteres Verzeichnis**, entscheidet die **Blatt-Klassifikation**: ein
+**datei-förmiges** Blatt (letztes Segment enthält `.`) gehört zur
+**Root-Sub-Einheit `''`** — Sub-Einheiten sind, wie Schichten, Verzeichnisse,
+keine Dateinamen —, ein **verzeichnis-förmiges** Blatt (ohne `.`, z. B. ein
+Go-Paket-Pfad) **ist** die Sub-Einheit. Importe zwischen Root-Dateien
+derselben Schicht sind damit keine lateralen Kanten; Root ↔ Unterverzeichnis
+und verschiedene Unterverzeichnisse bleiben lateral,
+Cross-Layer-Adapter-Importe bleiben kategorisch.
 
 **Akzeptanzkriterien:**
 
 - **Happy:** Given ein Adapter ohne Fremd-Adapter-Import, when `a-check` läuft, then kein Befund.
 - **Boundary:** Given ein Adapter, der die konfigurierte gemeinsame Senke importiert, when `a-check` läuft, then kein Befund.
 - **Negative:** Given Adapter A importiert Adapter B (nicht die Senke), when `a-check` läuft, then ein Befund (`lateral-adapter`) und Exit-Code 1.
+- **Happy (Root-Sub-Einheit):** Given zwei Dateien direkt im Root desselben Adapter-Layers (`x.cpp` importiert `x.h`), when `a-check` läuft, then **kein** `lateral-adapter`.
+- **Boundary (Root ↔ Unterverzeichnis):** Given eine Root-Datei, die eine Datei eines Unterverzeichnisses derselben Schicht importiert (oder umgekehrt), when `a-check` läuft, then ein Befund (`lateral-adapter`) — verschiedene Sub-Einheiten.
+- **Negative (Bestand):** Given Importe zwischen zwei Unterverzeichnissen derselben Schicht oder zwischen zwei Adapter-Layern, when `a-check` läuft, then `lateral-adapter` wie bisher (kategorisch; `adapter_sink`-Ausnahme unverändert).
+- **Boundary (Verzeichnis-Blatt/Go-Paket):** Given ein externes Go-Testpaket, das sein **eigenes** Paket importiert (Kandidaten-Blatt = eigenes Sub-Einheiten-Verzeichnis), when `a-check` läuft, then kein Befund; Given ein Import eines **fremden** Paket-Verzeichnisses derselben Schicht, then `lateral-adapter` (die Blatt-Klassifikation blendet die Cross-Paket-Erkennung nicht).
 
-**Out-of-Scope:** Zyklen-Erkennung über drei oder mehr Adapter (eigenes Re-Eval).
+**Out-of-Scope:** Zyklen-Erkennung über drei oder mehr Adapter (eigenes Re-Eval); datei-granulare Sub-Einheiten als Opt-in (Re-Eval); endungslose Datei-Specifier (z. B. TypeScript `./b` ohne Endung) sind textuell nicht von Verzeichnis-Blättern unterscheidbar und gelten als Sub-Einheit — dokumentierte Heuristik-Grenze (`AC-QA-02`).
 
 ### AC-FA-RULE-003 — Tech-Kapselung (Regel `tech-leak`)
 
@@ -408,3 +422,4 @@ Konsumenten-Repos).
 | 0.14.0 | 2026-07-03 | **CR d-check-Pilot (1/3)** — `AC-FA-RULE-003`/`AC-FA-CONF-001`: `tech.adapter` auch als Pfad-**Liste** (Symbol in jedem gelisteten Adapter erlaubt; leere Liste/leerer Eintrag → Exit 2); nicht-leerer Skalar bleibt gültig (rückwärtskompatibel), leerer/fehlender `adapter` → Exit 2 (fail-closed statt vormals stillem Never-Leak-Eintrag, Umsetzungs-Review). Anlass: d-check erlaubt `yaml` in **zwei** Adaptern (Config **und** Report) — mit Ein-Pattern-ein-Adapter nicht ausdrückbar (Erst-Treffer-Präzedenz). welle-11, slice-023. |
 | 0.14.0 | 2026-07-03 | **CR d-check-Pilot (2/3)** — `AC-FA-RULE-003`/`AC-FA-CONF-001`: die Composition-Root-Ausnahme der `tech`-Kapselung wird **pro Eintrag steuerbar** (`composition_root: allow\|forbid`, Default `allow` = bisheriges Verhalten); `forbid` betrifft nur `tech-leak`, die Schicht-Regel-Ausnahme der Composition Root bleibt. Anlass: d-check verbietet `net/http`/`yaml` auch in CLI/`cmd` — die Total-Ausnahme kostete dort die Deckung. welle-11, slice-023. |
 | 0.14.0 | 2026-07-03 | **CR d-check-Pilot (3/3)** — `AC-FA-CONF-001`: optionaler **`exclude`**-Block (Datei-Globs) nimmt Dateien vor der Extraktion vom Scan aus (explizites Gegenstück zur negations-freien Glob-Engine); ohne Block byte-identisch. Anlass: der Scanner erfasst `*_test.go`, d-checks abgelöstes `go list`-Gate prüfte nur Nicht-Test-Imports — ohne Ausschluss ist der saubere Baum dort rot. welle-11, slice-023. |
+| 0.15.0 | 2026-07-03 | `AC-FA-RULE-002`: Sub-Einheiten-Grenzfall präzisiert — Blatt-Klassifikation: ein **datei-förmiges** Blatt (`.`) direkt im Layer-Root gehört zur **Root-Sub-Einheit `''`** (Sub-Einheiten sind Verzeichnisse, keine Dateinamen), ein **verzeichnis-förmiges** Blatt (Go-Paket-Pfad) **ist** die Sub-Einheit; Root↔Root same-layer ist kein `lateral-adapter` mehr, Root↔Unterverzeichnis/Cross-Layer/Cross-Paket unverändert. Bewusste Gate-Lockerung per ADR; Anlass: b-cad-Pilot — die Richtungs-Modellierung (pro-Adapter-Layer) erzeugte 40 Falsch-Positive der Klasse `x.cpp → x.h` bei 0 echten Verstößen (welle-05/M3-Pilot, slice-024). |

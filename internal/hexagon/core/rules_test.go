@@ -1030,6 +1030,89 @@ func TestMonoRepoGoTypescriptModes(t *testing.T) { // ADR-0017: Mono-Repo — Go
 	}
 }
 
+// --- slice-024 (ADR-0019): Root-Sub-Einheit — Dateien direkt im Layer-Root ---
+
+func TestRootSubunitNoLateral(t *testing.T) { // ADR-0019: Root<->Root same-layer ist KEIN lateral (bricht am Alt-Code: Dateinamen-Sub-Einheiten)
+	m := Model{Layers: []Layer{{Name: "io", Globs: []string{"adapters/io/**"}, Role: "adapter"}}}
+	files := []FileImports{{Path: "adapters/io/dxf_reader.cpp", Layer: "io",
+		Imports: []Import{{Symbol: "adapters/io/dxf_reader.h", Line: 1}}}}
+	if fs := Evaluate(m, files); len(fs) != 0 {
+		t.Fatalf("Root-Datei importiert Root-Datei derselben Schicht (x.cpp -> x.h) — Root-Sub-Einheit, kein lateral, got %v", fs)
+	}
+}
+
+func TestRootSubunitVsSubdirLateral(t *testing.T) { // ADR-0019: Root <-> Unterverzeichnis bleibt lateral (beide Richtungen)
+	m := Model{Layers: []Layer{{Name: "io", Globs: []string{"adapters/io/**"}, Role: "adapter"}}}
+	rootToSub := []FileImports{{Path: "adapters/io/root.cpp", Layer: "io",
+		Imports: []Import{{Symbol: "adapters/io/dxf/reader.h", Line: 1}}}}
+	if fs := Evaluate(m, rootToSub); len(fs) != 1 || fs[0].Rule != "lateral-adapter" {
+		t.Fatalf("Root -> Unterverzeichnis muss lateral bleiben, got %v", fs)
+	}
+	subToRoot := []FileImports{{Path: "adapters/io/dxf/reader.cpp", Layer: "io",
+		Imports: []Import{{Symbol: "adapters/io/root.h", Line: 1}}}}
+	if fs := Evaluate(m, subToRoot); len(fs) != 1 || fs[0].Rule != "lateral-adapter" {
+		t.Fatalf("Unterverzeichnis -> Root muss lateral bleiben, got %v", fs)
+	}
+}
+
+func TestRootSubunitUniformOverResolution(t *testing.T) { // ADR-0019: Root-Regel gilt auf dem KANDIDATEN (relative-Modus, ADR-0017)
+	m := Model{
+		Layers:     []Layer{{Name: "io", Globs: []string{"src/adapters/io/**"}, Role: "adapter"}},
+		Resolution: map[string]ResolutionConfig{"typescript": {Mode: "relative"}},
+	}
+	// ./b.js: datei-foermiges Blatt, beide Root -> kein lateral; ./sub/x -> lateral.
+	same := []FileImports{{Path: "src/adapters/io/a.ts", Layer: "io", Language: "typescript",
+		Imports: []Import{{Symbol: "./b.js", Line: 1}}}}
+	if fs := Evaluate(m, same); len(fs) != 0 {
+		t.Fatalf("relative Root->Root (datei-foermig) muss befundfrei sein, got %v", fs)
+	}
+	cross := []FileImports{{Path: "src/adapters/io/a.ts", Layer: "io", Language: "typescript",
+		Imports: []Import{{Symbol: "./sub/x", Line: 1}}}}
+	if fs := Evaluate(m, cross); len(fs) != 1 || fs[0].Rule != "lateral-adapter" {
+		t.Fatalf("relative Root->Unterverzeichnis muss lateral sein, got %v", fs)
+	}
+	// Dokumentierte Grenze (ADR-0019 Re-Eval): endungsloses ./b ist verzeichnis-
+	// foermig (nicht von einem Go-Paket-Blatt unterscheidbar) -> gilt als
+	// Sub-Einheit und meldet aus einer Root-Datei heraus lateral.
+	boundary := []FileImports{{Path: "src/adapters/io/a.ts", Layer: "io", Language: "typescript",
+		Imports: []Import{{Symbol: "./b", Line: 1}}}}
+	if fs := Evaluate(m, boundary); len(fs) != 1 || fs[0].Rule != "lateral-adapter" {
+		t.Fatalf("endungsloser Specifier ist die dokumentierte Heuristik-Grenze (pinnt den Ist-Stand), got %v", fs)
+	}
+}
+
+func TestGoPackageLeafIsSubunit(t *testing.T) { // ADR-0019 Entscheid D (Dogfooding-Fund): Go-Paket-Blatt (ohne '.') IST die Sub-Einheit
+	m := Model{Layers: []Layer{{Name: "adapters", Globs: []string{"internal/adapter/driven/**"}, Role: "adapter"}}}
+	// Externes Testpaket importiert das EIGENE Paket (report_test.go -> .../report): kein lateral.
+	own := []FileImports{{Path: "internal/adapter/driven/report/report_test.go", Layer: "adapters",
+		Imports: []Import{{Symbol: "github.com/pt9912/a-check/internal/adapter/driven/report", Line: 8}}}}
+	if fs := Evaluate(m, own); len(fs) != 0 {
+		t.Fatalf("Eigen-Paket-Import (Verzeichnis-Blatt == eigene Sub-Einheit) darf kein lateral sein, got %v", fs)
+	}
+	// Fremd-Paket-Import bleibt lateral — ein Root-Blatt haette die Erkennung geblendet.
+	cross := []FileImports{{Path: "internal/adapter/driven/config/config.go", Layer: "adapters",
+		Imports: []Import{{Symbol: "github.com/pt9912/a-check/internal/adapter/driven/extract", Line: 3}}}}
+	if fs := Evaluate(m, cross); len(fs) != 1 || fs[0].Rule != "lateral-adapter" {
+		t.Fatalf("Fremd-Paket-Import (Verzeichnis-Blatt anderer Sub-Einheit) muss lateral bleiben, got %v", fs)
+	}
+}
+
+func TestAdapterSegNoMatchStaysEmpty(t *testing.T) { // ADR-0019 Entscheid C/D: Nicht-Match und datei-foermiges Root-Blatt -> ''; Verzeichnis-Blatt -> Sub-Einheit
+	layer := Layer{Name: "io", Globs: []string{"adapters/io/**"}}
+	if got := adapterSeg("voellig/fremd/x.h", layer); got != "" {
+		t.Fatalf("Nicht-Match muss '' bleiben (Alt-Verhalten, faellt mit Root zusammen), got %q", got)
+	}
+	if got := adapterSeg("adapters/io/root.h", layer); got != "" {
+		t.Fatalf("datei-foermiges Root-Blatt muss Sub-Einheit '' haben (ADR-0019), got %q", got)
+	}
+	if got := adapterSeg("adapters/io/dxf/reader.h", layer); got != "dxf" {
+		t.Fatalf("Unterverzeichnis bleibt die Sub-Einheit, got %q", got)
+	}
+	if got := adapterSeg("adapters/io/pkg", layer); got != "pkg" {
+		t.Fatalf("verzeichnis-foermiges Blatt (ohne '.') IST die Sub-Einheit (Go-Paket-Fall, Entscheid D), got %q", got)
+	}
+}
+
 func TestRelativeIntraSubunitNoLateral(t *testing.T) { // ADR-0017 (Review-R1 C-1): Sub-Einheit wird auf dem KANDIDATEN bestimmt, nicht am Roh-Specifier
 	m := Model{
 		Layers:     []Layer{{Name: "adapters", Globs: []string{"src/adapters/**"}, Role: "adapter"}},

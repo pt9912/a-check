@@ -106,6 +106,19 @@ jede Aenderung an Cross-Layer-lateral oder adapter_sink.
 
 ## 6. Offen / Entscheidungen zur Abnahme
 
+> **Abnahme (2026-07-03):** Entscheide A–C gemäß Empfehlung bestätigt (Maintainer-Wort).
+> **Entscheid D (Umsetzungs-Fund, ausstehend):** Das Dogfooding deckte auf, dass die reine
+> Root-Regel **Go-Paket-Blätter** falsch behandelt — `report_test.go` (externes Testpaket)
+> importiert sein eigenes Paket `…/driven/report`: der Kandidat endet auf dem
+> Paket-**Verzeichnis**, die Root-Deutung machte daraus einen neuen Falsch-Positiv und
+> hätte zugleich Cross-Paket-Lateral in Go-Repos geblendet. Umgesetzt per dokumentierter
+> Empfehlung: **Blatt-Klassifikation** — datei-förmiges Blatt (`.`) → Root `''`,
+> verzeichnis-förmiges Blatt → ist die Sub-Einheit; endungslose Datei-Specifier
+> (TS `./b`) als dokumentierte [AC-QA-02](../../../../spec/lastenheft.md#ac-qa-02--hermetik-und-ehrliche-heuristik-grenze)-Grenze
+> + [ADR-0019](../../adr/0019-adapterseg-root-subeinheit.md)-Re-Eval-Trigger.
+> ADR bleibt `Proposed` bis D abgenommen ist (Lerneintrag slice-023 angewandt:
+> Alt-Code-Semantik erst am Dogfooding verifiziert, Abweichung deklariert statt still).
+
 - **Entscheid A — Root-Sub-Einheit `''` als Default (kein Opt-in):** Die Datei-Ebene war nie
   eine Architektur-Aussage; ein Schalter würde den Degenerat-Fall konservieren. *Empfehlung:
   Default, Opt-in-Datei-Granularität nur als Re-Eval-Trigger im ADR.*

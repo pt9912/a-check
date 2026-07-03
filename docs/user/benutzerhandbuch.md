@@ -1,6 +1,6 @@
 # Benutzerhandbuch: a-check
 
-**Handbuch-Version:** 1.21 · **Software-Version:** 0.8.0 · **Stand:** 2026-07-03 ·
+**Handbuch-Version:** 1.22 · **Software-Version:** 0.8.0 · **Stand:** 2026-07-03 ·
 **Autor:** pt9912 (Maintainer)
 
 ---
@@ -436,6 +436,7 @@ siehe „Dateien vom Scan ausnehmen" in Abschnitt 4.
 - **Rolle (`role`):** die Funktion einer Schicht (`domain`/`app`/`port`/`adapter`), die bestimmt, welche Reinheits-Regel greift — explizit per `role:` oder aus dem Schicht-Namen abgeleitet (Abschnitt 4).
 - **Kante (`edges`):** eine erlaubte gerichtete Abhängigkeit zwischen zwei Schichten (`from` → `to`).
 - **`adapter_sink`:** eine gemeinsame Senke, die alle Adapter importieren dürfen (Ausnahme von `lateral-adapter`).
+- **Sub-Einheit:** ein Unterverzeichnis innerhalb einer Adapter-Schicht — `lateral-adapter` trennt Sub-Einheiten, nie Dateinamen; Dateien direkt im Schicht-Root bilden eine gemeinsame Root-Einheit (eigene `.cpp`/`.h`-Paare melden nicht).
 - **`forbidden_constructs`:** je Schicht konfigurierte verbotene Text-Muster (für `port-impurity`).
 - **Befund:** eine gemeldete Regelverletzung (Datei, Zeile, Regel, Meldung).
 - **`core-impurity` / `app-impurity` / `lateral-adapter` / `tech-leak` / `port-impurity` / `port-direction-mismatch` / `wrong-direction`:** die sieben geprüften Regeln (Abschnitt 3.4).
@@ -475,3 +476,4 @@ und die [Spezifikation](../../spec/spezifikation.md); ein Überblick steht in de
 | 1.19 | 2026-07-03 | §4 an Lastenheft 0.14.0 (CR d-check-Pilot): `tech.adapter` auch als Pfad-**Liste** (Symbol in jedem gelisteten Adapter erlaubt) + `composition_root: allow\|forbid` je `tech`-Eintrag + neuer Abschnitt „Dateien vom Scan ausnehmen (`exclude`)" (Top-Level-Datei-Globs vor der Extraktion; `.d.ts`-Hinweis). Noch nicht im veröffentlichten Image (folgt mit dem nächsten Release). |
 | 1.20 | 2026-07-03 | Software-Version **0.8.0** (GHCR-Release `v0.8.0` veröffentlicht, digest-gepinnt `@sha256:a1c9c4d6…`) — d-check-Pilot-Deltas (`tech.adapter`-Liste, `composition_root: allow\|forbid`, `exclude`) jetzt im veröffentlichten Image; die 1.19-Verfügbarkeitsnotiz entfällt. |
 | 1.21 | 2026-07-03 | 0.14.0-Nachzug außerhalb §4: Fehlerbehebung „findet nichts" um die `exclude`-Falle (zu breite Globs) ergänzt; FAQ-Eintrag „Tests/`node_modules`/Generat ausnehmen"; Glossar um `exclude` + `composition_root: forbid`-Hinweis. |
+| 1.22 | 2026-07-03 | An Lastenheft 0.15.0: Glossar-Eintrag **Sub-Einheit** — `lateral-adapter` trennt Unterverzeichnisse, nie Dateinamen; Dateien direkt im Schicht-Root bilden eine gemeinsame Root-Einheit (eigene `.cpp`/`.h`-Paare in flachen Adaptern melden nicht mehr). Noch nicht im veröffentlichten Image (folgt mit dem nächsten Release). |

@@ -437,7 +437,13 @@ func matchTech(imp string, techs []Tech) (Tech, bool) {
 // segment after the layer's matching glob prefix — the longest matching prefix
 // when a layer has several globs, mirroring targetLayer (ADR-0010). It tells two
 // adapters apart inside one layer for any name, e.g. src/geometry/step vs
-// src/geometry/io under a "geometry" layer.
+// src/geometry/io under a "geometry" layer. A rest WITHOUT a further directory
+// (file directly at the layer root) belongs to the root sub-unit "" — sub-units
+// are directories like layers, never file names; otherwise every same-directory
+// x.cpp -> x.h include of a per-adapter layer misreports as lateral (ADR-0019,
+// b-cad evidence: 40 false positives, 0 real). The no-match case also yields ""
+// (pre-existing: no lateral without a resolvable prefix) — both collapse into
+// "no sub-unit boundary crossed", which is the intended semantics.
 func adapterSeg(s string, layer Layer) string {
 	bestEnd, bestLen := -1, -1
 	for _, g := range layer.Globs {
@@ -456,6 +462,14 @@ func adapterSeg(s string, layer Layer) string {
 	if j := strings.IndexByte(rest, '/'); j >= 0 {
 		return rest[:j]
 	}
+	if strings.Contains(rest, ".") {
+		return "" // file-shaped leaf at the layer root: root sub-unit (ADR-0019)
+	}
+	// Directory-shaped leaf (no dot): the leaf IS the sub-unit — a Go package
+	// import ends on the package DIRECTORY (…/driven/report), and treating it
+	// as root would blind cross-package lateral detection (Dogfooding-Fund
+	// slice-024). Extensionless file imports (TS `./b`) share this shape and
+	// stay a documented heuristic boundary (AC-QA-02, ADR-0019 Re-Eval).
 	return rest
 }
 
