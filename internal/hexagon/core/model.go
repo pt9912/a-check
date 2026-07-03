@@ -24,7 +24,10 @@ type FileImports struct {
 
 // ResolutionConfig is how one language's import symbols resolve to layers
 // (ADR-0016). Mode "" / "path" leaves the import unchanged (Import = Pfad);
-// "fixed-root" strips PackageBase, maps "." to "/" and roots the import.
+// "fixed-root" strips PackageBase, maps "." to "/" and roots the import;
+// "relative" resolves ./-style specifiers against the importing file's
+// directory and yields no candidate for bare imports or root escapes
+// (ADR-0017 — Roots/PackageBase are rejected for it by the config adapter).
 type ResolutionConfig struct {
 	Mode        string
 	Roots       []string

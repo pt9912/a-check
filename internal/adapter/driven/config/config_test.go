@@ -234,13 +234,28 @@ func TestResolutionFixedRootValid(t *testing.T) { // AC-FA-CONF-001 / ADR-0016: 
 	}
 }
 
-func TestResolutionReservedModeFailsClosed(t *testing.T) { // ADR-0016: reservierter mode (relative/namespace) -> Exit 2, Meldung nennt "reserviert"
-	_, err := New().Load(write(t, resBody(`typescript: {mode: relative}`)))
-	if err == nil || !strings.Contains(err.Error(), "reserviert") {
-		t.Fatalf("mode 'relative' muss als reserviert brechen, got %v", err)
-	}
+func TestResolutionReservedModeFailsClosed(t *testing.T) { // ADR-0016: reservierter mode (nur noch namespace, slice-022) -> Exit 2, Meldung nennt "reserviert"
 	if _, err := New().Load(write(t, resBody(`csharp: {mode: namespace}`))); err == nil || !strings.Contains(err.Error(), "reserviert") {
 		t.Fatalf("mode 'namespace' muss als reserviert brechen, got %v", err)
+	}
+}
+
+func TestResolutionRelativeValid(t *testing.T) { // AC-FA-CONF-001 / ADR-0017: relative lädt + wird dekodiert
+	m, err := New().Load(write(t, resBody(`typescript: {mode: relative}`)))
+	if err != nil {
+		t.Fatalf("mode relative muss laden (seit ADR-0017 gültig), got %v", err)
+	}
+	if r := m.Resolution["typescript"]; r.Mode != "relative" || len(r.Roots) != 0 || r.PackageBase != "" {
+		t.Fatalf("relative nicht korrekt dekodiert: %+v", r)
+	}
+}
+
+func TestResolutionRelativeRejectsRootsAndPackageBase(t *testing.T) { // ADR-0017: relative duldet kein roots/package_base (fail-closed)
+	if _, err := New().Load(write(t, resBody(`typescript: {mode: relative, roots: ["src"]}`))); err == nil {
+		t.Fatal("relative mit roots muss brechen (roots würden still ignoriert)")
+	}
+	if _, err := New().Load(write(t, resBody(`typescript: {mode: relative, package_base: "x"}`))); err == nil {
+		t.Fatal("relative mit package_base muss brechen (würde still ignoriert)")
 	}
 }
 
@@ -281,9 +296,13 @@ func TestResolutionTrailingSlashRootNormalized(t *testing.T) { // ADR-0016 (LOW)
 	}
 }
 
-func TestResolutionUnknownModeFailsClosed(t *testing.T) { // ADR-0016: unbekannter mode -> Exit 2
-	if _, err := New().Load(write(t, resBody(`go: {mode: bogus}`))); err == nil {
+func TestResolutionUnknownModeFailsClosed(t *testing.T) { // ADR-0016: unbekannter mode -> Exit 2; Enum-Meldung nennt alle gültigen Modi (slice-022)
+	_, err := New().Load(write(t, resBody(`go: {mode: bogus}`)))
+	if err == nil {
 		t.Fatal("unbekannter mode muss brechen (fail-closed)")
+	}
+	if !strings.Contains(err.Error(), "(path|fixed-root|relative)") {
+		t.Fatalf("Enum-Meldung muss (path|fixed-root|relative) nennen, got %v", err)
 	}
 }
 

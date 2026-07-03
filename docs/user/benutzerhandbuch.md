@@ -1,6 +1,6 @@
 # Benutzerhandbuch: a-check
 
-**Handbuch-Version:** 1.16 · **Software-Version:** 0.6.0 · **Stand:** 2026-07-02 ·
+**Handbuch-Version:** 1.17 · **Software-Version:** 0.6.0 · **Stand:** 2026-07-03 ·
 **Autor:** pt9912 (Maintainer)
 
 ---
@@ -10,7 +10,7 @@
 ### Zweck der Software
 
 **a-check** prüft, ob ein Repository seine **hexagonale Schicht-Architektur**
-einhält — sprachübergreifend (C++, Go, Rust, Kotlin, Java, Python, C#), gesteuert über eine
+einhält — sprachübergreifend (C++, Go, Rust, Kotlin, Java, Python, C#, TypeScript), gesteuert über eine
 Konfigurationsdatei. a-check liest Ihren Quellcode, meldet Architektur-Verstöße
 mit Datei und Zeile und liefert einen Exit-Code, mit dem Sie es als Gate in CI
 oder `make` einsetzen. a-check **repariert nichts** und **schreibt nie** in Ihr
@@ -191,11 +191,12 @@ markers:
 
 **Pflichtblöcke:** `version`, `languages`, `layers`, `edges`.
 **Gültige `languages`-Schlüssel:** genau `go`, `cpp`, `rust`, `kotlin`, `java`, `python`,
-`csharp` — exakt so zu schreiben (z. B. `cpp`, **nicht** `c++`; `csharp`, **nicht** `c#`);
+`csharp`, `typescript` — exakt so zu schreiben (z. B. `cpp`, **nicht** `c++`; `csharp`,
+**nicht** `c#`; `typescript`, **nicht** `ts`);
 ein anderer Schlüssel bricht mit Exit-Code 2 ab (kein stilles Ignorieren). Jeder Schlüssel
 bildet auf eine Liste von Datei-Globs ab, z. B. `cpp: ["**/*.h", "**/*.cpp"]`,
 `rust: ["**/*.rs"]`, `kotlin: ["**/*.kt"]`, `java: ["**/*.java"]`, `python: ["**/*.py"]`,
-`csharp: ["**/*.cs"]`.
+`csharp: ["**/*.cs"]`, `typescript: ["**/*.ts", "**/*.tsx", "**/*.mts", "**/*.cts"]`.
 **Optionalblöcke:** `adapter_sink`, `tech`, `composition_root`, `allow`,
 `forbidden_constructs`, `markers`. Fehlt ein Optionalblock, entfällt die
 zugehörige Prüfung (kein stiller Standardwert) — fehlt z. B. `adapter_sink`,
@@ -233,9 +234,43 @@ Paket-/Namespace-Baum den Verzeichnis-Baum spiegelt — für C# ist das die verb
 (Namespace ≠ Ordner) bleiben unaufgelöst (keine schicht-basierte Regel; die
 `tech`-Muster greifen unabhängig davon). Der Auflösungs-Modus `namespace`
 (Namespace→Datei-Index) ist dafür reserviert und noch nicht implementiert (Exit 2). **Relative** Python-Importe
-(`from . import x`, `from ..pkg import y`) werden **nicht** extrahiert — eine
-dokumentierte Heuristik-Grenze, bis der (heute reservierte) Auflösungs-Modus
-`relative` existiert; Architektur-Kanten prüfen Sie über absolute Importe.
+(`from . import x`, `from ..pkg import y`) werden weiterhin **nicht** extrahiert —
+eine dokumentierte Heuristik-Grenze der Python-Extraktion; Architektur-Kanten
+prüfen Sie dort über absolute Importe.
+
+**Datei-relative Importe auflösen (`mode: relative`): TypeScript.**
+TypeScript-Module referenzieren einander relativ zur importierenden Datei
+(`./db`, `../core/model`). Deklarieren Sie dafür `mode: relative` — ohne
+`roots`/`package_base` (beides bricht dort mit Exit-Code 2):
+
+```yaml
+# TypeScript-Hexagon: src/{core,ports,adapters}/…, relative Importe
+languages:
+  typescript: ["**/*.ts", "**/*.tsx", "**/*.mts", "**/*.cts"]
+layers:                         # layers-Globs verzeichnisbasiert halten!
+  core:     ["src/core/**"]
+  ports:    ["src/ports/**"]
+  adapters: ["src/adapters/**"]
+edges:
+  - {from: adapters, to: ports}
+  - {from: ports,    to: core}
+resolution:
+  typescript: {mode: relative}
+```
+
+Aufgelöst werden nur Specifier, die `.`/`..` sind oder mit `./`/`../` beginnen —
+lexikalisch gegen das Verzeichnis der importierenden Datei, endungs-agnostisch
+(`./db`, `./db.js` und `./db/index` treffen dieselbe Schicht). **Wichtig:**
+Halten Sie die `layers`-Globs **verzeichnisbasiert** (`src/core/**`, **nicht**
+`src/core/**/*.ts`) — ein Glob mit Datei-Endung macht die Symbol-Auflösung
+still blind und kippt die Endungs-Agnostik. Bare-Imports (`react`, `fs`,
+`@scope/pkg`) und Specifier, die über die Scan-Wurzel hinausführen, bleiben
+bewusst unaufgelöst (kein Befund; `tech`-Muster greifen am Roh-Symbol —
+Bare-Imports sind für `tech`-Zuordnungen ideal sichtbar). tsconfig-Aliasse
+(`paths`/`baseUrl`) werden nicht aufgelöst. Hinweis: `.cts`-Dateien
+importieren typischerweise per `require()`-**Ausdruck** und fallen damit unter
+die dokumentierte Ausdrucks-Grenze (dynamisches `import()`/`require()` wird
+nicht extrahiert).
 
 Zwei weitere dokumentierte Grenzen der Heuristik: (1) Die **Subpaket-Form**
 `from myapp import adapters` liefert nur den Modulpfad `myapp` und löst damit auf
@@ -393,3 +428,4 @@ und die [Spezifikation](../../spec/spezifikation.md); ein Überblick steht in de
 | 1.14 | 2026-07-02 | Software-Version **0.5.0** (GHCR-Release `v0.5.0` veröffentlicht, digest-gepinnt `@sha256:81951e61…`) — Python-Backend, `resolution`-Block und die Exit-2-Härtung für unbekannte Sprachen jetzt im veröffentlichten Image. |
 | 1.15 | 2026-07-02 | §1/§4 an Lastenheft 0.12.0: siebtes Sprach-Backend **C#** (`languages`-Schlüssel `csharp`; `using`-Direktiven inkl. `global`/`static`/Alias-Ziel, `using`-Statements nie gewertet); `resolution`-Absatz um das C#-Rezept + Namespace==Verzeichnis-Grenze (reservierter `namespace`-Modus) erweitert. Noch nicht im veröffentlichten Image (folgt mit dem nächsten Release). |
 | 1.16 | 2026-07-02 | Software-Version **0.6.0** (GHCR-Release `v0.6.0` veröffentlicht, digest-gepinnt `@sha256:b349a150…`) — C#-Backend jetzt im veröffentlichten Image; die 1.15-Verfügbarkeitsnotiz entfällt. |
+| 1.17 | 2026-07-03 | §1/§4 an Lastenheft 0.13.0: achtes Sprach-Backend **TypeScript** (`languages`-Schlüssel `typescript`; ES-Module-Importe/Re-Exports inkl. `import type` und mehrzeilig umbrochener Imports, Specifier in `'…'`/`"…"`) + neuer Auflösungs-Modus **`mode: relative`** (datei-relativ; Rezept + Warnung „`layers`-Globs verzeichnisbasiert halten"; Bare-Imports/tsconfig-Aliasse bleiben unaufgelöst). Noch nicht im veröffentlichten Image (folgt mit dem nächsten Release). |

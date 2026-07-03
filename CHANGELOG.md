@@ -6,6 +6,24 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
+Lastenheft/Spezifikation 0.12.0 → 0.13.0: **TypeScript-Backend** plus der bislang
+reservierte **`relative`-Auflösungs-Modus** (ADR-0017, erweitert ADR-0016); slice-022.
+
+### Added
+
+- **`AC-FA-EXTRACT-001` (Lastenheft/Spezifikation 0.12.0→0.13.0):** achtes Sprach-Backend
+  **TypeScript** (`languages`-Schlüssel `typescript`) — ES-Module-Formen → Modul-Specifier
+  in `'…'`/`"…"` (Semikolon optional/ASI): `import … from` (inkl. `import type`),
+  Seiteneffekt-Import, Re-Exports `export … from`, `import X = require(…)` sowie die
+  Fortsetzungszeile `} from '…'` mehrzeilig (Prettier-)umbrochener Imports; der Mittelteil
+  ist auf Import-Clause-Zeichen beschränkt — Ausdrucks-Zeilen (`knex.from('users')`,
+  dynamisches `import()`/`require()`) matchen nie (`AC-QA-02`-Grenze).
+- **`AC-FA-CONF-001` (0.12.0→0.13.0):** `resolution.mode: relative` (ADR-0017) — Specifier
+  `.`/`..`/`./…`/`../…` lösen lexikalisch gegen das Verzeichnis der importierenden Datei auf
+  (Quellpfad-Threading bis `targetLayer`); Bare-Imports und Wurzel-Escapes liefern eine
+  **leere** Kandidatenmenge (kein Geister-Match); `roots`/`package_base` bei `relative` →
+  Exit 2; nur noch `namespace` reserviert.
+
 ## [0.6.0] - 2026-07-02
 
 Sprach-Backend seit `v0.5.0`; Lastenheft/Spezifikation 0.11.0 → 0.12.0.

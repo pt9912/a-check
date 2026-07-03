@@ -1,6 +1,8 @@
 # slice-022 — TypeScript-Sprach-Backend + `relative`-Auflösungs-Modus (welle-06-sprach-backends)
 
-**Status:** Entwurf zur Abnahme (2026-07-03). Entscheide §7 **vor** der Umsetzung zu treffen.
+**Status:** in Umsetzung (2026-07-03). **Abnahme erteilt:** Entscheide A–G gemäß Empfehlung
+(Maintainer-Wort 2026-07-03, nach adversarischem Review des Entwurfs);
+[ADR-0017](../../adr/0017-relative-resolution-modus.md) damit `Accepted`.
 **Welle:** welle-06-sprach-backends (viertes Backend-Inkrement nach
 [slice-014](../done/slice-014-java-backend.md)/[slice-020](../done/slice-020-python-backend.md)/[slice-021](../done/slice-021-csharp-backend.md))
 **plus** Import-Auflösung (zweiter gelieferter Modus nach [slice-015](../done/slice-015-resolution-roots.md)).
@@ -303,6 +305,10 @@ Sprachmengen (nicht anfassen). **Nicht**
 - [ ] Closure: reiner `git mv` nach `done/` (AGENTS §3.3); 2 beobachtbare Kriterien + Lerneintrag.
 
 ## 7. Offen / Entscheidungen zur Abnahme
+
+> **Abnahme (2026-07-03):** Entscheide A–G gemäß Empfehlung bestätigt (Maintainer-Wort),
+> nach Einarbeitung des adversarischen Entwurfs-Reviews (1 BLOCKER → Entscheid G, 6 MAJOR,
+> 8 MINOR, 5 NIT).
 
 - **Entscheid A — Sprach-Schlüssel `typescript`:** (nicht `ts`) — konsistent mit `csharp`
   ([slice-021](../done/slice-021-csharp-backend.md) Entscheid E); `.tsx` läuft über die

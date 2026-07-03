@@ -304,14 +304,14 @@ func TestCsharpStaticKeywordPrefix(t *testing.T) { // Review-R1 (Test-Linse): st
 	}
 }
 
-func TestBackendRegistrySet(t *testing.T) { // slice-017: Registry ist die Single Source — genau {cpp,csharp,go,java,kotlin,python,rust}
+func TestBackendRegistrySet(t *testing.T) { // slice-017: Registry ist die Single Source — genau {cpp,csharp,go,java,kotlin,python,rust,typescript}
 	got := make([]string, 0)
 	for n := range newAdapter().backends {
 		got = append(got, n)
 	}
 	sort.Strings(got)
-	if strings.Join(got, ",") != "cpp,csharp,go,java,kotlin,python,rust" {
-		t.Fatalf("Backend-Registry = %v, erwarte cpp/csharp/go/java/kotlin/python/rust", got)
+	if strings.Join(got, ",") != "cpp,csharp,go,java,kotlin,python,rust,typescript" {
+		t.Fatalf("Backend-Registry = %v, erwarte cpp/csharp/go/java/kotlin/python/rust/typescript", got)
 	}
 }
 
@@ -320,7 +320,7 @@ func TestCheckLanguagesUnknown(t *testing.T) { // slice-017: unbekannte Sprache 
 	if err == nil {
 		t.Fatal("erwarte Fehler für unbekannte Sprache")
 	}
-	if err.Error() != `unbekannte Sprache "ruby" (cpp|csharp|go|java|kotlin|python|rust)` {
+	if err.Error() != `unbekannte Sprache "ruby" (cpp|csharp|go|java|kotlin|python|rust|typescript)` {
 		t.Fatalf("Meldungsformat driftet (Name/Menge/Klammerung/Reihenfolge): %q", err.Error())
 	}
 }
@@ -333,10 +333,12 @@ func TestCheckLanguagesCaseSensitive(t *testing.T) { // slice-017: Sprach-Keys s
 }
 
 func TestCheckLanguagesMixedUnsupported(t *testing.T) { // slice-017: Mono-Repo go+unsupported -> Fehler (go rettet nicht), positions-unabhängig
-	// typescript sortiert NACH go — die unsupported bricht, obwohl go zuerst geprüft wird.
-	err := newAdapter().checkLanguages(map[string][]string{"go": {"**/*.go"}, "typescript": {"**/*.ts"}})
-	if err == nil || !strings.Contains(err.Error(), "typescript") || !strings.Contains(err.Error(), "unbekannte Sprache") {
-		t.Fatalf("gemischt (unsupported nach go): typescript muss brechen, got %v", err)
+	// ruby sortiert NACH go — die unsupported bricht, obwohl go zuerst geprüft wird.
+	// (typescript ist seit slice-022 ein Backend und taugt nicht mehr als Fixture —
+	// derselbe Präzedenzfall wie csharp in slice-021.)
+	err := newAdapter().checkLanguages(map[string][]string{"go": {"**/*.go"}, "ruby": {"**/*.rb"}})
+	if err == nil || !strings.Contains(err.Error(), "ruby") || !strings.Contains(err.Error(), "unbekannte Sprache") {
+		t.Fatalf("gemischt (unsupported nach go): ruby muss brechen, got %v", err)
 	}
 	// fsharp sortiert VOR go — auch die zuerst-sortierte unsupported bricht.
 	// (csharp ist seit slice-021 ein Backend und taugt nicht mehr als Fixture.)
@@ -363,5 +365,85 @@ func TestExtractSetsLanguage(t *testing.T) { // ADR-0016 (F5): Extract markiert 
 	}
 	if len(files) != 1 || files[0].Language != "go" {
 		t.Fatalf("Extract muss Language='go' setzen (Threading-Quelle), got %+v", files)
+	}
+}
+
+// --- slice-022: TypeScript-Backend (AC-FA-EXTRACT-001) ---
+
+func tsSyms(src string) []string {
+	return syms(newAdapter().importsFromSource("typescript", prepSource("typescript", src)))
+}
+
+func TestTypescriptImportForms(t *testing.T) { // Happy: Clauses, beide Quote-Arten, Semikolon optional (ASI)
+	src := "import { Db } from '../adapters/db';\n" +
+		"import Repo from \"../adapters/repo\"\n" + // Default-Clause, Double-Quotes, semikolonfrei
+		"import * as ns from './ports/ns';\n" + // Namespace-Clause
+		"import A, { B as C } from './ports/mixed';\n" + // gemischte Clause
+		"import type { T } from './ports/t';\n" + // Typ-Import (Entscheid B: gewertet)
+		"import { type U, f } from './ports/u';\n" // Inline-type-Modifier
+	got := tsSyms(src)
+	for _, want := range []string{"../adapters/db", "../adapters/repo", "./ports/ns", "./ports/mixed", "./ports/t", "./ports/u"} {
+		if !has(got, want) {
+			t.Fatalf("TS-Importform fehlt: %q in %v", want, got)
+		}
+	}
+}
+
+func TestTypescriptSideEffectAndRequire(t *testing.T) { // Boundary: Seiteneffekt-Import + Interop-Form
+	got := tsSyms("import './polyfill';\nimport fs = require('fs');\nimport pg = require(\"pg\")\n")
+	for _, want := range []string{"./polyfill", "fs", "pg"} {
+		if !has(got, want) {
+			t.Fatalf("Seiteneffekt/require-Form fehlt: %q in %v", want, got)
+		}
+	}
+}
+
+func TestTypescriptReexports(t *testing.T) { // Boundary (Entscheid C): Re-Exports sind echte Abhängigkeits-Kanten (Barrel-Dateien)
+	src := "export * from './core/model';\n" +
+		"export { X } from \"./x\"\n" +
+		"export * as ns from './y';\n" +
+		"export type { T } from './z';\n"
+	got := tsSyms(src)
+	for _, want := range []string{"./core/model", "./x", "./y", "./z"} {
+		if !has(got, want) {
+			t.Fatalf("Re-Export-Form fehlt: %q in %v", want, got)
+		}
+	}
+}
+
+func TestTypescriptContinuationLine(t *testing.T) { // Entscheid G (BLOCKER-Fix): Prettier-umbrochener Import — Schlusszeile } from '…'
+	src := "import {\n  makeDb,\n  closeDb,\n} from '../adapters/db';\n" +
+		"export {\n  A,\n} from \"../adapters/a\"\n" +
+		"}\n" // nacktes } ohne from: kein Match
+	got := tsSyms(src)
+	if !has(got, "../adapters/db") || !has(got, "../adapters/a") {
+		t.Fatalf("Fortsetzungszeile '} from …' muss den Specifier liefern, got %v", got)
+	}
+	if len(got) != 2 {
+		t.Fatalf("nur die beiden Fortsetzungs-Specifier erwartet, got %v", got)
+	}
+}
+
+func TestTypescriptExpressionNoMatch(t *testing.T) { // Negative: Ausdrucks-Zeilen, Keyword-Präfix, Kommentare, Triple-Slash
+	src := "const m = await import('./lazy');\n" + // dynamisches import im Ausdruck
+		"import('./x').then(m => m.run());\n" + // zeilen-anführendes Ausdrucks-import (schärfster tsSide-Mutant)
+		"const x = require('pg');\n" + // require im Ausdruck
+		"export const q = knex.from('users');\n" + // Mittelteil-Beschränkung (kein =/(/. )
+		"export {};\n" + // leerer Export ohne from
+		"declare module './mod' {\n" + // Ambient-Deklaration
+		"importX from './evil';\n" + // Keyword-Präfix
+		"const s = 'import { X } from \"./evil2\"';\n" + // Import-String mitten im Ausdruck
+		"// import { Y } from './evil3';\n" + // Zeilen-Kommentar (C-Strip)
+		"/* import { Z } from './evil4'; */\n" + // Block-Kommentar (C-Strip)
+		"/// <reference path=\"./types.d.ts\" />\n" // Triple-Slash-Direktive (fällt dem C-Strip zu)
+	if got := tsSyms(src); len(got) != 0 {
+		t.Fatalf("Ausdrucks-/Kommentar-Zeilen dürfen nie Symbole liefern, got %v", got)
+	}
+}
+
+func TestTypescriptJsSpecifier(t *testing.T) { // Happy: NodeNext-.js-Specifier auf .ts-Datei — Symbol wörtlich erhalten
+	got := tsSyms("import { Repo } from \"../adapters/db.js\"\n")
+	if !has(got, "../adapters/db.js") {
+		t.Fatalf(".js-Specifier muss wörtlich geliefert werden, got %v", got)
 	}
 }

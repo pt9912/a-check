@@ -101,7 +101,7 @@ jederzeit, Senkung nur per ADR.
 ## Safety and scope boundaries
 
 - `a-check` ist ein **Lese-Tool**: Es schreibt nie in das geprüfte
-  Repository — es liest *fremde* Quellbäume (C++/Go/Rust/Kotlin/Java/Python/C#) und
+  Repository — es liest *fremde* Quellbäume (C++/Go/Rust/Kotlin/Java/Python/C#/TypeScript) und
   meldet Architektur-Verstöße (Kernvertrag
   [`AC-QA-02`](../spec/lastenheft.md#ac-qa-02--hermetik-und-ehrliche-heuristik-grenze)).
 - **Ehrliche Heuristik-Grenze:** die Extraktion ist text-/regex-basiert,

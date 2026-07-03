@@ -343,10 +343,10 @@ func TestTargetLayerLongestPrefix(t *testing.T) { // ADR-0010 (b1): spezifischst
 		{Name: "core", Globs: []string{"internal/core/**"}},
 		{Name: "legacy", Globs: []string{"internal/core/legacy/**"}},
 	}
-	if got := targetLayer("x/internal/core/legacy/db", layers, ResolutionConfig{}); got != "legacy" {
+	if got := targetLayer("x/internal/core/legacy/db", "", layers, ResolutionConfig{}); got != "legacy" {
 		t.Fatalf("expected longest-prefix 'legacy', got %q", got)
 	}
-	if got := targetLayer("x/internal/core/svc", layers, ResolutionConfig{}); got != "core" {
+	if got := targetLayer("x/internal/core/svc", "", layers, ResolutionConfig{}); got != "core" {
 		t.Fatalf("expected 'core', got %q", got)
 	}
 	// Reihenfolge-unabhängig: legacy vor core deklariert.
@@ -354,20 +354,20 @@ func TestTargetLayerLongestPrefix(t *testing.T) { // ADR-0010 (b1): spezifischst
 		{Name: "legacy", Globs: []string{"internal/core/legacy/**"}},
 		{Name: "core", Globs: []string{"internal/core/**"}},
 	}
-	if got := targetLayer("x/internal/core/legacy/db", rev, ResolutionConfig{}); got != "legacy" {
+	if got := targetLayer("x/internal/core/legacy/db", "", rev, ResolutionConfig{}); got != "legacy" {
 		t.Fatalf("longest-prefix muss reihenfolge-unabhängig sein, got %q", got)
 	}
 	// Segment-bewusst: 'io'-Präfix matcht nicht in 'audio'.
-	if got := targetLayer("audio/codec", []Layer{{Name: "io", Globs: []string{"io/**"}}}, ResolutionConfig{}); got != "" {
+	if got := targetLayer("audio/codec", "", []Layer{{Name: "io", Globs: []string{"io/**"}}}, ResolutionConfig{}); got != "" {
 		t.Fatalf("segment-bewusst: 'io' darf nicht in 'audio' matchen, got %q", got)
 	}
 	// Kernzweck: modul-qualifizierter Import, Präfix mitten im String.
 	mod := []Layer{{Name: "core", Globs: []string{"internal/hexagon/core/**"}}}
-	if got := targetLayer("github.com/x/a-check/internal/hexagon/core/model", mod, ResolutionConfig{}); got != "core" {
+	if got := targetLayer("github.com/x/a-check/internal/hexagon/core/model", "", mod, ResolutionConfig{}); got != "core" {
 		t.Fatalf("modul-qualifiziert: erwarte 'core', got %q", got)
 	}
 	// Präfix am Pfadende.
-	if got := targetLayer("github.com/x/a-check/internal/hexagon/core", mod, ResolutionConfig{}); got != "core" {
+	if got := targetLayer("github.com/x/a-check/internal/hexagon/core", "", mod, ResolutionConfig{}); got != "core" {
 		t.Fatalf("Präfix am Pfadende: erwarte 'core', got %q", got)
 	}
 	// Tie-Break: bei gleichlangem Präfix gewinnt der zuerst deklarierte Layer.
@@ -375,7 +375,7 @@ func TestTargetLayerLongestPrefix(t *testing.T) { // ADR-0010 (b1): spezifischst
 		{Name: "first", Globs: []string{"a/b/**"}},
 		{Name: "second", Globs: []string{"a/b/**"}},
 	}
-	if got := targetLayer("a/b/c", tie, ResolutionConfig{}); got != "first" {
+	if got := targetLayer("a/b/c", "", tie, ResolutionConfig{}); got != "first" {
 		t.Fatalf("Tie-Break: zuerst deklarierter gewinnt, erwarte 'first', got %q", got)
 	}
 }
@@ -831,35 +831,35 @@ func TestTechLeakRegexDeterministicOrder(t *testing.T) { // AC-QA-01: ≥2 regex
 }
 
 func TestResolveImportFixedRootDotted(t *testing.T) { // ADR-0016: gepunktetes Symbol -> Pfad via package_base + .->/
-	got := resolveImport("com.x.hexagon.model.Room", ResolutionConfig{Mode: "fixed-root", PackageBase: "com.x"})
+	got := resolveImport("com.x.hexagon.model.Room", "", ResolutionConfig{Mode: "fixed-root", PackageBase: "com.x"})
 	if len(got) != 1 || got[0] != "hexagon/model/Room" {
 		t.Fatalf("erwarte [hexagon/model/Room], got %v", got)
 	}
 }
 
 func TestResolveImportFixedRootRoots(t *testing.T) { // ADR-0016: roots werden vorangestellt (C++ src)
-	got := resolveImport("hexagon/model/room.h", ResolutionConfig{Mode: "fixed-root", Roots: []string{"src"}})
+	got := resolveImport("hexagon/model/room.h", "", ResolutionConfig{Mode: "fixed-root", Roots: []string{"src"}})
 	if len(got) != 1 || got[0] != "src/hexagon/model/room.h" {
 		t.Fatalf("erwarte [src/hexagon/model/room.h], got %v", got)
 	}
 }
 
 func TestResolveImportPathDefaultUnchanged(t *testing.T) { // ADR-0016: path/Default lässt unverändert (Go-Modulpfad mit Punkten)
-	if got := resolveImport("github.com/x/core", ResolutionConfig{}); len(got) != 1 || got[0] != "github.com/x/core" {
+	if got := resolveImport("github.com/x/core", "", ResolutionConfig{}); len(got) != 1 || got[0] != "github.com/x/core" {
 		t.Fatalf("Default (leerer mode) muss unverändert lassen, got %v", got)
 	}
-	if got := resolveImport("github.com/x/core", ResolutionConfig{Mode: "path"}); got[0] != "github.com/x/core" {
+	if got := resolveImport("github.com/x/core", "", ResolutionConfig{Mode: "path"}); got[0] != "github.com/x/core" {
 		t.Fatalf("mode: path darf Punkte NICHT ersetzen (Go-Modulpfad), got %v", got)
 	}
 }
 
 func TestTargetLayerFixedRootCpp(t *testing.T) { // ADR-0016: C++ src-Root -> Layer (b-cad-Fall)
 	layers := []Layer{{Name: "model", Globs: []string{"src/hexagon/model/**"}}}
-	if got := targetLayer("hexagon/model/room.h", layers, ResolutionConfig{Mode: "fixed-root", Roots: []string{"src"}}); got != "model" {
+	if got := targetLayer("hexagon/model/room.h", "", layers, ResolutionConfig{Mode: "fixed-root", Roots: []string{"src"}}); got != "model" {
 		t.Fatalf("src-gewurzelter Include muss auf 'model' auflösen, got %q", got)
 	}
 	// Ohne resolution (Default): der src-fremde Include löst NICHT auf — die Falle, die ADR-0016 schließt.
-	if got := targetLayer("hexagon/model/room.h", layers, ResolutionConfig{}); got != "" {
+	if got := targetLayer("hexagon/model/room.h", "", layers, ResolutionConfig{}); got != "" {
 		t.Fatalf("ohne resolution löst der Include nicht auf, got %q", got)
 	}
 }
@@ -901,22 +901,119 @@ func TestMonoRepoResolutionPerLanguage(t *testing.T) { // ADR-0016 (F1): jede Da
 }
 
 func TestResolveImportFixedRootMultipleRoots(t *testing.T) { // ADR-0016 (F3): ein Kandidat je root
-	got := resolveImport("hexagon/model/room.h", ResolutionConfig{Mode: "fixed-root", Roots: []string{"src", "include"}})
+	got := resolveImport("hexagon/model/room.h", "", ResolutionConfig{Mode: "fixed-root", Roots: []string{"src", "include"}})
 	if len(got) != 2 || got[0] != "src/hexagon/model/room.h" || got[1] != "include/hexagon/model/room.h" {
 		t.Fatalf("erwarte je root einen Kandidaten, got %v", got)
 	}
 }
 
 func TestResolveImportFixedRootDottedWithRoots(t *testing.T) { // ADR-0016 (F4): package_base-Strip + .->/ DANN root voran
-	got := resolveImport("com.x.a.B", ResolutionConfig{Mode: "fixed-root", PackageBase: "com.x", Roots: []string{"src/main/kotlin"}})
+	got := resolveImport("com.x.a.B", "", ResolutionConfig{Mode: "fixed-root", PackageBase: "com.x", Roots: []string{"src/main/kotlin"}})
 	if len(got) != 1 || got[0] != "src/main/kotlin/a/B" {
 		t.Fatalf("erwarte [src/main/kotlin/a/B], got %v", got)
 	}
 }
 
 func TestResolveImportPackageBaseNoMatch(t *testing.T) { // ADR-0016 (F7): Import ohne package_base-Präfix -> kein Strip, aber .->/ (dotted)
-	got := resolveImport("org.other.Foo", ResolutionConfig{Mode: "fixed-root", PackageBase: "com.x"})
+	got := resolveImport("org.other.Foo", "", ResolutionConfig{Mode: "fixed-root", PackageBase: "com.x"})
 	if len(got) != 1 || got[0] != "org/other/Foo" {
 		t.Fatalf("paket-fremder Import: erwarte [org/other/Foo], got %v", got)
+	}
+}
+
+// --- ADR-0017: relative-Modus (datei-relativ, leere Kandidatenmenge) ---
+
+func TestResolveImportRelativeNeighborAndParent(t *testing.T) { // ADR-0017: ./-Nachbar + ../-Eltern über Segmentgrenzen
+	rel := ResolutionConfig{Mode: "relative"}
+	if got := resolveImport("./db", "src/adapters/http.ts", rel); len(got) != 1 || got[0] != "src/adapters/db" {
+		t.Fatalf("./-Nachbar: erwarte [src/adapters/db], got %v", got)
+	}
+	if got := resolveImport("../core/model", "src/adapters/db.ts", rel); len(got) != 1 || got[0] != "src/core/model" {
+		t.Fatalf("../-Eltern: erwarte [src/core/model], got %v", got)
+	}
+	// Mehrfach-.. über zwei Segmentgrenzen.
+	if got := resolveImport("../../ports/repo", "src/adapters/db/pg.ts", rel); len(got) != 1 || got[0] != "src/ports/repo" {
+		t.Fatalf("Mehrfach-..: erwarte [src/ports/repo], got %v", got)
+	}
+	// .js-Specifier (NodeNext): Endung bleibt erhalten — verzeichnisbasierte Globs matchen trotzdem.
+	if got := resolveImport("../adapters/db.js", "src/core/service.ts", rel); len(got) != 1 || got[0] != "src/adapters/db.js" {
+		t.Fatalf(".js-Specifier: erwarte [src/adapters/db.js], got %v", got)
+	}
+}
+
+func TestResolveImportRelativeBarrelDots(t *testing.T) { // ADR-0017: pure '.'/'..' (Barrel-Importe) sind relativ
+	rel := ResolutionConfig{Mode: "relative"}
+	if got := resolveImport(".", "src/core/service.ts", rel); len(got) != 1 || got[0] != "src/core" {
+		t.Fatalf("Barrel '.': erwarte [src/core], got %v", got)
+	}
+	if got := resolveImport("..", "src/core/service.ts", rel); len(got) != 1 || got[0] != "src" {
+		t.Fatalf("Barrel '..': erwarte [src], got %v", got)
+	}
+}
+
+func TestResolveImportRelativeRootBoundaryPair(t *testing.T) { // ADR-0017: Grenz-Testpaar — exakt Wurzel aufgelöst, Escape leer
+	rel := ResolutionConfig{Mode: "relative"}
+	if got := resolveImport("../../x", "src/core/service.ts", rel); len(got) != 1 || got[0] != "x" {
+		t.Fatalf("exakt Wurzelebene muss auflösen: erwarte [x], got %v", got)
+	}
+	if got := resolveImport("../../../x", "src/core/service.ts", rel); got != nil {
+		t.Fatalf("Wurzel-Escape (führendes .. nach Normalisierung) muss leer sein, got %v", got)
+	}
+	// Datei auf Wurzelebene: ../x escaped sofort.
+	if got := resolveImport("../x", "main.ts", rel); got != nil {
+		t.Fatalf("Escape aus Wurzeldatei muss leer sein, got %v", got)
+	}
+}
+
+func TestResolveImportRelativeBareEmpty(t *testing.T) { // ADR-0017: Bare-Import -> LEERE Kandidatenmenge (kein Roh-Durchreichen)
+	rel := ResolutionConfig{Mode: "relative"}
+	for _, imp := range []string{"react", "fs", "@actions/core", "@x/core"} {
+		if got := resolveImport(imp, "src/core/service.ts", rel); got != nil {
+			t.Fatalf("Bare-Import %q muss leere Kandidatenmenge liefern, got %v", imp, got)
+		}
+	}
+}
+
+func TestRelativeBareImportNoGhostFinding(t *testing.T) { // ADR-0017 (adversarisch): @actions/adapters darf NICHT segment-matchen
+	m := Model{
+		Layers: []Layer{
+			{Name: "core", Globs: []string{"core/**"}, Role: "domain"},
+			{Name: "adapters", Globs: []string{"adapters/**"}, Role: "adapter"},
+		},
+		Resolution: map[string]ResolutionConfig{"typescript": {Mode: "relative"}},
+	}
+	files := []FileImports{{Path: "core/service.ts", Layer: "core", Language: "typescript",
+		Imports: []Import{{Symbol: "@actions/adapters", Line: 1}}}}
+	if fs := Evaluate(m, files); len(fs) != 0 {
+		t.Fatalf("Bare-Import '@actions/adapters' würde bei Roh-Durchreichung auf 'adapters/**' segment-matchen (Geister-core-impurity) — muss leer bleiben, got %v", fs)
+	}
+	// Gegenprobe: derselbe Pfad als ECHTER relativer Import findet.
+	relFiles := []FileImports{{Path: "core/service.ts", Layer: "core", Language: "typescript",
+		Imports: []Import{{Symbol: "../adapters/db", Line: 1}}}}
+	fs := Evaluate(m, relFiles)
+	if len(fs) != 1 || fs[0].Rule != "core-impurity" {
+		t.Fatalf("relativer Import ../adapters/db muss core-impurity liefern, got %v", fs)
+	}
+}
+
+func TestMonoRepoGoTypescriptModes(t *testing.T) { // ADR-0017: Mono-Repo — Go path-Default, TS relative, je eigener Modus
+	m := Model{
+		Layers: []Layer{
+			{Name: "core", Globs: []string{"core/**"}, Role: "domain"},
+			{Name: "adapters", Globs: []string{"adapters/**"}, Role: "adapter"},
+		},
+		Resolution: map[string]ResolutionConfig{"typescript": {Mode: "relative"}},
+	}
+	files := []FileImports{
+		// Go-Domäne, path-Default: modul-qualifizierter Import segment-matcht.
+		{Path: "core/svc.go", Layer: "core", Language: "go",
+			Imports: []Import{{Symbol: "github.com/x/repo/adapters/db", Line: 1}}},
+		// TS-Domäne, relative: ../adapters/db löst über den Quellpfad auf.
+		{Path: "core/service.ts", Layer: "core", Language: "typescript",
+			Imports: []Import{{Symbol: "../adapters/db", Line: 1}}},
+	}
+	fs := Evaluate(m, files)
+	if len(fs) != 2 || fs[0].Rule != "core-impurity" || fs[1].Rule != "core-impurity" {
+		t.Fatalf("beide Sprachen müssen je über IHREN Modus auflösen -> 2× core-impurity, got %v", fs)
 	}
 }

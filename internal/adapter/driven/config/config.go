@@ -142,8 +142,9 @@ func decodeResolution(res map[string]yamlResolution, langs map[string][]string, 
 
 // resolutionEntry validates + normalizes one resolution entry (ADR-0016): the
 // key must be a declared language (no silent no-op for typos); path duldet kein
-// roots/package_base; fixed-root braucht mindestens eines; relative/namespace
-// sind reserviert (→ exit 2). A blank mode defaults to path.
+// roots/package_base; fixed-root braucht mindestens eines; relative (ADR-0017)
+// duldet ebenfalls kein roots/package_base (fail-closed statt still ignoriert);
+// namespace ist reserviert (→ exit 2). A blank mode defaults to path.
 func resolutionEntry(lang string, r yamlResolution, langs map[string][]string, path string) (core.ResolutionConfig, error) {
 	if _, ok := langs[lang]; !ok {
 		return core.ResolutionConfig{}, fmt.Errorf("%s: resolution[%q]: keine unter languages deklarierte Sprache", path, lang)
@@ -161,10 +162,14 @@ func resolutionEntry(lang string, r yamlResolution, langs map[string][]string, p
 		if len(r.Roots) == 0 && r.PackageBase == "" {
 			return core.ResolutionConfig{}, fmt.Errorf("%s: resolution[%q]: mode fixed-root braucht roots und/oder package_base", path, lang)
 		}
-	case "relative", "namespace":
+	case "relative":
+		if len(r.Roots) > 0 || r.PackageBase != "" {
+			return core.ResolutionConfig{}, fmt.Errorf("%s: resolution[%q]: mode relative duldet kein roots/package_base", path, lang)
+		}
+	case "namespace":
 		return core.ResolutionConfig{}, fmt.Errorf("%s: resolution[%q].mode %q ist reserviert (Folge-ADR, noch nicht implementiert)", path, lang, mode)
 	default:
-		return core.ResolutionConfig{}, fmt.Errorf("%s: resolution[%q].mode %q ungültig (path|fixed-root)", path, lang, mode)
+		return core.ResolutionConfig{}, fmt.Errorf("%s: resolution[%q].mode %q ungültig (path|fixed-root|relative)", path, lang, mode)
 	}
 	roots, err := cleanRoots(r.Roots, lang, path)
 	if err != nil {

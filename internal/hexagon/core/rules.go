@@ -2,6 +2,7 @@ package core
 
 import (
 	"fmt"
+	"path"
 	"regexp"
 	"sort"
 	"strings"
@@ -36,7 +37,7 @@ func Evaluate(m Model, files []FileImports) []Finding {
 // or ok=false if the import is clean. The purity rules dispatch on the layer's
 // ROLE, not its name (AC-FA-RULE-006/007).
 func ruleFor(m Model, f FileImports, imp Import) (Finding, bool) {
-	tl := targetLayer(imp.Symbol, m.Layers, m.Resolution[f.Language])
+	tl := targetLayer(imp.Symbol, f.Path, m.Layers, m.Resolution[f.Language])
 	srcRole := roleOf(f.Layer, m)
 	tgtRole := roleOf(tl, m)
 	tech, isTech := matchTech(imp.Symbol, m.Techs)
@@ -227,10 +228,11 @@ func litPrefixLen(g string) int {
 // glob's path prefix occurs in the import (handles module-qualified paths such
 // as github.com/x/internal/core). The most specific (longest) matching prefix
 // wins — the first declared layer on an equal-length tie — so nested layers
-// resolve correctly (ADR-0010).
-func targetLayer(imp string, layers []Layer, res ResolutionConfig) string {
+// resolve correctly (ADR-0010). srcPath is the importing file's repo-relative
+// path: the `relative` mode resolves against its directory (ADR-0017).
+func targetLayer(imp, srcPath string, layers []Layer, res ResolutionConfig) string {
 	best, bestLen := "", -1
-	for _, cand := range resolveImport(imp, res) {
+	for _, cand := range resolveImport(imp, srcPath, res) {
 		for _, l := range layers {
 			for _, g := range l.Globs {
 				if p := globPrefix(g); p != "" && segIndex(cand, p) >= 0 && len(p) > bestLen {
@@ -246,25 +248,48 @@ func targetLayer(imp string, layers []Layer, res ResolutionConfig) string {
 // the source language's resolution (ADR-0016). "path"/"" (Default) leaves it
 // unchanged. "fixed-root" prepends each root (one candidate per root); a set
 // PackageBase marks a DOTTED language — its prefix is stripped and "." mapped to
-// "/" (a path language like C++ keeps its "." as file extensions). Reserved/
-// unknown modes never reach here — the config adapter rejects them (Exit 2).
-func resolveImport(imp string, res ResolutionConfig) []string {
-	if res.Mode != "fixed-root" {
+// "/" (a path language like C++ keeps its "." as file extensions). "relative"
+// resolves relative specifiers against the importing file's directory
+// (ADR-0017); non-relative specifiers and root escapes yield an EMPTY candidate
+// set — passing the raw symbol through (like the path default) would let a bare
+// import such as "@actions/core" ghost-match a "core/**" glob on a segment
+// boundary. Reserved/unknown modes never reach here — the config adapter
+// rejects them (Exit 2).
+func resolveImport(imp, srcPath string, res ResolutionConfig) []string {
+	switch res.Mode {
+	case "fixed-root":
+		s := imp
+		if res.PackageBase != "" { // dotted language (JVM/Python): package -> path
+			s = strings.TrimPrefix(s, res.PackageBase+".")
+			s = strings.ReplaceAll(s, ".", "/")
+		}
+		if len(res.Roots) == 0 {
+			return []string{s}
+		}
+		out := make([]string, 0, len(res.Roots))
+		for _, r := range res.Roots {
+			out = append(out, r+"/"+s)
+		}
+		return out
+	case "relative":
+		if !relativeSpecifier(imp) {
+			return nil // bare import: no path candidate (ADR-0017, AC-QA-02)
+		}
+		cand := path.Clean(path.Dir(srcPath) + "/" + imp)
+		if cand == ".." || strings.HasPrefix(cand, "../") {
+			return nil // escapes the scan root: documented boundary (AC-QA-02)
+		}
+		return []string{cand}
+	default:
 		return []string{imp}
 	}
-	s := imp
-	if res.PackageBase != "" { // dotted language (JVM/Python): package -> path
-		s = strings.TrimPrefix(s, res.PackageBase+".")
-		s = strings.ReplaceAll(s, ".", "/")
-	}
-	if len(res.Roots) == 0 {
-		return []string{s}
-	}
-	out := make([]string, 0, len(res.Roots))
-	for _, r := range res.Roots {
-		out = append(out, r+"/"+s)
-	}
-	return out
+}
+
+// relativeSpecifier reports whether a module specifier is relative per
+// ADR-0017: exactly "." or ".." (barrel imports) or a "./" / "../" prefix.
+func relativeSpecifier(imp string) bool {
+	return imp == "." || imp == ".." ||
+		strings.HasPrefix(imp, "./") || strings.HasPrefix(imp, "../")
 }
 
 // globPrefix is the literal path prefix of a glob (before a trailing /** or /*),

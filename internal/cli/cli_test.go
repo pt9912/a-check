@@ -237,15 +237,83 @@ resolution:
 	}
 }
 
-func TestMonoRepoMixedUnsupportedExit2(t *testing.T) { // slice-017: Mono-Repo go+typescript(unsupported) -> Exit 2, go rettet nicht
-	cfg := "version: 1\nlanguages:\n  go: [\"**/*.go\"]\n  typescript: [\"**/*.ts\"]\nlayers:\n  core: [\"core/**\"]\nedges:\n  - {from: core, to: core}\n"
+func TestMonoRepoMixedUnsupportedExit2(t *testing.T) { // slice-017: Mono-Repo go+ruby(unsupported) -> Exit 2, go rettet nicht
+	// (typescript ist seit slice-022 ein Backend und taugt nicht mehr als Fixture.)
+	cfg := "version: 1\nlanguages:\n  go: [\"**/*.go\"]\n  ruby: [\"**/*.rb\"]\nlayers:\n  core: [\"core/**\"]\nedges:\n  - {from: core, to: core}\n"
 	dir := writeRepo(t, map[string]string{".a-check.yml": cfg, "core/x.go": "package core\n"})
 	var out, errb bytes.Buffer
 	if code := cli.Run([]string{dir}, &out, &errb); code != 2 {
 		t.Fatalf("gemischte Sprachen mit unsupported -> Exit 2, got %d", code)
 	}
-	if !strings.Contains(errb.String(), "typescript") {
+	if !strings.Contains(errb.String(), "ruby") {
 		t.Fatalf("Meldung soll die unsupported Sprache nennen: %q", errb.String())
+	}
+}
+
+func TestTypescriptRelativeResolution(t *testing.T) { // AC-FA-EXTRACT-001 (TS) + AC-FA-CONF-001 Happy (relative): slice-022 §4.1/§4.2
+	tsCfg := `version: 1
+languages:
+  typescript: ["**/*.ts"]
+layers:
+  core:     ["core/**"]
+  ports:    ["ports/**"]
+  adapters: ["adapters/**"]
+edges:
+  - {from: adapters, to: ports}
+  - {from: ports,    to: core}
+resolution:
+  typescript: {mode: relative}
+`
+	// Zeile 1: relativer Import -> adapters -> core-impurity. Zeile 2: Bare-Import
+	// '@actions/adapters' — bei Roh-Durchreichung segment-matchte 'adapters' (Geister-
+	// Befund); muss leer bleiben (ADR-0017). Zeile 3: Ausdrucks-Zeile, deren Fehlsymbol
+	// '../adapters/db2' auflösen WÜRDE (pinnt die Mittelteil-Beschränkung end-to-end,
+	// Lerneintrag slice-021). Zeilen 4-6: Prettier-umbrochener Import — die Schluss-
+	// zeile } from '../adapters/db3' muss den Befund liefern (Entscheid G).
+	dir := writeRepo(t, map[string]string{
+		".a-check.yml": tsCfg,
+		"core/service.ts": "import { Db } from '../adapters/db';\n" +
+			"import * as a from '@actions/adapters';\n" +
+			"export const q = knex.from('../adapters/db2');\n" +
+			"import {\n  A,\n} from \"../adapters/db3\"\n",
+		"adapters/db.ts": "export const db = 1;\n",
+	})
+	var out, errb bytes.Buffer
+	if code := cli.Run([]string{dir}, &out, &errb); code != 1 {
+		t.Fatalf("TS-Domäne importiert Adapter relativ: erwarte Exit 1, got %d (out=%q err=%q)", code, out.String(), errb.String())
+	}
+	if got := strings.Count(out.String(), "core-impurity"); got != 2 {
+		t.Fatalf("erwarte genau 2 core-impurity (relativ + Fortsetzungszeile; Bare-Import und Ausdrucks-Zeile keinen), got %d: %q", got, out.String())
+	}
+	if !strings.Contains(out.String(), "core/service.ts:1") || !strings.Contains(out.String(), "core/service.ts:6") {
+		t.Fatalf("erwarte Befunde auf Zeile 1 und 6 der Domänen-Datei: %q", out.String())
+	}
+}
+
+func TestMonoRepoGoTypescriptRelative(t *testing.T) { // ADR-0017: Mono-Repo — Go path-Default + TS relative, je eigener Modus (CLI end-to-end)
+	cfg := `version: 1
+languages:
+  go:         ["**/*.go"]
+  typescript: ["**/*.ts"]
+layers:
+  core:     ["core/**"]
+  adapters: ["adapters/**"]
+edges:
+  - {from: adapters, to: core}
+resolution:
+  typescript: {mode: relative}
+`
+	dir := writeRepo(t, map[string]string{
+		".a-check.yml": cfg,
+		"core/x.go":    "package core\nimport \"myrepo/adapters/db\"\n",
+		"core/y.ts":    "import { D } from '../adapters/db';\n",
+	})
+	var out, errb bytes.Buffer
+	if code := cli.Run([]string{dir}, &out, &errb); code != 1 {
+		t.Fatalf("Mono-Repo Go+TS: erwarte Exit 1, got %d (out=%q err=%q)", code, out.String(), errb.String())
+	}
+	if got := strings.Count(out.String(), "core-impurity"); got != 2 {
+		t.Fatalf("beide Sprachen müssen je über IHREN Modus auflösen -> 2× core-impurity, got %d: %q", got, out.String())
 	}
 }
 

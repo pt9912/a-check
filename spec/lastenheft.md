@@ -1,6 +1,6 @@
 # Lastenheft — a-check
 
-**Version:** 0.12.0
+**Version:** 0.13.0
 
 **Status:** Draft
 
@@ -226,15 +226,29 @@ Regeln bleiben unverändert.
 Symbole/Module importiert diese Datei" — text-heuristisch über konfigurierbare
 Muster: C++ (`#include`), Go (`import`), Rust (`use`/`extern crate`), Kotlin
 (`import`), Java (`import`, inkl. `import static`), Python (`import` und
-`from … import`), C# (`using`-Direktiven, Schlüssel `csharp`). Beide
+`from … import`), C# (`using`-Direktiven, Schlüssel `csharp`), TypeScript
+(ES-Module-Importe/Re-Exports, Schlüssel `typescript`). Beide
 Python-Formen liefern den gepunkteten Modulpfad; ein Alias (`as x`) und die
 hinter `from … import` stehenden Namen werden nicht als Symbol gewertet.
 C#-`using`-Direktiven liefern den gepunkteten Namespace: `static`/`global`
 werden übersprungen, bei der Alias-Form (`using X = Ziel;`) wird das Ziel
 (rechte Seite) gewertet; das `;` direkt nach dem Namen ist Pflicht im Muster —
 `using`-**Statements** (`using var x = …;`, `using (…)`) sind keine Direktiven
-und werden nie gewertet. Das Backend wird über die Config (Sprache +
-Datei-Globs) gewählt.
+und werden nie gewertet. TypeScript liefert den **Modul-Specifier**: den
+String in einfachen **oder** doppelten Anführungszeichen (beide gleichwertig;
+Backticks nie — Template-Literal-Grenze) hinter `from` bzw. im Import; das
+Semikolon ist optional (ASI) und **nicht** Teil des Musters. Gegriffen werden
+`import … from '…'` (inkl. `import type` und Inline-`type`-Modifier), der
+Seiteneffekt-Import `import '…'`, Re-Exports `export … from '…'` (inkl.
+`export * from`, `export * as ns from`, `export type … from`), die
+Interop-Form `import X = require('…')` sowie die Fortsetzungszeile
+`} from '…'` eines mehrzeilig umbrochenen Imports/Re-Exports. Der Mittelteil
+zwischen `import`/`export` und `from` ist auf Import-Clause-Zeichen
+beschränkt (Bezeichner, `{ } * ,`, `type`/`as`, Whitespace — kein `=`, `(`,
+`.`, keine Quotes), damit Ausdrucks-Zeilen (`export const q =
+knex.from('users')`) nie matchen; die links von `from` stehenden
+Namen/Aliasse werden nie als Symbol geliefert. Das Backend wird über die
+Config (Sprache + Datei-Globs) gewählt.
 
 **Akzeptanzkriterien:**
 
@@ -250,8 +264,12 @@ Datei-Globs) gewählt.
 - **Boundary (C# static/global):** Given `using static System.Math;` bzw. `global using MyApp.Core;`, when das C#-Backend läuft, then liefert es `System.Math` bzw. `MyApp.Core` — die Schlüsselwörter werden übersprungen, nicht als Symbol gewertet.
 - **Boundary (C# Alias):** Given `using Db = MyApp.Adapters.Db;`, when das C#-Backend läuft, then liefert es `MyApp.Adapters.Db` (das Ziel; der Alias-Name wird nie geliefert).
 - **Negative (C# using-Statement):** Given `using var f = File.Open(p);` oder `using (var f = File.Open(p))`, when das C#-Backend läuft, then wird **kein** Symbol geliefert (Ressourcen-Statement, keine Direktive).
+- **Happy (TS):** Given `import { Db } from '../adapters/db';` sowie `import { Repo } from "../adapters/db.js"` (Double-Quotes, semikolonfrei, `.js`-Specifier auf `.ts`-Datei — NodeNext-Schreibweise), when das TypeScript-Backend läuft, then liefert es `../adapters/db` bzw. `../adapters/db.js`.
+- **Boundary (TS type/Seiteneffekt):** Given `import type { Repo } from './ports/repo';` und `import './polyfill';`, when das TypeScript-Backend läuft, then liefert es `./ports/repo` bzw. `./polyfill`.
+- **Boundary (TS Re-Export/require/mehrzeilig):** Given `export * from './core/model';`, `import fs = require('fs');` und ein mehrzeilig umbrochener Import, dessen Schlusszeile `} from '../adapters/db';` lautet, when das TypeScript-Backend läuft, then liefert es `./core/model`, `fs` bzw. `../adapters/db`.
+- **Negative (TS Ausdruck):** Given `const m = await import('./lazy');`, `const x = require('pg');`, `export const q = knex.from('users');` oder eine zeilen-anführende Ausdrucks-Zeile `import('./x').then(m => m.run());`, when das TypeScript-Backend läuft, then wird **kein** Symbol geliefert (dokumentierte Heuristik-Grenze, `AC-QA-02`).
 
-**Out-of-Scope:** vollständiges AST-Parsing; Toolchain-gestützte Backends (`go list`, `javac`/`jdeps`, Bytecode) sind ein opt-in-Re-Eval, nicht 0.1.0; Java-Wildcard-Imports (`import com.foo.*;`) werden heuristisch gegriffen (Symbol `com.foo.` mit Trailing-Dot), nicht expandiert; mehrere `import`-Statements auf **einer** Zeile werden nur einmal gegriffen (dokumentierte Heuristik-Grenze, `AC-QA-02`); relative Python-Importe (`from .`/`from ..`) werden nicht extrahiert — sie sind das Auflösungs-Signal des reservierten `relative`-Modus ([AC-FA-CONF-001](#ac-fa-conf-001--konfigurationsdatei-a-checkyml)), dokumentierte Heuristik-Grenze (`AC-QA-02`); Python-Mehrfach-Import in **einem** Statement (`import a, b`) wird nur als Erst-Treffer (`a`) gegriffen; die Subpaket-Form `from <paket> import <subpaket>` wird nur als `<paket>` gewertet und löst ggf. auf keine Schicht auf (dokumentierte Heuristik-Grenze, `AC-QA-02`); `__init__`-Re-Export-Semantik; import-ähnliche Zeilen in Docstrings (bestehende String-Grenze, `AC-QA-02`); C#-Typ-Aliasse auf generische Typen (`using L = List<int>;` — kein Namespace-Import, nicht gegriffen), `extern alias` und `global::`-qualifizierte Aliasse; C#-Namespace-**Deklarationen** (`namespace X;`/`namespace X { }`) werden nicht als Import gewertet.
+**Out-of-Scope:** vollständiges AST-Parsing; Toolchain-gestützte Backends (`go list`, `javac`/`jdeps`, Bytecode) sind ein opt-in-Re-Eval, nicht 0.1.0; Java-Wildcard-Imports (`import com.foo.*;`) werden heuristisch gegriffen (Symbol `com.foo.` mit Trailing-Dot), nicht expandiert; mehrere `import`-Statements auf **einer** Zeile werden nur einmal gegriffen (dokumentierte Heuristik-Grenze, `AC-QA-02`); relative Python-Importe (`from .`/`from ..`) werden nicht extrahiert — sie sind das Auflösungs-Signal des reservierten `relative`-Modus ([AC-FA-CONF-001](#ac-fa-conf-001--konfigurationsdatei-a-checkyml)), dokumentierte Heuristik-Grenze (`AC-QA-02`); Python-Mehrfach-Import in **einem** Statement (`import a, b`) wird nur als Erst-Treffer (`a`) gegriffen; die Subpaket-Form `from <paket> import <subpaket>` wird nur als `<paket>` gewertet und löst ggf. auf keine Schicht auf (dokumentierte Heuristik-Grenze, `AC-QA-02`); `__init__`-Re-Export-Semantik; import-ähnliche Zeilen in Docstrings (bestehende String-Grenze, `AC-QA-02`); C#-Typ-Aliasse auf generische Typen (`using L = List<int>;` — kein Namespace-Import, nicht gegriffen), `extern alias` und `global::`-qualifizierte Aliasse; C#-Namespace-**Deklarationen** (`namespace X;`/`namespace X { }`) werden nicht als Import gewertet; dynamisches TypeScript-`import()`/`require()` im Ausdruck (zeilenverankerte Heuristik, `AC-QA-02`); import-ähnliche Zeichenfolgen in Template-Literalen (Backticks) und JSX-Textzeilen von `.tsx`-Dateien (bestehende String-Grenze, `AC-QA-02`); Triple-Slash-Direktiven (`/// <reference path="…" />` — fallen dem Kommentar-Strip zu); JavaScript (`.js`/`.mjs`/`.cjs`) als eigener `languages`-Schlüssel; tsconfig-`paths`/`baseUrl`-Aliasse (nicht Teil des `relative`-Modus, [AC-FA-CONF-001](#ac-fa-conf-001--konfigurationsdatei-a-checkyml)); Node-Modul-Auflösung (Endungen/index-Dateien — keine Datei-Existenz-Probe; der Glob-Präfix-Match der Auflösung ist endungs-agnostisch, solange die `layers`-Globs verzeichnisbasiert sind, [AC-FA-CONF-001](#ac-fa-conf-001--konfigurationsdatei-a-checkyml)).
 
 ### AC-FA-CLI-001 — Aufruf, Scan-Wurzel und Exit-Codes
 
@@ -279,12 +297,20 @@ ist **entweder** eine Glob-Liste (`name: [globs]`, Rolle per Namens-Inferenz)
 Ein `tech`-Eintrag ist `{pattern, adapter}` mit optionalem `match: substring|regex`
 (Default `substring`; `regex` = RE2, [AC-FA-RULE-003](#ac-fa-rule-003--tech-kapselung-regel-tech-leak)).
 Ein optionaler `resolution`-Block deklariert **je Sprache**, wie Import-Symbole auf Schichten
-aufgelöst werden — Map Sprache → `{mode, roots, package_base}`, `mode ∈ {path (Default), fixed-root}`
-(`relative`/`namespace` reserviert); fehlt er (oder eine Sprache darin), gilt Import-als-Pfad.
+aufgelöst werden — Map Sprache → `{mode, roots, package_base}`, `mode ∈ {path (Default),
+fixed-root, relative}` (`namespace` reserviert); fehlt er (oder eine Sprache darin), gilt
+Import-als-Pfad. `relative` löst Specifier, die `.` oder `..` sind oder mit `./` bzw. `../`
+beginnen, lexikalisch gegen das **Verzeichnis der importierenden Datei** auf; alle anderen
+Specifier (Bare-Imports) und Specifier mit führendem `..` **nach** der Normalisierung
+(Wurzel-Escape) liefern eine **leere** Kandidatenmenge — das Roh-Symbol wird nicht als
+Pfad-Kandidat weitergereicht (kein Geister-Match, ausgewiesene Grenze `AC-QA-02`);
+`mode: relative` nimmt weder `roots` noch `package_base`. Die Endungs-Agnostik der Auflösung
+gilt, solange der Layer-Glob-Präfix oberhalb der Dateiebene endet (verzeichnisbasierte Globs);
+bei datei-tiefen Globs kippt eine Specifier-Endung den Match (dokumentierte Grenze).
 Striktes Decoding, fail-closed (Exit 2 bei unbekanntem Schlüssel, ungültiger `role`/`direction`,
 unbekanntem `match`-Wert, einer als Regex nicht kompilierbaren `pattern`, einem `languages`-Schlüssel
-außerhalb der unterstützten Backends aus [AC-FA-EXTRACT-001](#ac-fa-extract-001--sprach-backends-für-die-import-extraktion)
-oder einem reservierten/unbekannten `resolution.mode`).
+außerhalb der unterstützten Backends aus [AC-FA-EXTRACT-001](#ac-fa-extract-001--sprach-backends-für-die-import-extraktion),
+einem reservierten/unbekannten `resolution.mode` oder `roots`/`package_base` bei `mode: relative`).
 
 **Akzeptanzkriterien:**
 
@@ -294,7 +320,9 @@ oder einem reservierten/unbekannten `resolution.mode`).
 - **Negative (`match`):** Given ein `tech.match` mit einem anderen Wert als `substring`/`regex` **oder** ein `match: regex` mit leerer bzw. nicht kompilierbarer `pattern`, when `a-check` lädt, then Exit-Code 2.
 - **Negative (Sprache):** Given ein `languages`-Schlüssel außerhalb der von [AC-FA-EXTRACT-001](#ac-fa-extract-001--sprach-backends-für-die-import-extraktion) definierten unterstützten Backends, when `a-check` lädt, then Exit-Code 2 — **statt** stiller Nicht-Extraktion (falsch-grün).
 - **Happy (Auflösung):** Given ein `resolution` mit `{mode: fixed-root, roots, package_base}` für eine Sprache und ein gepunktetes Symbol dieser Sprache, when `a-check` läuft, then löst das Symbol wurzel-relativ auf seine Schicht auf (statt unaufgelöst zu bleiben) — sofern der Paket-Baum den Verzeichnis-Baum spiegelt (`AC-QA-02`-Grenze).
-- **Negative (`resolution`):** Given ein `resolution.mode` außerhalb `{path, fixed-root}` (inkl. der reservierten `relative`/`namespace`), when `a-check` lädt, then Exit-Code 2.
+- **Happy (`relative`):** Given `resolution: {typescript: {mode: relative}}` und in `src/core/service.ts` der Import `../adapters/db`, when `a-check` läuft, then löst das Symbol auf `src/adapters/db` auf (Schicht der `adapters`-Globs) — eine Domänen-Datei mit diesem Import wird `core-impurity`. Grenzfall inklusive: `../../x` aus `src/core/` normalisiert auf `x` (exakt Wurzelebene, aufgelöst).
+- **Boundary (`relative` Escape/Bare-Import):** Given `../../../x` aus `src/core/` (führendes `..` nach der Normalisierung) oder `import * as core from '@actions/core'` bei einem Layer-Glob `core/**`, when `a-check` läuft, then bleibt das Symbol unaufgelöst — leere Kandidatenmenge, kein Ziel-Layer, kein Geister-Befund; `tech`-Muster greifen unabhängig am Roh-Symbol (ausgewiesene Grenze, `AC-QA-02`).
+- **Negative (`resolution`):** Given ein `resolution.mode` außerhalb `{path, fixed-root, relative}` (inkl. des reservierten `namespace`) **oder** `{mode: relative, roots: […]}` bzw. `{mode: relative, package_base: …}`, when `a-check` lädt, then Exit-Code 2.
 
 **Out-of-Scope:** Vererbung/Includes zwischen Config-Dateien.
 
@@ -351,3 +379,5 @@ Konsumenten-Repos).
 | 0.10.0 | 2026-07-01 | `AC-FA-CONF-001`: optionaler `resolution`-Block — Map **Sprache → `{mode, roots, package_base}`** (`mode ∈ {path, fixed-root}`, `relative`/`namespace` reserviert → Exit 2), löst gepunktete/wurzel-fremde Importe **pro Sprache** auf ihre Schicht auf (Mono-Repo-tauglich); Default (ohne Block) = Import-als-Pfad, rückwärtskompatibel. Grenze: Paket==Verzeichnis (`AC-QA-02`). welle-06 (Polyglot-Bestand); slice-015. |
 | 0.11.0 | 2026-07-02 | `AC-FA-EXTRACT-001` um **Python** erweitert (`import` und `from … import` → gepunkteter Modulpfad; Alias und importierte Namen nicht gewertet; relative Importe nicht extrahiert — Signal des reservierten `relative`-Modus, dokumentierte Grenze `AC-QA-02`) — sechstes Sprach-Backend, text-heuristisch (welle-06, slice-020). |
 | 0.12.0 | 2026-07-02 | `AC-FA-EXTRACT-001` um **C#** erweitert (Schlüssel `csharp`; `using`-Direktiven → gepunkteter Namespace, `static`/`global` übersprungen, Alias-**Ziel** gewertet, Pflicht-`;` schließt `using`-Statements aus) — siebtes Sprach-Backend. Schicht-Auflösung über den `fixed-root`-Modus unter Namespace==Verzeichnis (`AC-QA-02`-Grenze); der reservierte `namespace`-Modus bleibt Exit 2 (welle-06, slice-021). |
+| 0.13.0 | 2026-07-03 | `AC-FA-EXTRACT-001` um **TypeScript** erweitert (Schlüssel `typescript`; ES-Module-Formen → Modul-Specifier in `'…'`/`"…"`, Semikolon optional: `import … from` inkl. `type`, Seiteneffekt-Import, Re-Exports `export … from`, `import X = require(…)`, Fortsetzungszeile `} from '…'` mehrzeiliger Imports; Mittelteil auf Import-Clause-Zeichen beschränkt — Ausdrucks-`import()`/`require()` nie gegriffen) — achtes Sprach-Backend (welle-06, slice-022). |
+| 0.13.0 | 2026-07-03 | `AC-FA-CONF-001`: `resolution.mode` um **`relative`** erweitert — Specifier `.`/`..`/`./…`/`../…` lexikalisch gegen das Verzeichnis der importierenden Datei; Bare-Imports und Wurzel-Escape (führendes `..` nach Normalisierung) → **leere** Kandidatenmenge (kein Geister-Match, `AC-QA-02`); `roots`/`package_base` bei `relative` unzulässig → Exit 2; nur `namespace` bleibt reserviert (welle-06, slice-022). |

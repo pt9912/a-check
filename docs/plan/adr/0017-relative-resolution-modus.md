@@ -1,6 +1,6 @@
 # ADR-0017 — `relative`-Auflösungs-Modus: Import-Auflösung gegen den Ort der importierenden Datei
 
-- **Status:** Proposed
+- **Status:** Accepted
 - **Datum:** 2026-07-03
 - **Autor:** pt9912
 - **Bezug:** [AC-FA-CONF-001](../../../spec/lastenheft.md#ac-fa-conf-001--konfigurationsdatei-a-checkyml), [AC-FA-EXTRACT-001](../../../spec/lastenheft.md#ac-fa-extract-001--sprach-backends-für-die-import-extraktion) — **Erweiterung** von [ADR-0016](0016-resolution-sprach-parametrisch.md) (füllt dessen reservierten `mode`-Wert `relative`), nach dem Muster, mit dem ADR-0016 selbst [ADR-0014](0014-resolution-roots.md) erweiterte.
@@ -113,3 +113,4 @@ Sprach-Map, Sprach-Threading und `mode`-Diskriminator gelten unverändert):
 |---|---|
 | 2026-07-03 | Proposed — Entwurf mit [slice-022](../planning/open/slice-022-typescript-backend.md); Sign-off Auftraggeber ausstehend. |
 | 2026-07-03 | Entwurf nach adversarischem Review geschärft: leere Kandidatenmenge statt Roh-Durchreichung (Geister-Match `@actions/core`↔`core/**`), Barrel-`.`/`..` als relativ, Escape scharf definiert (führendes `..` nach Normalisierung), Endungs-Agnostik an verzeichnisbasierte Globs gebunden. |
+| 2026-07-03 | Proposed → Accepted (Sign-off Auftraggeber: Entscheide A–G gemäß Empfehlung, [slice-022](../planning/open/slice-022-typescript-backend.md) §7). Ab jetzt immutable; Ablösung nur via Folge-ADR mit `Supersedes`. |

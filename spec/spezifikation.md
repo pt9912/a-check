@@ -1,6 +1,6 @@
 # Spezifikation — a-check
 
-**Version:** 0.12.0
+**Version:** 0.13.0
 
 **Status:** Draft
 
@@ -58,6 +58,7 @@ resolution:                     # Symbol→Layer-Auflösung je Sprache (optional
   go:     {mode: path}                          # Default (== weggelassen)
   cpp:    {mode: fixed-root, roots: ["src"]}
   kotlin: {mode: fixed-root, roots: ["src/main/kotlin"], package_base: "com.x"}
+  typescript: {mode: relative}                  # datei-relativ (./x, ../y)
 ```
 
 - **Pflichtblöcke:** `version`, `languages`, `layers`, `edges`. Die `languages`-Schlüssel müssen aus
@@ -74,7 +75,7 @@ resolution:                     # Symbol→Layer-Auflösung je Sprache (optional
   - `allow` → konfigurativ erlaubte Sonderkante/Re-Export ([AC-FA-RULE-005](lastenheft.md#ac-fa-rule-005--schicht-richtung-regel-wrong-direction) / [AC-FA-RULE-004](lastenheft.md#ac-fa-rule-004--port-disziplin-regel-port-impurity) Boundary).
   - `markers` → dokumentierte Heuristik-Ausnahme ([AC-QA-02](lastenheft.md#ac-qa-02--hermetik-und-ehrliche-heuristik-grenze)).
   - `forbidden_constructs` → schichtbezogen verbotene Konstrukte ([AC-FA-RULE-004](lastenheft.md#ac-fa-rule-004--port-disziplin-regel-port-impurity)); als Text-Muster geprüft (siehe [SPEC-EXTRACT-001](#spec-extract-001--import-extraktion)).
-  - `resolution` → Symbol→Layer-Auflösung **je Sprache** (Map Sprache → `{mode, roots, package_base}`); `mode ∈ {path (Default), fixed-root}`, `relative`/`namespace` **reserviert** → Exit 2. `fixed-root`: `roots` vorangestellt; **bei gesetztem `package_base`** (gepunktete Sprache) zusätzlich Präfix-Strip + `.`→`/` (eine Pfad-Sprache wie C++ behält ihre `.`-Endungen). Greift nur, wenn der Paket-Baum den Verzeichnis-Baum spiegelt ([AC-QA-02](lastenheft.md#ac-qa-02--hermetik-und-ehrliche-heuristik-grenze)). Fehlt es (oder eine Sprache) → Import-als-Pfad. Nutzt die Quelldatei-Sprache ([SPEC-RULE-001](#spec-rule-001--regel-auswertung)/[SPEC-EXTRACT-001](#spec-extract-001--import-extraktion)).
+  - `resolution` → Symbol→Layer-Auflösung **je Sprache** (Map Sprache → `{mode, roots, package_base}`); `mode ∈ {path (Default), fixed-root, relative}`, `namespace` **reserviert** → Exit 2. `fixed-root`: `roots` vorangestellt; **bei gesetztem `package_base`** (gepunktete Sprache) zusätzlich Präfix-Strip + `.`→`/` (eine Pfad-Sprache wie C++ behält ihre `.`-Endungen); greift nur, wenn der Paket-Baum den Verzeichnis-Baum spiegelt ([AC-QA-02](lastenheft.md#ac-qa-02--hermetik-und-ehrliche-heuristik-grenze)). `relative`: Specifier, die `.`/`..` sind oder mit `./`/`../` beginnen, werden lexikalisch gegen das **Verzeichnis der importierenden Datei** normalisiert (`path.Clean`-Semantik); alle anderen Specifier (Bare-Imports) sowie Wurzel-Escapes (führendes `..` **nach** der Normalisierung) liefern eine **leere** Kandidatenmenge — das Roh-Symbol wird nicht als Pfad-Kandidat weitergereicht (kein Geister-Match, [AC-QA-02](lastenheft.md#ac-qa-02--hermetik-und-ehrliche-heuristik-grenze)); `roots`/`package_base` sind bei `relative` unzulässig → Exit 2; Endungs-Agnostik gilt, solange die `layers`-Glob-Präfixe oberhalb der Dateiebene enden (verzeichnisbasierte Globs). Fehlt der Block (oder eine Sprache) → Import-als-Pfad. Nutzt Sprache **und Pfad** der Quelldatei ([SPEC-RULE-001](#spec-rule-001--regel-auswertung)/[SPEC-EXTRACT-001](#spec-extract-001--import-extraktion)).
 - **Schicht-Rollen** ([AC-FA-RULE-006](lastenheft.md#ac-fa-rule-006--schicht-rollen-generische-regel-anwendung)): ein `layers`-Eintrag ist **entweder** eine Glob-Liste (`name: [globs]`) **oder** ein Objekt `{globs: [...], role: domain|app|port|adapter, direction: driving|driven}` (`direction` optional). Fehlt `role`, wird es aus konventionellen Namen abgeleitet (`core`→`domain`, `ports`→`port`, `adapters`→`adapter`, `application`/`app`→`app`); `role:` hat Vorrang. Die Reinheits-Regeln (`core-impurity`/`app-impurity`/`port-impurity`/`lateral-adapter`) greifen über die Rolle, nicht den Namen — fremd benannte Schichten sind damit voll prüfbar. Optional trägt eine `port`-/`adapter`-Schicht zusätzlich `direction` ∈ {`driving`, `driven`} (**orthogonal** zur Rolle, [AC-FA-RULE-008](lastenheft.md#ac-fa-rule-008--driving-driven-port-richtung-regel-port-direction-mismatch)); die Connectivity-Regel `port-direction-mismatch` prüft, dass ein Adapter nur Ports **seiner** Richtung importiert — ohne `direction` keine Prüfung.
 - Kein Include/Vererbung zwischen Config-Dateien (Lastenheft-Out-of-Scope).
 
@@ -108,6 +109,20 @@ gewählte Backend die Menge der importierten Symbole/Module:
      `using (…)`, `using T x = …;`) matchen dadurch nie. Typ-Aliasse auf
      generische Typen, `extern alias`, `global::`-Qualifizierer und
      `namespace`-Deklarationen werden nicht gegriffen
+   - **TypeScript** (Schlüssel `typescript`): ES-Module-Formen → **Modul-Specifier**
+     (String in `'…'` **oder** `"…"`, gleichwertig; Semikolon optional/ASI, nicht
+     Teil des Musters): `import … from '…'` (inkl. `import type` und
+     Inline-`type`-Modifier), Seiteneffekt `import '…'`, Re-Export
+     `export … from '…'` (inkl. `export * from`, `export * as ns from`,
+     `export type … from`), Interop `import X = require('…')` sowie die
+     Fortsetzungszeile `} from '…'` mehrzeilig umbrochener Imports/Re-Exports.
+     Der Mittelteil zwischen `import`/`export` und `from` ist auf
+     Import-Clause-Zeichen beschränkt (Bezeichner, `{ } * ,`, Whitespace — kein
+     `=`, `(`, `.`, keine Quotes) — Ausdrucks-Zeilen (`export const q =
+     knex.from('users')`, dynamisches `import(…)`/`require(…)`) matchen nie;
+     Triple-Slash-Direktiven fallen dem Kommentar-Strip zu; Template-Literale
+     und JSX-Textzeilen sind die bestehende String-Grenze
+     ([AC-QA-02](lastenheft.md#ac-qa-02--hermetik-und-ehrliche-heuristik-grenze))
 3. Import-ähnliche Zeilen in Zeilen-/Block-Kommentaren werden **nicht**
    gewertet (`//` und `/* */` werden entfernt). Das C-artige Kommentar-Stripping
    gilt **nur für die C-Syntax-Sprachen**; **Python** wird nicht C-gestrippt —
@@ -126,7 +141,7 @@ gewählte Backend die Menge der importierten Symbole/Module:
 Nur direkte Imports (keine transitive Auflösung über Modulgrenzen);
 Toolchain-gestützte Backends sind Lastenheft-Out-of-Scope.
 
-**Zulässige Backend-Menge** (normativ, Owner dieser Spec): genau `{cpp, go, rust, kotlin, java, python, csharp}`.
+**Zulässige Backend-Menge** (normativ, Owner dieser Spec): genau `{cpp, go, rust, kotlin, java, python, csharp, typescript}`.
 Ein `languages`-Schlüssel außerhalb dieser Menge ist ein **Konfigurationsfehler** (Exit 2,
 [SPEC-CLI-001](#spec-cli-001--aufruf-scan-wurzel-und-exit-codes)) — der Extraktions-Adapter
 validiert die `languages`-Schlüssel gegen seine Backend-Registry, **bevor** er Dateien liest
@@ -163,9 +178,13 @@ Die Schicht einer Datei ergibt sich aus dem **spezifischsten** passenden `layers
 Symbol-Auflösung unten; bei Gleichstand die zuerst deklarierte Schicht), ihre
 **Rolle** aus `role:` (Vorrang) oder Namens-Inferenz ([AC-FA-RULE-006](lastenheft.md#ac-fa-rule-006--schicht-rollen-generische-regel-anwendung)).
 Vor der Auflösung wird ein Import-Symbol gemäß dem `resolution`-`mode` seiner **Quelldatei-Sprache**
-normalisiert (`fixed-root`: `roots` voran; bei gesetztem `package_base` zusätzlich Präfix-Strip + `.`→`/`;
-`path`/Default: unverändert) — so lösen gepunktete (JVM/Python/C#) oder `src`-gewurzelte (C++) Importe auf, sofern der
-Paket-Baum den Verzeichnis-Baum spiegelt. Dann werden Symbole über die `layers`-Globs des Zielpfads aufgelöst
+normalisiert — die Auflösung kennt dazu Sprache **und Pfad** der importierenden Datei
+(`fixed-root`: `roots` voran; bei gesetztem `package_base` zusätzlich Präfix-Strip + `.`→`/`;
+`relative`: relative Specifier (`.`/`..`/`./…`/`../…`) lexikalisch gegen das Verzeichnis der
+importierenden Datei, nicht-relative Specifier und Wurzel-Escapes → **leere** Kandidatenmenge;
+`path`/Default: unverändert) — so lösen gepunktete (JVM/Python/C#), `src`-gewurzelte (C++) oder
+datei-relative (TypeScript) Importe auf, sofern der Paket-Baum den Verzeichnis-Baum spiegelt
+bzw. die `layers`-Globs verzeichnisbasiert sind. Dann werden Symbole über die `layers`-Globs des Zielpfads aufgelöst
 (**spezifischster/längster** literaler Präfix gewinnt) — die Ziel-Rolle ist die **des aufgelösten Layers**; die Reinheits-Regeln
 dispatchen über die Rolle, nicht den Namen. Die **`tech`-Muster** dagegen lösen in
 **Deklarationsreihenfolge** auf (**Erst-Treffer** gewinnt, `matchTech`) — uniform für
@@ -240,3 +259,5 @@ und [AC-QA-03](lastenheft.md#ac-qa-03--reproduzierbarkeit).
 | 0.10.0 | 2026-07-01 | `SPEC-CONF-001`: `resolution`-Block (Map Sprache → `{mode, roots, package_base}`; `mode ∈ {path, fixed-root}`, `relative`/`namespace` reserviert → Exit 2). `SPEC-RULE-001`: Import-Symbol wird **vor** der Layer-Auflösung gemäß dem `mode` seiner **Quelldatei-Sprache** normalisiert (`fixed-root`: `roots` voran, bei gesetztem `package_base` zusätzlich Strip + `.`→`/`) — Grenze Paket==Verzeichnis. Folgt [`AC-FA-CONF-001`](lastenheft.md#ac-fa-conf-001--konfigurationsdatei-a-checkyml) 0.10.0. |
 | 0.11.0 | 2026-07-02 | `SPEC-EXTRACT-001`: Python-Muster (`import a.b.c` inkl. Alias, `from a.b import c` → Modulpfad; relative Importe nicht gegriffen — reservierter `relative`-Modus) als sechstes Backend; Backend-Menge → `{cpp,go,rust,kotlin,java,python}`. Folgt [`AC-FA-EXTRACT-001`](lastenheft.md#ac-fa-extract-001--sprach-backends-für-die-import-extraktion) 0.11.0. |
 | 0.12.0 | 2026-07-02 | `SPEC-EXTRACT-001`: C#-Muster (`using`-Direktiven inkl. `global`/`static`/Alias-Ziel; Pflicht-`;` nach dem Namen schließt `using`-Statements aus) als siebtes Backend; Backend-Menge → `{cpp,go,rust,kotlin,java,python,csharp}`. Folgt [`AC-FA-EXTRACT-001`](lastenheft.md#ac-fa-extract-001--sprach-backends-für-die-import-extraktion) 0.12.0. |
+| 0.13.0 | 2026-07-03 | `SPEC-EXTRACT-001`: TypeScript-Muster (ES-Module-Formen → Modul-Specifier in `'…'`/`"…"`, Semikolon optional; `import … from` inkl. `type`, Seiteneffekt, Re-Exports, `import X = require(…)`, Fortsetzungszeile `} from '…'`; Mittelteil auf Import-Clause-Zeichen beschränkt) als achtes Backend; Backend-Menge → `{cpp,go,rust,kotlin,java,python,csharp,typescript}`. Folgt [`AC-FA-EXTRACT-001`](lastenheft.md#ac-fa-extract-001--sprach-backends-für-die-import-extraktion) 0.13.0. |
+| 0.13.0 | 2026-07-03 | `SPEC-CONF-001`/`SPEC-RULE-001`: `mode: relative` gültig (Specifier `.`/`..`/`./…`/`../…` lexikalisch gegen das Verzeichnis der importierenden Datei; Bare-Imports/Wurzel-Escape → **leere** Kandidatenmenge; `roots`/`package_base` unzulässig → Exit 2; nur `namespace` reserviert); die Symbol-Normalisierung kennt Sprache **und Pfad** der Quelldatei (Quellpfad-Threading). Folgt [`AC-FA-CONF-001`](lastenheft.md#ac-fa-conf-001--konfigurationsdatei-a-checkyml) 0.13.0. |

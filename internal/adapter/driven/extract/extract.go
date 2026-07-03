@@ -24,12 +24,13 @@ type extractFn func(src string) []core.Import
 // Adapter implements port.ExtractionPort. Its compiled patterns live on the
 // value (not as package globals) to satisfy the lint profile (ADR-0005).
 type Adapter struct {
-	goSingle, goBlock, goQuoted *regexp.Regexp
-	cppInclude                  *regexp.Regexp
-	rustUse, rustCrate          *regexp.Regexp
-	kotlinImp, javaImp          *regexp.Regexp
-	pyImp, pyFrom               *regexp.Regexp
-	csUsing                     *regexp.Regexp
+	goSingle, goBlock, goQuoted        *regexp.Regexp
+	cppInclude                         *regexp.Regexp
+	rustUse, rustCrate                 *regexp.Regexp
+	kotlinImp, javaImp                 *regexp.Regexp
+	pyImp, pyFrom                      *regexp.Regexp
+	csUsing                            *regexp.Regexp
+	tsFrom, tsSide, tsRequire, tsCont *regexp.Regexp
 	// backends maps a language to its extractor; its keys are the single
 	// source of the supported-backend set (SPEC-EXTRACT-001). A new backend is
 	// one entry — dispatch and language validation share this one map.
@@ -59,6 +60,18 @@ func newAdapter() Adapter {
 		// dotted name keeps using STATEMENTS (`using var x = …;`, `using (…)`,
 		// `using T x = …;`) from ever matching (SPEC-EXTRACT-001).
 		csUsing: regexp.MustCompile(`^\s*(?:global\s+)?using\s+(?:static\s+)?(?:[A-Za-z_][A-Za-z0-9_]*\s*=\s*)?([A-Za-z_][A-Za-z0-9_.]*)\s*;`),
+		// TypeScript: the module SPECIFIER (single or double quotes, semicolon
+		// optional/ASI) — never the names left of `from`. The middle part is
+		// restricted to import-clause characters (identifiers, { } * , and
+		// whitespace — no `=`, `(`, `.`, no quotes), so expression lines like
+		// `export const q = knex.from('users')` and dynamic `import(…)`/
+		// `require(…)` never match (SPEC-EXTRACT-001). tsCont catches the
+		// closing `} from '…'` line of a multi-line (Prettier-wrapped) import;
+		// call chains like `db.from('x')` never lead a line with `}`.
+		tsFrom:    regexp.MustCompile(`^\s*(?:import|export)\s+[\w$*{},\s]*?\bfrom\s*['"]([^'"]+)['"]`),
+		tsSide:    regexp.MustCompile(`^\s*import\s*['"]([^'"]+)['"]`),
+		tsRequire: regexp.MustCompile(`^\s*import\s+[\w$]+\s*=\s*require\s*\(\s*['"]([^'"]+)['"]`),
+		tsCont:    regexp.MustCompile(`^\s*\}\s*from\s*['"]([^'"]+)['"]`),
 	}
 	a.backends = map[string]extractFn{
 		"go":     func(src string) []core.Import { return dedupeSort(a.goImports(src)) },
@@ -68,6 +81,9 @@ func newAdapter() Adapter {
 		"java":   func(src string) []core.Import { return dedupeSort(lineMatches(src, a.javaImp)) },
 		"python": func(src string) []core.Import { return dedupeSort(lineMatches(src, a.pyImp, a.pyFrom)) },
 		"csharp": func(src string) []core.Import { return dedupeSort(lineMatches(src, a.csUsing)) },
+		"typescript": func(src string) []core.Import {
+			return dedupeSort(lineMatches(src, a.tsFrom, a.tsSide, a.tsRequire, a.tsCont))
+		},
 	}
 	return a
 }
