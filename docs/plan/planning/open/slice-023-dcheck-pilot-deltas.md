@@ -71,6 +71,25 @@ Historie 1/3–3/3); dieser Slice liefert die Umsetzung:
   (`**/*_test.go`) ist sprachgebunden nur per Konvention, und ein globaler
   Ausschluss (generierter Code) ist der allgemeinere Fall. Entscheidung ggf. per
   ADR festhalten.
+  **m-trace-Evidenz (2026-07-03, Sichtung des Schwester-Repos):** pnpm-TS-Monorepo
+  **mit Go-Hexagon-App** (`apps/api`: `hexagon/{domain,application,port}` +
+  `adapters/{driving,driven}`, 99 `*_test.go`) neben TS-Workspaces
+  (`packages/player-sdk` mit `src/{core,adapters,transport}`, `apps/dashboard`,
+  `packages/stream-analyzer`). Die Ausschluss-Klassen sind dort gemischt
+  sprachübergreifend und sprachgebunden: `node_modules/` liegt **je Workspace**
+  (pnpm — Root plus vier weitere), dazu `dist/`-Generat, `test-results/`,
+  `tests/`-Ordner, `*.test.ts` und `*_test.go`. Ohne `exclude` lägen 296 statt
+  94 eigene `.ts`-Dateien im Scan-Scope (**zwei Drittel Fremdcode**) — für
+  TS-Konsum ist `exclude` damit **Existenzbedingung**, nicht nur Test-Hygiene.
+  Zudem matcht der `languages`-Glob `**/*.ts` auch `*.d.ts`-Typ-Generat
+  (Suffix-Falle — ins Handbuch-Rezept). Ein **Top-Level**-`exclude` (z. B.
+  `["**/node_modules/**", "**/dist/**", "**/*.d.ts", "**/*_test.go",
+  "**/*.test.ts", "tests/**", "test-results/**"]`) deckt beide Welten in einer
+  Liste; ein je-Sprache-`exclude` müsste die repo-weiten Verzeichnis-Klassen je
+  Sprache duplizieren und lückte bei jeder neuen Sprache still. **Die Evidenz
+  stützt: Top-Level.** m-trace ist zugleich Kandidat für einen
+  Go+TS-Mono-Repo-Pilot (konsumiert bereits d-check mit Digest-Pin v0.2.0 und
+  fährt ein eigenes `make arch-check` nur für die Go-API).
 - **Wechselwirkung `exclude` ↔ `composition_root`:** beide nehmen Dateien aus,
   aber auf verschiedenen Ebenen (Scan vs. Regel-Auswertung) — Reihenfolge und
   Meldeverhalten (Zähler „gescannte Dateien") dokumentieren.
