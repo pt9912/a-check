@@ -1,6 +1,6 @@
 # Review-Synthese — slice-023: d-check-Pilot-Deltas
 
-**Datum:** 2026-07-03 · **Gegenstand:** [slice-023](../plan/planning/open/slice-023-dcheck-pilot-deltas.md)
+**Datum:** 2026-07-03 · **Gegenstand:** [slice-023](../plan/planning/done/slice-023-dcheck-pilot-deltas.md)
 ([ADR-0018](../plan/adr/0018-exclude-scan-scope.md),
 [AC-FA-RULE-003](../../spec/lastenheft.md#ac-fa-rule-003--tech-kapselung-regel-tech-leak)/[AC-FA-CONF-001](../../spec/lastenheft.md#ac-fa-conf-001--konfigurationsdatei-a-checkyml)
 0.14.0: `tech.adapter`-Liste · `composition_root: allow|forbid` · `exclude`)
