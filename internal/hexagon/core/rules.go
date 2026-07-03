@@ -365,6 +365,11 @@ func NewTech(pattern string, adapters []string, match, compositionRoot string) (
 	if len(adapters) == 0 {
 		return Tech{}, fmt.Errorf("tech-Muster %q: leere adapter-Liste unzulässig", pattern)
 	}
+	for _, a := range adapters {
+		if a == "" {
+			return Tech{}, fmt.Errorf("tech-Muster %q: leerer adapter-Eintrag unzulässig", pattern)
+		}
+	}
 	var forbid bool
 	switch compositionRoot {
 	case "", "allow":

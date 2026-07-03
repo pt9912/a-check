@@ -1150,6 +1150,9 @@ func TestNewTechEmptyAdapterListFails(t *testing.T) { // Review-R1 T-k: der Kern
 	if _, err := NewTech("x", []string{}, "", ""); err == nil {
 		t.Fatal("NewTech muss die leere adapter-Liste selbst ablehnen (leerer Slice)")
 	}
+	if _, err := NewTech("x", []string{"a", ""}, "", ""); err == nil {
+		t.Fatal("NewTech muss auch leere adapter-EINTRÄGE selbst ablehnen (Delta-Review-NIT: Kern-Wächter deckt jetzt beides)")
+	}
 }
 
 func TestCompositionRootFindingsSortedWithOthers(t *testing.T) { // Review-R1 T-4 / AC-QA-01: CR- und Nicht-CR-Befunde stabil gemischt sortiert

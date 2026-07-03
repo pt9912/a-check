@@ -90,7 +90,9 @@ in `d-migrate` real existierende, heute nur per Review erzwungene Regel.
 zugeordnetes Framework/Tech (z. B. `*.hxx` → Geometrie-Adapter, `sqlite3*` →
 Persistenz-Adapter, `Qt` → UI-Adapter, `net/http` → http-Adapter, `yaml` →
 Config- **und** Report-Adapter) erscheint **nur** in seinem/seinen Adapter(n)
-— `adapter` als Pfad oder Pfad-**Liste**, das Symbol ist in **jedem** gelisteten
+— `adapter` als nicht-leerer Pfad oder Pfad-**Liste** (leere Liste, leerer
+Listen-Eintrag sowie leerer/fehlender Skalar → Exit 2; der leere Adapter war
+vormals ein stiller Never-Leak-Eintrag), das Symbol ist in **jedem** gelisteten
 Adapter erlaubt — und in der Composition Root, sofern der Eintrag deren Ausnahme
 nicht per **`composition_root: forbid`** abschaltet (Default `allow` =
 bisheriges Verhalten; das Verbot betrifft nur die `tech`-Ausnahme — die
@@ -110,7 +112,8 @@ Symbol, greift der **in Deklarationsreihenfolge erste** (deterministisch; kein
 - **Präzedenz:** Given mehrere `tech`-Muster (substring und/oder regex), die dasselbe Symbol treffen, when `a-check` läuft, then greift der in Deklarationsreihenfolge erste Treffer (deterministisch).
 - **Mehr-Adapter:** Given ein `tech`-Eintrag mit Adapter-**Liste** und das Symbol in einem der gelisteten Adapter, when `a-check` läuft, then kein Befund; liegt es außerhalb **aller** gelisteten Adapter, then ein Befund (`tech-leak`) und Exit-Code 1.
 - **Composition-Root-Verbot:** Given ein `tech`-Eintrag mit `composition_root: forbid` und das Symbol in der Composition Root, when `a-check` läuft, then ein Befund (`tech-leak`) und Exit-Code 1; die Ausnahme der **Schicht**-Regeln für die Composition Root bleibt unberührt.
-- **Rückwärtskompat:** Given ein `tech`-Eintrag **ohne** `match`, **ohne** `composition_root`-Feld und mit Skalar-`adapter`, when `a-check` läuft, then Substring- und Erlaubnis-Semantik wie bisher (byte-identische Ausgabe).
+- **Rückwärtskompat:** Given ein `tech`-Eintrag **ohne** `match`, **ohne** `composition_root`-Feld und mit **nicht-leerem** Skalar-`adapter`, when `a-check` läuft, then Substring- und Erlaubnis-Semantik wie bisher (byte-identische Ausgabe).
+- **Negative (leerer Adapter):** Given ein `tech`-Eintrag mit leerem oder fehlendem `adapter` (Skalar wie Liste), when `a-check` lädt, then Exit-Code 2 — statt des vormals stillen Never-Leak-Eintrags (das Muster meldete nie, falsch-grün).
 
 **Out-of-Scope:** semantische Unterscheidung gleichnamiger, aber framework-fremder Symbole (Heuristik-Grenze, siehe `AC-QA-02`).
 
@@ -327,7 +330,7 @@ Striktes Decoding, fail-closed (Exit 2 bei unbekanntem Schlüssel, ungültiger `
 unbekanntem `match`-Wert, einer als Regex nicht kompilierbaren `pattern`, einem `languages`-Schlüssel
 außerhalb der unterstützten Backends aus [AC-FA-EXTRACT-001](#ac-fa-extract-001--sprach-backends-für-die-import-extraktion),
 einem reservierten/unbekannten `resolution.mode` oder `roots`/`package_base` bei `mode: relative`,
-einer **leeren** `tech.adapter`-Liste, einem `composition_root`-Wert außerhalb
+einer **leeren** `tech.adapter`-Liste oder einem leeren/fehlenden `tech.adapter`, einem `composition_root`-Wert außerhalb
 `{allow, forbid}` oder einem ungültigen `exclude`-Glob).
 
 **Akzeptanzkriterien:**
@@ -343,7 +346,7 @@ einer **leeren** `tech.adapter`-Liste, einem `composition_root`-Wert außerhalb
 - **Negative (`resolution`):** Given ein `resolution.mode` außerhalb `{path, fixed-root, relative}` (inkl. des reservierten `namespace`) **oder** `{mode: relative, roots: […]}` bzw. `{mode: relative, package_base: …}`, when `a-check` lädt, then Exit-Code 2.
 - **Happy (`exclude`):** Given `exclude: ["**/*_test.go"]` und ein Tech-/Schicht-Verstoß **nur** in einer Test-Datei, when `a-check` läuft, then kein Befund (die Datei wird nicht gescannt).
 - **Boundary (`exclude`):** Given eine Config **ohne** `exclude`, when `a-check` läuft, then byte-identische Ausgabe wie bisher.
-- **Negative (neue Schlüssel):** Given eine **leere** `tech.adapter`-Liste, ein `composition_root` mit einem Wert außerhalb `{allow, forbid}` **oder** ein ungültiger `exclude`-Glob, when `a-check` lädt, then Exit-Code 2.
+- **Negative (neue Schlüssel):** Given eine **leere** `tech.adapter`-Liste, ein leerer/fehlender `tech.adapter`, ein `composition_root` mit einem Wert außerhalb `{allow, forbid}` **oder** ein ungültiger `exclude`-Glob, when `a-check` lädt, then Exit-Code 2.
 
 **Out-of-Scope:** Vererbung/Includes zwischen Config-Dateien.
 
@@ -402,6 +405,6 @@ Konsumenten-Repos).
 | 0.12.0 | 2026-07-02 | `AC-FA-EXTRACT-001` um **C#** erweitert (Schlüssel `csharp`; `using`-Direktiven → gepunkteter Namespace, `static`/`global` übersprungen, Alias-**Ziel** gewertet, Pflicht-`;` schließt `using`-Statements aus) — siebtes Sprach-Backend. Schicht-Auflösung über den `fixed-root`-Modus unter Namespace==Verzeichnis (`AC-QA-02`-Grenze); der reservierte `namespace`-Modus bleibt Exit 2 (welle-06, slice-021). |
 | 0.13.0 | 2026-07-03 | `AC-FA-EXTRACT-001` um **TypeScript** erweitert (Schlüssel `typescript`; ES-Module-Formen → Modul-Specifier in `'…'`/`"…"`, Semikolon optional: `import … from` inkl. `type`, Seiteneffekt-Import, Re-Exports `export … from`, `import X = require(…)`, Fortsetzungszeile `} from '…'` mehrzeiliger Imports; Mittelteil auf Import-Clause-Zeichen beschränkt — Ausdrucks-`import()`/`require()` nie gegriffen) — achtes Sprach-Backend (welle-06, slice-022). |
 | 0.13.0 | 2026-07-03 | `AC-FA-CONF-001`: `resolution.mode` um **`relative`** erweitert — Specifier `.`/`..`/`./…`/`../…` lexikalisch gegen das Verzeichnis der importierenden Datei; Bare-Imports und Wurzel-Escape (führendes `..` nach Normalisierung) → **leere** Kandidatenmenge (kein Geister-Match, `AC-QA-02`); `roots`/`package_base` bei `relative` unzulässig → Exit 2; nur `namespace` bleibt reserviert (welle-06, slice-022). |
-| 0.14.0 | 2026-07-03 | **CR d-check-Pilot (1/3)** — `AC-FA-RULE-003`/`AC-FA-CONF-001`: `tech.adapter` auch als Pfad-**Liste** (Symbol in jedem gelisteten Adapter erlaubt; leere Liste → Exit 2); Skalar bleibt gültig (rückwärtskompatibel). Anlass: d-check erlaubt `yaml` in **zwei** Adaptern (Config **und** Report) — mit Ein-Pattern-ein-Adapter nicht ausdrückbar (Erst-Treffer-Präzedenz). welle-11, slice-023. |
+| 0.14.0 | 2026-07-03 | **CR d-check-Pilot (1/3)** — `AC-FA-RULE-003`/`AC-FA-CONF-001`: `tech.adapter` auch als Pfad-**Liste** (Symbol in jedem gelisteten Adapter erlaubt; leere Liste/leerer Eintrag → Exit 2); nicht-leerer Skalar bleibt gültig (rückwärtskompatibel), leerer/fehlender `adapter` → Exit 2 (fail-closed statt vormals stillem Never-Leak-Eintrag, Umsetzungs-Review). Anlass: d-check erlaubt `yaml` in **zwei** Adaptern (Config **und** Report) — mit Ein-Pattern-ein-Adapter nicht ausdrückbar (Erst-Treffer-Präzedenz). welle-11, slice-023. |
 | 0.14.0 | 2026-07-03 | **CR d-check-Pilot (2/3)** — `AC-FA-RULE-003`/`AC-FA-CONF-001`: die Composition-Root-Ausnahme der `tech`-Kapselung wird **pro Eintrag steuerbar** (`composition_root: allow\|forbid`, Default `allow` = bisheriges Verhalten); `forbid` betrifft nur `tech-leak`, die Schicht-Regel-Ausnahme der Composition Root bleibt. Anlass: d-check verbietet `net/http`/`yaml` auch in CLI/`cmd` — die Total-Ausnahme kostete dort die Deckung. welle-11, slice-023. |
 | 0.14.0 | 2026-07-03 | **CR d-check-Pilot (3/3)** — `AC-FA-CONF-001`: optionaler **`exclude`**-Block (Datei-Globs) nimmt Dateien vor der Extraktion vom Scan aus (explizites Gegenstück zur negations-freien Glob-Engine); ohne Block byte-identisch. Anlass: der Scanner erfasst `*_test.go`, d-checks abgelöstes `go list`-Gate prüfte nur Nicht-Test-Imports — ohne Ausschluss ist der saubere Baum dort rot. welle-11, slice-023. |
