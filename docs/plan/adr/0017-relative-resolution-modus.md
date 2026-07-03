@@ -13,7 +13,7 @@
 `resolution`-Map mit `mode`-Diskriminator und **reservierte** `relative` (Exit 2) für Sprachen,
 deren Importe gegen den **Ort der importierenden Datei** auflösen statt gegen eine feste Wurzel.
 Der dort benannte Re-Evaluierungs-Trigger („eigener ADR, sobald ein Pilot feuert") feuert jetzt:
-das **TypeScript-Backend** ([slice-022](../planning/open/slice-022-typescript-backend.md),
+das **TypeScript-Backend** ([slice-022](../planning/done/slice-022-typescript-backend.md),
 welle-06). TypeScript-Module importieren einander mit relativen Specifiern (`./db`,
 `../core/model`) — die gelieferten Modi können das nicht:
 
@@ -79,7 +79,7 @@ Sprach-Map, Sprach-Threading und `mode`-Diskriminator gelten unverändert):
   Supersede. Genau das dort versprochene „kein Re-Architecting".
 - **Schema** ([AC-FA-CONF-001](../../../spec/lastenheft.md#ac-fa-conf-001--konfigurationsdatei-a-checkyml)/[SPEC-CONF-001](../../../spec/spezifikation.md#spec-conf-001--konfigurationsschema)):
   `mode ∈ {path, fixed-root, relative}`; nur `namespace` reserviert.
-- **Erste Nutzerin:** TypeScript ([slice-022](../planning/open/slice-022-typescript-backend.md)).
+- **Erste Nutzerin:** TypeScript ([slice-022](../planning/done/slice-022-typescript-backend.md)).
   Der Modus ist sprach-parametrisch generisch; C++-`"…"`-Includes (datei-relativ) vs.
   `<…>`-Includes (Include-Root) brauchen zusätzlich ein Import-**Kind**-Signal aus der
   Extraktion → Re-Evaluierungs-Trigger.
@@ -111,6 +111,6 @@ Sprach-Map, Sprach-Threading und `mode`-Diskriminator gelten unverändert):
 
 | Datum | Ereignis |
 |---|---|
-| 2026-07-03 | Proposed — Entwurf mit [slice-022](../planning/open/slice-022-typescript-backend.md); Sign-off Auftraggeber ausstehend. |
+| 2026-07-03 | Proposed — Entwurf mit [slice-022](../planning/done/slice-022-typescript-backend.md); Sign-off Auftraggeber ausstehend. |
 | 2026-07-03 | Entwurf nach adversarischem Review geschärft: leere Kandidatenmenge statt Roh-Durchreichung (Geister-Match `@actions/core`↔`core/**`), Barrel-`.`/`..` als relativ, Escape scharf definiert (führendes `..` nach Normalisierung), Endungs-Agnostik an verzeichnisbasierte Globs gebunden. |
-| 2026-07-03 | Proposed → Accepted (Sign-off Auftraggeber: Entscheide A–G gemäß Empfehlung, [slice-022](../planning/open/slice-022-typescript-backend.md) §7). Ab jetzt immutable; Ablösung nur via Folge-ADR mit `Supersedes`. |
+| 2026-07-03 | Proposed → Accepted (Sign-off Auftraggeber: Entscheide A–G gemäß Empfehlung, [slice-022](../planning/done/slice-022-typescript-backend.md) §7). Ab jetzt immutable; Ablösung nur via Folge-ADR mit `Supersedes`. |
