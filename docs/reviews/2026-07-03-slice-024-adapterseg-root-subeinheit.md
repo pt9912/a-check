@@ -1,6 +1,6 @@
 # Review-Synthese — slice-024: Root-Sub-Einheit für `adapterSeg` (Blatt-Klassifikation)
 
-**Datum:** 2026-07-03 · **Gegenstand:** [slice-024](../plan/planning/open/slice-024-adapterseg-root-subeinheit.md)
+**Datum:** 2026-07-03 · **Gegenstand:** [slice-024](../plan/planning/done/slice-024-adapterseg-root-subeinheit.md)
 ([ADR-0019](../plan/adr/0019-adapterseg-root-subeinheit.md) Proposed — A–C abgenommen, D ausstehend;
 [AC-FA-RULE-002](../../spec/lastenheft.md#ac-fa-rule-002--keine-lateralen-adapter-kanten-regel-lateral-adapter) 0.15.0)
 · **Form:** adversarisches Multi-Linsen-Review, 3 read-only Linsen (Code · Vertrag/Spec · Tests).

@@ -103,7 +103,7 @@ eigenen Einheit namens ihres Dateinamens.
 
 | Datum | Ereignis |
 |---|---|
-| 2026-07-03 | Proposed — Entwurf mit [slice-024](../planning/open/slice-024-adapterseg-root-subeinheit.md); Evidenz b-cad-Pilot (V3b: 39, V4 nach den dortigen Umbauten: 40 Falsch-Positive). |
-| 2026-07-03 | Sign-off Auftraggeber für die Entscheide A–C (gemäß Empfehlung, [slice-024](../planning/open/slice-024-adapterseg-root-subeinheit.md) §6). |
+| 2026-07-03 | Proposed — Entwurf mit [slice-024](../planning/done/slice-024-adapterseg-root-subeinheit.md); Evidenz b-cad-Pilot (V3b: 39, V4 nach den dortigen Umbauten: 40 Falsch-Positive). |
+| 2026-07-03 | Sign-off Auftraggeber für die Entscheide A–C (gemäß Empfehlung, [slice-024](../planning/done/slice-024-adapterseg-root-subeinheit.md) §6). |
 | 2026-07-03 | **In der Umsetzung geschärft (Entscheid D, zur Abnahme):** Blatt-Klassifikation datei-förmig (`.`) → Root `''` vs. verzeichnis-förmig → Sub-Einheit — das Dogfooding deckte auf, dass die reine Root-Regel Go-Paket-Blätter (`report_test.go` → Eigen-Paket) falsch meldet und Cross-Paket-Lateral blenden würde; endungslose Specifier als dokumentierte Grenze in die Re-Eval-Trigger. Status bleibt Proposed bis D abgenommen. |
-| 2026-07-03 | Proposed → Accepted (Sign-off Auftraggeber: Entscheid D mit dem Merge-Wort bestätigt, [slice-024](../planning/open/slice-024-adapterseg-root-subeinheit.md) §6). Ab jetzt immutable; Ablösung nur via Folge-ADR mit `Supersedes`. |
+| 2026-07-03 | Proposed → Accepted (Sign-off Auftraggeber: Entscheid D mit dem Merge-Wort bestätigt, [slice-024](../planning/done/slice-024-adapterseg-root-subeinheit.md) §6). Ab jetzt immutable; Ablösung nur via Folge-ADR mit `Supersedes`. |
