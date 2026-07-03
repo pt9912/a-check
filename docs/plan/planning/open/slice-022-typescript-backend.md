@@ -1,8 +1,10 @@
 # slice-022 — TypeScript-Sprach-Backend + `relative`-Auflösungs-Modus (welle-06-sprach-backends)
 
-**Status:** in Umsetzung (2026-07-03). **Abnahme erteilt:** Entscheide A–G gemäß Empfehlung
-(Maintainer-Wort 2026-07-03, nach adversarischem Review des Entwurfs);
-[ADR-0017](../../adr/0017-relative-resolution-modus.md) damit `Accepted`.
+**Status:** done (2026-07-03). Abnahme erteilt (Entscheide A–G gemäß Empfehlung, §7);
+Umsetzung + `make gates`/`make ci` + Multi-Linsen-Review (4 Linsen) + Delta-Re-Review + Fixes
+erledigt, Synthese
+[`docs/reviews/2026-07-03-slice-022-typescript-backend.md`](../../../reviews/2026-07-03-slice-022-typescript-backend.md);
+[ADR-0017](../../adr/0017-relative-resolution-modus.md) `Accepted`.
 **Welle:** welle-06-sprach-backends (viertes Backend-Inkrement nach
 [slice-014](../done/slice-014-java-backend.md)/[slice-020](../done/slice-020-python-backend.md)/[slice-021](../done/slice-021-csharp-backend.md))
 **plus** Import-Auflösung (zweiter gelieferter Modus nach [slice-015](../done/slice-015-resolution-roots.md)).
@@ -290,19 +292,23 @@ Sprachmengen (nicht anfassen). **Nicht**
 
 ## 6. Definition of Done
 
-- [ ] [ADR-0017](../../adr/0017-relative-resolution-modus.md) **Accepted** (Sign-off) +
+- [x] [ADR-0017](../../adr/0017-relative-resolution-modus.md) **Accepted** (Sign-off) +
       [ADR-Index](../../adr/README.md).
-- [ ] Lastenheft + Spezifikation **0.13.0**: TS-Backend + `relative`-Modus (§4.1/§4.2) mit
-      Historie-Zeilen; [SPEC-RULE-001](../../../../spec/spezifikation.md#spec-rule-001--regel-auswertung)-Threading
-      um den Quellpfad ergänzt.
-- [ ] `extract.go`: TS-Regexes + Registry-Eintrag `"typescript"`; Dogfooding grün (0 Befunde).
-- [ ] `core`/`config`: `relative`-Auflösung + Quellpfad-Threading; fail-closed-Constraints;
-      Default (`path`/ohne `resolution`) byte-identisch unverändert.
-- [ ] Tests: §5.6-Umfang inkl. CLI-Integration + Mono-Repo; Fixture-/Meldungs-Nachzug §5.7.
-- [ ] „sieben → acht Sprachen"-Sweep vollständig (§4.4).
-- [ ] `make gates` + `make ci` grün; Multi-Linsen-Review (4 Linsen) + ggf. Delta bestanden.
-- [ ] **Maintainer-Abnahme der Entscheide A–G (§7).**
-- [ ] Closure: reiner `git mv` nach `done/` (AGENTS §3.3); 2 beobachtbare Kriterien + Lerneintrag.
+- [x] Lastenheft + Spezifikation **0.13.0**: TS-Backend + `relative`-Modus (§4.1/§4.2) mit
+      je zwei Historie-Zeilen; [SPEC-RULE-001](../../../../spec/spezifikation.md#spec-rule-001--regel-auswertung)-Threading
+      um den Quellpfad ergänzt (+ Review-R1: lateral-Zeile auf den Ziel-Kandidaten präzisiert).
+- [x] `extract.go`: TS-Regexes + Registry-Eintrag `"typescript"`; Dogfooding grün (0 Befunde).
+- [x] `core`/`config`: `relative`-Auflösung + Quellpfad-Threading; fail-closed-Constraints;
+      Default (`path`/ohne `resolution`) byte-identisch unverändert (Review-R1 C-1: `lateral`
+      prüft Sink + Sub-Einheit auf dem aufgelösten Kandidaten).
+- [x] Tests: §5.6-Umfang inkl. CLI-Integration + Mono-Repo; Fixture-/Meldungs-Nachzug §5.7
+      (+ Review-R1: Mittelteil-Mutanten, tech-am-Roh-Symbol, `.js`→Schicht, `..`-Escape-Ast,
+      Intra-Sub-Einheit/Sink-auf-Kandidat).
+- [x] „sieben → acht Sprachen"-Sweep vollständig (§4.4).
+- [x] `make gates` + `make ci` grün; Multi-Linsen-Review (4 Linsen) + Delta bestanden
+      ([Synthese](../../../reviews/2026-07-03-slice-022-typescript-backend.md)).
+- [x] **Maintainer-Abnahme der Entscheide A–G (§7)** — erteilt 2026-07-03.
+- [x] Closure: reiner `git mv` nach `done/` (AGENTS §3.3); 2 beobachtbare Kriterien + Lerneintrag (§8).
 
 ## 7. Offen / Entscheidungen zur Abnahme
 
@@ -353,3 +359,42 @@ Sprachmengen (nicht anfassen). **Nicht**
   in Lastenheft/Spezifikation ausgewiesen. `mode: relative` ist sprach-parametrisch generisch:
   für eine Sprache, deren Extraktion keine relativen Specifier liefert (Python), ist er
   deklarierbar, aber wirkungslos — die Python-Grenze bleibt eine Extraktions-Grenze.
+
+## 8. Closure-Notiz
+
+**Abschluss (2026-07-03).** slice-022 (welle-06 — viertes und letztes Sprach-Backend, plus
+zweiter Auflösungs-Modus) umgesetzt, reviewt, abgenommen und gate-belegt. **welle-06 ist
+damit vollständig** (Java/Python/C#/TypeScript geliefert); vom Auflösungs-Ausbau bleibt
+allein der reservierte `namespace`-Modus (eigener Folge-Slice + Folge-ADR, Trigger: realer
+C#-Pilot mit Namespace≠Verzeichnis).
+
+- **Gate-Beleg:** `make gates` grün — `lint` 0 issues, alle Test-Pakete `ok`,
+  `coverage-gate` 96,00 % (≥ 90 %), `arch-check` **0** (Dogfooding), `doc-check` 0 Befunde,
+  gate-consistency/guard-selftest/record-gates ok; `make ci` (inkl. `image-test` 4/4) grün.
+- **Review (4 Linsen + Delta):** 3 MAJOR gefixt — (C-1) `lateral`/`adapter_sink` arbeiteten
+  am Roh-Specifier statt am aufgelösten Kandidaten (Falsch-Positiv für jeden
+  Intra-Sub-Einheit-Import, der TS-Alltagsfall); (T-1) die Mittelteil-Klasse von `tsFrom`
+  war unbewacht (die `knex.from`-Negative blockte der `from(`-Anker); (S-1/2) stale
+  „reservierter `relative`-Modus" in beiden Norm-Straten. Delta-Re-Review: kein
+  BLOCKER/MAJOR, Reste im Closure-Commit behoben. Details:
+  [Synthese](../../../reviews/2026-07-03-slice-022-typescript-backend.md).
+- **2 beobachtbare Kriterien:** (1) `TestTypescriptRelativeResolution` — TS-Domäne mit
+  `import { Db } from '../adapters/db';` und Prettier-umbrochenem Import
+  (Schlusszeile `} from "../adapters/db3"`) unter `{mode: relative}` ⇒ Exit 1 mit genau
+  2 × `core-impurity` (Zeile 1 + 6); der Bare-Import `@actions/adapters` (würde bei
+  Roh-Durchreichung segment-matchen) und die `=`-Ausdrucks-Zeile bleiben befundfrei —
+  pinnt leere Kandidatenmenge, Mittelteil-Klasse und Entscheid G end-to-end.
+  (2) `TestRelativeIntraSubunitNoLateral` — `./helper` in der eigenen Adapter-Sub-Einheit
+  bleibt befundfrei, `../db/conn` in eine andere wird `lateral-adapter` — pinnt die
+  Kandidaten-Semantik des Review-Fixes (Sub-Einheit nie am Roh-Specifier).
+- **Lerneintrag (geschärfte Regeln):** (a) **Namensraum-Umzug braucht Abnehmer-Sweep:**
+  Ein Auflösungs-Modus, der Symbole in einen anderen Namensraum überführt, muss *alle*
+  pfadbasierten Konsumenten des Symbols mitnehmen — `targetLayer` war umgestellt,
+  `lateral`/`adapterSeg`/`adapter_sink` konsumierten weiter `imp.Symbol` (R1 C-1). Künftig
+  bei solchen Umbauten jede `imp.Symbol`-Konsumstelle explizit listen und je Stelle
+  entscheiden Roh vs. Kandidat (`matchTech` bleibt bewusst Roh — jetzt deklariert).
+  (b) **Ein Negativ-Fixture bewacht nur, woran es als Einzigem scheitert:** `knex.from('…')`
+  wurde vom `from(`-Anker geblockt, nicht von der Mittelteil-Klasse, die es laut Kommentar
+  pinnen sollte — pro bewachtem Regex-Baustein ein Fixture, dessen *einziger* Blocker der
+  Baustein ist (Verschärfung des [slice-021](slice-021-csharp-backend.md)-Lerneintrags von
+  „Fehlsymbol muss auflösen" auf „Blocker muss eindeutig sein").

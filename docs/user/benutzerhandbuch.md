@@ -228,7 +228,11 @@ resolution:
 ```
 
 Dasselbe Schema trägt JVM-Pakete (`package_base: com.example`) und fremdgewurzelte
-C++-Includes (`roots: ["src"]`, ohne `package_base`). Voraussetzung ist, dass der
+C++-Includes (`roots: ["src"]`, ohne `package_base`). Hinweis: die
+`lateral-adapter`-Prüfung (Sub-Einheit, `adapter_sink`) arbeitet auf dem
+**aufgelösten Pfad-Kandidaten** — unter einem `resolution`-Modus schreiben Sie
+`adapter_sink` daher als Pfad-Fragment mit Slashes (z. B.
+`adapters/driver-common`), nicht als gepunkteten Namen. Voraussetzung ist, dass der
 Paket-/Namespace-Baum den Verzeichnis-Baum spiegelt — für C# ist das die verbreitete
 .NET-Konvention, aber **nicht** erzwungen: frei deklarierte Namespaces
 (Namespace ≠ Ordner) bleiben unaufgelöst (keine schicht-basierte Regel; die

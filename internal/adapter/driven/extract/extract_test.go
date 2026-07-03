@@ -140,10 +140,10 @@ func TestPythonImportAlias(t *testing.T) { // AC-FA-EXTRACT-001 boundary (Python
 	}
 }
 
-func TestPythonRelativeNotCounted(t *testing.T) { // AC-FA-EXTRACT-001 Out-of-Scope: relative Importe = Signal des reservierten relative-Modus
+func TestPythonRelativeNotCounted(t *testing.T) { // AC-FA-EXTRACT-001 Out-of-Scope: dokumentierte Grenze der Python-Extraktion (unabhängig vom gültigen relative-Modus, ADR-0017)
 	got := syms(newAdapter().importsFromSource("python", prepSource("python", "from . import x\nfrom ..pkg import y\nfrom .sibling import z\n")))
 	if len(got) != 0 {
-		t.Fatalf("relative Importe dürfen nicht extrahiert werden (reservierter relative-Modus), got %v", got)
+		t.Fatalf("relative Python-Importe dürfen nicht extrahiert werden (Extraktions-Grenze), got %v", got)
 	}
 }
 

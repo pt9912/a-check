@@ -138,8 +138,10 @@ func inferRole(name string) string {
 // sink containment and sub-unit discrimination live in the layer-glob namespace
 // — a raw relative specifier like "./helper" never carries the layer prefix and
 // would misreport every same-sub-unit import. In path mode cand IS the raw
-// import, so the pre-resolution behavior is unchanged. The caller guarantees
-// both ends resolve to role adapter.
+// import, so the pre-resolution behavior is unchanged; under dotted fixed-root
+// the sink/sub-unit checks now see the resolved PATH (adapter_sink is a path
+// fragment with slashes there, SPEC-RULE-001). The caller guarantees both ends
+// resolve to role adapter.
 func lateral(m Model, f FileImports, cand, tl string) bool {
 	if contains(cand, m.AdapterSink) {
 		return false
@@ -238,6 +240,9 @@ func litPrefixLen(g string) int {
 // returns the resolved candidate that produced the match — the layer-glob-
 // namespace path that downstream path work (lateral's sub-unit/sink checks)
 // must use instead of the raw specifier; in path mode it is the raw import.
+// Candidates are tried in roots order and only a strictly longer prefix
+// replaces the best, so the earliest candidate wins ties (deterministic,
+// SPEC-DET-001).
 func targetLayer(imp, srcPath string, layers []Layer, res ResolutionConfig) (string, string) {
 	best, bestCand, bestLen := "", "", -1
 	for _, cand := range resolveImport(imp, srcPath, res) {
