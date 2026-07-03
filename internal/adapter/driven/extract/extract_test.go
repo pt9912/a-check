@@ -368,6 +368,39 @@ func TestExtractSetsLanguage(t *testing.T) { // ADR-0016 (F5): Extract markiert 
 	}
 }
 
+func TestExtractExcludeSkipsFiles(t *testing.T) { // ADR-0018 (slice-023): exclude nimmt Dateien VOR der Extraktion aus — sie liefern gar nichts
+	dir := t.TempDir()
+	if err := os.MkdirAll(filepath.Join(dir, "core"), 0o755); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(filepath.Join(dir, "core", "x.go"), []byte("package core\nimport \"os\"\n"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	// Die Test-Datei enthält Import UND forbidden-construct-Muster — beides darf
+	// nie auftauchen, weil die Datei nicht gelesen wird (Scan-Scope, ADR-0018).
+	if err := os.WriteFile(filepath.Join(dir, "core", "x_test.go"), []byte("package core\nimport \"os\"\nimpl leak\n"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	m := core.Model{
+		Languages: map[string][]string{"go": {"**/*.go"}},
+		Exclude:   []string{"**/*_test.go"},
+		Forbidden: map[string][]string{"": {"impl "}},
+	}
+	files, err := newAdapter().Extract(dir, m)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(files) != 1 || files[0].Path != "core/x.go" {
+		t.Fatalf("die exclude-Datei darf im Ergebnis gar nicht existieren, got %+v", files)
+	}
+	// Ohne exclude: byte-identisches Alt-Verhalten — beide Dateien im Scan.
+	m.Exclude = nil
+	files, err = newAdapter().Extract(dir, m)
+	if err != nil || len(files) != 2 {
+		t.Fatalf("ohne exclude müssen beide Dateien gescannt werden, got %v / %+v", err, files)
+	}
+}
+
 // --- slice-022: TypeScript-Backend (AC-FA-EXTRACT-001) ---
 
 func tsSyms(src string) []string {

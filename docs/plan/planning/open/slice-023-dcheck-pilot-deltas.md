@@ -66,6 +66,20 @@ Historie 1/3–3/3); dieser Slice liefert die Umsetzung:
 
 ## 3. Vor der Umsetzung zu klären
 
+> **Entscheide bei Umsetzung (2026-07-03, zur Abnahme):** (a) `exclude`-Ort =
+> **Top-Level**, per [ADR-0018](../../adr/0018-exclude-scan-scope.md) (Proposed —
+> Sign-off ausstehend; m-trace-Evidenz unten). (b) Reihenfolge: `exclude` wirkt als
+> **Scan-Scope vor der Extraktion** (Datei existiert für keine Prüfung),
+> `composition_root` erst in der Regel-Auswertung — in
+> [SPEC-EXTRACT-001](../../../../spec/spezifikation.md#spec-extract-001--import-extraktion)/[SPEC-RULE-001](../../../../spec/spezifikation.md#spec-rule-001--regel-auswertung)
+> dokumentiert; einen „gescannte Dateien"-Zähler gibt der Report heute nicht aus
+> (Ausweis des Scan-Scopes = [ADR-0018](../../adr/0018-exclude-scan-scope.md)
+> Re-Eval-Trigger). (c) `tech-leak`-Meldetext nennt **alle** gelisteten Adapter in
+> Deklarationsreihenfolge (`config|report`); Composition-Root-Verbots-Befunde tragen
+> den Zusatz `(composition_root: forbid)`. (d) Strengegefälle: der **Skalar** bleibt
+> byte-identisch (auch leer/fehlend — Alt-Semantik), die **Liste** ist die neue,
+> strikte Form (leere Liste/leerer Eintrag → Exit 2).
+
 - **`exclude`-Ort im Schema:** Top-Level neben `languages` (ein Scan hat eine
   Ausschluss-Liste) oder je Sprache? Vorschlag: Top-Level — die d-check-Evidenz
   (`**/*_test.go`) ist sprachgebunden nur per Konvention, und ein globaler

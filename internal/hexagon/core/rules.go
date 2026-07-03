@@ -16,7 +16,8 @@ func Evaluate(m Model, files []FileImports) []Finding {
 	var fs []Finding
 	for _, f := range files {
 		if matchesAny(f.Path, m.CompositionRoot) {
-			continue // composition root wires everything; exempt from layering + tech-leak
+			fs = append(fs, compositionRootFindings(m, f)...)
+			continue
 		}
 		for _, imp := range f.Imports {
 			if find, ok := ruleFor(m, f, imp); ok {
@@ -30,6 +31,20 @@ func Evaluate(m Model, files []FileImports) []Finding {
 		}
 	}
 	sortFindings(fs)
+	return fs
+}
+
+// compositionRootFindings checks a composition-root file: it wires everything,
+// so the layer rules are exempt — but tech-leak stays active for entries with
+// `composition_root: forbid` (AC-FA-RULE-003 0.14.0); entries with the allow
+// default keep the pre-0.14.0 exemption.
+func compositionRootFindings(m Model, f FileImports) []Finding {
+	var fs []Finding
+	for _, imp := range f.Imports {
+		if tech, isTech := matchTech(imp.Symbol, m.Techs); isTech && tech.ForbidCompositionRoot && !tech.inAdapter(f.Path) {
+			fs = append(fs, Finding{f.Path, imp.Line, "tech-leak", "Tech " + tech.Pattern + " außerhalb " + tech.adapterLabel() + " (composition_root: forbid)"})
+		}
+	}
 	return fs
 }
 
@@ -47,8 +62,8 @@ func ruleFor(m Model, f FileImports, imp Import) (Finding, bool) {
 	switch {
 	case srcRole == "adapter" && tgtRole == "adapter" && lateral(m, f, cand, tl):
 		return Finding{f.Path, imp.Line, "lateral-adapter", "Adapter importiert anderen Adapter " + imp.Symbol}, true
-	case isTech && !strings.Contains(f.Path, tech.Adapter):
-		return Finding{f.Path, imp.Line, "tech-leak", "Tech " + tech.Pattern + " außerhalb " + tech.Adapter}, true
+	case isTech && !tech.inAdapter(f.Path):
+		return Finding{f.Path, imp.Line, "tech-leak", "Tech " + tech.Pattern + " außerhalb " + tech.adapterLabel()}, true
 	case srcRole == "adapter" && tgtRole == "port" && directionMismatch(m, f.Layer, tl):
 		return Finding{f.Path, imp.Line, "port-direction-mismatch", f.Layer + " (" + dirOf(f.Layer, m) + ") -> " + tl + " (" + dirOf(tl, m) + "): " + imp.Symbol}, true
 	case tl != "" && wrongDirection(m, f, tl):
@@ -340,13 +355,29 @@ func segIndex(s, p string) int {
 }
 
 // NewTech builds a Tech, compiling pattern as an unanchored RE2 regexp when
-// match=="regex". An empty match defaults to substring. It returns an error for
-// an unknown match mode or an uncompilable regex, which the config adapter maps
-// to exit code 2 (SPEC-CONF-001 / ADR-0015).
-func NewTech(pattern, adapter, match string) (Tech, error) {
+// match=="regex". An empty match defaults to substring. adapters carries one or
+// more owning path fragments (an empty list is rejected — AC-FA-RULE-003
+// 0.14.0); compositionRoot is "allow" (default, "") or "forbid". It returns an
+// error for an unknown match mode, an uncompilable regex, an empty adapter list
+// or an unknown compositionRoot value, which the config adapter maps to exit
+// code 2 (SPEC-CONF-001 / ADR-0015).
+func NewTech(pattern string, adapters []string, match, compositionRoot string) (Tech, error) {
+	if len(adapters) == 0 {
+		return Tech{}, fmt.Errorf("tech-Muster %q: leere adapter-Liste unzulässig", pattern)
+	}
+	var forbid bool
+	switch compositionRoot {
+	case "", "allow":
+		forbid = false
+	case "forbid":
+		forbid = true
+	default:
+		return Tech{}, fmt.Errorf("tech-Muster %q: ungültiges composition_root %q (allow|forbid)", pattern, compositionRoot)
+	}
+	t := Tech{Pattern: pattern, Adapters: adapters, ForbidCompositionRoot: forbid}
 	switch match {
 	case "", "substring":
-		return Tech{Pattern: pattern, Adapter: adapter}, nil
+		return t, nil
 	case "regex":
 		if pattern == "" {
 			return Tech{}, fmt.Errorf("tech-Muster: leeres regex-Pattern unzulässig (match: regex würde jeden Import treffen)")
@@ -355,11 +386,27 @@ func NewTech(pattern, adapter, match string) (Tech, error) {
 		if err != nil {
 			return Tech{}, fmt.Errorf("tech-Muster %q: ungültige Regex: %w", pattern, err)
 		}
-		return Tech{Pattern: pattern, Adapter: adapter, match: re.MatchString}, nil
+		t.match = re.MatchString
+		return t, nil
 	default:
 		return Tech{}, fmt.Errorf("tech-Muster %q: ungültiges match %q (substring|regex)", pattern, match)
 	}
 }
+
+// inAdapter reports whether the file path lies inside ANY of the tech's owning
+// adapters (the symbol is allowed in each listed adapter, AC-FA-RULE-003).
+func (t Tech) inAdapter(filePath string) bool {
+	for _, a := range t.Adapters {
+		if contains(filePath, a) {
+			return true
+		}
+	}
+	return false
+}
+
+// adapterLabel names all owning adapters in declaration order for the finding
+// message (deterministic, SPEC-RULE-001).
+func (t Tech) adapterLabel() string { return strings.Join(t.Adapters, "|") }
 
 // matches reports whether imp hits this tech pattern: the compiled regexp when
 // set, otherwise a substring test on Pattern (default / literal Tech).

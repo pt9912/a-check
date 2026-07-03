@@ -6,6 +6,25 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
+Lastenheft/Spezifikation 0.13.0 → 0.14.0 (**CR d-check-Pilot**, slice-023; ADR-0018):
+die drei Deltas, auf die d-check seine `arch-check`-Ablösung als Vorbedingung gestellt hat.
+
+### Added
+
+- **`AC-FA-RULE-003`/`AC-FA-CONF-001` (0.13.0→0.14.0):** `tech.adapter` auch als
+  Pfad-**Liste** — das Symbol ist in **jedem** gelisteten Adapter erlaubt (leere
+  Liste/leerer Eintrag → Exit 2; Skalar bleibt gültig, byte-identisch); die
+  `tech-leak`-Meldung nennt alle gelisteten Adapter in Deklarationsreihenfolge.
+- **`AC-FA-RULE-003`/`AC-FA-CONF-001` (0.14.0):** `composition_root: allow|forbid`
+  je `tech`-Eintrag (Default `allow` = bisheriges Verhalten): `forbid` schaltet nur
+  die `tech-leak`-Ausnahme der Composition Root für diesen Eintrag ab — die
+  Schicht-Regel-Ausnahme des Verdrahtungspunkts bleibt; anderer Wert → Exit 2.
+- **`AC-FA-CONF-001` (0.14.0):** optionaler **`exclude`**-Block (ADR-0018) —
+  Top-Level-Datei-Globs relativ zur Scan-Wurzel; Treffer fallen **vor** der
+  Extraktion vollständig vom Scan (auch `forbidden_constructs`); leerer Glob →
+  Exit 2; ohne Block byte-identisch. Evidenz: d-check (`**/*_test.go`) + m-trace
+  (`node_modules/` je Workspace, `dist/`, `*.d.ts`-Suffix-Falle).
+
 ## [0.7.0] - 2026-07-03
 
 Lastenheft/Spezifikation 0.12.0 → 0.13.0: **TypeScript-Backend** plus der bislang

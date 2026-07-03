@@ -215,6 +215,74 @@ func TestTechUnknownKeyFailsClosed(t *testing.T) { // AC-FA-CONF-001 negative: u
 	}
 }
 
+// --- slice-023 (AC-FA-RULE-003/AC-FA-CONF-001 0.14.0): adapter-Liste, composition_root, exclude ---
+
+func TestTechAdapterListValid(t *testing.T) { // adapter als Pfad-LISTE dekodiert (Reihenfolge erhalten)
+	m, err := New().Load(write(t, techBody(`{pattern: yaml, adapter: [adapters/config, adapters/report]}`)))
+	if err != nil {
+		t.Fatalf("adapter-Liste muss laden, got %v", err)
+	}
+	a := m.Techs[0].Adapters
+	if len(a) != 2 || a[0] != "adapters/config" || a[1] != "adapters/report" {
+		t.Fatalf("adapter-Liste nicht korrekt dekodiert: %v", a)
+	}
+}
+
+func TestTechAdapterScalarBackCompat(t *testing.T) { // Skalar == einelementige Liste (rückwärtskompatibel)
+	m, err := New().Load(write(t, techBody(`{pattern: "net/http", adapter: "adapters/http"}`)))
+	if err != nil || len(m.Techs[0].Adapters) != 1 || m.Techs[0].Adapters[0] != "adapters/http" {
+		t.Fatalf("Skalar-adapter muss einelementige Liste ergeben, got %v / %v", err, m.Techs)
+	}
+}
+
+func TestTechAdapterEmptyListFailsClosed(t *testing.T) { // leere Liste -> Exit 2
+	if _, err := New().Load(write(t, techBody(`{pattern: yaml, adapter: []}`))); err == nil || !strings.Contains(err.Error(), "leere adapter-Liste") {
+		t.Fatalf("leere adapter-Liste muss brechen, got %v", err)
+	}
+}
+
+func TestTechAdapterEmptyListEntryFailsClosed(t *testing.T) { // leerer Listen-Eintrag -> Exit 2 (strikte neue Form)
+	if _, err := New().Load(write(t, techBody(`{pattern: yaml, adapter: [adapters/config, ""]}`))); err == nil || !strings.Contains(err.Error(), "leerer adapter-Listen-Eintrag") {
+		t.Fatalf("leerer Listen-Eintrag muss brechen, got %v", err)
+	}
+}
+
+func TestTechCompositionRootDecode(t *testing.T) { // forbid -> Flag gesetzt; allow/weggelassen -> Default false
+	m, err := New().Load(write(t, techBody(`{pattern: "net/http", adapter: "adapters/http", composition_root: forbid}`)))
+	if err != nil || !m.Techs[0].ForbidCompositionRoot {
+		t.Fatalf("composition_root: forbid muss das Flag setzen, got %v / %+v", err, m.Techs)
+	}
+	m2, err := New().Load(write(t, techBody(`{pattern: "net/http", adapter: "adapters/http", composition_root: allow}`)))
+	if err != nil || m2.Techs[0].ForbidCompositionRoot {
+		t.Fatalf("composition_root: allow ist der Default (Flag false), got %v / %+v", err, m2.Techs)
+	}
+	m3, err := New().Load(write(t, techBody(`{pattern: "net/http", adapter: "adapters/http"}`)))
+	if err != nil || m3.Techs[0].ForbidCompositionRoot {
+		t.Fatalf("ohne composition_root-Feld gilt allow (Flag false), got %v / %+v", err, m3.Techs)
+	}
+}
+
+func TestTechCompositionRootInvalidFailsClosed(t *testing.T) { // Wert außerhalb {allow, forbid} -> Exit 2
+	if _, err := New().Load(write(t, techBody(`{pattern: "net/http", adapter: "adapters/http", composition_root: maybe}`))); err == nil || !strings.Contains(err.Error(), "(allow|forbid)") {
+		t.Fatalf("ungültiger composition_root-Wert muss brechen (Enum in der Meldung), got %v", err)
+	}
+}
+
+func TestExcludeDecode(t *testing.T) { // AC-FA-CONF-001 / ADR-0018: exclude-Globs werden dekodiert
+	body := "version: 1\nlanguages:\n  go: [\"**/*.go\"]\nlayers:\n  core: [\"core/**\"]\nedges:\n  - {from: core, to: core}\nexclude:\n  - \"**/*_test.go\"\n  - \"**/node_modules/**\"\n"
+	m, err := New().Load(write(t, body))
+	if err != nil || len(m.Exclude) != 2 || m.Exclude[0] != "**/*_test.go" {
+		t.Fatalf("exclude muss dekodiert werden, got %v / %v", err, m.Exclude)
+	}
+}
+
+func TestExcludeEmptyGlobFailsClosed(t *testing.T) { // ADR-0018: leerer Glob -> Exit 2 (stiller Match-Nichts-Eintrag)
+	body := "version: 1\nlanguages:\n  go: [\"**/*.go\"]\nlayers:\n  core: [\"core/**\"]\nedges:\n  - {from: core, to: core}\nexclude:\n  - \"\"\n"
+	if _, err := New().Load(write(t, body)); err == nil || !strings.Contains(err.Error(), "leerer Glob") {
+		t.Fatalf("leerer exclude-Glob muss brechen, got %v", err)
+	}
+}
+
 // resBody baut eine minimale gültige Config mit einem resolution-Eintrag. Es
 // deklariert bewusst mehrere languages (config.Load prüft die Backend-Menge
 // nicht — das tut extract), damit der resolution-Key-gegen-languages-Check

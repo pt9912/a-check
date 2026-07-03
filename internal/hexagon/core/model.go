@@ -54,14 +54,20 @@ type Edge struct {
 	To   string
 }
 
-// Tech maps a framework/tech pattern to the path fragment of its owning adapter.
-// The pattern matches an imported symbol as a substring (default) or, when built
-// via NewTech with match=="regex", as an unanchored RE2 regexp (ADR-0015). A
+// Tech maps a framework/tech pattern to the path fragment(s) of its owning
+// adapter(s) — the symbol is allowed in EVERY listed adapter (AC-FA-RULE-003
+// 0.14.0; a scalar config adapter becomes a one-element list). The pattern
+// matches an imported symbol as a substring (default) or, when built via
+// NewTech with match=="regex", as an unanchored RE2 regexp (ADR-0015). A
 // literal Tech (zero match) matches as substring — backward compatible.
+// ForbidCompositionRoot switches off ONLY the composition-root exemption of
+// tech-leak for this entry (`composition_root: forbid`); the layer-rule
+// exemption of the composition root is untouched.
 type Tech struct {
-	Pattern string
-	Adapter string
-	match   func(string) bool // compiled matcher; nil ⇒ substring on Pattern
+	Pattern               string
+	Adapters              []string
+	ForbidCompositionRoot bool
+	match                 func(string) bool // compiled matcher; nil ⇒ substring on Pattern
 }
 
 // Model is the resolved architecture model decoded from `.a-check.yml`.
@@ -72,10 +78,11 @@ type Model struct {
 	Allow           []Edge // explicit extra allowed edges
 	AdapterSink     string // shared adapter sink (path fragment), optional
 	Techs           []Tech
-	CompositionRoot []string                    // globs, exempt from layering + tech-leak
+	CompositionRoot []string                    // globs, exempt from layering (+ tech-leak per entry, AC-FA-RULE-003)
 	Forbidden       map[string][]string         // layer name -> forbidden text patterns
 	IgnoreSymbols   []string                    // heuristic-boundary allowlist (markers)
 	Resolution      map[string]ResolutionConfig // language -> import resolution (ADR-0016)
+	Exclude         []string                    // file globs removed from the scan before extraction (ADR-0018)
 }
 
 // Finding is one rule violation. Its fields define the stable sort order

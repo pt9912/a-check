@@ -22,9 +22,10 @@ type yamlEdge struct {
 }
 
 type yamlTech struct {
-	Pattern string `yaml:"pattern"`
-	Adapter string `yaml:"adapter"`
-	Match   string `yaml:"match"` // "substring" (default) or "regex" (ADR-0015)
+	Pattern         string    `yaml:"pattern"`
+	Adapter         yaml.Node `yaml:"adapter"`          // scalar OR list (AC-FA-RULE-003 0.14.0)
+	Match           string    `yaml:"match"`            // "substring" (default) or "regex" (ADR-0015)
+	CompositionRoot string    `yaml:"composition_root"` // "allow" (default) or "forbid" (AC-FA-RULE-003 0.14.0)
 }
 
 type yamlMarkers struct {
@@ -59,6 +60,7 @@ type yamlConfig struct {
 	Markers         *yamlMarkers              `yaml:"markers"`
 	Forbidden       map[string][]string       `yaml:"forbidden_constructs"`
 	Resolution      map[string]yamlResolution `yaml:"resolution"`
+	Exclude         []string                  `yaml:"exclude"` // Scan-Scope (ADR-0018)
 }
 
 // Adapter implements port.ConfigPort.
@@ -105,13 +107,15 @@ func (Adapter) Load(path string) (core.Model, error) {
 	for _, e := range yc.Allow {
 		m.Allow = append(m.Allow, core.Edge{From: e.From, To: e.To})
 	}
-	for _, t := range yc.Tech {
-		tech, terr := core.NewTech(t.Pattern, t.Adapter, t.Match)
-		if terr != nil {
-			return core.Model{}, fmt.Errorf("%s: %w", path, terr)
-		}
-		m.Techs = append(m.Techs, tech)
+	techs, terr := decodeTechs(yc.Tech, path)
+	if terr != nil {
+		return core.Model{}, terr
 	}
+	m.Techs = techs
+	if eerr := validateExclude(yc.Exclude, path); eerr != nil {
+		return core.Model{}, eerr
+	}
+	m.Exclude = yc.Exclude
 	if yc.Markers != nil {
 		m.IgnoreSymbols = yc.Markers.IgnoreSymbols
 	}
@@ -121,6 +125,69 @@ func (Adapter) Load(path string) (core.Model, error) {
 	}
 	m.Resolution = res
 	return m, nil
+}
+
+// decodeTechs builds the tech list: adapter scalar/list decode plus NewTech
+// validation (match, composition_root, empty list — AC-FA-RULE-003 0.14.0).
+func decodeTechs(entries []yamlTech, path string) ([]core.Tech, error) {
+	var out []core.Tech
+	for _, t := range entries {
+		adapters, aerr := decodeTechAdapters(t.Adapter, t.Pattern, path)
+		if aerr != nil {
+			return nil, aerr
+		}
+		tech, terr := core.NewTech(t.Pattern, adapters, t.Match, t.CompositionRoot)
+		if terr != nil {
+			return nil, fmt.Errorf("%s: %w", path, terr)
+		}
+		out = append(out, tech)
+	}
+	return out, nil
+}
+
+// decodeTechAdapters reads a tech entry's `adapter` as a scalar or a string
+// list (AC-FA-RULE-003 0.14.0). A scalar becomes a one-element list — byte-
+// identical to the pre-list behavior, including an absent/empty scalar (its
+// always-leak semantics is preserved, not silently rejected). A LIST is the
+// new, strict form: empty lists and empty entries fail closed (exit 2).
+func decodeTechAdapters(node yaml.Node, pattern, path string) ([]string, error) {
+	switch node.Kind {
+	case 0, yaml.ScalarNode:
+		var s string
+		if node.Kind != 0 {
+			if err := node.Decode(&s); err != nil {
+				return nil, fmt.Errorf("%s: tech-Muster %q: adapter: %w", path, pattern, err)
+			}
+		}
+		return []string{s}, nil
+	case yaml.SequenceNode:
+		var list []string
+		if err := node.Decode(&list); err != nil {
+			return nil, fmt.Errorf("%s: tech-Muster %q: adapter: %w", path, pattern, err)
+		}
+		if len(list) == 0 {
+			return nil, fmt.Errorf("%s: tech-Muster %q: leere adapter-Liste unzulässig", path, pattern)
+		}
+		for _, a := range list {
+			if a == "" {
+				return nil, fmt.Errorf("%s: tech-Muster %q: leerer adapter-Listen-Eintrag unzulässig", path, pattern)
+			}
+		}
+		return list, nil
+	default:
+		return nil, fmt.Errorf("%s: tech-Muster %q: adapter muss Pfad oder Pfad-Liste sein", path, pattern)
+	}
+}
+
+// validateExclude rejects empty exclude globs (the invalid case of the
+// otherwise total glob engine — a silent match-nothing entry, ADR-0018).
+func validateExclude(globs []string, path string) error {
+	for _, g := range globs {
+		if g == "" {
+			return fmt.Errorf("%s: exclude: leerer Glob unzulässig", path)
+		}
+	}
+	return nil
 }
 
 // decodeResolution maps the resolution block to the core model (ADR-0016),

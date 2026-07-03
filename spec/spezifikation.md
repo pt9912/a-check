@@ -1,6 +1,6 @@
 # Spezifikation — a-check
 
-**Version:** 0.13.0
+**Version:** 0.14.0
 
 **Status:** Draft
 
@@ -43,10 +43,15 @@ edges:                          # erlaubte gerichtete Schicht-Kanten (from → t
   - {from: adapters, to: ports}
   - {from: ports,    to: core}  # Ports dürfen Domänentypen referenzieren (AC-FA-RULE-004)
 adapter_sink: driver-common     # gemeinsame Senke, die Adapter importieren dürfen (optional)
-tech:                           # Tech-/Framework-Muster → zugeordneter Adapter (optional)
+tech:                           # Tech-/Framework-Muster → zugeordnete(r) Adapter (optional)
   - {pattern: "net/http", adapter: http}
   - {pattern: "sqlite3*", adapter: persistence}
   - {pattern: "Q[A-Za-z]", adapter: ui, match: regex}  # RE2 statt Substring (Default: match: substring)
+  - {pattern: "yaml", adapter: [config, report]}       # Pfad-LISTE: in jedem gelisteten Adapter erlaubt
+  - {pattern: "net/http", adapter: http, composition_root: forbid}  # tech-leak auch in der Composition Root
+exclude:                        # Datei-Globs: vor der Extraktion vom Scan ausgenommen (optional)
+  - "**/*_test.go"
+  - "**/node_modules/**"
 composition_root: ["hexagon/main/**"]   # deklarierte Ausnahme für tech-leak (optional)
 allow:                          # explizit erlaubte Sonderkanten/Re-Exports (optional)
   - {from: ports, to: ports, reason: "Re-Export"}
@@ -66,16 +71,17 @@ resolution:                     # Symbol→Layer-Auflösung je Sprache (optional
   unbekannter Schlüssel → Exit 2 (die Menge steht **normativ nur** dort, hier bloß verwiesen —
   **kein Duplikat**).
 - **Optionalblöcke:** `adapter_sink`, `tech`, `composition_root`, `allow`,
-  `markers`, `forbidden_constructs`, `resolution`. Fehlt ein Optionalblock, entfällt die
+  `markers`, `forbidden_constructs`, `resolution`, `exclude`. Fehlt ein Optionalblock, entfällt die
   zugehörige Prüfung — nicht still, sondern bewusst nicht-konfiguriert. Die je
   Block präzisierte Anforderung:
   - `adapter_sink` → gemeinsame Senke aus [AC-FA-RULE-002](lastenheft.md#ac-fa-rule-002--keine-lateralen-adapter-kanten-regel-lateral-adapter); fehlt sie, darf **kein** Adapter einen anderen importieren (strengere Auslegung).
-  - `tech` → [AC-FA-RULE-003](lastenheft.md#ac-fa-rule-003--tech-kapselung-regel-tech-leak); fehlt es, entfällt `tech-leak` (gedeckt durch die Boundary von [AC-FA-CONF-001](lastenheft.md#ac-fa-conf-001--konfigurationsdatei-a-checkyml)). Je Eintrag optional `match: substring|regex` (Default `substring`): `substring` = Teilstring-Vergleich, `regex` = **RE2**, unverankerter Suchlauf (`regexp.MatchString`) gegen das extrahierte Symbol ([SPEC-EXTRACT-001](#spec-extract-001--import-extraktion)). Unbekannter `match`-Wert, leere oder nicht kompilierbare Regex → Exit 2 (strict-decode; ein leeres Regex-Muster würde jeden Import treffen und ist unzulässig). RE2 ist linear und deterministisch ([SPEC-DET-001](#spec-det-001--determinismus-vertrag)).
+  - `tech` → [AC-FA-RULE-003](lastenheft.md#ac-fa-rule-003--tech-kapselung-regel-tech-leak); fehlt es, entfällt `tech-leak` (gedeckt durch die Boundary von [AC-FA-CONF-001](lastenheft.md#ac-fa-conf-001--konfigurationsdatei-a-checkyml)). `adapter` ist ein Pfad-Fragment **oder** eine Pfad-**Liste** (das Symbol ist in **jedem** gelisteten Adapter erlaubt; Skalar ≡ einelementige Liste, rückwärtskompatibel; eine **leere** Liste oder ein leerer Listen-Eintrag → Exit 2). Je Eintrag optional `match: substring|regex` (Default `substring`): `substring` = Teilstring-Vergleich, `regex` = **RE2**, unverankerter Suchlauf (`regexp.MatchString`) gegen das extrahierte Symbol ([SPEC-EXTRACT-001](#spec-extract-001--import-extraktion)); und optional `composition_root: allow|forbid` (Default `allow` = Composition-Root-Ausnahme wie bisher; `forbid` schaltet **nur** die `tech-leak`-Ausnahme der Composition Root für diesen Eintrag ab, [SPEC-RULE-001](#spec-rule-001--regel-auswertung)) — anderer Wert → Exit 2. Unbekannter `match`-Wert, leere oder nicht kompilierbare Regex → Exit 2 (strict-decode; ein leeres Regex-Muster würde jeden Import treffen und ist unzulässig). RE2 ist linear und deterministisch ([SPEC-DET-001](#spec-det-001--determinismus-vertrag)).
   - `composition_root` → deklarierte `tech-leak`-Ausnahme ([AC-FA-RULE-003](lastenheft.md#ac-fa-rule-003--tech-kapselung-regel-tech-leak) Boundary).
   - `allow` → konfigurativ erlaubte Sonderkante/Re-Export ([AC-FA-RULE-005](lastenheft.md#ac-fa-rule-005--schicht-richtung-regel-wrong-direction) / [AC-FA-RULE-004](lastenheft.md#ac-fa-rule-004--port-disziplin-regel-port-impurity) Boundary).
   - `markers` → dokumentierte Heuristik-Ausnahme ([AC-QA-02](lastenheft.md#ac-qa-02--hermetik-und-ehrliche-heuristik-grenze)).
   - `forbidden_constructs` → schichtbezogen verbotene Konstrukte ([AC-FA-RULE-004](lastenheft.md#ac-fa-rule-004--port-disziplin-regel-port-impurity)); als Text-Muster geprüft (siehe [SPEC-EXTRACT-001](#spec-extract-001--import-extraktion)).
   - `resolution` → Symbol→Layer-Auflösung **je Sprache** (Map Sprache → `{mode, roots, package_base}`); `mode ∈ {path (Default), fixed-root, relative}`, `namespace` **reserviert** → Exit 2. `fixed-root`: `roots` vorangestellt; **bei gesetztem `package_base`** (gepunktete Sprache) zusätzlich Präfix-Strip + `.`→`/` (eine Pfad-Sprache wie C++ behält ihre `.`-Endungen); greift nur, wenn der Paket-Baum den Verzeichnis-Baum spiegelt ([AC-QA-02](lastenheft.md#ac-qa-02--hermetik-und-ehrliche-heuristik-grenze)). `relative`: Specifier, die `.`/`..` sind oder mit `./`/`../` beginnen, werden lexikalisch gegen das **Verzeichnis der importierenden Datei** normalisiert (`path.Clean`-Semantik); alle anderen Specifier (Bare-Imports) sowie Wurzel-Escapes (führendes `..` **nach** der Normalisierung) liefern eine **leere** Kandidatenmenge — das Roh-Symbol wird nicht als Pfad-Kandidat weitergereicht (kein Geister-Match, [AC-QA-02](lastenheft.md#ac-qa-02--hermetik-und-ehrliche-heuristik-grenze)); `roots`/`package_base` sind bei `relative` unzulässig → Exit 2; Endungs-Agnostik gilt, solange die `layers`-Glob-Präfixe oberhalb der Dateiebene enden (verzeichnisbasierte Globs). Fehlt der Block (oder eine Sprache) → Import-als-Pfad. Nutzt Sprache **und Pfad** der Quelldatei ([SPEC-RULE-001](#spec-rule-001--regel-auswertung)/[SPEC-EXTRACT-001](#spec-extract-001--import-extraktion)).
+  - `exclude` → **Scan-Scope**: Datei-Globs relativ zur Scan-Wurzel (dieselbe Glob-Semantik wie `layers`/`languages`); eine matchende Datei wird **vor** der Extraktion vollständig vom Scan ausgenommen — sie existiert für keine Prüfung (weder Import- noch `forbidden_constructs`-Erkennung, [SPEC-EXTRACT-001](#spec-extract-001--import-extraktion)). Ein leerer Glob → Exit 2 (der ungültige Fall der ansonsten totalen Glob-Engine). Fehlt der Block, wird jede `languages`-Glob-Datei gescannt — byte-identisch zum bisherigen Verhalten ([AC-FA-CONF-001](lastenheft.md#ac-fa-conf-001--konfigurationsdatei-a-checkyml)).
 - **Schicht-Rollen** ([AC-FA-RULE-006](lastenheft.md#ac-fa-rule-006--schicht-rollen-generische-regel-anwendung)): ein `layers`-Eintrag ist **entweder** eine Glob-Liste (`name: [globs]`) **oder** ein Objekt `{globs: [...], role: domain|app|port|adapter, direction: driving|driven}` (`direction` optional). Fehlt `role`, wird es aus konventionellen Namen abgeleitet (`core`→`domain`, `ports`→`port`, `adapters`→`adapter`, `application`/`app`→`app`); `role:` hat Vorrang. Die Reinheits-Regeln (`core-impurity`/`app-impurity`/`port-impurity`/`lateral-adapter`) greifen über die Rolle, nicht den Namen — fremd benannte Schichten sind damit voll prüfbar. Optional trägt eine `port`-/`adapter`-Schicht zusätzlich `direction` ∈ {`driving`, `driven`} (**orthogonal** zur Rolle, [AC-FA-RULE-008](lastenheft.md#ac-fa-rule-008--driving-driven-port-richtung-regel-port-direction-mismatch)); die Connectivity-Regel `port-direction-mismatch` prüft, dass ein Adapter nur Ports **seiner** Richtung importiert — ohne `direction` keine Prüfung.
 - Kein Include/Vererbung zwischen Config-Dateien (Lastenheft-Out-of-Scope).
 
@@ -87,8 +93,12 @@ und [AC-QA-02](lastenheft.md#ac-qa-02--hermetik-und-ehrliche-heuristik-grenze).
 Pro Datei, die einem Schicht-Glob entspricht, liefert das über `languages`
 gewählte Backend die Menge der importierten Symbole/Module:
 
-1. Die Datei wird zeilenweise gelesen.
-2. Je Sprache werden konfigurierbare Muster angewandt (Defaults):
+1. Dateien, die einem `exclude`-Glob entsprechen
+   ([SPEC-CONF-001](#spec-conf-001--konfigurationsschema)), werden **vor** der
+   Extraktion vollständig ausgenommen — sie werden nicht gelesen und liefern
+   weder Import- noch `forbidden_constructs`-Treffer.
+2. Die Datei wird zeilenweise gelesen.
+3. Je Sprache werden konfigurierbare Muster angewandt (Defaults):
    - **C++:** `#include "…"` / `#include <…>`
    - **Go:** `import "…"` sowie Block-Form `import ( … )`
    - **Rust:** `use …;` und `extern crate …;` inkl. Alias-Form (`use x as y;` → `x`)
@@ -129,7 +139,7 @@ gewählte Backend die Menge der importierten Symbole/Module:
      Kommentar-Strip zu; kompakte Formen ohne Whitespace nach `import`/`export`
      sowie ein nacktes `from '…'` auf eigener (nicht `}`-geführter) Zeile
      werden nicht gegriffen
-3. Import-ähnliche Zeilen in Zeilen-/Block-Kommentaren werden **nicht**
+4. Import-ähnliche Zeilen in Zeilen-/Block-Kommentaren werden **nicht**
    gewertet (`//` und `/* */` werden entfernt). Das C-artige Kommentar-Stripping
    gilt **nur für die C-Syntax-Sprachen**; **Python** wird nicht C-gestrippt —
    seine `#`-Kommentarzeilen werden von den zeilen-verankerten Mustern nie
@@ -141,7 +151,7 @@ gewählte Backend die Menge der importierten Symbole/Module:
    `Q[A-Za-z]`-Muster oder ein Treffer in einem String), wird die Grenze
    ausgewiesen, nicht verschwiegen; `markers.ignore_symbols` erlaubt eine
    dokumentierte Ausnahme.
-4. Ergebnis je Datei: eine **deduplizierte, stabil sortierte** Symbolmenge
+5. Ergebnis je Datei: eine **deduplizierte, stabil sortierte** Symbolmenge
    (siehe [SPEC-DET-001](#spec-det-001--determinismus-vertrag)).
 
 Nur direkte Imports (keine transitive Auflösung über Modulgrenzen);
@@ -174,7 +184,7 @@ Meldung); ≥ 1 Befund ⇒ Exit-Code 1.
 | `core-impurity` | Datei mit Rolle `domain` importiert ein Symbol, das auf eine `app`-, `port`- oder `adapter`-Rolle oder ein `tech`-Muster auflöst — `domain` ist die innerste Schicht, **kategorisch** | [AC-FA-RULE-001](lastenheft.md#ac-fa-rule-001--kern-reinheit-regel-core-impurity) |
 | `app-impurity` | Datei mit Rolle `app` importiert eine `adapter`-Rolle oder ein `tech`-Muster; `domain`- und `port`-Referenzen sind erlaubt (Richtung edge-regiert) | [AC-FA-RULE-007](lastenheft.md#ac-fa-rule-007--rolle-app-und-strenge-domain) |
 | `lateral-adapter` | Datei mit Rolle `adapter` importiert eine *andere* `adapter`-Schicht (Layer-Identität) oder — in derselben Schicht — eine andere Adapter-Sub-Einheit (relativ zum Schicht-Glob-Präfix); nicht `adapter_sink`. Sub-Einheit **und** `adapter_sink`-Ausnahme werden auf dem gemäß `resolution` normalisierten Ziel-**Kandidaten** geprüft, nicht am Roh-Symbol (ein relativer Specifier trägt den Schicht-Präfix nie; im `path`-Modus sind beide identisch). **Kategorisch** (nicht über `edges`/`allow` aufhebbar) | [AC-FA-RULE-002](lastenheft.md#ac-fa-rule-002--keine-lateralen-adapter-kanten-regel-lateral-adapter) |
-| `tech-leak` | ein `tech`-Muster (Substring oder RE2-Regex, je `match`) erscheint außerhalb seines zugeordneten Adapters (und außerhalb `composition_root`, falls konfiguriert) | [AC-FA-RULE-003](lastenheft.md#ac-fa-rule-003--tech-kapselung-regel-tech-leak) |
+| `tech-leak` | ein `tech`-Muster (Substring oder RE2-Regex, je `match`) erscheint außerhalb **aller** seiner zugeordneten Adapter (`adapter` als Pfad oder Pfad-Liste) — und außerhalb `composition_root`, sofern der Eintrag nicht `composition_root: forbid` deklariert (dann prüft `tech-leak` auch dort; die Meldung nennt alle gelisteten Adapter in Deklarationsreihenfolge) | [AC-FA-RULE-003](lastenheft.md#ac-fa-rule-003--tech-kapselung-regel-tech-leak) |
 | `port-impurity` | Datei mit Rolle `port` importiert eine `adapter`-Rolle oder ein `tech`-Muster **oder** enthält ein `forbidden_constructs`-Muster (text-heuristisch erkannt). **Kern-Referenzen sind erlaubt** (Ports sprechen die Sprache des Kerns) und werden über `edges`/`allow` regiert — eine undeklarierte `ports → core`-Kante fällt unter `wrong-direction` | [AC-FA-RULE-004](lastenheft.md#ac-fa-rule-004--port-disziplin-regel-port-impurity) |
 | `port-direction-mismatch` | Datei mit Rolle `adapter` und Richtung `direction` X importiert eine `port`-Rolle mit Richtung Y (X ≠ Y, **beide gesetzt**) — ein Treiber-Adapter spricht nur `driving`-Ports, ein getriebener nur `driven`-Ports; **orthogonal** zur Rolle, ohne `direction` keine Prüfung. **Kategorisch** (nicht über `edges`/`allow` aufhebbar, wie `lateral-adapter`) | [AC-FA-RULE-008](lastenheft.md#ac-fa-rule-008--driving-driven-port-richtung-regel-port-direction-mismatch) |
 | `wrong-direction` | ein Import quert eine Schicht-Kante entgegen `edges`/`allow` | [AC-FA-RULE-005](lastenheft.md#ac-fa-rule-005--schicht-richtung-regel-wrong-direction) |
@@ -201,8 +211,13 @@ Pro (Datei, Import) gilt **deterministische Erst-Treffer-Reihenfolge** in der
 Tabellen-Reihenfolge (`core-impurity` → `app-impurity` → `port-impurity` →
 `lateral-adapter` → `tech-leak` → `port-direction-mismatch` → `wrong-direction`); ein Import erzeugt höchstens einen Befund.
 Dateien unter `composition_root` sind als Verdrahtungspunkt von **allen**
-Schicht-Regeln **und** `tech-leak` ausgenommen — sie importieren
-bestimmungsgemäß quer über die Schichten.
+Schicht-Regeln ausgenommen — sie importieren bestimmungsgemäß quer über die
+Schichten — und von `tech-leak` **je `tech`-Eintrag**: bei
+`composition_root: allow` (Default) wie bisher, bei `composition_root: forbid`
+prüft `tech-leak` den Eintrag auch dort weiter
+([SPEC-CONF-001](#spec-conf-001--konfigurationsschema)); die
+Schicht-Regel-Ausnahme bleibt davon unberührt. `exclude`-Dateien erreichen die
+Regel-Auswertung nie (Scan-Scope, [SPEC-EXTRACT-001](#spec-extract-001--import-extraktion)).
 
 ## SPEC-CLI-001 — Aufruf, Scan-Wurzel und Exit-Codes
 
@@ -267,3 +282,5 @@ und [AC-QA-03](lastenheft.md#ac-qa-03--reproduzierbarkeit).
 | 0.12.0 | 2026-07-02 | `SPEC-EXTRACT-001`: C#-Muster (`using`-Direktiven inkl. `global`/`static`/Alias-Ziel; Pflicht-`;` nach dem Namen schließt `using`-Statements aus) als siebtes Backend; Backend-Menge → `{cpp,go,rust,kotlin,java,python,csharp}`. Folgt [`AC-FA-EXTRACT-001`](lastenheft.md#ac-fa-extract-001--sprach-backends-für-die-import-extraktion) 0.12.0. |
 | 0.13.0 | 2026-07-03 | `SPEC-EXTRACT-001`: TypeScript-Muster (ES-Module-Formen → Modul-Specifier in `'…'`/`"…"`, Semikolon optional; `import … from` inkl. `type`, Seiteneffekt, Re-Exports, `import X = require(…)`, Fortsetzungszeile `} from '…'`; Mittelteil auf Import-Clause-Zeichen beschränkt) als achtes Backend; Backend-Menge → `{cpp,go,rust,kotlin,java,python,csharp,typescript}`. Folgt [`AC-FA-EXTRACT-001`](lastenheft.md#ac-fa-extract-001--sprach-backends-für-die-import-extraktion) 0.13.0. |
 | 0.13.0 | 2026-07-03 | `SPEC-CONF-001`/`SPEC-RULE-001`: `mode: relative` gültig (Specifier `.`/`..`/`./…`/`../…` lexikalisch gegen das Verzeichnis der importierenden Datei; Bare-Imports/Wurzel-Escape → **leere** Kandidatenmenge; `roots`/`package_base` unzulässig → Exit 2; nur `namespace` reserviert); die Symbol-Normalisierung kennt Sprache **und Pfad** der Quelldatei (Quellpfad-Threading). Folgt [`AC-FA-CONF-001`](lastenheft.md#ac-fa-conf-001--konfigurationsdatei-a-checkyml) 0.13.0. |
+| 0.14.0 | 2026-07-03 | `SPEC-CONF-001`/`SPEC-RULE-001`: `tech.adapter` auch als Pfad-**Liste** (Symbol in jedem gelisteten Adapter erlaubt; leere Liste/leerer Eintrag → Exit 2; Meldung nennt alle Adapter) + `tech.composition_root: allow\|forbid` je Eintrag (Default `allow`; `forbid` schaltet nur die `tech-leak`-Ausnahme der Composition Root ab, Schicht-Regel-Ausnahme unberührt). Folgt [`AC-FA-RULE-003`](lastenheft.md#ac-fa-rule-003--tech-kapselung-regel-tech-leak)/[`AC-FA-CONF-001`](lastenheft.md#ac-fa-conf-001--konfigurationsdatei-a-checkyml) 0.14.0. |
+| 0.14.0 | 2026-07-03 | `SPEC-CONF-001`/`SPEC-EXTRACT-001`: optionaler **`exclude`**-Block (Datei-Globs relativ zur Scan-Wurzel) nimmt matchende Dateien **vor** der Extraktion vollständig vom Scan aus (auch `forbidden_constructs`); leerer Glob → Exit 2; ohne Block byte-identisch. Folgt [`AC-FA-CONF-001`](lastenheft.md#ac-fa-conf-001--konfigurationsdatei-a-checkyml) 0.14.0. |

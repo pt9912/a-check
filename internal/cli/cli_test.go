@@ -319,6 +319,56 @@ resolution:
 	}
 }
 
+func TestDcheckPilotDeltas(t *testing.T) { // slice-023 end-to-end (AC-FA-RULE-003/AC-FA-CONF-001 0.14.0): adapter-Liste + composition_root: forbid + exclude
+	cfg := `version: 1
+languages:
+  go: ["**/*.go"]
+layers:
+  core:    {globs: ["core/**"], role: domain}
+  config:  {globs: ["adapters/config/**"], role: adapter}
+  report:  {globs: ["adapters/report/**"], role: adapter}
+  httpad:  {globs: ["adapters/http/**"], role: adapter}
+edges:
+  - {from: core, to: core}
+composition_root: ["cmd/**"]
+tech:
+  - {pattern: yaml, adapter: [adapters/config, adapters/report]}
+  - {pattern: "net/http", adapter: adapters/http, composition_root: forbid}
+exclude:
+  - "**/*_test.go"
+`
+	dir := writeRepo(t, map[string]string{
+		".a-check.yml": cfg,
+		// yaml in beiden gelisteten Adaptern erlaubt:
+		"adapters/config/c.go": "package config\nimport \"gopkg.in/yaml.v3\"\n",
+		"adapters/report/r.go": "package report\nimport \"gopkg.in/yaml.v3\"\n",
+		// yaml außerhalb ALLER gelisteten -> tech-leak (Meldung nennt beide):
+		"adapters/http/h.go": "package http\nimport \"gopkg.in/yaml.v3\"\n",
+		// composition_root: net/http (forbid) -> tech-leak trotz Verdrahtungspunkt;
+		// yaml (allow, Default) und der Schicht-Querimport bleiben ausgenommen:
+		"cmd/main.go": "package main\nimport \"net/http\"\nimport \"gopkg.in/yaml.v3\"\nimport \"myrepo/core/svc\"\n",
+		// exclude: die Test-Datei enthielte einen weiteren yaml-Leak — darf nie melden:
+		"adapters/http/h_test.go": "package http\nimport \"gopkg.in/yaml.v3\"\n",
+		"core/svc.go":             "package core\n",
+	})
+	var out, errb bytes.Buffer
+	if code := cli.Run([]string{dir}, &out, &errb); code != 1 {
+		t.Fatalf("erwarte Exit 1 (zwei tech-leaks), got %d (out=%q err=%q)", code, out.String(), errb.String())
+	}
+	if got := strings.Count(out.String(), "tech-leak"); got != 2 {
+		t.Fatalf("erwarte genau 2 tech-leak (h.go + cmd/main.go), got %d: %q", got, out.String())
+	}
+	if !strings.Contains(out.String(), "adapters/config|adapters/report") {
+		t.Fatalf("Mehr-Adapter-Meldung muss beide gelisteten Adapter nennen: %q", out.String())
+	}
+	if !strings.Contains(out.String(), "(composition_root: forbid)") {
+		t.Fatalf("Composition-Root-Verbots-Meldung muss den forbid-Grund nennen: %q", out.String())
+	}
+	if strings.Contains(out.String(), "h_test.go") {
+		t.Fatalf("exclude-Datei darf nie in Befunden auftauchen: %q", out.String())
+	}
+}
+
 func TestMonoRepoMultiSupportedRuns(t *testing.T) { // slice-017: Mono-Repo mit nur unterstützten Sprachen (go+cpp) läuft
 	cfg := "version: 1\nlanguages:\n  go: [\"**/*.go\"]\n  cpp: [\"**/*.h\", \"**/*.cpp\"]\nlayers:\n  core: [\"core/**\"]\nedges:\n  - {from: core, to: core}\n"
 	dir := writeRepo(t, map[string]string{".a-check.yml": cfg, "core/x.go": "package core\n"})

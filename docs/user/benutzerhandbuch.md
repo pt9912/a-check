@@ -1,6 +1,6 @@
 # Benutzerhandbuch: a-check
 
-**Handbuch-Version:** 1.18 · **Software-Version:** 0.7.0 · **Stand:** 2026-07-03 ·
+**Handbuch-Version:** 1.19 · **Software-Version:** 0.7.0 · **Stand:** 2026-07-03 ·
 **Autor:** pt9912 (Maintainer)
 
 ---
@@ -198,17 +198,43 @@ bildet auf eine Liste von Datei-Globs ab, z. B. `cpp: ["**/*.h", "**/*.cpp"]`,
 `rust: ["**/*.rs"]`, `kotlin: ["**/*.kt"]`, `java: ["**/*.java"]`, `python: ["**/*.py"]`,
 `csharp: ["**/*.cs"]`, `typescript: ["**/*.ts", "**/*.tsx", "**/*.mts", "**/*.cts"]`.
 **Optionalblöcke:** `adapter_sink`, `tech`, `composition_root`, `allow`,
-`forbidden_constructs`, `markers`. Fehlt ein Optionalblock, entfällt die
+`forbidden_constructs`, `markers`, `resolution`, `exclude`. Fehlt ein Optionalblock, entfällt die
 zugehörige Prüfung (kein stiller Standardwert) — fehlt z. B. `adapter_sink`,
 darf **kein** Adapter einen anderen importieren (strengere Auslegung). Das
 vollständige Schema steht in der [Spezifikation](../../spec/spezifikation.md).
 
-**Tech-Muster (`match`).** Ein `tech`-Eintrag ist `{pattern, adapter}` mit optionalem
-`match: substring|regex` (Standard `substring`). `substring` prüft, ob das importierte
-Symbol den Text enthält; `match: regex` interpretiert `pattern` als **RE2-Regex**
-(unverankert) — nötig, wenn ein Framework nur als Muster fassbar ist, etwa Qt-Header
-`Q[A-Za-z]`. Ein unbekannter `match`-Wert oder eine ungültige Regex bricht mit
+**Tech-Muster (`match`, Adapter-Liste, `composition_root`).** Ein `tech`-Eintrag ist
+`{pattern, adapter}` mit optionalem `match: substring|regex` (Standard `substring`).
+`substring` prüft, ob das importierte Symbol den Text enthält; `match: regex`
+interpretiert `pattern` als **RE2-Regex** (unverankert) — nötig, wenn ein Framework
+nur als Muster fassbar ist, etwa Qt-Header `Q[A-Za-z]`. `adapter` ist ein Pfad
+**oder eine Pfad-Liste** — das Symbol ist dann in **jedem** gelisteten Adapter
+erlaubt (z. B. `{pattern: yaml, adapter: [adapters/config, adapters/report]}`;
+eine leere Liste bricht mit Exit-Code 2). Standardmäßig ist die Composition Root
+von der Tech-Kapselung ausgenommen; mit `composition_root: forbid` am Eintrag
+meldet `tech-leak` auch dort (die Schicht-Regel-Ausnahme des Verdrahtungspunkts
+bleibt bestehen). Ein unbekannter `match`-Wert, eine ungültige Regex oder ein
+`composition_root`-Wert außerhalb `allow`/`forbid` bricht mit
 Exit-Code 2 ab. Treffen mehrere Muster dasselbe Symbol, greift das **zuerst notierte**.
+
+**Dateien vom Scan ausnehmen (`exclude`).** Die `layers`-/`languages`-Globs kennen
+bewusst keine Negation — `exclude` ist das explizite Gegenstück: eine Top-Level-Liste
+von Datei-Globs (relativ zur Scan-Wurzel), deren Treffer **vor** der Extraktion
+vollständig vom Scan ausgenommen werden (sie liefern weder Import- noch
+`forbidden_constructs`-Befunde):
+
+```yaml
+exclude:
+  - "**/*_test.go"        # Go-Tests (z. B. wenn das abgelöste Gate nur Nicht-Test-Imports prüfte)
+  - "**/*.test.ts"        # TS-Tests
+  - "**/node_modules/**"  # Fremdcode je Workspace (pnpm/npm)
+  - "**/dist/**"          # generierter Output
+  - "**/*.d.ts"           # Typ-Generat (Achtung: "**/*.ts" matcht auch .d.ts)
+```
+
+Ein leerer Glob bricht mit Exit-Code 2 ab; ohne `exclude`-Block wird jede
+`languages`-Glob-Datei gescannt (bisheriges Verhalten). Wer zu breit ausschließt,
+schwächt sein eigenes Gate — die Config ist die deklarierte Wahrheit.
 
 **Gepunktete Importe auflösen (`resolution`): Python, C#, JVM.** Python-Importe
 (`import myapp.adapters.db`, `from myapp.adapters import db` → Modulpfad
@@ -434,3 +460,4 @@ und die [Spezifikation](../../spec/spezifikation.md); ein Überblick steht in de
 | 1.16 | 2026-07-02 | Software-Version **0.6.0** (GHCR-Release `v0.6.0` veröffentlicht, digest-gepinnt `@sha256:b349a150…`) — C#-Backend jetzt im veröffentlichten Image; die 1.15-Verfügbarkeitsnotiz entfällt. |
 | 1.17 | 2026-07-03 | §1/§4 an Lastenheft 0.13.0: achtes Sprach-Backend **TypeScript** (`languages`-Schlüssel `typescript`; ES-Module-Importe/Re-Exports inkl. `import type` und mehrzeilig umbrochener Imports, Specifier in `'…'`/`"…"`) + neuer Auflösungs-Modus **`mode: relative`** (datei-relativ; Rezept + Warnung „`layers`-Globs verzeichnisbasiert halten"; Bare-Imports/tsconfig-Aliasse bleiben unaufgelöst). Noch nicht im veröffentlichten Image (folgt mit dem nächsten Release). |
 | 1.18 | 2026-07-03 | Software-Version **0.7.0** (GHCR-Release `v0.7.0` veröffentlicht, digest-gepinnt `@sha256:41eb368e…`) — TypeScript-Backend + `relative`-Modus jetzt im veröffentlichten Image; die 1.17-Verfügbarkeitsnotiz entfällt. |
+| 1.19 | 2026-07-03 | §4 an Lastenheft 0.14.0 (CR d-check-Pilot): `tech.adapter` auch als Pfad-**Liste** (Symbol in jedem gelisteten Adapter erlaubt) + `composition_root: allow\|forbid` je `tech`-Eintrag + neuer Abschnitt „Dateien vom Scan ausnehmen (`exclude`)" (Top-Level-Datei-Globs vor der Extraktion; `.d.ts`-Hinweis). Noch nicht im veröffentlichten Image (folgt mit dem nächsten Release). |

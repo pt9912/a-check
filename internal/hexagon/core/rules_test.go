@@ -1,6 +1,9 @@
 package core
 
-import "testing"
+import (
+	"strings"
+	"testing"
+)
 
 func testModel() Model {
 	return Model{
@@ -11,7 +14,7 @@ func testModel() Model {
 		},
 		Edges:           []Edge{{From: "adapters", To: "ports"}, {From: "ports", To: "core"}},
 		AdapterSink:     "driver-common",
-		Techs:           []Tech{{Pattern: "net/http", Adapter: "adapters/http"}},
+		Techs:           []Tech{{Pattern: "net/http", Adapters: []string{"adapters/http"}}},
 		CompositionRoot: []string{"cmd/**"},
 		Forbidden:       map[string][]string{"ports": {"impl "}},
 	}
@@ -407,7 +410,7 @@ func appModel() Model {
 			{From: "app", To: "prt"},
 			{From: "prt", To: "dom"},
 		},
-		Techs: []Tech{{Pattern: "net/http", Adapter: "adp"}},
+		Techs: []Tech{{Pattern: "net/http", Adapters: []string{"adp"}}},
 	}
 }
 
@@ -700,7 +703,7 @@ func TestPortDirectionTechLeakPrecedence(t *testing.T) { // AC-FA-RULE-008 / SPE
 	// tech-Muster trägt und außerhalb des Tech-Adapters liegt: die dokumentierte
 	// Erst-Treffer-Kette meldet bewusst tech-leak (nicht port-direction-mismatch).
 	m := dirModel()
-	m.Techs = []Tech{{Pattern: "store/grpc", Adapter: "store/grpc-adapter"}}
+	m.Techs = []Tech{{Pattern: "store/grpc", Adapters: []string{"store/grpc-adapter"}}}
 	fs := Evaluate(m, []FileImports{
 		{Path: "cli/c.go", Layer: "cli", Imports: []Import{{Symbol: "store/grpc/client", Line: 1}}},
 	})
@@ -723,7 +726,7 @@ func TestDeterministicOrderWithDirection(t *testing.T) { // AC-QA-01: der neue B
 // regexTechModel: zwei Adapter (ui/geometry) + ein Qt-Muster als RE2-Regex auf ui.
 func regexTechModel(t *testing.T) Model {
 	t.Helper()
-	qt, err := NewTech("Q[A-Za-z]", "adapters/ui", "regex")
+	qt, err := NewTech("Q[A-Za-z]", []string{"adapters/ui"}, "regex", "")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -765,11 +768,11 @@ func TestTechLeakRegexComposition(t *testing.T) { // AC-FA-RULE-003 / ADR-0015: 
 }
 
 func TestTechPrecedenceDeclarationOrder(t *testing.T) { // AC-FA-RULE-003 / ADR-0015: Erst-Treffer in Deklarationsreihenfolge
-	first, err := NewTech("Q[A-Za-z]", "adapters/ui", "regex")
+	first, err := NewTech("Q[A-Za-z]", []string{"adapters/ui"}, "regex", "")
 	if err != nil {
 		t.Fatal(err)
 	}
-	second, err := NewTech("Queue", "adapters/persistence", "substring")
+	second, err := NewTech("Queue", []string{"adapters/persistence"}, "substring", "")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -790,11 +793,11 @@ func TestTechPrecedenceDeclarationOrder(t *testing.T) { // AC-FA-RULE-003 / ADR-
 }
 
 func TestNewTechBackCompatSubstring(t *testing.T) { // AC-FA-RULE-003 / ADR-0015: NewTech(p,a,"") verhält sich wie das Literal Tech (Substring)
-	built, err := NewTech("net/http", "adapters/http", "")
+	built, err := NewTech("net/http", []string{"adapters/http"}, "", "")
 	if err != nil {
 		t.Fatal(err)
 	}
-	literal := Tech{Pattern: "net/http", Adapter: "adapters/http"}
+	literal := Tech{Pattern: "net/http", Adapters: []string{"adapters/http"}}
 	if !built.matches("net/http/client") || !literal.matches("net/http/client") {
 		t.Fatalf("beide müssen den Substring-Treffer melden")
 	}
@@ -804,7 +807,7 @@ func TestNewTechBackCompatSubstring(t *testing.T) { // AC-FA-RULE-003 / ADR-0015
 }
 
 func TestNewTechSubstringNotRegex(t *testing.T) { // AC-FA-RULE-003 / ADR-0015: match: substring nimmt das Muster wörtlich, nicht als Regex
-	sub, err := NewTech("Q[A-Za-z]", "adapters/ui", "substring")
+	sub, err := NewTech("Q[A-Za-z]", []string{"adapters/ui"}, "substring", "")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -1061,10 +1064,72 @@ func TestRelativeAdapterSinkOnCandidate(t *testing.T) { // ADR-0017 (Review-R1 C
 	}
 }
 
+// --- slice-023 (AC-FA-RULE-003 0.14.0): tech.adapter-Liste + composition_root: forbid ---
+
+func TestTechMultiAdapterAllowed(t *testing.T) { // Mehr-Adapter: Symbol in JEDEM gelisteten Adapter erlaubt; außerhalb aller -> Befund mit beiden Namen
+	m := Model{
+		Layers: []Layer{
+			{Name: "config", Globs: []string{"adapters/config/**"}, Role: "adapter"},
+			{Name: "report", Globs: []string{"adapters/report/**"}, Role: "adapter"},
+			{Name: "http", Globs: []string{"adapters/http/**"}, Role: "adapter"},
+		},
+		Techs: []Tech{{Pattern: "yaml", Adapters: []string{"adapters/config", "adapters/report"}}},
+	}
+	for _, p := range []struct{ path, layer string }{
+		{"adapters/config/c.go", "config"}, {"adapters/report/r.go", "report"},
+	} {
+		files := []FileImports{{Path: p.path, Layer: p.layer, Imports: []Import{{Symbol: "gopkg.in/yaml.v3", Line: 1}}}}
+		if fs := Evaluate(m, files); len(fs) != 0 {
+			t.Fatalf("yaml ist in %s (gelisteter Adapter) erlaubt, got %v", p.path, fs)
+		}
+	}
+	out := []FileImports{{Path: "adapters/http/h.go", Layer: "http", Imports: []Import{{Symbol: "gopkg.in/yaml.v3", Line: 4}}}}
+	fs := Evaluate(m, out)
+	if len(fs) != 1 || fs[0].Rule != "tech-leak" {
+		t.Fatalf("yaml außerhalb ALLER gelisteten Adapter muss tech-leak sein, got %v", fs)
+	}
+	if !strings.Contains(fs[0].Msg, "adapters/config|adapters/report") {
+		t.Fatalf("Meldung muss alle gelisteten Adapter in Deklarationsreihenfolge nennen, got %q", fs[0].Msg)
+	}
+}
+
+func TestTechCompositionRootForbid(t *testing.T) { // composition_root: forbid — tech-leak auch im Verdrahtungspunkt; Schicht- und allow-Ausnahmen bleiben
+	m := Model{
+		Layers: []Layer{
+			{Name: "core", Globs: []string{"core/**"}, Role: "domain"},
+			{Name: "http", Globs: []string{"adapters/http/**"}, Role: "adapter"},
+		},
+		CompositionRoot: []string{"cmd/**"},
+		Techs: []Tech{
+			{Pattern: "net/http", Adapters: []string{"adapters/http"}, ForbidCompositionRoot: true},
+			{Pattern: "yaml", Adapters: []string{"adapters/config"}}, // Default allow
+		},
+	}
+	files := []FileImports{{Path: "cmd/main.go", Layer: "", Imports: []Import{
+		{Symbol: "net/http", Line: 1},         // forbid -> tech-leak trotz Composition Root
+		{Symbol: "gopkg.in/yaml.v3", Line: 2}, // allow (Default) -> ausgenommen wie bisher
+		{Symbol: "core/model", Line: 3},       // Schicht-Regel-Ausnahme bleibt unberührt
+	}}}
+	fs := Evaluate(m, files)
+	if len(fs) != 1 || fs[0].Rule != "tech-leak" || fs[0].Line != 1 {
+		t.Fatalf("genau der forbid-Eintrag muss in der Composition Root melden, got %v", fs)
+	}
+	if !strings.Contains(fs[0].Msg, "composition_root: forbid") {
+		t.Fatalf("Meldung muss den forbid-Grund nennen, got %q", fs[0].Msg)
+	}
+	// Gegenprobe: forbid-Tech IM eigenen Adapter bleibt auch in einer CR-Datei dort erlaubt.
+	inAdp := []FileImports{{Path: "cmd/main.go", Layer: "", Imports: []Import{{Symbol: "net/http", Line: 1}}}}
+	m2 := m
+	m2.Techs = []Tech{{Pattern: "net/http", Adapters: []string{"cmd"}, ForbidCompositionRoot: true}}
+	if fs := Evaluate(m2, inAdp); len(fs) != 0 {
+		t.Fatalf("forbid prüft weiter gegen die Adapter-Liste — cmd ist hier gelistet, got %v", fs)
+	}
+}
+
 func TestRelativeTechAtRawSymbol(t *testing.T) { // AC-FA-CONF-001 Boundary (Review-R1 T-2): tech greift am ROH-Symbol, auch bei leerer Kandidatenmenge
 	m := Model{
 		Layers:     []Layer{{Name: "misc", Globs: []string{"misc/**"}}},
-		Techs:      []Tech{{Pattern: "@nestjs", Adapter: "nest"}},
+		Techs:      []Tech{{Pattern: "@nestjs", Adapters: []string{"nest"}}},
 		Resolution: map[string]ResolutionConfig{"typescript": {Mode: "relative"}},
 	}
 	files := []FileImports{{Path: "misc/x.ts", Layer: "misc", Language: "typescript",

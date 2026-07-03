@@ -111,6 +111,12 @@ func (a Adapter) Extract(root string, m core.Model) ([]core.FileImports, error) 
 			return relErr
 		}
 		rel = filepath.ToSlash(rel)
+		if core.MatchGlobs(rel, m.Exclude) {
+			// exclude removes the file from the scan BEFORE extraction: it is
+			// never read and yields neither imports nor forbidden-construct
+			// hits (ADR-0018, SPEC-EXTRACT-001).
+			return nil
+		}
 		lang := langFor(rel, m.Languages)
 		if lang == "" {
 			return nil
