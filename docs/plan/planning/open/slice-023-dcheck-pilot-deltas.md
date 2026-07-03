@@ -1,9 +1,12 @@
 # slice-023 — d-check-Pilot-Deltas: `tech.adapter`-Liste, `composition_root` steuerbar, `exclude`-Globs
 
-**Status:** open (konsumenten-gated — das Schwester-Repo **d-check** wartet: dessen
-`arch-check`-Ablösung durch a-check ist dort per Plan-Review auf diese drei Deltas
-als **Umstellungs-Vorbedingung** gestellt; erst ein lieferndes a-check-Release +
-Pin-Hebung entsperrt den dortigen Umbau).
+**Status:** done (2026-07-03). Abnahme erteilt (Entscheide a–d gemäß Empfehlung, §3);
+Umsetzung + `make gates`/`make ci` + Multi-Linsen-Review (4 Linsen) + Delta-Re-Review + Fixes
+erledigt, Synthese
+[`docs/reviews/2026-07-03-slice-023-dcheck-pilot-deltas.md`](../../../reviews/2026-07-03-slice-023-dcheck-pilot-deltas.md);
+[ADR-0018](../../adr/0018-exclude-scan-scope.md) `Accepted`; **veröffentlicht in `v0.8.0`**
+(Digest `@sha256:a1c9c4d6…`, Re-Pin erledigt) — die d-check-Umstellung drüben ist damit
+**entsperrt**.
 **Bezug:** Change Request
 [AC-FA-RULE-003](../../../../spec/lastenheft.md#ac-fa-rule-003--tech-kapselung-regel-tech-leak)
 + [AC-FA-CONF-001](../../../../spec/lastenheft.md#ac-fa-conf-001--konfigurationsdatei-a-checkyml)
@@ -123,7 +126,39 @@ Historie 1/3–3/3); dieser Slice liefert die Umsetzung:
   flaggen — [AC-QA-02](../../../../spec/lastenheft.md#ac-qa-02--hermetik-und-ehrliche-heuristik-grenze)-Grenze
   bleibt ehrlich); Rest-Deltas melden die d-check-Belege zurück als Folge-CR.
 
-## 4. Closure-Notiz (nach `done/`)
+## 4. Closure-Notiz
 
-_(folgt bei Closure — Umsetzung, Gate-Ausgaben, Review, Release + Digest-Re-Pin,
-d-check-Entsperrung.)_
+**Abschluss (2026-07-03).** slice-023 (welle-11) umgesetzt, reviewt, abgenommen, released
+und gate-belegt; alle drei d-check-Vorbedingungs-Deltas sind im veröffentlichten Image
+`v0.8.0` — der dortige Umbau ist entsperrt.
+
+- **Gate-Beleg:** `make gates`/`make ci` grün — `lint` 0 issues, alle Test-Pakete `ok`,
+  `coverage-gate` 96,10 % (≥ 90 %), `arch-check` **0** (Dogfooding, Eigen-Config
+  byte-identisch ohne neue Schlüssel), `doc-check` 0 Befunde, `image-test` 4/4.
+- **Review (4 Linsen + Delta):** 1 BLOCKER gefixt — der leere/fehlende Skalar-`adapter`
+  hätte die Alt-Semantik (stiller **Never-Leak**: `strings.Contains(pfad, "")` ist immer
+  wahr, das Muster meldete nie) auf Always-Leak **invertiert**; Entscheid fail-closed
+  (Exit 2, Lastenheft/Spec nachpräzisiert). Dazu YAML-Alias-Deref, Determinismus-Mischung
+  CR+Normal, kategorisches CR-Fixture, `NewTech`-Kern-Wächter. Details:
+  [Synthese](../../../reviews/2026-07-03-slice-023-dcheck-pilot-deltas.md).
+- **Release-Beleg:** `v0.8.0` (Run 28660247949), Digest-Re-Pin `@sha256:a1c9c4d6…`;
+  veröffentlichtes Image gegen die Drei-Deltas-Fixture verifiziert (genau 2 × `tech-leak`:
+  `yaml außerhalb adapters/config|adapters/report` + `net/http … (composition_root:
+  forbid)` in `cmd/`; die `exclude`-Testdatei und die erlaubten yaml-Adapter befundfrei;
+  Exit 1).
+- **2 beobachtbare Kriterien:** (1) `TestDcheckPilotDeltas` + Container-Gegenprobe — das
+  d-check-Szenario (yaml in zwei Adaptern, `net/http`-Verbot auch in `cmd/`,
+  `**/*_test.go` ausgeschlossen) liefert exakt die zwei erwarteten Befunde mit den
+  gepinnten Meldetexten. (2) `TestTechCompositionRootForbid` — der forbid-Eintrag meldet
+  im Verdrahtungspunkt, während `allow`-Einträge und die (kategorisch gepinnte)
+  Schicht-Regel-Ausnahme unberührt bleiben.
+- **Lerneintrag (geschärfte Regel):** **„Byte-identisch" ist erst behauptbar, wenn die
+  Alt-Semantik am Alt-Code verifiziert wurde** — die Erst-Umsetzung übernahm die
+  Leerstring-Semantik des *Helpers* (`contains`) statt der des Alt-Aufrufs
+  (`strings.Contains` roh) und dokumentierte die Inversion als „Erhalt"; erst das
+  adversarische Review las den Alt-Code zeichengenau. Für Degenerat-Fälle (leer/fehlend)
+  gilt zudem: ein stiller No-Op ist kein schützenswertes Alt-Verhalten — fail-closed
+  ersetzt ihn (Ethos-Linie [slice-017](../done/slice-017-unbekannte-sprache-exit2.md)),
+  aber als **deklarierter Entscheid** im Lastenheft, nie als stille Nebenwirkung.
+- **welle-11 damit abgeschlossen**; Folge-Punkte drüben: d-check fährt seine
+  Paritäts-Proben-Matrix (§3) und meldet Rest-Deltas als Folge-CR zurück.
