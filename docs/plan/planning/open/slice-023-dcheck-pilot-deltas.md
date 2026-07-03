@@ -76,9 +76,14 @@ Historie 1/3–3/3); dieser Slice liefert die Umsetzung:
 > (Ausweis des Scan-Scopes = [ADR-0018](../../adr/0018-exclude-scan-scope.md)
 > Re-Eval-Trigger). (c) `tech-leak`-Meldetext nennt **alle** gelisteten Adapter in
 > Deklarationsreihenfolge (`config|report`); Composition-Root-Verbots-Befunde tragen
-> den Zusatz `(composition_root: forbid)`. (d) Strengegefälle: der **Skalar** bleibt
-> byte-identisch (auch leer/fehlend — Alt-Semantik), die **Liste** ist die neue,
-> strikte Form (leere Liste/leerer Eintrag → Exit 2).
+> den Zusatz `(composition_root: forbid)`. (d) Strengegefälle (nach Review-R1
+> präzisiert): der **nicht-leere Skalar** bleibt byte-identisch; ein **leerer oder
+> fehlender** `adapter` bricht mit Exit 2 — die Alt-Semantik war dort ein **stiller
+> Never-Leak** (`strings.Contains(pfad, "")` ist immer wahr, das Muster meldete
+> nie), also ein Falsch-Grün-Eintrag, den fail-closed ersetzt statt konserviert
+> (Ethos-Linie [slice-017](../done/slice-017-unbekannte-sprache-exit2.md)); die **Liste** ist durchgängig
+> strikt (leere Liste/leerer Eintrag → Exit 2). YAML-Aliasse auf `adapter` werden
+> dereferenziert.
 
 - **`exclude`-Ort im Schema:** Top-Level neben `languages` (ein Scan hat eine
   Ausschluss-Liste) oder je Sprache? Vorschlag: Top-Level — die d-check-Evidenz

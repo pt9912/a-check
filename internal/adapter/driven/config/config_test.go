@@ -247,6 +247,38 @@ func TestTechAdapterEmptyListEntryFailsClosed(t *testing.T) { // leerer Listen-E
 	}
 }
 
+func TestTechAdapterAbsentFailsClosed(t *testing.T) { // Review-R1 B1: fehlender adapter -> Exit 2 (Alt-Zustand war stiller Never-Leak)
+	if _, err := New().Load(write(t, techBody(`{pattern: yaml}`))); err == nil || !strings.Contains(err.Error(), "adapter fehlt") {
+		t.Fatalf("fehlender adapter muss brechen (kein stiller Never-Leak-Eintrag), got %v", err)
+	}
+}
+
+func TestTechAdapterEmptyScalarFailsClosed(t *testing.T) { // Review-R1 B1/M2: leerer Skalar und null -> Exit 2
+	if _, err := New().Load(write(t, techBody(`{pattern: yaml, adapter: ""}`))); err == nil || !strings.Contains(err.Error(), "leerer adapter") {
+		t.Fatalf("leerer adapter-Skalar muss brechen, got %v", err)
+	}
+	if _, err := New().Load(write(t, techBody(`{pattern: yaml, adapter: null}`))); err == nil || !strings.Contains(err.Error(), "leerer adapter") {
+		t.Fatalf("adapter: null muss brechen, got %v", err)
+	}
+}
+
+func TestTechAdapterAsMappingFailsClosed(t *testing.T) { // Review-R1: Mapping ist weder Pfad noch Pfad-Liste -> Exit 2
+	if _, err := New().Load(write(t, techBody(`{pattern: yaml, adapter: {x: y}}`))); err == nil || !strings.Contains(err.Error(), "Pfad oder Pfad-Liste") {
+		t.Fatalf("adapter als Mapping muss brechen, got %v", err)
+	}
+}
+
+func TestTechAdapterAliasResolved(t *testing.T) { // Review-R1 M1: YAML-Alias auf adapter wird dereferenziert, nicht abgelehnt
+	body := "version: 1\nlanguages:\n  go: [\"**/*.go\"]\nlayers:\n  core: [\"core/**\"]\n  adapters: [\"adapters/**\"]\nedges:\n  - {from: adapters, to: core}\nmarkers:\n  ignore_symbols: &adp [\"adapters/config\"]\ntech:\n  - {pattern: yaml, adapter: *adp}\n"
+	m, err := New().Load(write(t, body))
+	if err != nil {
+		t.Fatalf("Alias-adapter muss laden (dereferenziert), got %v", err)
+	}
+	if a := m.Techs[0].Adapters; len(a) != 1 || a[0] != "adapters/config" {
+		t.Fatalf("Alias muss zur Liste dereferenzieren, got %v", a)
+	}
+}
+
 func TestTechCompositionRootDecode(t *testing.T) { // forbid -> Flag gesetzt; allow/weggelassen -> Default false
 	m, err := New().Load(write(t, techBody(`{pattern: "net/http", adapter: "adapters/http", composition_root: forbid}`)))
 	if err != nil || !m.Techs[0].ForbidCompositionRoot {

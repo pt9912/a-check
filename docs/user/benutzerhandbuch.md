@@ -180,7 +180,7 @@ adapter_sink: driver-common       # gemeinsame Adapter-Senke (optional)
 tech:
   - {pattern: "net/http", adapter: http}   # Tech -> Adapter (optional)
   # - {pattern: "Q[A-Za-z]", adapter: adapters/ui, match: regex}  # RE2 statt Substring
-composition_root: ["cmd/**"]      # verdrahtet alles, von Regeln ausgenommen (optional)
+composition_root: ["cmd/**"]      # verdrahtet alles, von den Schicht-Regeln ausgenommen (optional)
 allow:                            # explizit erlaubte Sonderkanten/Re-Exports (optional)
   - {from: ports, to: ports}
 forbidden_constructs:             # Schicht -> verbotene Text-Muster (Port-Disziplin, optional)
@@ -210,7 +210,10 @@ interpretiert `pattern` als **RE2-Regex** (unverankert) — nötig, wenn ein Fra
 nur als Muster fassbar ist, etwa Qt-Header `Q[A-Za-z]`. `adapter` ist ein Pfad
 **oder eine Pfad-Liste** — das Symbol ist dann in **jedem** gelisteten Adapter
 erlaubt (z. B. `{pattern: yaml, adapter: [adapters/config, adapters/report]}`;
-eine leere Liste bricht mit Exit-Code 2). Standardmäßig ist die Composition Root
+eine leere Liste, ein leerer Listen-Eintrag oder ein leerer/fehlender
+`adapter` bricht mit Exit-Code 2). Der Adapter-Abgleich ist ein
+**Teilstring**-Vergleich auf dem Dateipfad (nicht segmentgrenzen-bewusst —
+`adapters/config` matcht auch `adapters/configurator`; präzise Fragmente wählen). Standardmäßig ist die Composition Root
 von der Tech-Kapselung ausgenommen; mit `composition_root: forbid` am Eintrag
 meldet `tech-leak` auch dort (die Schicht-Regel-Ausnahme des Verdrahtungspunkts
 bleibt bestehen). Ein unbekannter `match`-Wert, eine ungültige Regex oder ein

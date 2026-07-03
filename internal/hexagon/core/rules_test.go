@@ -1098,6 +1098,10 @@ func TestTechCompositionRootForbid(t *testing.T) { // composition_root: forbid �
 		Layers: []Layer{
 			{Name: "core", Globs: []string{"core/**"}, Role: "domain"},
 			{Name: "http", Globs: []string{"adapters/http/**"}, Role: "adapter"},
+			// Die CR-Datei liegt in einem DOMAIN-Layer: würde die Schicht-Ausnahme
+			// fallen, gäbe der Adapter-Import unten ein KATEGORISCHES core-impurity
+			// (kein Kanten-Zufall — Review-R1 T-3, schärferes Fixture).
+			{Name: "cmdlayer", Globs: []string{"cmd/**"}, Role: "domain"},
 		},
 		CompositionRoot: []string{"cmd/**"},
 		Techs: []Tech{
@@ -1105,14 +1109,15 @@ func TestTechCompositionRootForbid(t *testing.T) { // composition_root: forbid �
 			{Pattern: "yaml", Adapters: []string{"adapters/config"}}, // Default allow
 		},
 	}
-	files := []FileImports{{Path: "cmd/main.go", Layer: "", Imports: []Import{
-		{Symbol: "net/http", Line: 1},         // forbid -> tech-leak trotz Composition Root
-		{Symbol: "gopkg.in/yaml.v3", Line: 2}, // allow (Default) -> ausgenommen wie bisher
-		{Symbol: "core/model", Line: 3},       // Schicht-Regel-Ausnahme bleibt unberührt
+	files := []FileImports{{Path: "cmd/main.go", Layer: "cmdlayer", Imports: []Import{
+		{Symbol: "net/http", Line: 1},              // forbid -> tech-leak trotz Composition Root
+		{Symbol: "gopkg.in/yaml.v3", Line: 2},      // allow (Default) -> ausgenommen wie bisher
+		{Symbol: "adapters/http/client", Line: 3},  // ohne Schicht-Ausnahme: kategorisches core-impurity
+		{Symbol: "core/model", Line: 4},            // dito (domain -> domain wäre ok, aber pinnt die Kanten-Seite mit)
 	}}}
 	fs := Evaluate(m, files)
 	if len(fs) != 1 || fs[0].Rule != "tech-leak" || fs[0].Line != 1 {
-		t.Fatalf("genau der forbid-Eintrag muss in der Composition Root melden, got %v", fs)
+		t.Fatalf("genau der forbid-Eintrag muss in der Composition Root melden (Schicht-Regeln kategorisch ausgenommen), got %v", fs)
 	}
 	if !strings.Contains(fs[0].Msg, "composition_root: forbid") {
 		t.Fatalf("Meldung muss den forbid-Grund nennen, got %q", fs[0].Msg)
@@ -1123,6 +1128,52 @@ func TestTechCompositionRootForbid(t *testing.T) { // composition_root: forbid �
 	m2.Techs = []Tech{{Pattern: "net/http", Adapters: []string{"cmd"}, ForbidCompositionRoot: true}}
 	if fs := Evaluate(m2, inAdp); len(fs) != 0 {
 		t.Fatalf("forbid prüft weiter gegen die Adapter-Liste — cmd ist hier gelistet, got %v", fs)
+	}
+}
+
+func TestTechLeakSingleAdapterGoldenMessage(t *testing.T) { // Review-R1 T-6: byte-identische Einzel-Adapter-Meldung golden gepinnt
+	m := Model{
+		Layers: []Layer{{Name: "geo", Globs: []string{"adapters/geometry/**"}, Role: "adapter"}},
+		Techs:  []Tech{{Pattern: "net/http", Adapters: []string{"adapters/http"}}},
+	}
+	fs := Evaluate(m, []FileImports{{Path: "adapters/geometry/g.go", Layer: "geo",
+		Imports: []Import{{Symbol: "net/http", Line: 7}}}})
+	if len(fs) != 1 || fs[0].Msg != "Tech net/http außerhalb adapters/http" {
+		t.Fatalf("Einzel-Adapter-Meldung muss byte-identisch zum Vor-0.14.0-Format sein, got %v", fs)
+	}
+}
+
+func TestNewTechEmptyAdapterListFails(t *testing.T) { // Review-R1 T-k: der Kern-Wächter selbst (nicht nur der Config-Wächter davor)
+	if _, err := NewTech("x", nil, "", ""); err == nil {
+		t.Fatal("NewTech muss die leere adapter-Liste selbst ablehnen")
+	}
+	if _, err := NewTech("x", []string{}, "", ""); err == nil {
+		t.Fatal("NewTech muss die leere adapter-Liste selbst ablehnen (leerer Slice)")
+	}
+}
+
+func TestCompositionRootFindingsSortedWithOthers(t *testing.T) { // Review-R1 T-4 / AC-QA-01: CR- und Nicht-CR-Befunde stabil gemischt sortiert
+	m := Model{
+		Layers: []Layer{
+			{Name: "adp", Globs: []string{"z_adapter/**"}, Role: "adapter"},
+			{Name: "adp2", Globs: []string{"m_adapter/**"}, Role: "adapter"},
+		},
+		CompositionRoot: []string{"a_cmd/**"},
+		Techs:           []Tech{{Pattern: "net/http", Adapters: []string{"adapters/http"}, ForbidCompositionRoot: true}},
+	}
+	// Append-Reihenfolge (Datei-Iteration) weicht bewusst von der sortierten
+	// (Path, Line, Rule)-Ordnung ab: z_… und m_… kommen VOR der CR-Datei a_….
+	files := []FileImports{
+		{Path: "z_adapter/x.go", Layer: "adp", Imports: []Import{{Symbol: "net/http", Line: 2}}},
+		{Path: "m_adapter/y.go", Layer: "adp2", Imports: []Import{{Symbol: "net/http", Line: 9}}},
+		{Path: "a_cmd/main.go", Layer: "", Imports: []Import{{Symbol: "net/http", Line: 5}}},
+	}
+	fs := Evaluate(m, files)
+	if len(fs) != 3 {
+		t.Fatalf("erwarte 3 tech-leaks (2 normal + 1 composition_root: forbid), got %v", fs)
+	}
+	if fs[0].Path != "a_cmd/main.go" || fs[1].Path != "m_adapter/y.go" || fs[2].Path != "z_adapter/x.go" {
+		t.Fatalf("CR- und Nicht-CR-Befunde müssen gemeinsam stabil nach Pfad sortiert sein (SPEC-DET-001), got %v", fs)
 	}
 }
 

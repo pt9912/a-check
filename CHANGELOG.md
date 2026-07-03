@@ -6,15 +6,19 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
-Lastenheft/Spezifikation 0.13.0 → 0.14.0 (**CR d-check-Pilot**, slice-023; ADR-0018):
-die drei Deltas, auf die d-check seine `arch-check`-Ablösung als Vorbedingung gestellt hat.
+Spezifikation 0.13.0 → 0.14.0 (folgt dem Lastenheft-CR 0.14.0, **CR d-check-Pilot**,
+slice-023; ADR-0018): die drei Deltas, auf die d-check seine `arch-check`-Ablösung
+als Vorbedingung gestellt hat.
 
 ### Added
 
 - **`AC-FA-RULE-003`/`AC-FA-CONF-001` (0.13.0→0.14.0):** `tech.adapter` auch als
   Pfad-**Liste** — das Symbol ist in **jedem** gelisteten Adapter erlaubt (leere
-  Liste/leerer Eintrag → Exit 2; Skalar bleibt gültig, byte-identisch); die
+  Liste/leerer Eintrag → Exit 2; der nicht-leere Skalar bleibt byte-identisch); die
   `tech-leak`-Meldung nennt alle gelisteten Adapter in Deklarationsreihenfolge.
+  **Fail-closed-Härtung:** ein leerer oder **fehlender** `tech.adapter` bricht jetzt
+  mit Exit 2 — vor 0.14.0 war er ein **stiller Never-Leak-Eintrag** (das Muster
+  meldete nie; `AC-QA-02`-Ethos wie beim leeren `resolution`-Root).
 - **`AC-FA-RULE-003`/`AC-FA-CONF-001` (0.14.0):** `composition_root: allow|forbid`
   je `tech`-Eintrag (Default `allow` = bisheriges Verhalten): `forbid` schaltet nur
   die `tech-leak`-Ausnahme der Composition Root für diesen Eintrag ab — die

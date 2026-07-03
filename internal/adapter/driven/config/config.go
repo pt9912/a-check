@@ -146,18 +146,27 @@ func decodeTechs(entries []yamlTech, path string) ([]core.Tech, error) {
 }
 
 // decodeTechAdapters reads a tech entry's `adapter` as a scalar or a string
-// list (AC-FA-RULE-003 0.14.0). A scalar becomes a one-element list — byte-
-// identical to the pre-list behavior, including an absent/empty scalar (its
-// always-leak semantics is preserved, not silently rejected). A LIST is the
-// new, strict form: empty lists and empty entries fail closed (exit 2).
+// list (AC-FA-RULE-003 0.14.0). A non-empty scalar becomes a one-element list —
+// byte-identical to the pre-list behavior. An ABSENT or EMPTY adapter (also
+// `null`) fails closed (exit 2): in the pre-0.14.0 code it was a silent
+// never-leak dead entry (`strings.Contains(path, "")` is always true, so the
+// pattern never reported) — a false-green trap, not a behavior worth
+// preserving (Review-R1 B1; same ethos line as the empty resolution root).
+// A YAML alias is dereferenced first (yaml.Node fields keep Kind==AliasNode).
 func decodeTechAdapters(node yaml.Node, pattern, path string) ([]string, error) {
+	if node.Kind == yaml.AliasNode && node.Alias != nil {
+		node = *node.Alias
+	}
 	switch node.Kind {
-	case 0, yaml.ScalarNode:
+	case 0:
+		return nil, fmt.Errorf("%s: tech-Muster %q: adapter fehlt (Pfad oder Pfad-Liste erforderlich)", path, pattern)
+	case yaml.ScalarNode:
 		var s string
-		if node.Kind != 0 {
-			if err := node.Decode(&s); err != nil {
-				return nil, fmt.Errorf("%s: tech-Muster %q: adapter: %w", path, pattern, err)
-			}
+		if err := node.Decode(&s); err != nil {
+			return nil, fmt.Errorf("%s: tech-Muster %q: adapter: %w", path, pattern, err)
+		}
+		if s == "" {
+			return nil, fmt.Errorf("%s: tech-Muster %q: leerer adapter unzulässig (war ein stiller Never-Leak-Eintrag)", path, pattern)
 		}
 		return []string{s}, nil
 	case yaml.SequenceNode:
