@@ -66,7 +66,11 @@ Historie 1/3–3/3); dieser Slice liefert die Umsetzung:
 
 ## 3. Vor der Umsetzung zu klären
 
-> **Entscheide bei Umsetzung (2026-07-03, zur Abnahme):** (a) `exclude`-Ort =
+> **Abnahme (2026-07-03):** Entscheide a–d gemäß Empfehlung bestätigt (Maintainer-Wort),
+> inkl. des Review-Entscheids fail-closed für leeren/fehlenden `tech.adapter`;
+> [ADR-0018](../../adr/0018-exclude-scan-scope.md) damit `Accepted`.
+>
+> **Entscheide bei Umsetzung (2026-07-03, abgenommen):** (a) `exclude`-Ort =
 > **Top-Level**, per [ADR-0018](../../adr/0018-exclude-scan-scope.md) (Proposed —
 > Sign-off ausstehend; m-trace-Evidenz unten). (b) Reihenfolge: `exclude` wirkt als
 > **Scan-Scope vor der Extraktion** (Datei existiert für keine Prüfung),

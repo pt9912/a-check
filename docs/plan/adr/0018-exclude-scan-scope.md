@@ -1,6 +1,6 @@
 # ADR-0018 — `exclude`-Scan-Scope: Top-Level-Datei-Ausschluss vor der Extraktion
 
-- **Status:** Proposed
+- **Status:** Accepted
 - **Datum:** 2026-07-03
 - **Autor:** pt9912
 - **Bezug:** [AC-FA-CONF-001](../../../spec/lastenheft.md#ac-fa-conf-001--konfigurationsdatei-a-checkyml) (Lastenheft 0.14.0, CR d-check-Pilot 3/3) — additiv zu [ADR-0003](0003-config-modell-a-check-yml.md) (Config-Modell).
@@ -81,4 +81,5 @@ Die Ausschluss-Klassen sind gemischt sprachübergreifend (`node_modules/`, `dist
 
 | Datum | Ereignis |
 |---|---|
-| 2026-07-03 | Proposed — Entwurf mit [slice-023](../planning/open/slice-023-dcheck-pilot-deltas.md); Evidenz d-check-Plan-Review + m-trace-Sichtung; Sign-off Auftraggeber ausstehend. |
+| 2026-07-03 | Proposed — Entwurf mit [slice-023](../planning/open/slice-023-dcheck-pilot-deltas.md); Evidenz d-check-Plan-Review + m-trace-Sichtung. |
+| 2026-07-03 | Proposed → Accepted (Sign-off Auftraggeber: Entscheide a–d gemäß Empfehlung inkl. fail-closed für leeren/fehlenden `tech.adapter`, [slice-023](../planning/open/slice-023-dcheck-pilot-deltas.md) §3). Ab jetzt immutable; Ablösung nur via Folge-ADR mit `Supersedes`. |
