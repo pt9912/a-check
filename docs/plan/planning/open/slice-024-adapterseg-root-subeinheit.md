@@ -8,9 +8,11 @@
 [Roadmap](../in-progress/roadmap.md). **Trigger:** b-cad-Pilot (Meilenstein M3) — Maintainer-Urteil
 „Richtungen bewusst setzen" ist ohne diesen Fix nur um den Preis von 40 Falsch-Positiven umsetzbar.
 
-> **Hinweis:** Entwurf zur Abnahme. Der AC-Text in §3 (Code-Fence) ist unverbindlich —
-> gültig erst nach Freigabe in [`spec/lastenheft.md`](../../../../spec/lastenheft.md).
-> [ADR-0019](../../adr/0019-adapterseg-root-subeinheit.md) ist `Proposed` — Sign-off ausstehend.
+> **Hinweis:** Der AC-Text in §3 (Code-Fence) war der Entwurf zur Abnahme (Vor-D-Stand);
+> maßgeblich ist die freigegebene Fassung in [`spec/lastenheft.md`](../../../../spec/lastenheft.md)
+> (0.15.0, inkl. Blatt-Klassifikation aus Entscheid D).
+> [ADR-0019](../../adr/0019-adapterseg-root-subeinheit.md) bleibt `Proposed`, bis Entscheid D
+> abgenommen ist.
 
 ---
 
@@ -32,10 +34,12 @@ Schichten — Verzeichnisse.
 
 - **Slice-ID:** slice-024.
 - **ADR:** [ADR-0019](../../adr/0019-adapterseg-root-subeinheit.md) (neu; `Proposed` →
-  `Accepted` per Sign-off; erweitert [ADR-0010](../../adr/0010-layer-relativer-adapterseg-laengster-praefix.md),
-  `Supersedes: —`).
+  `Accepted` erst nach Abnahme **inkl. Umsetzungs-Entscheid D**, §6; erweitert
+  [ADR-0010](../../adr/0010-layer-relativer-adapterseg-laengster-praefix.md), `Supersedes: —`).
 - **AC:** [AC-FA-RULE-002](../../../../spec/lastenheft.md#ac-fa-rule-002--keine-lateralen-adapter-kanten-regel-lateral-adapter)
-  (Sub-Einheiten-Grenzfall Root).
+  (Sub-Einheiten-Grenzfall Root); Bezug ohne Änderung:
+  [AC-FA-RULE-006](../../../../spec/lastenheft.md#ac-fa-rule-006--schicht-rollen-generische-regel-anwendung)
+  (`adapterSeg`-Generalisierung, wie [ADR-0010](../../adr/0010-layer-relativer-adapterseg-laengster-praefix.md)).
 - **Spec:** [SPEC-RULE-001](../../../../spec/spezifikation.md#spec-rule-001--regel-auswertung)
   (`lateral-adapter`-Zeile).
 - **Module:** `internal/hexagon/core` (`adapterSeg`), Tests in `rules_test.go` + ein
@@ -72,8 +76,8 @@ jede Aenderung an Cross-Layer-lateral oder adapter_sink.
 
 ## 4. Umsetzungsplan (Reihenfolge: ADR → Lastenheft → Spec → Code → Tests)
 
-1. [ADR-0019](../../adr/0019-adapterseg-root-subeinheit.md) `Proposed → Accepted` (Sign-off =
-   Abnahme §6); [ADR-Index](../../adr/README.md) ist ergänzt.
+1. [ADR-0019](../../adr/0019-adapterseg-root-subeinheit.md) `Proposed → Accepted` — erst mit
+   der Abnahme **inkl. Entscheid D** (§6); [ADR-Index](../../adr/README.md) ist ergänzt.
 2. Lastenheft: §3-Text einarbeiten, Bump **0.15.0** + Historie-Zeile;
    [SPEC-RULE-001](../../../../spec/spezifikation.md#spec-rule-001--regel-auswertung)-`lateral-adapter`-Zeile
    + Bump + Historie.

@@ -93,11 +93,16 @@ eigenen Einheit namens ihres Dateinamens.
   melden aus einer Root-Datei heraus lateral (dokumentierte Grenze,
   [AC-QA-02](../../../spec/lastenheft.md#ac-qa-02--hermetik-und-ehrliche-heuristik-grenze));
   Re-Eval beim realen TypeScript-Mono-Repo-Pilot (m-trace-Klasse).
+- **Verzeichnisnamen mit Punkt** (Review-R1: die Gegenrichtung derselben Ambiguität —
+  ein Paket-Verzeichnis wie `yaml.v2`/`config.v1` als Blatt gilt datei-förmig → Root,
+  Lateral zwischen solchen Sub-Einheiten wird geblendet, falsch-negativ): per Test
+  gepinnte, dokumentierte Grenze ([AC-QA-02](../../../spec/lastenheft.md#ac-qa-02--hermetik-und-ehrliche-heuristik-grenze));
+  Re-Eval, falls ein Pilot real gepunktete Sub-Einheiten-Verzeichnisse führt.
 
 ## Geschichte
 
 | Datum | Ereignis |
 |---|---|
-| 2026-07-03 | Proposed — Entwurf mit [slice-024](../planning/open/slice-024-adapterseg-root-subeinheit.md); Evidenz b-cad-Pilot V3b/V4 (39/40 Falsch-Positive). |
+| 2026-07-03 | Proposed — Entwurf mit [slice-024](../planning/open/slice-024-adapterseg-root-subeinheit.md); Evidenz b-cad-Pilot (V3b: 39, V4 nach den dortigen Umbauten: 40 Falsch-Positive). |
 | 2026-07-03 | Sign-off Auftraggeber für die Entscheide A–C (gemäß Empfehlung, [slice-024](../planning/open/slice-024-adapterseg-root-subeinheit.md) §6). |
 | 2026-07-03 | **In der Umsetzung geschärft (Entscheid D, zur Abnahme):** Blatt-Klassifikation datei-förmig (`.`) → Root `''` vs. verzeichnis-förmig → Sub-Einheit — das Dogfooding deckte auf, dass die reine Root-Regel Go-Paket-Blätter (`report_test.go` → Eigen-Paket) falsch meldet und Cross-Paket-Lateral blenden würde; endungslose Specifier als dokumentierte Grenze in die Re-Eval-Trigger. Status bleibt Proposed bis D abgenommen. |

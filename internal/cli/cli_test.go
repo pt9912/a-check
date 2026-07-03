@@ -349,6 +349,35 @@ edges:
 	}
 }
 
+func TestGoPackageRootSubunitE2E(t *testing.T) { // ADR-0019 Entscheid D (Review-R1 T-1): Go-Paket-Blatt end-to-end — Eigen-Paket ok, Fremd-Paket lateral
+	cfg := `version: 1
+languages:
+  go: ["**/*.go"]
+layers:
+  adapters: {globs: ["internal/adapter/**"], role: adapter}
+edges:
+  - {from: adapters, to: adapters}
+`
+	dir := writeRepo(t, map[string]string{
+		".a-check.yml": cfg,
+		// Externes Testpaket importiert sein EIGENES Paket-Verzeichnis (der Dogfooding-Fund).
+		"internal/adapter/report/report.go":      "package report\n",
+		"internal/adapter/report/report_test.go": "package report_test\nimport \"myrepo/internal/adapter/report\"\n",
+		// Fremdes Paket-Verzeichnis derselben Schicht -> lateral (Blatt-Klassifikation blendet nicht).
+		"internal/adapter/config/config.go": "package config\nimport \"myrepo/internal/adapter/report\"\n",
+	})
+	var out, errb bytes.Buffer
+	if code := cli.Run([]string{dir}, &out, &errb); code != 1 {
+		t.Fatalf("erwarte Exit 1 (nur der Fremd-Paket-Import), got %d (out=%q err=%q)", code, out.String(), errb.String())
+	}
+	if got := strings.Count(out.String(), "lateral-adapter"); got != 1 {
+		t.Fatalf("erwarte genau 1 lateral-adapter (config->report; report_test->report keiner), got %d: %q", got, out.String())
+	}
+	if !strings.Contains(out.String(), "config/config.go") || strings.Contains(out.String(), "report_test.go") {
+		t.Fatalf("nur der Fremd-Paket-Import darf melden, nie der Eigen-Paket-Import: %q", out.String())
+	}
+}
+
 func TestDcheckPilotDeltas(t *testing.T) { // slice-023 end-to-end (AC-FA-RULE-003/AC-FA-CONF-001 0.14.0): adapter-Liste + composition_root: forbid + exclude
 	cfg := `version: 1
 languages:

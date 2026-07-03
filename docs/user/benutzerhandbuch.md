@@ -436,7 +436,7 @@ siehe „Dateien vom Scan ausnehmen" in Abschnitt 4.
 - **Rolle (`role`):** die Funktion einer Schicht (`domain`/`app`/`port`/`adapter`), die bestimmt, welche Reinheits-Regel greift — explizit per `role:` oder aus dem Schicht-Namen abgeleitet (Abschnitt 4).
 - **Kante (`edges`):** eine erlaubte gerichtete Abhängigkeit zwischen zwei Schichten (`from` → `to`).
 - **`adapter_sink`:** eine gemeinsame Senke, die alle Adapter importieren dürfen (Ausnahme von `lateral-adapter`).
-- **Sub-Einheit:** ein Unterverzeichnis innerhalb einer Adapter-Schicht — `lateral-adapter` trennt Sub-Einheiten, nie Dateinamen; Dateien direkt im Schicht-Root bilden eine gemeinsame Root-Einheit (eigene `.cpp`/`.h`-Paare melden nicht).
+- **Sub-Einheit:** ein Unterverzeichnis innerhalb einer Adapter-Schicht — `lateral-adapter` trennt Sub-Einheiten, nie Dateinamen; Dateien direkt im Schicht-Root bilden eine gemeinsame Root-Einheit (eigene `.cpp`/`.h`-Paare melden nicht). Endungslose Importe (z. B. TypeScript `./b` oder Go-Paket-Pfade) gelten als eigene Einheit.
 - **`forbidden_constructs`:** je Schicht konfigurierte verbotene Text-Muster (für `port-impurity`).
 - **Befund:** eine gemeldete Regelverletzung (Datei, Zeile, Regel, Meldung).
 - **`core-impurity` / `app-impurity` / `lateral-adapter` / `tech-leak` / `port-impurity` / `port-direction-mismatch` / `wrong-direction`:** die sieben geprüften Regeln (Abschnitt 3.4).

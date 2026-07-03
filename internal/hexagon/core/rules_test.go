@@ -1111,6 +1111,11 @@ func TestAdapterSegNoMatchStaysEmpty(t *testing.T) { // ADR-0019 Entscheid C/D: 
 	if got := adapterSeg("adapters/io/pkg", layer); got != "pkg" {
 		t.Fatalf("verzeichnis-foermiges Blatt (ohne '.') IST die Sub-Einheit (Go-Paket-Fall, Entscheid D), got %q", got)
 	}
+	// Dokumentierte Gegenrichtung der Ambiguitaet (Review-R1, ADR-0019 Re-Eval):
+	// ein Paket-VERZEICHNIS mit Punkt im Namen (yaml.v2) gilt datei-foermig -> Root.
+	if got := adapterSeg("adapters/io/yaml.v2", layer); got != "" {
+		t.Fatalf("gepunktetes Verzeichnis-Blatt gilt als datei-foermig -> Root (gepinnte AC-QA-02-Grenze), got %q", got)
+	}
 }
 
 func TestRelativeIntraSubunitNoLateral(t *testing.T) { // ADR-0017 (Review-R1 C-1): Sub-Einheit wird auf dem KANDIDATEN bestimmt, nicht am Roh-Specifier
