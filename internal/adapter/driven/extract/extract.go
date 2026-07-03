@@ -24,12 +24,12 @@ type extractFn func(src string) []core.Import
 // Adapter implements port.ExtractionPort. Its compiled patterns live on the
 // value (not as package globals) to satisfy the lint profile (ADR-0005).
 type Adapter struct {
-	goSingle, goBlock, goQuoted        *regexp.Regexp
-	cppInclude                         *regexp.Regexp
-	rustUse, rustCrate                 *regexp.Regexp
-	kotlinImp, javaImp                 *regexp.Regexp
-	pyImp, pyFrom                      *regexp.Regexp
-	csUsing                            *regexp.Regexp
+	goSingle, goBlock, goQuoted       *regexp.Regexp
+	cppInclude                        *regexp.Regexp
+	rustUse, rustCrate                *regexp.Regexp
+	kotlinImp, javaImp                *regexp.Regexp
+	pyImp, pyFrom                     *regexp.Regexp
+	csUsing                           *regexp.Regexp
 	tsFrom, tsSide, tsRequire, tsCont *regexp.Regexp
 	// backends maps a language to its extractor; its keys are the single
 	// source of the supported-backend set (SPEC-EXTRACT-001). A new backend is
@@ -51,8 +51,10 @@ func newAdapter() Adapter {
 		kotlinImp:  regexp.MustCompile(`^\s*import\s+([A-Za-z_][A-Za-z0-9_.]*)`),
 		javaImp:    regexp.MustCompile(`^\s*import\s+(?:static\s+)?([A-Za-z_][A-Za-z0-9_.]*)`),
 		// Python: both forms yield the dotted module path; relative imports
-		// (leading dot) never match [A-Za-z_] — the reserved `relative`
-		// resolution mode's signal, a documented boundary (SPEC-EXTRACT-001).
+		// (leading dot) never match [A-Za-z_] — a documented boundary of the
+		// Python extraction (SPEC-EXTRACT-001): they stay unextracted even
+		// though the `relative` resolution mode exists for specifier
+		// languages like TypeScript (ADR-0017).
 		pyImp:  regexp.MustCompile(`^\s*import\s+([A-Za-z_][A-Za-z0-9_.]*)`),
 		pyFrom: regexp.MustCompile(`^\s*from\s+([A-Za-z_][A-Za-z0-9_.]*)\s+import\b`),
 		// C#: using DIRECTIVES only — `global`/`static` skipped, the alias form

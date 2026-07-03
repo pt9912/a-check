@@ -97,10 +97,12 @@ gewählte Backend die Menge der importierten Symbole/Module:
    - **Python:** `import a.b.c` (inkl. Alias-Form `import a.b as x` → `a.b`) sowie
      `from a.b import c` → Modulpfad `a.b` (die importierten Namen werden nicht
      expandiert); **relative** Importe (führender Punkt: `from . import x`,
-     `from ..pkg import y`) werden **nicht** gegriffen — sie sind das
-     Auflösungs-Signal des reservierten `relative`-Modus
-     ([SPEC-CONF-001](#spec-conf-001--konfigurationsschema)), dokumentierte
-     Heuristik-Grenze ([AC-QA-02](lastenheft.md#ac-qa-02--hermetik-und-ehrliche-heuristik-grenze))
+     `from ..pkg import y`) werden **nicht** gegriffen — eine dokumentierte
+     Grenze der Python-Extraktion
+     ([AC-QA-02](lastenheft.md#ac-qa-02--hermetik-und-ehrliche-heuristik-grenze)),
+     unabhängig vom `relative`-Auflösungs-Modus
+     ([SPEC-CONF-001](#spec-conf-001--konfigurationsschema)), den
+     Specifier-Sprachen wie TypeScript nutzen
    - **C#** (Schlüssel `csharp`): `using`-**Direktiven** → gepunkteter Namespace —
      `using A.B;` (inkl. `global using …;` und `using static …;`, Schlüsselwörter
      übersprungen) sowie Alias-Form `using X = A.B;` → `A.B` (das Ziel; der
@@ -122,7 +124,11 @@ gewählte Backend die Menge der importierten Symbole/Module:
      knex.from('users')`, dynamisches `import(…)`/`require(…)`) matchen nie;
      Triple-Slash-Direktiven fallen dem Kommentar-Strip zu; Template-Literale
      und JSX-Textzeilen sind die bestehende String-Grenze
-     ([AC-QA-02](lastenheft.md#ac-qa-02--hermetik-und-ehrliche-heuristik-grenze))
+     ([AC-QA-02](lastenheft.md#ac-qa-02--hermetik-und-ehrliche-heuristik-grenze)).
+     Weitere dokumentierte Grenzen: Specifier mit `//` (URL-Importe) fallen dem
+     Kommentar-Strip zu; kompakte Formen ohne Whitespace nach `import`/`export`
+     sowie ein nacktes `from '…'` auf eigener (nicht `}`-geführter) Zeile
+     werden nicht gegriffen
 3. Import-ähnliche Zeilen in Zeilen-/Block-Kommentaren werden **nicht**
    gewertet (`//` und `/* */` werden entfernt). Das C-artige Kommentar-Stripping
    gilt **nur für die C-Syntax-Sprachen**; **Python** wird nicht C-gestrippt —
@@ -167,7 +173,7 @@ Meldung); ≥ 1 Befund ⇒ Exit-Code 1.
 |---|---|---|
 | `core-impurity` | Datei mit Rolle `domain` importiert ein Symbol, das auf eine `app`-, `port`- oder `adapter`-Rolle oder ein `tech`-Muster auflöst — `domain` ist die innerste Schicht, **kategorisch** | [AC-FA-RULE-001](lastenheft.md#ac-fa-rule-001--kern-reinheit-regel-core-impurity) |
 | `app-impurity` | Datei mit Rolle `app` importiert eine `adapter`-Rolle oder ein `tech`-Muster; `domain`- und `port`-Referenzen sind erlaubt (Richtung edge-regiert) | [AC-FA-RULE-007](lastenheft.md#ac-fa-rule-007--rolle-app-und-strenge-domain) |
-| `lateral-adapter` | Datei mit Rolle `adapter` importiert eine *andere* `adapter`-Schicht (Layer-Identität) oder — in derselben Schicht — eine andere Adapter-Sub-Einheit (relativ zum Schicht-Glob-Präfix); nicht `adapter_sink`. **Kategorisch** (nicht über `edges`/`allow` aufhebbar) | [AC-FA-RULE-002](lastenheft.md#ac-fa-rule-002--keine-lateralen-adapter-kanten-regel-lateral-adapter) |
+| `lateral-adapter` | Datei mit Rolle `adapter` importiert eine *andere* `adapter`-Schicht (Layer-Identität) oder — in derselben Schicht — eine andere Adapter-Sub-Einheit (relativ zum Schicht-Glob-Präfix); nicht `adapter_sink`. Sub-Einheit **und** `adapter_sink`-Ausnahme werden auf dem gemäß `resolution` normalisierten Ziel-**Kandidaten** geprüft, nicht am Roh-Symbol (ein relativer Specifier trägt den Schicht-Präfix nie; im `path`-Modus sind beide identisch). **Kategorisch** (nicht über `edges`/`allow` aufhebbar) | [AC-FA-RULE-002](lastenheft.md#ac-fa-rule-002--keine-lateralen-adapter-kanten-regel-lateral-adapter) |
 | `tech-leak` | ein `tech`-Muster (Substring oder RE2-Regex, je `match`) erscheint außerhalb seines zugeordneten Adapters (und außerhalb `composition_root`, falls konfiguriert) | [AC-FA-RULE-003](lastenheft.md#ac-fa-rule-003--tech-kapselung-regel-tech-leak) |
 | `port-impurity` | Datei mit Rolle `port` importiert eine `adapter`-Rolle oder ein `tech`-Muster **oder** enthält ein `forbidden_constructs`-Muster (text-heuristisch erkannt). **Kern-Referenzen sind erlaubt** (Ports sprechen die Sprache des Kerns) und werden über `edges`/`allow` regiert — eine undeklarierte `ports → core`-Kante fällt unter `wrong-direction` | [AC-FA-RULE-004](lastenheft.md#ac-fa-rule-004--port-disziplin-regel-port-impurity) |
 | `port-direction-mismatch` | Datei mit Rolle `adapter` und Richtung `direction` X importiert eine `port`-Rolle mit Richtung Y (X ≠ Y, **beide gesetzt**) — ein Treiber-Adapter spricht nur `driving`-Ports, ein getriebener nur `driven`-Ports; **orthogonal** zur Rolle, ohne `direction` keine Prüfung. **Kategorisch** (nicht über `edges`/`allow` aufhebbar, wie `lateral-adapter`) | [AC-FA-RULE-008](lastenheft.md#ac-fa-rule-008--driving-driven-port-richtung-regel-port-direction-mismatch) |

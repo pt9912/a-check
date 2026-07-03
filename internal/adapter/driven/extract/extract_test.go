@@ -428,10 +428,14 @@ func TestTypescriptExpressionNoMatch(t *testing.T) { // Negative: Ausdrucks-Zeil
 	src := "const m = await import('./lazy');\n" + // dynamisches import im Ausdruck
 		"import('./x').then(m => m.run());\n" + // zeilen-anführendes Ausdrucks-import (schärfster tsSide-Mutant)
 		"const x = require('pg');\n" + // require im Ausdruck
-		"export const q = knex.from('users');\n" + // Mittelteil-Beschränkung (kein =/(/. )
+		"export const q = knex.from('users');\n" + // blockiert vom from(-Anker (kein Quote nach from)
+		"export const x = from './adapters/db5';\n" + // pinnt die Mittelteil-Klasse: '=' darf nie überspannt werden (Review-R1 T-1)
+		"export obj.prop from './adapters/db7';\n" + // pinnt die Mittelteil-Klasse: '.' darf nie überspannt werden (Review-R1 T-1)
 		"export {};\n" + // leerer Export ohne from
 		"declare module './mod' {\n" + // Ambient-Deklaration
 		"importX from './evil';\n" + // Keyword-Präfix
+		"exportX from './evil5';\n" + // Keyword-Präfix (export-Seite)
+		"import { X } from `./y`\n" + // Backtick-Specifier: Template-Literal-Grenze, nie gegriffen
 		"const s = 'import { X } from \"./evil2\"';\n" + // Import-String mitten im Ausdruck
 		"// import { Y } from './evil3';\n" + // Zeilen-Kommentar (C-Strip)
 		"/* import { Z } from './evil4'; */\n" + // Block-Kommentar (C-Strip)

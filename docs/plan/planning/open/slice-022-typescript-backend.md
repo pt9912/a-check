@@ -9,7 +9,7 @@
 **Bezug:** erweitert [AC-FA-EXTRACT-001](../../../../spec/lastenheft.md#ac-fa-extract-001--sprach-backends-für-die-import-extraktion)
 um TypeScript und [AC-FA-CONF-001](../../../../spec/lastenheft.md#ac-fa-conf-001--konfigurationsdatei-a-checkyml)
 um den gültigen `relative`-Modus; **neuer Folge-ADR
-[ADR-0017](../../adr/0017-relative-resolution-modus.md)** (Proposed) zu
+[ADR-0017](../../adr/0017-relative-resolution-modus.md)** (Accepted seit Abnahme 2026-07-03) zu
 [ADR-0016](../../adr/0016-resolution-sprach-parametrisch.md); schärft
 [SPEC-EXTRACT-001](../../../../spec/spezifikation.md#spec-extract-001--import-extraktion),
 [SPEC-CONF-001](../../../../spec/spezifikation.md#spec-conf-001--konfigurationsschema),
@@ -17,9 +17,9 @@ um den gültigen `relative`-Modus; **neuer Folge-ADR
 [Roadmap welle-06](../in-progress/roadmap.md). **Trigger:** Polyglot-Bestand (TypeScript-Repos),
 Maintainer-Priorität 2; letzter offener welle-06-Kandidat.
 
-> **Hinweis:** Entwurf zur Abnahme. Die in §4 als Code-Fence gesetzten AC-Texte sind
-> unverbindlich — gültig erst nach Freigabe in [`spec/lastenheft.md`](../../../../spec/lastenheft.md).
-> [ADR-0017](../../adr/0017-relative-resolution-modus.md) ist `Proposed` — Sign-off ausstehend.
+> **Hinweis:** Die in §4 als Code-Fence gesetzten AC-Texte waren der Entwurf zur Abnahme;
+> maßgeblich ist die freigegebene Fassung in [`spec/lastenheft.md`](../../../../spec/lastenheft.md) (0.13.0).
+> [ADR-0017](../../adr/0017-relative-resolution-modus.md) ist seit der Abnahme (2026-07-03) `Accepted`.
 
 ---
 
@@ -346,3 +346,10 @@ Sprachmengen (nicht anfassen). **Nicht**
   `import … from` beginnen (String-/Markup-Grenze, nicht TS-spezifisch behandelt).
 - **Risiko/Notiz — synthetische Verifikation:** noch kein benannter TypeScript-Pilot;
   Verifikation gegen eigene Fixtures (wie Java/Python/C#). Sprache bleibt gated-geliefert.
+- **Notiz (Review-R1) — weitere dokumentierte Grenzen:** TypeScript-Specifier mit `//`
+  (URL-Importe) fallen dem C-Kommentar-Strip zu; kompakte Formen ohne Whitespace nach
+  `import`/`export` und ein nacktes `from '…'` auf eigener Zeile werden nicht gegriffen —
+  alle drei als [AC-QA-02](../../../../spec/lastenheft.md#ac-qa-02--hermetik-und-ehrliche-heuristik-grenze)-Grenzen
+  in Lastenheft/Spezifikation ausgewiesen. `mode: relative` ist sprach-parametrisch generisch:
+  für eine Sprache, deren Extraktion keine relativen Specifier liefert (Python), ist er
+  deklarierbar, aber wirkungslos — die Python-Grenze bleibt eine Extraktions-Grenze.

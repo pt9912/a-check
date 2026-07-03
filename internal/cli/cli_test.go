@@ -266,15 +266,17 @@ resolution:
 `
 	// Zeile 1: relativer Import -> adapters -> core-impurity. Zeile 2: Bare-Import
 	// '@actions/adapters' — bei Roh-Durchreichung segment-matchte 'adapters' (Geister-
-	// Befund); muss leer bleiben (ADR-0017). Zeile 3: Ausdrucks-Zeile, deren Fehlsymbol
-	// '../adapters/db2' auflösen WÜRDE (pinnt die Mittelteil-Beschränkung end-to-end,
-	// Lerneintrag slice-021). Zeilen 4-6: Prettier-umbrochener Import — die Schluss-
-	// zeile } from '../adapters/db3' muss den Befund liefern (Entscheid G).
+	// Befund); muss leer bleiben (ADR-0017). Zeile 3: Ausdrucks-Zeile MIT nacktem
+	// `from '…'` — ihr Fehlsymbol '../adapters/db2' löste auf; nur die Mittelteil-
+	// Klasse (kein '=') blockiert sie, das pinnt die Beschränkung end-to-end
+	// (Review-R1 T-1; ein knex.from(...) bewachte nur den from(-Anker). Zeilen 4-6:
+	// Prettier-umbrochener Import — die Schlusszeile } from '../adapters/db3' muss
+	// den Befund liefern (Entscheid G).
 	dir := writeRepo(t, map[string]string{
 		".a-check.yml": tsCfg,
 		"core/service.ts": "import { Db } from '../adapters/db';\n" +
 			"import * as a from '@actions/adapters';\n" +
-			"export const q = knex.from('../adapters/db2');\n" +
+			"export const q = from '../adapters/db2';\n" +
 			"import {\n  A,\n} from \"../adapters/db3\"\n",
 		"adapters/db.ts": "export const db = 1;\n",
 	})

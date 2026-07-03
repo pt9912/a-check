@@ -37,7 +37,7 @@ func Evaluate(m Model, files []FileImports) []Finding {
 // or ok=false if the import is clean. The purity rules dispatch on the layer's
 // ROLE, not its name (AC-FA-RULE-006/007).
 func ruleFor(m Model, f FileImports, imp Import) (Finding, bool) {
-	tl := targetLayer(imp.Symbol, f.Path, m.Layers, m.Resolution[f.Language])
+	tl, cand := targetLayer(imp.Symbol, f.Path, m.Layers, m.Resolution[f.Language])
 	srcRole := roleOf(f.Layer, m)
 	tgtRole := roleOf(tl, m)
 	tech, isTech := matchTech(imp.Symbol, m.Techs)
@@ -45,7 +45,7 @@ func ruleFor(m Model, f FileImports, imp Import) (Finding, bool) {
 		return find, true // core-/app-/port-impurity (domain-seitig, kategorisch)
 	}
 	switch {
-	case srcRole == "adapter" && tgtRole == "adapter" && lateral(m, f, imp, tl):
+	case srcRole == "adapter" && tgtRole == "adapter" && lateral(m, f, cand, tl):
 		return Finding{f.Path, imp.Line, "lateral-adapter", "Adapter importiert anderen Adapter " + imp.Symbol}, true
 	case isTech && !strings.Contains(f.Path, tech.Adapter):
 		return Finding{f.Path, imp.Line, "tech-leak", "Tech " + tech.Pattern + " außerhalb " + tech.Adapter}, true
@@ -134,16 +134,21 @@ func inferRole(name string) string {
 // categorical — only adapter_sink exempts, not edges/allow — and fires across
 // different adapter layers (layer identity) or, within one layer, across adapter
 // sub-units distinguished relative to the layer's glob prefix (name-independent,
-// ADR-0010). The caller guarantees both ends resolve to role adapter.
-func lateral(m Model, f FileImports, imp Import, tl string) bool {
-	if contains(imp.Symbol, m.AdapterSink) {
+// ADR-0010). cand is the RESOLVED candidate targetLayer matched (ADR-0017):
+// sink containment and sub-unit discrimination live in the layer-glob namespace
+// — a raw relative specifier like "./helper" never carries the layer prefix and
+// would misreport every same-sub-unit import. In path mode cand IS the raw
+// import, so the pre-resolution behavior is unchanged. The caller guarantees
+// both ends resolve to role adapter.
+func lateral(m Model, f FileImports, cand, tl string) bool {
+	if contains(cand, m.AdapterSink) {
 		return false
 	}
 	if tl != f.Layer {
 		return true
 	}
 	layer := layerByName(f.Layer, m)
-	return adapterSeg(f.Path, layer) != adapterSeg(imp.Symbol, layer)
+	return adapterSeg(f.Path, layer) != adapterSeg(cand, layer)
 }
 
 func wrongDirection(m Model, f FileImports, tl string) bool {
@@ -229,19 +234,22 @@ func litPrefixLen(g string) int {
 // as github.com/x/internal/core). The most specific (longest) matching prefix
 // wins — the first declared layer on an equal-length tie — so nested layers
 // resolve correctly (ADR-0010). srcPath is the importing file's repo-relative
-// path: the `relative` mode resolves against its directory (ADR-0017).
-func targetLayer(imp, srcPath string, layers []Layer, res ResolutionConfig) string {
-	best, bestLen := "", -1
+// path: the `relative` mode resolves against its directory (ADR-0017). It also
+// returns the resolved candidate that produced the match — the layer-glob-
+// namespace path that downstream path work (lateral's sub-unit/sink checks)
+// must use instead of the raw specifier; in path mode it is the raw import.
+func targetLayer(imp, srcPath string, layers []Layer, res ResolutionConfig) (string, string) {
+	best, bestCand, bestLen := "", "", -1
 	for _, cand := range resolveImport(imp, srcPath, res) {
 		for _, l := range layers {
 			for _, g := range l.Globs {
 				if p := globPrefix(g); p != "" && segIndex(cand, p) >= 0 && len(p) > bestLen {
-					best, bestLen = l.Name, len(p)
+					best, bestCand, bestLen = l.Name, cand, len(p)
 				}
 			}
 		}
 	}
-	return best
+	return best, bestCand
 }
 
 // resolveImport normalizes an import symbol into the layer-glob namespace per

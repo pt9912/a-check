@@ -343,10 +343,10 @@ func TestTargetLayerLongestPrefix(t *testing.T) { // ADR-0010 (b1): spezifischst
 		{Name: "core", Globs: []string{"internal/core/**"}},
 		{Name: "legacy", Globs: []string{"internal/core/legacy/**"}},
 	}
-	if got := targetLayer("x/internal/core/legacy/db", "", layers, ResolutionConfig{}); got != "legacy" {
+	if got, _ := targetLayer("x/internal/core/legacy/db", "", layers, ResolutionConfig{}); got != "legacy" {
 		t.Fatalf("expected longest-prefix 'legacy', got %q", got)
 	}
-	if got := targetLayer("x/internal/core/svc", "", layers, ResolutionConfig{}); got != "core" {
+	if got, _ := targetLayer("x/internal/core/svc", "", layers, ResolutionConfig{}); got != "core" {
 		t.Fatalf("expected 'core', got %q", got)
 	}
 	// Reihenfolge-unabhängig: legacy vor core deklariert.
@@ -354,20 +354,20 @@ func TestTargetLayerLongestPrefix(t *testing.T) { // ADR-0010 (b1): spezifischst
 		{Name: "legacy", Globs: []string{"internal/core/legacy/**"}},
 		{Name: "core", Globs: []string{"internal/core/**"}},
 	}
-	if got := targetLayer("x/internal/core/legacy/db", "", rev, ResolutionConfig{}); got != "legacy" {
+	if got, _ := targetLayer("x/internal/core/legacy/db", "", rev, ResolutionConfig{}); got != "legacy" {
 		t.Fatalf("longest-prefix muss reihenfolge-unabhängig sein, got %q", got)
 	}
 	// Segment-bewusst: 'io'-Präfix matcht nicht in 'audio'.
-	if got := targetLayer("audio/codec", "", []Layer{{Name: "io", Globs: []string{"io/**"}}}, ResolutionConfig{}); got != "" {
+	if got, _ := targetLayer("audio/codec", "", []Layer{{Name: "io", Globs: []string{"io/**"}}}, ResolutionConfig{}); got != "" {
 		t.Fatalf("segment-bewusst: 'io' darf nicht in 'audio' matchen, got %q", got)
 	}
 	// Kernzweck: modul-qualifizierter Import, Präfix mitten im String.
 	mod := []Layer{{Name: "core", Globs: []string{"internal/hexagon/core/**"}}}
-	if got := targetLayer("github.com/x/a-check/internal/hexagon/core/model", "", mod, ResolutionConfig{}); got != "core" {
+	if got, _ := targetLayer("github.com/x/a-check/internal/hexagon/core/model", "", mod, ResolutionConfig{}); got != "core" {
 		t.Fatalf("modul-qualifiziert: erwarte 'core', got %q", got)
 	}
 	// Präfix am Pfadende.
-	if got := targetLayer("github.com/x/a-check/internal/hexagon/core", "", mod, ResolutionConfig{}); got != "core" {
+	if got, _ := targetLayer("github.com/x/a-check/internal/hexagon/core", "", mod, ResolutionConfig{}); got != "core" {
 		t.Fatalf("Präfix am Pfadende: erwarte 'core', got %q", got)
 	}
 	// Tie-Break: bei gleichlangem Präfix gewinnt der zuerst deklarierte Layer.
@@ -375,7 +375,7 @@ func TestTargetLayerLongestPrefix(t *testing.T) { // ADR-0010 (b1): spezifischst
 		{Name: "first", Globs: []string{"a/b/**"}},
 		{Name: "second", Globs: []string{"a/b/**"}},
 	}
-	if got := targetLayer("a/b/c", "", tie, ResolutionConfig{}); got != "first" {
+	if got, _ := targetLayer("a/b/c", "", tie, ResolutionConfig{}); got != "first" {
 		t.Fatalf("Tie-Break: zuerst deklarierter gewinnt, erwarte 'first', got %q", got)
 	}
 }
@@ -855,11 +855,11 @@ func TestResolveImportPathDefaultUnchanged(t *testing.T) { // ADR-0016: path/Def
 
 func TestTargetLayerFixedRootCpp(t *testing.T) { // ADR-0016: C++ src-Root -> Layer (b-cad-Fall)
 	layers := []Layer{{Name: "model", Globs: []string{"src/hexagon/model/**"}}}
-	if got := targetLayer("hexagon/model/room.h", "", layers, ResolutionConfig{Mode: "fixed-root", Roots: []string{"src"}}); got != "model" {
+	if got, _ := targetLayer("hexagon/model/room.h", "", layers, ResolutionConfig{Mode: "fixed-root", Roots: []string{"src"}}); got != "model" {
 		t.Fatalf("src-gewurzelter Include muss auf 'model' auflösen, got %q", got)
 	}
 	// Ohne resolution (Default): der src-fremde Include löst NICHT auf — die Falle, die ADR-0016 schließt.
-	if got := targetLayer("hexagon/model/room.h", "", layers, ResolutionConfig{}); got != "" {
+	if got, _ := targetLayer("hexagon/model/room.h", "", layers, ResolutionConfig{}); got != "" {
 		t.Fatalf("ohne resolution löst der Include nicht auf, got %q", got)
 	}
 }
@@ -939,6 +939,11 @@ func TestResolveImportRelativeNeighborAndParent(t *testing.T) { // ADR-0017: ./-
 	if got := resolveImport("../adapters/db.js", "src/core/service.ts", rel); len(got) != 1 || got[0] != "src/adapters/db.js" {
 		t.Fatalf(".js-Specifier: erwarte [src/adapters/db.js], got %v", got)
 	}
+	// … und end-to-end: db.js löst trotz Endung auf die adapters-SCHICHT auf (Review-R1 T-3).
+	if got, _ := targetLayer("../adapters/db.js", "src/core/x.ts",
+		[]Layer{{Name: "adapters", Globs: []string{"src/adapters/**"}}}, rel); got != "adapters" {
+		t.Fatalf(".js-Specifier muss auf die adapters-Schicht auflösen (Endungs-Agnostik bei Verzeichnis-Globs), got %q", got)
+	}
 }
 
 func TestResolveImportRelativeBarrelDots(t *testing.T) { // ADR-0017: pure '.'/'..' (Barrel-Importe) sind relativ
@@ -962,6 +967,10 @@ func TestResolveImportRelativeRootBoundaryPair(t *testing.T) { // ADR-0017: Gren
 	// Datei auf Wurzelebene: ../x escaped sofort.
 	if got := resolveImport("../x", "main.ts", rel); got != nil {
 		t.Fatalf("Escape aus Wurzeldatei muss leer sein, got %v", got)
+	}
+	// Barrel '..' aus einer Wurzeldatei normalisiert auf exakt ".." (eigener Escape-Ast, Review-R1 T-4).
+	if got := resolveImport("..", "main.ts", rel); got != nil {
+		t.Fatalf("Barrel '..' aus Wurzeldatei ist ein Escape und muss leer sein, got %v", got)
 	}
 }
 
@@ -1015,5 +1024,53 @@ func TestMonoRepoGoTypescriptModes(t *testing.T) { // ADR-0017: Mono-Repo — Go
 	fs := Evaluate(m, files)
 	if len(fs) != 2 || fs[0].Rule != "core-impurity" || fs[1].Rule != "core-impurity" {
 		t.Fatalf("beide Sprachen müssen je über IHREN Modus auflösen -> 2× core-impurity, got %v", fs)
+	}
+}
+
+func TestRelativeIntraSubunitNoLateral(t *testing.T) { // ADR-0017 (Review-R1 C-1): Sub-Einheit wird auf dem KANDIDATEN bestimmt, nicht am Roh-Specifier
+	m := Model{
+		Layers:     []Layer{{Name: "adapters", Globs: []string{"src/adapters/**"}, Role: "adapter"}},
+		Resolution: map[string]ResolutionConfig{"typescript": {Mode: "relative"}},
+	}
+	// ./helper bleibt in der EIGENEN Sub-Einheit http — adapterSeg("./helper") wäre ""
+	// und meldete fälschlich lateral (der Alltagsfall jedes TS-Adapters).
+	same := []FileImports{{Path: "src/adapters/http/client.ts", Layer: "adapters", Language: "typescript",
+		Imports: []Import{{Symbol: "./helper", Line: 1}}}}
+	if fs := Evaluate(m, same); len(fs) != 0 {
+		t.Fatalf("relativer Import derselben Sub-Einheit darf kein lateral-adapter sein, got %v", fs)
+	}
+	// ../db/conn quert in eine ANDERE Sub-Einheit -> lateral-adapter.
+	cross := []FileImports{{Path: "src/adapters/http/client.ts", Layer: "adapters", Language: "typescript",
+		Imports: []Import{{Symbol: "../db/conn", Line: 1}}}}
+	fs := Evaluate(m, cross)
+	if len(fs) != 1 || fs[0].Rule != "lateral-adapter" {
+		t.Fatalf("relativer Import einer anderen Sub-Einheit muss lateral-adapter sein, got %v", fs)
+	}
+}
+
+func TestRelativeAdapterSinkOnCandidate(t *testing.T) { // ADR-0017 (Review-R1 C-1): adapter_sink greift auf dem Kandidaten (Roh-Specifier trägt den Layer-Präfix nie)
+	m := Model{
+		Layers:      []Layer{{Name: "adapters", Globs: []string{"src/adapters/**"}, Role: "adapter"}},
+		AdapterSink: "adapters/driver-common", // Fragment inkl. Layer-Präfix: nur der KANDIDAT enthält es
+		Resolution:  map[string]ResolutionConfig{"typescript": {Mode: "relative"}},
+	}
+	files := []FileImports{{Path: "src/adapters/http/client.ts", Layer: "adapters", Language: "typescript",
+		Imports: []Import{{Symbol: "../driver-common/log", Line: 1}}}}
+	if fs := Evaluate(m, files); len(fs) != 0 {
+		t.Fatalf("Sink-Import muss auch relativ ausgenommen sein (Kandidat 'src/adapters/driver-common/log'), got %v", fs)
+	}
+}
+
+func TestRelativeTechAtRawSymbol(t *testing.T) { // AC-FA-CONF-001 Boundary (Review-R1 T-2): tech greift am ROH-Symbol, auch bei leerer Kandidatenmenge
+	m := Model{
+		Layers:     []Layer{{Name: "misc", Globs: []string{"misc/**"}}},
+		Techs:      []Tech{{Pattern: "@nestjs", Adapter: "nest"}},
+		Resolution: map[string]ResolutionConfig{"typescript": {Mode: "relative"}},
+	}
+	files := []FileImports{{Path: "misc/x.ts", Layer: "misc", Language: "typescript",
+		Imports: []Import{{Symbol: "@nestjs/core", Line: 1}}}}
+	fs := Evaluate(m, files)
+	if len(fs) != 1 || fs[0].Rule != "tech-leak" {
+		t.Fatalf("tech-Muster muss am Roh-Symbol greifen (Bare-Import loest nicht auf, tech trotzdem), got %v", fs)
 	}
 }
