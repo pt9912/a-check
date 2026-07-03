@@ -1,6 +1,6 @@
 # ADR-0019 — Root-Sub-Einheit: Dateien direkt im Layer-Root bilden die Sub-Einheit „''"
 
-- **Status:** Proposed (Entscheide A–C abgenommen; Umsetzungs-Schärfung D ausstehend)
+- **Status:** Accepted
 - **Datum:** 2026-07-03
 - **Autor:** pt9912
 - **Bezug:** [AC-FA-RULE-002](../../../spec/lastenheft.md#ac-fa-rule-002--keine-lateralen-adapter-kanten-regel-lateral-adapter), [AC-FA-RULE-006](../../../spec/lastenheft.md#ac-fa-rule-006--schicht-rollen-generische-regel-anwendung) — **Erweiterung** von [ADR-0010](0010-layer-relativer-adapterseg-laengster-praefix.md) (layer-relativer `adapterSeg`), nach dem Muster, mit dem [ADR-0016](0016-resolution-sprach-parametrisch.md) [ADR-0014](0014-resolution-roots.md) erweiterte.
@@ -106,3 +106,4 @@ eigenen Einheit namens ihres Dateinamens.
 | 2026-07-03 | Proposed — Entwurf mit [slice-024](../planning/open/slice-024-adapterseg-root-subeinheit.md); Evidenz b-cad-Pilot (V3b: 39, V4 nach den dortigen Umbauten: 40 Falsch-Positive). |
 | 2026-07-03 | Sign-off Auftraggeber für die Entscheide A–C (gemäß Empfehlung, [slice-024](../planning/open/slice-024-adapterseg-root-subeinheit.md) §6). |
 | 2026-07-03 | **In der Umsetzung geschärft (Entscheid D, zur Abnahme):** Blatt-Klassifikation datei-förmig (`.`) → Root `''` vs. verzeichnis-förmig → Sub-Einheit — das Dogfooding deckte auf, dass die reine Root-Regel Go-Paket-Blätter (`report_test.go` → Eigen-Paket) falsch meldet und Cross-Paket-Lateral blenden würde; endungslose Specifier als dokumentierte Grenze in die Re-Eval-Trigger. Status bleibt Proposed bis D abgenommen. |
+| 2026-07-03 | Proposed → Accepted (Sign-off Auftraggeber: Entscheid D mit dem Merge-Wort bestätigt, [slice-024](../planning/open/slice-024-adapterseg-root-subeinheit.md) §6). Ab jetzt immutable; Ablösung nur via Folge-ADR mit `Supersedes`. |

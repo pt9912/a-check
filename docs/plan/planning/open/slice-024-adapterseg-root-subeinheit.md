@@ -1,6 +1,10 @@
 # slice-024 — Root-Sub-Einheit für `adapterSeg` (entsperrt die b-cad-Richtungs-Config)
 
-**Status:** open — **Entwurf zur Abnahme** (2026-07-03). Entscheide §6 **vor** der Umsetzung.
+**Status:** done (2026-07-03). Abnahme erteilt (A–C vorab; **Entscheid D mit dem
+Merge-Wort bestätigt**, §6); Umsetzung + `make gates`/`make ci` + Multi-Linsen-Review
+(3 Linsen, kein BLOCKER/MAJOR) erledigt, Synthese
+[`docs/reviews/2026-07-03-slice-024-adapterseg-root-subeinheit.md`](../../../reviews/2026-07-03-slice-024-adapterseg-root-subeinheit.md);
+[ADR-0019](../../adr/0019-adapterseg-root-subeinheit.md) `Accepted`.
 **Bezug:** Change Request an [AC-FA-RULE-002](../../../../spec/lastenheft.md#ac-fa-rule-002--keine-lateralen-adapter-kanten-regel-lateral-adapter)
 (Sub-Einheiten-Definition); **neuer Folge-ADR [ADR-0019](../../adr/0019-adapterseg-root-subeinheit.md)**
 (Proposed) zu [ADR-0010](../../adr/0010-layer-relativer-adapterseg-laengster-praefix.md); schärft
@@ -99,14 +103,18 @@ jede Aenderung an Cross-Layer-lateral oder adapter_sink.
 
 ## 5. Definition of Done
 
-- [ ] [ADR-0019](../../adr/0019-adapterseg-root-subeinheit.md) **Accepted** + Index.
-- [ ] Lastenheft + Spezifikation **0.15.0** mit Historie-Zeilen.
-- [ ] `adapterSeg`-Root-Zweig; Dogfooding grün (0 Befunde).
-- [ ] Tests §4.4 inkl. Alt-Code-brechendem Root↔Root-Pin + CLI-Integration.
-- [ ] Benutzerhandbuch nachgezogen.
-- [ ] `make gates` + `make ci` grün; Review bestanden; b-cad-V4-Gegenprobe 0 Befunde.
-- [ ] **Maintainer-Abnahme der Entscheide A–C (§6).**
-- [ ] Closure: reiner `git mv` nach `done/`; 2 beobachtbare Kriterien + Lerneintrag.
+- [x] [ADR-0019](../../adr/0019-adapterseg-root-subeinheit.md) **Accepted** + Index
+      (D mit dem Merge-Wort).
+- [x] Lastenheft + Spezifikation **0.15.0** mit Historie-Zeilen (inkl. Blatt-Klassifikation).
+- [x] `adapterSeg`-Root-Zweig (+ Blatt-Klassifikation, Entscheid D); Dogfooding grün (0 Befunde).
+- [x] Tests §4.4 inkl. Alt-Code-brechendem Root↔Root-Pin (am `main` verifiziert rot),
+      Go-Paket-Fällen, gepinnten Grenzen (endungslos, `yaml.v2`) + CLI-Integrationen
+      (flacher C++-Adapter, Mini-Go-Repo).
+- [x] Benutzerhandbuch 1.22 nachgezogen.
+- [x] `make gates` + `make ci` grün; Review bestanden (3 Linsen, kein überlebender Mutant);
+      b-cad-V4-Gegenprobe **0 Befunde** (vorher 40 Falsch-Positive), Gegen-Gegenprobe io→ui feuert.
+- [x] **Maintainer-Abnahme A–C (§6) + Entscheid D** (Merge-Wort).
+- [x] Closure: reiner `git mv` nach `done/`; 2 beobachtbare Kriterien + Lerneintrag (§7).
 
 ## 6. Offen / Entscheidungen zur Abnahme
 
@@ -139,6 +147,32 @@ jede Aenderung an Cross-Layer-lateral oder adapter_sink.
   `lateral`) **plus** deklarierte Kante (für `wrong-direction`) — in der V4-Config
   dokumentiert, kein a-check-Delta.
 
-## 7. Closure-Notiz (nach `done/`)
+## 7. Closure-Notiz
 
-_(folgt bei Closure.)_
+**Abschluss (2026-07-03).** slice-024 umgesetzt, reviewt, abgenommen (A–C vorab, D per
+Merge-Wort) und gate-belegt — die Richtungs-Modellierung ist damit verlustfrei nutzbar,
+der b-cad-Pilot-Schnitt (M3) ist a-check-seitig vollständig entsperrt.
+
+- **Gate-Beleg:** `make gates`/`make ci` grün — `lint` 0 issues, alle Test-Pakete `ok`,
+  `coverage-gate` 96,50 % (≥ 90 %), `arch-check` **0** (Dogfooding — zugleich der
+  aufdeckende Fall des Entscheids D), `doc-check` 0 Befunde, `image-test` 4/4.
+- **Review (3 Linsen):** kein BLOCKER/MAJOR; kein überlebender Mutant (8 geprüft);
+  Reste (gepunktete Verzeichnis-Blätter als gepinnte Grenze, Go-Paket-CLI-Integration,
+  Formulierungs-Präzisierungen) eingearbeitet
+  ([Synthese](../../../reviews/2026-07-03-slice-024-adapterseg-root-subeinheit.md)).
+- **2 beobachtbare Kriterien:** (1) `TestRootSubunitNoLateral` — am Alt-Code verifiziert
+  **rot** (`x.cpp → x.h` war lateral), am Neu-Code grün; komplementär
+  `TestGoPackageLeafIsSubunit`/`TestGoPackageRootSubunitE2E` (Eigen-Paket befundfrei,
+  Fremd-Paket lateral — die Blatt-Klassifikation blendet nicht).
+  (2) **Pilot-Beleg:** die verifizierte b-cad-Vollrichtungs-Config (V4) gegen
+  `a-check:dev` ⇒ **0 Befunde** (vorher 40 Falsch-Positive); adversarische Gegenprobe
+  (io → ui/view) feuert weiter.
+- **Lerneintrag (geschärfte Regel):** **Ein Grenzfall-Fix braucht die Gegenprobe der
+  anderen Pfad-Gattung.** Die Root-Regel war an Datei-Blättern (b-cad, C++) entworfen und
+  am Dogfooding sofort an Verzeichnis-Blättern (Go-Pakete) gescheitert — Import-Kandidaten
+  sind je nach Sprache Datei- ODER Verzeichnis-Pfade, und jede Segment-Semantik muss gegen
+  beide Gattungen entworfen und getestet werden (die Blatt-Klassifikation macht die
+  Unterscheidung explizit; beide Ambiguitäts-Richtungen sind als gepinnte
+  [AC-QA-02](../../../../spec/lastenheft.md#ac-qa-02--hermetik-und-ehrliche-heuristik-grenze)-Grenzen
+  dokumentiert). Prozessual bewährt (Lerneintrag slice-023 angewandt): der Umsetzungs-Fund
+  wurde als eigener Entscheid deklariert, das ADR blieb bis zum Sign-off Proposed.
