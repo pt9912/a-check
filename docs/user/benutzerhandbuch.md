@@ -1,6 +1,6 @@
 # Benutzerhandbuch: a-check
 
-**Handbuch-Version:** 1.20 · **Software-Version:** 0.8.0 · **Stand:** 2026-07-03 ·
+**Handbuch-Version:** 1.21 · **Software-Version:** 0.8.0 · **Stand:** 2026-07-03 ·
 **Autor:** pt9912 (Maintainer)
 
 ---
@@ -392,11 +392,15 @@ unbekannten Schlüssel; oder es wurde eine unbekannte Option übergeben.
 
 ### Fehler: a-check findet nichts, obwohl Verstöße erwartet werden
 
-**Ursache:** Die `layers`- oder `languages`-Globs passen nicht auf Ihre Pfade.
+**Ursache:** Die `layers`- oder `languages`-Globs passen nicht auf Ihre Pfade —
+oder ein zu breiter `exclude`-Glob nimmt die betroffenen Dateien vom Scan aus.
 
 **Lösung:**
 1. Prüfen Sie, ob die Globs (z. B. `internal/core/**`) Ihre echten Verzeichnisse treffen.
 2. Prüfen Sie, ob die Datei-Endung unter `languages` erfasst ist.
+3. Prüfen Sie Ihre `exclude`-Globs: ein zu breites Muster (z. B. `src/**` statt
+   `**/*_test.go`) schließt still auch produktiven Code aus — wer zu breit
+   ausschließt, schwächt sein eigenes Gate (Abschnitt 4).
 
 ### Fehler: ein `tech-leak`/`core-impurity`-Befund ist falsch-positiv
 
@@ -417,12 +421,17 @@ Grenze ist dokumentiert; Ausnahmen sind konfigurierbar.
 **Kann ich mehrere Sprachen in einem Repo prüfen?** Ja — tragen Sie mehrere
 Einträge unter `languages` ein.
 
+**Wie nehme ich Test-Dateien, `node_modules/` oder generierten Code vom Scan
+aus?** Über den `exclude`-Block (Datei-Globs, wirken vor der Extraktion) —
+siehe „Dateien vom Scan ausnehmen" in Abschnitt 4.
+
 ## 8. Glossar
 
 - **Kern (core):** die reine Domänenlogik ohne I/O, Framework oder Ports (innerste Schicht — kennt nur sich selbst).
 - **Port:** eine Schnittstelle/Abstraktion, über die der Kern mit der Außenwelt spricht.
 - **Adapter:** die konkrete Anbindung an Technik (Datenbank, HTTP, UI …).
-- **Composition Root:** der Ort, der konkrete Adapter an den Kern verdrahtet (z. B. `main`); von den Schicht-Regeln ausgenommen.
+- **Composition Root:** der Ort, der konkrete Adapter an den Kern verdrahtet (z. B. `main`); von den Schicht-Regeln ausgenommen (die `tech-leak`-Ausnahme ist je `tech`-Eintrag per `composition_root: forbid` abschaltbar).
+- **`exclude`:** Datei-Globs, deren Treffer vor der Extraktion vollständig vom Scan ausgenommen werden (Tests, `node_modules/`, generierter Code).
 - **Schicht:** eine über Pfad-Muster (`layers`) definierte Datei-Gruppe (z. B. `core`, `ports`, `adapters`).
 - **Rolle (`role`):** die Funktion einer Schicht (`domain`/`app`/`port`/`adapter`), die bestimmt, welche Reinheits-Regel greift — explizit per `role:` oder aus dem Schicht-Namen abgeleitet (Abschnitt 4).
 - **Kante (`edges`):** eine erlaubte gerichtete Abhängigkeit zwischen zwei Schichten (`from` → `to`).
@@ -465,3 +474,4 @@ und die [Spezifikation](../../spec/spezifikation.md); ein Überblick steht in de
 | 1.18 | 2026-07-03 | Software-Version **0.7.0** (GHCR-Release `v0.7.0` veröffentlicht, digest-gepinnt `@sha256:41eb368e…`) — TypeScript-Backend + `relative`-Modus jetzt im veröffentlichten Image; die 1.17-Verfügbarkeitsnotiz entfällt. |
 | 1.19 | 2026-07-03 | §4 an Lastenheft 0.14.0 (CR d-check-Pilot): `tech.adapter` auch als Pfad-**Liste** (Symbol in jedem gelisteten Adapter erlaubt) + `composition_root: allow\|forbid` je `tech`-Eintrag + neuer Abschnitt „Dateien vom Scan ausnehmen (`exclude`)" (Top-Level-Datei-Globs vor der Extraktion; `.d.ts`-Hinweis). Noch nicht im veröffentlichten Image (folgt mit dem nächsten Release). |
 | 1.20 | 2026-07-03 | Software-Version **0.8.0** (GHCR-Release `v0.8.0` veröffentlicht, digest-gepinnt `@sha256:a1c9c4d6…`) — d-check-Pilot-Deltas (`tech.adapter`-Liste, `composition_root: allow\|forbid`, `exclude`) jetzt im veröffentlichten Image; die 1.19-Verfügbarkeitsnotiz entfällt. |
+| 1.21 | 2026-07-03 | 0.14.0-Nachzug außerhalb §4: Fehlerbehebung „findet nichts" um die `exclude`-Falle (zu breite Globs) ergänzt; FAQ-Eintrag „Tests/`node_modules`/Generat ausnehmen"; Glossar um `exclude` + `composition_root: forbid`-Hinweis. |
