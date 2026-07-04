@@ -272,6 +272,47 @@ func targetLayer(imp, srcPath string, layers []Layer, res ResolutionConfig) (str
 	return best, bestCand
 }
 
+// PhantomRootConflictIn reports the first ambiguous multi-root witness for a
+// fixed-root resolution (ADR-0020), or nil. It fires only for mode "fixed-root"
+// with ≥2 roots where two DISTINCT roots each lie fully inside two DIFFERENT
+// layers. The witness is deterministic: roots are scanned in declared order and
+// the earliest qualifying (rootA, rootB) pair wins (SPEC-DET-001).
+func PhantomRootConflictIn(res ResolutionConfig, layers []Layer) *PhantomRootConflict {
+	if res.Mode != "fixed-root" || len(res.Roots) < 2 {
+		return nil
+	}
+	type rl struct{ root, layer string }
+	var pairs []rl
+	for _, root := range res.Roots {
+		for _, l := range layers {
+			if layerContainsRoot(root, l) {
+				pairs = append(pairs, rl{root, l.Name})
+			}
+		}
+	}
+	for i := range pairs {
+		for j := range pairs {
+			if pairs[i].root != pairs[j].root && pairs[i].layer != pairs[j].layer {
+				return &PhantomRootConflict{pairs[i].root, pairs[i].layer, pairs[j].root, pairs[j].layer}
+			}
+		}
+	}
+	return nil
+}
+
+// layerContainsRoot reports whether some glob prefix of the layer is an
+// ancestor-or-equal of the root (segIndex(root,p)==0 && len(p)<=len(root)) — then
+// every candidate root/… matches this layer by the root prefix alone, regardless
+// of the package path (the phantom condition, ADR-0020).
+func layerContainsRoot(root string, l Layer) bool {
+	for _, g := range l.Globs {
+		if p := globPrefix(g); p != "" && len(p) <= len(root) && segIndex(root, p) == 0 {
+			return true
+		}
+	}
+	return false
+}
+
 // resolveImport normalizes an import symbol into the layer-glob namespace per
 // the source language's resolution (ADR-0016). "path"/"" (Default) leaves it
 // unchanged. "fixed-root" prepends each root (one candidate per root); a set

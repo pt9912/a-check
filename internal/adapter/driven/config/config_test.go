@@ -416,3 +416,66 @@ func TestResolutionPathEqualsOmitted(t *testing.T) { // ADR-0016: mode: path == 
 		t.Fatalf("resolution go: {} muss als mode=path laden, got %v / %+v", err, m2.Resolution)
 	}
 }
+
+// kmpFlat is Config X from the belief-agent report (ADR-0020): two roots sharing
+// package_base with flat source-set globs — phantom-capable, must fail closed.
+const kmpFlat = `version: 1
+languages:
+  kotlin: ["**/*.kt"]
+layers:
+  core: ["src/commonMain/**"]
+  adapters: ["src/jvmMain/**"]
+edges:
+  - {from: adapters, to: core}
+resolution:
+  kotlin: {mode: fixed-root, roots: ["src/commonMain/kotlin/myapp", "src/jvmMain/kotlin/myapp"], package_base: "myapp"}
+`
+
+func TestResolutionMultiRootPhantomFailsClosed(t *testing.T) { // AC-FA-CONF-001 / ADR-0020: 2 roots je in 2 Schichten -> Exit 2 (sonst stilles Falsch-Negativ)
+	_, err := New().Load(write(t, kmpFlat))
+	if err == nil {
+		t.Fatal("Mehr-Wurzel-Phantom (2 roots in 2 Schichten) muss fail-closed brechen — sonst still falsch-grün")
+	}
+	if !strings.Contains(err.Error(), "Mehr-Wurzel") || !strings.Contains(err.Error(), "commonMain") || !strings.Contains(err.Error(), "jvmMain") {
+		t.Fatalf("Meldung muss die beiden roots nennen, got %v", err)
+	}
+}
+
+// kmpDeep is Config Y: same roots, but package-specific globs deeper than the
+// roots — no root is contained in a layer, so it loads (the documented recipe).
+const kmpDeep = `version: 1
+languages:
+  kotlin: ["**/*.kt"]
+layers:
+  core: ["src/commonMain/kotlin/myapp/core/**"]
+  adapters: ["src/jvmMain/kotlin/myapp/adapters/**"]
+edges:
+  - {from: adapters, to: core}
+resolution:
+  kotlin: {mode: fixed-root, roots: ["src/commonMain/kotlin/myapp", "src/jvmMain/kotlin/myapp"], package_base: "myapp"}
+`
+
+func TestResolutionMultiRootDeepGlobsValid(t *testing.T) { // ADR-0020 Boundary: paket-tiefe Globs (Rezept) -> kein Root in einer Schicht -> lädt
+	if _, err := New().Load(write(t, kmpDeep)); err != nil {
+		t.Fatalf("paket-tiefe Globs (das dokumentierte Rezept) müssen laden, got %v", err)
+	}
+}
+
+// twoRootsSameLayer: two roots, but both fall inside the SAME layer — no
+// cross-layer phantom, so it loads (the guard requires DIFFERENT layers).
+const twoRootsSameLayer = `version: 1
+languages:
+  go: ["**/*.go"]
+layers:
+  core: ["src/**"]
+edges:
+  - {from: core, to: core}
+resolution:
+  go: {mode: fixed-root, roots: ["src/a", "src/b"]}
+`
+
+func TestResolutionMultiRootSameLayerValid(t *testing.T) { // ADR-0020: 2 roots in DERSELBEN Schicht -> kein Konflikt -> lädt
+	if _, err := New().Load(write(t, twoRootsSameLayer)); err != nil {
+		t.Fatalf("zwei roots in derselben Schicht sind kein Phantom-Konflikt und müssen laden, got %v", err)
+	}
+}

@@ -34,6 +34,17 @@ type ResolutionConfig struct {
 	PackageBase string
 }
 
+// PhantomRootConflict witnesses an ambiguous multi-root fixed-root resolution
+// (ADR-0020): two distinct roots each lie fully inside a DIFFERENT layer, so
+// every import spawns one candidate per root that matches its layer by the root
+// prefix alone (phantom candidates across layer boundaries) and targetLayer's
+// longest-prefix pick decides the layer instead of the symbol — a silent
+// false-negative. The config adapter turns a non-nil conflict into exit code 2.
+type PhantomRootConflict struct {
+	RootA, LayerA string
+	RootB, LayerB string
+}
+
 // Layer is a named architectural layer with repo-relative path globs and an
 // optional role (domain|app|port|adapter, AC-FA-RULE-006/007) that drives the
 // purity rules; a blank role falls back to name inference

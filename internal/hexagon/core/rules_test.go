@@ -1281,3 +1281,48 @@ func TestRelativeTechAtRawSymbol(t *testing.T) { // AC-FA-CONF-001 Boundary (Rev
 		t.Fatalf("tech-Muster muss am Roh-Symbol greifen (Bare-Import loest nicht auf, tech trotzdem), got %v", fs)
 	}
 }
+
+func TestPhantomRootConflict(t *testing.T) { // ADR-0020: Mehr-Wurzel-Phantom-Prädikat
+	kmp := []Layer{
+		{Name: "core", Globs: []string{"src/commonMain/**"}},
+		{Name: "adapters", Globs: []string{"src/jvmMain/**"}},
+	}
+	kmpRoots := []string{"src/commonMain/kotlin/myapp", "src/jvmMain/kotlin/myapp"}
+	deep := []Layer{
+		{Name: "core", Globs: []string{"src/commonMain/kotlin/myapp/core/**"}},
+		{Name: "adapters", Globs: []string{"src/jvmMain/kotlin/myapp/adapters/**"}},
+	}
+	// Boundary: a root exactly equal to a layer's glob prefix is contained
+	// (len(p)==len(root)); with a second root in another layer that is a conflict.
+	exactLayers := []Layer{
+		{Name: "core", Globs: []string{"src/commonMain/**"}},
+		{Name: "adapters", Globs: []string{"src/jvmMain/**"}},
+	}
+	exactRoots := []string{"src/commonMain", "src/jvmMain"} // root == glob prefix
+
+	cases := []struct {
+		name    string
+		res     ResolutionConfig
+		layers  []Layer
+		want    bool
+		wantA   string // expected RootA when want
+		wantLA  string // expected LayerA when want
+	}{
+		{"kmp-flat-conflict", ResolutionConfig{Mode: "fixed-root", Roots: kmpRoots, PackageBase: "myapp"}, kmp, true, "src/commonMain/kotlin/myapp", "core"},
+		{"deep-globs-ok", ResolutionConfig{Mode: "fixed-root", Roots: kmpRoots, PackageBase: "myapp"}, deep, false, "", ""},
+		{"single-root-ok", ResolutionConfig{Mode: "fixed-root", Roots: []string{"src/commonMain/kotlin/myapp"}}, kmp, false, "", ""},
+		{"path-mode-ok", ResolutionConfig{Mode: "path"}, kmp, false, "", ""},
+		{"root-equals-prefix-conflict", ResolutionConfig{Mode: "fixed-root", Roots: exactRoots}, exactLayers, true, "src/commonMain", "core"},
+	}
+	for _, c := range cases {
+		t.Run(c.name, func(t *testing.T) {
+			got := PhantomRootConflictIn(c.res, c.layers)
+			if (got != nil) != c.want {
+				t.Fatalf("want conflict=%v, got %+v", c.want, got)
+			}
+			if c.want && (got.RootA != c.wantA || got.LayerA != c.wantLA) {
+				t.Fatalf("Zeuge nicht deterministisch/erwartet: got %+v, want RootA=%q LayerA=%q", got, c.wantA, c.wantLA)
+			}
+		})
+	}
+}

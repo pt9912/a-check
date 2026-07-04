@@ -119,12 +119,37 @@ func (Adapter) Load(path string) (core.Model, error) {
 	if yc.Markers != nil {
 		m.IgnoreSymbols = yc.Markers.IgnoreSymbols
 	}
-	res, rerr := decodeResolution(yc.Resolution, yc.Languages, path)
+	res, rerr := resolveAndCheck(yc.Resolution, yc.Languages, m.Layers, path)
 	if rerr != nil {
 		return core.Model{}, rerr
 	}
 	m.Resolution = res
 	return m, nil
+}
+
+// resolveAndCheck decodes the resolution block (ADR-0016) and then rejects an
+// ambiguous multi-root fixed-root config (ADR-0020, AC-FA-CONF-001): ≥2 roots
+// each fully inside two different layers would resolve import candidates by the
+// root prefix alone (phantom candidates), a silent false-negative. Both steps
+// live here so Load stays flat; languages are checked in sorted order so the
+// reported conflict is deterministic (SPEC-DET-001).
+func resolveAndCheck(entries map[string]yamlResolution, langs map[string][]string, layers []core.Layer, path string) (map[string]core.ResolutionConfig, error) {
+	res, err := decodeResolution(entries, langs, path)
+	if err != nil {
+		return nil, err
+	}
+	names := make([]string, 0, len(res))
+	for lang := range res {
+		names = append(names, lang)
+	}
+	sort.Strings(names)
+	for _, lang := range names {
+		if c := core.PhantomRootConflictIn(res[lang], layers); c != nil {
+			return nil, fmt.Errorf("%s: resolution[%q]: mehrdeutige Mehr-Wurzel-Auflösung — roots %q und %q liegen je vollständig in verschiedenen Schichten (%q bzw. %q); Import-Kandidaten fielen allein am Wurzel-Präfix in die falsche Schicht (Phantom, still falsch-grün). Nutze paket-spezifische Globs tiefer als die roots",
+				path, lang, c.RootA, c.RootB, c.LayerA, c.LayerB)
+		}
+	}
+	return res, nil
 }
 
 // decodeTechs builds the tech list: adapter scalar/list decode plus NewTech
