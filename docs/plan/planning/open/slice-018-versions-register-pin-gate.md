@@ -16,11 +16,11 @@ Versions-/Digest-Pins liegen an mehreren Stellen (`README.md`, `docs/user/benutz
 `a-check.mk`, `internal/cli/cli.go`-`aCheckImage`, `CHANGELOG.md`) und driften **still**: der
 README-Status stand auf `v0.2.0` mit einem veralteten Digest, während der Release längst `v0.3.0`
 war — **kein Gate** hat das gemeldet. Das widerspricht dem „Invarianten als Gate statt Review-Meinung"-
-Ethos. Das a-check nun gepinnte **d-check v0.35.0** bringt die Module `versions`/`pins` mit, die genau
+Ethos. Das a-check nun gepinnte **d-check v0.37.1** bringt die Module `versions`/`pins` mit, die genau
 diese Klasse erzwingen könnten (in `.d-check.yml` aktuell **nicht** aktiv).
 
 Hinzu kommt `d-check.mk` (Pin des **Schwester-Tools**): heute eine Digest-Koordinate (driftfrei);
-nach [slice-019](slice-019-dcheck-mk-print-mk-angleichung.md) **Tag + Digest**, die gegeneinander
+nach [slice-019](../done/slice-019-dcheck-mk-print-mk-angleichung.md) **Tag + Digest**, die gegeneinander
 driften können. Dessen **Tag↔Digest-Konsistenz** gehört dann in dieses Gate — **oder** wird explizit
 exemptiert; hier zu entscheiden, damit slice-019 keine Drift-Quelle schafft, die das Gate nicht sieht.
 

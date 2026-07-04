@@ -179,8 +179,8 @@ die kanonische Quelle (Source Precedence, siehe
   ganz übersprungen; neue ADRs **ab 0021** tragen den Provenance-Marker.
 - **Begründung:** schärft [`AGENTS.md` §3.4](../AGENTS.md#34-architektur-sprach-meilensteinfrei-spec-straten-nie-abwärts)
   maschinell (Spec-Straten-Abwärts **und** ADR-aus-Planung-Argumentation). a-checks
-  gepinntes `d-check` (v0.35.0) unterstützt die Schlüssel (verifiziert 2026-07-04); die
-  Angleichung des Pins an den aktuellen `d-check`-Stand (`v0.37.1`) bleibt eigener Slice.
+  gepinntes `d-check` unterstützt die Schlüssel (verifiziert 2026-07-04 gegen v0.35.0);
+  der Pin ist seit slice-019 auf `v0.37.1` gehoben.
 - **Auflösungs-Trigger:** permanent.
 
 ## Anforderungs-Anlege-Prozess

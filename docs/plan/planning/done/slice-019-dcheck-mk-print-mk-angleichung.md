@@ -1,10 +1,10 @@
-# slice-019 — `d-check.mk` an v0.35.0-`--print-mk` angleichen (Verbatim + Pin)
+# slice-019 — `d-check.mk` an `--print-mk` angleichen (Verbatim + Pin)
 
-**Status:** open (Entwurf zur Abnahme).
+**Status:** done (2026-07-04 — Weg 3 umgesetzt gegen **v0.37.1**; [Closure](#5-closure-notiz)).
 **Bezug:** Reproduzierbarkeit **sinngemäß** [AC-QA-03](../../../../spec/lastenheft.md#ac-qa-03--reproduzierbarkeit)
 (`d-check.mk` ist eine **konsumierte Dev-Abhängigkeit**, nicht a-checks eigenes Distributions-Artefakt —
 daher per Analogie, **nicht direkt** gebunden); `AGENTS.md` §4 ↔ `tools/gate-consistency.sh`
-(Target-Invariante); Koordination mit [slice-018](slice-018-versions-register-pin-gate.md)
+(Target-Invariante); Koordination mit [slice-018](../open/slice-018-versions-register-pin-gate.md)
 (Pin-Drift-Gate). [Roadmap](../in-progress/roadmap.md). **Evidenz:** `d-check.mk` weicht vom
 v0.35.0-`--print-mk` ab.
 
@@ -53,7 +53,7 @@ AGENTS-§4-Fläche). Dieser Slice **kehrt sie um** — die eigentliche Review-Fr
 
 ## 3. Vor der Umsetzung zu klären
 
-- **Koordination mit [slice-018](slice-018-versions-register-pin-gate.md) (Pin-Drift-Gate):** Weg 3
+- **Koordination mit [slice-018](../open/slice-018-versions-register-pin-gate.md) (Pin-Drift-Gate):** Weg 3
   **spaltet** den heute driftfreien d-check-Pin (eine Digest-Koordinate) in **Tag + Digest**, die
   gegeneinander driften können (Tag sagt `v0.35.0`, Digest evtl. von woanders) — **genau** die Klasse,
   für die slice-018 `versions`/`pins` einführt. slice-018 listet `d-check.mk` **noch nicht** als
@@ -61,6 +61,29 @@ AGENTS-§4-Fläche). Dieser Slice **kehrt sie um** — die eigentliche Review-Fr
   Tag↔Digest-Konsistenz ab **oder** exemptiert es explizit — sonst schafft slice-019 eine Drift-Quelle,
   die das dafür gebaute Gate nicht sieht. (slice-018 §1 um diesen Punkt ergänzt.)
 - **`?=` vs `:=`** für `DCHECK_DIGEST` (§2.5): Verbatim/override-bar vs. harter Reproduzierbarkeits-Pin.
-- **Restkost (akzeptiert):** nach dem einmaligen Smoke schützt **kein Gate** die 5 advisory Targets vor
+- **Restkost (akzeptiert):** nach dem einmaligen Smoke schützt **kein Gate** die advisory Targets vor
   stillem Verrotten bei künftigen Image-Bumps (geänderte Flags) — dieselbe Klasse, die sie ursprünglich
   draußen hielt. Bewusst getragene Restkost von Weg 3 (§1-Trade).
+
+## 5. Closure-Notiz
+
+Umgesetzt gegen **v0.37.1** (nicht v0.35.0 wie im Plan skizziert — der Pin-Stand ist
+inzwischen v0.37.1):
+
+- **`d-check.mk`** = `d-check:v0.37.1 --print-mk` **verbatim**, mit der einen Anpassung
+  `DCHECK_DIGEST ?= sha256:3bbdb19b…` (Digest sticht Tag → Reproduzierbarkeit sinngemäß
+  [AC-QA-03](../../../../spec/lastenheft.md#ac-qa-03--reproduzierbarkeit)); `?=` override-bar
+  (Plan §2.5-Default). Struktur (`DCHECK_IMAGE`-Tag + `DCHECK_DIGEST`/`DCHECK_REF` + `## `-Help)
+  gegen den gepinnten `--print-mk`-Lauf verifiziert — **keine** zweite Abweichung.
+- **Delta zum Plan (§2.2):** v0.37.1 liefert **10** `doc-*`-Targets, nicht 8 — seit v0.35.0
+  neu: **`doc-planning`** (DC-FA-PLAN-001) und **`doc-tracked`** (DC-FA-TRK-001). Alle 10 in
+  [`AGENTS.md` §4](../../../../AGENTS.md#4-quality-gates) als **advisory** gelistet
+  (Pipe-Zeilen — `gate-consistency` grün).
+- **Smoke-Check (§2.6):** `doc-help`/`-doctor`/`-repair`/`-immutable`/`-commits`/`-planning`/
+  `-tracked` — Recipes/Flags fehlerfrei (rc 0/1, kein Usage-Fehler).
+- **`harness/README.md §Sensors` unverändert** (advisory ≠ Feedback-Gate, Plan §2.4).
+- **`make gates` grün**; CHANGELOG-`[Unreleased]`-Notiz (Dev-Tooling, kein Image-Release nötig).
+- **Offen (slice-018-Koordination, §3):** der d-check-Pin ist jetzt **Tag + Digest** (Drift-Klasse);
+  [slice-018](../open/slice-018-versions-register-pin-gate.md)s `versions`/`pins`-Gate muss `d-check.mk`s
+  Tag↔Digest-Konsistenz abdecken **oder** explizit exemptieren — sonst ist hier eine Drift-Quelle,
+  die das dafür gebaute Gate nicht sieht.

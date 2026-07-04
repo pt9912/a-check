@@ -6,6 +6,14 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
+### Changed
+
+- **doc-check-Tooling (`d-check.mk`):** Pin des Schwester-Tools `d-check` von **v0.35.0**
+  auf **v0.37.1** gehoben (`@sha256:3bbdb19b…`, via `DCHECK_DIGEST`); `d-check.mk` verbatim
+  aus `v0.37.1 --print-mk` regeneriert (alle 10 `doc-*`-Targets, in AGENTS §4 als advisory
+  gelistet). Dev-Tooling, netzlos, read-only; a-checks aktive `.d-check.yml`-Module
+  unverändert (slice-019).
+
 ## [0.10.0] - 2026-07-04
 
 Lastenheft/Spezifikation 0.15.0 → 0.16.0 (slice-026; ADR-0020, belief-agent-KMP-Evidenz)

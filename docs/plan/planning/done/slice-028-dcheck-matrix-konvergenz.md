@@ -37,7 +37,7 @@ a-checks Gate sah es nicht.
 - **`make doc-check` grün** (0 Befunde) mit dem Grandfathering; ohne Grandfathering feuert
   die Regel nachweislich (Fitness Function). `make gates` grün.
 - Pin-Angleichung an den aktuellen `d-check`-Stand (`v0.35.0 → v0.37.1`) bleibt
-  [slice-019](../open/slice-019-dcheck-mk-print-mk-angleichung.md).
+  [slice-019](../done/slice-019-dcheck-mk-print-mk-angleichung.md).
 
 ## 4. Closure-Notiz
 
