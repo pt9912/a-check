@@ -6,6 +6,26 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
+## [0.10.0] - 2026-07-04
+
+Lastenheft/Spezifikation 0.15.0 → 0.16.0 (slice-026; ADR-0020, belief-agent-KMP-Evidenz)
+— fail-closed-Guard gegen mehrdeutige Mehr-Wurzel-Auflösung; bringt den Guard ins Image.
+
+### Added
+
+- **`AC-FA-CONF-001` (0.15.0→0.16.0):** fail-closed-Guard gegen **mehrdeutige
+  Mehr-Wurzel-Auflösung** — `mode: fixed-root` mit ≥ 2 `roots`, von denen zwei Roots je
+  eine andere Schicht **erzwingen** (die Schicht, in die ein Root allein am Wurzel-Präfix
+  auflöst — längster passender Glob-Präfix, exakt wie die Import-Auflösung), bricht mit
+  Exit 2 statt still falsch-grün. Anlass: belief-agent-Bericht — KMP (`commonMain`/`jvmMain`
+  teilen `package_base`) bei flachen Source-Set-Globs fing die illegale `core → adapter`-
+  Kante nicht (Phantom-Kandidaten Root × Paketpfad; die Zuordnung entschied der längste
+  Präfix statt das Symbol). Meldung nennt Roots + Schichten + Rezept (paket-spezifische
+  Globs tiefer als die Roots). Verschachtelte Schichten, unter denen beide Roots dieselbe
+  Schicht erzwingen, laden unverändert; die **asymmetrische** Phantom-Form (nur ein Root
+  erzwingt eine Schicht) bleibt dokumentierte Grenze (`AC-QA-02`). Stufe 2
+  (datei-mengen-bewusste Auflösung) gated als slice-027.
+
 ## [0.9.0] - 2026-07-04
 
 Lastenheft/Spezifikation 0.14.0 → 0.15.0 (slice-024; ADR-0019, b-cad-Pilot-Evidenz)
