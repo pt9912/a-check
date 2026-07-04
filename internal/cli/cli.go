@@ -65,7 +65,7 @@ const aCheckImage = "ghcr.io/pt9912/a-check@sha256:0378211fc24bdd5a61becf6a4671e
 const mkFragment = `# a-check.mk — Architektur-Gate via a-check, zum ` + "`include`" + ` in das
 # Makefile des konsumierenden Repos. Erzeugt von ` + "`a-check --print-mk`" + `.
 #
-# A_CHECK_IMAGE wird beim Release auf ` + "`@sha256:…`" + ` digest-gepinnt (AC-QA-03).
+# A_CHECK_IMAGE wird beim Release auf ` + "`@sha256:…`" + ` digest-gepinnt.
 A_CHECK_IMAGE ?= ` + aCheckImage + `
 
 .PHONY: a-check
