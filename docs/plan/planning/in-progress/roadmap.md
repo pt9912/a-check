@@ -64,8 +64,10 @@ veröffentlichten Image, verifiziert gegen den b-cad-Stand mit der Vollrichtungs
 intra-Spec `no-downward` + `adr → slice`-Disziplin + Provenance-Marker, [MR-005](../../../../harness/conventions.md#mr-005--referenzmatrix-intra-spec-richtung--adrslice-disziplin-d-check-angleichung))
 schärft das Doku-Gate; [slice-029](../done/slice-029-doc-check-module-hardening.md)
 (**done** — `spans` ins mandatory `doc-check`, `vcs`/ADR-Immutabilität §3.5 in der CI durchgesetzt;
-`codepaths`/`planning` als Domänen-Misfit/vakuum verworfen, `commits` als `trace-check`-Ablöse
-vorgemerkt); [slice-025](../open/slice-025-p-rest-generalisierung.md)
+`codepaths`/`planning` als Domänen-Misfit/vakuum verworfen);
+[slice-030](../done/slice-030-commits-modul-trace-check.md) (**done** — [ADR-0021](../../adr/0021-commits-modul-trace-check.md)
+`Accepted`: `make trace-check` fährt jetzt das `commits`-Modul, `tools/trace-check.sh` entfernt —
+eine Skript-Kopie weniger, Parität verifiziert); [slice-025](../open/slice-025-p-rest-generalisierung.md)
 (P-Rest-Generalisierung) abgenommen und vorgemerkt.
 Als Release-/Tooling-Hygiene sind [slice-018](../open/slice-018-versions-register-pin-gate.md)
 (Versions-Register `version.md` + `versions`/`pins`-Gate, nachdem ein stale README-Pin nur per

@@ -1,12 +1,12 @@
 # slice-030 — Traceability-Gate via `commits`-Modul (löst `tools/trace-check.sh` ab)
 
-**Status:** in-progress (2026-07-04 — umgesetzt, [ADR-0021](../../adr/0021-commits-modul-trace-check.md) Proposed).
+**Status:** done (2026-07-04 — umgesetzt, [ADR-0021](../../adr/0021-commits-modul-trace-check.md) Accepted).
 **Typ:** Tool-Ablösung / Harness-Konsolidierung, nicht konsumenten-gated.
 **Bezug:** [`AGENTS.md` §5](../../../../AGENTS.md#5-dokumentations-regeln) (Traceability-Regel),
 [ADR-0021](../../adr/0021-commits-modul-trace-check.md); Ziel „Skript-Copies verringern".
-Folge von [slice-019](../done/slice-019-dcheck-mk-print-mk-angleichung.md) (Pin v0.37.1 →
-Modul verfügbar) + [slice-029](../done/slice-029-doc-check-module-hardening.md) (dort als
-Konsolidierungs-Kandidat identifiziert). [Roadmap](roadmap.md).
+Folge von [slice-019](slice-019-dcheck-mk-print-mk-angleichung.md) (Pin v0.37.1 →
+Modul verfügbar) + [slice-029](slice-029-doc-check-module-hardening.md) (dort als
+Konsolidierungs-Kandidat identifiziert). [Roadmap](../in-progress/roadmap.md).
 
 ## 1. Auslöser
 
@@ -47,6 +47,11 @@ Verhaltensgleichheit vorab belegt.
   d-check). Bewusst getragen ([ADR-0021](../../adr/0021-commits-modul-trace-check.md) §Konsequenzen).
 - **bash-Selbsttest entfällt** — Ersatz = d-checks upstream-getestetes Modul + die Proben §3.
 
-## 5. Offen bis Merge
+## 5. Closure
 
-[ADR-0021](../../adr/0021-commits-modul-trace-check.md) Proposed → Accepted (Merge-Wort); Slice → `done/`; `make gates` grün.
+[ADR-0021](../../adr/0021-commits-modul-trace-check.md) Accepted (Merge-Wort), Slice `done/`,
+`make gates` grün. **Lerneintrag:** [ADR-0021](../../adr/0021-commits-modul-trace-check.md) war
+die erste ADR über der [MR-005](../../../../harness/conventions.md#mr-005--referenzmatrix-intra-spec-richtung--adrslice-disziplin-d-check-angleichung)-Grandfathering-Grenze
+— der Provenance-Marker exemptierte die Slice-*Entscheidungs*-Referenzen nicht (er ist für reine
+Herkunfts-Zeiger); die saubere Lösung war, den ADR **slice-token-frei** aus AGENTS §5/Modul/Verhalten
+zu argumentieren (nicht „aus einem früheren Slice"). So sollen neue ADRs geschrieben werden.

@@ -1,6 +1,6 @@
 # ADR-0021 — Traceability-Gate via d-check-Modul `commits` (löst `tools/trace-check.sh` ab)
 
-- **Status:** Proposed
+- **Status:** Accepted
 - **Datum:** 2026-07-04
 - **Autor:** pt9912
 - **Bezug:** [`AGENTS.md` §5](../../../AGENTS.md#5-dokumentations-regeln) (Traceability-Regel), [`harness/README.md` §Traceability rules](../../../harness/README.md#traceability-rules); d-check-Modul `commits` (DC-FA-COMMITS-001).
@@ -72,3 +72,10 @@ in der `modules`-Liste (fokussiertes Gate, im Default-`doc-check` inert).
   die Paritäts-Proben beim nächsten Pin-Bump erneut fahren.
 - **Docker-loser Commit-Workflow** gewünscht (Hook ohne Container): dann eine schlanke
   lokale Vorprüfung erwägen — der CI-Range-Check bleibt die Wahrheit.
+
+## Geschichte
+
+| Datum | Ereignis |
+|---|---|
+| 2026-07-04 | Proposed — Entwurf; Paritäts-Proben gegen das abgelöste Skript bestanden (ID-Pflicht, Merge-/Revert-Ausnahme, fail-closed Range). |
+| 2026-07-04 | Proposed → Accepted (Sign-off Auftraggeber per Merge-Wort). Ab jetzt immutable; Ablösung nur via Folge-ADR mit `Supersedes`. |
