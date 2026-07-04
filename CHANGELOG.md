@@ -6,7 +6,11 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
-Lastenheft/Spezifikation 0.14.0 → 0.15.0 (slice-024; ADR-0019, b-cad-Pilot-Evidenz).
+## [0.9.0] - 2026-07-04
+
+Lastenheft/Spezifikation 0.14.0 → 0.15.0 (slice-024; ADR-0019, b-cad-Pilot-Evidenz)
+— dieses Release bringt die Root-Sub-Einheit ins Image und entsperrt den
+b-cad-Pilot-Schnitt (M3).
 
 ### Changed
 
