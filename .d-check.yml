@@ -4,7 +4,8 @@
 # (alle Slice-Erwähnungen sind Vorwärts-Referenzen). Baseline v1.3.0.
 #
 # Aktiv: links, anchors, ids (AC/ADR/MR-Linkpflicht), matrix (Spec-Straten
-# verweisen nie abwärts). DEFERRED bis slice-003: codepaths/spans/hostpaths —
+# verweisen nie abwärts — intra-Spec no-downward + ADR→Slice-Disziplin, MR-005).
+# DEFERRED bis slice-003: codepaths/spans/hostpaths —
 # sie prüfen Inline-Code-Pfade, von denen einige bewusst noch nicht existieren
 # (spec/spezifikation.md, spec/architecture.md, tools/, internal/, cmd/); sobald
 # die Struktur steht, werden sie wie in d-checks .d-check.yml aktiviert.
@@ -38,16 +39,26 @@ ids:
 
 matrix:
   classes:
-    - {
-        name: spec-straten,
-        paths:
-          [spec/lastenheft.md, spec/spezifikation.md, spec/architecture.md],
-      }
+    - name: spec-straten
+      paths: [spec/lastenheft.md, spec/spezifikation.md, spec/architecture.md]
+      # intra-Klassen-Richtung (MR-005): autoritativste Schicht zuerst; ein
+      # Abwärtsverweis zwischen Spec-Straten (auch transitiv) ⇒ matrix-downward.
+      order: [spec/lastenheft.md, spec/spezifikation.md, spec/architecture.md]
+      direction: no-downward
     - { name: adr, paths: ["docs/plan/adr/[0-9]*.md"] }
-    - { name: slice, paths: ["docs/plan/planning/**/slice-*.md"] }
+    - name: slice
+      paths: ["docs/plan/planning/**/slice-*.md"]
+      # Token-Erkennung (MR-005): eine Slice-Kennung im ADR-Körper ⇒ matrix-forbidden,
+      # außer per Provenance-Marker <!-- d-check:status-provenance --> deklariert.
+      token: 'slice-\d{3}'
   rules:
     - { from: spec-straten, to: adr, allow: false }
     - { from: spec-straten, to: slice, allow: false }
+    - { from: adr, to: slice, allow: false }
   status:
     forbidden: [superseded, deprecated]
+  # Grandfathering (MR-005): die vor der Übernahme Accepted-ADRs (0001–0020) sind
+  # immutabel und nennen Slices als Verifikations-Zeiger im Körper — ganz
+  # übersprungen; neue ADRs ab 0021 tragen den Provenance-Marker.
+  exempt-paths: ["docs/plan/adr/00[01][0-9]-*.md", "docs/plan/adr/0020-*.md"]
   exclude-sections: [Historie, "7. Historie", Geschichte]

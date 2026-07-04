@@ -60,10 +60,10 @@ veröffentlichten Image, verifiziert gegen den b-cad-Stand mit der Vollrichtungs
 ([ADR-0020](../../adr/0020-mehr-wurzel-phantom-guard.md) `Accepted`, Lastenheft/Spez **0.16.0**,
 **noch unveröffentlicht**) tilgt ein stilles KMP-Falsch-Negativ (belief-agent-Bericht: mehrere
 `roots` mit geteiltem `package_base` + flache Globs) per fail-closed-Guard; Stufe 2
-(datei-mengen-bewusste Auflösung) gated als slice-027. Abgenommen und vorgemerkt:
-[slice-025](../open/slice-025-p-rest-generalisierung.md) (P-Rest-Generalisierung) sowie eine
-d-check-Matrix-Konvergenz (`adr → slice`/`order`/`direction`/Provenance-Marker; d-check aktuell
-`v0.37.1`).
+(datei-mengen-bewusste Auflösung) gated als slice-027. [slice-028](../done/slice-028-dcheck-matrix-konvergenz.md) (**done** — d-check-Matrix-Konvergenz:
+intra-Spec `no-downward` + `adr → slice`-Disziplin + Provenance-Marker, [MR-005](../../../../harness/conventions.md#mr-005--referenzmatrix-intra-spec-richtung--adrslice-disziplin-d-check-angleichung))
+schärft das Doku-Gate; [slice-025](../open/slice-025-p-rest-generalisierung.md)
+(P-Rest-Generalisierung) abgenommen und vorgemerkt.
 Als Release-/Tooling-Hygiene sind [slice-018](../open/slice-018-versions-register-pin-gate.md)
 (Versions-Register `version.md` + `versions`/`pins`-Gate, nachdem ein stale README-Pin nur per
 Zufalls-Audit auffiel) und [slice-019](../open/slice-019-dcheck-mk-print-mk-angleichung.md)
