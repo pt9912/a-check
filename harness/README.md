@@ -74,16 +74,17 @@ Stop-Hook-„frischer-Klon"-Restlücke.
 | `make ci` | CI-äquivalent: `gates` + `image-test` (Engine des Workflows `.github/workflows/ci.yml`) | — | **real** (slice-006) |
 | `make trace-check` | Traceability via Modul `commits` ([ADR-0021](../docs/plan/adr/0021-commits-modul-trace-check.md)): jede Commit-Message nennt `AC-*`/`ADR-*`/`MR-*`/`slice-NNN` (`MSGFILE=` Hook, `RANGE=` CI) | Harness-Prozess ([`AGENTS.md` §5](../AGENTS.md#5-dokumentations-regeln)) | **real** (slice-006, Modul seit slice-030) |
 
-**Aktueller Lauf-Status (2026-07-04, `v0.10.0`):** `make gates`
-grün — `lint` 0 issues, `test` ok,
+**Aktueller Lauf-Status (2026-07-04 Tagesende, `v0.10.0` + Harness-Härtung
+slice-019/028/029/030):** `make gates` grün — `lint` 0 issues, `test` ok,
 `coverage-gate` 96,70 % (≥ 90 %), `arch-check` 0 Befunde (Dogfooding),
-`doc-check` 0 Befunde, `gate-consistency` ok, `guard-selftest` ok,
-`record-gates` Nachweis geschrieben. `make ci` (gates + `image-test`:
-`--print-mk`/`--print-config`/unbekanntes Flag + nativ==Container) und
-`make trace-check` grün.
+`doc-check` 0 Befunde (Module jetzt +`spans`; d-check-Pin `v0.37.1`), `gate-consistency` ok,
+`guard-selftest` ok, `record-gates` Nachweis geschrieben. `make ci` (gates + `image-test`)
+grün. **CI-Range-Gates:** `make trace-check` (jetzt via d-check-Modul `commits`,
+[ADR-0021](../docs/plan/adr/0021-commits-modul-trace-check.md)) + ADR-Immutabilität
+(`make doc-immutable`, Modul `vcs`, slice-029) — beide grün.
 **Rote Gates:** keine.
 **Kalibrierungs-Historie Coverage:** 90 % seit 2026-06-21
-(Bootstrap-Kalibrierung, damals Ist 92,60 %; aktuell 96,50 %); Anhebung
+(Bootstrap-Kalibrierung, damals Ist 92,60 %; aktuell 96,70 %); Anhebung
 jederzeit, Senkung nur per ADR.
 
 ## Traceability rules

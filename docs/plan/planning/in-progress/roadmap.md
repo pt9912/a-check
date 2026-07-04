@@ -69,12 +69,13 @@ schärft das Doku-Gate; [slice-029](../done/slice-029-doc-check-module-hardening
 `Accepted`: `make trace-check` fährt jetzt das `commits`-Modul, `tools/trace-check.sh` entfernt —
 eine Skript-Kopie weniger, Parität verifiziert); [slice-025](../open/slice-025-p-rest-generalisierung.md)
 (P-Rest-Generalisierung) abgenommen und vorgemerkt.
-Als Release-/Tooling-Hygiene sind [slice-018](../open/slice-018-versions-register-pin-gate.md)
-(Versions-Register `version.md` + `versions`/`pins`-Gate, nachdem ein stale README-Pin nur per
-Zufalls-Audit auffiel) und [slice-019](../done/slice-019-dcheck-mk-print-mk-angleichung.md)
-(`d-check.mk` an das aktuelle `--print-mk` angleichen) vorgemerkt; [slice-019](../done/slice-019-dcheck-mk-print-mk-angleichung.md)
+Release-/Tooling-Hygiene: [slice-019](../done/slice-019-dcheck-mk-print-mk-angleichung.md)
 (**done** — `d-check.mk` verbatim aus `v0.37.1`-`--print-mk`, `DCHECK_DIGEST` gepinnt, alle 10
-`doc-*`-Targets in AGENTS §4) hat den d-check-Pin `v0.35.0` → `v0.37.1` gehoben.
+`doc-*`-Targets in AGENTS §4) hat den d-check-Pin `v0.35.0` → `v0.37.1` gehoben. **Nächster
+vorgemerkter Schritt:** [slice-018](../open/slice-018-versions-register-pin-gate.md) — Versions-Register
+`version.md` + Pin-Gate (**Entwurf zur Abnahme**, 2026-07-04): Kern-Erkenntnis, dass d-checks
+`versions`/`pins`-Module **tag-pin**-basiert sind, a-check aber per **Digest** pinnt — Empfehlung
+Prosa→`version.md`-Link + schlanker Digest-Gleichheits-Check (Optionen im Entwurf, Maintainer-Wahl).
 
 ## Nächste Wellen
 
