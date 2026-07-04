@@ -72,7 +72,7 @@ Stop-Hook-„frischer-Klon"-Restlücke.
 | `make gates` | aggregiert die inneren Gates (lint/test/coverage-gate/arch-check/doc-check/gate-consistency/guard-selftest) + `record-gates` als letzter Schritt | — | **real** (slice-004) |
 | `make image-test` | Distributions-Akzeptanz (`--print-mk`/`--print-config`/unbekanntes Flag) + nativ==Container-Determinismus eines Scans gegen das gebaute Image | [`AC-FA-DIST-001`](../spec/lastenheft.md#ac-fa-dist-001--distribution-image---print-mk-a-checkmk)/[`AC-QA-02`](../spec/lastenheft.md#ac-qa-02--hermetik-und-ehrliche-heuristik-grenze) | **real** (slice-006) |
 | `make ci` | CI-äquivalent: `gates` + `image-test` (Engine des Workflows `.github/workflows/ci.yml`) | — | **real** (slice-006) |
-| `make trace-check` | Traceability: jede Commit-Message nennt `AC-*`/`ADR-*`/`MR-*`/`slice-NNN` (Selbsttest + `HEAD`; `RANGE=` für CI) | Harness-Prozess ([`AGENTS.md` §5](../AGENTS.md#5-dokumentations-regeln)) | **real** (slice-006) |
+| `make trace-check` | Traceability via Modul `commits` ([ADR-0021](../docs/plan/adr/0021-commits-modul-trace-check.md)): jede Commit-Message nennt `AC-*`/`ADR-*`/`MR-*`/`slice-NNN` (`MSGFILE=` Hook, `RANGE=` CI) | Harness-Prozess ([`AGENTS.md` §5](../AGENTS.md#5-dokumentations-regeln)) | **real** (slice-006, Modul seit slice-030) |
 
 **Aktueller Lauf-Status (2026-07-04, `v0.10.0`):** `make gates`
 grün — `lint` 0 issues, `test` ok,

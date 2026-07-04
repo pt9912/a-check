@@ -8,6 +8,11 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
 ### Changed
 
+- **Traceability-Gate (`make trace-check`):** von `tools/trace-check.sh` (98 Zeilen bash)
+  auf das d-check-Modul `commits` umgestellt (ADR-0021, slice-030) — eine Skript-Kopie
+  weniger; Verhalten verifiziert gleich (ID-Pflicht, Merge-/Revert-Ausnahme, fail-closed bei
+  unauflösbarer Range). Der commit-msg-Hook läuft jetzt über das digest-gepinnte Image.
+  Dev-Tooling; die Traceability-**Regel** (AGENTS §5) unverändert.
 - **doc-check-Tooling (`d-check.mk`):** Pin des Schwester-Tools `d-check` von **v0.35.0**
   auf **v0.37.1** gehoben (`@sha256:3bbdb19b…`, via `DCHECK_DIGEST`); `d-check.mk` verbatim
   aus `v0.37.1 --print-mk` regeneriert (alle 10 `doc-*`-Targets, in AGENTS §4 als advisory

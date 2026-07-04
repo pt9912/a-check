@@ -126,13 +126,14 @@ Host-Bash. `doc-trace`/`doc-complete` sind advisory `d-check`-Targets
 | `make gates` | alle inneren Gates (mandatory vor Handoff) | **real** (slice-003) |
 | `make image-test` | [AC-FA-DIST-001](spec/lastenheft.md#ac-fa-dist-001--distribution-image---print-mk-a-checkmk) + nativ==Container-Akzeptanz gegen das gebaute Image | **real** (slice-006) |
 | `make ci` | CI-äquivalent: `gates` + `image-test` (Workflow `.github/workflows/ci.yml`) | **real** (slice-006) |
-| `make trace-check` | Traceability: `AC-*`/`ADR-*`/`MR-*`/`slice`-ID je Commit (§5; `RANGE=` für CI) | **real** (slice-006) |
+| `make trace-check` | Traceability via Modul `commits` ([ADR-0021](docs/plan/adr/0021-commits-modul-trace-check.md)): `AC-*`/`ADR-*`/`MR-*`/`slice`-ID je Commit (§5; `MSGFILE=` Hook, `RANGE=` CI) | **real** (slice-006, Modul seit slice-030) |
 
 ## 5. Dokumentations-Regeln
 
 - Commits/PRs müssen mindestens eine `AC-*`- oder `ADR-*`-ID nennen
   (auch `MR-*`/`slice-NNN` gelten). Durchgesetzt durch `make trace-check`
-  (slice-006) — lokal über `HEAD`, in der CI über den Commit-Range
+  (slice-006; via d-check-Modul `commits`, [ADR-0021](docs/plan/adr/0021-commits-modul-trace-check.md))
+  — lokal über `HEAD~1..HEAD`, in der CI über den Commit-Range
   ([`.github/workflows/ci.yml`](.github/workflows/ci.yml)). IDs werden nur
   beim Spec-/ADR-Schreiben nach dem deklarierten Schema vergeben (siehe
   [`harness/conventions.md`](harness/conventions.md)) — nie ad hoc im

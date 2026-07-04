@@ -78,3 +78,16 @@ vcs:
   exclude-sections: [Geschichte]
   status-line: '^- \*\*Status:\*\*'
   head-allow: '^- \*\*Status:\*\* (Accepted|Superseded by ADR-[0-9]{4})'
+
+# Modul commits (DC-FA-COMMITS-001, slice-030, ADR-0021): Traceability-Kennung in
+# Commit-Messages über eine Range bzw. Pending-Message — `make trace-check` aktiviert
+# es mit `--enable commits` (NICHT in der modules-Liste, im Default-doc-check inert).
+# Löst tools/trace-check.sh ab (AGENTS §5). id-patterns = die drei ids-Muster
+# (AC/ADR/MR) plus slice-NNN; exempt-pattern nimmt Merge-/Revert-Betreffe aus.
+commits:
+  id-patterns:
+    - 'AC-(FA-[A-Z]+|QA)-\d+'
+    - 'ADR-\d{4}'
+    - 'MR-\d{3}'
+    - 'slice-\d+'
+  exempt-pattern: '^(Merge |Revert )'

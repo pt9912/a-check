@@ -78,8 +78,13 @@ image-test: build ## AC-FA-DIST-001 + nativ==Container-Akzeptanz gegen das gebau
 ci: gates image-test ## CI-äquivalenter Lauf: gates + image-test (AC-FA-DIST-001).
 	@echo "[ci] gates + image-test grün"
 
-trace-check: ## Traceability-Gate: AC-/ADR-/MR-/slice-ID in Commits (Selbsttest + HEAD; RANGE=a..b für CI). AGENTS §5.
-	@bash tools/trace-check.sh $(if $(RANGE),--range $(RANGE),)
+# FOCUS_COMMITS wählt alle übrigen .d-check.yml-Module ab, sodass nur `commits`
+# läuft (sonst feuern die Datei-Module auf den Arbeitsbaum). ADR-0021.
+DCHECK_RUN_I := docker run --rm -i --network none -v "$(CURDIR):/repo:ro" $(DCHECK_REF)
+FOCUS_COMMITS := --enable commits --disable links --disable anchors --disable ids --disable matrix --disable external --disable codepaths --disable spans --disable hostpaths --disable diagrams --disable versions --disable pins --disable immutable --disable vcs --disable planning --disable tracked
+
+trace-check: ## Traceability via Modul commits (ADR-0021): AC-/ADR-/MR-/slice-ID je Commit. MSGFILE=<datei> (Hook), RANGE=a..b (CI), sonst HEAD~1..HEAD. AGENTS §5.
+	@$(if $(MSGFILE),$(DCHECK_RUN_I) --commit-msg - < $(MSGFILE),docker run --rm --network none -v "$(CURDIR):/repo:ro" $(DCHECK_REF) $(FOCUS_COMMITS) --range $(if $(RANGE),$(RANGE),HEAD~1..HEAD))
 
 hooks: ## git-Hooks installieren (core.hooksPath -> .githooks; commit-msg Traceability). AGENTS §5.
 	@git config core.hooksPath .githooks
