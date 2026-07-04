@@ -26,6 +26,11 @@ Lastenheft/Spezifikation 0.15.0 → 0.16.0 (slice-026; ADR-0020, belief-agent-KM
   erzwingt eine Schicht) bleibt dokumentierte Grenze (`AC-QA-02`). Stufe 2
   (datei-mengen-bewusste Auflösung) gated als slice-027.
 
+### Changed
+
+- **Selbst-Pin** (`--print-mk`/`a-check.mk`/`cli.go`-`aCheckImage`) auf den **v0.10.0**-Digest
+  `@sha256:0932cb1d…` gehoben (AC-QA-03, ADR-0004/ADR-0007).
+
 ## [0.9.0] - 2026-07-04
 
 Lastenheft/Spezifikation 0.14.0 → 0.15.0 (slice-024; ADR-0019, b-cad-Pilot-Evidenz)

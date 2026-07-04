@@ -3,10 +3,10 @@
 Sprachübergreifender Hexagon-Architektur-Checker — deterministisch,
 seiteneffektfrei, text-heuristisch, ausgeliefert als Container-Image.
 
-**Status: `v0.9.0` veröffentlicht.** Lastenheft, Spezifikation, Architektur,
+**Status: `v0.10.0` veröffentlicht.** Lastenheft, Spezifikation, Architektur,
 Go-Implementierung, Durchsetzungsschicht (Meta-/Tool-Call-/Handoff-Gates) und
 CI-/Release-Pipeline stehen; alle Gates sind grün. Das Image liegt auf GHCR
-(`ghcr.io/pt9912/a-check`, Tags `v0.9.0` + `latest`, digest-gepinnt). Verbindlich
+(`ghcr.io/pt9912/a-check`, Tags `v0.10.0` + `latest`, digest-gepinnt). Verbindlich
 ist das [Lastenheft](spec/lastenheft.md); die Versionshistorie führt die
 [CHANGELOG.md](CHANGELOG.md).
 
@@ -91,7 +91,7 @@ Gegen das veröffentlichte Image (digest-gepinnt, netzlos, read-only):
 
 ```bash
 docker run --rm --network none -v "$PWD:/src:ro" \
-  ghcr.io/pt9912/a-check@sha256:0378211fc24bdd5a61becf6a4671ec8788a5da57108e19d62c374b26aa643bc9 /src
+  ghcr.io/pt9912/a-check@sha256:0932cb1dbdfa6ece0a5f9892dbe541cf29618ffe2667feda01c96d3218af2fc9 /src
 ```
 
 Konsumenten binden a-check als `make a-check`-Gate ein — **ohne

@@ -1,6 +1,6 @@
 # Benutzerhandbuch: a-check
 
-**Handbuch-Version:** 1.23 · **Software-Version:** 0.9.0 · **Stand:** 2026-07-04 ·
+**Handbuch-Version:** 1.24 · **Software-Version:** 0.10.0 · **Stand:** 2026-07-04 ·
 **Autor:** pt9912 (Maintainer)
 
 ---
@@ -478,3 +478,4 @@ und die [Spezifikation](../../spec/spezifikation.md); ein Überblick steht in de
 | 1.21 | 2026-07-03 | 0.14.0-Nachzug außerhalb §4: Fehlerbehebung „findet nichts" um die `exclude`-Falle (zu breite Globs) ergänzt; FAQ-Eintrag „Tests/`node_modules`/Generat ausnehmen"; Glossar um `exclude` + `composition_root: forbid`-Hinweis. |
 | 1.22 | 2026-07-03 | An Lastenheft 0.15.0: Glossar-Eintrag **Sub-Einheit** — `lateral-adapter` trennt Unterverzeichnisse, nie Dateinamen; Dateien direkt im Schicht-Root bilden eine gemeinsame Root-Einheit (eigene `.cpp`/`.h`-Paare in flachen Adaptern melden nicht mehr). Noch nicht im veröffentlichten Image (folgt mit dem nächsten Release). |
 | 1.23 | 2026-07-04 | Software-Version **0.9.0** (GHCR-Release `v0.9.0` veröffentlicht, digest-gepinnt `@sha256:0378211f…`) — adapterSeg-Root-Sub-Einheit mit Blatt-Klassifikation (`lateral-adapter`) jetzt im veröffentlichten Image; die 1.22-Verfügbarkeitsnotiz entfällt. |
+| 1.24 | 2026-07-04 | Software-Version **0.10.0** (GHCR-Release `v0.10.0` veröffentlicht, digest-gepinnt `@sha256:0932cb1d…`) — fail-closed-Guard gegen mehrdeutige Mehr-Wurzel-Auflösung (`mode: fixed-root`, ≥ 2 `roots`, die zwei Schichten erzwingen → Exit 2) jetzt im veröffentlichten Image; KMP-Rezept: paket-spezifische Globs tiefer als die Roots. |
