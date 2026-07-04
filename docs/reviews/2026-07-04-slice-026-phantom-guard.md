@@ -1,6 +1,6 @@
 # Review-Synthese — slice-026 Stufe 1: Mehr-Wurzel-Phantom-Guard
 
-**Datum:** 2026-07-04 · **Gegenstand:** [slice-026](../plan/planning/in-progress/slice-026-kmp-mehr-root-phantom.md)
+**Datum:** 2026-07-04 · **Gegenstand:** [slice-026](../plan/planning/done/slice-026-kmp-mehr-root-phantom.md)
 ([ADR-0020](../plan/adr/0020-mehr-wurzel-phantom-guard.md),
 [AC-FA-CONF-001](../../spec/lastenheft.md#ac-fa-conf-001--konfigurationsdatei-a-checkyml) 0.16.0)
 · **Form:** adversarisches Multi-Linsen-Review, 4 read-only Linsen (Code-Korrektheit ·

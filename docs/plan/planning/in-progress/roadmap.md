@@ -56,10 +56,18 @@ veröffentlichten Image, verifiziert gegen den b-cad-Stand mit der Vollrichtungs
 **Nächster Schritt:** Pilot-Schnitt in b-cad (verifizierte Vollrichtungs-Config + `a-check.mk`,
 `arch-check.sh` auf den P-Rest schrumpfen — dlopen-Aufrufmuster + feine P2-Allowlist)
 ⇒ **Meilenstein M3**.
+**Post-v0.9.0-Härtung (2026-07-04):** [slice-026](../done/slice-026-kmp-mehr-root-phantom.md)
+([ADR-0020](../../adr/0020-mehr-wurzel-phantom-guard.md) `Accepted`, Lastenheft/Spez **0.16.0**,
+**noch unveröffentlicht**) tilgt ein stilles KMP-Falsch-Negativ (belief-agent-Bericht: mehrere
+`roots` mit geteiltem `package_base` + flache Globs) per fail-closed-Guard; Stufe 2
+(datei-mengen-bewusste Auflösung) gated als slice-027. Abgenommen und vorgemerkt:
+[slice-025](../open/slice-025-p-rest-generalisierung.md) (P-Rest-Generalisierung) sowie eine
+d-check-Matrix-Konvergenz (`adr → slice`/`order`/`direction`/Provenance-Marker; d-check aktuell
+`v0.37.1`).
 Als Release-/Tooling-Hygiene sind [slice-018](../open/slice-018-versions-register-pin-gate.md)
 (Versions-Register `version.md` + `versions`/`pins`-Gate, nachdem ein stale README-Pin nur per
 Zufalls-Audit auffiel) und [slice-019](../open/slice-019-dcheck-mk-print-mk-angleichung.md)
-(`d-check.mk` an das v0.35.0-`--print-mk` angleichen) vorgemerkt.
+(`d-check.mk` an das aktuelle `--print-mk` angleichen, Pin `v0.35.0` → `v0.37.1`) vorgemerkt.
 
 ## Nächste Wellen
 
