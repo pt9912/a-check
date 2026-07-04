@@ -111,7 +111,7 @@ Host-Bash. `doc-trace`/`doc-complete` sind advisory `d-check`-Targets
 | `make doc-complete` | Vollständigkeits-Gate: Requirements-Waise ⇒ Exit 1 (DC-FA-CLI-011) | **advisory** (d-check v0.37.1) |
 | `make doc-doctor` | erklärende Diagnose mit Fix-Kandidaten (DC-FA-CLI-007) | **advisory** (d-check v0.37.1) |
 | `make doc-repair` | Reparatur-Patch (unified diff) auf stdout, git-apply-rein (DC-FA-CLI-008) | **advisory** (d-check v0.37.1) |
-| `make doc-immutable` | Doc-/ADR-Immutabilität via git-Diff (Modul `vcs`; `RANGE=`/`STAGED=1`, DC-FA-VCS-001) | **advisory** (d-check v0.37.1) |
+| `make doc-immutable` | ADR-Immutabilität (§3.5) via git-Diff (Modul `vcs`; `RANGE=`/`STAGED=1`, DC-FA-VCS-001) — **CI-durchgesetzt** über die Commit-Range ([`ci.yml`](.github/workflows/ci.yml)) | **real** (slice-029, CI) |
 | `make doc-commits` | Commit-Message-Traceability (Modul `commits`; `RANGE=`, DC-FA-COMMITS-001) | **advisory** (d-check v0.37.1) |
 | `make doc-planning` | Planning-Lifecycle-Konsistenz Roadmap ↔ `in-progress` (Modul `planning`, DC-FA-PLAN-001) | **advisory** (d-check v0.37.1) |
 | `make doc-tracked` | Getrackt-Status auflösbarer Referenz-Ziele (Modul `tracked`, DC-FA-TRK-001) | **advisory** (d-check v0.37.1) |

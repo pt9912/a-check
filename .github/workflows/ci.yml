@@ -45,7 +45,7 @@ jobs:
           fetch-depth: 0
 
       # Traceability ZUERST (billig, fail-fast vor dem teuren Docker-Build).
-      - name: Traceability-Gate (AC-/ADR-/MR-/slice-ID in Commits)
+      - name: Traceability + ADR-Immutabilität (Commit-Range)
         env:
           EVENT: ${{ github.event_name }}
           PR_BASE: ${{ github.event.pull_request.base.sha }}
@@ -66,6 +66,8 @@ jobs:
           fi
           echo "Prüfe Commit-Range: $RANGE"
           make trace-check RANGE="$RANGE"
+          echo "ADR-Immutabilität (vcs) über die Range:"
+          make doc-immutable RANGE="$RANGE"
 
       # Volle Gates + Image-Integrationstests (identische Engine wie lokal).
       - name: Gates + Image-Integrationstests (make ci)

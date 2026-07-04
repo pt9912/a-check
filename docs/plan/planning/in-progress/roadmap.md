@@ -62,7 +62,10 @@ veröffentlichten Image, verifiziert gegen den b-cad-Stand mit der Vollrichtungs
 `roots` mit geteiltem `package_base` + flache Globs) per fail-closed-Guard; Stufe 2
 (datei-mengen-bewusste Auflösung) gated als slice-027. [slice-028](../done/slice-028-dcheck-matrix-konvergenz.md) (**done** — d-check-Matrix-Konvergenz:
 intra-Spec `no-downward` + `adr → slice`-Disziplin + Provenance-Marker, [MR-005](../../../../harness/conventions.md#mr-005--referenzmatrix-intra-spec-richtung--adrslice-disziplin-d-check-angleichung))
-schärft das Doku-Gate; [slice-025](../open/slice-025-p-rest-generalisierung.md)
+schärft das Doku-Gate; [slice-029](../done/slice-029-doc-check-module-hardening.md)
+(**done** — `spans` ins mandatory `doc-check`, `vcs`/ADR-Immutabilität §3.5 in der CI durchgesetzt;
+`codepaths`/`planning` als Domänen-Misfit/vakuum verworfen, `commits` als `trace-check`-Ablöse
+vorgemerkt); [slice-025](../open/slice-025-p-rest-generalisierung.md)
 (P-Rest-Generalisierung) abgenommen und vorgemerkt.
 Als Release-/Tooling-Hygiene sind [slice-018](../open/slice-018-versions-register-pin-gate.md)
 (Versions-Register `version.md` + `versions`/`pins`-Gate, nachdem ein stale README-Pin nur per

@@ -4,15 +4,17 @@
 # (alle Slice-Erwähnungen sind Vorwärts-Referenzen). Baseline v1.3.0.
 #
 # Aktiv: links, anchors, ids (AC/ADR/MR-Linkpflicht), matrix (Spec-Straten
-# verweisen nie abwärts — intra-Spec no-downward + ADR→Slice-Disziplin, MR-005).
-# DEFERRED bis slice-003: codepaths/spans/hostpaths —
-# sie prüfen Inline-Code-Pfade, von denen einige bewusst noch nicht existieren
-# (spec/spezifikation.md, spec/architecture.md, tools/, internal/, cmd/); sobald
-# die Struktur steht, werden sie wie in d-checks .d-check.yml aktiviert.
+# verweisen nie abwärts — intra-Spec no-downward + ADR→Slice-Disziplin, MR-005),
+# spans (offene Code-Spans) seit slice-029. `codepaths` bewusst NICHT aktiv:
+# a-checks Domäne (Import-Auflösung) füllt die Doku mit illustrativen
+# Beispiel-Specifiern (`./b`, `../core/model`, `./db` …), die codepaths nicht
+# von echten Datei-Verweisen trennen kann — ~40 Falsch-Positive, Domänen-Misfit
+# (slice-029 §Entscheidung). vcs/planning sind separate Targets (doc-immutable/
+# doc-planning), nicht im Default.
 scan:
   roots: ["."]
 
-modules: [links, anchors, ids, matrix, hostpaths]
+modules: [links, anchors, ids, matrix, spans, hostpaths]
 
 ids:
   patterns:
@@ -62,3 +64,17 @@ matrix:
   # übersprungen; neue ADRs ab 0021 tragen den Provenance-Marker.
   exempt-paths: ["docs/plan/adr/00[01][0-9]-*.md", "docs/plan/adr/0020-*.md"]
   exclude-sections: [Historie, "7. Historie", Geschichte]
+
+# Modul vcs (DC-FA-VCS-001, slice-029): git-Diff-Immutabilität der eigenen
+# Accepted-ADRs (AGENTS §3.5) über eine Commit-Range — `make doc-immutable`
+# aktiviert es mit `--enable vcs` (NICHT in der modules-Liste, daher im
+# hermetischen Default-doc-check inert). Die CI ruft es über die PR-/Push-Range
+# (`.github/workflows/ci.yml`, neben `trace-check`) — so ist §3.5 maschinell
+# durchgesetzt. Kern = ADR ohne Kopf-Status-Zeile und ohne `Geschichte`;
+# head-allow lässt den Proposed→Accepted- und den Supersede-Übergang zu.
+vcs:
+  paths: ["docs/plan/adr/[0-9]*.md"]
+  immutable-when: '^- \*\*Status:\*\* Accepted'
+  exclude-sections: [Geschichte]
+  status-line: '^- \*\*Status:\*\*'
+  head-allow: '^- \*\*Status:\*\* (Accepted|Superseded by ADR-[0-9]{4})'
