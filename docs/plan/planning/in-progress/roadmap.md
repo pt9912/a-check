@@ -1,6 +1,6 @@
 # Roadmap
 
-**Status:** Aktiv. **Letzte Änderung:** 2026-07-03.
+**Status:** Aktiv. **Letzte Änderung:** 2026-07-04.
 
 **Format-Regel:** Die Roadmap ist eine Reihenfolge von **Wellen**, keine
 Reihenfolge von Terminen. Termine erscheinen — falls überhaupt — als
@@ -35,10 +35,10 @@ ungenutzt. Port→Port-Richtungsregeln und Auto-Inferenz der Richtung bleiben ou
 (späteres Inkrement).
 Alle Gates real und grün (`make gates`; Dogfooding 0 Befunde).
 
-**Parallel offen — `welle-05-release`:** `v0.1.0` … `v0.7.0` und **`v0.8.0`** sind veröffentlicht
+**Parallel offen — `welle-05-release`:** `v0.1.0` … `v0.8.0` und **`v0.9.0`** sind veröffentlicht
 ([slice-007 §4](../done/slice-007-release-pipeline.md#4-closure-notiz-nach-done),
 [ADR-0007](../../adr/0007-latest-tag-politik.md) `Accepted`; GHCR
-`@sha256:a1c9c4d6…` (aktuell v0.8.0) digest-gepinnt in `a-check.mk`); nur die
+`@sha256:0378211f…` (aktuell v0.9.0) digest-gepinnt in `a-check.mk`); nur die
 **Pilot-Einbindung** in ein Konsumenten-Repo bleibt. Für den b-cad-Pilot liefert
 [slice-016](../done/slice-016-regex-tech-muster.md) ([ADR-0015](../../adr/0015-regex-tech-muster.md),
 Lastenheft/Spezifikation 0.8.0) die letzte fehlende a-check-Fähigkeit — `tech`-Muster als opt-in
@@ -50,9 +50,12 @@ slice-028/029: `services/geometry/`-Unterordner + `ui/command|view`-Richtungs-Sp
 [slice-024](../done/slice-024-adapterseg-root-subeinheit.md) ([ADR-0019](../../adr/0019-adapterseg-root-subeinheit.md)
 `Accepted`, Lastenheft/Spez 0.15.0) hat die letzte a-check-Blockade getilgt (Root-Sub-Einheit/
 Blatt-Klassifikation — die Vollrichtungs-Config erzeugte 40 Falsch-Positive, jetzt verifiziert
-**0 Befunde** gegen `a-check:dev`). **Nächste Schritte:** v0.9.0-Cut (0.15.0 ins Image), dann
-Pilot-Schnitt in b-cad (verifizierte Vollrichtungs-Config + `a-check.mk`, `arch-check.sh` auf den
-P-Rest schrumpfen — dlopen-Aufrufmuster + feine P2-Allowlist) ⇒ **Meilenstein M3**.
+**0 Befunde** gegen `a-check:dev`). Der **v0.9.0-Cut ist erledigt (2026-07-04)** — 0.15.0 ist im
+veröffentlichten Image, verifiziert gegen den b-cad-Stand mit der Vollrichtungs-Config
+(**0 Befunde**; Gegenprobe: injizierter Qt-Include im Model meldet `core-impurity`, Exit 1).
+**Nächster Schritt:** Pilot-Schnitt in b-cad (verifizierte Vollrichtungs-Config + `a-check.mk`,
+`arch-check.sh` auf den P-Rest schrumpfen — dlopen-Aufrufmuster + feine P2-Allowlist)
+⇒ **Meilenstein M3**.
 Als Release-/Tooling-Hygiene sind [slice-018](../open/slice-018-versions-register-pin-gate.md)
 (Versions-Register `version.md` + `versions`/`pins`-Gate, nachdem ein stale README-Pin nur per
 Zufalls-Audit auffiel) und [slice-019](../open/slice-019-dcheck-mk-print-mk-angleichung.md)

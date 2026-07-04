@@ -74,7 +74,7 @@ Stop-Hook-„frischer-Klon"-Restlücke.
 | `make ci` | CI-äquivalent: `gates` + `image-test` (Engine des Workflows `.github/workflows/ci.yml`) | — | **real** (slice-006) |
 | `make trace-check` | Traceability: jede Commit-Message nennt `AC-*`/`ADR-*`/`MR-*`/`slice-NNN` (Selbsttest + `HEAD`; `RANGE=` für CI) | Harness-Prozess ([`AGENTS.md` §5](../AGENTS.md#5-dokumentations-regeln)) | **real** (slice-006) |
 
-**Aktueller Lauf-Status (2026-07-03, `v0.8.0` + unveröffentlichte 0.15.0-Slices):** `make gates`
+**Aktueller Lauf-Status (2026-07-04, `v0.9.0`):** `make gates`
 grün — `lint` 0 issues, `test` ok,
 `coverage-gate` 96,50 % (≥ 90 %), `arch-check` 0 Befunde (Dogfooding),
 `doc-check` 0 Befunde, `gate-consistency` ok, `guard-selftest` ok,
@@ -83,7 +83,7 @@ grün — `lint` 0 issues, `test` ok,
 `make trace-check` grün.
 **Rote Gates:** keine.
 **Kalibrierungs-Historie Coverage:** 90 % seit 2026-06-21
-(Bootstrap-Kalibrierung, damals Ist 92,60 %; aktuell 96,00 %); Anhebung
+(Bootstrap-Kalibrierung, damals Ist 92,60 %; aktuell 96,50 %); Anhebung
 jederzeit, Senkung nur per ADR.
 
 ## Traceability rules

@@ -24,6 +24,8 @@ b-cad-Pilot-Schnitt (M3).
   `x.cpp → x.h` bei 0 echten Verstößen; pro-Adapter-Layer (Voraussetzung der
   `direction`-Modellierung) sind damit falsch-positiv-frei. Endungslose
   Datei-Specifier (TS `./b`) bleiben dokumentierte Grenze (`AC-QA-02`).
+- **Selbst-Pin** (`--print-mk`/`a-check.mk`/`cli.go`-`aCheckImage`) auf den **v0.9.0**-Digest
+  `@sha256:0378211f…` gehoben (AC-QA-03, ADR-0004/ADR-0007).
 
 ## [0.8.0] - 2026-07-03
 
