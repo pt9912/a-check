@@ -903,6 +903,46 @@ func TestMonoRepoResolutionPerLanguage(t *testing.T) { // ADR-0016 (F1): jede Da
 	}
 }
 
+// TestPhantomFlatGlobsMisresolves pins the false-negative MECHANISM that the
+// ADR-0020 guard defends against: with flat source-set globs and 2 roots sharing
+// package_base, the adapter import from a commonMain file resolves to the WRONG
+// layer (core) because the phantom candidate src/commonMain/…/adapters wins on
+// the longer prefix. This is why the config is rejected at load; if a later
+// file-set-aware resolution (slice-027) fixes it, this anchor must be revisited.
+func TestPhantomFlatGlobsMisresolves(t *testing.T) {
+	layers := []Layer{
+		{Name: "core", Globs: []string{"src/commonMain/**"}, Role: "domain"},
+		{Name: "adapters", Globs: []string{"src/jvmMain/**"}, Role: "adapter"},
+	}
+	res := ResolutionConfig{Mode: "fixed-root", Roots: []string{"src/commonMain/kotlin/myapp", "src/jvmMain/kotlin/myapp"}, PackageBase: "myapp"}
+	got, _ := targetLayer("myapp.adapters.Foo", "src/commonMain/kotlin/myapp/core/Bar.kt", layers, res)
+	if got != "core" {
+		t.Fatalf("Phantom-Mechanismus (längster Präfix gewinnt) muss den Adapter-Import falsch auf 'core' legen, got %q", got)
+	}
+}
+
+// TestPhantomDeepGlobsResolvesCorrectly proves the documented recipe: with
+// package-specific globs deeper than the roots, the same import resolves to
+// adapters and a domain file importing it is core-impurity (Exit 1) — the
+// load-and-detect half of ADR-0020's Fitness Function.
+func TestPhantomDeepGlobsResolvesCorrectly(t *testing.T) {
+	m := Model{
+		Layers: []Layer{
+			{Name: "core", Globs: []string{"src/commonMain/kotlin/myapp/core/**"}, Role: "domain"},
+			{Name: "adapters", Globs: []string{"src/jvmMain/kotlin/myapp/adapters/**"}, Role: "adapter"},
+		},
+		Resolution: map[string]ResolutionConfig{
+			"kotlin": {Mode: "fixed-root", Roots: []string{"src/commonMain/kotlin/myapp", "src/jvmMain/kotlin/myapp"}, PackageBase: "myapp"},
+		},
+	}
+	files := []FileImports{{Path: "src/commonMain/kotlin/myapp/core/Bar.kt", Layer: "core", Language: "kotlin",
+		Imports: []Import{{Symbol: "myapp.adapters.Foo", Line: 2}}}}
+	fs := Evaluate(m, files)
+	if len(fs) != 1 || fs[0].Rule != "core-impurity" {
+		t.Fatalf("paket-tiefe Globs müssen core -> adapter als core-impurity fangen, got %v", fs)
+	}
+}
+
 func TestResolveImportFixedRootMultipleRoots(t *testing.T) { // ADR-0016 (F3): ein Kandidat je root
 	got := resolveImport("hexagon/model/room.h", "", ResolutionConfig{Mode: "fixed-root", Roots: []string{"src", "include"}})
 	if len(got) != 2 || got[0] != "src/hexagon/model/room.h" || got[1] != "include/hexagon/model/room.h" {
@@ -1292,27 +1332,62 @@ func TestPhantomRootConflict(t *testing.T) { // ADR-0020: Mehr-Wurzel-Phantom-Pr
 		{Name: "core", Globs: []string{"src/commonMain/kotlin/myapp/core/**"}},
 		{Name: "adapters", Globs: []string{"src/jvmMain/kotlin/myapp/adapters/**"}},
 	}
-	// Boundary: a root exactly equal to a layer's glob prefix is contained
+	// Boundary: a root exactly equal to a layer's glob prefix is forced into it
 	// (len(p)==len(root)); with a second root in another layer that is a conflict.
 	exactLayers := []Layer{
 		{Name: "core", Globs: []string{"src/commonMain/**"}},
 		{Name: "adapters", Globs: []string{"src/jvmMain/**"}},
 	}
 	exactRoots := []string{"src/commonMain", "src/jvmMain"} // root == glob prefix
+	// Befund 1 (review): nested/overlapping layers — both roots force the DEEPER
+	// layer (longest prefix), so targetLayer resolves unambiguously → no conflict.
+	nested := []Layer{
+		{Name: "broad", Globs: []string{"src/**"}},
+		{Name: "appL", Globs: []string{"src/app/**"}},
+	}
+	nestedRoots := []string{"src/app/main", "src/app/gen"}
+	// Befund 2 (review): the layer prefix occurs as an INTERIOR segment of the
+	// root (segIndex>0) — targetLayer matches it, so the guard must too.
+	interiorLayers := []Layer{
+		{Name: "coreL", Globs: []string{"core/**"}},
+		{Name: "adapterL", Globs: []string{"adapter/**"}},
+	}
+	interiorRoots := []string{"build/gen/core", "build/gen/adapter"}
+	// Witness determinism: 3 roots in 3 layers — the earliest (i,j) pair wins.
+	threeLayers := []Layer{
+		{Name: "a", Globs: []string{"src/commonMain/**"}},
+		{Name: "b", Globs: []string{"src/jvmMain/**"}},
+		{Name: "c", Globs: []string{"src/jsMain/**"}},
+	}
+	threeRoots := []string{"src/commonMain/x", "src/jvmMain/x", "src/jsMain/x"}
+	// Longest-prefix forcing (review B1): a root matches broad (declared FIRST)
+	// and appL (declared SECOND); rootForcedLayer must pick appL (longest prefix,
+	// like targetLayer), NOT the first-declared broad. Second root in libL.
+	longestLayers := []Layer{
+		{Name: "broad", Globs: []string{"src/**"}},
+		{Name: "appL", Globs: []string{"src/app/**"}},
+		{Name: "libL", Globs: []string{"lib/**"}},
+	}
+	longestRoots := []string{"src/app/x", "lib/y"}
 
 	cases := []struct {
-		name    string
-		res     ResolutionConfig
-		layers  []Layer
-		want    bool
-		wantA   string // expected RootA when want
-		wantLA  string // expected LayerA when want
+		name   string
+		res    ResolutionConfig
+		layers []Layer
+		want   bool
+		wantA  string // expected RootA when want
+		wantLA string // expected LayerA when want
+		wantB  string // expected LayerB when want
 	}{
-		{"kmp-flat-conflict", ResolutionConfig{Mode: "fixed-root", Roots: kmpRoots, PackageBase: "myapp"}, kmp, true, "src/commonMain/kotlin/myapp", "core"},
-		{"deep-globs-ok", ResolutionConfig{Mode: "fixed-root", Roots: kmpRoots, PackageBase: "myapp"}, deep, false, "", ""},
-		{"single-root-ok", ResolutionConfig{Mode: "fixed-root", Roots: []string{"src/commonMain/kotlin/myapp"}}, kmp, false, "", ""},
-		{"path-mode-ok", ResolutionConfig{Mode: "path"}, kmp, false, "", ""},
-		{"root-equals-prefix-conflict", ResolutionConfig{Mode: "fixed-root", Roots: exactRoots}, exactLayers, true, "src/commonMain", "core"},
+		{"kmp-flat-conflict", ResolutionConfig{Mode: "fixed-root", Roots: kmpRoots, PackageBase: "myapp"}, kmp, true, "src/commonMain/kotlin/myapp", "core", "adapters"},
+		{"deep-globs-ok", ResolutionConfig{Mode: "fixed-root", Roots: kmpRoots, PackageBase: "myapp"}, deep, false, "", "", ""},
+		{"single-root-ok", ResolutionConfig{Mode: "fixed-root", Roots: []string{"src/commonMain/kotlin/myapp"}}, kmp, false, "", "", ""},
+		{"path-mode-ok", ResolutionConfig{Mode: "path"}, kmp, false, "", "", ""},
+		{"root-equals-prefix-conflict", ResolutionConfig{Mode: "fixed-root", Roots: exactRoots}, exactLayers, true, "src/commonMain", "core", "adapters"},
+		{"nested-layers-no-conflict", ResolutionConfig{Mode: "fixed-root", Roots: nestedRoots}, nested, false, "", "", ""},
+		{"interior-segment-conflict", ResolutionConfig{Mode: "fixed-root", Roots: interiorRoots}, interiorLayers, true, "build/gen/core", "coreL", "adapterL"},
+		{"three-roots-earliest-witness", ResolutionConfig{Mode: "fixed-root", Roots: threeRoots}, threeLayers, true, "src/commonMain/x", "a", "b"},
+		{"forced-layer-longest-prefix", ResolutionConfig{Mode: "fixed-root", Roots: longestRoots}, longestLayers, true, "src/app/x", "appL", "libL"},
 	}
 	for _, c := range cases {
 		t.Run(c.name, func(t *testing.T) {
@@ -1320,8 +1395,8 @@ func TestPhantomRootConflict(t *testing.T) { // ADR-0020: Mehr-Wurzel-Phantom-Pr
 			if (got != nil) != c.want {
 				t.Fatalf("want conflict=%v, got %+v", c.want, got)
 			}
-			if c.want && (got.RootA != c.wantA || got.LayerA != c.wantLA) {
-				t.Fatalf("Zeuge nicht deterministisch/erwartet: got %+v, want RootA=%q LayerA=%q", got, c.wantA, c.wantLA)
+			if c.want && (got.RootA != c.wantA || got.LayerA != c.wantLA || got.LayerB != c.wantB) {
+				t.Fatalf("Zeuge nicht deterministisch/erwartet: got %+v, want RootA=%q LayerA=%q LayerB=%q", got, c.wantA, c.wantLA, c.wantB)
 			}
 		})
 	}

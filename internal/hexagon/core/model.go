@@ -35,11 +35,12 @@ type ResolutionConfig struct {
 }
 
 // PhantomRootConflict witnesses an ambiguous multi-root fixed-root resolution
-// (ADR-0020): two distinct roots each lie fully inside a DIFFERENT layer, so
-// every import spawns one candidate per root that matches its layer by the root
-// prefix alone (phantom candidates across layer boundaries) and targetLayer's
-// longest-prefix pick decides the layer instead of the symbol — a silent
-// false-negative. The config adapter turns a non-nil conflict into exit code 2.
+// (ADR-0020): two distinct roots FORCE two DIFFERENT layers (each root's
+// candidates resolve to its layer by the root prefix alone), so every import
+// spawns one candidate per root across layer boundaries (phantom candidates) and
+// targetLayer's longest-prefix pick decides the layer instead of the symbol — a
+// silent false-negative. The config adapter turns a non-nil conflict into exit
+// code 2.
 type PhantomRootConflict struct {
 	RootA, LayerA string
 	RootB, LayerB string

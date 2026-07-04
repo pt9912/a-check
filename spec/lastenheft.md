@@ -347,12 +347,15 @@ einem reservierten/unbekannten `resolution.mode` oder `roots`/`package_base` bei
 einer **leeren** `tech.adapter`-Liste oder einem leeren/fehlenden `tech.adapter`, einem `composition_root`-Wert außerhalb
 `{allow, forbid}` oder einem ungültigen `exclude`-Glob).
 Zusätzlich fail-closed: eine **mehrdeutige Mehr-Wurzel-Auflösung** — `mode: fixed-root`
-mit **≥ 2** `roots`, von denen **≥ 2 je vollständig innerhalb einer Schicht** liegen
-(ein `layers`-Glob-Präfix ist Vorfahr-oder-gleich des Roots) und diese Schichten
-**verschieden** sind — bricht mit Exit 2. In dieser Form fällt jeder Import-Kandidat
-allein am Wurzel-Präfix in „seine" Schicht (Phantom-Kandidaten über Schicht-Grenzen),
-und die Schicht-Zuordnung würde vom längsten Präfix statt vom Symbol entschieden — ein
-stilles Falsch-Negativ (`AC-QA-02`). Auflösungs-Rezept dagegen: paket-spezifische Globs,
+mit **≥ 2** `roots`, von denen **zwei verschiedene Roots je eine andere Schicht erzwingen**,
+bricht mit Exit 2. Ein Root „erzwingt" die Schicht, in die er allein am Wurzel-Präfix
+auflöst: der längste `layers`-Glob-Präfix, der im Root auf einer Segmentgrenze auftritt
+(dieselbe Längster-Präfix-Wahl wie die Import-Auflösung selbst). Erzwingen zwei Roots
+verschiedene, nicht-leere Schichten, fällt jeder Import-Kandidat allein am Wurzel-Präfix
+in „seine" Schicht (Phantom-Kandidaten über Schicht-Grenzen), und die Zuordnung würde vom
+längsten Präfix statt vom Symbol entschieden — ein stilles Falsch-Negativ (`AC-QA-02`).
+Verschachtelte Schichten, unter denen **beide** Roots dieselbe (tiefere) Schicht erzwingen,
+sind eindeutig und laden. Auflösungs-Rezept gegen den Konflikt: paket-spezifische Globs,
 tiefer als die Roots (dann diskriminiert der Paketpfad, nicht die Wurzel).
 
 **Akzeptanzkriterien:**
@@ -369,7 +372,8 @@ tiefer als die Roots (dann diskriminiert der Paketpfad, nicht die Wurzel).
 - **Happy (`exclude`):** Given `exclude: ["**/*_test.go"]` und ein Tech-/Schicht-Verstoß **nur** in einer Test-Datei, when `a-check` läuft, then kein Befund (die Datei wird nicht gescannt).
 - **Boundary (`exclude`):** Given eine Config **ohne** `exclude`, when `a-check` läuft, then byte-identische Ausgabe wie bisher.
 - **Negative (neue Schlüssel):** Given eine **leere** `tech.adapter`-Liste, ein leerer/fehlender `tech.adapter`, ein `composition_root` mit einem Wert außerhalb `{allow, forbid}` **oder** ein ungültiger `exclude`-Glob, when `a-check` lädt, then Exit-Code 2.
-- **Negative (Mehr-Wurzel-Phantom):** Given `mode: fixed-root` mit ≥ 2 `roots`, von denen ≥ 2 je vollständig in einer Schicht liegen und diese Schichten verschieden sind (z. B. KMP: `roots: [src/commonMain/kotlin/myapp, src/jvmMain/kotlin/myapp]` bei flachen Globs `core: [src/commonMain/**]`, `adapters: [src/jvmMain/**]`), when `a-check` lädt, then Exit-Code 2 mit Verweis auf tiefere paket-spezifische Globs — **statt** stiller Fehlklassifikation der Import-Kandidaten (falsch-grün, `AC-QA-02`). Boundary: dieselben Roots mit paket-tiefen Globs (`core: [src/commonMain/kotlin/myapp/core/**]`, …) laden sauber (Exit 0/1), da kein Root mehr in einer Schicht enthalten ist.
+- **Negative (Mehr-Wurzel-Phantom):** Given `mode: fixed-root` mit ≥ 2 `roots`, von denen zwei verschiedene Roots je eine andere Schicht erzwingen (z. B. KMP: `roots: [src/commonMain/kotlin/myapp, src/jvmMain/kotlin/myapp]` bei flachen Globs `core: [src/commonMain/**]`, `adapters: [src/jvmMain/**]`), when `a-check` lädt, then Exit-Code 2 mit Verweis auf tiefere paket-spezifische Globs — **statt** stiller Fehlklassifikation der Import-Kandidaten (falsch-grün, `AC-QA-02`).
+- **Boundary (Mehr-Wurzel, eindeutig):** Given dieselben Roots mit paket-tiefen Globs (`core: [src/commonMain/kotlin/myapp/core/**]`, `adapters: [src/jvmMain/kotlin/myapp/adapters/**]`) **oder** verschachtelte Globs, unter denen beide Roots dieselbe tiefere Schicht erzwingen, when `a-check` lädt, then Exit 0/1 (kein Konflikt) — und eine Kern-Datei mit Adapter-Import wird korrekt `core-impurity`; auch ein Root, dessen Wurzel-Präfix exakt einem (verschiedenen) Layer-Glob-Präfix entspricht, zählt als erzwungen (Prädikat-Kante).
 
 **Out-of-Scope:** Vererbung/Includes zwischen Config-Dateien.
 
@@ -432,4 +436,4 @@ Konsumenten-Repos).
 | 0.14.0 | 2026-07-03 | **CR d-check-Pilot (2/3)** — `AC-FA-RULE-003`/`AC-FA-CONF-001`: die Composition-Root-Ausnahme der `tech`-Kapselung wird **pro Eintrag steuerbar** (`composition_root: allow\|forbid`, Default `allow` = bisheriges Verhalten); `forbid` betrifft nur `tech-leak`, die Schicht-Regel-Ausnahme der Composition Root bleibt. Anlass: d-check verbietet `net/http`/`yaml` auch in CLI/`cmd` — die Total-Ausnahme kostete dort die Deckung. welle-11, slice-023. |
 | 0.14.0 | 2026-07-03 | **CR d-check-Pilot (3/3)** — `AC-FA-CONF-001`: optionaler **`exclude`**-Block (Datei-Globs) nimmt Dateien vor der Extraktion vom Scan aus (explizites Gegenstück zur negations-freien Glob-Engine); ohne Block byte-identisch. Anlass: der Scanner erfasst `*_test.go`, d-checks abgelöstes `go list`-Gate prüfte nur Nicht-Test-Imports — ohne Ausschluss ist der saubere Baum dort rot. welle-11, slice-023. |
 | 0.15.0 | 2026-07-03 | `AC-FA-RULE-002`: Sub-Einheiten-Grenzfall präzisiert — Blatt-Klassifikation: ein **datei-förmiges** Blatt (`.`) direkt im Layer-Root gehört zur **Root-Sub-Einheit `''`** (Sub-Einheiten sind Verzeichnisse, keine Dateinamen), ein **verzeichnis-förmiges** Blatt (Go-Paket-Pfad) **ist** die Sub-Einheit; Root↔Root same-layer ist kein `lateral-adapter` mehr, Root↔Unterverzeichnis/Cross-Layer/Cross-Paket unverändert. Bewusste Gate-Lockerung per ADR; Anlass: b-cad-Pilot — die Richtungs-Modellierung (pro-Adapter-Layer) erzeugte 40 Falsch-Positive der Klasse `x.cpp → x.h` bei 0 echten Verstößen (welle-05/M3-Pilot, slice-024). |
-| 0.16.0 | 2026-07-04 | `AC-FA-CONF-001`: **fail-closed-Guard gegen mehrdeutige Mehr-Wurzel-Auflösung** — `mode: fixed-root` mit ≥ 2 `roots`, von denen ≥ 2 je vollständig in einer (verschiedenen) Schicht liegen, bricht mit Exit 2 statt still falsch-grün (Phantom-Kandidaten über Schicht-Grenzen; die Zuordnung entschiede der längste Präfix statt das Symbol). Anlass: belief-agent-Bericht — KMP (`commonMain`/`jvmMain` teilen `package_base`) bei flachen Source-Set-Globs fing die illegale `core → adapter`-Kante nicht; Rezept: paket-spezifische Globs. Stufe 1 des Fixes (fail-closed); die datei-mengen-bewusste Auflösung folgt gated (slice-027). welle-05-Härtung, slice-026. |
+| 0.16.0 | 2026-07-04 | `AC-FA-CONF-001`: **fail-closed-Guard gegen mehrdeutige Mehr-Wurzel-Auflösung** — `mode: fixed-root` mit ≥ 2 `roots`, von denen zwei Roots je eine andere Schicht erzwingen (die Schicht, in die ein Root allein am Wurzel-Präfix auflöst — längster passender Glob-Präfix, wie die Import-Auflösung), bricht mit Exit 2 statt still falsch-grün (Phantom-Kandidaten über Schicht-Grenzen; die Zuordnung entschiede der längste Präfix statt das Symbol). Anlass: belief-agent-Bericht — KMP (`commonMain`/`jvmMain` teilen `package_base`) bei flachen Source-Set-Globs fing die illegale `core → adapter`-Kante nicht; Rezept: paket-spezifische Globs. Stufe 1 des Fixes (fail-closed); die datei-mengen-bewusste Auflösung folgt gated (slice-027). welle-05-Härtung, slice-026. |

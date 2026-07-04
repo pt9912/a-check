@@ -436,8 +436,36 @@ func TestResolutionMultiRootPhantomFailsClosed(t *testing.T) { // AC-FA-CONF-001
 	if err == nil {
 		t.Fatal("Mehr-Wurzel-Phantom (2 roots in 2 Schichten) muss fail-closed brechen — sonst still falsch-grün")
 	}
-	if !strings.Contains(err.Error(), "Mehr-Wurzel") || !strings.Contains(err.Error(), "commonMain") || !strings.Contains(err.Error(), "jvmMain") {
-		t.Fatalf("Meldung muss die beiden roots nennen, got %v", err)
+	for _, want := range []string{"Mehr-Wurzel", "commonMain", "jvmMain", "core", "adapters", "paket-spezifische Globs"} {
+		if !strings.Contains(err.Error(), want) {
+			t.Fatalf("Meldung muss %q nennen (roots + Schichten + Rezept), got %v", want, err)
+		}
+	}
+}
+
+// twoLangConflict has TWO languages that each phantom-conflict; the guard checks
+// languages in sorted order, so the reported conflict must be the go one.
+const twoLangConflict = `version: 1
+languages:
+  go: ["**/*.go"]
+  kotlin: ["**/*.kt"]
+layers:
+  la: ["a/**"]
+  lb: ["b/**"]
+edges:
+  - {from: la, to: lb}
+resolution:
+  go: {mode: fixed-root, roots: ["a", "b"]}
+  kotlin: {mode: fixed-root, roots: ["a", "b"]}
+`
+
+func TestResolutionMultiRootConflictLanguageDeterministic(t *testing.T) { // ADR-0020 / SPEC-DET-001: bei mehreren konfligierenden Sprachen gewinnt die sortiert-erste
+	_, err := New().Load(write(t, twoLangConflict))
+	if err == nil {
+		t.Fatal("zwei phantom-fähige Sprachen müssen brechen")
+	}
+	if !strings.Contains(err.Error(), `resolution["go"]`) {
+		t.Fatalf("die sortiert-erste Sprache (go) muss deterministisch gemeldet werden, got %v", err)
 	}
 }
 

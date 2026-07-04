@@ -274,43 +274,48 @@ func targetLayer(imp, srcPath string, layers []Layer, res ResolutionConfig) (str
 
 // PhantomRootConflictIn reports the first ambiguous multi-root witness for a
 // fixed-root resolution (ADR-0020), or nil. It fires only for mode "fixed-root"
-// with ≥2 roots where two DISTINCT roots each lie fully inside two DIFFERENT
-// layers. The witness is deterministic: roots are scanned in declared order and
-// the earliest qualifying (rootA, rootB) pair wins (SPEC-DET-001).
+// with ≥2 roots where two DISTINCT roots FORCE two DIFFERENT layers — i.e. each
+// root's candidates would resolve to its layer by the root prefix alone. The
+// witness is deterministic: roots are scanned in declared order and the earliest
+// qualifying (i, j) pair wins (SPEC-DET-001).
 func PhantomRootConflictIn(res ResolutionConfig, layers []Layer) *PhantomRootConflict {
 	if res.Mode != "fixed-root" || len(res.Roots) < 2 {
 		return nil
 	}
-	type rl struct{ root, layer string }
-	var pairs []rl
-	for _, root := range res.Roots {
-		for _, l := range layers {
-			if layerContainsRoot(root, l) {
-				pairs = append(pairs, rl{root, l.Name})
-			}
-		}
+	dom := make([]string, len(res.Roots))
+	for i, root := range res.Roots {
+		dom[i] = rootForcedLayer(root, layers)
 	}
-	for i := range pairs {
-		for j := range pairs {
-			if pairs[i].root != pairs[j].root && pairs[i].layer != pairs[j].layer {
-				return &PhantomRootConflict{pairs[i].root, pairs[i].layer, pairs[j].root, pairs[j].layer}
+	for i := range res.Roots {
+		for j := range res.Roots {
+			if i != j && dom[i] != "" && dom[j] != "" && dom[i] != dom[j] {
+				return &PhantomRootConflict{res.Roots[i], dom[i], res.Roots[j], dom[j]}
 			}
 		}
 	}
 	return nil
 }
 
-// layerContainsRoot reports whether some glob prefix of the layer is an
-// ancestor-or-equal of the root (segIndex(root,p)==0 && len(p)<=len(root)) — then
-// every candidate root/… matches this layer by the root prefix alone, regardless
-// of the package path (the phantom condition, ADR-0020).
-func layerContainsRoot(root string, l Layer) bool {
-	for _, g := range l.Globs {
-		if p := globPrefix(g); p != "" && len(p) <= len(root) && segIndex(root, p) == 0 {
-			return true
+// rootForcedLayer returns the layer a fixed-root candidate rooted at root
+// resolves to by the root prefix ALONE — mirroring targetLayer: the layer whose
+// glob prefix occurs in root on a segment boundary (segIndex>=0, so an interior
+// module-qualified segment counts) with the longest such prefix, the first
+// declared layer on a length tie, or "" if none. When such a prefix exists,
+// EVERY candidate root/… matches that layer regardless of the package path — the
+// phantom condition (ADR-0020). Using segIndex>=0 (not ==0) and the longest
+// prefix keeps this in lockstep with targetLayer, so the guard is neither too
+// strict (nested/overlapping layers resolve unambiguously) nor too lax (interior
+// segments still match).
+func rootForcedLayer(root string, layers []Layer) string {
+	best, bestLen := "", -1
+	for _, l := range layers {
+		for _, g := range l.Globs {
+			if p := globPrefix(g); p != "" && segIndex(root, p) >= 0 && len(p) > bestLen {
+				best, bestLen = l.Name, len(p)
+			}
 		}
 	}
-	return false
+	return best
 }
 
 // resolveImport normalizes an import symbol into the layer-glob namespace per

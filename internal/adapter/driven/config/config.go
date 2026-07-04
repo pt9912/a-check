@@ -129,10 +129,10 @@ func (Adapter) Load(path string) (core.Model, error) {
 
 // resolveAndCheck decodes the resolution block (ADR-0016) and then rejects an
 // ambiguous multi-root fixed-root config (ADR-0020, AC-FA-CONF-001): ≥2 roots
-// each fully inside two different layers would resolve import candidates by the
-// root prefix alone (phantom candidates), a silent false-negative. Both steps
-// live here so Load stays flat; languages are checked in sorted order so the
-// reported conflict is deterministic (SPEC-DET-001).
+// that force two different layers would resolve import candidates by the root
+// prefix alone (phantom candidates), a silent false-negative. Both steps live
+// here so Load stays flat; languages are checked in sorted order so the reported
+// conflict is deterministic (SPEC-DET-001).
 func resolveAndCheck(entries map[string]yamlResolution, langs map[string][]string, layers []core.Layer, path string) (map[string]core.ResolutionConfig, error) {
 	res, err := decodeResolution(entries, langs, path)
 	if err != nil {

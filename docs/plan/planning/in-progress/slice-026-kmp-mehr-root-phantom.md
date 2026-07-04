@@ -1,6 +1,6 @@
 # slice-026 — Mehr-Root-Phantom: fail-closed-Guard (+ datei-mengen-bewusste Auflösung, gated)
 
-**Status:** open (Entwurf **abgenommen 2026-07-04** — spec-first; Umsetzung folgt als eigener Slice, noch kein Code).
+**Status:** in-progress (abgenommen + **Stufe 1 umgesetzt** 2026-07-04 — fail-closed-Guard, spec-first; Multi-Linsen-Review + Fixes eingearbeitet, [Review-Synthese](../../../reviews/2026-07-04-slice-026-phantom-guard.md). Stufe 2 gated als slice-027).
 **Bezug:** schärft [AC-QA-02](../../../../spec/lastenheft.md#ac-qa-02--hermetik-und-ehrliche-heuristik-grenze)
 (ehrliche Heuristik-Grenze — ein stilles Falsch-Negativ ist der teure Bruch dieses
 Vertrags) + [AC-FA-CONF-001](../../../../spec/lastenheft.md#ac-fa-conf-001--konfigurationsdatei-a-checkyml)
@@ -8,7 +8,7 @@ Vertrags) + [AC-FA-CONF-001](../../../../spec/lastenheft.md#ac-fa-conf-001--konf
 [ADR-0016](../../adr/0016-resolution-sprach-parametrisch.md) (Re-Eval),
 Wurzel-Auflösung [ADR-0014](../../adr/0014-resolution-roots.md);
 Determinismus [AC-QA-01](../../../../spec/lastenheft.md#ac-qa-01--determinismus).
-[Roadmap](../in-progress/roadmap.md). **Evidenz:** Fehlerbericht belief-agent gegen
+[Roadmap](roadmap.md). **Evidenz:** Fehlerbericht belief-agent gegen
 `v0.9.0` (2026-07-04), hier reproduziert (§2, §6).
 
 ## 1. Auslöser — stilles Falsch-Negativ bei KMP-Mehr-Source-Set

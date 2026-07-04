@@ -43,33 +43,42 @@ paket-diskriminierende Tiefe** gebunden.
 
 | Weg | Idee | Bewertung |
 |---|---|---|
-| **A — fail-closed-Guard (Config-Validierung)** | Die Phantom-fähige Config-Form beim Laden erkennen und mit Exit 2 ablehnen (Verweis auf paket-tiefe Globs). Keine Änderung der Auflösungs-Semantik. | **Gewählt (Stufe 1).** Tilgt das *stille* Grün sofort, konsistent mit der belegten Linie (unbekannte Sprache → Exit 2 [slice-017], leerer `tech.adapter` → Exit 2 [slice-023]); falsch-positiv-frei gegen die reale Flotte (Scan 2026-07-04: keine Config mit ≥ 2 Roots). |
+| **A — fail-closed-Guard (Config-Validierung)** | Die Phantom-fähige Config-Form beim Laden erkennen und mit Exit 2 ablehnen (Verweis auf paket-tiefe Globs). Keine Änderung der Auflösungs-Semantik. | **Gewählt (Stufe 1).** Tilgt das *stille* Grün sofort, konsistent mit der belegten fail-closed-Linie von [AC-FA-CONF-001](../../../spec/lastenheft.md#ac-fa-conf-001--konfigurationsdatei-a-checkyml) (ein unbekannter `languages`-Schlüssel und ein leerer/fehlender `tech.adapter` brechen bereits mit Exit 2); falsch-positiv-frei gegen die reale Flotte (Scan 2026-07-04: keine Config mit ≥ 2 Roots). |
 | **B — datei-mengen-bewusste Auflösung** | Phantom-Kandidaten gegen die real gescannte Dateimenge filtern (nur existierende Pfade überleben). | **Aufgeschoben (Stufe 2, gated — slice-027).** Macht die flache Config *korrekt* statt nur laut, aber drei ungelöste Fragen: `expect`/`actual` (derselbe FQN legitim in zwei Source-Sets), endungsloses Matching (`adapters/Foo` ↔ `Foo.kt`), Determinismus der Filterung. Eigener ADR bei Lande-Trigger. |
 | **C — nur Warnung (stderr), Exit 0/1** | Die Config bestehen lassen, aber warnen. | Verworfen: a-check hat keinen von Befunden getrennten Warn-Kanal (eigenes Feature); und eine Warnung bei einem *Gate* lässt das falsch-grün-Ergebnis bestehen — das widerspricht dem fail-closed-Ethos. |
 | **D — reine Doku (KMP-Rezept)** | Nur Benutzerhandbuch, kein Signal. | Verworfen: macht das stille Grün nicht sichtbar; wer die Falle nicht kennt, tappt hinein. |
 
 ## Entscheidung
 
-**Weg A (Stufe 1).** Der Config-Adapter lehnt beim Laden fail-closed (Exit 2) ab, wenn:
+**Weg A (Stufe 1).** Der Config-Adapter lehnt beim Laden fail-closed (Exit 2) ab, wenn
+eine Sprache `mode: fixed-root` mit **≥ 2** `roots` hat und **zwei verschiedene Roots je
+eine andere Schicht erzwingen**.
 
-- eine Sprache `mode: fixed-root` mit **≥ 2** `roots` hat, **und**
-- **≥ 2 verschiedene** Roots je **vollständig in einer Schicht enthalten** sind, **und**
-- diese Schichten **verschieden** sind.
-
-**„Root R vollständig in Schicht L enthalten"** := ein `layers`-Glob-Präfix `P` von L
-ist **Vorfahr-oder-gleich** von R — `segIndex(R, P) == 0` **und** `len(P) ≤ len(R)`.
-Dann matcht **jeder** Kandidat `R/…` die Schicht L allein am Wurzel-Präfix, unabhängig
-vom Paketpfad. Liegen zwei verschiedene Roots so in zwei verschiedenen Schichten, kann
-ein Import je Schicht ein Phantom erzeugen und die Zuordnung wird vom längsten Präfix
-statt vom Symbol entschieden — genau die Falsch-Negativ-Bedingung.
+**Die von einem Root R erzwungene Schicht** ist die, in die R allein am Wurzel-Präfix
+auflöst: der **längste** `layers`-Glob-Präfix `P`, der in R auf einer Segmentgrenze
+auftritt (`segIndex(R, P) >= 0`, erste Schicht bei Längen-Gleichstand), oder „" wenn
+keiner. Das ist **dieselbe** Auswahl, die `targetLayer` auf den Import-Kandidaten trifft —
+bewusst kein separates „Vorfahr-Prädikat", denn ein solches wäre zugleich zu streng
+(verschachtelte/überlappende Schichten würden abgelehnt, obwohl der längste Präfix beide
+Roots eindeutig in **dieselbe** tiefere Schicht legt) und zu lasch (ein Layer-Präfix als
+**inneres** Segment des Roots — `build/gen/core` unter `core/**` — entginge einem
+`== 0`-Präfix-Test, obwohl `targetLayer` es matcht; Review-Fund). Erzwingen zwei Roots
+verschiedene, nicht-leere Schichten, fällt jeder Import-Kandidat allein am Wurzel-Präfix in
+„seine" Schicht (Phantom), und die Zuordnung entscheidet der längste Präfix statt das
+Symbol — genau die Falsch-Negativ-Bedingung.
 
 Die Meldung nennt die zwei Roots und ihre Schichten und verweist auf das Rezept
 (paket-spezifische Globs, tiefer als die Roots — dann diskriminiert der Paketpfad).
 
 **Abgrenzung:** Der Guard prüft nur `fixed-root` mit ≥ 2 Roots. Ein Root, ein
-`path`-/`relative`-Modus, oder ≥ 2 Roots mit paket-tiefen Globs (kein Root in einer
-Schicht enthalten) laden unverändert. Damit ist die Änderung eine **Verschärfung** einer
-bisher stillen Lücke, kein Verhaltenswechsel für bestehende gültige Configs.
+`path`-/`relative`-Modus, ≥ 2 Roots mit paket-tiefen Globs (keiner erzwingt eine Schicht)
+**oder** verschachtelte Schichten, unter denen beide Roots dieselbe Schicht erzwingen,
+laden unverändert. Damit ist die Änderung eine **Verschärfung** einer bisher stillen
+Lücke, kein Verhaltenswechsel für bestehende gültige Configs. **Residual (Stufe 2):** eine
+*asymmetrische* Phantom-Form, in der nur **ein** Root eine Schicht erzwingt und der andere
+gar keine (Catch-all-Layer nur über einem Teilbaum), bleibt vom Guard ungefangen — eine
+dokumentierte Grenze ([AC-QA-02](../../../spec/lastenheft.md#ac-qa-02--hermetik-und-ehrliche-heuristik-grenze)),
+die die datei-mengen-bewusste Auflösung (Weg B) mitschließt.
 
 ## Konsequenzen
 
@@ -87,10 +96,16 @@ bisher stillen Lücke, kein Verhaltenswechsel für bestehende gültige Configs.
 
 ## Fitness Function
 
-- `make test`: Config X (KMP flach, 2 Roots in 2 Schichten) → Exit 2; Config Y (dieselben
-  Roots, paket-tiefe Globs) → lädt, `core → adapter` = `core-impurity` (Exit 1);
-  b-cad-artiger 1-Root → lädt; Grenzform (ein Root **exakt** = einem Glob-Präfix) →
-  deterministisch klassifiziert.
+- `make test`: Config X (KMP flach, 2 Roots erzwingen 2 Schichten) → Exit 2; Config Y
+  (dieselben Roots, paket-tiefe Globs) → lädt **und** fängt `core → adapter` als
+  `core-impurity` (Exit 1, End-to-End über `Evaluate`); 1-Root → lädt; Grenzform (Root
+  **exakt** = Glob-Präfix) → Konflikt; **verschachtelte Schichten** (beide Roots erzwingen
+  die tiefere Schicht) → lädt (Falsch-Positiv-Anker, Review-Fund 1); **inneres Segment**
+  (`build/gen/core` unter `core/**`) → Konflikt (Falsch-Negativ-Anker, Review-Fund 2);
+  3-Root-Zeuge + zwei konfligierende Sprachen → deterministisch (sortiert-erste). Ein
+  separater Anker pinnt den **Phantom-Mechanismus** selbst: `targetLayer` legt den
+  Adapter-Import bei flachen Globs falsch auf `core` (bricht sichtbar, falls Stufe 2 die
+  Auflösung ändert).
 - `make arch-check` (Dogfooding): unverändert 0 (a-checks Config hat keinen
   `resolution`-Block).
 
@@ -102,9 +117,16 @@ bisher stillen Lücke, kein Verhaltenswechsel für bestehende gültige Configs.
   entschieden hat.
 - **Legitime ≥ 2-Root-in-≥ 2-Schichten-Config:** falls je ein Konsument eine solche Form
   *korrekt* meint (heute: keine bekannt), Re-Eval des Prädikats.
+- **Flach+tief gemischte Globs je Schicht:** trägt eine Schicht *sowohl* ein flaches Glob,
+  das den Wurzel-Präfix deckt, *als auch* ein tieferes diskriminierendes (redundant), so
+  erzwingen die flachen Globs den Konflikt, obwohl die tiefen jeden realen Import korrekt
+  auflösten (konservatives Falsch-Positiv, fail-closed-konform, Review-Notiz B2). Bisher
+  bei keiner realen Config; das Rezept bleibt „paket-tiefe Globs, **keiner** erzwingt eine
+  Schicht". Re-Eval, falls ein Konsument diese gemischte Form real führt.
 
 ## Geschichte
 
 | Datum | Ereignis |
 |---|---|
-| 2026-07-04 | Proposed — Entwurf mit [slice-026](../planning/open/slice-026-kmp-mehr-root-phantom.md); Mechanismus reproduziert + per Gegentest belegt; Falsch-Positiv-Scan der realen Flotte (keine ≥ 2-Root-Config). |
+| 2026-07-04 | Proposed — Entwurf mit [slice-026](../planning/in-progress/slice-026-kmp-mehr-root-phantom.md); Mechanismus reproduziert + per Gegentest belegt; Falsch-Positiv-Scan der realen Flotte (keine ≥ 2-Root-Config). |
+| 2026-07-04 | In der Umsetzung geschärft (Multi-Linsen-Review): das Enthaltungs-Prädikat war zunächst ein separates Vorfahr-Kriterium (`segIndex == 0`) und meldete *alle* enthaltenden Schichten — das war zugleich zu streng (verschachtelte Schichten fälschlich abgelehnt) und zu lasch (innere Segmente entgingen). Korrigiert auf die **erzwungene Schicht** = längster passender Glob-Präfix (`segIndex >= 0`), exakt wie `targetLayer`. Status bleibt Proposed. |
