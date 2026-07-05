@@ -66,7 +66,7 @@ Stop-Hook-„frischer-Klon"-Restlücke.
 | `make test` | Akzeptanzkriterien der bezogenen `AC-FA-*` als Tests; Determinismus-Test | [`AC-QA-01`](../spec/lastenheft.md#ac-qa-01--determinismus) (AC-Bindung) | **real** (slice-003) |
 | `make coverage-gate` | Gesamt-Coverage ≥ Schwelle über `./internal/...` (`-coverpkg`, `tools/coverage-gate.sh`) | Kalibrierungs-Bindung **90 %** seit 2026-06-21 ([`ADR-0006`](../docs/plan/adr/0006-coverage-gate.md)) | **real** (slice-003) |
 | `make arch-check` | Eigen-Architektur via `a-check` selbst (Dogfooding) | [`AC-QA-02`](../spec/lastenheft.md#ac-qa-02--hermetik-und-ehrliche-heuristik-grenze) (AC-Bindung) | **real** (slice-003) |
-| `make gate-consistency` | Meta-Gate: dokumentierte Targets ↔ Makefile + `.d-check.yml`-Module (Schutz gegen Doku-/Gate-Drift) | Harness-Prozess ([`AC-QA-02`](../spec/lastenheft.md#ac-qa-02--hermetik-und-ehrliche-heuristik-grenze) für die Modul-Integrität) | **real** (slice-004) |
+| `make gate-consistency` | Meta-Gate: dokumentierte Targets ↔ Makefile + `.d-check.yml`-Module (Schutz gegen Doku-/Gate-Drift) + Pin-Konsistenz (Digest-Gleichheit `a-check.mk`/`cli.go`/README == `version.md#aktuell`, Version ↔ CHANGELOG, `d-check.mk`-Tag/Digest-Deklaration; slice-018) | Harness-Prozess ([`AC-QA-02`](../spec/lastenheft.md#ac-qa-02--hermetik-und-ehrliche-heuristik-grenze) für die Modul-Integrität) | **real** (slice-004) |
 | `make record-gates` | inhaltsbasierter Working-Tree-Hash-Nachweis für den `.claude`-Stop-Hook (Handoff-Gate) | Harness-Prozess (Durchsetzungsschicht) | **real** (slice-004) |
 | `make guard-selftest` | Selbsttest des PreToolUse-Command-Guard (`.claude/hooks/`): Host-Toolchain fail-closed geblockt, `make`/`git`/`docker` durchgelassen | Harness-Prozess (Tool-Call-Gate; [`AGENTS.md` §3.1](../AGENTS.md#31-dockermake-only)) | **real** (slice-005) |
 | `make gates` | aggregiert die inneren Gates (lint/test/coverage-gate/arch-check/doc-check/gate-consistency/guard-selftest) + `record-gates` als letzter Schritt | — | **real** (slice-004) |
@@ -74,8 +74,8 @@ Stop-Hook-„frischer-Klon"-Restlücke.
 | `make ci` | CI-äquivalent: `gates` + `image-test` (Engine des Workflows `.github/workflows/ci.yml`) | — | **real** (slice-006) |
 | `make trace-check` | Traceability via Modul `commits` ([ADR-0021](../docs/plan/adr/0021-commits-modul-trace-check.md)): jede Commit-Message nennt `AC-*`/`ADR-*`/`MR-*`/`slice-NNN` (`MSGFILE=` Hook, `RANGE=` CI) | Harness-Prozess ([`AGENTS.md` §5](../AGENTS.md#5-dokumentations-regeln)) | **real** (slice-006, Modul seit slice-030) |
 
-**Aktueller Lauf-Status (2026-07-04 Tagesende, `v0.10.0` + Harness-Härtung
-slice-019/028/029/030):** `make gates` grün — `lint` 0 issues, `test` ok,
+**Aktueller Lauf-Status (2026-07-04 Tagesende, Harness-Härtung
+slice-019/028/029/030; Release-Koordinate: [`version.md`](../version.md#aktuell)):** `make gates` grün — `lint` 0 issues, `test` ok,
 `coverage-gate` 96,70 % (≥ 90 %), `arch-check` 0 Befunde (Dogfooding),
 `doc-check` 0 Befunde (Module jetzt +`spans`; d-check-Pin `v0.37.1`), `gate-consistency` ok,
 `guard-selftest` ok, `record-gates` Nachweis geschrieben. `make ci` (gates + `image-test`)

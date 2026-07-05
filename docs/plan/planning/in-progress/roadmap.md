@@ -1,6 +1,6 @@
 # Roadmap
 
-**Status:** Aktiv. **Letzte Änderung:** 2026-07-04.
+**Status:** Aktiv. **Letzte Änderung:** 2026-07-05.
 
 **Format-Regel:** Die Roadmap ist eine Reihenfolge von **Wellen**, keine
 Reihenfolge von Terminen. Termine erscheinen — falls überhaupt — als
@@ -35,10 +35,11 @@ ungenutzt. Port→Port-Richtungsregeln und Auto-Inferenz der Richtung bleiben ou
 (späteres Inkrement).
 Alle Gates real und grün (`make gates`; Dogfooding 0 Befunde).
 
-**Parallel offen — `welle-05-release`:** `v0.1.0` … `v0.9.0` und **`v0.10.0`** sind veröffentlicht
+**Parallel offen — `welle-05-release`:** die Releases `v0.1.0` bis zur
+[aktuellen Version](../../../../version.md#aktuell) sind veröffentlicht
 ([slice-007 §4](../done/slice-007-release-pipeline.md#4-closure-notiz-nach-done),
-[ADR-0007](../../adr/0007-latest-tag-politik.md) `Accepted`; GHCR
-`@sha256:0932cb1d…` (aktuell v0.10.0) digest-gepinnt in `a-check.mk`); nur die
+[ADR-0007](../../adr/0007-latest-tag-politik.md) `Accepted`; GHCR digest-gepinnt in
+`a-check.mk`, Koordinaten im [Release-Register](../../../../version.md#aktuell)); nur die
 **Pilot-Einbindung** in ein Konsumenten-Repo bleibt. Für den b-cad-Pilot liefert
 [slice-016](../done/slice-016-regex-tech-muster.md) ([ADR-0015](../../adr/0015-regex-tech-muster.md),
 Lastenheft/Spezifikation 0.8.0) die letzte fehlende a-check-Fähigkeit — `tech`-Muster als opt-in
@@ -71,11 +72,13 @@ eine Skript-Kopie weniger, Parität verifiziert); [slice-025](../open/slice-025-
 (P-Rest-Generalisierung) abgenommen und vorgemerkt.
 Release-/Tooling-Hygiene: [slice-019](../done/slice-019-dcheck-mk-print-mk-angleichung.md)
 (**done** — `d-check.mk` verbatim aus `v0.37.1`-`--print-mk`, `DCHECK_DIGEST` gepinnt, alle 10
-`doc-*`-Targets in AGENTS §4) hat den d-check-Pin `v0.35.0` → `v0.37.1` gehoben. **Nächster
-vorgemerkter Schritt:** [slice-018](../open/slice-018-versions-register-pin-gate.md) — Versions-Register
-`version.md` + Pin-Gate (**Entwurf zur Abnahme**, 2026-07-04): Kern-Erkenntnis, dass d-checks
-`versions`/`pins`-Module **tag-pin**-basiert sind, a-check aber per **Digest** pinnt — Empfehlung
-Prosa→`version.md`-Link + schlanker Digest-Gleichheits-Check (Optionen im Entwurf, Maintainer-Wahl).
+`doc-*`-Targets in AGENTS §4) hat den d-check-Pin `v0.35.0` → `v0.37.1` gehoben. **Aktiver
+Schritt:** [slice-018](slice-018-versions-register-pin-gate.md) — Versions-Register
+`version.md` + Pin-Gate (**in Umsetzung**, Opt 1 + 3 abgenommen 2026-07-05): d-checks
+`versions`/`pins`-Module sind **tag-pin**-basiert, a-check pinnt per **Digest** — daher
+[`version.md#aktuell`](../../../../version.md#aktuell) als *eine* Wahrheit (Prosa verlinkt dorthin) +
+Digest-Gleichheits-Check in `gate-consistency.sh` (harte Pins == `version.md`; `d-check.mk`
+Tag↔Digest-Deklaration; Fitness-Function).
 
 ## Nächste Wellen
 

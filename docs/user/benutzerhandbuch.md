@@ -1,6 +1,6 @@
 # Benutzerhandbuch: a-check
 
-**Handbuch-Version:** 1.24 · **Software-Version:** 0.10.0 · **Stand:** 2026-07-04 ·
+**Handbuch-Version:** 1.25 · **Software-Version:** [aktuelles Release](../../version.md#aktuell) · **Stand:** 2026-07-05 ·
 **Autor:** pt9912 (Maintainer)
 
 ---
@@ -479,3 +479,4 @@ und die [Spezifikation](../../spec/spezifikation.md); ein Überblick steht in de
 | 1.22 | 2026-07-03 | An Lastenheft 0.15.0: Glossar-Eintrag **Sub-Einheit** — `lateral-adapter` trennt Unterverzeichnisse, nie Dateinamen; Dateien direkt im Schicht-Root bilden eine gemeinsame Root-Einheit (eigene `.cpp`/`.h`-Paare in flachen Adaptern melden nicht mehr). Noch nicht im veröffentlichten Image (folgt mit dem nächsten Release). |
 | 1.23 | 2026-07-04 | Software-Version **0.9.0** (GHCR-Release `v0.9.0` veröffentlicht, digest-gepinnt `@sha256:0378211f…`) — adapterSeg-Root-Sub-Einheit mit Blatt-Klassifikation (`lateral-adapter`) jetzt im veröffentlichten Image; die 1.22-Verfügbarkeitsnotiz entfällt. |
 | 1.24 | 2026-07-04 | Software-Version **0.10.0** (GHCR-Release `v0.10.0` veröffentlicht, digest-gepinnt `@sha256:0932cb1d…`) — fail-closed-Guard gegen mehrdeutige Mehr-Wurzel-Auflösung (`mode: fixed-root`, ≥ 2 `roots`, die zwei Schichten erzwingen → Exit 2) jetzt im veröffentlichten Image; KMP-Rezept: paket-spezifische Globs tiefer als die Roots. |
+| 1.25 | 2026-07-05 | Software-Version-Kopf verweist jetzt auf das [Release-Register](../../version.md#aktuell) statt einer literalen Nummer (slice-018, Opt 1) — die eine driftende Live-Stelle im Handbuch entfällt; die historischen „Software-Version X.Y.Z"-Zeilen bleiben als Release-Ledger. |

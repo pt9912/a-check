@@ -5,18 +5,21 @@ Release-Prozess für `ghcr.io/pt9912/a-check`
 [ADR-0004](../plan/adr/0004-distribution-image-mk.md),
 [ADR-0007](../plan/adr/0007-latest-tag-politik.md)). Die Pipeline ist
 [`.github/workflows/release.yml`](../../.github/workflows/release.yml) (seit
-slice-007). **Aktuelles Release: `v0.10.0`** (Vorgänger `v0.9.0`, erstes `v0.1.0`) —
-[GitHub-Release](https://github.com/pt9912/a-check/releases/tag/v0.10.0),
-GHCR-Tags `v0.10.0` + `latest`.
+slice-007). Das **aktuelle Release** samt Versions-Koordinaten (Version, Datum,
+Digest, Tag) führt das [Release-Register `version.md#aktuell`](../../version.md#aktuell);
+der [Verlauf](../../version.md#verlauf) listet alle Releases ab `v0.1.0`. Der
+GitHub-Release-Link und die GHCR-Tags (`+ latest`) stehen dort.
 
 ## Aktueller Stand
 
-`v0.10.0` ist auf GHCR verfügbar; Konsumenten pinnen den **Digest**
-([Konsum](#konsum-digest-pin)). Das mitgelieferte
+Die [aktuelle Version](../../version.md#aktuell) ist auf GHCR verfügbar;
+Konsumenten pinnen den **Digest** ([Konsum](#konsum-digest-pin)). Das mitgelieferte
 [`a-check.mk`](../../a-check.mk) und `a-check --print-mk`
 ([AC-FA-DIST-001](../../spec/lastenheft.md#ac-fa-dist-001--distribution-image---print-mk-a-checkmk))
-sind auf `@sha256:0932cb1d…` digest-gepinnt. Für lokale Entwicklung gegen
-ungetaggte Stände dient weiterhin das lokal gebaute Image:
+sind auf den im [Release-Register](../../version.md#aktuell) geführten `@sha256:`-Digest
+gepinnt — `tools/gate-consistency.sh` prüft die Gleichheit dieser harten Pins mit
+`version.md#aktuell` (slice-018). Für lokale Entwicklung gegen ungetaggte Stände
+dient weiterhin das lokal gebaute Image:
 
 ```sh
 make build                               # baut a-check:dev (static/distroless)
@@ -33,8 +36,8 @@ Lastenheft steht bei 0.16.0.
 ## Release auslösen
 
 ```sh
-git tag v0.10.0
-git push origin v0.10.0
+git tag vX.Y.Z          # die neue Version
+git push origin vX.Y.Z
 ```
 
 Die Pipeline ([`release.yml`](../../.github/workflows/release.yml)) läuft bei
@@ -55,6 +58,16 @@ jedem `v*`-Tag-Push:
    danach gibt `a-check --print-mk` ein `a-check.mk` mit dem **aktuell
    digest-gepinnten** `A_CHECK_IMAGE` aus
    ([AC-QA-03](../../spec/lastenheft.md#ac-qa-03--reproduzierbarkeit)).
+6. **Register-Re-Pin** (slice-018): den neuen Digest + die neue Version an **einer**
+   Stelle nachziehen — [`version.md#aktuell`](../../version.md#aktuell) (Version, Datum,
+   voller `@sha256:`-Digest) plus eine neue [Verlaufs](../../version.md#verlauf)-Zeile und
+   der wandernde `<a id>`-Anker. Die harten Pins ([`a-check.mk`](../../a-check.mk),
+   [`internal/cli/cli.go`](../../internal/cli/cli.go)) und das `docker run`-Beispiel im
+   README tragen den Digest verbatim; vergisst der Re-Pin eine davon, meldet
+   `make gates` (via `tools/gate-consistency.sh`) die Digest- bzw. Versions-Drift
+   **rot** — statt sie wie früher nur per Zufalls-Audit aufzudecken. Die Prosa-Erwähnungen
+   („Status", „aktuelles Release", Handbuch-Software-Version) verlinken auf
+   `version.md#aktuell` und brauchen **keinen** Bump.
 
 ## Konsum (Digest-Pin)
 

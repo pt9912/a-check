@@ -6,6 +6,23 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
+### Added
+
+- **Release-Register `version.md` + Pin-Konsistenz-Gate (slice-018):** neues `version.md`
+  (Repo-Wurzel, `#aktuell`-Anker) als *eine* Wahrheit für die aktuelle Release-Koordinate
+  (Version, Datum, voller `@sha256:`-Digest). `make gate-consistency` prüft jetzt zusätzlich die
+  Pin-Konsistenz: der Digest ist in `a-check.mk`, `internal/cli/cli.go`, dem README-`docker run`-
+  Beispiel und `version.md#aktuell` identisch, die Version stimmt mit dem aktuellsten CHANGELOG-
+  Release, und `d-check.mk` trägt eine wohlgeformte Tag/Digest-Deklaration. Jede harte Pin-Datei
+  muss genau **einen** Digest tragen (fail-closed gegen einen Decoy-Zweitdigest). Ein Selbsttest
+  beweist die Fitness-Function offline für alle Dimensionen — ein gedrifteter Digest/eine falsche
+  Version macht `make gates` rot. README-/Handbuch-/
+  `releasing.md`-Prosa verlinkt auf `version.md#aktuell` statt literaler Nummern (Opt 1). Schließt
+  die stille Pin-Drift, die den stale README-`v0.2.0`-Pin am 2026-07-01 nur per Zufalls-Audit
+  auffallen ließ; schärft AC-QA-03 (Reproduzierbarkeit). Netzlose Grenze (AC-QA-02): die
+  Tag→Digest-Auflösung wird beim Re-Pin (online) verifiziert. d-checks tag-basierte Module
+  `versions`/`pins` passen nicht auf a-checks Digest-Pins (verworfen: Opt 2).
+
 ### Changed
 
 - **Traceability-Gate (`make trace-check`):** von `tools/trace-check.sh` (98 Zeilen bash)
