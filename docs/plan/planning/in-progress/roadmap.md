@@ -54,9 +54,11 @@ Blatt-Klassifikation — die Vollrichtungs-Config erzeugte 40 Falsch-Positive, j
 **0 Befunde** gegen `a-check:dev`). Der **v0.9.0-Cut ist erledigt (2026-07-04)** — 0.15.0 ist im
 veröffentlichten Image, verifiziert gegen den b-cad-Stand mit der Vollrichtungs-Config
 (**0 Befunde**; Gegenprobe: injizierter Qt-Include im Model meldet `core-impurity`, Exit 1).
-**Nächster Schritt:** Pilot-Schnitt in b-cad (verifizierte Vollrichtungs-Config + `a-check.mk`,
-`arch-check.sh` auf den P-Rest schrumpfen — dlopen-Aufrufmuster + feine P2-Allowlist)
-⇒ **Meilenstein M3**.
+**b-cad-Pilot-Schnitt erledigt** (2026-07-04): b-cad bindet a-check über `.a-check.yml` +
+`a-check.mk` (Pin v0.9.0) ein und hat `arch-check.sh` auf den **75-Zeilen-P-Rest** geschrumpft
+(dlopen-Aufrufmuster + feine P2-Allowlist), Schichtung A–E läuft via a-check ⇒ **Meilenstein M3
+erreicht** (zweiter Konsument: belief-agent/KMP, v0.11.0). Die P-Rest-Generalisierung sammelt
+[slice-025](../open/slice-025-p-rest-generalisierung.md) (gated auf einen zweiten P-Rest-Konsumenten).
 **Post-v0.9.0-Härtung (2026-07-04):** [slice-026](../done/slice-026-kmp-mehr-root-phantom.md)
 ([ADR-0020](../../adr/0020-mehr-wurzel-phantom-guard.md) `Accepted`, Lastenheft/Spez **0.16.0**,
 **noch unveröffentlicht**) tilgt ein stilles KMP-Falsch-Negativ (belief-agent-Bericht: mehrere
@@ -81,13 +83,13 @@ d-checks `versions`/`pins`-Module sind **tag-pin**-basiert, a-check pinnt per **
 [`version.md#aktuell`](../../../../version.md#aktuell) als *eine* Wahrheit (Prosa verlinkt dorthin) +
 Digest-Gleichheits-Check in `gate-consistency.sh` (harte Pins == `version.md`, Version == CHANGELOG,
 `d-check.mk`-Tag/Digest-Deklaration; jede harte Pin-Datei genau ein Digest — fail-closed gegen einen
-Decoy-Zweitdigest, adversarische Review-Härtung A1). **Nächster Schritt:** b-cad-Pilot-Schnitt (M3).
+Decoy-Zweitdigest, adversarische Review-Härtung A1). **M3 erreicht** (b-cad-Pilot + belief-agent, s. Meilenstein-Tabelle); **offene Fäden:** [slice-025](../open/slice-025-p-rest-generalisierung.md) (P-Rest-Gen, gated) + [slice-013](../open/slice-013-driving-driven-vertiefung.md) (driving/driven-Vertiefung, Entwurf).
 
 ## Nächste Wellen
 
 | Welle | Trigger | Wichtigste Inhalte | Status |
 |---|---|---|---|
-| welle-05-release | Image-Veröffentlichung | **`v0.1.0` veröffentlicht** ([slice-007](../done/slice-007-release-pipeline.md): `release.yml` + [ADR-0007](../../adr/0007-latest-tag-politik.md)); GHCR digest-gepinnt in `a-check.mk` ([AC-FA-DIST-001](../../../../spec/lastenheft.md#ac-fa-dist-001--distribution-image---print-mk-a-checkmk), [AC-QA-03](../../../../spec/lastenheft.md#ac-qa-03--reproduzierbarkeit)). **Offen:** Pilot-Einbindung in ein Konsumenten-Repo | fast fertig |
+| welle-05-release | Image-Veröffentlichung | **`v0.1.0` veröffentlicht** ([slice-007](../done/slice-007-release-pipeline.md): `release.yml` + [ADR-0007](../../adr/0007-latest-tag-politik.md)); GHCR digest-gepinnt in `a-check.mk` ([AC-FA-DIST-001](../../../../spec/lastenheft.md#ac-fa-dist-001--distribution-image---print-mk-a-checkmk), [AC-QA-03](../../../../spec/lastenheft.md#ac-qa-03--reproduzierbarkeit)). **Pilot-Einbindung erfüllt:** b-cad (C++-Pilot: `.a-check.yml` + `a-check.mk` + `arch-check.sh`→P-Rest) + belief-agent (KMP, v0.11.0). | **abgeschlossen** (2026-07-05) |
 | welle-06-sprach-backends | Konsumenten-Bedarf (Java/belief-agent) | **Java-Backend** geliefert ([slice-014](../done/slice-014-java-backend.md), [AC-FA-EXTRACT-001](../../../../spec/lastenheft.md#ac-fa-extract-001--sprach-backends-für-die-import-extraktion) 0.7.0; fünftes Backend). **Python-Backend** geliefert ([slice-020](../done/slice-020-python-backend.md), [AC-FA-EXTRACT-001](../../../../spec/lastenheft.md#ac-fa-extract-001--sprach-backends-für-die-import-extraktion) 0.11.0; sechstes Backend — Auflösung über das `fixed-root`-Rezept aus [slice-015](../done/slice-015-resolution-roots.md), **veröffentlicht in `v0.5.0`**). **C#-Backend** geliefert ([slice-021](../done/slice-021-csharp-backend.md), [AC-FA-EXTRACT-001](../../../../spec/lastenheft.md#ac-fa-extract-001--sprach-backends-für-die-import-extraktion) 0.12.0; siebtes Backend — `using`-Direktiven + fixed-root-Rezept unter Namespace==Verzeichnis, **veröffentlicht in `v0.6.0`**; der Namespace-Index bleibt reserviert, eigener Folge-Slice + Folge-ADR). **TypeScript-Backend** geliefert ([slice-022](../done/slice-022-typescript-backend.md), [AC-FA-EXTRACT-001](../../../../spec/lastenheft.md#ac-fa-extract-001--sprach-backends-für-die-import-extraktion) 0.13.0; achtes Backend **plus** der `relative`-Auflösungs-Modus per [ADR-0017](../../adr/0017-relative-resolution-modus.md) `Accepted` — **welle-06 damit vollständig**, **veröffentlicht in `v0.7.0`**). **Maintainer-Priorität:** Kern **Go + C++** (bereits unterstützt, solide halten) → dann **Python/C#/TypeScript** (neue Backends) → **Rust** nachrangig (unterstützt, kein weiterer Ausbau). Härtung [slice-017](../done/slice-017-unbekannte-sprache-exit2.md) **erledigt** (Lastenheft/Spec 0.9.0): ein unbekannter `languages`-Schlüssel bricht mit Exit 2 statt still falsch-grün. | abgeschlossen (2026-07-03) |
 | driving/driven-Vertiefung | Konsumenten-Bedarf (Gate) | Port→Port-Richtungsregeln + Auto-Inferenz der Richtung aus **Namen** (Glob/Pfad bleibt out) ([ADR-0012](../../adr/0012-driving-driven-richtung-orthogonale-dimension.md) Out-of-Scope); Entwurf [slice-013](../open/slice-013-driving-driven-vertiefung.md) — Carry-forward aus welle-10b/b2b; x-wal als Struktur-Kandidat | Entwurf in Abnahme |
 | welle-11-dcheck-pilot-deltas | d-check-Umstellung (Schwester-Repo wartet: die dortige `arch-check`-Ablösung ist per Plan-Review auf drei a-check-Deltas als Vorbedingung gestellt) | **Geliefert und veröffentlicht in `v0.8.0`** ([slice-023](../done/slice-023-dcheck-pilot-deltas.md), [ADR-0018](../../adr/0018-exclude-scan-scope.md) `Accepted`, Lastenheft/Spez 0.14.0): `tech.adapter` auch als Pfad-**Liste** · `composition_root: allow\|forbid` je `tech`-Eintrag · `exclude`-Datei-Globs vor der Extraktion — die d-check-Umstellung drüben ist **entsperrt**; Rest-Deltas melden die dortigen Paritäts-Proben als Folge-CR zurück | abgeschlossen (2026-07-03) |
@@ -101,7 +103,7 @@ _(Kein fixer Termin — Wellen feuern auf Trigger.)_
 |---|---|---|
 | M1: Spec-Fundament steht (Lastenheft + Spezifikation + Architektur + Fundament-ADRs) | welle-01/02 | **erreicht** (2026-06-21) |
 | M2: Dogfooding — a-check prüft die eigene Architektur grün ([AC-QA-02](../../../../spec/lastenheft.md#ac-qa-02--hermetik-und-ehrliche-heuristik-grenze)) | welle-03 | **erreicht** (2026-06-21) |
-| M3: erstes GHCR-Release + Pilot-Einbindung | welle-05 | offen |
+| M3: erstes GHCR-Release + Pilot-Einbindung | welle-05 | **erreicht** (2026-07-05) — v0.1.0…v0.11.0 released; **zwei reale Konsumenten**: b-cad (C++, `.a-check.yml` + `a-check.mk`@v0.9.0 + `arch-check.sh` auf 75-Zeilen-P-Rest, 2026-07-04) und belief-agent (Kotlin/KMP, v0.11.0 adoptiert + Erfolg gemeldet 2026-07-05) |
 
 ## Abhängigkeitsgraph
 
