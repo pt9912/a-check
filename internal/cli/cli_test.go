@@ -492,8 +492,8 @@ func TestKmpSameFqnTwoRootsExit2(t *testing.T) { // AC-FA-CONF-001 / ADR-0022 AC
 	if code != 2 {
 		t.Fatalf("gleicher FQN in 2 roots/2 Schichten: erwarte Exit 2, got %d (out=%q err=%q)", code, out.String(), errb.String())
 	}
-	if !strings.Contains(errb.String(), "mehrdeutige Mehr-Wurzel-Auflösung") {
-		t.Fatalf("stderr muss die Mehrdeutigkeit nennen, got %q", errb.String())
+	if !strings.Contains(errb.String(), "existiert real unter mehreren Wurzeln") { // Scan-Zeit-Phrase (der alte Ladezeit-Guard formulierte anders)
+		t.Fatalf("stderr muss die scan-zeitliche Mehrdeutigkeit nennen, got %q", errb.String())
 	}
 	if out.String() != "" {
 		t.Fatalf("bei fail-closed keine Findings auf stdout, got %q", out.String())
@@ -510,5 +510,56 @@ func TestPrintConfigDocumentsResolution(t *testing.T) { // AC-FA-CONF-001 / ADR-
 		if !strings.Contains(o, want) {
 			t.Fatalf("print-config muss die Multi-Modul-Resolution dokumentieren (%q fehlt): %q", want, o)
 		}
+	}
+}
+
+func TestKmpSharedRootClassNoSpuriousAmbiguity(t *testing.T) { // ADR-0022 (Review A1): Klasse direkt unter package_base, real nur in EINEM Modul -> kein spurioses Exit 2
+	dir := writeRepo(t, map[string]string{
+		".a-check.yml": kmpCfg,
+		"mod-a/src/commonMain/kotlin/com/ex/Shared.kt":        "package com.ex\n",                                     // direkt unter package_base, nur in mod-a (domain)
+		"mod-b/src/commonMain/kotlin/com/ex/application/B.kt": "package com.ex.application\nimport com.ex.Shared\n",   // application -> domain (erlaubt); mod-b hat KEIN com.ex.Shared
+	})
+	var out, errb bytes.Buffer
+	if code := cli.Run([]string{dir}, &out, &errb); code != 0 {
+		t.Fatalf("Klasse real nur unter mod-a (Elternpaket in mod-b existiert nur zufällig) darf keine Mehrdeutigkeit erzeugen: erwarte Exit 0, got %d (out=%q err=%q)", code, out.String(), errb.String())
+	}
+}
+
+func TestKmpSameFqnSameLayerExit0(t *testing.T) { // ADR-0022 §5 (Review C4): gleicher FQN real in 2 roots DERSELBEN Schicht (expect/actual) -> kein Exit 2
+	cfg := `version: 1
+languages:
+  kotlin: ["**/*.kt"]
+layers:
+  domain: {globs: ["mod-a/**", "mod-b/**"], role: domain}
+edges:
+  - {from: domain, to: domain}
+resolution:
+  kotlin: {mode: fixed-root, package_base: com.ex, roots: ["mod-a/src/commonMain/kotlin/com/ex", "mod-b/src/commonMain/kotlin/com/ex"]}
+`
+	dir := writeRepo(t, map[string]string{
+		".a-check.yml": cfg,
+		"mod-a/src/commonMain/kotlin/com/ex/util/X.kt": "package com.ex.util\n",
+		"mod-b/src/commonMain/kotlin/com/ex/util/X.kt": "package com.ex.util\n", // gleicher FQN com.ex.util.X, beide in Schicht domain
+		"mod-a/src/commonMain/kotlin/com/ex/A.kt":      "package com.ex\nimport com.ex.util.X\n",
+	})
+	var out, errb bytes.Buffer
+	if code := cli.Run([]string{dir}, &out, &errb); code != 0 {
+		t.Fatalf("gleicher FQN in 2 roots DERSELBEN Schicht (expect/actual) muss sauber auflösen: erwarte Exit 0, got %d (out=%q err=%q)", code, out.String(), errb.String())
+	}
+}
+
+func TestKmpWildcardImportExit1(t *testing.T) { // ADR-0022 (Review C5): Wildcard-Import a.b.* end-to-end (Symbol mit Trailing-Dot -> Paket-Verzeichnis)
+	dir := writeRepo(t, map[string]string{
+		".a-check.yml": kmpCfg,
+		"mod-a/src/commonMain/kotlin/com/ex/domain/A.kt":      "package com.ex.domain\nimport com.ex.application.*\n", // Wildcard, verboten
+		"mod-b/src/commonMain/kotlin/com/ex/application/B.kt": "package com.ex.application\n",
+	})
+	var out, errb bytes.Buffer
+	code := cli.Run([]string{dir}, &out, &errb)
+	if code != 1 {
+		t.Fatalf("Wildcard domain -> application.*: erwarte Exit 1, got %d (out=%q err=%q)", code, out.String(), errb.String())
+	}
+	if strings.Count(out.String(), "impurity") != 1 {
+		t.Fatalf("erwarte genau 1 impurity-Befund (Wildcard), got %q", out.String())
 	}
 }

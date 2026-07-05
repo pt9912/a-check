@@ -277,26 +277,39 @@ func newFileIndex(files []FileImports) fileIndex {
 	return idx
 }
 
-// denotes reports whether a resolved fixed-root candidate corresponds to a real
-// scanned target (extension-agnostic, package==directory — the AC-QA-02 heuristic
-// boundary). A trailing slash marks a package/wildcard import (`a.b.*` extracts as
-// `a.b.` → …/b/): the candidate IS the package directory. Otherwise it is a
-// symbol: a real file with the extension stripped (…/B ↔ …/B.kt) OR — for a
-// symbol declared in a differently-named file (Kotlin class≠file) — its PACKAGE
-// directory (the parent) exists. A nested-class import resolves one level too
-// deep and stays external (documented boundary, ADR-0022).
-func (idx fileIndex) denotes(cand string) bool {
+// strength scores how strongly a resolved candidate is backed by the scan
+// (extension-agnostic, package==directory — the AC-QA-02 heuristic boundary):
+//   - **2 (exact):** a real file with the extension stripped (…/B ↔ …/B.kt), or a
+//     package/wildcard import (`a.b.*` extracts as `a.b.` → …/b/, trailing slash)
+//     onto a real package directory.
+//   - **1 (weak):** only the candidate's PARENT package directory exists — a symbol
+//     declared in a differently-named file (Kotlin class≠file).
+//   - **0:** phantom (nothing real).
+// filterReal keeps the strongest tier present, so a file-exact candidate under one
+// root beats a merely-parent-dir-exists candidate under another. Without the tier a
+// symbol directly under package_base (or a split package shared across roots) would
+// mark the OTHER root's non-existent candidate "real" — its parent is that shared/
+// base directory — and fabricate a distinct-layer ambiguity (Exit 2) for legit code.
+// A nested-class import resolves one level too deep and stays external (boundary).
+func (idx fileIndex) strength(cand string) int {
 	if strings.HasSuffix(cand, "/") {
-		_, ok := idx.dirs[path.Clean(cand)]
-		return ok
+		if _, ok := idx.dirs[path.Clean(cand)]; ok {
+			return 2
+		}
+		return 0
 	}
 	c := path.Clean(cand)
 	if _, ok := idx.stripped[c]; ok {
-		return true
+		return 2
 	}
-	_, ok := idx.dirs[path.Dir(c)]
-	return ok
+	if _, ok := idx.dirs[path.Dir(c)]; ok {
+		return 1
+	}
+	return 0
 }
+
+// denotes reports whether a candidate is backed by the scan at all (any tier).
+func (idx fileIndex) denotes(cand string) bool { return idx.strength(cand) > 0 }
 
 // stripExt drops a path's file extension (last segment only), so an extensionless
 // resolved candidate can match a real scanned file.
@@ -324,21 +337,31 @@ func (e *AmbiguousResolution) Error() string {
 		e.Symbol, e.Src, e.LayerA, e.CandA, e.LayerB, e.CandB)
 }
 
-// filterReal keeps only the real (scanned-file-backed) candidates of a fixed-root
-// resolution with ≥2 roots (ADR-0022); every other mode (path/relative/1-root)
-// passes through unchanged, so their behavior — and their tests — are untouched.
-// Declaration (roots) order is preserved (deterministic, SPEC-DET-001).
+// filterReal keeps the real (scanned-file-backed) candidates of a fixed-root
+// resolution with ≥2 roots (ADR-0022), preferring the strongest evidence tier
+// present: file-exact/real-package candidates (strength 2) beat parent-dir-only
+// candidates (strength 1), so a phantom whose parent is a shared/base package dir
+// under another root cannot fabricate an ambiguity. Every other mode
+// (path/relative/1-root) passes through unchanged — their behavior, and their
+// tests, are untouched. Declaration (roots) order is preserved within a tier
+// (deterministic, SPEC-DET-001).
 func filterReal(cands []string, res ResolutionConfig, idx fileIndex) []string {
 	if res.Mode != "fixed-root" || len(res.Roots) < 2 {
 		return cands
 	}
-	var out []string
+	var strong, weak []string
 	for _, c := range cands {
-		if idx.denotes(c) {
-			out = append(out, c)
+		switch idx.strength(c) {
+		case 2:
+			strong = append(strong, c)
+		case 1:
+			weak = append(weak, c)
 		}
 	}
-	return out
+	if len(strong) > 0 {
+		return strong
+	}
+	return weak
 }
 
 // targetLayer resolves an import string to a layer by testing whether a layer

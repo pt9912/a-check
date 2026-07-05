@@ -1,6 +1,7 @@
 package core
 
 import (
+	"errors"
 	"strings"
 	"testing"
 )
@@ -1381,8 +1382,13 @@ func TestTargetLayerAmbiguityDistinctLayer(t *testing.T) { // ADR-0022 (§5 Ents
 		{Name: "domain", Globs: []string{"mod-a/**"}, Role: "domain"},
 		{Name: "app", Globs: []string{"mod-b/**"}, Role: "app"},
 	}
-	if _, _, err := targetLayer("com.ex.util.X", "mod-a/src/com/ex/d/A.kt", distinct, res, idx); err == nil {
-		t.Fatal("gleicher FQN real in 2 verschiedenen Schichten muss *AmbiguousResolution liefern")
+	var amb *AmbiguousResolution
+	_, _, err := targetLayer("com.ex.util.X", "mod-a/src/com/ex/d/A.kt", distinct, res, idx)
+	if !errors.As(err, &amb) {
+		t.Fatalf("gleicher FQN real in 2 verschiedenen Schichten muss *AmbiguousResolution liefern, got %v", err)
+	}
+	if amb.LayerA != "domain" || amb.LayerB != "app" { // Zeuge deterministisch in roots-Reihenfolge (SPEC-DET-001)
+		t.Fatalf("Ambiguitäts-Zeuge deterministisch (LayerA=domain vor LayerB=app) erwartet, got %+v", amb)
 	}
 	same := []Layer{{Name: "domain", Globs: []string{"mod-a/**", "mod-b/**"}, Role: "domain"}}
 	if got, _, err := targetLayer("com.ex.util.X", "mod-a/src/com/ex/d/A.kt", same, res, idx); err != nil || got != "domain" {

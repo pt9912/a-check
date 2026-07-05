@@ -61,7 +61,7 @@ matrix:
     forbidden: [superseded, deprecated]
   # Grandfathering (MR-005): die vor der Übernahme Accepted-ADRs (0001–0020) sind
   # immutabel und nennen Slices als Verifikations-Zeiger im Körper — ganz
-  # übersprungen; neue ADRs ab 0021 tragen den Provenance-Marker.
+  # übersprungen; neue ADRs ab 0021 sind slice-token-frei ODER tragen (bei Slice-Verweis) den Provenance-Marker.
   exempt-paths: ["docs/plan/adr/00[01][0-9]-*.md", "docs/plan/adr/0020-*.md"]
   exclude-sections: [Historie, "7. Historie", Geschichte]
 

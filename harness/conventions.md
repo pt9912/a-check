@@ -176,7 +176,10 @@ die kanonische Quelle (Source Precedence, siehe
 - **Grandfathering:** die vor der Übernahme `Accepted`-ADRs (0001–0020) sind immutabel
   ([`AGENTS.md` §3.5](../AGENTS.md#35-adrs-sind-nach-accepted-immutable)) und nennen
   Slices als legitime Verifikations-Zeiger im Körper — sie werden per `exempt-paths`
-  ganz übersprungen; neue ADRs **ab 0021** tragen den Provenance-Marker.
+  ganz übersprungen; neue ADRs **ab 0021** sind **slice-token-frei** (aus
+  AGENTS/Modul/Verhalten argumentiert) **oder** tragen — falls sie einen Slice als
+  Provenance/Verifikation nennen — den Provenance-Marker (gelebte Praxis: 0021/0022
+  sind slice-token-frei, kein Marker nötig).
 - **Begründung:** schärft [`AGENTS.md` §3.4](../AGENTS.md#34-architektur-sprach-meilensteinfrei-spec-straten-nie-abwärts)
   maschinell (Spec-Straten-Abwärts **und** ADR-aus-Planung-Argumentation). a-checks
   gepinntes `d-check` unterstützt die Schlüssel (verifiziert 2026-07-04 gegen v0.35.0);

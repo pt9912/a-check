@@ -1,7 +1,8 @@
 # slice-027 — Datei-mengen-bewusste KMP-Multi-Modul-Resolution (Bug + Feature)
 
-**Status:** open (**abnahmereif** — Maintainer-Review 2026-07-05 durch; 9 Befunde eingearbeitet,
-drei Entscheide in §5 **gesetzt** (a/a/a)). **Typ:** Bug (stilles Falsch-Negativ) + Feature
+**Status:** in-progress (**umgesetzt** — Spec 0.17.0 + [ADR-0022](../../adr/0022-datei-mengen-bewusste-mehr-wurzel-aufloesung.md) (Proposed) + Code + AC1–AC6 grün,
+Umsetzungs-Review eingearbeitet; Closure ausstehend). Maintainer-Review 2026-07-05: 9 Befunde
+eingearbeitet, drei Entscheide in §5 **gesetzt** (a/a/a). **Typ:** Bug (stilles Falsch-Negativ) + Feature
 (Multi-Modul-Auflösung), konsumenten-getrieben (belief-agent).
 **Bezug:** schärft [AC-FA-CONF-001](../../../../spec/lastenheft.md#ac-fa-conf-001--konfigurationsdatei-a-checkyml)
 (resolution + fail-closed) und [AC-QA-02](../../../../spec/lastenheft.md#ac-qa-02--hermetik-und-ehrliche-heuristik-grenze)
@@ -188,3 +189,21 @@ mod-b/src/commonMain/kotlin/com/ex/application/B.kt     // package com.ex.applic
 - **Endungs-Agnostik** gilt für verzeichnisbasierte Globs (package==directory); datei-tiefe
   Globs sind eine dokumentierte Grenze.
 - **Per-Root `package_base`** und Namespace-Index bleiben additive Folge-Slices.
+
+## 8. Umsetzungs-Review-Härtung (2026-07-05, adversarisches Multi-Linsen-Review)
+
+Drei Linsen (Core-Korrektheit / Spec-Konformität / Test-Härte). Linse B: konform (Guard-
+Entfernung ADR-gedeckt + netto präziser, keine Harness-Lüge). Behobene Befunde:
+
+- **A1 (kritisch, reproduziert):** `denotes` akzeptierte im Symbol-Zweig ein **Phantom**, dessen
+  Elternverzeichnis nur zufällig existiert (Klasse direkt unter `package_base` / **Split-Package**)
+  → **spurioses Exit 2** für legitimen Code. Fix: `strength`-Stufen (Datei-exakt/Paket-Verzeichnis
+  = 2 sticht Nur-Elternpaket = 1); `filterReal` behält die stärkste vorhandene Stufe. Neuer E2E
+  pinnt es.
+- **C1/C6:** Ambiguitäts-Zeugen-Determinismus (`errors.As` + `LayerA`/`LayerB`-Reihenfolge) neu gepinnt.
+- **C2:** zwei durch den Guard-Abbau vakuant gewordene Config-Ladetests entfernt.
+- **C3:** AC5-stderr-Assertion auf eine **scan-zeit-spezifische** Phrase geschärft (der alte Guard
+  erzeugte denselben Kern-Text).
+- **C4/C5:** same-layer-`expect`/`actual` und **Wildcard-Import** als E2E ergänzt.
+- **B1/B2:** [MR-005](../../../../harness/conventions.md#mr-005--referenzmatrix-intra-spec-richtung--adrslice-disziplin-d-check-angleichung)/`.d-check.yml`-Provenance-Marker-Wortlaut an die gelebte
+  slice-token-freie Praxis angeglichen; Slice-Status-Header aktualisiert.
