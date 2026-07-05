@@ -1,6 +1,6 @@
 # Lastenheft — a-check
 
-**Version:** 0.16.0
+**Version:** 0.17.0
 
 **Status:** Draft
 
@@ -346,17 +346,18 @@ außerhalb der unterstützten Backends aus [AC-FA-EXTRACT-001](#ac-fa-extract-00
 einem reservierten/unbekannten `resolution.mode` oder `roots`/`package_base` bei `mode: relative`,
 einer **leeren** `tech.adapter`-Liste oder einem leeren/fehlenden `tech.adapter`, einem `composition_root`-Wert außerhalb
 `{allow, forbid}` oder einem ungültigen `exclude`-Glob).
-Zusätzlich fail-closed: eine **mehrdeutige Mehr-Wurzel-Auflösung** — `mode: fixed-root`
-mit **≥ 2** `roots`, von denen **zwei verschiedene Roots je eine andere Schicht erzwingen**,
-bricht mit Exit 2. Ein Root „erzwingt" die Schicht, in die er allein am Wurzel-Präfix
-auflöst: der längste `layers`-Glob-Präfix, der im Root auf einer Segmentgrenze auftritt
-(dieselbe Längster-Präfix-Wahl wie die Import-Auflösung selbst). Erzwingen zwei Roots
-verschiedene, nicht-leere Schichten, fällt jeder Import-Kandidat allein am Wurzel-Präfix
-in „seine" Schicht (Phantom-Kandidaten über Schicht-Grenzen), und die Zuordnung würde vom
-längsten Präfix statt vom Symbol entschieden — ein stilles Falsch-Negativ (`AC-QA-02`).
-Verschachtelte Schichten, unter denen **beide** Roots dieselbe (tiefere) Schicht erzwingen,
-sind eindeutig und laden. Auflösungs-Rezept gegen den Konflikt: paket-spezifische Globs,
-tiefer als die Roots (dann diskriminiert der Paketpfad, nicht die Wurzel).
+Bei `mode: fixed-root` mit **≥ 2** `roots` (geteiltes `package_base`, disjunkte Paket-
+Sub-Namespaces je Modul — KMP/Gradle-Multi-Modul) wird der interne FQN **datei-mengen-
+bewusst** aufgelöst: der Kandidat je Root gilt nur, wenn er einer **real gescannten Datei**
+entspricht (endungs-agnostisch, package==directory-Grenze `AC-QA-02`). Disjunkte
+Sub-Namespaces matchen in höchstens einem Root ⇒ eindeutig; die Schicht wird am Pfad des
+**realen** Kandidaten bestimmt, nicht am Wurzel-Präfix (kein Phantom-Falsch-Negativ mehr).
+Ein Kandidat ohne reale Datei bleibt **extern**. **Fail-closed (Exit 2):** löst derselbe
+FQN real unter ≥ 2 Roots in **verschiedene** Schichten auf (echte Mehrdeutigkeit), bricht
+`a-check` **nach dem Scan** ab — ein FQN muss in höchstens eine Schicht auflösen; gleiche
+Schicht (z. B. `expect`/`actual` im selben Layer) löst sauber. Dokumentierte Grenzen
+(`AC-QA-02`): ein Import, dessen Paket-Verzeichnis unter **keiner** Root real ist, bleibt
+still extern; verschachtelte-Klassen-Importe und datei-tiefe Globs sind heuristische Grenzen.
 
 **Akzeptanzkriterien:**
 
@@ -372,10 +373,13 @@ tiefer als die Roots (dann diskriminiert der Paketpfad, nicht die Wurzel).
 - **Happy (`exclude`):** Given `exclude: ["**/*_test.go"]` und ein Tech-/Schicht-Verstoß **nur** in einer Test-Datei, when `a-check` läuft, then kein Befund (die Datei wird nicht gescannt).
 - **Boundary (`exclude`):** Given eine Config **ohne** `exclude`, when `a-check` läuft, then byte-identische Ausgabe wie bisher.
 - **Negative (neue Schlüssel):** Given eine **leere** `tech.adapter`-Liste, ein leerer/fehlender `tech.adapter`, ein `composition_root` mit einem Wert außerhalb `{allow, forbid}` **oder** ein ungültiger `exclude`-Glob, when `a-check` lädt, then Exit-Code 2.
-- **Negative (Mehr-Wurzel-Phantom):** Given `mode: fixed-root` mit ≥ 2 `roots`, von denen zwei verschiedene Roots je eine andere Schicht erzwingen (z. B. KMP: `roots: [src/commonMain/kotlin/myapp, src/jvmMain/kotlin/myapp]` bei flachen Globs `core: [src/commonMain/**]`, `adapters: [src/jvmMain/**]`), when `a-check` lädt, then Exit-Code 2 mit Verweis auf tiefere paket-spezifische Globs — **statt** stiller Fehlklassifikation der Import-Kandidaten (falsch-grün, `AC-QA-02`).
-- **Boundary (Mehr-Wurzel, eindeutig):** Given dieselben Roots mit paket-tiefen Globs (`core: [src/commonMain/kotlin/myapp/core/**]`, `adapters: [src/jvmMain/kotlin/myapp/adapters/**]`) **oder** verschachtelte Globs, unter denen beide Roots dieselbe tiefere Schicht erzwingen, when `a-check` lädt, then Exit 0/1 (kein Konflikt) — und eine Kern-Datei mit Adapter-Import wird korrekt `core-impurity`; auch ein Root, dessen Wurzel-Präfix exakt einem (verschiedenen) Layer-Glob-Präfix entspricht, zählt als erzwungen (Prädikat-Kante).
+- **Happy (Multi-Modul disjunkt):** Given `mode: fixed-root` mit ≥ 2 `roots` + geteiltem `package_base` und disjunkten Paket-Sub-Namespaces je Modul (KMP: `mod-a/…/domain`, `mod-b/…/application` mit flachen Modul-Globs), when eine `domain`-Datei `com.ex.application.B` importiert, then löst der FQN datei-mengen-bewusst auf das reale Modul (Schicht `application`) auf und die verbotene Kante wird gemeldet (Exit 1) — **statt** stiller Fehlklassifikation (vor der datei-mengen-bewussten Auflösung: 0 Befunde, `AC-QA-02`).
+- **Boundary (Mehr-Wurzel, gleiche Schicht):** Given denselben FQN real unter ≥ 2 Roots, die **dieselbe** Schicht treffen (`expect`/`actual`), when `a-check` läuft, then löst er sauber auf — kein Exit 2.
+- **Negative (Mehr-Wurzel, echte Mehrdeutigkeit):** Given denselben FQN real unter ≥ 2 Roots in **verschiedenen** Schichten, when `a-check` läuft, then Exit-Code 2 **nach dem Scan** (fail-closed, ein FQN muss in höchstens eine Schicht auflösen) — stderr nennt die Mehrdeutigkeit, kein Befund auf stdout.
 
-**Out-of-Scope:** Vererbung/Includes zwischen Config-Dateien.
+**Out-of-Scope:** Vererbung/Includes zwischen Config-Dateien; per-Root `package_base`, der
+reservierte Namespace-Index-Modus sowie die Auflösung verschachtelter-Klassen-Importe und
+datei-tiefer Globs (heuristische Grenzen, `AC-QA-02`).
 
 ### AC-FA-DIST-001 — Distribution: Image, `--print-mk`, `a-check.mk`
 
@@ -437,3 +441,4 @@ Konsumenten-Repos).
 | 0.14.0 | 2026-07-03 | **CR d-check-Pilot (3/3)** — `AC-FA-CONF-001`: optionaler **`exclude`**-Block (Datei-Globs) nimmt Dateien vor der Extraktion vom Scan aus (explizites Gegenstück zur negations-freien Glob-Engine); ohne Block byte-identisch. Anlass: der Scanner erfasst `*_test.go`, d-checks abgelöstes `go list`-Gate prüfte nur Nicht-Test-Imports — ohne Ausschluss ist der saubere Baum dort rot. welle-11, slice-023. |
 | 0.15.0 | 2026-07-03 | `AC-FA-RULE-002`: Sub-Einheiten-Grenzfall präzisiert — Blatt-Klassifikation: ein **datei-förmiges** Blatt (`.`) direkt im Layer-Root gehört zur **Root-Sub-Einheit `''`** (Sub-Einheiten sind Verzeichnisse, keine Dateinamen), ein **verzeichnis-förmiges** Blatt (Go-Paket-Pfad) **ist** die Sub-Einheit; Root↔Root same-layer ist kein `lateral-adapter` mehr, Root↔Unterverzeichnis/Cross-Layer/Cross-Paket unverändert. Bewusste Gate-Lockerung per ADR; Anlass: b-cad-Pilot — die Richtungs-Modellierung (pro-Adapter-Layer) erzeugte 40 Falsch-Positive der Klasse `x.cpp → x.h` bei 0 echten Verstößen (welle-05/M3-Pilot, slice-024). |
 | 0.16.0 | 2026-07-04 | `AC-FA-CONF-001`: **fail-closed-Guard gegen mehrdeutige Mehr-Wurzel-Auflösung** — `mode: fixed-root` mit ≥ 2 `roots`, von denen zwei Roots je eine andere Schicht erzwingen (die Schicht, in die ein Root allein am Wurzel-Präfix auflöst — längster passender Glob-Präfix, wie die Import-Auflösung), bricht mit Exit 2 statt still falsch-grün (Phantom-Kandidaten über Schicht-Grenzen; die Zuordnung entschiede der längste Präfix statt das Symbol). Anlass: belief-agent-Bericht — KMP (`commonMain`/`jvmMain` teilen `package_base`) bei flachen Source-Set-Globs fing die illegale `core → adapter`-Kante nicht; Rezept: paket-spezifische Globs. Stufe 1 des Fixes (fail-closed); die datei-mengen-bewusste Auflösung folgt gated (slice-027). welle-05-Härtung, slice-026. |
+| 0.17.0 | 2026-07-05 | `AC-FA-CONF-001`: **datei-mengen-bewusste Mehr-Wurzel-Auflösung** (Stufe 2) — `mode: fixed-root` mit ≥ 2 `roots` löst den internen FQN gegen die **real gescannten Dateien** auf (endungs-agnostisch, package==directory), statt je Root einen Phantom-Kandidaten am Wurzel-Präfix zu bilden; die disjunkte Multi-Modul-Config (KMP: geteiltes `package_base`, disjunkte Sub-Namespaces) **lädt und löst korrekt** (die verbotene `domain → application`-Kante wird gemeldet), der Ladezeit-Guard aus 0.16.0 entfällt. Echte Mehrdeutigkeit (gleicher FQN real in ≥ 2 Roots, **verschiedene** Schichten) bricht **nach dem Scan** mit Exit 2 (distinct-layer; `expect`/`actual` same-layer löst sauber). Ersetzt Stufe 1 (Supersede-ADR). Anlass: belief-agent-KMP — jede resolution-Variante war Reject oder still falsch-grün. welle-05-Härtung, slice-027. |
