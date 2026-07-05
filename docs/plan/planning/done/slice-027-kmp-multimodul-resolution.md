@@ -1,8 +1,9 @@
 # slice-027 — Datei-mengen-bewusste KMP-Multi-Modul-Resolution (Bug + Feature)
 
-**Status:** in-progress (**umgesetzt** — Spec 0.17.0 + [ADR-0022](../../adr/0022-datei-mengen-bewusste-mehr-wurzel-aufloesung.md) (Proposed) + Code + AC1–AC6 grün,
-Umsetzungs-Review eingearbeitet; Closure ausstehend). Maintainer-Review 2026-07-05: 9 Befunde
-eingearbeitet, drei Entscheide in §5 **gesetzt** (a/a/a). **Typ:** Bug (stilles Falsch-Negativ) + Feature
+**Status:** **done** (2026-07-05) — Spec/Lastenheft **0.17.0** + [ADR-0022](../../adr/0022-datei-mengen-bewusste-mehr-wurzel-aufloesung.md)
+`Accepted` (Supersedes [ADR-0020](../../adr/0020-mehr-wurzel-phantom-guard.md)) + Code + AC1–AC6 grün +
+Benutzerhandbuch 1.26; Maintainer-Review + Umsetzungs-Review (A1-Fix) eingearbeitet; Closure §9.
+**Typ:** Bug (stilles Falsch-Negativ) + Feature
 (Multi-Modul-Auflösung), konsumenten-getrieben (belief-agent).
 **Bezug:** schärft [AC-FA-CONF-001](../../../../spec/lastenheft.md#ac-fa-conf-001--konfigurationsdatei-a-checkyml)
 (resolution + fail-closed) und [AC-QA-02](../../../../spec/lastenheft.md#ac-qa-02--hermetik-und-ehrliche-heuristik-grenze)
@@ -211,3 +212,22 @@ Entfernung ADR-gedeckt + netto präziser, keine Harness-Lüge). Behobene Befunde
   Benutzerhandbuch kannte nur Ein-Root-Rezepte — das **Multi-Modul (KMP)**-Rezept ergänzt und
   die alte „paket-tiefe Globs"-Guard-Empfehlung getilgt (Handbuch-Version 1.26). §4 hatte den
   Benutzerhandbuch als Deliverable **nicht gelistet** — Scope-Lücke, nachgezogen.
+
+## 9. Closure
+
+**done 2026-07-05.** `make gates` grün (arch-check Dogfooding 0, doc-check 0/87, coverage ok,
+gate-consistency ok, record-gates geschrieben) + `make image-test` OK (`--print-config` dekodierbar).
+[ADR-0022](../../adr/0022-datei-mengen-bewusste-mehr-wurzel-aufloesung.md) `Accepted`,
+[ADR-0020](../../adr/0020-mehr-wurzel-phantom-guard.md) → `Superseded` (Header + Index; **erster
+Supersede** im Repo — `matrix`/`status.forbidden` bleibt grün, da adr→adr/slice→adr keine
+gate-regierten Kanten sind). Slice nach `done/` (reiner `git mv`,
+[AGENTS §3.3](../../../../AGENTS.md#33-git-mv--inhaltsänderung--zwei-commits)); Roadmap-Link + Handbuch nachgezogen.
+
+**Lerneintrag:** Das adversarische Umsetzungs-Review fand einen **echten kritischen Befund (A1)**,
+den die grünen AC-Tests **nicht** zeigten: der erste `denotes` akzeptierte im Symbol-Zweig ein Phantom,
+dessen Elternverzeichnis nur zufällig existiert (Klasse direkt unter `package_base` / Split-Package) →
+**spurioses Exit 2** für legitimen Code. Lehre: bei datei-mengen-bewusster Auflösung ist die **Stärke
+der Evidenz** entscheidend (datei-exakt sticht nur-Elternpaket), nicht bloß „existiert irgendwas unter
+dem Pfad" — ein Prädikat, das „das Elternverzeichnis existiert" mit „das Symbol existiert" verwechselt,
+erzeugt Phantom-Positive. Zudem: eine Verhaltens-Änderung (Guard→Auflösung) macht Bestands-Tests still
+**vakuant** — sie müssen als nicht-mehr-pinnend erkannt und ersetzt werden, nicht bloß grün gelassen.
