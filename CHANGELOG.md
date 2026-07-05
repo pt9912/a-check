@@ -6,6 +6,19 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
+### Fixed
+
+- **KMP-/Multi-Modul-Auflösung (`AC-FA-CONF-001` 0.16.0→0.17.0, slice-027, ADR-0022):** `mode:
+  fixed-root` mit ≥ 2 `roots` löst den internen FQN jetzt **datei-mengen-bewusst** gegen die real
+  gescannten Dateien auf (endungs-agnostisch, package==directory) statt je Root einen Phantom-
+  Kandidaten am Wurzel-Präfix zu bilden. Damit **lädt und löst** die legitime disjunkte KMP-Multi-
+  Modul-Config (geteiltes `package_base`, disjunkte Sub-Namespaces) korrekt — die verbotene
+  `domain → application`-Kante wird gemeldet (vorher: still falsch-grün **oder** Reject des
+  Ladezeit-Guards). Der statische Guard aus 0.16.0 entfällt (ADR-0022 Supersedes ADR-0020); echte
+  Mehrdeutigkeit (gleicher FQN real in ≥ 2 Roots, **verschiedene** Schichten) bricht nach dem Scan
+  mit Exit 2, same-layer `expect`/`actual` löst sauber. Anlass: belief-agent-KMP-Bericht; schärft
+  AC-QA-02. `--print-config` dokumentiert die Multi-Modul-Resolution.
+
 ### Added
 
 - **Release-Register `version.md` + Pin-Konsistenz-Gate (slice-018):** neues `version.md`
