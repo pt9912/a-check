@@ -1,6 +1,6 @@
 # ADR-0022 — Datei-mengen-bewusste Mehr-Wurzel-Auflösung (ersetzt den Phantom-Guard)
 
-- **Status:** Proposed
+- **Status:** Accepted
 - **Datum:** 2026-07-05
 - **Autor:** pt9912
 - **Bezug:** [AC-FA-CONF-001](../../../spec/lastenheft.md#ac-fa-conf-001--konfigurationsdatei-a-checkyml) (Mehr-Wurzel-Auflösung, fail-closed), [AC-QA-02](../../../spec/lastenheft.md#ac-qa-02--hermetik-und-ehrliche-heuristik-grenze) (ein stilles Falsch-Negativ ist der teure Vertragsbruch); erweitert das Auflösungs-Modell [ADR-0016](0016-resolution-sprach-parametrisch.md) / [ADR-0014](0014-resolution-roots.md) — der `fixed-root`-Root-Prepend wird datei-mengen-bewusst; beide bleiben immutabel.
@@ -100,3 +100,5 @@ Der statische Guard (`PhantomRootConflictIn`/`rootForcedLayer` + Config-Ladezeit
 | Datum | Ereignis |
 |---|---|
 | 2026-07-05 | Proposed — Entwurf; belief-agent-KMP-Evidenz (jede `resolution`-Variante Reject **oder** still falsch-grün); datei-mengen-bewusste Auflösung reproduziert, AC1–AC6 als Tests grün; Multi-Linsen-Review des Entwurfs eingearbeitet. |
+| 2026-07-05 | Umsetzungs-Review (3 Linsen) eingearbeitet: **A1** (spurioses Exit 2 durch ein Phantom, dessen Elternverzeichnis nur zufällig existiert) per `strength`-Stufen gefixt; Test-Härtung (Determinismus-Zeuge, same-layer-/Wildcard-E2E). |
+| 2026-07-05 | Proposed → Accepted (Sign-off Auftraggeber per Merge-Wort). Ab jetzt immutable; Ablösung nur via Folge-ADR mit `Supersedes`. |

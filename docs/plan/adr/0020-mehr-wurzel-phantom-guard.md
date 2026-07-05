@@ -1,6 +1,6 @@
 # ADR-0020 — Fail-closed-Guard gegen mehrdeutige Mehr-Wurzel-Auflösung (Phantom-Kandidaten)
 
-- **Status:** Accepted
+- **Status:** Superseded by ADR-0022
 - **Datum:** 2026-07-04
 - **Autor:** pt9912
 - **Bezug:** [AC-FA-CONF-001](../../../spec/lastenheft.md#ac-fa-conf-001--konfigurationsdatei-a-checkyml) (fail-closed-Validierung), [AC-QA-02](../../../spec/lastenheft.md#ac-qa-02--hermetik-und-ehrliche-heuristik-grenze) (ein stilles Falsch-Negativ ist der teure Vertragsbruch) — betrifft das Auflösungs-Modell [ADR-0016](0016-resolution-sprach-parametrisch.md)/[ADR-0014](0014-resolution-roots.md).
@@ -131,3 +131,4 @@ die die datei-mengen-bewusste Auflösung (Weg B) mitschließt.
 | 2026-07-04 | Proposed — Entwurf mit [slice-026](../planning/done/slice-026-kmp-mehr-root-phantom.md); Mechanismus reproduziert + per Gegentest belegt; Falsch-Positiv-Scan der realen Flotte (keine ≥ 2-Root-Config). |
 | 2026-07-04 | In der Umsetzung geschärft (Multi-Linsen-Review): das Enthaltungs-Prädikat war zunächst ein separates Vorfahr-Kriterium (`segIndex == 0`) und meldete *alle* enthaltenden Schichten — das war zugleich zu streng (verschachtelte Schichten fälschlich abgelehnt) und zu lasch (innere Segmente entgingen). Korrigiert auf die **erzwungene Schicht** = längster passender Glob-Präfix (`segIndex >= 0`), exakt wie `targetLayer`. |
 | 2026-07-04 | Proposed → Accepted (Sign-off Auftraggeber per Merge-Wort). Ab jetzt immutable; Ablösung nur via Folge-ADR mit `Supersedes`. |
+| 2026-07-05 | Accepted → Superseded by [ADR-0022](0022-datei-mengen-bewusste-mehr-wurzel-aufloesung.md): die datei-mengen-bewusste Auflösung (Stufe 2) ersetzt den statischen Guard — sie fängt den echten Bug **und** akzeptiert die legitime disjunkte Config. |
