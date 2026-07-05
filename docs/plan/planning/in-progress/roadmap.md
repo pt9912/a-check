@@ -61,7 +61,9 @@ veröffentlichten Image, verifiziert gegen den b-cad-Stand mit der Vollrichtungs
 ([ADR-0020](../../adr/0020-mehr-wurzel-phantom-guard.md) `Accepted`, Lastenheft/Spez **0.16.0**,
 **noch unveröffentlicht**) tilgt ein stilles KMP-Falsch-Negativ (belief-agent-Bericht: mehrere
 `roots` mit geteiltem `package_base` + flache Globs) per fail-closed-Guard; Stufe 2
-(datei-mengen-bewusste Auflösung) gated als slice-027. [slice-028](../done/slice-028-dcheck-matrix-konvergenz.md) (**done** — d-check-Matrix-Konvergenz:
+(datei-mengen-bewusste Auflösung) als [slice-027](../open/slice-027-kmp-multimodul-resolution.md)
+(**Entwurf zur Abnahme**, 2026-07-05: Guard löst legitime disjunkte Multi-Modul-Config nicht auf →
+datei-mengen-bewusst korrigieren, Folge-ADR supersedet den Guard-ADR; drei Abnahme-Entscheide offen). [slice-028](../done/slice-028-dcheck-matrix-konvergenz.md) (**done** — d-check-Matrix-Konvergenz:
 intra-Spec `no-downward` + `adr → slice`-Disziplin + Provenance-Marker, [MR-005](../../../../harness/conventions.md#mr-005--referenzmatrix-intra-spec-richtung--adrslice-disziplin-d-check-angleichung))
 schärft das Doku-Gate; [slice-029](../done/slice-029-doc-check-module-hardening.md)
 (**done** — `spans` ins mandatory `doc-check`, `vcs`/ADR-Immutabilität §3.5 in der CI durchgesetzt;
