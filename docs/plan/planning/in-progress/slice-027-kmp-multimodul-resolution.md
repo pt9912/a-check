@@ -207,3 +207,7 @@ Entfernung ADR-gedeckt + netto präziser, keine Harness-Lüge). Behobene Befunde
 - **C4/C5:** same-layer-`expect`/`actual` und **Wildcard-Import** als E2E ergänzt.
 - **B1/B2:** [MR-005](../../../../harness/conventions.md#mr-005--referenzmatrix-intra-spec-richtung--adrslice-disziplin-d-check-angleichung)/`.d-check.yml`-Provenance-Marker-Wortlaut an die gelebte
   slice-token-freie Praxis angeglichen; Slice-Status-Header aktualisiert.
+- **Handbuch-Currency (Nachtrag, Maintainer-Frage):** der `resolution`-Abschnitt im
+  Benutzerhandbuch kannte nur Ein-Root-Rezepte — das **Multi-Modul (KMP)**-Rezept ergänzt und
+  die alte „paket-tiefe Globs"-Guard-Empfehlung getilgt (Handbuch-Version 1.26). §4 hatte den
+  Benutzerhandbuch als Deliverable **nicht gelistet** — Scope-Lücke, nachgezogen.

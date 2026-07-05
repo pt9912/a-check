@@ -1,6 +1,6 @@
 # Benutzerhandbuch: a-check
 
-**Handbuch-Version:** 1.25 · **Software-Version:** [aktuelles Release](../../version.md#aktuell) · **Stand:** 2026-07-05 ·
+**Handbuch-Version:** 1.26 · **Software-Version:** [aktuelles Release](../../version.md#aktuell) · **Stand:** 2026-07-05 ·
 **Autor:** pt9912 (Maintainer)
 
 ---
@@ -271,6 +271,38 @@ Paket-/Namespace-Baum den Verzeichnis-Baum spiegelt — für C# ist das die verb
 eine dokumentierte Heuristik-Grenze der Python-Extraktion; Architektur-Kanten
 prüfen Sie dort über absolute Importe.
 
+**Multi-Modul (KMP/Gradle): mehrere `roots`.** Teilen sich mehrere Module **ein**
+`package_base`, aber jedes Modul trägt **disjunkte** Paket-Sub-Namespaces (Kotlin-
+Multiplatform/Gradle: `hexagon/domain/…/dev/app/domain/**`,
+`hexagon/application/…/dev/app/application/**`), geben Sie **mehrere `roots`** an — je
+Modul einen, bis zum geteilten `package_base`:
+
+```yaml
+layers:                                     # flache Modul-Globs genügen
+  domain:      {globs: ["hexagon/domain/**"], role: domain}
+  application: {globs: ["hexagon/application/**"], role: app}
+edges:
+  - {from: application, to: domain}
+resolution:
+  kotlin:
+    mode: fixed-root
+    package_base: dev.app
+    roots:
+      - hexagon/domain/src/commonMain/kotlin/dev/app
+      - hexagon/application/src/commonMain/kotlin/dev/app
+```
+
+`a-check` löst den Import dann **datei-mengen-bewusst** auf: der interne FQN wird gegen
+die real gescannten Dateien geprüft und trifft — bei disjunkten Sub-Namespaces — genau
+**ein** Modul; die Schicht kommt vom realen Ziel, nicht vom Wurzel-Präfix. **Paket-tiefe
+Globs sind nicht nötig** (die frühere „paket-spezifische Globs"-Empfehlung entfällt). Löst
+dasselbe voll qualifizierte Symbol real unter **≥ 2** Roots in **verschiedene** Schichten
+auf (echte Mehrdeutigkeit — dieselbe Klasse in zwei Modulen zweier Schichten), bricht
+`a-check` **nach dem Scan** mit Exit-Code 2 ab (ein FQN muss in höchstens eine Schicht
+auflösen); dieselbe Klasse in **derselben** Schicht (`expect`/`actual`) löst sauber. Grenze:
+liegt das Paket-Verzeichnis unter **keiner** Root real (fehlkonfigurierte/nicht gescannte
+Source-Set), bleibt der Import extern — die ehrliche Heuristik-Grenze.
+
 **Datei-relative Importe auflösen (`mode: relative`): TypeScript.**
 TypeScript-Module referenzieren einander relativ zur importierenden Datei
 (`./db`, `../core/model`). Deklarieren Sie dafür `mode: relative` — ohne
@@ -480,3 +512,4 @@ und die [Spezifikation](../../spec/spezifikation.md); ein Überblick steht in de
 | 1.23 | 2026-07-04 | Software-Version **0.9.0** (GHCR-Release `v0.9.0` veröffentlicht, digest-gepinnt `@sha256:0378211f…`) — adapterSeg-Root-Sub-Einheit mit Blatt-Klassifikation (`lateral-adapter`) jetzt im veröffentlichten Image; die 1.22-Verfügbarkeitsnotiz entfällt. |
 | 1.24 | 2026-07-04 | Software-Version **0.10.0** (GHCR-Release `v0.10.0` veröffentlicht, digest-gepinnt `@sha256:0932cb1d…`) — fail-closed-Guard gegen mehrdeutige Mehr-Wurzel-Auflösung (`mode: fixed-root`, ≥ 2 `roots`, die zwei Schichten erzwingen → Exit 2) jetzt im veröffentlichten Image; KMP-Rezept: paket-spezifische Globs tiefer als die Roots. |
 | 1.25 | 2026-07-05 | Software-Version-Kopf verweist jetzt auf das [Release-Register](../../version.md#aktuell) statt einer literalen Nummer (slice-018, Opt 1) — die eine driftende Live-Stelle im Handbuch entfällt; die historischen „Software-Version X.Y.Z"-Zeilen bleiben als Release-Ledger. |
+| 1.26 | 2026-07-05 | §4 an Lastenheft 0.17.0: `resolution`-Absatz um das **Multi-Modul (KMP/Gradle)**-Rezept erweitert — mehrere `roots` mit geteiltem `package_base` lösen den FQN **datei-mengen-bewusst** gegen die realen Dateien auf (disjunkte Sub-Namespaces → genau ein Modul; **flache** Modul-Globs genügen, keine paket-tiefen mehr nötig); gleicher FQN real in ≥ 2 Roots **verschiedener** Schichten → Exit 2 nach dem Scan, `expect`/`actual` same-layer sauber. Löst den Ladezeit-Guard aus 1.24/Software-Version 0.10.0 ab (slice-027). |
