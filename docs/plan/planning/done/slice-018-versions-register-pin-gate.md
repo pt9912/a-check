@@ -143,3 +143,21 @@ Behobene Befunde:
 - **A5:** `pin_self_test` deckte nur (B) ab — jetzt (B/A/C) + Decoy-Regression.
 - **C1:** `harness/README.md`-„Aktueller Lauf-Status" trug ein ungegatetes `v0.10.0` — entfernt.
 - **C2/C3:** `a-check.mk`- und `cli.go`-Kommentar-Versionen in §7 vollständig verbucht.
+
+## 9. Closure
+
+**done 2026-07-05.** `make gates` grün (arch-check 0, doc-check 0/85 Dateien, gate-consistency
+„Pins konsistent, Selbsttests gefeuert", record-gates geschrieben); `trace-check` beider
+Implementierungs-Commits (`4644064` git mv + `dac8d7f` Inhalt) ok. Fitness-Function für alle
+Drift-Klassen (B/A/C) **und** den Decoy-Fall am echten Baum bewiesen. Slice nach `done/`
+(reiner `git mv`, [AGENTS §3.3](../../../../AGENTS.md#33-git-mv--inhaltsänderung--zwei-commits)),
+Inbound-Links (`roadmap.md`, [slice-019](slice-019-dcheck-mk-print-mk-angleichung.md)) nachgezogen.
+
+**Lerneintrag:** Das adversarische Multi-Linsen-Review fand einen **echten kritischen Befund
+(A1)** — die erste, „offensichtlich fertige" `head -1`-Digest-Extraktion war *täuschbar* (Decoy-
+Zweitdigest vor dem echten Pin ⇒ Gate grün trotz Drift), genau das Leck, das der Slice schließen
+soll. Lehre: bei einem **Anti-Drift-Gate** ist Eindeutigkeit (genau ein Digest je Datei, fail-closed)
+kein Nice-to-have, sondern der Kern — ein Extraktor, der „das erste Vorkommen" nimmt, ist gegen
+Folge-Edits blind. Zudem: d-checks tag-basierte Module (`versions`/`pins`) passen strukturell nicht
+auf digest-gepinnte Tools — die Prüfung musste eigen und offline-ehrlich
+([AC-QA-02](../../../../spec/lastenheft.md#ac-qa-02--hermetik-und-ehrliche-heuristik-grenze)-Grenze) sein.

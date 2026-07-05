@@ -4,7 +4,7 @@
 **Bezug:** Reproduzierbarkeit **sinngemäß** [AC-QA-03](../../../../spec/lastenheft.md#ac-qa-03--reproduzierbarkeit)
 (`d-check.mk` ist eine **konsumierte Dev-Abhängigkeit**, nicht a-checks eigenes Distributions-Artefakt —
 daher per Analogie, **nicht direkt** gebunden); `AGENTS.md` §4 ↔ `tools/gate-consistency.sh`
-(Target-Invariante); Koordination mit [slice-018](../in-progress/slice-018-versions-register-pin-gate.md)
+(Target-Invariante); Koordination mit [slice-018](../done/slice-018-versions-register-pin-gate.md)
 (Pin-Drift-Gate). [Roadmap](../in-progress/roadmap.md). **Evidenz:** `d-check.mk` weicht vom
 v0.35.0-`--print-mk` ab.
 
@@ -53,7 +53,7 @@ AGENTS-§4-Fläche). Dieser Slice **kehrt sie um** — die eigentliche Review-Fr
 
 ## 3. Vor der Umsetzung zu klären
 
-- **Koordination mit [slice-018](../in-progress/slice-018-versions-register-pin-gate.md) (Pin-Drift-Gate):** Weg 3
+- **Koordination mit [slice-018](../done/slice-018-versions-register-pin-gate.md) (Pin-Drift-Gate):** Weg 3
   **spaltet** den heute driftfreien d-check-Pin (eine Digest-Koordinate) in **Tag + Digest**, die
   gegeneinander driften können (Tag sagt `v0.35.0`, Digest evtl. von woanders) — **genau** die Klasse,
   für die slice-018 `versions`/`pins` einführt. slice-018 listet `d-check.mk` **noch nicht** als
@@ -84,6 +84,6 @@ inzwischen v0.37.1):
 - **`harness/README.md §Sensors` unverändert** (advisory ≠ Feedback-Gate, Plan §2.4).
 - **`make gates` grün**; CHANGELOG-`[Unreleased]`-Notiz (Dev-Tooling, kein Image-Release nötig).
 - **Offen (slice-018-Koordination, §3):** der d-check-Pin ist jetzt **Tag + Digest** (Drift-Klasse);
-  [slice-018](../in-progress/slice-018-versions-register-pin-gate.md)s `versions`/`pins`-Gate muss `d-check.mk`s
+  [slice-018](../done/slice-018-versions-register-pin-gate.md)s `versions`/`pins`-Gate muss `d-check.mk`s
   Tag↔Digest-Konsistenz abdecken **oder** explizit exemptieren — sonst ist hier eine Drift-Quelle,
   die das dafür gebaute Gate nicht sieht.

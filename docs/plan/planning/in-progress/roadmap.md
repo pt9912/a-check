@@ -72,13 +72,13 @@ eine Skript-Kopie weniger, Parität verifiziert); [slice-025](../open/slice-025-
 (P-Rest-Generalisierung) abgenommen und vorgemerkt.
 Release-/Tooling-Hygiene: [slice-019](../done/slice-019-dcheck-mk-print-mk-angleichung.md)
 (**done** — `d-check.mk` verbatim aus `v0.37.1`-`--print-mk`, `DCHECK_DIGEST` gepinnt, alle 10
-`doc-*`-Targets in AGENTS §4) hat den d-check-Pin `v0.35.0` → `v0.37.1` gehoben. **Aktiver
-Schritt:** [slice-018](slice-018-versions-register-pin-gate.md) — Versions-Register
-`version.md` + Pin-Gate (**in Umsetzung**, Opt 1 + 3 abgenommen 2026-07-05): d-checks
-`versions`/`pins`-Module sind **tag-pin**-basiert, a-check pinnt per **Digest** — daher
+`doc-*`-Targets in AGENTS §4) hat den d-check-Pin `v0.35.0` → `v0.37.1` gehoben. [slice-018](../done/slice-018-versions-register-pin-gate.md)
+(**done** 2026-07-05, Opt 1 + 3) — Versions-Register `version.md` + Pin-Konsistenz-Gate:
+d-checks `versions`/`pins`-Module sind **tag-pin**-basiert, a-check pinnt per **Digest** — daher
 [`version.md#aktuell`](../../../../version.md#aktuell) als *eine* Wahrheit (Prosa verlinkt dorthin) +
-Digest-Gleichheits-Check in `gate-consistency.sh` (harte Pins == `version.md`; `d-check.mk`
-Tag↔Digest-Deklaration; Fitness-Function).
+Digest-Gleichheits-Check in `gate-consistency.sh` (harte Pins == `version.md`, Version == CHANGELOG,
+`d-check.mk`-Tag/Digest-Deklaration; jede harte Pin-Datei genau ein Digest — fail-closed gegen einen
+Decoy-Zweitdigest, adversarische Review-Härtung A1). **Nächster Schritt:** b-cad-Pilot-Schnitt (M3).
 
 ## Nächste Wellen
 
