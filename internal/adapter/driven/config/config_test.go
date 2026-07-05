@@ -417,8 +417,11 @@ func TestResolutionPathEqualsOmitted(t *testing.T) { // ADR-0016: mode: path == 
 	}
 }
 
-// kmpFlat is Config X from the belief-agent report (ADR-0020): two roots sharing
-// package_base with flat source-set globs — phantom-capable, must fail closed.
+// kmpFlat is Config X from the belief-agent report: two roots sharing package_base
+// with flat source-set globs. Pre-ADR-0022 the static guard rejected this at load;
+// now the file-set-aware resolution ACCEPTS it (the phantom no longer wins by
+// prefix) — the load half of slice-027's Fitness Function (AC4). Genuine same-FQN
+// ambiguity is a scan-time concern (see cli_test.go E2E).
 const kmpFlat = `version: 1
 languages:
   kotlin: ["**/*.kt"]
@@ -431,41 +434,9 @@ resolution:
   kotlin: {mode: fixed-root, roots: ["src/commonMain/kotlin/myapp", "src/jvmMain/kotlin/myapp"], package_base: "myapp"}
 `
 
-func TestResolutionMultiRootPhantomFailsClosed(t *testing.T) { // AC-FA-CONF-001 / ADR-0020: 2 roots je in 2 Schichten -> Exit 2 (sonst stilles Falsch-Negativ)
-	_, err := New().Load(write(t, kmpFlat))
-	if err == nil {
-		t.Fatal("Mehr-Wurzel-Phantom (2 roots in 2 Schichten) muss fail-closed brechen — sonst still falsch-grün")
-	}
-	for _, want := range []string{"Mehr-Wurzel", "commonMain", "jvmMain", "core", "adapters", "paket-spezifische Globs"} {
-		if !strings.Contains(err.Error(), want) {
-			t.Fatalf("Meldung muss %q nennen (roots + Schichten + Rezept), got %v", want, err)
-		}
-	}
-}
-
-// twoLangConflict has TWO languages that each phantom-conflict; the guard checks
-// languages in sorted order, so the reported conflict must be the go one.
-const twoLangConflict = `version: 1
-languages:
-  go: ["**/*.go"]
-  kotlin: ["**/*.kt"]
-layers:
-  la: ["a/**"]
-  lb: ["b/**"]
-edges:
-  - {from: la, to: lb}
-resolution:
-  go: {mode: fixed-root, roots: ["a", "b"]}
-  kotlin: {mode: fixed-root, roots: ["a", "b"]}
-`
-
-func TestResolutionMultiRootConflictLanguageDeterministic(t *testing.T) { // ADR-0020 / SPEC-DET-001: bei mehreren konfligierenden Sprachen gewinnt die sortiert-erste
-	_, err := New().Load(write(t, twoLangConflict))
-	if err == nil {
-		t.Fatal("zwei phantom-fähige Sprachen müssen brechen")
-	}
-	if !strings.Contains(err.Error(), `resolution["go"]`) {
-		t.Fatalf("die sortiert-erste Sprache (go) muss deterministisch gemeldet werden, got %v", err)
+func TestResolutionMultiRootDisjointLoads(t *testing.T) { // AC-FA-CONF-001 / ADR-0022 (AC4): disjunkte Multi-Root-Config lädt (kein Ladezeit-Reject mehr)
+	if _, err := New().Load(write(t, kmpFlat)); err != nil {
+		t.Fatalf("disjunkte Multi-Root-Config muss laden (ADR-0022: statischer Guard entfällt), got %v", err)
 	}
 }
 

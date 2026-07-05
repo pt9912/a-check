@@ -30,7 +30,7 @@ func hasRule(fs []Finding, rule string) bool {
 }
 
 func TestCoreImpurity(t *testing.T) { // AC-FA-RULE-001 negative
-	fs := Evaluate(testModel(), []FileImports{
+	fs := mustEval(t, testModel(), []FileImports{
 		{Path: "core/svc.go", Layer: "core", Imports: []Import{{Symbol: "adapters/http", Line: 3}}},
 	})
 	if !hasRule(fs, "core-impurity") {
@@ -39,7 +39,7 @@ func TestCoreImpurity(t *testing.T) { // AC-FA-RULE-001 negative
 }
 
 func TestCoreClean(t *testing.T) { // AC-FA-RULE-001 happy
-	fs := Evaluate(testModel(), []FileImports{
+	fs := mustEval(t, testModel(), []FileImports{
 		{Path: "core/svc.go", Layer: "core", Imports: []Import{{Symbol: "core/util", Line: 3}}},
 	})
 	if len(fs) != 0 {
@@ -48,7 +48,7 @@ func TestCoreClean(t *testing.T) { // AC-FA-RULE-001 happy
 }
 
 func TestLateralAdapter(t *testing.T) { // AC-FA-RULE-002 negative
-	fs := Evaluate(testModel(), []FileImports{
+	fs := mustEval(t, testModel(), []FileImports{
 		{Path: "adapters/a/x.go", Layer: "adapters", Imports: []Import{{Symbol: "adapters/b/y", Line: 5}}},
 	})
 	if !hasRule(fs, "lateral-adapter") {
@@ -57,7 +57,7 @@ func TestLateralAdapter(t *testing.T) { // AC-FA-RULE-002 negative
 }
 
 func TestLateralSinkAllowed(t *testing.T) { // AC-FA-RULE-002 boundary
-	fs := Evaluate(testModel(), []FileImports{
+	fs := mustEval(t, testModel(), []FileImports{
 		{Path: "adapters/a/x.go", Layer: "adapters", Imports: []Import{{Symbol: "adapters/driver-common/z", Line: 5}}},
 	})
 	if len(fs) != 0 {
@@ -66,7 +66,7 @@ func TestLateralSinkAllowed(t *testing.T) { // AC-FA-RULE-002 boundary
 }
 
 func TestTechLeak(t *testing.T) { // AC-FA-RULE-003 negative
-	fs := Evaluate(testModel(), []FileImports{
+	fs := mustEval(t, testModel(), []FileImports{
 		{Path: "adapters/persistence/db.go", Layer: "adapters", Imports: []Import{{Symbol: "net/http", Line: 7}}},
 	})
 	if !hasRule(fs, "tech-leak") {
@@ -75,7 +75,7 @@ func TestTechLeak(t *testing.T) { // AC-FA-RULE-003 negative
 }
 
 func TestTechInOwnAdapter(t *testing.T) { // AC-FA-RULE-003 boundary
-	fs := Evaluate(testModel(), []FileImports{
+	fs := mustEval(t, testModel(), []FileImports{
 		{Path: "adapters/http/client.go", Layer: "adapters", Imports: []Import{{Symbol: "net/http", Line: 7}}},
 	})
 	if len(fs) != 0 {
@@ -84,7 +84,7 @@ func TestTechInOwnAdapter(t *testing.T) { // AC-FA-RULE-003 boundary
 }
 
 func TestPortDomainAllowed(t *testing.T) { // AC-FA-RULE-004 happy: Ports dürfen die Domäne referenzieren
-	fs := Evaluate(testModel(), []FileImports{
+	fs := mustEval(t, testModel(), []FileImports{
 		{Path: "ports/p.go", Layer: "ports", Imports: []Import{{Symbol: "core/x", Line: 2}}},
 	})
 	if len(fs) != 0 {
@@ -93,7 +93,7 @@ func TestPortDomainAllowed(t *testing.T) { // AC-FA-RULE-004 happy: Ports dürfe
 }
 
 func TestPortImpurityAdapter(t *testing.T) { // AC-FA-RULE-004 negative: Port importiert Adapter
-	fs := Evaluate(testModel(), []FileImports{
+	fs := mustEval(t, testModel(), []FileImports{
 		{Path: "ports/p.go", Layer: "ports", Imports: []Import{{Symbol: "adapters/http/client", Line: 2}}},
 	})
 	if !hasRule(fs, "port-impurity") {
@@ -102,7 +102,7 @@ func TestPortImpurityAdapter(t *testing.T) { // AC-FA-RULE-004 negative: Port im
 }
 
 func TestPortImpurityTech(t *testing.T) { // AC-FA-RULE-004 negative: Port importiert Tech/Framework
-	fs := Evaluate(testModel(), []FileImports{
+	fs := mustEval(t, testModel(), []FileImports{
 		{Path: "ports/p.go", Layer: "ports", Imports: []Import{{Symbol: "net/http", Line: 2}}},
 	})
 	if !hasRule(fs, "port-impurity") {
@@ -111,7 +111,7 @@ func TestPortImpurityTech(t *testing.T) { // AC-FA-RULE-004 negative: Port impor
 }
 
 func TestPortImpurityConstruct(t *testing.T) { // AC-FA-RULE-004 negative (construct)
-	fs := Evaluate(testModel(), []FileImports{
+	fs := mustEval(t, testModel(), []FileImports{
 		{Path: "ports/p.go", Layer: "ports", Constructs: []Import{{Symbol: "impl ", Line: 4}}},
 	})
 	if !hasRule(fs, "port-impurity") {
@@ -122,7 +122,7 @@ func TestPortImpurityConstruct(t *testing.T) { // AC-FA-RULE-004 negative (const
 func TestPortToCoreWithoutEdge(t *testing.T) { // AC-FA-RULE-004/005: ports->core ist edge-regiert, nicht port-impurity
 	m := testModel()
 	m.Edges = []Edge{{From: "adapters", To: "ports"}} // {ports->core}-Kante entfernt
-	fs := Evaluate(m, []FileImports{
+	fs := mustEval(t, m, []FileImports{
 		{Path: "ports/p.go", Layer: "ports", Imports: []Import{{Symbol: "core/x", Line: 2}}},
 	})
 	if hasRule(fs, "port-impurity") {
@@ -134,7 +134,7 @@ func TestPortToCoreWithoutEdge(t *testing.T) { // AC-FA-RULE-004/005: ports->cor
 }
 
 func TestWrongDirection(t *testing.T) { // AC-FA-RULE-005 negative
-	fs := Evaluate(testModel(), []FileImports{
+	fs := mustEval(t, testModel(), []FileImports{
 		{Path: "adapters/a/x.go", Layer: "adapters", Imports: []Import{{Symbol: "core/x", Line: 9}}},
 	})
 	if !hasRule(fs, "wrong-direction") {
@@ -143,7 +143,7 @@ func TestWrongDirection(t *testing.T) { // AC-FA-RULE-005 negative
 }
 
 func TestCompositionRootExempt(t *testing.T) { // composition root wires everything
-	fs := Evaluate(testModel(), []FileImports{
+	fs := mustEval(t, testModel(), []FileImports{
 		{Path: "cmd/main.go", Layer: "", Imports: []Import{{Symbol: "adapters/http", Line: 1}, {Symbol: "core/x", Line: 2}}},
 	})
 	if len(fs) != 0 {
@@ -173,7 +173,7 @@ func TestGlobAndLayerHelpers(t *testing.T) {
 func TestAllowEdge(t *testing.T) { // edgeAllowed via Allow-Liste
 	m := testModel()
 	m.Allow = []Edge{{From: "adapters", To: "core"}}
-	fs := Evaluate(m, []FileImports{
+	fs := mustEval(t, m, []FileImports{
 		{Path: "adapters/a/x.go", Layer: "adapters", Imports: []Import{{Symbol: "core/x", Line: 1}}},
 	})
 	if hasRule(fs, "wrong-direction") {
@@ -186,7 +186,7 @@ func TestDeterministicOrder(t *testing.T) { // AC-QA-01: stable sort by path, li
 		{Path: "core/b.go", Layer: "core", Imports: []Import{{Symbol: "adapters/x", Line: 2}}},
 		{Path: "core/a.go", Layer: "core", Imports: []Import{{Symbol: "adapters/x", Line: 9}}},
 	}
-	fs := Evaluate(testModel(), files)
+	fs := mustEval(t, testModel(), files)
 	if len(fs) != 2 || fs[0].Path != "core/a.go" || fs[1].Path != "core/b.go" {
 		t.Fatalf("findings not stably sorted: %v", fs)
 	}
@@ -210,7 +210,7 @@ func roleModel() Model {
 }
 
 func TestRoleCrossLayerLateral(t *testing.T) { // AC-FA-RULE-006 happy: fremde Namen, role:adapter -> role:adapter
-	fs := Evaluate(roleModel(), []FileImports{
+	fs := mustEval(t, roleModel(), []FileImports{
 		{Path: "geometry/g.go", Layer: "geometry", Imports: []Import{{Symbol: "persistence/p", Line: 3}}},
 	})
 	if !hasRule(fs, "lateral-adapter") {
@@ -234,7 +234,7 @@ func assertCategorical(t *testing.T, base func() Model, from, to string, file Fi
 		t.Run(tc.name, func(t *testing.T) {
 			m := base()
 			tc.mod(&m)
-			fs := Evaluate(m, []FileImports{file})
+			fs := mustEval(t, m, []FileImports{file})
 			if len(fs) != 1 || fs[0].Rule != wantRule {
 				t.Fatalf("%s ist kategorisch (%s darf nicht aufheben), got %v", wantRule, tc.name, fs)
 			}
@@ -249,7 +249,7 @@ func TestRoleCrossLayerLateralCategorical(t *testing.T) { // AC-FA-RULE-006: kat
 }
 
 func TestRoleDomainImportsAdapter(t *testing.T) { // AC-FA-RULE-006 negative (a): role:domain -> role:adapter
-	fs := Evaluate(roleModel(), []FileImports{
+	fs := mustEval(t, roleModel(), []FileImports{
 		{Path: "domainx/d.go", Layer: "domainx", Imports: []Import{{Symbol: "geometry/g", Line: 2}}},
 	})
 	if !hasRule(fs, "core-impurity") {
@@ -259,7 +259,7 @@ func TestRoleDomainImportsAdapter(t *testing.T) { // AC-FA-RULE-006 negative (a)
 
 func TestRolePortConstructForeignName(t *testing.T) { // AC-FA-RULE-006 negative (b): role:port, fremder Name, Konstrukt
 	m := Model{Layers: []Layer{{Name: "api", Globs: []string{"api/**"}, Role: "port"}}}
-	fs := Evaluate(m, []FileImports{
+	fs := mustEval(t, m, []FileImports{
 		{Path: "api/p.go", Layer: "api", Constructs: []Import{{Symbol: "impl ", Line: 4}}},
 	})
 	if !hasRule(fs, "port-impurity") {
@@ -272,7 +272,7 @@ func TestRolelessLayerEdgeOnly(t *testing.T) { // AC-FA-RULE-006: ohne Rolle nur
 		{Name: "alpha", Globs: []string{"alpha/**"}},
 		{Name: "beta", Globs: []string{"beta/**"}},
 	}}
-	fs := Evaluate(m, []FileImports{
+	fs := mustEval(t, m, []FileImports{
 		{Path: "alpha/a.go", Layer: "alpha", Imports: []Import{{Symbol: "beta/b", Line: 1}}},
 	})
 	if hasRule(fs, "core-impurity") || hasRule(fs, "port-impurity") || hasRule(fs, "lateral-adapter") {
@@ -291,7 +291,7 @@ func TestExplicitRoleOverridesInference(t *testing.T) { // AC-FA-RULE-006: expli
 		},
 		Edges: []Edge{{From: "core", To: "other"}},
 	}
-	fs := Evaluate(m, []FileImports{
+	fs := mustEval(t, m, []FileImports{
 		{Path: "core/c.go", Layer: "core", Imports: []Import{{Symbol: "other/o", Line: 1}}},
 	})
 	if !hasRule(fs, "lateral-adapter") {
@@ -308,19 +308,19 @@ func TestInferenceBoundaryClassicNames(t *testing.T) { // AC-FA-RULE-006 boundar
 		},
 		Edges: []Edge{{From: "adapters", To: "ports"}, {From: "ports", To: "core"}},
 	}
-	coreToAdapter := Evaluate(m, []FileImports{
+	coreToAdapter := mustEval(t, m, []FileImports{
 		{Path: "core/s.go", Layer: "core", Imports: []Import{{Symbol: "adapters/x", Line: 1}}},
 	})
 	if !hasRule(coreToAdapter, "core-impurity") {
 		t.Fatalf("core->adapter via inference must be core-impurity, got %v", coreToAdapter)
 	}
-	portConstruct := Evaluate(m, []FileImports{
+	portConstruct := mustEval(t, m, []FileImports{
 		{Path: "ports/p.go", Layer: "ports", Constructs: []Import{{Symbol: "impl ", Line: 2}}},
 	})
 	if !hasRule(portConstruct, "port-impurity") {
 		t.Fatalf("ports construct via inference must be port-impurity, got %v", portConstruct)
 	}
-	intraLateral := Evaluate(m, []FileImports{
+	intraLateral := mustEval(t, m, []FileImports{
 		{Path: "adapters/a/x.go", Layer: "adapters", Imports: []Import{{Symbol: "adapters/b/y", Line: 3}}},
 	})
 	if !hasRule(intraLateral, "lateral-adapter") {
@@ -333,7 +333,7 @@ func TestForeignAdapterIntraLateral(t *testing.T) { // ADR-0010 (b1): adapterSeg
 	// die Sub-Einheit wird relativ zum Glob-Präfix der Schicht bestimmt, also greift
 	// die Intra-Unterscheidung jetzt namensunabhängig (kehrt den 10a-Regression-Pin um).
 	m := Model{Layers: []Layer{{Name: "io", Globs: []string{"io/**"}, Role: "adapter"}}}
-	fs := Evaluate(m, []FileImports{
+	fs := mustEval(t, m, []FileImports{
 		{Path: "io/a/x.go", Layer: "io", Imports: []Import{{Symbol: "io/b/y", Line: 1}}},
 	})
 	if !hasRule(fs, "lateral-adapter") {
@@ -346,10 +346,10 @@ func TestTargetLayerLongestPrefix(t *testing.T) { // ADR-0010 (b1): spezifischst
 		{Name: "core", Globs: []string{"internal/core/**"}},
 		{Name: "legacy", Globs: []string{"internal/core/legacy/**"}},
 	}
-	if got, _ := targetLayer("x/internal/core/legacy/db", "", layers, ResolutionConfig{}); got != "legacy" {
+	if got, _, _ := tlFor("x/internal/core/legacy/db", "", layers, ResolutionConfig{}); got != "legacy" {
 		t.Fatalf("expected longest-prefix 'legacy', got %q", got)
 	}
-	if got, _ := targetLayer("x/internal/core/svc", "", layers, ResolutionConfig{}); got != "core" {
+	if got, _, _ := tlFor("x/internal/core/svc", "", layers, ResolutionConfig{}); got != "core" {
 		t.Fatalf("expected 'core', got %q", got)
 	}
 	// Reihenfolge-unabhängig: legacy vor core deklariert.
@@ -357,20 +357,20 @@ func TestTargetLayerLongestPrefix(t *testing.T) { // ADR-0010 (b1): spezifischst
 		{Name: "legacy", Globs: []string{"internal/core/legacy/**"}},
 		{Name: "core", Globs: []string{"internal/core/**"}},
 	}
-	if got, _ := targetLayer("x/internal/core/legacy/db", "", rev, ResolutionConfig{}); got != "legacy" {
+	if got, _, _ := tlFor("x/internal/core/legacy/db", "", rev, ResolutionConfig{}); got != "legacy" {
 		t.Fatalf("longest-prefix muss reihenfolge-unabhängig sein, got %q", got)
 	}
 	// Segment-bewusst: 'io'-Präfix matcht nicht in 'audio'.
-	if got, _ := targetLayer("audio/codec", "", []Layer{{Name: "io", Globs: []string{"io/**"}}}, ResolutionConfig{}); got != "" {
+	if got, _, _ := tlFor("audio/codec", "", []Layer{{Name: "io", Globs: []string{"io/**"}}}, ResolutionConfig{}); got != "" {
 		t.Fatalf("segment-bewusst: 'io' darf nicht in 'audio' matchen, got %q", got)
 	}
 	// Kernzweck: modul-qualifizierter Import, Präfix mitten im String.
 	mod := []Layer{{Name: "core", Globs: []string{"internal/hexagon/core/**"}}}
-	if got, _ := targetLayer("github.com/x/a-check/internal/hexagon/core/model", "", mod, ResolutionConfig{}); got != "core" {
+	if got, _, _ := tlFor("github.com/x/a-check/internal/hexagon/core/model", "", mod, ResolutionConfig{}); got != "core" {
 		t.Fatalf("modul-qualifiziert: erwarte 'core', got %q", got)
 	}
 	// Präfix am Pfadende.
-	if got, _ := targetLayer("github.com/x/a-check/internal/hexagon/core", "", mod, ResolutionConfig{}); got != "core" {
+	if got, _, _ := tlFor("github.com/x/a-check/internal/hexagon/core", "", mod, ResolutionConfig{}); got != "core" {
 		t.Fatalf("Präfix am Pfadende: erwarte 'core', got %q", got)
 	}
 	// Tie-Break: bei gleichlangem Präfix gewinnt der zuerst deklarierte Layer.
@@ -378,14 +378,14 @@ func TestTargetLayerLongestPrefix(t *testing.T) { // ADR-0010 (b1): spezifischst
 		{Name: "first", Globs: []string{"a/b/**"}},
 		{Name: "second", Globs: []string{"a/b/**"}},
 	}
-	if got, _ := targetLayer("a/b/c", "", tie, ResolutionConfig{}); got != "first" {
+	if got, _, _ := tlFor("a/b/c", "", tie, ResolutionConfig{}); got != "first" {
 		t.Fatalf("Tie-Break: zuerst deklarierter gewinnt, erwarte 'first', got %q", got)
 	}
 }
 
 func TestSameAdapterSubunitNoLateral(t *testing.T) { // ADR-0010 (b1): gleiche Sub-Einheit -> kein lateral
 	m := Model{Layers: []Layer{{Name: "io", Globs: []string{"io/**"}, Role: "adapter"}}}
-	fs := Evaluate(m, []FileImports{
+	fs := mustEval(t, m, []FileImports{
 		{Path: "io/a/x.go", Layer: "io", Imports: []Import{{Symbol: "io/a/z", Line: 1}}},
 	})
 	if hasRule(fs, "lateral-adapter") {
@@ -415,7 +415,7 @@ func appModel() Model {
 }
 
 func TestAppHappyDomainAndPort(t *testing.T) { // AC-FA-RULE-007 happy: app darf domain+port
-	fs := Evaluate(appModel(), []FileImports{
+	fs := mustEval(t, appModel(), []FileImports{
 		{Path: "app/u.go", Layer: "app", Imports: []Import{
 			{Symbol: "dom/entity", Line: 1},
 			{Symbol: "prt/repo", Line: 2},
@@ -429,7 +429,7 @@ func TestAppHappyDomainAndPort(t *testing.T) { // AC-FA-RULE-007 happy: app darf
 func TestAppImportsAdapterCategorical(t *testing.T) { // AC-FA-RULE-007 negative (app): app->adapter, kategorisch
 	m := appModel()
 	m.Edges = append(m.Edges, Edge{From: "app", To: "adp"}) // sogar mit erlaubter Kante
-	fs := Evaluate(m, []FileImports{
+	fs := mustEval(t, m, []FileImports{
 		{Path: "app/u.go", Layer: "app", Imports: []Import{{Symbol: "adp/sql", Line: 3}}},
 	})
 	if len(fs) != 1 || fs[0].Rule != "app-impurity" {
@@ -438,7 +438,7 @@ func TestAppImportsAdapterCategorical(t *testing.T) { // AC-FA-RULE-007 negative
 }
 
 func TestAppImportsTech(t *testing.T) { // AC-FA-RULE-007 negative (app): zweiter Arm app->tech (vor tech-leak)
-	fs := Evaluate(appModel(), []FileImports{
+	fs := mustEval(t, appModel(), []FileImports{
 		{Path: "app/u.go", Layer: "app", Imports: []Import{{Symbol: "net/http", Line: 4}}},
 	})
 	if len(fs) != 1 || fs[0].Rule != "app-impurity" {
@@ -449,7 +449,7 @@ func TestAppImportsTech(t *testing.T) { // AC-FA-RULE-007 negative (app): zweite
 func TestDomainImportsPortCategorical(t *testing.T) { // AC-FA-RULE-007 negative (domain): domain->port, kategorisch
 	m := appModel()
 	m.Edges = append(m.Edges, Edge{From: "dom", To: "prt"}) // Kante hebt nicht auf
-	fs := Evaluate(m, []FileImports{
+	fs := mustEval(t, m, []FileImports{
 		{Path: "dom/e.go", Layer: "dom", Imports: []Import{{Symbol: "prt/repo", Line: 5}}},
 	})
 	if len(fs) != 1 || fs[0].Rule != "core-impurity" {
@@ -460,7 +460,7 @@ func TestDomainImportsPortCategorical(t *testing.T) { // AC-FA-RULE-007 negative
 func TestDomainImportsAppCategorical(t *testing.T) { // AC-FA-RULE-007: Schärfung deckt app, nicht nur port
 	m := appModel()
 	m.Edges = append(m.Edges, Edge{From: "dom", To: "app"})
-	fs := Evaluate(m, []FileImports{
+	fs := mustEval(t, m, []FileImports{
 		{Path: "dom/e.go", Layer: "dom", Imports: []Import{{Symbol: "app/u", Line: 6}}},
 	})
 	if len(fs) != 1 || fs[0].Rule != "core-impurity" {
@@ -475,7 +475,7 @@ func TestInferAppRole(t *testing.T) { // AC-FA-RULE-007: Namens-Inferenz applica
 				{Name: name, Globs: []string{name + "/**"}}, // KEINE role -> Inferenz
 				{Name: "adp", Globs: []string{"adp/**"}, Role: "adapter"},
 			}}
-			fs := Evaluate(m, []FileImports{
+			fs := mustEval(t, m, []FileImports{
 				{Path: name + "/u.go", Layer: name, Imports: []Import{{Symbol: "adp/x", Line: 1}}},
 			})
 			if !hasRule(fs, "app-impurity") {
@@ -490,7 +490,7 @@ func TestExplicitRoleBeatsAppInference(t *testing.T) { // AC-FA-RULE-007: expliz
 		{Name: "app", Globs: []string{"app/**"}, Role: "domain"}, // Name app, aber role domain
 		{Name: "prt", Globs: []string{"prt/**"}, Role: "port"},
 	}}
-	fs := Evaluate(m, []FileImports{
+	fs := mustEval(t, m, []FileImports{
 		{Path: "app/d.go", Layer: "app", Imports: []Import{{Symbol: "prt/p", Line: 1}}},
 	})
 	if !hasRule(fs, "core-impurity") || hasRule(fs, "app-impurity") {
@@ -501,7 +501,7 @@ func TestExplicitRoleBeatsAppInference(t *testing.T) { // AC-FA-RULE-007: expliz
 func TestDomainImportsAdapterCategorical(t *testing.T) { // AC-FA-RULE-007: domain->adapter kategorisch (Pin mit Kante)
 	m := appModel()
 	m.Edges = append(m.Edges, Edge{From: "dom", To: "adp"}) // Kante hebt nicht auf
-	fs := Evaluate(m, []FileImports{
+	fs := mustEval(t, m, []FileImports{
 		{Path: "dom/e.go", Layer: "dom", Imports: []Import{{Symbol: "adp/sql", Line: 7}}},
 	})
 	if len(fs) != 1 || fs[0].Rule != "core-impurity" {
@@ -510,7 +510,7 @@ func TestDomainImportsAdapterCategorical(t *testing.T) { // AC-FA-RULE-007: doma
 }
 
 func TestDomainImportsTech(t *testing.T) { // AC-FA-RULE-007: domain->tech ist core-impurity (vor tech-leak)
-	fs := Evaluate(appModel(), []FileImports{
+	fs := mustEval(t, appModel(), []FileImports{
 		{Path: "dom/e.go", Layer: "dom", Imports: []Import{{Symbol: "net/http", Line: 8}}},
 	})
 	if len(fs) != 1 || fs[0].Rule != "core-impurity" {
@@ -534,7 +534,7 @@ func dirModel() Model {
 }
 
 func TestPortDirectionHappy(t *testing.T) { // AC-FA-RULE-008 happy: driving-Adapter -> driving-Port
-	fs := Evaluate(dirModel(), []FileImports{
+	fs := mustEval(t, dirModel(), []FileImports{
 		{Path: "cli/c.go", Layer: "cli", Imports: []Import{{Symbol: "api/u", Line: 1}}},
 	})
 	if len(fs) != 0 {
@@ -543,7 +543,7 @@ func TestPortDirectionHappy(t *testing.T) { // AC-FA-RULE-008 happy: driving-Ada
 }
 
 func TestPortDirectionMismatch(t *testing.T) { // AC-FA-RULE-008 negative: driving-Adapter -> driven-Port
-	fs := Evaluate(dirModel(), []FileImports{
+	fs := mustEval(t, dirModel(), []FileImports{
 		{Path: "cli/c.go", Layer: "cli", Imports: []Import{{Symbol: "store/s", Line: 2}}},
 	})
 	if len(fs) != 1 || fs[0].Rule != "port-direction-mismatch" {
@@ -565,7 +565,7 @@ func TestPortDirectionOnlyOneSide(t *testing.T) { // AC-FA-RULE-008: nur EINE Se
 		}
 	}
 	m.Edges = append(m.Edges, Edge{From: "cli", To: "store"}) // Kante: auch wrong-direction schweigt
-	fs := Evaluate(m, []FileImports{
+	fs := mustEval(t, m, []FileImports{
 		{Path: "cli/c.go", Layer: "cli", Imports: []Import{{Symbol: "store/s", Line: 2}}},
 	})
 	if hasRule(fs, "port-direction-mismatch") {
@@ -581,7 +581,7 @@ func TestPortDirectionBoundaryNoDirection(t *testing.T) { // AC-FA-RULE-008 boun
 		},
 		Edges: []Edge{{From: "adp", To: "prt"}},
 	}
-	fs := Evaluate(m, []FileImports{
+	fs := mustEval(t, m, []FileImports{
 		{Path: "adp/a.go", Layer: "adp", Imports: []Import{{Symbol: "prt/p", Line: 1}}},
 	})
 	if len(fs) != 0 {
@@ -663,7 +663,7 @@ func TestPortDirectionPortToPortNotCaught(t *testing.T) { // AC-FA-RULE-008: por
 	// (srcRole==adapter ∧ tgtRole==port) schließt ihn aus -> kein Befund.
 	m := dirModel()
 	m.Edges = append(m.Edges, Edge{From: "api", To: "store"}) // damit auch wrong-direction schweigt
-	fs := Evaluate(m, []FileImports{
+	fs := mustEval(t, m, []FileImports{
 		{Path: "api/p.go", Layer: "api", Imports: []Import{{Symbol: "store/s", Line: 1}}},
 	})
 	if hasRule(fs, "port-direction-mismatch") {
@@ -674,7 +674,7 @@ func TestPortDirectionPortToPortNotCaught(t *testing.T) { // AC-FA-RULE-008: por
 func TestPortDirectionSymmetric(t *testing.T) { // AC-FA-RULE-008: driven-Adapter -> driving-Port feuert spiegelbildlich
 	m := dirModel()
 	m.Layers = append(m.Layers, Layer{Name: "repo", Globs: []string{"repo/**"}, Role: "adapter", Direction: "driven"})
-	fs := Evaluate(m, []FileImports{
+	fs := mustEval(t, m, []FileImports{
 		{Path: "repo/r.go", Layer: "repo", Imports: []Import{{Symbol: "api/u", Line: 1}}}, // driven-Adapter -> driving-Port
 	})
 	if len(fs) != 1 || fs[0].Rule != "port-direction-mismatch" {
@@ -690,7 +690,7 @@ func TestPortDirectionSourceNoDirection(t *testing.T) { // AC-FA-RULE-008: nur d
 		}
 	}
 	m.Edges = append(m.Edges, Edge{From: "cli", To: "store"}) // Kante: auch wrong-direction schweigt
-	fs := Evaluate(m, []FileImports{
+	fs := mustEval(t, m, []FileImports{
 		{Path: "cli/c.go", Layer: "cli", Imports: []Import{{Symbol: "store/s", Line: 2}}},
 	})
 	if hasRule(fs, "port-direction-mismatch") {
@@ -704,7 +704,7 @@ func TestPortDirectionTechLeakPrecedence(t *testing.T) { // AC-FA-RULE-008 / SPE
 	// Erst-Treffer-Kette meldet bewusst tech-leak (nicht port-direction-mismatch).
 	m := dirModel()
 	m.Techs = []Tech{{Pattern: "store/grpc", Adapters: []string{"store/grpc-adapter"}}}
-	fs := Evaluate(m, []FileImports{
+	fs := mustEval(t, m, []FileImports{
 		{Path: "cli/c.go", Layer: "cli", Imports: []Import{{Symbol: "store/grpc/client", Line: 1}}},
 	})
 	if len(fs) != 1 || fs[0].Rule != "tech-leak" {
@@ -717,7 +717,7 @@ func TestDeterministicOrderWithDirection(t *testing.T) { // AC-QA-01: der neue B
 		{Path: "cli/b.go", Layer: "cli", Imports: []Import{{Symbol: "store/s", Line: 2}}},
 		{Path: "cli/a.go", Layer: "cli", Imports: []Import{{Symbol: "store/s", Line: 9}}},
 	}
-	fs := Evaluate(dirModel(), files)
+	fs := mustEval(t, dirModel(), files)
 	if len(fs) != 2 || fs[0].Path != "cli/a.go" || fs[1].Path != "cli/b.go" {
 		t.Fatalf("port-direction-mismatch-Befunde nicht stabil nach Pfad sortiert: %v", fs)
 	}
@@ -741,7 +741,7 @@ func regexTechModel(t *testing.T) Model {
 }
 
 func TestTechLeakRegexNegative(t *testing.T) { // AC-FA-RULE-003 / ADR-0015: match: regex meldet außerhalb des Adapters
-	fs := Evaluate(regexTechModel(t), []FileImports{
+	fs := mustEval(t, regexTechModel(t), []FileImports{
 		{Path: "adapters/geometry/g.cpp", Layer: "geo", Imports: []Import{{Symbol: "QWidget", Line: 3}}},
 	})
 	if len(fs) != 1 || fs[0].Rule != "tech-leak" {
@@ -750,7 +750,7 @@ func TestTechLeakRegexNegative(t *testing.T) { // AC-FA-RULE-003 / ADR-0015: mat
 }
 
 func TestTechLeakRegexHappy(t *testing.T) { // AC-FA-RULE-003 / ADR-0015: Qt im eigenen Adapter erlaubt
-	fs := Evaluate(regexTechModel(t), []FileImports{
+	fs := mustEval(t, regexTechModel(t), []FileImports{
 		{Path: "adapters/ui/w.cpp", Layer: "ui", Imports: []Import{{Symbol: "QString", Line: 3}}},
 	})
 	if len(fs) != 0 {
@@ -759,7 +759,7 @@ func TestTechLeakRegexHappy(t *testing.T) { // AC-FA-RULE-003 / ADR-0015: Qt im 
 }
 
 func TestTechLeakRegexComposition(t *testing.T) { // AC-FA-RULE-003 / ADR-0015: Composition Root ausgenommen
-	fs := Evaluate(regexTechModel(t), []FileImports{
+	fs := mustEval(t, regexTechModel(t), []FileImports{
 		{Path: "main.cpp", Layer: "", Imports: []Import{{Symbol: "QApplication", Line: 1}}},
 	})
 	if len(fs) != 0 {
@@ -782,12 +782,12 @@ func TestTechPrecedenceDeclarationOrder(t *testing.T) { // AC-FA-RULE-003 / ADR-
 	// "Queue.h" trifft beide Muster; der erste (regex → adapters/ui) gewinnt → kein Befund
 	// (die Datei liegt in adapters/ui). Griffe der zweite, wäre es ein tech-leak.
 	m.Techs = []Tech{first, second}
-	if fs := Evaluate(m, file); len(fs) != 0 {
+	if fs := mustEval(t, m, file); len(fs) != 0 {
 		t.Fatalf("Erst-Treffer (regex → adapters/ui) muss gewinnen → kein Befund, got %v", fs)
 	}
 	// Umgekehrte Reihenfolge: der substring-Eintrag (→ persistence) greift zuerst → tech-leak.
 	m.Techs = []Tech{second, first}
-	if fs := Evaluate(m, file); len(fs) != 1 || fs[0].Rule != "tech-leak" {
+	if fs := mustEval(t, m, file); len(fs) != 1 || fs[0].Rule != "tech-leak" {
 		t.Fatalf("bei umgekehrter Reihenfolge greift substring→persistence → tech-leak, got %v", fs)
 	}
 }
@@ -824,7 +824,7 @@ func TestTechLeakRegexDeterministicOrder(t *testing.T) { // AC-QA-01: ≥2 regex
 		{Path: "adapters/geometry/b.cpp", Layer: "geo", Imports: []Import{{Symbol: "QWidget", Line: 2}}},
 		{Path: "adapters/geometry/a.cpp", Layer: "geo", Imports: []Import{{Symbol: "QString", Line: 9}}},
 	}
-	fs := Evaluate(regexTechModel(t), files)
+	fs := mustEval(t, regexTechModel(t), files)
 	if len(fs) != 2 || fs[0].Path != "adapters/geometry/a.cpp" || fs[1].Path != "adapters/geometry/b.cpp" {
 		t.Fatalf("regex-tech-leak-Befunde nicht stabil nach Pfad sortiert: %v", fs)
 	}
@@ -858,11 +858,11 @@ func TestResolveImportPathDefaultUnchanged(t *testing.T) { // ADR-0016: path/Def
 
 func TestTargetLayerFixedRootCpp(t *testing.T) { // ADR-0016: C++ src-Root -> Layer (b-cad-Fall)
 	layers := []Layer{{Name: "model", Globs: []string{"src/hexagon/model/**"}}}
-	if got, _ := targetLayer("hexagon/model/room.h", "", layers, ResolutionConfig{Mode: "fixed-root", Roots: []string{"src"}}); got != "model" {
+	if got, _, _ := tlFor("hexagon/model/room.h", "", layers, ResolutionConfig{Mode: "fixed-root", Roots: []string{"src"}}); got != "model" {
 		t.Fatalf("src-gewurzelter Include muss auf 'model' auflösen, got %q", got)
 	}
 	// Ohne resolution (Default): der src-fremde Include löst NICHT auf — die Falle, die ADR-0016 schließt.
-	if got, _ := targetLayer("hexagon/model/room.h", "", layers, ResolutionConfig{}); got != "" {
+	if got, _, _ := tlFor("hexagon/model/room.h", "", layers, ResolutionConfig{}); got != "" {
 		t.Fatalf("ohne resolution löst der Include nicht auf, got %q", got)
 	}
 }
@@ -887,7 +887,7 @@ func TestMonoRepoResolutionPerLanguage(t *testing.T) { // ADR-0016 (F1): jede Da
 		{Path: "src/model/r.h", Layer: "cppdom", Language: "cpp", Imports: []Import{{Symbol: "io/writer.h", Line: 1}}},
 	}
 	n := 0
-	for _, f := range Evaluate(m, files) {
+	for _, f := range mustEval(t, m, files) {
 		if f.Rule == "core-impurity" {
 			n++
 		}
@@ -898,33 +898,40 @@ func TestMonoRepoResolutionPerLanguage(t *testing.T) { // ADR-0016 (F1): jede Da
 	// Beweis der Schlüssel-Selektion: eine Datei mit Sprache OHNE resolution-Eintrag bleibt unaufgelöst.
 	noRes := []FileImports{{Path: "hexagon/model/R.kt", Layer: "ktdom", Language: "go",
 		Imports: []Import{{Symbol: "com.x.adapters.Db", Line: 1}}}}
-	if fs := Evaluate(m, noRes); len(fs) != 0 {
+	if fs := mustEval(t, m, noRes); len(fs) != 0 {
 		t.Fatalf("Sprache 'go' ohne resolution-Eintrag: gepunktetes Symbol bleibt unaufgelöst -> kein Befund, got %v", fs)
 	}
 }
 
-// TestPhantomFlatGlobsMisresolves pins the false-negative MECHANISM that the
-// ADR-0020 guard defends against: with flat source-set globs and 2 roots sharing
-// package_base, the adapter import from a commonMain file resolves to the WRONG
-// layer (core) because the phantom candidate src/commonMain/…/adapters wins on
-// the longer prefix. This is why the config is rejected at load; if a later
-// file-set-aware resolution (slice-027) fixes it, this anchor must be revisited.
-func TestPhantomFlatGlobsMisresolves(t *testing.T) {
+// TestPhantomFlatGlobsHealed proves the file-set-aware resolution (ADR-0022)
+// heals the former false-negative: with flat source-set globs and 2 roots sharing
+// package_base, the phantom src/commonMain/…/adapters candidate is filtered out
+// (no real file), so the adapter import resolves to 'adapters' (the real jvmMain
+// target), NOT the phantom 'core'. Pre-ADR-0022 this misresolved to 'core' by the
+// longer prefix (silent green) and the flat config was rejected at load.
+func TestPhantomFlatGlobsHealed(t *testing.T) {
 	layers := []Layer{
 		{Name: "core", Globs: []string{"src/commonMain/**"}, Role: "domain"},
 		{Name: "adapters", Globs: []string{"src/jvmMain/**"}, Role: "adapter"},
 	}
 	res := ResolutionConfig{Mode: "fixed-root", Roots: []string{"src/commonMain/kotlin/myapp", "src/jvmMain/kotlin/myapp"}, PackageBase: "myapp"}
-	got, _ := targetLayer("myapp.adapters.Foo", "src/commonMain/kotlin/myapp/core/Bar.kt", layers, res)
-	if got != "core" {
-		t.Fatalf("Phantom-Mechanismus (längster Präfix gewinnt) muss den Adapter-Import falsch auf 'core' legen, got %q", got)
+	idx := newFileIndex([]FileImports{
+		{Path: "src/commonMain/kotlin/myapp/core/Bar.kt"},
+		{Path: "src/jvmMain/kotlin/myapp/adapters/Foo.kt"}, // the REAL adapter target
+	})
+	got, _, err := targetLayer("myapp.adapters.Foo", "src/commonMain/kotlin/myapp/core/Bar.kt", layers, res, idx)
+	if err != nil {
+		t.Fatalf("nur ein realer Kandidat -> kein Ambiguitäts-Fehler erwartet, got %v", err)
+	}
+	if got != "adapters" {
+		t.Fatalf("datei-mengen-bewusst muss den Adapter-Import korrekt auf 'adapters' legen (Phantom gefiltert), got %q", got)
 	}
 }
 
-// TestPhantomDeepGlobsResolvesCorrectly proves the documented recipe: with
-// package-specific globs deeper than the roots, the same import resolves to
-// adapters and a domain file importing it is core-impurity (Exit 1) — the
-// load-and-detect half of ADR-0020's Fitness Function.
+// TestPhantomDeepGlobsResolvesCorrectly proves the documented recipe still holds
+// under the file-set-aware resolution (ADR-0022): with package-specific globs
+// deeper than the roots AND the real adapter file in the scan set, the import
+// resolves to adapters and a domain file importing it is core-impurity (Exit 1).
 func TestPhantomDeepGlobsResolvesCorrectly(t *testing.T) {
 	m := Model{
 		Layers: []Layer{
@@ -935,9 +942,12 @@ func TestPhantomDeepGlobsResolvesCorrectly(t *testing.T) {
 			"kotlin": {Mode: "fixed-root", Roots: []string{"src/commonMain/kotlin/myapp", "src/jvmMain/kotlin/myapp"}, PackageBase: "myapp"},
 		},
 	}
-	files := []FileImports{{Path: "src/commonMain/kotlin/myapp/core/Bar.kt", Layer: "core", Language: "kotlin",
-		Imports: []Import{{Symbol: "myapp.adapters.Foo", Line: 2}}}}
-	fs := Evaluate(m, files)
+	files := []FileImports{
+		{Path: "src/commonMain/kotlin/myapp/core/Bar.kt", Layer: "core", Language: "kotlin",
+			Imports: []Import{{Symbol: "myapp.adapters.Foo", Line: 2}}},
+		{Path: "src/jvmMain/kotlin/myapp/adapters/Foo.kt", Layer: "adapters", Language: "kotlin"}, // real target (ADR-0022)
+	}
+	fs := mustEval(t, m, files)
 	if len(fs) != 1 || fs[0].Rule != "core-impurity" {
 		t.Fatalf("paket-tiefe Globs müssen core -> adapter als core-impurity fangen, got %v", fs)
 	}
@@ -983,7 +993,7 @@ func TestResolveImportRelativeNeighborAndParent(t *testing.T) { // ADR-0017: ./-
 		t.Fatalf(".js-Specifier: erwarte [src/adapters/db.js], got %v", got)
 	}
 	// … und end-to-end: db.js löst trotz Endung auf die adapters-SCHICHT auf (Review-R1 T-3).
-	if got, _ := targetLayer("../adapters/db.js", "src/core/x.ts",
+	if got, _, _ := tlFor("../adapters/db.js", "src/core/x.ts",
 		[]Layer{{Name: "adapters", Globs: []string{"src/adapters/**"}}}, rel); got != "adapters" {
 		t.Fatalf(".js-Specifier muss auf die adapters-Schicht auflösen (Endungs-Agnostik bei Verzeichnis-Globs), got %q", got)
 	}
@@ -1036,13 +1046,13 @@ func TestRelativeBareImportNoGhostFinding(t *testing.T) { // ADR-0017 (adversari
 	}
 	files := []FileImports{{Path: "core/service.ts", Layer: "core", Language: "typescript",
 		Imports: []Import{{Symbol: "@actions/adapters", Line: 1}}}}
-	if fs := Evaluate(m, files); len(fs) != 0 {
+	if fs := mustEval(t, m, files); len(fs) != 0 {
 		t.Fatalf("Bare-Import '@actions/adapters' würde bei Roh-Durchreichung auf 'adapters/**' segment-matchen (Geister-core-impurity) — muss leer bleiben, got %v", fs)
 	}
 	// Gegenprobe: derselbe Pfad als ECHTER relativer Import findet.
 	relFiles := []FileImports{{Path: "core/service.ts", Layer: "core", Language: "typescript",
 		Imports: []Import{{Symbol: "../adapters/db", Line: 1}}}}
-	fs := Evaluate(m, relFiles)
+	fs := mustEval(t, m, relFiles)
 	if len(fs) != 1 || fs[0].Rule != "core-impurity" {
 		t.Fatalf("relativer Import ../adapters/db muss core-impurity liefern, got %v", fs)
 	}
@@ -1064,7 +1074,7 @@ func TestMonoRepoGoTypescriptModes(t *testing.T) { // ADR-0017: Mono-Repo — Go
 		{Path: "core/service.ts", Layer: "core", Language: "typescript",
 			Imports: []Import{{Symbol: "../adapters/db", Line: 1}}},
 	}
-	fs := Evaluate(m, files)
+	fs := mustEval(t, m, files)
 	if len(fs) != 2 || fs[0].Rule != "core-impurity" || fs[1].Rule != "core-impurity" {
 		t.Fatalf("beide Sprachen müssen je über IHREN Modus auflösen -> 2× core-impurity, got %v", fs)
 	}
@@ -1076,7 +1086,7 @@ func TestRootSubunitNoLateral(t *testing.T) { // ADR-0019: Root<->Root same-laye
 	m := Model{Layers: []Layer{{Name: "io", Globs: []string{"adapters/io/**"}, Role: "adapter"}}}
 	files := []FileImports{{Path: "adapters/io/dxf_reader.cpp", Layer: "io",
 		Imports: []Import{{Symbol: "adapters/io/dxf_reader.h", Line: 1}}}}
-	if fs := Evaluate(m, files); len(fs) != 0 {
+	if fs := mustEval(t, m, files); len(fs) != 0 {
 		t.Fatalf("Root-Datei importiert Root-Datei derselben Schicht (x.cpp -> x.h) — Root-Sub-Einheit, kein lateral, got %v", fs)
 	}
 }
@@ -1085,12 +1095,12 @@ func TestRootSubunitVsSubdirLateral(t *testing.T) { // ADR-0019: Root <-> Unterv
 	m := Model{Layers: []Layer{{Name: "io", Globs: []string{"adapters/io/**"}, Role: "adapter"}}}
 	rootToSub := []FileImports{{Path: "adapters/io/root.cpp", Layer: "io",
 		Imports: []Import{{Symbol: "adapters/io/dxf/reader.h", Line: 1}}}}
-	if fs := Evaluate(m, rootToSub); len(fs) != 1 || fs[0].Rule != "lateral-adapter" {
+	if fs := mustEval(t, m, rootToSub); len(fs) != 1 || fs[0].Rule != "lateral-adapter" {
 		t.Fatalf("Root -> Unterverzeichnis muss lateral bleiben, got %v", fs)
 	}
 	subToRoot := []FileImports{{Path: "adapters/io/dxf/reader.cpp", Layer: "io",
 		Imports: []Import{{Symbol: "adapters/io/root.h", Line: 1}}}}
-	if fs := Evaluate(m, subToRoot); len(fs) != 1 || fs[0].Rule != "lateral-adapter" {
+	if fs := mustEval(t, m, subToRoot); len(fs) != 1 || fs[0].Rule != "lateral-adapter" {
 		t.Fatalf("Unterverzeichnis -> Root muss lateral bleiben, got %v", fs)
 	}
 }
@@ -1103,12 +1113,12 @@ func TestRootSubunitUniformOverResolution(t *testing.T) { // ADR-0019: Root-Rege
 	// ./b.js: datei-foermiges Blatt, beide Root -> kein lateral; ./sub/x -> lateral.
 	same := []FileImports{{Path: "src/adapters/io/a.ts", Layer: "io", Language: "typescript",
 		Imports: []Import{{Symbol: "./b.js", Line: 1}}}}
-	if fs := Evaluate(m, same); len(fs) != 0 {
+	if fs := mustEval(t, m, same); len(fs) != 0 {
 		t.Fatalf("relative Root->Root (datei-foermig) muss befundfrei sein, got %v", fs)
 	}
 	cross := []FileImports{{Path: "src/adapters/io/a.ts", Layer: "io", Language: "typescript",
 		Imports: []Import{{Symbol: "./sub/x", Line: 1}}}}
-	if fs := Evaluate(m, cross); len(fs) != 1 || fs[0].Rule != "lateral-adapter" {
+	if fs := mustEval(t, m, cross); len(fs) != 1 || fs[0].Rule != "lateral-adapter" {
 		t.Fatalf("relative Root->Unterverzeichnis muss lateral sein, got %v", fs)
 	}
 	// Dokumentierte Grenze (ADR-0019 Re-Eval): endungsloses ./b ist verzeichnis-
@@ -1116,7 +1126,7 @@ func TestRootSubunitUniformOverResolution(t *testing.T) { // ADR-0019: Root-Rege
 	// Sub-Einheit und meldet aus einer Root-Datei heraus lateral.
 	boundary := []FileImports{{Path: "src/adapters/io/a.ts", Layer: "io", Language: "typescript",
 		Imports: []Import{{Symbol: "./b", Line: 1}}}}
-	if fs := Evaluate(m, boundary); len(fs) != 1 || fs[0].Rule != "lateral-adapter" {
+	if fs := mustEval(t, m, boundary); len(fs) != 1 || fs[0].Rule != "lateral-adapter" {
 		t.Fatalf("endungsloser Specifier ist die dokumentierte Heuristik-Grenze (pinnt den Ist-Stand), got %v", fs)
 	}
 }
@@ -1126,13 +1136,13 @@ func TestGoPackageLeafIsSubunit(t *testing.T) { // ADR-0019 Entscheid D (Dogfood
 	// Externes Testpaket importiert das EIGENE Paket (report_test.go -> .../report): kein lateral.
 	own := []FileImports{{Path: "internal/adapter/driven/report/report_test.go", Layer: "adapters",
 		Imports: []Import{{Symbol: "github.com/pt9912/a-check/internal/adapter/driven/report", Line: 8}}}}
-	if fs := Evaluate(m, own); len(fs) != 0 {
+	if fs := mustEval(t, m, own); len(fs) != 0 {
 		t.Fatalf("Eigen-Paket-Import (Verzeichnis-Blatt == eigene Sub-Einheit) darf kein lateral sein, got %v", fs)
 	}
 	// Fremd-Paket-Import bleibt lateral — ein Root-Blatt haette die Erkennung geblendet.
 	cross := []FileImports{{Path: "internal/adapter/driven/config/config.go", Layer: "adapters",
 		Imports: []Import{{Symbol: "github.com/pt9912/a-check/internal/adapter/driven/extract", Line: 3}}}}
-	if fs := Evaluate(m, cross); len(fs) != 1 || fs[0].Rule != "lateral-adapter" {
+	if fs := mustEval(t, m, cross); len(fs) != 1 || fs[0].Rule != "lateral-adapter" {
 		t.Fatalf("Fremd-Paket-Import (Verzeichnis-Blatt anderer Sub-Einheit) muss lateral bleiben, got %v", fs)
 	}
 }
@@ -1167,13 +1177,13 @@ func TestRelativeIntraSubunitNoLateral(t *testing.T) { // ADR-0017 (Review-R1 C-
 	// und meldete fälschlich lateral (der Alltagsfall jedes TS-Adapters).
 	same := []FileImports{{Path: "src/adapters/http/client.ts", Layer: "adapters", Language: "typescript",
 		Imports: []Import{{Symbol: "./helper", Line: 1}}}}
-	if fs := Evaluate(m, same); len(fs) != 0 {
+	if fs := mustEval(t, m, same); len(fs) != 0 {
 		t.Fatalf("relativer Import derselben Sub-Einheit darf kein lateral-adapter sein, got %v", fs)
 	}
 	// ../db/conn quert in eine ANDERE Sub-Einheit -> lateral-adapter.
 	cross := []FileImports{{Path: "src/adapters/http/client.ts", Layer: "adapters", Language: "typescript",
 		Imports: []Import{{Symbol: "../db/conn", Line: 1}}}}
-	fs := Evaluate(m, cross)
+	fs := mustEval(t, m, cross)
 	if len(fs) != 1 || fs[0].Rule != "lateral-adapter" {
 		t.Fatalf("relativer Import einer anderen Sub-Einheit muss lateral-adapter sein, got %v", fs)
 	}
@@ -1187,7 +1197,7 @@ func TestRelativeAdapterSinkOnCandidate(t *testing.T) { // ADR-0017 (Review-R1 C
 	}
 	files := []FileImports{{Path: "src/adapters/http/client.ts", Layer: "adapters", Language: "typescript",
 		Imports: []Import{{Symbol: "../driver-common/log", Line: 1}}}}
-	if fs := Evaluate(m, files); len(fs) != 0 {
+	if fs := mustEval(t, m, files); len(fs) != 0 {
 		t.Fatalf("Sink-Import muss auch relativ ausgenommen sein (Kandidat 'src/adapters/driver-common/log'), got %v", fs)
 	}
 }
@@ -1207,12 +1217,12 @@ func TestTechMultiAdapterAllowed(t *testing.T) { // Mehr-Adapter: Symbol in JEDE
 		{"adapters/config/c.go", "config"}, {"adapters/report/r.go", "report"},
 	} {
 		files := []FileImports{{Path: p.path, Layer: p.layer, Imports: []Import{{Symbol: "gopkg.in/yaml.v3", Line: 1}}}}
-		if fs := Evaluate(m, files); len(fs) != 0 {
+		if fs := mustEval(t, m, files); len(fs) != 0 {
 			t.Fatalf("yaml ist in %s (gelisteter Adapter) erlaubt, got %v", p.path, fs)
 		}
 	}
 	out := []FileImports{{Path: "adapters/http/h.go", Layer: "http", Imports: []Import{{Symbol: "gopkg.in/yaml.v3", Line: 4}}}}
-	fs := Evaluate(m, out)
+	fs := mustEval(t, m, out)
 	if len(fs) != 1 || fs[0].Rule != "tech-leak" {
 		t.Fatalf("yaml außerhalb ALLER gelisteten Adapter muss tech-leak sein, got %v", fs)
 	}
@@ -1243,7 +1253,7 @@ func TestTechCompositionRootForbid(t *testing.T) { // composition_root: forbid �
 		{Symbol: "adapters/http/client", Line: 3},  // ohne Schicht-Ausnahme: kategorisches core-impurity
 		{Symbol: "core/model", Line: 4},            // dito (domain -> domain wäre ok, aber pinnt die Kanten-Seite mit)
 	}}}
-	fs := Evaluate(m, files)
+	fs := mustEval(t, m, files)
 	if len(fs) != 1 || fs[0].Rule != "tech-leak" || fs[0].Line != 1 {
 		t.Fatalf("genau der forbid-Eintrag muss in der Composition Root melden (Schicht-Regeln kategorisch ausgenommen), got %v", fs)
 	}
@@ -1254,7 +1264,7 @@ func TestTechCompositionRootForbid(t *testing.T) { // composition_root: forbid �
 	inAdp := []FileImports{{Path: "cmd/main.go", Layer: "", Imports: []Import{{Symbol: "net/http", Line: 1}}}}
 	m2 := m
 	m2.Techs = []Tech{{Pattern: "net/http", Adapters: []string{"cmd"}, ForbidCompositionRoot: true}}
-	if fs := Evaluate(m2, inAdp); len(fs) != 0 {
+	if fs := mustEval(t, m2, inAdp); len(fs) != 0 {
 		t.Fatalf("forbid prüft weiter gegen die Adapter-Liste — cmd ist hier gelistet, got %v", fs)
 	}
 }
@@ -1264,7 +1274,7 @@ func TestTechLeakSingleAdapterGoldenMessage(t *testing.T) { // Review-R1 T-6: by
 		Layers: []Layer{{Name: "geo", Globs: []string{"adapters/geometry/**"}, Role: "adapter"}},
 		Techs:  []Tech{{Pattern: "net/http", Adapters: []string{"adapters/http"}}},
 	}
-	fs := Evaluate(m, []FileImports{{Path: "adapters/geometry/g.go", Layer: "geo",
+	fs := mustEval(t, m, []FileImports{{Path: "adapters/geometry/g.go", Layer: "geo",
 		Imports: []Import{{Symbol: "net/http", Line: 7}}}})
 	if len(fs) != 1 || fs[0].Msg != "Tech net/http außerhalb adapters/http" {
 		t.Fatalf("Einzel-Adapter-Meldung muss byte-identisch zum Vor-0.14.0-Format sein, got %v", fs)
@@ -1299,7 +1309,7 @@ func TestCompositionRootFindingsSortedWithOthers(t *testing.T) { // Review-R1 T-
 		{Path: "m_adapter/y.go", Layer: "adp2", Imports: []Import{{Symbol: "net/http", Line: 9}}},
 		{Path: "a_cmd/main.go", Layer: "", Imports: []Import{{Symbol: "net/http", Line: 5}}},
 	}
-	fs := Evaluate(m, files)
+	fs := mustEval(t, m, files)
 	if len(fs) != 3 {
 		t.Fatalf("erwarte 3 tech-leaks (2 normal + 1 composition_root: forbid), got %v", fs)
 	}
@@ -1316,88 +1326,66 @@ func TestRelativeTechAtRawSymbol(t *testing.T) { // AC-FA-CONF-001 Boundary (Rev
 	}
 	files := []FileImports{{Path: "misc/x.ts", Layer: "misc", Language: "typescript",
 		Imports: []Import{{Symbol: "@nestjs/core", Line: 1}}}}
-	fs := Evaluate(m, files)
+	fs := mustEval(t, m, files)
 	if len(fs) != 1 || fs[0].Rule != "tech-leak" {
 		t.Fatalf("tech-Muster muss am Roh-Symbol greifen (Bare-Import loest nicht auf, tech trotzdem), got %v", fs)
 	}
 }
 
-func TestPhantomRootConflict(t *testing.T) { // ADR-0020: Mehr-Wurzel-Phantom-Prädikat
-	kmp := []Layer{
-		{Name: "core", Globs: []string{"src/commonMain/**"}},
-		{Name: "adapters", Globs: []string{"src/jvmMain/**"}},
+// mustEval runs Evaluate and fails the test on a resolution ambiguity — the
+// signature-ripple helper for the pre-ADR-0022 callers that expect no error.
+func mustEval(t *testing.T, m Model, files []FileImports) []Finding {
+	t.Helper()
+	fs, err := Evaluate(m, files)
+	if err != nil {
+		t.Fatalf("Evaluate: unerwarteter Fehler: %v", err)
 	}
-	kmpRoots := []string{"src/commonMain/kotlin/myapp", "src/jvmMain/kotlin/myapp"}
-	deep := []Layer{
-		{Name: "core", Globs: []string{"src/commonMain/kotlin/myapp/core/**"}},
-		{Name: "adapters", Globs: []string{"src/jvmMain/kotlin/myapp/adapters/**"}},
-	}
-	// Boundary: a root exactly equal to a layer's glob prefix is forced into it
-	// (len(p)==len(root)); with a second root in another layer that is a conflict.
-	exactLayers := []Layer{
-		{Name: "core", Globs: []string{"src/commonMain/**"}},
-		{Name: "adapters", Globs: []string{"src/jvmMain/**"}},
-	}
-	exactRoots := []string{"src/commonMain", "src/jvmMain"} // root == glob prefix
-	// Befund 1 (review): nested/overlapping layers — both roots force the DEEPER
-	// layer (longest prefix), so targetLayer resolves unambiguously → no conflict.
-	nested := []Layer{
-		{Name: "broad", Globs: []string{"src/**"}},
-		{Name: "appL", Globs: []string{"src/app/**"}},
-	}
-	nestedRoots := []string{"src/app/main", "src/app/gen"}
-	// Befund 2 (review): the layer prefix occurs as an INTERIOR segment of the
-	// root (segIndex>0) — targetLayer matches it, so the guard must too.
-	interiorLayers := []Layer{
-		{Name: "coreL", Globs: []string{"core/**"}},
-		{Name: "adapterL", Globs: []string{"adapter/**"}},
-	}
-	interiorRoots := []string{"build/gen/core", "build/gen/adapter"}
-	// Witness determinism: 3 roots in 3 layers — the earliest (i,j) pair wins.
-	threeLayers := []Layer{
-		{Name: "a", Globs: []string{"src/commonMain/**"}},
-		{Name: "b", Globs: []string{"src/jvmMain/**"}},
-		{Name: "c", Globs: []string{"src/jsMain/**"}},
-	}
-	threeRoots := []string{"src/commonMain/x", "src/jvmMain/x", "src/jsMain/x"}
-	// Longest-prefix forcing (review B1): a root matches broad (declared FIRST)
-	// and appL (declared SECOND); rootForcedLayer must pick appL (longest prefix,
-	// like targetLayer), NOT the first-declared broad. Second root in libL.
-	longestLayers := []Layer{
-		{Name: "broad", Globs: []string{"src/**"}},
-		{Name: "appL", Globs: []string{"src/app/**"}},
-		{Name: "libL", Globs: []string{"lib/**"}},
-	}
-	longestRoots := []string{"src/app/x", "lib/y"}
+	return fs
+}
 
+// tlFor calls targetLayer with an empty fileIndex — for the path/relative/1-root
+// cases whose resolution is file-set-independent (filterReal passes them through).
+func tlFor(imp, src string, layers []Layer, res ResolutionConfig) (string, string, error) {
+	return targetLayer(imp, src, layers, res, fileIndex{})
+}
+
+func TestFileIndexDenotes(t *testing.T) { // ADR-0022: endungs-agnostisch, package==directory, Phantom extern
+	idx := newFileIndex([]FileImports{
+		{Path: "mod-b/kotlin/com/ex/app/UseCases.kt"}, // Klasse != Datei
+		{Path: "mod-b/kotlin/com/ex/app/B.kt"},        // Klasse == Datei
+	})
 	cases := []struct {
-		name   string
-		res    ResolutionConfig
-		layers []Layer
-		want   bool
-		wantA  string // expected RootA when want
-		wantLA string // expected LayerA when want
-		wantB  string // expected LayerB when want
+		cand string
+		want bool
 	}{
-		{"kmp-flat-conflict", ResolutionConfig{Mode: "fixed-root", Roots: kmpRoots, PackageBase: "myapp"}, kmp, true, "src/commonMain/kotlin/myapp", "core", "adapters"},
-		{"deep-globs-ok", ResolutionConfig{Mode: "fixed-root", Roots: kmpRoots, PackageBase: "myapp"}, deep, false, "", "", ""},
-		{"single-root-ok", ResolutionConfig{Mode: "fixed-root", Roots: []string{"src/commonMain/kotlin/myapp"}}, kmp, false, "", "", ""},
-		{"path-mode-ok", ResolutionConfig{Mode: "path"}, kmp, false, "", "", ""},
-		{"root-equals-prefix-conflict", ResolutionConfig{Mode: "fixed-root", Roots: exactRoots}, exactLayers, true, "src/commonMain", "core", "adapters"},
-		{"nested-layers-no-conflict", ResolutionConfig{Mode: "fixed-root", Roots: nestedRoots}, nested, false, "", "", ""},
-		{"interior-segment-conflict", ResolutionConfig{Mode: "fixed-root", Roots: interiorRoots}, interiorLayers, true, "build/gen/core", "coreL", "adapterL"},
-		{"three-roots-earliest-witness", ResolutionConfig{Mode: "fixed-root", Roots: threeRoots}, threeLayers, true, "src/commonMain/x", "a", "b"},
-		{"forced-layer-longest-prefix", ResolutionConfig{Mode: "fixed-root", Roots: longestRoots}, longestLayers, true, "src/app/x", "appL", "libL"},
+		{"mod-b/kotlin/com/ex/app/B", true},            // Datei-Match (endungslos)
+		{"mod-b/kotlin/com/ex/app/CreateBelief", true}, // Klasse != Datei: Paket-Verzeichnis existiert
+		{"mod-b/kotlin/com/ex/app/", true},             // Wildcard: Paket-Verzeichnis
+		{"mod-a/kotlin/com/ex/app/B", false},           // Phantom: kein solches Verzeichnis
+		{"mod-b/kotlin/com/ex/nope/", false},           // Wildcard auf nicht existierendes Paket
 	}
 	for _, c := range cases {
-		t.Run(c.name, func(t *testing.T) {
-			got := PhantomRootConflictIn(c.res, c.layers)
-			if (got != nil) != c.want {
-				t.Fatalf("want conflict=%v, got %+v", c.want, got)
-			}
-			if c.want && (got.RootA != c.wantA || got.LayerA != c.wantLA || got.LayerB != c.wantB) {
-				t.Fatalf("Zeuge nicht deterministisch/erwartet: got %+v, want RootA=%q LayerA=%q LayerB=%q", got, c.wantA, c.wantLA, c.wantB)
-			}
-		})
+		if got := idx.denotes(c.cand); got != c.want {
+			t.Fatalf("denotes(%q) = %v, want %v", c.cand, got, c.want)
+		}
+	}
+}
+
+func TestTargetLayerAmbiguityDistinctLayer(t *testing.T) { // ADR-0022 (§5 Entscheid 1): gleicher FQN in 2 Schichten -> Fehler; gleiche Schicht (expect/actual) -> ok
+	res := ResolutionConfig{Mode: "fixed-root", PackageBase: "com.ex", Roots: []string{"mod-a/src/com/ex", "mod-b/src/com/ex"}}
+	idx := newFileIndex([]FileImports{
+		{Path: "mod-a/src/com/ex/util/X.kt"},
+		{Path: "mod-b/src/com/ex/util/X.kt"},
+	})
+	distinct := []Layer{
+		{Name: "domain", Globs: []string{"mod-a/**"}, Role: "domain"},
+		{Name: "app", Globs: []string{"mod-b/**"}, Role: "app"},
+	}
+	if _, _, err := targetLayer("com.ex.util.X", "mod-a/src/com/ex/d/A.kt", distinct, res, idx); err == nil {
+		t.Fatal("gleicher FQN real in 2 verschiedenen Schichten muss *AmbiguousResolution liefern")
+	}
+	same := []Layer{{Name: "domain", Globs: []string{"mod-a/**", "mod-b/**"}, Role: "domain"}}
+	if got, _, err := targetLayer("com.ex.util.X", "mod-a/src/com/ex/d/A.kt", same, res, idx); err != nil || got != "domain" {
+		t.Fatalf("expect/actual (gleiche Schicht) muss sauber auf 'domain' auflösen, got %q err=%v", got, err)
 	}
 }

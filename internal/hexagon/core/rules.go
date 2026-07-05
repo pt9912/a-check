@@ -11,8 +11,11 @@ import (
 // Evaluate runs the seven hexagon rules (SPEC-RULE-001) on the extracted files
 // against the model and returns a stably sorted finding list (SPEC-DET-001).
 // Per (file, import) the most specific rule wins (first match), so an import is
-// reported once.
-func Evaluate(m Model, files []FileImports) []Finding {
+// reported once. A non-nil error is a fail-closed resolution ambiguity
+// (*AmbiguousResolution, ADR-0022): the caller maps it to exit code 2 and no
+// findings are reported.
+func Evaluate(m Model, files []FileImports) ([]Finding, error) {
+	idx := newFileIndex(files)
 	var fs []Finding
 	for _, f := range files {
 		if matchesAny(f.Path, m.CompositionRoot) {
@@ -20,7 +23,11 @@ func Evaluate(m Model, files []FileImports) []Finding {
 			continue
 		}
 		for _, imp := range f.Imports {
-			if find, ok := ruleFor(m, f, imp); ok {
+			find, ok, err := ruleFor(m, f, imp, idx)
+			if err != nil {
+				return nil, err
+			}
+			if ok {
 				fs = append(fs, find)
 			}
 		}
@@ -31,7 +38,7 @@ func Evaluate(m Model, files []FileImports) []Finding {
 		}
 	}
 	sortFindings(fs)
-	return fs
+	return fs, nil
 }
 
 // compositionRootFindings checks a composition-root file: it wires everything,
@@ -50,26 +57,30 @@ func compositionRootFindings(m Model, f FileImports) []Finding {
 
 // ruleFor returns the most specific rule violation for one import (first match),
 // or ok=false if the import is clean. The purity rules dispatch on the layer's
-// ROLE, not its name (AC-FA-RULE-006/007).
-func ruleFor(m Model, f FileImports, imp Import) (Finding, bool) {
-	tl, cand := targetLayer(imp.Symbol, f.Path, m.Layers, m.Resolution[f.Language])
+// ROLE, not its name (AC-FA-RULE-006/007). A non-nil error is a fail-closed
+// resolution ambiguity (ADR-0022) propagated from targetLayer.
+func ruleFor(m Model, f FileImports, imp Import, idx fileIndex) (Finding, bool, error) {
+	tl, cand, err := targetLayer(imp.Symbol, f.Path, m.Layers, m.Resolution[f.Language], idx)
+	if err != nil {
+		return Finding{}, false, err
+	}
 	srcRole := roleOf(f.Layer, m)
 	tgtRole := roleOf(tl, m)
 	tech, isTech := matchTech(imp.Symbol, m.Techs)
 	if find, ok := impurityFinding(f, imp, srcRole, tgtRole, isTech); ok {
-		return find, true // core-/app-/port-impurity (domain-seitig, kategorisch)
+		return find, true, nil // core-/app-/port-impurity (domain-seitig, kategorisch)
 	}
 	switch {
 	case srcRole == "adapter" && tgtRole == "adapter" && lateral(m, f, cand, tl):
-		return Finding{f.Path, imp.Line, "lateral-adapter", "Adapter importiert anderen Adapter " + imp.Symbol}, true
+		return Finding{f.Path, imp.Line, "lateral-adapter", "Adapter importiert anderen Adapter " + imp.Symbol}, true, nil
 	case isTech && !tech.inAdapter(f.Path):
-		return Finding{f.Path, imp.Line, "tech-leak", "Tech " + tech.Pattern + " außerhalb " + tech.adapterLabel()}, true
+		return Finding{f.Path, imp.Line, "tech-leak", "Tech " + tech.Pattern + " außerhalb " + tech.adapterLabel()}, true, nil
 	case srcRole == "adapter" && tgtRole == "port" && directionMismatch(m, f.Layer, tl):
-		return Finding{f.Path, imp.Line, "port-direction-mismatch", f.Layer + " (" + dirOf(f.Layer, m) + ") -> " + tl + " (" + dirOf(tl, m) + "): " + imp.Symbol}, true
+		return Finding{f.Path, imp.Line, "port-direction-mismatch", f.Layer + " (" + dirOf(f.Layer, m) + ") -> " + tl + " (" + dirOf(tl, m) + "): " + imp.Symbol}, true, nil
 	case tl != "" && wrongDirection(m, f, tl):
-		return Finding{f.Path, imp.Line, "wrong-direction", f.Layer + " -> " + tl + " (" + imp.Symbol + ")"}, true
+		return Finding{f.Path, imp.Line, "wrong-direction", f.Layer + " -> " + tl + " (" + imp.Symbol + ")"}, true, nil
 	}
-	return Finding{}, false
+	return Finding{}, false, nil
 }
 
 // impurityFinding reports a purity violation for a domain/app/port source (the
@@ -246,76 +257,135 @@ func litPrefixLen(g string) int {
 	return len(p)
 }
 
-// targetLayer resolves an import string to a layer by testing whether a layer
-// glob's path prefix occurs in the import (handles module-qualified paths such
-// as github.com/x/internal/core). The most specific (longest) matching prefix
-// wins — the first declared layer on an equal-length tie — so nested layers
-// resolve correctly (ADR-0010). srcPath is the importing file's repo-relative
-// path: the `relative` mode resolves against its directory (ADR-0017). It also
-// returns the resolved candidate that produced the match — the layer-glob-
-// namespace path that downstream path work (lateral's sub-unit/sink checks)
-// must use instead of the raw specifier; in path mode it is the raw import.
-// Candidates are tried in roots order and only a strictly longer prefix
-// replaces the best, so the earliest candidate wins ties (deterministic,
-// SPEC-DET-001).
-func targetLayer(imp, srcPath string, layers []Layer, res ResolutionConfig) (string, string) {
-	best, bestCand, bestLen := "", "", -1
-	for _, cand := range resolveImport(imp, srcPath, res) {
-		for _, l := range layers {
-			for _, g := range l.Globs {
-				if p := globPrefix(g); p != "" && segIndex(cand, p) >= 0 && len(p) > bestLen {
-					best, bestCand, bestLen = l.Name, cand, len(p)
-				}
-			}
-		}
-	}
-	return best, bestCand
+// fileIndex is the real scanned file set, normalized for the extensionless,
+// package==directory candidate matching of the file-set-aware fixed-root
+// resolution (ADR-0022, slice-027). Set membership is order-free (SPEC-DET-001);
+// it is built once per Evaluate from the already-extracted file list — no I/O.
+type fileIndex struct {
+	stripped map[string]struct{} // each scanned path with its file extension stripped
+	dirs     map[string]struct{} // every ancestor directory of every scanned path
 }
 
-// PhantomRootConflictIn reports the first ambiguous multi-root witness for a
-// fixed-root resolution (ADR-0020), or nil. It fires only for mode "fixed-root"
-// with ≥2 roots where two DISTINCT roots FORCE two DIFFERENT layers — i.e. each
-// root's candidates would resolve to its layer by the root prefix alone. The
-// witness is deterministic: roots are scanned in declared order and the earliest
-// qualifying (i, j) pair wins (SPEC-DET-001).
-func PhantomRootConflictIn(res ResolutionConfig, layers []Layer) *PhantomRootConflict {
+func newFileIndex(files []FileImports) fileIndex {
+	idx := fileIndex{stripped: map[string]struct{}{}, dirs: map[string]struct{}{}}
+	for _, f := range files {
+		idx.stripped[stripExt(f.Path)] = struct{}{}
+		for d := path.Dir(f.Path); d != "." && d != "/" && d != ""; d = path.Dir(d) {
+			idx.dirs[d] = struct{}{}
+		}
+	}
+	return idx
+}
+
+// denotes reports whether a resolved fixed-root candidate corresponds to a real
+// scanned target (extension-agnostic, package==directory — the AC-QA-02 heuristic
+// boundary). A trailing slash marks a package/wildcard import (`a.b.*` extracts as
+// `a.b.` → …/b/): the candidate IS the package directory. Otherwise it is a
+// symbol: a real file with the extension stripped (…/B ↔ …/B.kt) OR — for a
+// symbol declared in a differently-named file (Kotlin class≠file) — its PACKAGE
+// directory (the parent) exists. A nested-class import resolves one level too
+// deep and stays external (documented boundary, ADR-0022).
+func (idx fileIndex) denotes(cand string) bool {
+	if strings.HasSuffix(cand, "/") {
+		_, ok := idx.dirs[path.Clean(cand)]
+		return ok
+	}
+	c := path.Clean(cand)
+	if _, ok := idx.stripped[c]; ok {
+		return true
+	}
+	_, ok := idx.dirs[path.Dir(c)]
+	return ok
+}
+
+// stripExt drops a path's file extension (last segment only), so an extensionless
+// resolved candidate can match a real scanned file.
+func stripExt(p string) string {
+	if e := path.Ext(p); e != "" {
+		return p[:len(p)-len(e)]
+	}
+	return p
+}
+
+// AmbiguousResolution is the fail-closed error a file-set-aware fixed-root
+// resolution raises when the SAME import resolves to real files under ≥2 roots
+// that fall into DIFFERENT layers (ADR-0022): a FQN must map to at most one layer.
+// The CLI maps it to exit code 2 (like a load/extract error). expect/actual in the
+// SAME layer resolves cleanly and is NOT an error (the distinct-layer refinement
+// of the residual left open by ADR-0020).
+type AmbiguousResolution struct {
+	Symbol, Src   string
+	LayerA, CandA string
+	LayerB, CandB string
+}
+
+func (e *AmbiguousResolution) Error() string {
+	return fmt.Sprintf("mehrdeutige Mehr-Wurzel-Auflösung: %q (in %s) existiert real unter mehreren Wurzeln und fällt in verschiedene Schichten — %q (%s) vs. %q (%s); ein FQN muss in höchstens eine Schicht auflösen. Nutze disjunkte Paket-Namespaces oder root-spezifische Globs",
+		e.Symbol, e.Src, e.LayerA, e.CandA, e.LayerB, e.CandB)
+}
+
+// filterReal keeps only the real (scanned-file-backed) candidates of a fixed-root
+// resolution with ≥2 roots (ADR-0022); every other mode (path/relative/1-root)
+// passes through unchanged, so their behavior — and their tests — are untouched.
+// Declaration (roots) order is preserved (deterministic, SPEC-DET-001).
+func filterReal(cands []string, res ResolutionConfig, idx fileIndex) []string {
 	if res.Mode != "fixed-root" || len(res.Roots) < 2 {
-		return nil
+		return cands
 	}
-	dom := make([]string, len(res.Roots))
-	for i, root := range res.Roots {
-		dom[i] = rootForcedLayer(root, layers)
-	}
-	for i := range res.Roots {
-		for j := range res.Roots {
-			if i != j && dom[i] != "" && dom[j] != "" && dom[i] != dom[j] {
-				return &PhantomRootConflict{res.Roots[i], dom[i], res.Roots[j], dom[j]}
-			}
+	var out []string
+	for _, c := range cands {
+		if idx.denotes(c) {
+			out = append(out, c)
 		}
 	}
-	return nil
+	return out
 }
 
-// rootForcedLayer returns the layer a fixed-root candidate rooted at root
-// resolves to by the root prefix ALONE — mirroring targetLayer: the layer whose
-// glob prefix occurs in root on a segment boundary (segIndex>=0, so an interior
-// module-qualified segment counts) with the longest such prefix, the first
-// declared layer on a length tie, or "" if none. When such a prefix exists,
-// EVERY candidate root/… matches that layer regardless of the package path — the
-// phantom condition (ADR-0020). Using segIndex>=0 (not ==0) and the longest
-// prefix keeps this in lockstep with targetLayer, so the guard is neither too
-// strict (nested/overlapping layers resolve unambiguously) nor too lax (interior
-// segments still match).
-func rootForcedLayer(root string, layers []Layer) string {
+// targetLayer resolves an import string to a layer by testing whether a layer
+// glob's path prefix occurs in the resolved candidate (handles module-qualified
+// paths such as github.com/x/internal/core). For fixed-root with ≥2 roots the
+// candidates are first filtered to the ones backed by a REAL scanned file
+// (filterReal, ADR-0022), so a phantom root/… candidate no longer wins by prefix
+// length — the layer is decided by the real target, not the root. Per candidate
+// the most specific (longest) matching prefix wins (first declared layer on a
+// length tie); across REAL candidates the earliest wins a same-layer tie
+// (deterministic, SPEC-DET-001). Two real candidates in DIFFERENT layers are a
+// genuine ambiguity → *AmbiguousResolution (exit 2). It also returns the resolved
+// candidate that produced the match — the layer-glob-namespace path that
+// downstream path work (lateral's sub-unit/sink checks) must use instead of the
+// raw specifier; in path mode it is the raw import.
+func targetLayer(imp, srcPath string, layers []Layer, res ResolutionConfig, idx fileIndex) (string, string, error) {
+	best, bestCand, bestLen := "", "", -1
+	for _, cand := range filterReal(resolveImport(imp, srcPath, res), res, idx) {
+		l, n := layerOfCand(cand, layers)
+		switch {
+		case l == "":
+			// candidate matches no layer: external, contributes nothing
+		case best == "":
+			best, bestCand, bestLen = l, cand, n
+		case l != best:
+			return "", "", &AmbiguousResolution{Symbol: imp, Src: srcPath, LayerA: best, CandA: bestCand, LayerB: l, CandB: cand}
+		case n > bestLen:
+			bestCand, bestLen = cand, n
+		}
+	}
+	return best, bestCand, nil
+}
+
+// layerOfCand returns the layer of ONE resolved candidate and its literal glob
+// prefix length: the longest layer-glob prefix occurring in cand on a segment
+// boundary (segIndex>=0), the first declared layer on a length tie, or "" / -1 if
+// none. Mirrors the inner loop the pre-ADR-0022 targetLayer ran over every candidate.
+func layerOfCand(cand string, layers []Layer) (string, int) {
 	best, bestLen := "", -1
 	for _, l := range layers {
 		for _, g := range l.Globs {
-			if p := globPrefix(g); p != "" && segIndex(root, p) >= 0 && len(p) > bestLen {
+			if p := globPrefix(g); p != "" && segIndex(cand, p) >= 0 && len(p) > bestLen {
 				best, bestLen = l.Name, len(p)
 			}
 		}
 	}
-	return best
+	return best, bestLen
 }
 
 // resolveImport normalizes an import symbol into the layer-glob namespace per

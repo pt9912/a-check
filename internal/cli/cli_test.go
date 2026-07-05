@@ -436,3 +436,79 @@ func TestMonoRepoMultiSupportedRuns(t *testing.T) { // slice-017: Mono-Repo mit 
 		t.Fatalf("go+cpp (beide unterstützt) muss laufen (Exit 0), got %d (err=%q)", code, errb.String())
 	}
 }
+
+// kmpCfg is a disjoint KMP/Gradle multi-module config: two modules share
+// package_base com.ex with disjoint sub-namespaces (domain vs application),
+// resolved file-set-aware over two roots (ADR-0022, slice-027).
+const kmpCfg = `version: 1
+languages:
+  kotlin: ["**/*.kt"]
+layers:
+  domain:      {globs: ["mod-a/**"], role: domain}
+  application: {globs: ["mod-b/**"], role: app}
+edges:
+  - {from: application, to: domain}
+resolution:
+  kotlin: {mode: fixed-root, package_base: com.ex, roots: ["mod-a/src/commonMain/kotlin/com/ex", "mod-b/src/commonMain/kotlin/com/ex"]}
+`
+
+func TestKmpDisjointCleanExit0(t *testing.T) { // AC-FA-CONF-001 / ADR-0022 AC1+AC4: disjunkte Multi-Modul-Config lädt UND löst sauber -> Exit 0
+	dir := writeRepo(t, map[string]string{
+		".a-check.yml": kmpCfg,
+		"mod-a/src/commonMain/kotlin/com/ex/domain/A.kt":      "package com.ex.domain\n",
+		"mod-b/src/commonMain/kotlin/com/ex/application/B.kt": "package com.ex.application\nimport com.ex.domain.A\n", // application -> domain erlaubt
+	})
+	var out, errb bytes.Buffer
+	if code := cli.Run([]string{dir}, &out, &errb); code != 0 {
+		t.Fatalf("sauberes disjunktes Multi-Modul: erwarte Exit 0, got %d (out=%q err=%q)", code, out.String(), errb.String())
+	}
+}
+
+func TestKmpDisjointDomainToApplicationExit1(t *testing.T) { // AC-FA-CONF-001 / ADR-0022 AC2: verbotene domain->application-Kante gemeldet (vor slice-027: 0 Befunde)
+	dir := writeRepo(t, map[string]string{
+		".a-check.yml": kmpCfg,
+		"mod-a/src/commonMain/kotlin/com/ex/domain/A.kt":      "package com.ex.domain\nimport com.ex.application.B\n", // verboten
+		"mod-b/src/commonMain/kotlin/com/ex/application/B.kt": "package com.ex.application\n",
+	})
+	var out, errb bytes.Buffer
+	code := cli.Run([]string{dir}, &out, &errb)
+	if code != 1 {
+		t.Fatalf("domain importiert application: erwarte Exit 1, got %d (out=%q err=%q)", code, out.String(), errb.String())
+	}
+	if strings.Count(out.String(), "impurity") != 1 || !strings.Contains(out.String(), "com.ex.application.B") {
+		t.Fatalf("erwarte genau 1 impurity-Befund über com.ex.application.B, got %q", out.String())
+	}
+}
+
+func TestKmpSameFqnTwoRootsExit2(t *testing.T) { // AC-FA-CONF-001 / ADR-0022 AC5: gleicher FQN real in 2 roots mit VERSCHIEDENEN Schichten -> Exit 2 (fail-closed)
+	dir := writeRepo(t, map[string]string{
+		".a-check.yml": kmpCfg,
+		"mod-a/src/commonMain/kotlin/com/ex/util/X.kt":   "package com.ex.util\n", // domain-Schicht
+		"mod-b/src/commonMain/kotlin/com/ex/util/X.kt":   "package com.ex.util\n", // application-Schicht — gleicher FQN, andere Schicht
+		"mod-a/src/commonMain/kotlin/com/ex/domain/A.kt": "package com.ex.domain\nimport com.ex.util.X\n",
+	})
+	var out, errb bytes.Buffer
+	code := cli.Run([]string{dir}, &out, &errb)
+	if code != 2 {
+		t.Fatalf("gleicher FQN in 2 roots/2 Schichten: erwarte Exit 2, got %d (out=%q err=%q)", code, out.String(), errb.String())
+	}
+	if !strings.Contains(errb.String(), "mehrdeutige Mehr-Wurzel-Auflösung") {
+		t.Fatalf("stderr muss die Mehrdeutigkeit nennen, got %q", errb.String())
+	}
+	if out.String() != "" {
+		t.Fatalf("bei fail-closed keine Findings auf stdout, got %q", out.String())
+	}
+}
+
+func TestPrintConfigDocumentsResolution(t *testing.T) { // AC-FA-CONF-001 / ADR-0022 AC6: --print-config dokumentiert die Multi-Modul-Resolution
+	var out, errb bytes.Buffer
+	if code := cli.Run([]string{"--print-config"}, &out, &errb); code != 0 {
+		t.Fatalf("exit %d", code)
+	}
+	o := out.String()
+	for _, want := range []string{"resolution", "fixed-root", "package_base"} {
+		if !strings.Contains(o, want) {
+			t.Fatalf("print-config muss die Multi-Modul-Resolution dokumentieren (%q fehlt): %q", want, o)
+		}
+	}
+}

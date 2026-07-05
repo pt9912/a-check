@@ -54,7 +54,12 @@ func Run(args []string, out, errw io.Writer) int {
 		_, _ = fmt.Fprintf(errw, "a-check: %v\n", err)
 		return 2
 	}
-	return report.New(out, errw).Report(core.Evaluate(m, files))
+	findings, err := core.Evaluate(m, files)
+	if err != nil {
+		_, _ = fmt.Fprintf(errw, "a-check: %v\n", err)
+		return 2
+	}
+	return report.New(out, errw).Report(findings)
 }
 
 // aCheckImage is the distributed image reference, digest-pinned to the v0.10.0
@@ -94,4 +99,11 @@ forbidden_constructs:
   ports: ["impl "]
 markers:
   ignore_symbols: []
+# resolution:                     # optional: Import-Symbol -> Schicht je Sprache (ADR-0016/ADR-0022)
+#   kotlin:                       # Multi-Modul (KMP/Gradle): disjunkte package-Sub-Namespaces je Modul,
+#     mode: fixed-root            #   geteiltes package_base; der interne FQN wird datei-mengen-bewusst
+#     package_base: dev.example   #   gegen die REALEN Dateien unter roots aufgeloest (nicht am Wurzel-Praefix).
+#     roots:                      #   Gleicher FQN real in >=2 roots mit VERSCHIEDENEN Schichten -> Exit 2.
+#       - hexagon/domain/src/commonMain/kotlin/dev/example
+#       - hexagon/application/src/commonMain/kotlin/dev/example
 `
