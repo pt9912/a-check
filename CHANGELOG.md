@@ -6,6 +6,8 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
+## [0.11.0] - 2026-07-05
+
 ### Fixed
 
 - **KMP-/Multi-Modul-Auflösung (`AC-FA-CONF-001` 0.16.0→0.17.0, slice-027, ADR-0022):** `mode:

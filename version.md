@@ -16,8 +16,8 @@
 
 ## Aktuell
 
-Aktuelle Version: [`v0.10.0`](#v0.10.0) — 2026-07-04.
-Release-Digest: `ghcr.io/pt9912/a-check@sha256:0932cb1dbdfa6ece0a5f9892dbe541cf29618ffe2667feda01c96d3218af2fc9`.
+Aktuelle Version: [`v0.11.0`](#v0.11.0) — 2026-07-05.
+Release-Digest: `ghcr.io/pt9912/a-check@sha256:f53a06fe02973a0cd4771eccb3d22171619a5ddfcbca2fac9922ce3fe7520483`.
 
 Aus anderen Dokumenten stabil referenzierbar als `version.md#aktuell` (zeigt immer
 hierher, nie auf eine feste Nummer). Pro Release sind genau diese Zeile **und** eine
@@ -31,7 +31,8 @@ Bump nicht). Zusammen mit dem Digest-Gleichheits-Gate ist der Bump damit einpunk
 
 | Version                       | Datum      | Release                                                             |
 | ----------------------------- | ---------- | ------------------------------------------------------------------ |
-| `v0.10.0` <a id="v0.10.0"></a>| 2026-07-04 | [Tag v0.10.0](https://github.com/pt9912/a-check/releases/tag/v0.10.0) |
+| `v0.11.0` <a id="v0.11.0"></a>| 2026-07-05 | [Tag v0.11.0](https://github.com/pt9912/a-check/releases/tag/v0.11.0) |
+| `v0.10.0`                     | 2026-07-04 | [Tag v0.10.0](https://github.com/pt9912/a-check/releases/tag/v0.10.0) |
 | `v0.9.0`                      | 2026-07-04 | [Tag v0.9.0](https://github.com/pt9912/a-check/releases/tag/v0.9.0) |
 | `v0.8.0`                      | 2026-07-03 | [Tag v0.8.0](https://github.com/pt9912/a-check/releases/tag/v0.8.0) |
 | `v0.7.0`                      | 2026-07-03 | [Tag v0.7.0](https://github.com/pt9912/a-check/releases/tag/v0.7.0) |
