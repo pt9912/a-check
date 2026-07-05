@@ -69,8 +69,9 @@ jedem `v*`-Tag-Push:
    (Version, Datum, voller `@sha256:`-Digest) plus eine neue
    [Verlaufs](../../version.md#verlauf)-Zeile und den wandernden `<a id>`-Anker nachziehen.
    Die harten Pins ([`a-check.mk`](../../a-check.mk),
-   [`internal/cli/cli.go`](../../internal/cli/cli.go)) und das `docker run`-Beispiel im
-   README tragen den Digest verbatim; vergisst der Re-Pin eine davon, meldet
+   [`internal/cli/cli.go`](../../internal/cli/cli.go)) und die `docker run`-Beispiele in
+   **beiden** READMEs ([`README.md`](../../README.md) + [`README.de.md`](../../README.de.md))
+   tragen den Digest verbatim; vergisst der Re-Pin eine davon, meldet
    `make gates` (via `tools/gate-consistency.sh`) die Digest- bzw. Versions-Drift
    **rot** — statt sie wie früher nur per Zufalls-Audit aufzudecken. Die Prosa-Erwähnungen
    („Status", „aktuelles Release", Handbuch-Software-Version) verlinken auf

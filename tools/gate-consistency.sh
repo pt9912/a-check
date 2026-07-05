@@ -74,9 +74,9 @@ self_test() {
 # NICHT fangen (a-check pinnt per Digest, nicht per Tag):
 #   (A) Versions-Nummer: version.md#aktuell == aktuellstes CHANGELOG-Release.
 #   (B) Digest: der volle @sha256-Digest ist in a-check.mk, internal/cli/cli.go,
-#       dem README-`docker run`-Beispiel UND version.md#aktuell identisch (die
-#       zwei harten, nicht verlinkbaren Pins + das Kommando-Beispiel + die eine
-#       Prosa-Wahrheit).
+#       den `docker run`-Beispielen BEIDER READMEs (README.md + README.de.md) UND
+#       version.md#aktuell identisch (die zwei harten, nicht verlinkbaren Pins + die
+#       zwei Kommando-Beispiele + die eine Prosa-Wahrheit).
 # Jede harte Pin-Datei muss GENAU EINEN a-check-Digest tragen — ein zweiter,
 # abweichender (Decoy/Alt-Kommentar) macht den effektiven Pin mehrdeutig und
 # könnte echte Drift maskieren ⇒ fail-closed.
@@ -99,7 +99,7 @@ _nlines() { printf '%s' "$1" | grep -c . || true; }
 pin_consistency() {
   local root="$1" fail=0
   local mk="$root/a-check.mk" cli="$root/internal/cli/cli.go"
-  local readme="$root/README.md" ver="$root/version.md"
+  local readme="$root/README.md" dereadme="$root/README.de.md" ver="$root/version.md"
   local chg="$root/CHANGELOG.md" dmk="$root/d-check.mk"
 
   # (B) Digest-Gleichheit. version.md#aktuell ist die Anker-Wahrheit — auf den
@@ -113,7 +113,7 @@ pin_consistency() {
   fi
 
   local name path digs n
-  for pair in "a-check.mk:$mk" "internal/cli/cli.go:$cli" "README.md:$readme"; do
+  for pair in "a-check.mk:$mk" "internal/cli/cli.go:$cli" "README.md:$readme" "README.de.md:$dereadme"; do
     name="${pair%%:*}"; path="${pair#*:}"
     digs="$(a_check_digests "$path")"
     n="$(_nlines "$digs")"
@@ -171,6 +171,7 @@ pin_self_test() {
     printf 'A_CHECK_IMAGE ?= ghcr.io/pt9912/a-check@%s\n' "$A" > "$tmp/a-check.mk"
     printf 'const aCheckImage = "ghcr.io/pt9912/a-check@%s"\n' "$A" > "$tmp/internal/cli/cli.go"
     printf 'run ghcr.io/pt9912/a-check@%s /src\n' "$1" > "$tmp/README.md"
+    printf 'run ghcr.io/pt9912/a-check@%s /src\n' "$A" > "$tmp/README.de.md"
     printf '## Aktuell\nAktuelle Version: %s\nDigest ghcr.io/pt9912/a-check@%s\n## Verlauf\n' "$2" "$A" > "$tmp/version.md"
     printf '## [0.10.0] - 2026-07-04\n' > "$tmp/CHANGELOG.md"
     printf 'DCHECK_IMAGE ?= ghcr.io/pt9912/d-check:v0.37.1\n# historisch v0.35.0 → v0.37.1\nDCHECK_DIGEST ?= %s\n' "$3" > "$tmp/d-check.mk"

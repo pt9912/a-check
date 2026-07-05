@@ -1,118 +1,114 @@
 # a-check
 
-Sprachübergreifender Hexagon-Architektur-Checker — deterministisch,
-seiteneffektfrei, text-heuristisch, ausgeliefert als Container-Image.
+**English** · [Deutsch](README.de.md)
 
-**Status: [aktuelle Version](version.md#aktuell) veröffentlicht.** Lastenheft, Spezifikation, Architektur,
-Go-Implementierung, Durchsetzungsschicht (Meta-/Tool-Call-/Handoff-Gates) und
-CI-/Release-Pipeline stehen; alle Gates sind grün. Das Image liegt auf GHCR
-(`ghcr.io/pt9912/a-check`, Tags der [aktuellen Version](version.md#aktuell) + `latest`, digest-gepinnt). Verbindlich
-ist das [Lastenheft](spec/lastenheft.md); die Versionshistorie führt die
-[CHANGELOG.md](CHANGELOG.md), die Release-Koordinaten (Version/Digest/Tag) das
-[Release-Register](version.md#aktuell).
+Cross-language hexagonal-architecture checker — deterministic, side-effect-free,
+text-heuristic, shipped as a container image.
 
-## Was ist a-check?
+**Status: [current version](version.md#aktuell) released.** Requirements spec, specification,
+architecture, Go implementation, enforcement layer (meta/tool-call/handoff gates) and the
+CI/release pipeline are in place; all gates are green. The image lives on GHCR
+(`ghcr.io/pt9912/a-check`, tags for the [current version](version.md#aktuell) + `latest`, digest-pinned).
+The binding source is the [requirements spec (Lastenheft)](spec/lastenheft.md); the version
+history lives in [CHANGELOG.md](CHANGELOG.md), the release coordinates (version/digest/tag) in the
+[release register](version.md#aktuell).
 
-**a-check** erzwingt die hexagonale Schicht-Architektur eines Repositories
-**sprachübergreifend**, gesteuert über eine Konfigurationsdatei. Sieben
-universelle Regeln, je eine Anforderung im [Lastenheft](spec/lastenheft.md):
+## What is a-check?
 
-- `core-impurity` — der Kern (Domäne, innerste Schicht) importiert weder Port, Adapter noch Framework/Tech
+**a-check** enforces a repository's hexagonal layered architecture **across languages**, driven
+by a single config file. Seven universal rules, each one requirement in the
+[requirements spec](spec/lastenheft.md):
+
+- `core-impurity` — the core (domain, innermost layer) imports neither a port, an adapter, nor a framework/tech
   ([AC-FA-RULE-001](spec/lastenheft.md#ac-fa-rule-001--kern-reinheit-regel-core-impurity))
-- `lateral-adapter` — ein Adapter importiert keinen anderen Adapter (außer der gemeinsamen Senke)
+- `lateral-adapter` — an adapter imports no other adapter (except the shared sink)
   ([AC-FA-RULE-002](spec/lastenheft.md#ac-fa-rule-002--keine-lateralen-adapter-kanten-regel-lateral-adapter))
-- `tech-leak` — ein Framework/Tech erscheint nur in seinem Adapter
+- `tech-leak` — a framework/tech appears only in its adapter
   ([AC-FA-RULE-003](spec/lastenheft.md#ac-fa-rule-003--tech-kapselung-regel-tech-leak))
-- `port-impurity` — ein Port importiert keinen Adapter und kein Framework/Tech (Domänentypen des Kerns darf er referenzieren)
+- `port-impurity` — a port imports no adapter and no framework/tech (it may reference the core's domain types)
   ([AC-FA-RULE-004](spec/lastenheft.md#ac-fa-rule-004--port-disziplin-regel-port-impurity))
-- `wrong-direction` — Schicht-Kanten sind einbahnig
+- `wrong-direction` — layer edges are one-way
   ([AC-FA-RULE-005](spec/lastenheft.md#ac-fa-rule-005--schicht-richtung-regel-wrong-direction))
-- `app-impurity` — die Application-Schicht importiert keinen Adapter und kein Framework/Tech (Domäne und Ports darf sie nutzen)
+- `app-impurity` — the application layer imports no adapter and no framework/tech (it may use the domain and ports)
   ([AC-FA-RULE-007](spec/lastenheft.md#ac-fa-rule-007--rolle-app-und-strenge-domain))
-- `port-direction-mismatch` — ein Adapter spricht nur Ports **seiner** Richtung (optionale Dimension `driving`/`driven`, orthogonal zur Rolle)
+- `port-direction-mismatch` — an adapter talks only to ports of **its** direction (optional `driving`/`driven` dimension, orthogonal to the role)
   ([AC-FA-RULE-008](spec/lastenheft.md#ac-fa-rule-008--driving-driven-port-richtung-regel-port-direction-mismatch))
 
-Die Imports werden **text-heuristisch** je Sprache (C++/Go/Rust/Kotlin/Java/Python/C#/TypeScript)
-extrahiert ([AC-FA-EXTRACT-001](spec/lastenheft.md#ac-fa-extract-001--sprach-backends-für-die-import-extraktion)).
-Jeder Befund nennt Datei, Zeile, Regel und Grund; Exit-Codes: `0` sauber,
-`1` Befunde, `2` Nutzungs-/Konfigurationsfehler
+Imports are extracted **text-heuristically** per language (C++/Go/Rust/Kotlin/Java/Python/C#/TypeScript)
+([AC-FA-EXTRACT-001](spec/lastenheft.md#ac-fa-extract-001--sprach-backends-für-die-import-extraktion)).
+Every finding names the file, line, rule and reason; exit codes: `0` clean, `1` findings,
+`2` usage/config error
 ([AC-FA-CLI-001](spec/lastenheft.md#ac-fa-cli-001--aufruf-scan-wurzel-und-exit-codes)).
 
-## Warum a-check?
+## Why a-check?
 
-Vier funktional überlappende `arch-check.sh`-Varianten sind in den
-Schwester-Repositories gewachsen — C++ über `#include`-Heuristik (`b-cad`),
-Go über `go list` (`d-check`), Rust über `use`-Heuristik (`grid-guide`),
-Kotlin über Gradle-Modulgrenzen (`d-migrate`): vier Sprachen, vier
-Mechanismen, dieselben sieben Regeln. a-check ersetzt sie durch **ein** Tool:
+Four functionally overlapping `arch-check.sh` variants grew across the sibling repositories —
+C++ via `#include` heuristics (`b-cad`), Go via `go list` (`d-check`), Rust via `use` heuristics
+(`grid-guide`), Kotlin via Gradle module boundaries (`d-migrate`): four languages, four
+mechanisms, the same seven rules. a-check replaces them with **one** tool:
 
-- **Konfiguration statt Fork:** repo-spezifische Schicht-/Tech-Regeln leben
-  deklarativ in `.a-check.yml`
+- **Configuration instead of fork:** repo-specific layer/tech rules live declaratively in
+  `.a-check.yml`
   ([AC-FA-CONF-001](spec/lastenheft.md#ac-fa-conf-001--konfigurationsdatei-a-checkyml)),
-  nicht in kopierten Skripten.
-- **Ein Distributionsweg:** digest-gepinntes Container-Image plus
-  mitgeliefertes `a-check.mk` statt n gepflegter Kopien
+  not in copied scripts.
+- **One distribution path:** a digest-pinned container image plus a shipped `a-check.mk`
+  instead of N maintained copies
   ([AC-FA-DIST-001](spec/lastenheft.md#ac-fa-dist-001--distribution-image---print-mk-a-checkmk)).
 
-Es ist das **Architektur-Gegenstück zu `d-check`** (Doku-Referenzen):
-dieselbe Gründungslogik (eine Familie driftender Skripte durch ein Werkzeug
-ersetzen), eine Abstraktionsebene höher.
+It is the **architecture counterpart to `d-check`** (doc references): the same founding logic
+(replace a family of drifting scripts with one tool), one abstraction level higher.
 
-## Kerngedanke
+## Core idea
 
-**Architektur ist ein Import-Graph mit prüfbaren Invarianten.** Ob der Kern
-rein bleibt, ein Adapter lateral importiert oder eine Schicht-Kante gegen
-die Richtung läuft, ist maschinell entscheidbar — a-check macht diese
-Invarianten zum Gate statt zur Review-Meinung.
+**Architecture is an import graph with checkable invariants.** Whether the core stays pure, an
+adapter imports laterally, or a layer edge runs against its direction is machine-decidable —
+a-check turns these invariants into a gate instead of a review opinion.
 
-Dabei gilt **berichten, nie reparieren**: a-check ist ein reines Lese-Tool.
-Die **Heuristik-Grenze** (text-basiert, kein vollständiger Parser je Sprache)
-wird ausgewiesen, nicht verschwiegen; eine Allowlist/Marker-Ausnahme ist
-konfigurierbar
+The rule is **report, never repair**: a-check is a pure read-only tool. The **heuristic boundary**
+(text-based, not a full parser per language) is disclosed, not hidden; an allowlist/marker
+exception is configurable
 ([AC-QA-02](spec/lastenheft.md#ac-qa-02--hermetik-und-ehrliche-heuristik-grenze)).
 
-## Was macht es vertrauenswürdig?
+## What makes it trustworthy?
 
-- **Determinismus:** identische Eingabe ⇒ byte-identische, stabil sortierte
-  Ausgabe ([AC-QA-01](spec/lastenheft.md#ac-qa-01--determinismus)).
-- **Hermetisch & netzlos:** schreibt nie ins geprüfte Repo, läuft mit
-  `--network none` auf distroless/static
+- **Determinism:** identical input ⇒ byte-identical, stably sorted output
+  ([AC-QA-01](spec/lastenheft.md#ac-qa-01--determinismus)).
+- **Hermetic & network-less:** never writes into the checked repo, runs with `--network none`
+  on distroless/static
   ([AC-QA-02](spec/lastenheft.md#ac-qa-02--hermetik-und-ehrliche-heuristik-grenze)).
-- **Keine stillen Defaults:** jede ungültige `.a-check.yml` bricht mit Exit 2
-  ab (strict decode,
+- **No silent defaults:** any invalid `.a-check.yml` aborts with exit 2 (strict decode,
   [AC-FA-CONF-001](spec/lastenheft.md#ac-fa-conf-001--konfigurationsdatei-a-checkyml)).
-- **Reproduzierbar:** Image und `a-check.mk` referenzieren einen
-  `@sha256:`-Digest ([AC-QA-03](spec/lastenheft.md#ac-qa-03--reproduzierbarkeit)).
-- **Dogfooding:** a-check prüft seine eigene Hexagon-Architektur bei jedem
-  `make arch-check` — mit der [Selbstkonfiguration](.a-check.yml), 0 Befunde.
+- **Reproducible:** the image and `a-check.mk` reference a `@sha256:` digest
+  ([AC-QA-03](spec/lastenheft.md#ac-qa-03--reproduzierbarkeit)).
+- **Dogfooding:** a-check checks its own hexagonal architecture on every `make arch-check` —
+  against the [self-configuration](.a-check.yml), 0 findings.
 
-## Nutzung
+## Usage
 
-Gegen das veröffentlichte Image (digest-gepinnt, netzlos, read-only):
+Against the published image (digest-pinned, network-less, read-only):
 
 ```bash
 docker run --rm --network none -v "$PWD:/src:ro" \
   ghcr.io/pt9912/a-check@sha256:f53a06fe02973a0cd4771eccb3d22171619a5ddfcbca2fac9922ce3fe7520483 /src
 ```
 
-Konsumenten binden a-check als `make a-check`-Gate ein — **ohne
-Skript-Kopie**: das mitgelieferte [`a-check.mk`](a-check.mk) (von
-`a-check --print-mk` erzeugt) wird `include`-t, dazu ein `.a-check.yml`.
-`A_CHECK_IMAGE` ist auf den `@sha256:`-Digest des Releases gepinnt
+Consumers wire a-check in as a `make a-check` gate — **without a script copy**: the shipped
+[`a-check.mk`](a-check.mk) (produced by `a-check --print-mk`) is `include`-d, plus an
+`.a-check.yml`. `A_CHECK_IMAGE` is pinned to the release's `@sha256:` digest
 ([AC-FA-DIST-001](spec/lastenheft.md#ac-fa-dist-001--distribution-image---print-mk-a-checkmk),
-[AC-QA-03](spec/lastenheft.md#ac-qa-03--reproduzierbarkeit)); die Pin-Hebung ist
-ein bewusster Commit. Den Release-Prozess beschreibt [`docs/user/releasing.md`](docs/user/releasing.md).
+[AC-QA-03](spec/lastenheft.md#ac-qa-03--reproduzierbarkeit)); raising the pin is a deliberate
+commit. The release process is described in [`docs/user/releasing.md`](docs/user/releasing.md).
 
-Lokal (Dogfooding, ohne Pull):
+Locally (dogfooding, no pull):
 
 ```bash
-make build        # static/distroless Image bauen
-make arch-check   # a-check prüft sich selbst (netzlos, read-only)
+make build        # build the static/distroless image
+make arch-check   # a-check checks itself (network-less, read-only)
 ```
 
-## Konfiguration (`.a-check.yml`)
+## Configuration (`.a-check.yml`)
 
-In der Repo-Wurzel; strikt dekodiert (unbekannter Schlüssel ⇒ Exit 2):
+In the repo root; strictly decoded (unknown key ⇒ exit 2):
 
 ```yaml
 version: 1
@@ -124,43 +120,46 @@ layers:
   adapters: ["internal/adapters/**"]
 edges:
   - {from: adapters, to: ports}
-  - {from: ports,    to: core}     # Ports dürfen Domänentypen referenzieren
-  # - {from: adapters, to: core}   # falls Adapter Domänentypen direkt referenzieren
+  - {from: ports,    to: core}     # ports may reference domain types
+  # - {from: adapters, to: core}   # if adapters reference domain types directly
 tech:
-  - {pattern: "net/http", adapter: adapters/http}                 # Substring (Default)
-  # - {pattern: "Q[A-Za-z]", adapter: adapters/ui, match: regex}  # RE2-Regex (z. B. Qt)
+  - {pattern: "net/http", adapter: adapters/http}                 # substring (default)
+  # - {pattern: "Q[A-Za-z]", adapter: adapters/ui, match: regex}  # RE2 regex (e.g. Qt)
 ```
 
-Das vollständige Schema steht in der
-[Spezifikation §SPEC-CONF-001](spec/spezifikation.md#spec-conf-001--konfigurationsschema);
-ein lebendes Beispiel ist die [Selbstkonfiguration dieses Repos](.a-check.yml).
-`a-check --print-config` gibt ein kommentiertes Gerüst aus.
+The full schema is in the
+[specification §SPEC-CONF-001](spec/spezifikation.md#spec-conf-001--konfigurationsschema);
+a living example is [this repo's self-configuration](.a-check.yml).
+`a-check --print-config` prints a commented skeleton.
 
-## Einstieg
+## Getting started
 
-| Dokument | Inhalt |
+| Document | Content |
 |---|---|
-| [`docs/user/benutzerhandbuch.md`](docs/user/benutzerhandbuch.md) | **Benutzerhandbuch** — Installation, Nutzung, `.a-check.yml`, Fehlerbehebung |
-| [`docs/user/releasing.md`](docs/user/releasing.md) | Release-Prozess — Tagging, GHCR, Digest-Pin |
-| [`spec/lastenheft.md`](spec/lastenheft.md) | Anforderungen (`AC-FA-*`, `AC-QA-*`), Akzeptanzkriterien |
-| [`spec/spezifikation.md`](spec/spezifikation.md) | Algorithmen, `.a-check.yml`-Schema, Exit-Codes (`SPEC-*`) |
-| [`spec/architecture.md`](spec/architecture.md) | Hexagon-Komponenten und Rollen (`ARC-*`) |
-| [`docs/plan/adr/README.md`](docs/plan/adr/README.md) | Architekturentscheidungen (ADR-Index) |
-| [`harness/README.md`](harness/README.md) | Harness-Einstieg: Source Precedence, Guides, Sensors |
-| [`AGENTS.md`](AGENTS.md) | Briefing für AI-Coding-Agenten, Hard Rules |
-| [`CHANGELOG.md`](CHANGELOG.md) | Änderungshistorie |
+| [`docs/user/benutzerhandbuch.md`](docs/user/benutzerhandbuch.md) | **User manual** (German) — installation, usage, `.a-check.yml`, troubleshooting |
+| [`docs/user/releasing.md`](docs/user/releasing.md) | Release process — tagging, GHCR, digest pin |
+| [`spec/lastenheft.md`](spec/lastenheft.md) | Requirements (`AC-FA-*`, `AC-QA-*`), acceptance criteria |
+| [`spec/spezifikation.md`](spec/spezifikation.md) | Algorithms, `.a-check.yml` schema, exit codes (`SPEC-*`) |
+| [`spec/architecture.md`](spec/architecture.md) | Hexagon components and roles (`ARC-*`) |
+| [`docs/plan/adr/README.md`](docs/plan/adr/README.md) | Architecture decisions (ADR index) |
+| [`harness/README.md`](harness/README.md) | Harness entry: source precedence, guides, sensors |
+| [`AGENTS.md`](AGENTS.md) | Briefing for AI coding agents, hard rules |
+| [`CHANGELOG.md`](CHANGELOG.md) | Change history |
 
-## Entwicklung
+> The specification, requirements and user manual are maintained in German. The `AC-*`/`SPEC-*`/`ARC-*`
+> anchors above therefore point to German headings.
 
-Der Host braucht nur `git`, GNU `make`, `bash` und Docker
+## Development
+
+The host needs only `git`, GNU `make`, `bash` and Docker
 ([`AGENTS.md`](AGENTS.md) §3.1).
 
 ```bash
-make help     # verfügbare Targets
-make gates    # alle inneren Gates (lint/test/coverage-gate/arch-check/doc-check/gate-consistency/guard-selftest)
-make ci       # gates + image-test (CI-äquivalent); make trace-check prüft Commit-IDs
+make help     # available targets
+make gates    # all inner gates (lint/test/coverage-gate/arch-check/doc-check/gate-consistency/guard-selftest)
+make ci       # gates + image-test (CI-equivalent); make trace-check checks commit IDs
 ```
 
-## Lizenz
+## License
 
-Dieses Projekt steht unter der [MIT-Lizenz](LICENSE).
+This project is licensed under the [MIT License](LICENSE).

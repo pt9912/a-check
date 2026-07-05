@@ -7,8 +7,8 @@
 > beweglichem Tag; darum trägt die Aktuell-Zeile zusätzlich den **vollen
 > Release-Digest** — die **eine Wahrheit**, gegen die
 > [`tools/gate-consistency.sh`](tools/gate-consistency.sh) die harten Pins
-> ([`a-check.mk`](a-check.mk), [`internal/cli/cli.go`](internal/cli/cli.go) und
-> das `docker run`-Beispiel in [`README.md`](README.md)) auf Gleichheit prüft
+> ([`a-check.mk`](a-check.mk), [`internal/cli/cli.go`](internal/cli/cli.go) und die
+> `docker run`-Beispiele in [`README.md`](README.md) + [`README.de.md`](README.de.md)) auf Gleichheit prüft
 > (slice-018). **Kein Duplikat** der Detail-Changes — die stehen im
 > [CHANGELOG](CHANGELOG.md); hier nur Versions-Koordinaten (Version, Datum,
 > Digest, Tag). **Fremde** Versionen (d-check, Baseline) gehören nicht hierher,
