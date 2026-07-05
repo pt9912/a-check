@@ -29,9 +29,14 @@ make a-check A_CHECK_IMAGE=a-check:dev   # Konsum-Aufruf gegen das lokale Image
 ## Versionsquelle
 
 Versionen folgen SemVer; die menschlich kuratierte Begründung jedes Releases ist
-der zugehörige Abschnitt in [`CHANGELOG.md`](../../CHANGELOG.md). Vor dem Tag
-wird dort der `[Unreleased]`-Stand unter die neue Version geschnitten. Das
-Lastenheft steht bei 0.16.0.
+der zugehörige Abschnitt in [`CHANGELOG.md`](../../CHANGELOG.md). Der
+`[Unreleased]`-Stand wird **beim Re-Pin nach dem Publish** (Schritt 6) unter die neue
+Version geschnitten — **zusammen** mit dem `version.md#aktuell`-Bump: der Pin-Check
+(slice-018) verlangt `version.md#aktuell` == aktuellstes `CHANGELOG`-Release; ein
+CHANGELOG-Schnitt **vor** dem Tag (ohne version.md-Bump) macht `make ci` in der Pipeline
+rot. So bleibt `version.md#aktuell` bis zum Publish beim vorigen Release (immer wahr —
+nie ein unveröffentlichter Digest). Das Lastenheft steht bei **0.17.0** (eigene Doku-Achse,
+**≠** der Release-Tag: v0.10.0 trägt Lastenheft 0.16.0).
 
 ## Release auslösen
 
@@ -58,10 +63,12 @@ jedem `v*`-Tag-Push:
    danach gibt `a-check --print-mk` ein `a-check.mk` mit dem **aktuell
    digest-gepinnten** `A_CHECK_IMAGE` aus
    ([AC-QA-03](../../spec/lastenheft.md#ac-qa-03--reproduzierbarkeit)).
-6. **Register-Re-Pin** (slice-018): den neuen Digest + die neue Version an **einer**
-   Stelle nachziehen — [`version.md#aktuell`](../../version.md#aktuell) (Version, Datum,
-   voller `@sha256:`-Digest) plus eine neue [Verlaufs](../../version.md#verlauf)-Zeile und
-   der wandernde `<a id>`-Anker. Die harten Pins ([`a-check.mk`](../../a-check.mk),
+6. **Register-Re-Pin + CHANGELOG-Schnitt** (slice-018): den CHANGELOG `[Unreleased]` →
+   `[X.Y.Z] - <Datum>` schneiden **und** — im **selben** Commit, sonst Versions-Drift —
+   den neuen Digest + die neue Version an [`version.md#aktuell`](../../version.md#aktuell)
+   (Version, Datum, voller `@sha256:`-Digest) plus eine neue
+   [Verlaufs](../../version.md#verlauf)-Zeile und den wandernden `<a id>`-Anker nachziehen.
+   Die harten Pins ([`a-check.mk`](../../a-check.mk),
    [`internal/cli/cli.go`](../../internal/cli/cli.go)) und das `docker run`-Beispiel im
    README tragen den Digest verbatim; vergisst der Re-Pin eine davon, meldet
    `make gates` (via `tools/gate-consistency.sh`) die Digest- bzw. Versions-Drift
