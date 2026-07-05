@@ -5,14 +5,6 @@
 Cross-language hexagonal-architecture checker — deterministic, side-effect-free,
 text-heuristic, shipped as a container image.
 
-**Status: [current version](version.md#aktuell) released.** Requirements spec, specification,
-architecture, Go implementation, enforcement layer (meta/tool-call/handoff gates) and the
-CI/release pipeline are in place; all gates are green. The image lives on GHCR
-(`ghcr.io/pt9912/a-check`, tags for the [current version](version.md#aktuell) + `latest`, digest-pinned).
-The binding source is the [requirements spec (Lastenheft)](spec/lastenheft.md); the version
-history lives in [CHANGELOG.md](CHANGELOG.md), the release coordinates (version/digest/tag) in the
-[release register](version.md#aktuell).
-
 ## What is a-check?
 
 **a-check** enforces a repository's hexagonal layered architecture **across languages**, driven
