@@ -484,3 +484,39 @@ func TestTypescriptJsSpecifier(t *testing.T) { // Happy: NodeNext-.js-Specifier 
 		t.Fatalf(".js-Specifier muss wörtlich geliefert werden, got %v", got)
 	}
 }
+
+func TestKotlinDeclarations(t *testing.T) { // slice-031/ADR-0023: Top-Level-Deklarationen erkannt, unabhängig vom Dateinamen
+	src := stripComments("package com.ex.conn\n" +
+		"fun Pool.asJdbc(): Connection = TODO()\n" +
+		"class HikariPool\n" +
+		"interface Marker\n" +
+		"object Registry\n" +
+		"typealias Alias = String\n" +
+		"const val MAX = 1\n" +
+		"internal fun helper() {}\n")
+	got := newAdapter().declarations(src)
+	want := []string{"Alias", "HikariPool", "MAX", "Marker", "Registry", "asJdbc", "helper"}
+	if strings.Join(got, ",") != strings.Join(want, ",") {
+		t.Fatalf("Kotlin-Deklarationen = %v, erwarte %v", got, want)
+	}
+}
+
+func TestKotlinDeclarationsCommentNotCounted(t *testing.T) { // slice-031: Deklaration im Kommentar zählt nicht (Kommentar-Strip)
+	src := prepSource("kotlin", "// fun ghost() {}\n/* class Ghost */\nfun real() {}\n")
+	if got := newAdapter().declarations(src); len(got) != 1 || got[0] != "real" {
+		t.Fatalf("nur die echte Top-Level-fun 'real' erwartet, got %v", got)
+	}
+}
+
+func TestKotlinDeclarationsIndentedMemberNotCounted(t *testing.T) { // slice-031: eingerückte Member zählen nicht (nur Spalte-0-Top-Level)
+	src := stripComments("class Outer {\n    fun member() {}\n    val field = 1\n}\n")
+	if got := newAdapter().declarations(src); len(got) != 1 || got[0] != "Outer" {
+		t.Fatalf("nur die Top-Level-Klasse 'Outer' erwartet (Member eingerückt), got %v", got)
+	}
+}
+
+func TestNonKotlinNoDeclarations(t *testing.T) { // slice-031/ADR-0023: nicht deklarations-bewusste Backends liefern ein leeres Set (No-op)
+	if got := newAdapter().declarationsFor("go", "func Foo() {}\ntype Bar struct{}\n"); got != nil {
+		t.Fatalf("Go-Backend darf keine Deklarationen liefern (No-op), got %v", got)
+	}
+}

@@ -99,11 +99,11 @@ forbidden_constructs:
   ports: ["impl "]
 markers:
   ignore_symbols: []
-# resolution:                     # optional: Import-Symbol -> Schicht je Sprache (ADR-0016/ADR-0022)
-#   kotlin:                       # Multi-Modul (KMP/Gradle): disjunkte package-Sub-Namespaces je Modul,
-#     mode: fixed-root            #   geteiltes package_base; der interne FQN wird datei-mengen-bewusst
-#     package_base: dev.example   #   gegen die REALEN Dateien unter roots aufgeloest (nicht am Wurzel-Praefix).
-#     roots:                      #   Gleicher FQN real in >=2 roots mit VERSCHIEDENEN Schichten -> Exit 2.
-#       - hexagon/domain/src/commonMain/kotlin/dev/example
-#       - hexagon/application/src/commonMain/kotlin/dev/example
+# resolution:                     # optional: Import-Symbol -> Schicht je Sprache (ADR-0016/ADR-0023)
+#   kotlin:                       # Multi-Modul (KMP/Gradle): mehrere Module, geteiltes package_base;
+#     mode: fixed-root            #   der interne FQN wird gegen die REALEN Dateien unter roots aufgeloest
+#     package_base: dev.example   #   (nicht am Wurzel-Praefix). Split-Package (dasselbe Paket ueber zwei
+#     roots:                      #   Schicht-Module): ein Top-Level-Symbol (Datei != Name, Kotlin) loest
+#       - hexagon/domain/src/commonMain/kotlin/dev/example       #   ueber die reale DEKLARATION auf.
+#       - hexagon/application/src/commonMain/kotlin/dev/example  #   FQN real in >=2 Schichten -> Exit 2.
 `

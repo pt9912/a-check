@@ -262,16 +262,32 @@ func litPrefixLen(g string) int {
 // resolution (ADR-0022, slice-027). Set membership is order-free (SPEC-DET-001);
 // it is built once per Evaluate from the already-extracted file list — no I/O.
 type fileIndex struct {
-	stripped map[string]struct{} // each scanned path with its file extension stripped
-	dirs     map[string]struct{} // every ancestor directory of every scanned path
+	// stripped holds each scanned path with its file extension stripped.
+	stripped map[string]struct{}
+	// dirs holds every ancestor directory of every scanned path.
+	dirs map[string]struct{}
+	// decls maps a directory to the set of top-level declaration names of the
+	// files scanned there (ADR-0023); only a declaration-aware backend fills it.
+	decls map[string]map[string]struct{}
 }
 
 func newFileIndex(files []FileImports) fileIndex {
-	idx := fileIndex{stripped: map[string]struct{}{}, dirs: map[string]struct{}{}}
+	idx := fileIndex{stripped: map[string]struct{}{}, dirs: map[string]struct{}{}, decls: map[string]map[string]struct{}{}}
 	for _, f := range files {
 		idx.stripped[stripExt(f.Path)] = struct{}{}
 		for d := path.Dir(f.Path); d != "." && d != "/" && d != ""; d = path.Dir(d) {
 			idx.dirs[d] = struct{}{}
+		}
+		if len(f.Declarations) > 0 {
+			dir := path.Dir(f.Path)
+			names := idx.decls[dir]
+			if names == nil {
+				names = map[string]struct{}{}
+				idx.decls[dir] = names
+			}
+			for _, n := range f.Declarations {
+				names[n] = struct{}{}
+			}
 		}
 	}
 	return idx
@@ -279,26 +295,40 @@ func newFileIndex(files []FileImports) fileIndex {
 
 // strength scores how strongly a resolved candidate is backed by the scan
 // (extension-agnostic, package==directory — the AC-QA-02 heuristic boundary):
-//   - **2 (exact):** a real file with the extension stripped (…/B ↔ …/B.kt), or a
-//     package/wildcard import (`a.b.*` extracts as `a.b.` → …/b/, trailing slash)
-//     onto a real package directory.
+//   - **3 (declared):** a scanned file in the candidate's PARENT package directory
+//     declares the last segment as a top-level symbol, regardless of the file name
+//     (ADR-0023). This is the real evidence a declaration-aware backend (Kotlin)
+//     supplies; for others idx.decls is empty and this tier never fires.
+//   - **2 (exact):** a real file with the extension stripped (…/B ↔ …/B.kt). A mere
+//     same-named file that does NOT declare the symbol counts only here — the file
+//     name alone is not proof (ADR-0023).
 //   - **1 (weak):** only the candidate's PARENT package directory exists — a symbol
-//     declared in a differently-named file (Kotlin class≠file).
+//     declared in a differently-named file the declaration index missed, a
+//     non-declaration-aware backend (class≠file fallback), or a package/wildcard
+//     import (`a.b.*` → …/b/) that matches a whole package directory (no single
+//     symbol to pin, so it fails open on a cross-layer split).
 //   - **0:** phantom (nothing real).
-// filterReal keeps the strongest tier present, so a file-exact candidate under one
-// root beats a merely-parent-dir-exists candidate under another. Without the tier a
-// symbol directly under package_base (or a split package shared across roots) would
-// mark the OTHER root's non-existent candidate "real" — its parent is that shared/
-// base directory — and fabricate a distinct-layer ambiguity (Exit 2) for legit code.
+// filterReal keeps the strongest tier present, so a real declaration beats a bare
+// file-name match (the AC3 critical case), which beats a parent-dir-only candidate.
 // A nested-class import resolves one level too deep and stays external (boundary).
 func (idx fileIndex) strength(cand string) int {
 	if strings.HasSuffix(cand, "/") {
+		// A wildcard/package import (`a.b.*` → …/b/) matches a whole package
+		// DIRECTORY, not a specific symbol — package-directory evidence (weak, tier
+		// 1). A split package imported by wildcard therefore fails OPEN (extern) on a
+		// cross-layer clash instead of breaking the scan (ADR-0023): the wildcard
+		// pulls a whole package and cannot be pinned to one layer.
 		if _, ok := idx.dirs[path.Clean(cand)]; ok {
-			return 2
+			return 1
 		}
 		return 0
 	}
 	c := path.Clean(cand)
+	if names, ok := idx.decls[path.Dir(c)]; ok {
+		if _, ok := names[path.Base(c)]; ok {
+			return 3 // declared: a real top-level declaration, file name notwithstanding
+		}
+	}
 	if _, ok := idx.stripped[c]; ok {
 		return 2
 	}
@@ -338,30 +368,35 @@ func (e *AmbiguousResolution) Error() string {
 }
 
 // filterReal keeps the real (scanned-file-backed) candidates of a fixed-root
-// resolution with ≥2 roots (ADR-0022), preferring the strongest evidence tier
-// present: file-exact/real-package candidates (strength 2) beat parent-dir-only
-// candidates (strength 1), so a phantom whose parent is a shared/base package dir
-// under another root cannot fabricate an ambiguity. Every other mode
-// (path/relative/1-root) passes through unchanged — their behavior, and their
-// tests, are untouched. Declaration (roots) order is preserved within a tier
-// (deterministic, SPEC-DET-001).
-func filterReal(cands []string, res ResolutionConfig, idx fileIndex) []string {
+// resolution with ≥2 roots (ADR-0022), keeping only the STRONGEST evidence tier
+// present (declared > file-exact > parent-dir), so a real declaration beats a bare
+// file-name match and a phantom whose parent is a shared/base package dir cannot
+// fabricate an ambiguity (ADR-0023). It also reports whether that surviving tier is
+// the WEAK one (parent-dir-only, strength 1): a clash there is fail-OPEN (extern),
+// because without a declaration the layer is not discriminable — whereas a clash at
+// the declared/file-exact tier is a genuine, fail-CLOSED ambiguity. Every other mode
+// (path/relative/1-root) passes through unchanged (weak=false). Root order is
+// preserved within the tier (deterministic, SPEC-DET-001).
+func filterReal(cands []string, res ResolutionConfig, idx fileIndex) ([]string, bool) {
 	if res.Mode != "fixed-root" || len(res.Roots) < 2 {
-		return cands
+		return cands, false
 	}
-	var strong, weak []string
+	best := 0
 	for _, c := range cands {
-		switch idx.strength(c) {
-		case 2:
-			strong = append(strong, c)
-		case 1:
-			weak = append(weak, c)
+		if e := idx.strength(c); e > best {
+			best = e
 		}
 	}
-	if len(strong) > 0 {
-		return strong
+	if best == 0 {
+		return nil, false
 	}
-	return weak
+	var kept []string
+	for _, c := range cands {
+		if idx.strength(c) == best {
+			kept = append(kept, c)
+		}
+	}
+	return kept, best == 1
 }
 
 // targetLayer resolves an import string to a layer by testing whether a layer
@@ -372,14 +407,17 @@ func filterReal(cands []string, res ResolutionConfig, idx fileIndex) []string {
 // length — the layer is decided by the real target, not the root. Per candidate
 // the most specific (longest) matching prefix wins (first declared layer on a
 // length tie); across REAL candidates the earliest wins a same-layer tie
-// (deterministic, SPEC-DET-001). Two real candidates in DIFFERENT layers are a
-// genuine ambiguity → *AmbiguousResolution (exit 2). It also returns the resolved
+// (deterministic, SPEC-DET-001). Two candidates in DIFFERENT layers clash: at the
+// declared/file-exact tier that is a genuine ambiguity → *AmbiguousResolution
+// (exit 2); at the weak parent-dir-only tier there is no declaration to
+// discriminate the layer, so it fails OPEN (extern, ADR-0023). It also returns the resolved
 // candidate that produced the match — the layer-glob-namespace path that
 // downstream path work (lateral's sub-unit/sink checks) must use instead of the
 // raw specifier; in path mode it is the raw import.
 func targetLayer(imp, srcPath string, layers []Layer, res ResolutionConfig, idx fileIndex) (string, string, error) {
+	cands, weak := filterReal(resolveImport(imp, srcPath, res), res, idx)
 	best, bestCand, bestLen := "", "", -1
-	for _, cand := range filterReal(resolveImport(imp, srcPath, res), res, idx) {
+	for _, cand := range cands {
 		l, n := layerOfCand(cand, layers)
 		switch {
 		case l == "":
@@ -387,6 +425,11 @@ func targetLayer(imp, srcPath string, layers []Layer, res ResolutionConfig, idx 
 		case best == "":
 			best, bestCand, bestLen = l, cand, n
 		case l != best:
+			if weak {
+				// parent-dir-only ambiguity: no declaration discriminates the layer,
+				// so fail OPEN (extern) instead of breaking the whole scan (ADR-0023).
+				return "", "", nil
+			}
 			return "", "", &AmbiguousResolution{Symbol: imp, Src: srcPath, LayerA: best, CandA: bestCand, LayerB: l, CandB: cand}
 		case n > bestLen:
 			bestCand, bestLen = cand, n

@@ -20,6 +20,13 @@ type FileImports struct {
 	Language   string // source-language of this file (drives resolution, ADR-0016)
 	Imports    []Import
 	Constructs []Import
+	// Declarations are the file's top-level declaration names (Kotlin: fun,
+	// val/var, class/object/interface/typealias, ADR-0023). Only a
+	// declaration-aware backend fills them (0.18.0: Kotlin); every other backend
+	// leaves them nil (no-op). They feed the declaration-aware fixed-root
+	// resolution so a top-level symbol whose file ≠ its name (extension function,
+	// second class in a file) resolves to the module that really declares it.
+	Declarations []string
 }
 
 // ResolutionConfig is how one language's import symbols resolve to layers

@@ -1,6 +1,6 @@
 # Lastenheft — a-check
 
-**Version:** 0.17.0
+**Version:** 0.18.0
 
 **Status:** Draft
 
@@ -272,7 +272,14 @@ zwischen `import`/`export` und `from` ist auf Import-Clause-Zeichen
 beschränkt (Bezeichner, `{ } * ,`, `type`/`as`, Whitespace — kein `=`, `(`,
 `.`, keine Quotes), damit Ausdrucks-Zeilen (`export const q =
 knex.from('users')`) nie matchen; die links von `from` stehenden
-Namen/Aliasse werden nie als Symbol geliefert. Das Backend wird über die
+Namen/Aliasse werden nie als Symbol geliefert. **Zusätzlich** liefert ein
+**deklarations-bewusstes** Backend die Menge der **Top-Level-Deklarationen** einer Datei —
+Namen von `fun` (inkl. Extension-Funktionen `fun R.name`), `val`/`var`/`const val`, `class`
+(inkl. `data`/`sealed`/`enum`/`annotation class`), `object`, `interface`, `sealed interface`
+und `typealias`, text-heuristisch — zur Schicht-Auflösung von Symbolen in **Split-Packages**,
+deren Datei ≠ Symbolname ist ([AC-FA-CONF-001](#ac-fa-conf-001--konfigurationsdatei-a-checkyml)).
+In 0.18.0 ist **Kotlin** das einzige deklarations-bewusste Backend; alle übrigen liefern ein
+**leeres** Deklarations-Set (No-op, kein Verhaltenswechsel). Das Backend wird über die
 Config (Sprache + Datei-Globs) gewählt.
 
 **Akzeptanzkriterien:**
@@ -293,8 +300,11 @@ Config (Sprache + Datei-Globs) gewählt.
 - **Boundary (TS type/Seiteneffekt):** Given `import type { Repo } from './ports/repo';` und `import './polyfill';`, when das TypeScript-Backend läuft, then liefert es `./ports/repo` bzw. `./polyfill`.
 - **Boundary (TS Re-Export/require/mehrzeilig):** Given `export * from './core/model';`, `import fs = require('fs');` und ein mehrzeilig umbrochener Import, dessen Schlusszeile `} from '../adapters/db';` lautet, when das TypeScript-Backend läuft, then liefert es `./core/model`, `fs` bzw. `../adapters/db`.
 - **Negative (TS Ausdruck):** Given `const m = await import('./lazy');`, `const x = require('pg');`, `export const q = knex.from('users');` oder eine zeilen-anführende Ausdrucks-Zeile `import('./x').then(m => m.run());`, when das TypeScript-Backend läuft, then wird **kein** Symbol geliefert (dokumentierte Heuristik-Grenze, `AC-QA-02`).
+- **Happy (Kotlin-Deklarationen):** Given eine Kotlin-Datei mit `fun Pool.asJdbc()`, `class Foo` und `typealias Bar = X`, when das Kotlin-Backend läuft, then liefert es die Top-Level-Deklarationen `asJdbc`, `Foo`, `Bar` — unabhängig vom Dateinamen.
+- **Boundary (Deklaration in Kommentar):** Given eine `fun`-/`class`-ähnliche Zeile in einem Kommentar **oder** eine eingerückte (Member-)Deklaration, when das Kotlin-Backend läuft, then wird sie **nicht** als Top-Level-Deklaration gewertet (Kommentar-Strip + Spalte-0-Verankerung); eine Deklarations-ähnliche Zeile in einem **mehrzeiligen String-Literal** bleibt die ausgewiesene Heuristik-Grenze (`AC-QA-02`, wie bei der Import-Extraktion).
+- **Negative (kein Deklarations-Backend):** Given eine Go-/C#-/TypeScript-/…-Datei, when ihr Backend läuft, then ist das Deklarations-Set **leer** (No-op) — die Schicht-Auflösung bleibt bei package==directory.
 
-**Out-of-Scope:** vollständiges AST-Parsing; Toolchain-gestützte Backends (`go list`, `javac`/`jdeps`, Bytecode) sind ein opt-in-Re-Eval, nicht 0.1.0; Java-Wildcard-Imports (`import com.foo.*;`) werden heuristisch gegriffen (Symbol `com.foo.` mit Trailing-Dot), nicht expandiert; mehrere `import`-Statements auf **einer** Zeile werden nur einmal gegriffen (dokumentierte Heuristik-Grenze, `AC-QA-02`); relative Python-Importe (`from .`/`from ..`) werden nicht extrahiert — eine dokumentierte Grenze der Python-Extraktion (`AC-QA-02`), unabhängig vom gültigen `relative`-Auflösungs-Modus ([AC-FA-CONF-001](#ac-fa-conf-001--konfigurationsdatei-a-checkyml)), den Specifier-Sprachen wie TypeScript nutzen; Python-Mehrfach-Import in **einem** Statement (`import a, b`) wird nur als Erst-Treffer (`a`) gegriffen; die Subpaket-Form `from <paket> import <subpaket>` wird nur als `<paket>` gewertet und löst ggf. auf keine Schicht auf (dokumentierte Heuristik-Grenze, `AC-QA-02`); `__init__`-Re-Export-Semantik; import-ähnliche Zeilen in Docstrings (bestehende String-Grenze, `AC-QA-02`); C#-Typ-Aliasse auf generische Typen (`using L = List<int>;` — kein Namespace-Import, nicht gegriffen), `extern alias` und `global::`-qualifizierte Aliasse; C#-Namespace-**Deklarationen** (`namespace X;`/`namespace X { }`) werden nicht als Import gewertet; dynamisches TypeScript-`import()`/`require()` im Ausdruck (zeilenverankerte Heuristik, `AC-QA-02`); import-ähnliche Zeichenfolgen in Template-Literalen (Backticks) und JSX-Textzeilen von `.tsx`-Dateien (bestehende String-Grenze, `AC-QA-02`); Triple-Slash-Direktiven (`/// <reference path="…" />` — fallen dem Kommentar-Strip zu); JavaScript (`.js`/`.mjs`/`.cjs`) als eigener `languages`-Schlüssel; tsconfig-`paths`/`baseUrl`-Aliasse (nicht Teil des `relative`-Modus, [AC-FA-CONF-001](#ac-fa-conf-001--konfigurationsdatei-a-checkyml)); Node-Modul-Auflösung (Endungen/index-Dateien — keine Datei-Existenz-Probe; der Glob-Präfix-Match der Auflösung ist endungs-agnostisch, solange die `layers`-Globs verzeichnisbasiert sind, [AC-FA-CONF-001](#ac-fa-conf-001--konfigurationsdatei-a-checkyml)); TypeScript-Specifier, die `//` enthalten (URL-/Protokoll-Importe wie `https://…`) — sie fallen dem Kommentar-Strip zu (String-/Strip-Grenze, `AC-QA-02`; URL-ESM/Deno nicht unterstützt); kompakt geschriebene Formen ohne Whitespace nach `import`/`export` (`import{A}from'./b'`) werden nicht gegriffen (Formatter-Konvention; das Pflicht-Whitespace schützt den Keyword-Präfix-Ausschluss); als Fortsetzungszeile mehrzeiliger Imports wird nur die `} from '…'`-Form gegriffen — ein nacktes `from '…'` auf eigener Zeile nicht (von Formatern nicht erzeugt; `AC-QA-02`).
+**Out-of-Scope:** vollständiges AST-Parsing; Toolchain-gestützte Backends (`go list`, `javac`/`jdeps`, Bytecode) sind ein opt-in-Re-Eval, nicht 0.1.0; Java-Wildcard-Imports (`import com.foo.*;`) werden heuristisch gegriffen (Symbol `com.foo.` mit Trailing-Dot), nicht expandiert; mehrere `import`-Statements auf **einer** Zeile werden nur einmal gegriffen (dokumentierte Heuristik-Grenze, `AC-QA-02`); relative Python-Importe (`from .`/`from ..`) werden nicht extrahiert — eine dokumentierte Grenze der Python-Extraktion (`AC-QA-02`), unabhängig vom gültigen `relative`-Auflösungs-Modus ([AC-FA-CONF-001](#ac-fa-conf-001--konfigurationsdatei-a-checkyml)), den Specifier-Sprachen wie TypeScript nutzen; Python-Mehrfach-Import in **einem** Statement (`import a, b`) wird nur als Erst-Treffer (`a`) gegriffen; die Subpaket-Form `from <paket> import <subpaket>` wird nur als `<paket>` gewertet und löst ggf. auf keine Schicht auf (dokumentierte Heuristik-Grenze, `AC-QA-02`); `__init__`-Re-Export-Semantik; import-ähnliche Zeilen in Docstrings (bestehende String-Grenze, `AC-QA-02`); C#-Typ-Aliasse auf generische Typen (`using L = List<int>;` — kein Namespace-Import, nicht gegriffen), `extern alias` und `global::`-qualifizierte Aliasse; C#-Namespace-**Deklarationen** (`namespace X;`/`namespace X { }`) werden nicht als Import gewertet; dynamisches TypeScript-`import()`/`require()` im Ausdruck (zeilenverankerte Heuristik, `AC-QA-02`); import-ähnliche Zeichenfolgen in Template-Literalen (Backticks) und JSX-Textzeilen von `.tsx`-Dateien (bestehende String-Grenze, `AC-QA-02`); Triple-Slash-Direktiven (`/// <reference path="…" />` — fallen dem Kommentar-Strip zu); JavaScript (`.js`/`.mjs`/`.cjs`) als eigener `languages`-Schlüssel; tsconfig-`paths`/`baseUrl`-Aliasse (nicht Teil des `relative`-Modus, [AC-FA-CONF-001](#ac-fa-conf-001--konfigurationsdatei-a-checkyml)); Node-Modul-Auflösung (Endungen/index-Dateien — keine Datei-Existenz-Probe; der Glob-Präfix-Match der Auflösung ist endungs-agnostisch, solange die `layers`-Globs verzeichnisbasiert sind, [AC-FA-CONF-001](#ac-fa-conf-001--konfigurationsdatei-a-checkyml)); TypeScript-Specifier, die `//` enthalten (URL-/Protokoll-Importe wie `https://…`) — sie fallen dem Kommentar-Strip zu (String-/Strip-Grenze, `AC-QA-02`; URL-ESM/Deno nicht unterstützt); kompakt geschriebene Formen ohne Whitespace nach `import`/`export` (`import{A}from'./b'`) werden nicht gegriffen (Formatter-Konvention; das Pflicht-Whitespace schützt den Keyword-Präfix-Ausschluss); als Fortsetzungszeile mehrzeiliger Imports wird nur die `} from '…'`-Form gegriffen — ein nacktes `from '…'` auf eigener Zeile nicht (von Formatern nicht erzeugt; `AC-QA-02`); die Extraktion von **Top-Level-Deklarationen** ist in 0.18.0 auf **Kotlin** begrenzt (übrige Backends: leeres Set); verschachtelte/Member-Deklarationen sowie Deklarationen in nicht gescanntem/generiertem Code werden nicht indiziert (`AC-QA-02`).
 
 ### AC-FA-CLI-001 — Aufruf, Scan-Wurzel und Exit-Codes
 
@@ -346,18 +356,27 @@ außerhalb der unterstützten Backends aus [AC-FA-EXTRACT-001](#ac-fa-extract-00
 einem reservierten/unbekannten `resolution.mode` oder `roots`/`package_base` bei `mode: relative`,
 einer **leeren** `tech.adapter`-Liste oder einem leeren/fehlenden `tech.adapter`, einem `composition_root`-Wert außerhalb
 `{allow, forbid}` oder einem ungültigen `exclude`-Glob).
-Bei `mode: fixed-root` mit **≥ 2** `roots` (geteiltes `package_base`, disjunkte Paket-
-Sub-Namespaces je Modul — KMP/Gradle-Multi-Modul) wird der interne FQN **datei-mengen-
-bewusst** aufgelöst: der Kandidat je Root gilt nur, wenn er einer **real gescannten Datei**
-entspricht (endungs-agnostisch, package==directory-Grenze `AC-QA-02`). Disjunkte
-Sub-Namespaces matchen in höchstens einem Root ⇒ eindeutig; die Schicht wird am Pfad des
-**realen** Kandidaten bestimmt, nicht am Wurzel-Präfix (kein Phantom-Falsch-Negativ mehr).
-Ein Kandidat ohne reale Datei bleibt **extern**. **Fail-closed (Exit 2):** löst derselbe
-FQN real unter ≥ 2 Roots in **verschiedene** Schichten auf (echte Mehrdeutigkeit), bricht
-`a-check` **nach dem Scan** ab — ein FQN muss in höchstens eine Schicht auflösen; gleiche
-Schicht (z. B. `expect`/`actual` im selben Layer) löst sauber. Dokumentierte Grenzen
-(`AC-QA-02`): ein Import, dessen Paket-Verzeichnis unter **keiner** Root real ist, bleibt
-still extern; verschachtelte-Klassen-Importe und datei-tiefe Globs sind heuristische Grenzen.
+Bei `mode: fixed-root` mit **≥ 2** `roots` (geteiltes `package_base`, Paket-Namespaces über
+mehrere Module — Gradle-Multi-Modul, auch **Split-Packages**, bei denen dasselbe Paket real
+über mehrere Modul-Roots verteilt ist) wird der interne FQN **datei-mengen-bewusst** aufgelöst.
+Für ein **deklarations-bewusstes** Backend (0.18.0 nur **Kotlin**, [AC-FA-EXTRACT-001](#ac-fa-extract-001--sprach-backends-für-die-import-extraktion))
+belegt die stärkste Evidenz die Schicht: ein Root, in dessen Paket-Verzeichnis eine gescannte
+Datei das importierte Symbol als **Top-Level-Deklaration** trägt (unabhängig vom Dateinamen),
+sticht einen Root, in dem nur das Paket-Verzeichnis existiert — eine bloß gleichnamige, das
+Symbol **nicht** deklarierende Datei zählt nicht als Deklaration. Für die übrigen (nicht
+deklarations-bewussten) Backends gilt unverändert der Datei-Namens-Match (endungs-agnostisch,
+package==directory-Grenze `AC-QA-02`). Die Schicht wird am Pfad des **auflösenden** Roots
+bestimmt, nicht am Wurzel-Präfix. **Fail-closed (Exit 2):** löst derselbe FQN real unter ≥ 2
+Roots in **verschiedene** Schichten auf (echte Mehrdeutigkeit — bei deklarations-bewussten
+Backends: real **deklariert** in ≥ 2 Roots), bricht `a-check` **nach dem Scan** ab; gleiche
+Schicht (z. B. `expect`/`actual`) löst sauber. Die Stufe *nur-Paketverzeichnis* (kein Deklarations-Treffer bzw. ein **Wildcard-/Paket-Import**
+`a.b.*`, nur das Paket-Verzeichnis existiert) **löst** rückwärtskompatibel, solange sie **eindeutig** ist (genau ein Root oder alle dieselbe
+Schicht); liegen Paket-Verzeichnisse ohne Deklaration unter ≥ 2 Roots in **verschiedenen** Schichten,
+bleibt der FQN **extern** (fail-open, kein Geister-Match — anders als *deklariert in ≥ 2
+verschiedenen Schichten*, das Exit 2 auslöst). Ganz ohne reale Evidenz bleibt der FQN extern. Dokumentierte Grenzen (`AC-QA-02`): ein
+intern gemeintes Symbol, das in keiner gescannten Datei als Top-Level-Deklaration auftaucht
+(verschachtelte Klasse, `object`-Member, nicht gescannter/generierter Code, Star-Import),
+bleibt still extern; datei-tiefe Globs sind eine heuristische Grenze.
 
 **Akzeptanzkriterien:**
 
@@ -374,12 +393,16 @@ still extern; verschachtelte-Klassen-Importe und datei-tiefe Globs sind heuristi
 - **Boundary (`exclude`):** Given eine Config **ohne** `exclude`, when `a-check` läuft, then byte-identische Ausgabe wie bisher.
 - **Negative (neue Schlüssel):** Given eine **leere** `tech.adapter`-Liste, ein leerer/fehlender `tech.adapter`, ein `composition_root` mit einem Wert außerhalb `{allow, forbid}` **oder** ein ungültiger `exclude`-Glob, when `a-check` lädt, then Exit-Code 2.
 - **Happy (Multi-Modul disjunkt):** Given `mode: fixed-root` mit ≥ 2 `roots` + geteiltem `package_base` und disjunkten Paket-Sub-Namespaces je Modul (KMP: `mod-a/…/domain`, `mod-b/…/application` mit flachen Modul-Globs), when eine `domain`-Datei `com.ex.application.B` importiert, then löst der FQN datei-mengen-bewusst auf das reale Modul (Schicht `application`) auf und die verbotene Kante wird gemeldet (Exit 1) — **statt** stiller Fehlklassifikation (vor der datei-mengen-bewussten Auflösung: 0 Befunde, `AC-QA-02`).
+- **Happy (Split-Package / Top-Level-Symbol):** Given `mode: fixed-root` mit ≥ 2 `roots`, ein **Split-Package** über zwei Schicht-Roots (`ports`, `adapters`) und ein Kotlin-Top-Level-Symbol, dessen Datei **≠** Symbolname ist (Extension-Fun `asJdbc` bzw. Zweitklasse), **genau in einem** Root deklariert, when eine Datei es importiert, then löst der FQN über die reale Top-Level-Deklaration auf die Schicht dieses Roots auf — **kein Exit 2** (vor der deklarations-bewussten Auflösung: Exit 2). Trägt Root A eine gleichnamige Datei, die das Symbol **nicht** deklariert, und Root B die echte Deklaration, then löst er auf **Root B**.
 - **Boundary (Mehr-Wurzel, gleiche Schicht):** Given denselben FQN real unter ≥ 2 Roots, die **dieselbe** Schicht treffen (`expect`/`actual`), when `a-check` läuft, then löst er sauber auf — kein Exit 2.
-- **Negative (Mehr-Wurzel, echte Mehrdeutigkeit):** Given denselben FQN real unter ≥ 2 Roots in **verschiedenen** Schichten, when `a-check` läuft, then Exit-Code 2 **nach dem Scan** (fail-closed, ein FQN muss in höchstens eine Schicht auflösen) — stderr nennt die Mehrdeutigkeit, kein Befund auf stdout.
+- **Boundary (Split-Package ohne Deklaration):** Given ein Symbol, dessen Paket-Verzeichnis unter ≥ 2 Roots existiert, das aber in **keiner** gescannten Datei als Top-Level-Deklaration auftaucht, when `a-check` läuft, then bleibt es **extern** — kein Exit 2, kein Befund (fail-open, `AC-QA-02`).
+- **Negative (Mehr-Wurzel, echte Mehrdeutigkeit):** Given denselben FQN real **auflösend** unter ≥ 2 Roots in **verschiedenen** Schichten (bei deklarations-bewussten Backends: real **deklariert** in ≥ 2 Roots), when `a-check` läuft, then Exit-Code 2 **nach dem Scan** (fail-closed, ein FQN muss in höchstens eine Schicht auflösen) — stderr nennt die Mehrdeutigkeit, kein Befund auf stdout.
 
-**Out-of-Scope:** Vererbung/Includes zwischen Config-Dateien; per-Root `package_base`, der
-reservierte Namespace-Index-Modus sowie die Auflösung verschachtelter-Klassen-Importe und
-datei-tiefer Globs (heuristische Grenzen, `AC-QA-02`).
+**Out-of-Scope:** Vererbung/Includes zwischen Config-Dateien; per-Root `package_base`; der
+reservierte Namespace-Index-Modus; die deklarations-bewusste Auflösung ist auf **Kotlin**
+begrenzt (übrige Backends: package==directory, kein Deklarations-Index); die Auflösung
+verschachtelter-Klassen-Importe, `object`-Member und datei-tiefer Globs bleiben heuristische
+Grenzen (`AC-QA-02`).
 
 ### AC-FA-DIST-001 — Distribution: Image, `--print-mk`, `a-check.mk`
 
@@ -442,3 +465,4 @@ Konsumenten-Repos).
 | 0.15.0 | 2026-07-03 | `AC-FA-RULE-002`: Sub-Einheiten-Grenzfall präzisiert — Blatt-Klassifikation: ein **datei-förmiges** Blatt (`.`) direkt im Layer-Root gehört zur **Root-Sub-Einheit `''`** (Sub-Einheiten sind Verzeichnisse, keine Dateinamen), ein **verzeichnis-förmiges** Blatt (Go-Paket-Pfad) **ist** die Sub-Einheit; Root↔Root same-layer ist kein `lateral-adapter` mehr, Root↔Unterverzeichnis/Cross-Layer/Cross-Paket unverändert. Bewusste Gate-Lockerung per ADR; Anlass: b-cad-Pilot — die Richtungs-Modellierung (pro-Adapter-Layer) erzeugte 40 Falsch-Positive der Klasse `x.cpp → x.h` bei 0 echten Verstößen (welle-05/M3-Pilot, slice-024). |
 | 0.16.0 | 2026-07-04 | `AC-FA-CONF-001`: **fail-closed-Guard gegen mehrdeutige Mehr-Wurzel-Auflösung** — `mode: fixed-root` mit ≥ 2 `roots`, von denen zwei Roots je eine andere Schicht erzwingen (die Schicht, in die ein Root allein am Wurzel-Präfix auflöst — längster passender Glob-Präfix, wie die Import-Auflösung), bricht mit Exit 2 statt still falsch-grün (Phantom-Kandidaten über Schicht-Grenzen; die Zuordnung entschiede der längste Präfix statt das Symbol). Anlass: belief-agent-Bericht — KMP (`commonMain`/`jvmMain` teilen `package_base`) bei flachen Source-Set-Globs fing die illegale `core → adapter`-Kante nicht; Rezept: paket-spezifische Globs. Stufe 1 des Fixes (fail-closed); die datei-mengen-bewusste Auflösung folgt gated (slice-027). welle-05-Härtung, slice-026. |
 | 0.17.0 | 2026-07-05 | `AC-FA-CONF-001`: **datei-mengen-bewusste Mehr-Wurzel-Auflösung** (Stufe 2) — `mode: fixed-root` mit ≥ 2 `roots` löst den internen FQN gegen die **real gescannten Dateien** auf (endungs-agnostisch, package==directory), statt je Root einen Phantom-Kandidaten am Wurzel-Präfix zu bilden; die disjunkte Multi-Modul-Config (KMP: geteiltes `package_base`, disjunkte Sub-Namespaces) **lädt und löst korrekt** (die verbotene `domain → application`-Kante wird gemeldet), der Ladezeit-Guard aus 0.16.0 entfällt. Echte Mehrdeutigkeit (gleicher FQN real in ≥ 2 Roots, **verschiedene** Schichten) bricht **nach dem Scan** mit Exit 2 (distinct-layer; `expect`/`actual` same-layer löst sauber). Ersetzt Stufe 1 (Supersede-ADR). Anlass: belief-agent-KMP — jede resolution-Variante war Reject oder still falsch-grün. welle-05-Härtung, slice-027. |
+| 0.18.0 | 2026-07-06 | `AC-FA-CONF-001`/`AC-FA-EXTRACT-001`: **deklarations-bewusste Auflösung für Split-Packages** (Stufe 3) — bei `mode: fixed-root` mit ≥ 2 `roots` löst ein importiertes Top-Level-Symbol, dessen Datei ≠ Symbolname ist (Kotlin-Extension-Fun, Zweitklasse), über die **reale Top-Level-Deklaration** statt nur über das Paket-Verzeichnis auf: genau ein deklarierender Root ⇒ eindeutig, ≥ 2 deklarierende Roots verschiedener Schichten ⇒ Exit 2, kein Deklarations-Treffer ⇒ **extern** (fail-open). Für deklarations-bewusste Backends sticht die echte Deklaration den bloßen Datei-Namens-Match. `AC-FA-EXTRACT-001`: **Kotlin** liefert zusätzlich Top-Level-Deklarationen; übrige Backends no-op (leeres Set), Verhalten unverändert. Ersetzt Stufe 2 (Supersede-ADR). Anlass: d-migrate-Pilot — die einzige korrekte Vollrichtungs-Config endete an einem Split-Package-Top-Level-Symbol (`asJdbc`) in Exit 2. welle-05-Härtung, slice-031. |

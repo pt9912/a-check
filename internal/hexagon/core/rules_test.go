@@ -1395,3 +1395,73 @@ func TestTargetLayerAmbiguityDistinctLayer(t *testing.T) { // ADR-0022 (§5 Ents
 		t.Fatalf("expect/actual (gleiche Schicht) muss sauber auf 'domain' auflösen, got %q err=%v", got, err)
 	}
 }
+
+// splitLayers is the ports/adapters split-package fixture geometry (slice-031).
+func splitLayers() []Layer {
+	return []Layer{
+		{Name: "ports", Globs: []string{"mod-p/**"}, Role: "port"},
+		{Name: "adapters", Globs: []string{"mod-a/**"}, Role: "adapter"},
+	}
+}
+
+func splitRes() ResolutionConfig {
+	return ResolutionConfig{Mode: "fixed-root", PackageBase: "com.ex", Roots: []string{"mod-p/src/com/ex", "mod-a/src/com/ex"}}
+}
+
+func TestTargetLayerDeclaredAmbiguity(t *testing.T) { // slice-031/ADR-0023 (AC5): dasselbe Symbol real DEKLARIERT in 2 Schichten -> Exit 2 (fail-closed)
+	idx := newFileIndex([]FileImports{
+		{Path: "mod-p/src/com/ex/conn/Api.kt", Declarations: []string{"Dup"}},
+		{Path: "mod-a/src/com/ex/conn/Impl.kt", Declarations: []string{"Dup"}},
+	})
+	var amb *AmbiguousResolution
+	if _, _, err := targetLayer("com.ex.conn.Dup", "mod-a/src/com/ex/x/Y.kt", splitLayers(), splitRes(), idx); !errors.As(err, &amb) {
+		t.Fatalf("Symbol real DEKLARIERT in 2 verschiedenen Schichten muss *AmbiguousResolution liefern, got %v", err)
+	}
+}
+
+func TestTargetLayerPkgdirAmbiguityFailsOpen(t *testing.T) { // slice-031/ADR-0023 (AC6): Paketverzeichnis-Mehrdeutigkeit ohne Deklaration -> extern (fail-open), NICHT Exit 2
+	idx := newFileIndex([]FileImports{
+		{Path: "mod-p/src/com/ex/conn/Api.kt"},  // keine Deklarationen, aber conn-Verzeichnis existiert
+		{Path: "mod-a/src/com/ex/conn/Impl.kt"}, // dito unter der anderen Schicht
+	})
+	got, _, err := targetLayer("com.ex.conn.Ghost", "mod-a/src/com/ex/x/Y.kt", splitLayers(), splitRes(), idx)
+	if err != nil {
+		t.Fatalf("Paketverzeichnis-Mehrdeutigkeit ohne Deklaration muss fail-open sein (kein Fehler), got %v", err)
+	}
+	if got != "" {
+		t.Fatalf("erwarte extern (leere Schicht), got %q", got)
+	}
+}
+
+func TestTargetLayerDeclaredBeatsFilename(t *testing.T) { // slice-031/ADR-0023 (AC3): echte Deklaration sticht bloßen Datei-Namens-Match
+	idx := newFileIndex([]FileImports{
+		{Path: "mod-a/src/com/ex/conn/Foo.kt"},                                  // Datei heißt Foo, deklariert Foo aber NICHT
+		{Path: "mod-p/src/com/ex/conn/Types.kt", Declarations: []string{"Foo"}}, // echte Deklaration von Foo (andere Datei)
+	})
+	if got, _, err := targetLayer("com.ex.conn.Foo", "mod-a/src/com/ex/x/Y.kt", splitLayers(), splitRes(), idx); err != nil || got != "ports" {
+		t.Fatalf("echte Deklaration (mod-p) muss den Datei-Namens-Match (mod-a/Foo.kt) stechen -> ports, got %q err=%v", got, err)
+	}
+}
+
+func TestTargetLayerPkgdirUniqueResolves(t *testing.T) { // slice-031/ADR-0023 (AC7): nur-Paketverzeichnis eindeutig -> löst (Rückwärtskompatibilität)
+	idx := newFileIndex([]FileImports{
+		{Path: "mod-a/src/com/ex/only/Box.kt", Declarations: []string{"Box"}}, // Paket com.ex.only NUR in mod-a
+	})
+	if got, _, err := targetLayer("com.ex.only.Missing", "mod-p/src/com/ex/u/U.kt", splitLayers(), splitRes(), idx); err != nil || got != "adapters" {
+		t.Fatalf("nicht deklariertes Symbol, Paketverzeichnis nur in mod-a -> löst via Verzeichnis auf 'adapters', got %q err=%v", got, err)
+	}
+}
+
+func TestTargetLayerWildcardSplitFailsOpen(t *testing.T) { // slice-031/ADR-0023: Wildcard-Import (a.b.*) eines Split-Packages -> extern (fail-open), NICHT Exit 2
+	idx := newFileIndex([]FileImports{
+		{Path: "mod-p/src/com/ex/conn/Api.kt"},  // conn-Paket in ports ...
+		{Path: "mod-a/src/com/ex/conn/Impl.kt"}, // ... UND in adapters (Split-Package)
+	})
+	got, _, err := targetLayer("com.ex.conn.", "mod-a/src/com/ex/x/Y.kt", splitLayers(), splitRes(), idx)
+	if err != nil {
+		t.Fatalf("Wildcard über eine Split-Package-Schicht-Grenze muss fail-open sein (kein Fehler), got %v", err)
+	}
+	if got != "" {
+		t.Fatalf("Wildcard-Import eines Split-Packages muss extern bleiben (Paket-Verzeichnis-Evidenz), got %q", got)
+	}
+}

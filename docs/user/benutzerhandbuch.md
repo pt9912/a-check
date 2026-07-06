@@ -1,6 +1,6 @@
 # Benutzerhandbuch: a-check
 
-**Handbuch-Version:** 1.26 · **Software-Version:** [aktuelles Release](../../version.md#aktuell) · **Stand:** 2026-07-05 ·
+**Handbuch-Version:** 1.27 · **Software-Version:** [aktuelles Release](../../version.md#aktuell) · **Stand:** 2026-07-05 ·
 **Autor:** pt9912 (Maintainer)
 
 ---
@@ -303,6 +303,20 @@ auflösen); dieselbe Klasse in **derselben** Schicht (`expect`/`actual`) löst s
 liegt das Paket-Verzeichnis unter **keiner** Root real (fehlkonfigurierte/nicht gescannte
 Source-Set), bleibt der Import extern — die ehrliche Heuristik-Grenze.
 
+**Split-Package über Modulgrenzen (deklarations-bewusst).** Liegt **dasselbe** Paket real über
+zwei Module verschiedener Schichten (z. B. ein Port-Modul und sein getriebenes Adapter-Modul
+teilen `dev.app.driver.connection` — JVM-Alltag) und importieren Sie ein **Top-Level-Symbol**,
+dessen Datei **≠** Symbolname ist (Kotlin-Extension-Funktion, zweite Klasse je Datei), löst
+`a-check` es über die **reale Deklaration** auf: es prüft, welches Modul das Symbol als
+Top-Level-Deklaration trägt, und nimmt dessen Schicht — die echte Deklaration sticht einen bloßen
+Dateinamen-Treffer. Genau **ein** deklarierendes Modul ⇒ eindeutig; **≥ 2** deklarierende Module
+verschiedener Schichten ⇒ Exit-Code 2 (echte Mehrdeutigkeit). Findet sich **keine** Deklaration
+und liegt das Paket-Verzeichnis unter ≥ 2 Modulen verschiedener Schichten, bleibt der Import
+**extern** (fail-open, kein Geister-Befund) — die ehrliche Heuristik-Grenze; ein **eindeutiges**
+Paket-Verzeichnis (genau ein Modul) löst unverändert. Diese Deklarations-Auflösung ist derzeit
+**Kotlin**-spezifisch (übrige Sprachen: `Paket == Verzeichnis`) und braucht **keine** zusätzliche
+Konfiguration — dieselbe Multi-`roots`-Config genügt.
+
 **Datei-relative Importe auflösen (`mode: relative`): TypeScript.**
 TypeScript-Module referenzieren einander relativ zur importierenden Datei
 (`./db`, `../core/model`). Deklarieren Sie dafür `mode: relative` — ohne
@@ -513,3 +527,4 @@ und die [Spezifikation](../../spec/spezifikation.md); ein Überblick steht in de
 | 1.24 | 2026-07-04 | Software-Version **0.10.0** (GHCR-Release `v0.10.0` veröffentlicht, digest-gepinnt `@sha256:0932cb1d…`) — fail-closed-Guard gegen mehrdeutige Mehr-Wurzel-Auflösung (`mode: fixed-root`, ≥ 2 `roots`, die zwei Schichten erzwingen → Exit 2) jetzt im veröffentlichten Image; KMP-Rezept: paket-spezifische Globs tiefer als die Roots. |
 | 1.25 | 2026-07-05 | Software-Version-Kopf verweist jetzt auf das [Release-Register](../../version.md#aktuell) statt einer literalen Nummer (slice-018, Opt 1) — die eine driftende Live-Stelle im Handbuch entfällt; die historischen „Software-Version X.Y.Z"-Zeilen bleiben als Release-Ledger. |
 | 1.26 | 2026-07-05 | §4 an Lastenheft 0.17.0: `resolution`-Absatz um das **Multi-Modul (KMP/Gradle)**-Rezept erweitert — mehrere `roots` mit geteiltem `package_base` lösen den FQN **datei-mengen-bewusst** gegen die realen Dateien auf (disjunkte Sub-Namespaces → genau ein Modul; **flache** Modul-Globs genügen, keine paket-tiefen mehr nötig); gleicher FQN real in ≥ 2 Roots **verschiedener** Schichten → Exit 2 nach dem Scan, `expect`/`actual` same-layer sauber. Löst den Ladezeit-Guard aus 1.24/Software-Version 0.10.0 ab (slice-027). |
+| 1.27 | 2026-07-06 | §4 an Lastenheft 0.18.0: `resolution`-Absatz um das **Split-Package über Modulgrenzen (deklarations-bewusst)**-Rezept erweitert — teilt sich **ein** Paket über zwei Schicht-Module und wird ein Top-Level-Symbol importiert, dessen Datei ≠ Symbolname ist (Kotlin-Extension-Funktion, zweite Klasse), löst `a-check` über die **reale Deklaration** auf (genau ein deklarierendes Modul → eindeutig; ≥ 2 verschiedene Schichten → Exit 2; kein Treffer, Paketverzeichnis in ≥ 2 Schichten → extern/fail-open; eindeutiges Paketverzeichnis → löst unverändert). Kotlin-spezifisch, keine Zusatz-Config (slice-031). |

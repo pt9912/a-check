@@ -563,3 +563,70 @@ func TestKmpWildcardImportExit1(t *testing.T) { // ADR-0022 (Review C5): Wildcar
 		t.Fatalf("erwarte genau 1 impurity-Befund (Wildcard), got %q", out.String())
 	}
 }
+
+// splitCfg is a JVM-Kotlin split-package geometry (slice-031): the package
+// com.ex.conn lives under a ports module (mod-p) AND an adapters module (mod-a).
+const splitCfg = `version: 1
+languages:
+  kotlin: ["**/*.kt"]
+layers:
+  ports:    {globs: ["mod-p/**"], role: port}
+  adapters: {globs: ["mod-a/**"], role: adapter}
+edges:
+  - {from: adapters, to: ports}
+resolution:
+  kotlin: {mode: fixed-root, package_base: com.ex, roots: ["mod-p/src/main/kotlin/com/ex", "mod-a/src/main/kotlin/com/ex"]}
+`
+
+func TestSplitPackageClassResolvesExit0(t *testing.T) { // slice-031 AC1/AC2: Split-Package-Symbol (Datei≠Name) löst über die Deklaration -> kein spurioses Exit 2
+	dir := writeRepo(t, map[string]string{
+		".a-check.yml":                              splitCfg,
+		"mod-p/src/main/kotlin/com/ex/conn/Api.kt":  "package com.ex.conn\ninterface Pool\n",       // Pool in Api.kt (Datei≠Name), ports
+		"mod-a/src/main/kotlin/com/ex/conn/Impl.kt": "package com.ex.conn\nfun Pool.asJdbc() {}\n", // asJdbc in Impl.kt, adapters
+		"mod-a/src/main/kotlin/com/ex/svc/Reader.kt": "package com.ex.svc\nimport com.ex.conn.Pool\n", // adapter -> port-Typ Pool (erlaubt)
+	})
+	var out, errb bytes.Buffer
+	if code := cli.Run([]string{dir}, &out, &errb); code != 0 {
+		t.Fatalf("'Pool' (in Api.kt deklariert) muss auf ports auflösen, adapters->ports erlaubt -> Exit 0 (vor slice-031: Exit 2); got %d (out=%q err=%q)", code, out.String(), errb.String())
+	}
+}
+
+func TestSplitPackageExtFunForbiddenEdgeExit1(t *testing.T) { // slice-031 AC4: ext-fun asJdbc (Adapter) aus einer ports-Datei importiert -> löst auf adapters -> port-impurity
+	dir := writeRepo(t, map[string]string{
+		".a-check.yml":                              splitCfg,
+		"mod-p/src/main/kotlin/com/ex/conn/Api.kt":  "package com.ex.conn\ninterface Pool\n",
+		"mod-a/src/main/kotlin/com/ex/conn/Impl.kt": "package com.ex.conn\nfun Pool.asJdbc() {}\n",
+		"mod-p/src/main/kotlin/com/ex/use/Uses.kt":  "package com.ex.use\nimport com.ex.conn.asJdbc\n", // ports -> Adapter-Symbol
+	})
+	var out, errb bytes.Buffer
+	code := cli.Run([]string{dir}, &out, &errb)
+	if code != 1 || !strings.Contains(out.String(), "port-impurity") {
+		t.Fatalf("asJdbc muss auf adapters auflösen und die ports->adapters-Kante als port-impurity melden (Exit 1); got %d (out=%q err=%q)", code, out.String(), errb.String())
+	}
+}
+
+func TestSplitPackageUndeclaredResidualExtern(t *testing.T) { // slice-031 AC6: Symbol ohne Deklaration, Paketverzeichnis in 2 versch. Schichten -> extern (fail-open, kein Exit 2)
+	dir := writeRepo(t, map[string]string{
+		".a-check.yml":                              splitCfg,
+		"mod-p/src/main/kotlin/com/ex/conn/Api.kt":  "package com.ex.conn\ninterface Pool\n",
+		"mod-a/src/main/kotlin/com/ex/conn/Impl.kt": "package com.ex.conn\nclass HikariPool\n",
+		"mod-a/src/main/kotlin/com/ex/svc/R.kt":     "package com.ex.svc\nimport com.ex.conn.Ghost\n", // Ghost nirgends deklariert
+	})
+	var out, errb bytes.Buffer
+	if code := cli.Run([]string{dir}, &out, &errb); code != 0 {
+		t.Fatalf("'Ghost' (nirgends deklariert, conn-Verzeichnis in ports UND adapters) muss extern bleiben (fail-open), kein Exit 2; got %d (out=%q err=%q)", code, out.String(), errb.String())
+	}
+}
+
+func TestSplitPackageUndeclaredUniqueResolves(t *testing.T) { // slice-031 AC7: Symbol ohne Deklaration, Paketverzeichnis in GENAU EINEM Root -> löst (Rückwärtskompatibilität)
+	dir := writeRepo(t, map[string]string{
+		".a-check.yml":                             splitCfg,
+		"mod-a/src/main/kotlin/com/ex/only/Box.kt": "package com.ex.only\nclass Box\n",                  // Paket com.ex.only NUR in mod-a (adapters)
+		"mod-p/src/main/kotlin/com/ex/use/U.kt":    "package com.ex.use\nimport com.ex.only.Missing\n", // Missing nicht deklariert, only-dir nur in mod-a
+	})
+	var out, errb bytes.Buffer
+	code := cli.Run([]string{dir}, &out, &errb)
+	if code != 1 || !strings.Contains(out.String(), "port-impurity") {
+		t.Fatalf("'Missing' (nicht deklariert, only-Verzeichnis nur in mod-a=adapters) muss via Paketverzeichnis eindeutig auf adapters auflösen -> ports->adapters port-impurity (Exit 1); got %d (out=%q err=%q)", code, out.String(), errb.String())
+	}
+}
