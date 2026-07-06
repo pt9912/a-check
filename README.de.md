@@ -86,7 +86,7 @@ Gegen das veröffentlichte Image (digest-gepinnt, netzlos, read-only):
 
 ```bash
 docker run --rm --network none -v "$PWD:/src:ro" \
-  ghcr.io/pt9912/a-check@sha256:f53a06fe02973a0cd4771eccb3d22171619a5ddfcbca2fac9922ce3fe7520483 /src
+  ghcr.io/pt9912/a-check@sha256:203df7ab02ec68db5f77f77660fe12523dad9fd48a6c84b95aabb080ec30de24 /src
 ```
 
 Konsumenten binden a-check als `make a-check`-Gate ein — **ohne

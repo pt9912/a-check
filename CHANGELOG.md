@@ -6,6 +6,8 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
+## [0.12.0] - 2026-07-06
+
 ### Fixed
 
 - **Split-Package-Auflösung (`AC-FA-CONF-001`/`AC-FA-EXTRACT-001` 0.17.0→0.18.0, slice-031,
