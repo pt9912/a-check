@@ -6,6 +6,20 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
+### Fixed
+
+- **Split-Package-Auflösung (`AC-FA-CONF-001`/`AC-FA-EXTRACT-001` 0.17.0→0.18.0, slice-031,
+  ADR-0023):** bei `mode: fixed-root` mit ≥ 2 `roots` löst ein importiertes **Top-Level-Symbol**,
+  dessen Datei ≠ Symbolname ist (Kotlin-Extension-Funktion, zweite Klasse je Datei), jetzt über die
+  **reale Top-Level-Deklaration** auf sein Modul auf — statt an einem **Split-Package** (dasselbe
+  Paket real über zwei Schicht-Module) mit **Exit 2** den ganzen Scan abzubrechen. Evidenz-Rangfolge
+  *deklariert > nur-Paketverzeichnis > keine*: genau ein deklarierender Root ⇒ eindeutig; real
+  **deklariert** in ≥ 2 verschiedenen Schichten ⇒ Exit 2 (fail-closed); kein Deklarations-Treffer ⇒
+  extern (fail-open, ebenso ein Wildcard-/Paket-Import über eine Schicht-Grenze); ein **eindeutiges**
+  Paket-Verzeichnis löst rückwärtskompatibel. Das **Kotlin**-Backend liefert dafür zusätzlich die
+  Top-Level-Deklarationen (übrige Backends no-op). ADR-0023 Supersedes ADR-0022. Anlass:
+  d-migrate-Pilot — der `asJdbc`-Exit-2 real reproduziert und getilgt; schärft AC-QA-02.
+
 ## [0.11.0] - 2026-07-05
 
 ### Fixed
