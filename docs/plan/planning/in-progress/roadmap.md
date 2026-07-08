@@ -1,6 +1,6 @@
 # Roadmap
 
-**Status:** Aktiv. **Letzte Änderung:** 2026-07-06.
+**Status:** Aktiv. **Letzte Änderung:** 2026-07-08.
 
 **Format-Regel:** Die Roadmap ist eine Reihenfolge von **Wellen**, keine
 Reihenfolge von Terminen. Termine erscheinen — falls überhaupt — als
@@ -83,7 +83,7 @@ d-checks `versions`/`pins`-Module sind **tag-pin**-basiert, a-check pinnt per **
 [`version.md#aktuell`](../../../../version.md#aktuell) als *eine* Wahrheit (Prosa verlinkt dorthin) +
 Digest-Gleichheits-Check in `gate-consistency.sh` (harte Pins == `version.md`, Version == CHANGELOG,
 `d-check.mk`-Tag/Digest-Deklaration; jede harte Pin-Datei genau ein Digest — fail-closed gegen einen
-Decoy-Zweitdigest, adversarische Review-Härtung A1). **M3 erreicht** (b-cad-Pilot + belief-agent, s. Meilenstein-Tabelle). **Neu (2026-07-06):** [slice-031](../done/slice-031-deklarations-index-split-package.md) (**done** — deklarations-bewusste Auflösung für **Split-Packages**, d-migrate-getrieben: Lastenheft/Spez **0.18.0**, [ADR-0023](../../adr/0023-deklarations-bewusste-mehr-wurzel-aufloesung.md) `Accepted` **Supersedes [ADR-0022](../../adr/0022-datei-mengen-bewusste-mehr-wurzel-aufloesung.md)** = 2. Supersede, Benutzerhandbuch 1.27; ein Top-Level-Symbol, dessen Datei ≠ Name ist, löst über die reale Deklaration statt nur das Paket-Verzeichnis — `make ci` grün + real gegen d-migrate verifiziert, der `asJdbc`-Exit-2 getilgt; Wildcard-Split fail-open). **Offene Fäden:** [slice-025](../open/slice-025-p-rest-generalisierung.md) (P-Rest-Gen, gated) + [slice-013](../open/slice-013-driving-driven-vertiefung.md) (driving/driven-Vertiefung, Entwurf) + [slice-032](../open/slice-032-print-graph-mermaid.md) (`--print-graph`: Architektur-Graph als Mermaid aus `.a-check.yml`, Entwurf spec-first — noch nicht abgenommen).
+Decoy-Zweitdigest, adversarische Review-Härtung A1). **M3 erreicht** (b-cad-Pilot + belief-agent, s. Meilenstein-Tabelle). **Neu (2026-07-06):** [slice-031](../done/slice-031-deklarations-index-split-package.md) (**done** — deklarations-bewusste Auflösung für **Split-Packages**, d-migrate-getrieben: Lastenheft/Spez **0.18.0**, [ADR-0023](../../adr/0023-deklarations-bewusste-mehr-wurzel-aufloesung.md) `Accepted` **Supersedes [ADR-0022](../../adr/0022-datei-mengen-bewusste-mehr-wurzel-aufloesung.md)** = 2. Supersede, Benutzerhandbuch 1.27; ein Top-Level-Symbol, dessen Datei ≠ Name ist, löst über die reale Deklaration statt nur das Paket-Verzeichnis — `make ci` grün + real gegen d-migrate verifiziert, der `asJdbc`-Exit-2 getilgt; Wildcard-Split fail-open). **Offene Fäden:** [slice-025](../open/slice-025-p-rest-generalisierung.md) (P-Rest-Gen, gated) + [slice-013](../open/slice-013-driving-driven-vertiefung.md) (driving/driven-Vertiefung, Entwurf) + [slice-032](../open/slice-032-print-graph-mermaid.md) (`--print-graph`: Architektur-Graph als Mermaid aus `.a-check.yml`, **abgenommen 2026-07-08** — kleiner ADR vorgesehen, Umsetzung folgt als eigener Slice).
 
 ## Nächste Wellen
 

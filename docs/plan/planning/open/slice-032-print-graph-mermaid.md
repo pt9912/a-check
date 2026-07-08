@@ -1,6 +1,6 @@
 # slice-032 — `--print-graph`: Architektur-Graph (Mermaid) aus `.a-check.yml`
 
-**Status:** open (Entwurf — spec-first; **noch nicht abgenommen**, kein Code).
+**Status:** open (Entwurf **abgenommen 2026-07-08** — spec-first; Umsetzung folgt als eigener Slice, noch kein Code).
 **Typ:** Feature (Inspektions-/Visualisierungs-Ausgabe), maintainer-initiiert (UX/Onboarding).
 **Bezug:** neue Anforderung im Bereich `CLI` (Schema-Konvention, siehe
 [MR-002](../../../../harness/conventions.md#mr-002--id-schema-mit-bereichskürzeln-ab-initialer-fassung));
@@ -159,7 +159,7 @@ einen Wert). So bleibt die v1-Form dauerhaft gültig.
    Out-of-Scope, Version-Bump + Historie
    ([conventions §Anforderungs-Anlege-Prozess](../../../../harness/conventions.md#anforderungs-anlege-prozess)).
    **AC-Änderung nur im Lastenheft.**
-2. **ADR (§5-Entscheid, ob nötig):** falls ja — Format-/Umfang-Entscheidung (Mermaid; deklarierte Kanten +
+2. **ADR (bei Abnahme entschieden: ja, klein):** Format-/Umfang-Entscheidung (Mermaid; deklarierte Kanten +
    Rollen + Sonderknoten; implizite Regeln als Legende; Determinismus-Ordnung). `Schärft:` aufwärts auf
    die einschlägige `SPEC-*`-Stelle; ADR-Index; slice-token-frei
    ([MR-005](../../../../harness/conventions.md#mr-005--referenzmatrix-intra-spec-richtung--adrslice-disziplin-d-check-angleichung)).
@@ -230,15 +230,19 @@ einen Wert). So bleibt die v1-Form dauerhaft gültig.
    (`direction` (`driving`/`driven`) wird als strukturelles Feature in v1 gerendert; `tech` bleibt
    bewusst v1-scope außen vor).
 
-**Offen (Abnahme + ggf. Folge-ADR):**
+**Bei Abnahme entschieden (2026-07-08):**
 
-1. **ADR ja/nein:** ein kleiner ADR für Format + Render-Umfang + „implizite Regeln als Legende" +
-   Determinismus-Ordnung (Empfehlung: **ja, klein** — neuer Ausgabe-Vertrag mit echten Wahl-Punkten)
-   vs. Lastenheft+Spec genügen.
-2. **Render-Umfang v2+:** die Behandlung von `tech` als visuelle Notiz/Badge (inkl. `tech.pattern`)
-   inklusive zusätzlicher Testerweiterung ist ausdrücklich als Folge-Slice offen.
-3. **Format v1:** Mermaid als einziges Format; ein späteres Format **additiv über ein separates
-   `--graph-format`-Flag**, nicht durch Änderung von `--print-graph` (bleibt `fs.Bool`, §3, [Medium-Flag-Fix]).
+1. **ADR ja/nein → ja, klein.** Der umsetzende Slice legt einen kleinen ADR an (Format Mermaid;
+   Render-Umfang: deklarierte Kanten + Rollen + Sonderknoten; „implizite Regeln als Legende";
+   Determinismus-Ordnung) — neuer Ausgabe-Vertrag mit echten Wahl-Punkten, konsistent mit der
+   ADR-je-Feature-Praxis des Repos. `Schärft:` aufwärts auf die einschlägige `SPEC-*`-Stelle,
+   ADR-Index, slice-token-frei (§4 Punkt 2).
+2. **Render-Umfang v2+ → als Folge-Slice bestätigt.** `tech` als visuelle Notiz/Badge
+   (inkl. `tech.pattern`) samt zusätzlicher Testerweiterung bleibt bewusst außerhalb v1 und wird
+   in einem eigenen Folge-Slice behandelt.
+3. **Format v1 → Mermaid als einziges Format bestätigt.** Ein späteres Format kommt **additiv über
+   ein separates `--graph-format`-Flag**, nicht durch Änderung von `--print-graph` (bleibt `fs.Bool`,
+   §3, [Medium-Flag-Fix]).
 
 ## 6. Akzeptanzkriterien (Fitness-Function, als Tests)
 
