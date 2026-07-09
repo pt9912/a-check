@@ -1,6 +1,6 @@
 # Lastenheft — a-check
 
-**Version:** 0.18.0
+**Version:** 0.19.0
 
 **Status:** Draft
 
@@ -321,6 +321,40 @@ Zusammenfassung auf stderr (analog `d-check`).
 
 **Out-of-Scope:** Auto-Fix/Reparatur von Architekturverstößen (es gibt keinen deterministisch ableitbaren Fix).
 
+### AC-FA-CLI-002 — Architektur-Graph-Ausgabe
+
+**Beschreibung:** `a-check --print-graph [pfad]` gibt die in `pfad/.a-check.yml`
+(Default `/src`) **deklarierte** Architektur als **Mermaid-Flowchart** auf stdout
+aus: ein Knoten je Schicht, eine Kante je deklarierter `edges`-Kante, eine
+abgesetzte Sonderkante je `allow`-Kante, Farbcodierung nach der **effektiven**
+Schicht-Rolle (explizites `role:` oder Namens-Inferenz wie
+[AC-FA-RULE-006](#ac-fa-rule-006--schicht-rollen-generische-regel-anwendung)). Der
+Modus liest **nur** die Konfiguration und **scannt keine Quellen** — er ist
+read-only (schreibt nie ins geprüfte Repo, `AC-QA-02`) und deterministisch
+(byte-identische Ausgabe bei identischer Config, `AC-QA-01`). Der Graph zeigt die
+deklarierte **Absicht**, nicht den realen Code: die kategorischen Rollen-/
+Richtungs-Constraints (`core-impurity`, `lateral-adapter`,
+`port-direction-mismatch`) sind keine Kanten und erscheinen als **Legende**, nicht
+als gezeichnete Verbindung (ehrliche Ausgabe ohne Semantik-Behauptung, `AC-QA-02`).
+Dies ist eine eigenständige **Inspektions**-Ausgabe, **keine** Erweiterung der
+Distributions-`--print-*`-Familie aus
+[AC-FA-DIST-001](#ac-fa-dist-001--distribution-image---print-mk-a-checkmk).
+Exit-Codes wie beim Scan-Aufruf
+([AC-FA-CLI-001](#ac-fa-cli-001--aufruf-scan-wurzel-und-exit-codes)): `0` bei
+erfolgreicher Ausgabe; `2` bei Nutzungs-/Konfigurationsfehler — ein ladezeitiger
+Config-Fehler (**inkl. eines unbekannten `languages`-Schlüssels**, identisch zum
+Scan), ein unbekanntes Flag **oder** ein zusätzliches Argument/Flag nach dem
+optionalen `pfad`. Scanzeitige, datei-mengenabhängige Auflösungs-Fehler treten im
+no-scan-Modus nicht auf (`AC-QA-02`).
+
+**Akzeptanzkriterien:**
+
+- **Happy:** Given eine gültige `.a-check.yml` mit `layers`, `edges` und einer `allow`-Kante, when `a-check --print-graph <pfad>` läuft, then eine Mermaid-`flowchart`-Ausgabe mit einem Knoten je Schicht, einer Kante je `edge`, einer abgesetzten `allow`-Kante und rollen-basierter Farbe auf stdout, Exit-Code 0 — und es wird **nichts** ins Repo geschrieben (read-only).
+- **Boundary:** Given eine minimale Config **ohne** optionale Blöcke (kein `tech`/`adapter_sink`/`composition_root`/`direction`) **oder** Schicht-Namen mit Mermaid-heiklen Zeichen (Punkte/Slashes/Quotes/`]`/`|`/Backtick/`<`/`>`/`&`), when `a-check --print-graph` läuft, then ein **gültiges** Flowchart ohne Syntax-Ausbruch und ohne leere Sonderknoten; zwei Läufe gegen dieselbe Config sind byte-identisch (`AC-QA-01`).
+- **Negative:** Given eine ungültige `.a-check.yml` (unbekannter Schlüssel **oder** unbekannte Sprache `languages: {ruby: …}`), ein unbekanntes Flag **oder** ein zusätzliches Argument nach dem Pfad (`--print-graph <pfad> --bogus`), when es läuft, then Exit-Code 2 (kein halbes Diagramm).
+
+**Out-of-Scope:** Nicht-Mermaid-Formate (DOT/Graphviz) und ein Findings-/Verstoß-Graph (der reale Import-Graph mit markierten Befunden) — eigene Folge-Slices; die visuelle Darstellung von `tech` (Muster/Badge) — Folge-Inkrement; scanzeitige, datei-mengenabhängige Auflösungs-Mehrdeutigkeiten (Mehr-Wurzel) — sie brauchen einen realen Scan und sind kein Vertrag des no-scan-Modus; Auto-Layout-Tuning (Mermaid ordnet selbst; sehr große Configs können unübersichtlich werden — dokumentierte Grenze).
+
 ### AC-FA-CONF-001 — Konfigurationsdatei `.a-check.yml`
 
 **Beschreibung:** `.a-check.yml` deklariert: die Sprache(n) + Datei-Globs je
@@ -466,3 +500,4 @@ Konsumenten-Repos).
 | 0.16.0 | 2026-07-04 | `AC-FA-CONF-001`: **fail-closed-Guard gegen mehrdeutige Mehr-Wurzel-Auflösung** — `mode: fixed-root` mit ≥ 2 `roots`, von denen zwei Roots je eine andere Schicht erzwingen (die Schicht, in die ein Root allein am Wurzel-Präfix auflöst — längster passender Glob-Präfix, wie die Import-Auflösung), bricht mit Exit 2 statt still falsch-grün (Phantom-Kandidaten über Schicht-Grenzen; die Zuordnung entschiede der längste Präfix statt das Symbol). Anlass: belief-agent-Bericht — KMP (`commonMain`/`jvmMain` teilen `package_base`) bei flachen Source-Set-Globs fing die illegale `core → adapter`-Kante nicht; Rezept: paket-spezifische Globs. Stufe 1 des Fixes (fail-closed); die datei-mengen-bewusste Auflösung folgt gated (slice-027). welle-05-Härtung, slice-026. |
 | 0.17.0 | 2026-07-05 | `AC-FA-CONF-001`: **datei-mengen-bewusste Mehr-Wurzel-Auflösung** (Stufe 2) — `mode: fixed-root` mit ≥ 2 `roots` löst den internen FQN gegen die **real gescannten Dateien** auf (endungs-agnostisch, package==directory), statt je Root einen Phantom-Kandidaten am Wurzel-Präfix zu bilden; die disjunkte Multi-Modul-Config (KMP: geteiltes `package_base`, disjunkte Sub-Namespaces) **lädt und löst korrekt** (die verbotene `domain → application`-Kante wird gemeldet), der Ladezeit-Guard aus 0.16.0 entfällt. Echte Mehrdeutigkeit (gleicher FQN real in ≥ 2 Roots, **verschiedene** Schichten) bricht **nach dem Scan** mit Exit 2 (distinct-layer; `expect`/`actual` same-layer löst sauber). Ersetzt Stufe 1 (Supersede-ADR). Anlass: belief-agent-KMP — jede resolution-Variante war Reject oder still falsch-grün. welle-05-Härtung, slice-027. |
 | 0.18.0 | 2026-07-06 | `AC-FA-CONF-001`/`AC-FA-EXTRACT-001`: **deklarations-bewusste Auflösung für Split-Packages** (Stufe 3) — bei `mode: fixed-root` mit ≥ 2 `roots` löst ein importiertes Top-Level-Symbol, dessen Datei ≠ Symbolname ist (Kotlin-Extension-Fun, Zweitklasse), über die **reale Top-Level-Deklaration** statt nur über das Paket-Verzeichnis auf: genau ein deklarierender Root ⇒ eindeutig, ≥ 2 deklarierende Roots verschiedener Schichten ⇒ Exit 2, kein Deklarations-Treffer ⇒ **extern** (fail-open). Für deklarations-bewusste Backends sticht die echte Deklaration den bloßen Datei-Namens-Match. `AC-FA-EXTRACT-001`: **Kotlin** liefert zusätzlich Top-Level-Deklarationen; übrige Backends no-op (leeres Set), Verhalten unverändert. Ersetzt Stufe 2 (Supersede-ADR). Anlass: d-migrate-Pilot — die einzige korrekte Vollrichtungs-Config endete an einem Split-Package-Top-Level-Symbol (`asJdbc`) in Exit 2. welle-05-Härtung, slice-031. |
+| 0.19.0 | 2026-07-09 | Neu `AC-FA-CLI-002` (Architektur-Graph-Ausgabe): `a-check --print-graph [pfad]` gibt die deklarierte Architektur aus `.a-check.yml` als **Mermaid-Flowchart** auf stdout aus — ein Knoten je Schicht, eine Kante je `edge`, abgesetzte `allow`-Kante, Farbe nach effektiver Rolle; read-only, deterministisch, **kein Scan**. Ladezeitiger Config-Fehler (inkl. unbekannter Sprache), unbekanntes Flag oder Restargument nach dem Pfad → Exit 2; scanzeitige Resolution-Fehler out-of-scope. Eigenständige Inspektions-CLI, **kein** `--print-*`-Ausbau von `AC-FA-DIST-001`. slice-032. |
