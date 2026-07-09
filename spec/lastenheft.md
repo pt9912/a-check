@@ -1,6 +1,6 @@
 # Lastenheft — a-check
 
-**Version:** 0.19.0
+**Version:** 0.20.0
 
 **Status:** Draft
 
@@ -443,16 +443,21 @@ Grenzen (`AC-QA-02`).
 **Beschreibung:** `a-check` wird als GHCR-Image (distroless/static,
 digest-gepinnt) verteilt. `a-check --print-config` gibt ein kommentiertes
 `.a-check.yml`-Gerüst aus; `a-check --print-mk` gibt ein `a-check.mk` mit dem
-**aktuell digest-gepinnten** Image und einem `a-check`-Target aus. Konsumenten
-`include a-check.mk` und liefern `.a-check.yml` — keine Skript-Kopie.
+**aktuell digest-gepinnten** Image, einem `a-check`-Scan-Target **und** einem
+`a-check-graph`-Target aus. Konsumenten `include a-check.mk` und liefern
+`.a-check.yml` — keine Skript-Kopie. Das `a-check-graph`-Target ruft
+`--print-graph` auf ([AC-FA-CLI-002](#ac-fa-cli-002--architektur-graph-ausgabe):
+Architektur-Graph als Mermaid nach stdout, read-only, kein Scan) und teilt dieselbe
+digest-gepinnte `A_CHECK_IMAGE`-Variable — kein zweiter Digest, keine Skript-Kopie.
 
 **Akzeptanzkriterien:**
 
-- **Happy:** Given das Image, when `a-check --print-mk` läuft, then ein `include`-bares Makefile-Fragment mit digest-gepinntem `A_CHECK_IMAGE` und `a-check`-Target auf stdout.
+- **Happy:** Given das Image, when `a-check --print-mk` läuft, then ein `include`-bares Makefile-Fragment mit digest-gepinntem `A_CHECK_IMAGE` und einem `a-check`-Scan-Target auf stdout.
+- **Happy (Graph-Target):** Given das erzeugte `a-check.mk` in einem Konsumenten-`Makefile` eingebunden, when `make a-check-graph` läuft, then ein Mermaid-`flowchart` auf stdout (read-only, kein Scan), Exit-Code 0 — dasselbe `A_CHECK_IMAGE` wie das `a-check`-Scan-Target, kein Schreibzugriff auf den Baum.
 - **Boundary:** Given `a-check --print-config`, when es läuft, then ein dekodierbares `.a-check.yml`-Gerüst, **schreibt nichts** (read-only).
 - **Negative:** Given `--print-mk` mit einem zusätzlichen unbekannten Flag, when aufgerufen, then Exit-Code 2.
 
-**Out-of-Scope:** Nicht-Docker-Distribution (Binary-Releases) in 0.1.0.
+**Out-of-Scope:** Nicht-Docker-Distribution (Binary-Releases) in 0.1.0; ein Datei-schreibendes oder Browser-öffnendes Graph-Target (`a-check-graph` schreibt nur nach stdout, Umleiten ist Nutzer-Sache); weitere Ausgabeformate (`--graph-format` DOT/Graphviz) — eigener Folge-Slice.
 
 ## 4. Nichtfunktionale Anforderungen
 
@@ -501,3 +506,4 @@ Konsumenten-Repos).
 | 0.17.0 | 2026-07-05 | `AC-FA-CONF-001`: **datei-mengen-bewusste Mehr-Wurzel-Auflösung** (Stufe 2) — `mode: fixed-root` mit ≥ 2 `roots` löst den internen FQN gegen die **real gescannten Dateien** auf (endungs-agnostisch, package==directory), statt je Root einen Phantom-Kandidaten am Wurzel-Präfix zu bilden; die disjunkte Multi-Modul-Config (KMP: geteiltes `package_base`, disjunkte Sub-Namespaces) **lädt und löst korrekt** (die verbotene `domain → application`-Kante wird gemeldet), der Ladezeit-Guard aus 0.16.0 entfällt. Echte Mehrdeutigkeit (gleicher FQN real in ≥ 2 Roots, **verschiedene** Schichten) bricht **nach dem Scan** mit Exit 2 (distinct-layer; `expect`/`actual` same-layer löst sauber). Ersetzt Stufe 1 (Supersede-ADR). Anlass: belief-agent-KMP — jede resolution-Variante war Reject oder still falsch-grün. welle-05-Härtung, slice-027. |
 | 0.18.0 | 2026-07-06 | `AC-FA-CONF-001`/`AC-FA-EXTRACT-001`: **deklarations-bewusste Auflösung für Split-Packages** (Stufe 3) — bei `mode: fixed-root` mit ≥ 2 `roots` löst ein importiertes Top-Level-Symbol, dessen Datei ≠ Symbolname ist (Kotlin-Extension-Fun, Zweitklasse), über die **reale Top-Level-Deklaration** statt nur über das Paket-Verzeichnis auf: genau ein deklarierender Root ⇒ eindeutig, ≥ 2 deklarierende Roots verschiedener Schichten ⇒ Exit 2, kein Deklarations-Treffer ⇒ **extern** (fail-open). Für deklarations-bewusste Backends sticht die echte Deklaration den bloßen Datei-Namens-Match. `AC-FA-EXTRACT-001`: **Kotlin** liefert zusätzlich Top-Level-Deklarationen; übrige Backends no-op (leeres Set), Verhalten unverändert. Ersetzt Stufe 2 (Supersede-ADR). Anlass: d-migrate-Pilot — die einzige korrekte Vollrichtungs-Config endete an einem Split-Package-Top-Level-Symbol (`asJdbc`) in Exit 2. welle-05-Härtung, slice-031. |
 | 0.19.0 | 2026-07-09 | Neu `AC-FA-CLI-002` (Architektur-Graph-Ausgabe): `a-check --print-graph [pfad]` gibt die deklarierte Architektur aus `.a-check.yml` als **Mermaid-Flowchart** auf stdout aus — ein Knoten je Schicht, eine Kante je `edge`, abgesetzte `allow`-Kante, Farbe nach effektiver Rolle; read-only, deterministisch, **kein Scan**. Ladezeitiger Config-Fehler (inkl. unbekannter Sprache), unbekanntes Flag oder Restargument nach dem Pfad → Exit 2; scanzeitige Resolution-Fehler out-of-scope. Eigenständige Inspektions-CLI, **kein** `--print-*`-Ausbau von `AC-FA-DIST-001`. slice-032. |
+| 0.20.0 | 2026-07-09 | `AC-FA-DIST-001` erweitert: das `--print-mk`-Fragment `a-check.mk` liefert zusätzlich ein **`a-check-graph`**-Target, das `--print-graph` (`AC-FA-CLI-002`) mit demselben digest-gepinnten `A_CHECK_IMAGE` und netzlosem read-only-Mount aufruft — Mermaid nach stdout, kein Scan, Exit 0; neue AK „Happy (Graph-Target)". Convenience für Konsumenten, die bereits `include a-check.mk` fahren. slice-033. |
