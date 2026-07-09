@@ -1,6 +1,6 @@
 # Spezifikation — a-check
 
-**Version:** 0.18.0
+**Version:** 0.19.0
 
 **Status:** Draft
 
@@ -249,6 +249,60 @@ Präzisiert [AC-FA-CLI-001](lastenheft.md#ac-fa-cli-001--aufruf-scan-wurzel-und-
   `pfad:zeile: regelname: meldung`; **Zusammenfassung** (Anzahl je Regel,
   Gesamtzahl) auf stderr.
 - **Read-only:** der geprüfte Baum wird nie beschrieben (Mount `:ro`).
+- **No-scan-Modus `--print-graph`** ([AC-FA-CLI-002](lastenheft.md#ac-fa-cli-002--architektur-graph-ausgabe)):
+  `a-check --print-graph [pfad]` liest **nur** `pfad/.a-check.yml` und gibt einen Graphen aus
+  ([SPEC-CLI-002](#spec-cli-002--graph-renderer-vertrag)) — **kein** Quell-Scan. Es gilt
+  **load-time/config-validation-Parität** zum Scan: das strikte Schema-Decoding
+  ([SPEC-CONF-001](#spec-conf-001--konfigurationsschema)) **und** die Sprach-Backend-Prüfung
+  gegen die Registry ([SPEC-EXTRACT-001](#spec-extract-001--import-extraktion)) laufen als
+  **validation-only**-Schritt **ohne** Datei-Walk; jeder ladezeitige Fehler → Exit 2 (unbekannter
+  Schlüssel, ungültige `role`/`direction`/`tech`, **unbekannte Sprache** u. a.). Zusätzlich brechen
+  ein unbekanntes Flag **und** — nur in diesem Modus — ein weiteres Positionsargument/Flag **nach**
+  dem optionalen `pfad` (`--print-graph <pfad> --bogus`) mit Exit 2 (Go-`flag` parst nach dem ersten
+  Positionsargument nicht weiter; das darf nicht still als zweites Argument ignoriert werden).
+  Bewusst **keine** Parität für scanzeitige, datei-mengenabhängige Fehler (Mehr-Wurzel-Auflösungs-
+  Mehrdeutigkeit, [SPEC-CONF-001](#spec-conf-001--konfigurationsschema)) — der Modus liest keine
+  Quellen. Erfolgreiche Ausgabe → Exit 0, read-only.
+
+## SPEC-CLI-002 — Graph-Renderer-Vertrag
+
+Präzisiert [AC-FA-CLI-002](lastenheft.md#ac-fa-cli-002--architektur-graph-ausgabe).
+
+Der Renderer bildet das geladene Config-Modell **pur** (kein I/O) auf einen
+Mermaid-`flowchart`-String ab; die Composition Root schreibt ihn nach stdout.
+
+- **Knoten:** ein Knoten je `layers`-Eintrag. Layer-Namen sind freie YAML-Map-Keys und taugen
+  **nicht** als Mermaid-Knoten-IDs; der Renderer vergibt **stabile interne IDs** (`L0`, `L1`, … in
+  Sortier-Reihenfolge) und gibt den Rohnamen **nur als escaptes Label** aus. `composition_root` wird
+  als **ein** isolierter Notizknoten (`C0`) mit seinen Globs als Labels gerendert, `adapter_sink` als
+  **ein** isolierter Ausnahme-/Notizknoten (`S0`) mit dem Pfadfragment — beide **ohne** gezeichnete
+  Kanten und ohne Layer-Klasse; fehlen sie, entsteht **kein** leerer Sonderknoten.
+- **Kanten:** eine Kante `Lᵢ --> Lⱼ` je `edges`-Eintrag (interne IDs, nie Rohnamen); je `allow`-Eintrag
+  eine **abgesetzte** (gestrichelte, gelabelte) Kante. Ein `edges`/`allow`-Endpunkt, der auf **keinen**
+  deklarierten Layer zeigt, wird als deterministischer **Dangling-Knoten** (`D0`, `D1`, …) gerendert —
+  der no-scan-Modus führt **keine** neue Config-Strenge ein (kein Exit 2 für einen Endpunkt, den der
+  Loader heute akzeptiert, [SPEC-CONF-001](#spec-conf-001--konfigurationsschema)).
+- **Rollen-Farbe:** ein `classDef` je **effektiver** Rolle (explizites `role:` oder Kern-Namens-Inferenz
+  `core`→`domain`/`ports`→`port`/`adapters`→`adapter`/`application`,`app`→`app`,
+  [SPEC-RULE-001](#spec-rule-001--regel-auswertung)); es gilt **derselbe** Resolver wie in der
+  Regel-Engine, keine kopierte Inferenz.
+- **Richtung:** Layer mit `direction` ∈ {`driving`, `driven`} werden in **stabilen** Mermaid-Subgraphs
+  gruppiert; Layer ohne `direction` bleiben außerhalb, behalten aber Rolle und Kanten. Kanten dürfen
+  Subgraph-Grenzen queren.
+- **Legende:** die impliziten, kategorischen Constraints (`core-impurity`, `lateral-adapter`,
+  `port-direction-mismatch`) erscheinen als Legende/Notiz, **nicht** als gezeichnete Kante
+  ([AC-QA-02](lastenheft.md#ac-qa-02--hermetik-und-ehrliche-heuristik-grenze): ehrliche Ausgabe, keine
+  Semantik-Behauptung über den realen Code).
+- **Escaping-Vertrag:** jeder nutzergesteuerte Text (Layer-Namen, `composition_root`-Globs,
+  `adapter_sink`, Legenden-Text) wird zuerst einzeilig normalisiert (`\r`/`\n`/`\t` → Leerzeichen,
+  übrige Steuerzeichen → `?`) und dann in fester Reihenfolge kodiert: `&`→`&amp;`, `"`→`&quot;`,
+  `<`→`&lt;`, `>`→`&gt;`, `[`→`&#91;`, `]`→`&#93;`, `|`→`&#124;`, `\`→`&#92;`, `` ` ``→`&#96;`. Die
+  Renderer-eigene Struktur (`["…"]`, feste `<br/>`-Trenner) wird erst **danach** um den kodierten Text
+  gelegt; nutzergesteuerter Text erzeugt nie Mermaid-Syntax.
+- **Determinismus** ([SPEC-DET-001](#spec-det-001--determinismus-vertrag)): Knoten stabil nach
+  Layer-Name sortiert, Kanten nach (`from`, dann `to`), `classDef` in fester Reihenfolge — **byte-
+  identische** Ausgabe bei identischer Config, unabhängig von der internen Map-/Slice-Ordnung des
+  Modells. `tech` wird in v1 nicht gerendert.
 
 ## SPEC-DET-001 — Determinismus-Vertrag
 
@@ -304,3 +358,4 @@ und [AC-QA-03](lastenheft.md#ac-qa-03--reproduzierbarkeit).
 | 0.16.0 | 2026-07-04 | `SPEC-CONF-001`: **Mehr-Wurzel-Guard (fail-closed)** — `mode: fixed-root` mit ≥ 2 `roots`, von denen zwei Roots je eine andere Schicht erzwingen (längster passender Glob-Präfix am Root, `segIndex >= 0`, wie die Import-Auflösung), bricht mit Exit 2 statt still Phantom-Kandidaten fehlzuklassifizieren. Folgt [`AC-FA-CONF-001`](lastenheft.md#ac-fa-conf-001--konfigurationsdatei-a-checkyml) 0.16.0. |
 | 0.17.0 | 2026-07-05 | `SPEC-CONF-001`: **datei-mengen-bewusste Mehr-Wurzel-Auflösung** (Stufe 2) — `fixed-root` mit ≥ 2 `roots` löst den FQN gegen die real gescannten Dateien auf (endungs-agnostisch, package==directory); Schicht am realen Kandidaten-Pfad, Phantom bleibt extern; der Ladezeit-Guard aus 0.16.0 entfällt. Gleicher FQN real in ≥ 2 Roots + **verschiedene** Schichten → Exit 2 **nach dem Scan** (distinct-layer; `expect`/`actual` same-layer löst sauber). Folgt [`AC-FA-CONF-001`](lastenheft.md#ac-fa-conf-001--konfigurationsdatei-a-checkyml) 0.17.0. |
 | 0.18.0 | 2026-07-06 | `SPEC-CONF-001`/`SPEC-EXTRACT-001`: **deklarations-bewusste Mehr-Wurzel-Auflösung** (Stufe 3) — bei `fixed-root` mit ≥ 2 `roots` gewinnt für ein deklarations-bewusstes Backend (Kotlin) die **reale Top-Level-Deklaration** über den bloßen Datei-Namens-Match (Evidenz-Rangfolge deklariert > Paketverzeichnis > keine); genau ein deklarierender Root ⇒ eindeutig, ≥ 2 deklarierende Roots verschiedener Schichten ⇒ Exit 2, kein Treffer ⇒ extern (fail-open). `SPEC-EXTRACT-001`: **Kotlin** liefert zusätzlich Top-Level-Deklarationen (`fun`/Extension/`val`/`class`/`object`/`interface`/`typealias`), übrige Backends no-op (leeres Set). Folgt [`AC-FA-CONF-001`](lastenheft.md#ac-fa-conf-001--konfigurationsdatei-a-checkyml)/[`AC-FA-EXTRACT-001`](lastenheft.md#ac-fa-extract-001--sprach-backends-für-die-import-extraktion) 0.18.0. |
+| 0.19.0 | 2026-07-09 | Neu `SPEC-CLI-002` (Graph-Renderer-Vertrag: Config-Modell→Mermaid **pur**; stabile interne IDs + escaptes Label je nutzergesteuertem Text; Kante je `edges`, abgesetzte `allow`-Kante; Dangling-/Composition-Root-/Adapter-Sink-Sonderknoten; `classDef` je effektiver Rolle via geteiltem Resolver; `direction`-Subgraphs; implizite Regeln als Legende; Escaping-Vertrag; Determinismus-Ordnung; `tech` v1 deferred). `SPEC-CLI-001` um den no-scan-`--print-graph`-Modus präzisiert (load-time/config-validation-Parität inkl. unbekannter Sprache; Restargument nach dem Pfad → Exit 2; **keine** scanzeitige Fehler-Parität). Folgt [`AC-FA-CLI-002`](lastenheft.md#ac-fa-cli-002--architektur-graph-ausgabe) 0.19.0. |
