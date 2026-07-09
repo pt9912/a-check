@@ -20,6 +20,11 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
   `graph`-Präsentationsadapter (`ARC-007`) hinter dem driven Port `GraphPort`; `ExtractionPort` um einen
   validation-only `Validate`-Einstieg (kein Datei-Walk) erweitert; `core.EffectiveRole` als von
   Regel-Engine und Renderer geteilter Rollen-Resolver.
+- **`a-check-graph`-`make`-Target im `a-check.mk`-Fragment (`AC-FA-DIST-001` 0.20.0, slice-033):**
+  `--print-mk` liefert neben `a-check` (Scan-Gate) jetzt ein `a-check-graph`-Target, das
+  `--print-graph` über dasselbe digest-gepinnte `A_CHECK_IMAGE` + netzlosen read-only-Mount ausführt
+  (`make a-check-graph > architektur.mmd`) — Convenience für Konsumenten, die bereits `include a-check.mk`
+  fahren; kein zweiter Digest.
 
 ## [0.12.0] - 2026-07-06
 

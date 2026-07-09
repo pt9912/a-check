@@ -55,6 +55,9 @@ func TestPrintMk(t *testing.T) { // SPEC-DIST-001: includebares Fragment
 	if !strings.Contains(o, "A_CHECK_IMAGE") || !strings.Contains(o, "a-check:") {
 		t.Fatalf("print-mk: %q", o)
 	}
+	if !strings.Contains(o, "a-check-graph:") || !strings.Contains(o, "--print-graph /src") {
+		t.Fatalf("print-mk: a-check-graph-Target fehlt (AC-FA-DIST-001 0.20.0): %q", o)
+	}
 }
 
 func TestUnknownFlag(t *testing.T) { // SPEC-CLI-001: Exit 2

@@ -102,9 +102,12 @@ const mkFragment = `# a-check.mk — Architektur-Gate via a-check, zum ` + "`inc
 # A_CHECK_IMAGE wird beim Release auf ` + "`@sha256:…`" + ` digest-gepinnt.
 A_CHECK_IMAGE ?= ` + aCheckImage + `
 
-.PHONY: a-check
+.PHONY: a-check a-check-graph
 a-check: ## Architektur: Hexagon-Regeln via a-check (netzlos, read-only).
 	docker run --rm --network none -v "$(CURDIR)":/src:ro $(A_CHECK_IMAGE) /src
+
+a-check-graph: ## Architektur-Graph (Mermaid) aus .a-check.yml auf stdout (read-only, kein Scan).
+	docker run --rm --network none -v "$(CURDIR)":/src:ro $(A_CHECK_IMAGE) --print-graph /src
 `
 
 const sampleConfig = `# .a-check.yml — Architektur-Regeln für a-check (Gerüst, ` + "`a-check --print-config`" + `).

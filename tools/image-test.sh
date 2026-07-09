@@ -38,7 +38,9 @@ mk_c=0; docker run --rm --network none "$IMG" --print-mk >"$WORK/mk.c.out" 2>"$W
 cmp -s "$WORK/mk.n.out" "$WORK/mk.c.out" || fail "--print-mk stdout nativ vs. Container nicht byte-identisch (AC-QA-02)"
 grep -q 'A_CHECK_IMAGE' "$WORK/mk.c.out" || fail "--print-mk: A_CHECK_IMAGE fehlt"
 grep -qE '^a-check:' "$WORK/mk.c.out" || fail "--print-mk: a-check-Target fehlt"
-echo "image-test: (1) Happy — --print-mk nativ == Container, A_CHECK_IMAGE + Target vorhanden"
+grep -qE '^a-check-graph:' "$WORK/mk.c.out" || fail "--print-mk: a-check-graph-Target fehlt (AC-FA-DIST-001 0.20.0)"
+grep -qF -- '--print-graph /src' "$WORK/mk.c.out" || fail "--print-mk: a-check-graph-Recipe ruft nicht --print-graph auf"
+echo "image-test: (1) Happy — --print-mk nativ == Container, A_CHECK_IMAGE + a-check/a-check-graph-Targets vorhanden"
 
 # --- (2) Boundary: --print-config, read-only-Mount → Exit 0 -----------------
 mkdir -p "$WORK/ro"

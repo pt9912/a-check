@@ -1,6 +1,6 @@
 # Benutzerhandbuch: a-check
 
-**Handbuch-Version:** 1.28 · **Software-Version:** [aktuelles Release](../../version.md#aktuell) · **Stand:** 2026-07-09 ·
+**Handbuch-Version:** 1.29 · **Software-Version:** [aktuelles Release](../../version.md#aktuell) · **Stand:** 2026-07-09 ·
 **Autor:** pt9912 (Maintainer)
 
 ---
@@ -203,6 +203,11 @@ Code: die kategorischen Regeln (`core-impurity`, `lateral-adapter`,
 Dangling-Knoten sichtbar (statt still ignoriert). Ein ladezeitiger Config-Fehler
 (inkl. unbekannter Sprache), ein unbekanntes Flag oder ein zusätzliches Argument
 nach dem Pfad führt zu Exit-Code 2.
+
+**Als `make`-Target:** Wer `a-check.mk` bereits einbindet (Abschnitt 3.3), erhält
+mit `--print-mk` neben `a-check` auch ein **`a-check-graph`**-Target — `make
+a-check-graph > architektur.mmd` erzeugt denselben Graphen über dasselbe
+digest-gepinnte Image, ohne die `docker run`-Details zu wiederholen.
 
 ## 4. Konfiguration (`.a-check.yml`)
 
@@ -573,3 +578,4 @@ und die [Spezifikation](../../spec/spezifikation.md); ein Überblick steht in de
 | 1.26 | 2026-07-05 | §4 an Lastenheft 0.17.0: `resolution`-Absatz um das **Multi-Modul (KMP/Gradle)**-Rezept erweitert — mehrere `roots` mit geteiltem `package_base` lösen den FQN **datei-mengen-bewusst** gegen die realen Dateien auf (disjunkte Sub-Namespaces → genau ein Modul; **flache** Modul-Globs genügen, keine paket-tiefen mehr nötig); gleicher FQN real in ≥ 2 Roots **verschiedener** Schichten → Exit 2 nach dem Scan, `expect`/`actual` same-layer sauber. Löst den Ladezeit-Guard aus 1.24/Software-Version 0.10.0 ab (slice-027). |
 | 1.27 | 2026-07-06 | §4 an Lastenheft 0.18.0: `resolution`-Absatz um das **Split-Package über Modulgrenzen (deklarations-bewusst)**-Rezept erweitert — teilt sich **ein** Paket über zwei Schicht-Module und wird ein Top-Level-Symbol importiert, dessen Datei ≠ Symbolname ist (Kotlin-Extension-Funktion, zweite Klasse), löst `a-check` über die **reale Deklaration** auf (genau ein deklarierendes Modul → eindeutig; ≥ 2 verschiedene Schichten → Exit 2; kein Treffer, Paketverzeichnis in ≥ 2 Schichten → extern/fail-open; eindeutiges Paketverzeichnis → löst unverändert). Kotlin-spezifisch, keine Zusatz-Config (slice-031). |
 | 1.28 | 2026-07-09 | Neuer Abschnitt 3.6 „Die deklarierte Architektur visualisieren (`--print-graph`)": `a-check --print-graph [pfad]` rendert die deklarierte Architektur aus `.a-check.yml` als **Mermaid-Flowchart** (read-only, kein Scan, deterministisch) — ein Knoten je Schicht nach effektiver Rolle, Kante je `edges`, gestrichelte Kante je `allow`, `composition_root`/`adapter_sink` als Notizknoten, implizite Regeln als Legende; mit Beispiel-Ausgabe. Ladezeitiger Config-Fehler (inkl. unbekannter Sprache)/unbekanntes Flag/Restargument → Exit 2. Noch nicht im veröffentlichten Image (folgt mit dem nächsten Release). (Lastenheft 0.19.0, slice-032) |
+| 1.29 | 2026-07-09 | §3.6 um die `make`-Variante ergänzt: das `--print-mk`-Fragment `a-check.mk` liefert neben `a-check` jetzt ein **`a-check-graph`**-Target (`make a-check-graph > architektur.mmd`), das `--print-graph` über dasselbe digest-gepinnte Image fährt (Lastenheft/Spez 0.20.0, slice-033). Noch nicht im veröffentlichten Image (folgt mit dem nächsten Release). |
