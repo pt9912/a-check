@@ -1,6 +1,6 @@
 # slice-032 — `--print-graph`: Architektur-Graph (Mermaid) aus `.a-check.yml`
 
-**Status:** in-progress (Entwurf **abgenommen 2026-07-08**; **in Umsetzung 2026-07-09** — Phase A: Vertrag/Spezifikation/Architektur spec-first, Code/Tests/Doku als Phase B).
+**Status:** done (**abgeschlossen 2026-07-09** — spec-first umgesetzt, `make ci` grün, adversarisches Multi-Linsen-Review eingearbeitet; noch unveröffentlicht). Closure-Notiz + Lerneintrag: §9.
 **Typ:** Feature (Inspektions-/Visualisierungs-Ausgabe), maintainer-initiiert (UX/Onboarding).
 **Bezug:** neue Anforderung im Bereich `CLI` (Schema-Konvention, siehe
 [MR-002](../../../../harness/conventions.md#mr-002--id-schema-mit-bereichskürzeln-ab-initialer-fassung));
@@ -354,3 +354,56 @@ Referenz-Fixture (`.a-check.yml`): `core`/`ports`/`adapters` mit `role`s, `edges
 - **Evidenz-/Diskrepanz-Risiko:** niedrig — Beispiel-Output und Dogfooding-Probe decken die
   Nutzererwartung.
 - **Reconciliation-Aufwand:** keiner erwartet; Benutzerhandbuch-Bump im umsetzenden Slice.
+
+## 9. Closure-Notiz (nach `done`)
+
+**Abgeschlossen 2026-07-09** auf Branch `slice-032-print-graph` (spec-first, zwei Phasen mit
+Zwischen-Review, noch unveröffentlicht).
+
+**Geliefert:**
+
+- **Vertrag/Spec:** neue Anforderung [AC-FA-CLI-002](../../../../spec/lastenheft.md#ac-fa-cli-002--architektur-graph-ausgabe)
+  (Lastenheft **0.19.0**); [SPEC-CLI-002](../../../../spec/spezifikation.md#spec-cli-002--graph-renderer-vertrag)
+  (Graph-Renderer-Vertrag) + [SPEC-CLI-001](../../../../spec/spezifikation.md#spec-cli-001--aufruf-scan-wurzel-und-exit-codes)
+  um den no-scan-Modus präzisiert (**0.19.0**); Architektur-Sicht **0.3.0**
+  ([ARC-007](../../../../spec/architecture.md) `graph`-Adapter, `GraphPort`, `ExtractionPort.Validate`,
+  no-scan-Sequenz); [ADR-0024](../../adr/0024-print-graph-mermaid.md) `Accepted` (Format Mermaid +
+  Render-Umfang).
+- **Code:** geteilter Resolver `core.EffectiveRole`; driven Port `GraphPort` + `ExtractionPort.Validate`
+  (validation-only, kein Walk); neuer **purer** `graph`-Präsentationsadapter (stabile interne IDs,
+  Escaping-Vertrag, `edges`/`allow`, Dangling-/Sonderknoten, `direction`-Subgraphs, Legende,
+  Determinismus); `cli.go`-Dispatch (`--print-graph`, vor dem Scan) + Restargument-Härtung.
+- **Doku/Test:** Benutzerhandbuch §3.6 (Currency **1.28**); `image-test.sh`-Block (2b); CHANGELOG
+  `[Unreleased]`; Unit- + E2E-Tests (Happy/Boundary/Negative, Mermaid-unsafe, Dangling, effektive
+  Rollen, read-only, unbekannte Sprache/Restargument → Exit 2, Determinismus).
+
+**Gate-Evidenz:** `make ci` grün (lint 0, test grün, coverage **97,10 %** ≥ 90 %, arch-check **0**,
+doc-check 92/0, gate-consistency/guard-selftest ok, image-test inkl. Block (2b)); `make trace-check`
+und `make doc-immutable` über die Branch-Range grün. Dogfooding: `a-check --print-graph` auf die
+eigene `.a-check.yml` liefert stabil (byte-identisch) den erwarteten Graphen.
+
+**Review:** adversarisches Multi-Linsen-Review (6 Winkel). Ein Korrektheits-Befund gefixt (**A1**: ein
+Layer mit unerwarteter `direction` wurde gedroppt, während eine Kante seine ID referenzierte →
+undefinierter Mermaid-Knoten); zwei Simplifizierungen angewandt (Ausgabe byte-identisch). Konventionen
+ohne Verstoß.
+
+### Lerneintrag
+
+1. **Ein purer Präsentations-Adapter muss über jede vom Modell erlaubte Eingabe total sein — nicht nur
+   über die vom Config-Adapter garantierte Teilmenge.** `GraphPort.Render` nimmt ein beliebiges
+   `core.Model`; der Renderer verließ sich anfangs darauf, dass die Config-Validierung nur
+   ""/`driving`/`driven` durchlässt, und ließ sonst einen Knoten still fallen. Die Invariante lebte
+   **außerhalb** des Moduls, das sie brauchte — genau die zu flache Fix-Ebene, die das Review (A1) fand.
+   Regel: Totalität am **Port-Interface** absichern, nicht an der aktuell engsten Aufrufkette.
+2. **Ein geteilter Kern-Resolver (`core.EffectiveRole`) statt kopierter Inferenz hält Sicht und
+   Durchsetzung deckungsgleich.** Regel-Engine und Renderer entscheiden über dieselbe Funktion — die
+   gezeichnete Rolle kann nicht von der erzwungenen driften. Muster für jede weitere abgeleitete Sicht
+   auf das Modell (etwa ein späterer Findings-/Verstoß-Graph).
+3. **Spec-Straten in Präzedenz-Reihenfolge, ADR nach der Spezifikation committen**, damit der
+   `Schärft:`-Link ([ADR-0024](../../adr/0024-print-graph-mermaid.md) →
+   [SPEC-CLI-002](../../../../spec/spezifikation.md#spec-cli-002--graph-renderer-vertrag)) schon beim
+   Anlegen auflöst und `doc-check` je Zwischenstand grün bleibt.
+
+**Folge-Slices (aus §5/§7, bewusst deferred):** `tech` als visuelle Notiz/Badge (v2+); ein zweites
+Ausgabeformat additiv über ein separates `--graph-format`-Flag (DOT/Graphviz); ein Findings-/Verstoß-Graph
+(realer Import-Graph mit markierten Befunden).
