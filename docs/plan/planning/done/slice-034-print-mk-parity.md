@@ -1,6 +1,6 @@
 # slice-034 — Fragment-Parität: committete `a-check.mk` == `--print-mk`
 
-**Status:** in-progress (**2026-07-09** — Harness-Gate-Härtung, maintainer-initiiert; Umsetzung sofort).
+**Status:** done (**abgeschlossen 2026-07-09** — Gate-Härtung umgesetzt, Negativ-Probe verifiziert, `make ci` grün; noch unveröffentlicht). Closure-Notiz + Lerneintrag: §7.
 **Typ:** Gate-Härtung (Durchsetzungsschicht), Folge von slice-033.
 **Bezug:** schärft die `image-test`-Akzeptanz zu
 [AC-FA-DIST-001](../../../../spec/lastenheft.md#ac-fa-dist-001--distribution-image---print-mk-a-checkmk)
@@ -76,3 +76,28 @@ impliziert, der Slice erzwingt sie nur maschinell.
 - **Phase-Reife:** Phase 4 — `image-test` real und grün; dieser Slice hängt einen Assert an Block (1).
 - **Evidenz-/Diskrepanz-Risiko:** niedrig — die Negativ-Probe belegt die Wirksamkeit direkt.
 - **Reconciliation-Aufwand:** keiner erwartet.
+
+## 7. Closure-Notiz (nach `done`)
+
+**Abgeschlossen 2026-07-09** auf Branch `slice-034-print-mk-parity`.
+
+**Geliefert:** `tools/image-test.sh` Block (1) um den `cmp` committete `a-check.mk` ↔ `--print-mk`-Output
+erweitert (self-contained: `image-test` baut das Image + fährt `--print-mk` bereits); cwd-unabhängiger
+Repo-Root-Anker (`ROOT`); AGENTS §4 + harness/README §Sensors `image-test`-Zeile um den Paritäts-Aspekt
+ergänzt. Kein Lastenheft-/SPEC-/ADR-Change (Gate-Verschärfung, Präzedenz slice-018/029).
+
+**Gate-Evidenz:** `make gates` grün (doc-check 94/0, gate-consistency ok); **Negativ-Probe** direkt
+verifiziert: gedriftete committete `a-check.mk` → `make image-test` **FAIL** (Exit 2, „committete a-check.mk
+!= --print-mk … regeneriere") → nach `git checkout` wieder grün. Das Gate hätte die slice-033-Drift gefangen.
+
+### Lerneintrag
+
+**Ein „generiertes" Artefakt ohne Byte-Gate ist ein un-eingelöstes Versprechen.** Die committete `a-check.mk`
+trug den Header „Erzeugt von `--print-mk`", war aber nur **digest**-gegatet — slice-033 änderte den Generator,
+die Referenz driftete still. Lehre: sobald ein committetes Artefakt als „aus X erzeugt" deklariert ist, gehört
+die **Byte-Gleichheit** unter ein fail-closed-Gate, sonst ist die Deklaration Wunschdenken. **Placement-Lehre:**
+ein Paritäts-Check gehört dorthin, wo die *Erzeuger-Ausgabe schon vorliegt* (`image-test` hat Image + `--print-mk`),
+nicht ins bewusst image-freie Meta-Gate (`gate-consistency`) — den Ort nach der **Datenverfügbarkeit** wählen,
+nicht nach thematischer Nähe (deshalb bewusst von der ursprünglichen „gate-consistency"-Formulierung abgewichen).
+
+**Folge:** kein committetes `--print-config`-Pendant existiert, daher dort keine Parität nötig (§5).
