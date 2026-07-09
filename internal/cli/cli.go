@@ -14,6 +14,7 @@ import (
 
 	"github.com/pt9912/a-check/internal/adapter/driven/config"
 	"github.com/pt9912/a-check/internal/adapter/driven/extract"
+	"github.com/pt9912/a-check/internal/adapter/driven/graph"
 	"github.com/pt9912/a-check/internal/adapter/driven/report"
 	"github.com/pt9912/a-check/internal/hexagon/core"
 )
@@ -25,6 +26,7 @@ func Run(args []string, out, errw io.Writer) int {
 	fs.SetOutput(errw)
 	printConfig := fs.Bool("print-config", false, "kommentiertes .a-check.yml-Gerüst ausgeben (read-only)")
 	printMk := fs.Bool("print-mk", false, "includebares a-check.mk ausgeben (read-only)")
+	printGraph := fs.Bool("print-graph", false, "Architektur-Graph (Mermaid) aus .a-check.yml ausgeben (read-only, kein Scan)")
 	if err := fs.Parse(args); err != nil {
 		if errors.Is(err, flag.ErrHelp) {
 			return 0
@@ -37,6 +39,33 @@ func Run(args []string, out, errw io.Writer) int {
 	}
 	if *printMk {
 		_, _ = fmt.Fprint(out, mkFragment)
+		return 0
+	}
+	if *printGraph {
+		// no-scan mode (SPEC-CLI-002): at most one positional argument (the
+		// path). Go's flag stops parsing after the first positional, so a stray
+		// `--print-graph <pfad> --bogus` would silently become a second
+		// positional — reject it as a usage error (exit 2) instead.
+		if fs.NArg() > 1 {
+			_, _ = fmt.Fprintln(errw, "a-check: --print-graph nimmt höchstens einen Pfad-Parameter")
+			return 2
+		}
+		root := "/src"
+		if fs.NArg() > 0 {
+			root = fs.Arg(0)
+		}
+		m, err := config.New().Load(filepath.Join(root, ".a-check.yml"))
+		if err != nil {
+			_, _ = fmt.Fprintf(errw, "a-check: %v\n", err)
+			return 2
+		}
+		// load-time/config-validation parity to a scan, WITHOUT a file walk:
+		// an unknown language fails here exactly as it would in a scan.
+		if err := extract.New().Validate(m); err != nil {
+			_, _ = fmt.Fprintf(errw, "a-check: %v\n", err)
+			return 2
+		}
+		_, _ = fmt.Fprint(out, graph.New().Render(m))
 		return 0
 	}
 

@@ -2,6 +2,7 @@ package cli_test
 
 import (
 	"bytes"
+	"io/fs"
 	"os"
 	"path/filepath"
 	"strings"
@@ -628,5 +629,188 @@ func TestSplitPackageUndeclaredUniqueResolves(t *testing.T) { // slice-031 AC7: 
 	code := cli.Run([]string{dir}, &out, &errb)
 	if code != 1 || !strings.Contains(out.String(), "port-impurity") {
 		t.Fatalf("'Missing' (nicht deklariert, only-Verzeichnis nur in mod-a=adapters) muss via Paketverzeichnis eindeutig auf adapters auflösen -> ports->adapters port-impurity (Exit 1); got %d (out=%q err=%q)", code, out.String(), errb.String())
+	}
+}
+
+// --- AC-FA-CLI-002 / SPEC-CLI-002: --print-graph (no-scan-Modus) -------------
+
+const cfgGraph = `version: 1
+languages:
+  go: ["**/*.go"]
+layers:
+  core: ["internal/core/**"]
+  ports: ["internal/ports/**"]
+  adapters: ["internal/adapters/**"]
+edges:
+  - {from: adapters, to: ports}
+  - {from: ports, to: core}
+allow:
+  - {from: ports, to: ports, reason: "Re-Export"}
+composition_root: ["cmd/**"]
+`
+
+func countFiles(t *testing.T, dir string) int {
+	t.Helper()
+	n := 0
+	_ = filepath.WalkDir(dir, func(_ string, d fs.DirEntry, err error) error {
+		if err == nil && !d.IsDir() {
+			n++
+		}
+		return nil
+	})
+	return n
+}
+
+func TestPrintGraphHappy(t *testing.T) { // AC-FA-CLI-002 Happy
+	dir := writeRepo(t, map[string]string{".a-check.yml": cfgGraph})
+	var out, errb bytes.Buffer
+	if code := cli.Run([]string{"--print-graph", dir}, &out, &errb); code != 0 {
+		t.Fatalf("exit %d (err=%q)", code, errb.String())
+	}
+	o := out.String()
+	for _, want := range []string{"flowchart TB", ":::adapter", ":::domain", ":::port", "-.->|allow|", "classDef domain"} {
+		if !strings.Contains(o, want) {
+			t.Fatalf("print-graph fehlt %q:\n%s", want, o)
+		}
+	}
+}
+
+func TestPrintGraphReadOnly(t *testing.T) { // AC-FA-CLI-002 Happy: schreibt nichts
+	dir := writeRepo(t, map[string]string{".a-check.yml": cfgGraph})
+	before := countFiles(t, dir)
+	var out, errb bytes.Buffer
+	cli.Run([]string{"--print-graph", dir}, &out, &errb)
+	if after := countFiles(t, dir); after != before {
+		t.Fatalf("print-graph hat Dateien verändert: %d -> %d", before, after)
+	}
+}
+
+func TestPrintGraphBoundaryMinimal(t *testing.T) { // AC-FA-CLI-002 Boundary: minimale Config
+	minimal := `version: 1
+languages:
+  go: ["**/*.go"]
+layers:
+  core: ["core/**"]
+  adapters: ["adapters/**"]
+edges:
+  - {from: adapters, to: core}
+`
+	dir := writeRepo(t, map[string]string{".a-check.yml": minimal})
+	var out, errb bytes.Buffer
+	if code := cli.Run([]string{"--print-graph", dir}, &out, &errb); code != 0 {
+		t.Fatalf("exit %d (err=%q)", code, errb.String())
+	}
+	o := out.String()
+	for _, unwanted := range []string{"C0[", "S0[", ":::dangling", "subgraph"} {
+		if strings.Contains(o, unwanted) {
+			t.Fatalf("minimale Config: unerwartetes %q:\n%s", unwanted, o)
+		}
+	}
+}
+
+func TestPrintGraphMermaidUnsafeNames(t *testing.T) { // AC-FA-CLI-002 Boundary [Medium-Fix]
+	cfgUnsafe := `version: 1
+languages:
+  go: ["**/*.go"]
+layers:
+  "a.b/c": ["a/**"]
+  "driven-adapters": ["b/**"]
+  "q]x|y": ["c/**"]
+edges:
+  - {from: "driven-adapters", to: "a.b/c"}
+`
+	dir := writeRepo(t, map[string]string{".a-check.yml": cfgUnsafe})
+	var out, errb bytes.Buffer
+	if code := cli.Run([]string{"--print-graph", dir}, &out, &errb); code != 0 {
+		t.Fatalf("gültige Config mit unsafe Namen: exit %d (err=%q)", code, errb.String())
+	}
+	o := out.String()
+	if !strings.Contains(o, "&#93;") || !strings.Contains(o, "&#124;") {
+		t.Fatalf("Mermaid-unsafe Namen nicht escaped:\n%s", o)
+	}
+	if strings.Contains(o, "q]x|y") {
+		t.Fatalf("roher unsafe Name im Output:\n%s", o)
+	}
+}
+
+func TestPrintGraphDangling(t *testing.T) { // AC-FA-CLI-002 Boundary [Medium-Dangling-Fix]
+	cfgDangling := `version: 1
+languages:
+  go: ["**/*.go"]
+layers:
+  core: ["core/**"]
+edges:
+  - {from: ghost, to: core}
+`
+	dir := writeRepo(t, map[string]string{".a-check.yml": cfgDangling})
+	var out, errb bytes.Buffer
+	if code := cli.Run([]string{"--print-graph", dir}, &out, &errb); code != 0 {
+		t.Fatalf("Dangling darf kein Exit 2 sein, got %d (err=%q)", code, errb.String())
+	}
+	if !strings.Contains(out.String(), ":::dangling") {
+		t.Fatalf("Dangling-Knoten fehlt:\n%s", out.String())
+	}
+}
+
+func TestPrintGraphUnknownLanguageExit2(t *testing.T) { // AC-FA-CLI-002 Negative [High-Fix]
+	cfgRuby := `version: 1
+languages:
+  ruby: ["**/*.rb"]
+layers:
+  core: ["core/**"]
+  adapters: ["adapters/**"]
+edges:
+  - {from: adapters, to: core}
+`
+	dir := writeRepo(t, map[string]string{".a-check.yml": cfgRuby})
+	var out, errb bytes.Buffer
+	if code := cli.Run([]string{"--print-graph", dir}, &out, &errb); code != 2 {
+		t.Fatalf("unbekannte Sprache: expected 2, got %d", code)
+	}
+	if out.Len() != 0 {
+		t.Fatalf("kein halbes Diagramm erwartet, stdout=%q", out.String())
+	}
+}
+
+func TestPrintGraphInvalidConfigExit2(t *testing.T) { // AC-FA-CLI-002 Negative
+	dir := writeRepo(t, map[string]string{".a-check.yml": "version: 1\nbogus_key: 1\n"})
+	var out, errb bytes.Buffer
+	if code := cli.Run([]string{"--print-graph", dir}, &out, &errb); code != 2 {
+		t.Fatalf("unbekannter Schlüssel: expected 2, got %d", code)
+	}
+}
+
+func TestPrintGraphMissingConfig(t *testing.T) { // AC-FA-CLI-002 Negative
+	var out, errb bytes.Buffer
+	if code := cli.Run([]string{"--print-graph", t.TempDir()}, &out, &errb); code != 2 {
+		t.Fatalf("fehlende Config: expected 2, got %d", code)
+	}
+}
+
+func TestPrintGraphRestArgExit2(t *testing.T) { // AC-FA-CLI-002 Negative: Restargument nach dem Pfad
+	dir := writeRepo(t, map[string]string{".a-check.yml": cfgGraph})
+	var out, errb bytes.Buffer
+	if code := cli.Run([]string{"--print-graph", dir, "--bogus"}, &out, &errb); code != 2 {
+		t.Fatalf("Restargument nach dem Pfad: expected 2, got %d", code)
+	}
+	if out.Len() != 0 {
+		t.Fatalf("kein halbes Diagramm bei Restargument, stdout=%q", out.String())
+	}
+}
+
+func TestPrintGraphUnknownFlagExit2(t *testing.T) { // AC-FA-CLI-002 Negative: unbekanntes Flag vor dem Pfad
+	var out, errb bytes.Buffer
+	if code := cli.Run([]string{"--print-graph", "--bogus"}, &out, &errb); code != 2 {
+		t.Fatalf("unbekanntes Flag: expected 2, got %d", code)
+	}
+}
+
+func TestPrintGraphDeterminism(t *testing.T) { // AC-QA-01: zwei Läufe byte-identisch
+	dir := writeRepo(t, map[string]string{".a-check.yml": cfgGraph})
+	var o1, o2, e bytes.Buffer
+	cli.Run([]string{"--print-graph", dir}, &o1, &e)
+	cli.Run([]string{"--print-graph", dir}, &o2, &e)
+	if o1.String() != o2.String() {
+		t.Fatalf("nicht deterministisch:\n%s\n---\n%s", o1.String(), o2.String())
 	}
 }
