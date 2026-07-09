@@ -52,8 +52,8 @@ func (Adapter) Render(m core.Model) string {
 	b.WriteString("flowchart TB\n")
 	writeLayerNodes(&b, layers, id)
 	writeSpecialNodes(&b, m, dangling, did)
-	writeEdges(&b, m.Edges, nodeID, " --> ")
-	writeAllow(&b, m.Allow, nodeID)
+	writeLinks(&b, m.Edges, nodeID, " --> ")
+	writeLinks(&b, m.Allow, nodeID, " -.->|allow| ")
 	writeLegend(&b)
 	b.WriteString(classDefs)
 	return b.String()
@@ -105,10 +105,12 @@ func danglingNodes(m core.Model, id map[string]string) ([]string, map[string]str
 }
 
 // writeLayerNodes emits the layer nodes: driving/driven into stable subgraphs,
-// direction-less layers at top level (SPEC-CLI-002).
+// EVERY other layer (including any unexpected direction value) at top level, so
+// no node an edge references is ever left undefined — the renderer does not rely
+// on the config validator's direction check for this invariant (SPEC-CLI-002).
 func writeLayerNodes(b *strings.Builder, layers []core.Layer, id map[string]string) {
 	for _, l := range layers {
-		if l.Direction == "" {
+		if l.Direction != "driving" && l.Direction != "driven" {
 			writeLayerNode(b, l, id)
 		}
 	}
@@ -119,15 +121,22 @@ func writeLayerNodes(b *strings.Builder, layers []core.Layer, id map[string]stri
 // writeLayerNode emits one layer node: internal ID, escaped name + glob sublines,
 // and the effective-role class (shared core resolver, no copied inference).
 func writeLayerNode(b *strings.Builder, l core.Layer, id map[string]string) {
-	label := escapeLabel(l.Name)
-	for _, g := range l.Globs {
-		label += "<br/>" + escapeLabel(g)
-	}
-	b.WriteString("    " + id[l.Name] + `["` + label + `"]`)
+	b.WriteString("    " + id[l.Name] + `["` + labelWithGlobs(escapeLabel(l.Name), l.Globs) + `"]`)
 	if role := core.EffectiveRole(l); role != "" {
 		b.WriteString(":::" + role)
 	}
 	b.WriteString("\n")
+}
+
+// labelWithGlobs appends each glob as an escaped <br/> subline to an already-safe
+// head (SPEC-CLI-002 label structure) — one place for the layer, composition_root
+// and adapter_sink note labels.
+func labelWithGlobs(head string, globs []string) string {
+	label := head
+	for _, g := range globs {
+		label += "<br/>" + escapeLabel(g)
+	}
+	return label
 }
 
 // writeDirGroup emits one direction subgraph if it holds any layer.
@@ -152,14 +161,10 @@ func writeDirGroup(b *strings.Builder, layers []core.Layer, id map[string]string
 // wiring edges) and the sorted dangling notes (SPEC-CLI-002).
 func writeSpecialNodes(b *strings.Builder, m core.Model, dangling []string, did map[string]string) {
 	if len(m.CompositionRoot) > 0 {
-		label := "composition_root"
-		for _, g := range m.CompositionRoot {
-			label += "<br/>" + escapeLabel(g)
-		}
-		b.WriteString("    C0[\"" + label + "\"]:::exempt\n")
+		b.WriteString("    C0[\"" + labelWithGlobs("composition_root", m.CompositionRoot) + "\"]:::exempt\n")
 	}
 	if m.AdapterSink != "" {
-		b.WriteString("    S0[\"adapter_sink<br/>" + escapeLabel(m.AdapterSink) + "\"]:::exempt\n")
+		b.WriteString("    S0[\"" + labelWithGlobs("adapter_sink", []string{m.AdapterSink}) + "\"]:::exempt\n")
 	}
 	for _, name := range dangling {
 		b.WriteString("    " + did[name] + `["` + escapeLabel(name) + `"]:::dangling` + "\n")
@@ -174,15 +179,12 @@ func writeLegend(b *strings.Builder) {
 		"durchgezogen = edges · gestrichelt = allow · Farbe = effektive Rolle\"]:::legend\n")
 }
 
-func writeEdges(b *strings.Builder, edges []core.Edge, nodeID func(string) string, arrow string) {
+// writeLinks emits one link per edge (stably sorted, SPEC-DET-001) using the
+// given connector (" --> " for edges, " -.->|allow| " for the abgesetzte
+// allow-Kante), always via internal node IDs — never raw names.
+func writeLinks(b *strings.Builder, edges []core.Edge, nodeID func(string) string, connector string) {
 	for _, e := range sortEdges(edges) {
-		b.WriteString("    " + nodeID(e.From) + arrow + nodeID(e.To) + "\n")
-	}
-}
-
-func writeAllow(b *strings.Builder, allow []core.Edge, nodeID func(string) string) {
-	for _, e := range sortEdges(allow) {
-		b.WriteString("    " + nodeID(e.From) + " -.->|allow| " + nodeID(e.To) + "\n")
+		b.WriteString("    " + nodeID(e.From) + connector + nodeID(e.To) + "\n")
 	}
 }
 

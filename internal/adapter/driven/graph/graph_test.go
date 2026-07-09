@@ -190,3 +190,18 @@ func TestRenderExplicitRoleWins(t *testing.T) {
 		t.Errorf("explizites role: nicht angewandt:\n%s", out)
 	}
 }
+
+// TestRenderUnexpectedDirectionNotDropped: ein Layer mit einer nicht erwarteten
+// direction (jenseits ""/driving/driven) wird dennoch als Knoten DEFINIERT —
+// sonst referenzierte eine Kante eine undefinierte Mermaid-ID (Review-Fix A1;
+// der Renderer verlässt sich nicht auf die Config-Validierung der direction).
+func TestRenderUnexpectedDirectionNotDropped(t *testing.T) {
+	m := core.Model{
+		Layers: []core.Layer{{Name: "x", Direction: "lateral"}, {Name: "core"}},
+		Edges:  []core.Edge{{From: "x", To: "core"}},
+	}
+	out := render(m)
+	if !strings.Contains(out, `["x"]`) {
+		t.Errorf("Layer mit unerwarteter direction gedroppt (undefinierte Kanten-ID):\n%s", out)
+	}
+}
