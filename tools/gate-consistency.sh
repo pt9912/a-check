@@ -18,7 +18,8 @@ set -euo pipefail
 cd "$(dirname "$0")/.."
 
 # Utility-Targets: keine Gates, müssen nicht in AGENTS §4 stehen.
-UTILITY_TARGETS='help build compile hooks'
+# arch-graph druckt nur den Architektur-Graphen (kein Pass/Fail), daher Utility.
+UTILITY_TARGETS='help build compile hooks arch-graph'
 
 # Dokumentierte Targets: alle `make <name>`-Tokens in Tabellenzeilen.
 doc_targets() {

@@ -61,6 +61,9 @@ build: ## a-check-Image bauen (static/distroless, digest-gepinnte Bases).
 arch-check: build ## Eigen-Architektur via a-check selbst (Dogfooding, AC-QA-02).
 	docker run --rm --network none -v "$(CURDIR)":/src:ro $(IMAGE):dev /src
 
+arch-graph: build ## Architektur-Graph (Mermaid) der eigenen .a-check.yml auf stdout (Dogfooding, netzlos, read-only).
+	docker run --rm --network none -v "$(CURDIR)":/src:ro $(IMAGE):dev --print-graph /src
+
 gate-consistency: ## Meta-Gate: dokumentierte Targets ↔ Makefile, .d-check.yml-Module (Harness-Lügen-Schutz).
 	@bash tools/gate-consistency.sh
 
