@@ -124,7 +124,7 @@ Host-Bash. `doc-trace`/`doc-complete` sind advisory `d-check`-Targets
 | `make record-gates` | Gate-Nachweis (Working-Tree-Hash) für den Stop-Hook | **real** (slice-004) |
 | `make guard-selftest` | Selbsttest des PreToolUse-Command-Guard (Tool-Call-Gate §3.1) | **real** (slice-005) |
 | `make gates` | alle inneren Gates (mandatory vor Handoff) | **real** (slice-003) |
-| `make image-test` | [AC-FA-DIST-001](spec/lastenheft.md#ac-fa-dist-001--distribution-image---print-mk-a-checkmk) + nativ==Container-Akzeptanz gegen das gebaute Image | **real** (slice-006) |
+| `make image-test` | [AC-FA-DIST-001](spec/lastenheft.md#ac-fa-dist-001--distribution-image---print-mk-a-checkmk) + nativ==Container-Akzeptanz + Fragment-Parität (committete [`a-check.mk`](a-check.mk) == `--print-mk`, slice-034) gegen das gebaute Image | **real** (slice-006) |
 | `make ci` | CI-äquivalent: `gates` + `image-test` (Workflow `.github/workflows/ci.yml`) | **real** (slice-006) |
 | `make trace-check` | Traceability via Modul `commits` ([ADR-0021](docs/plan/adr/0021-commits-modul-trace-check.md)): `AC-*`/`ADR-*`/`MR-*`/`slice`-ID je Commit (§5; `MSGFILE=` Hook, `RANGE=` CI) | **real** (slice-006, Modul seit slice-030) |
 

@@ -3,7 +3,8 @@
 # Runtime-Image (slice-006). Stack-Vorbild d-check tools/image-test.sh.
 #
 #   (1) Happy:    `--print-mk` → includebares Fragment (A_CHECK_IMAGE +
-#                 a-check-Target); nativ == Container byte-identisch.
+#                 a-check/a-check-graph-Targets); nativ == Container == die
+#                 committete `a-check.mk` byte-identisch (Fragment-Parität, slice-034).
 #   (2) Boundary: `--print-config` → dekodierbares .a-check.yml-Gerüst,
 #                 read-only-Mount, Exit 0 (schreibt nichts).
 #   (2b) Boundary:`--print-graph` → dekodierbares Mermaid-flowchart aus einer
@@ -19,6 +20,7 @@
 set -euo pipefail
 
 IMG="${IMAGE:-a-check}:dev"
+ROOT="$(cd "$(dirname "$0")/.." && pwd)"   # Repo-Wurzel (cwd-unabhängig)
 WORK="$(mktemp -d)"
 trap 'rm -rf "$WORK"' EXIT
 
@@ -36,11 +38,12 @@ mk_c=0; docker run --rm --network none "$IMG" --print-mk >"$WORK/mk.c.out" 2>"$W
 [ "$mk_n" -eq 0 ] || fail "--print-mk nativ: Exit $mk_n, want 0"
 [ "$mk_c" -eq 0 ] || fail "--print-mk Container: Exit $mk_c, want 0"
 cmp -s "$WORK/mk.n.out" "$WORK/mk.c.out" || fail "--print-mk stdout nativ vs. Container nicht byte-identisch (AC-QA-02)"
+cmp -s "$WORK/mk.c.out" "$ROOT/a-check.mk" || fail "committete a-check.mk != --print-mk-Output (Fragment-Paritaet slice-034; regeneriere: a-check --print-mk > a-check.mk)"
 grep -q 'A_CHECK_IMAGE' "$WORK/mk.c.out" || fail "--print-mk: A_CHECK_IMAGE fehlt"
 grep -qE '^a-check:' "$WORK/mk.c.out" || fail "--print-mk: a-check-Target fehlt"
 grep -qE '^a-check-graph:' "$WORK/mk.c.out" || fail "--print-mk: a-check-graph-Target fehlt (AC-FA-DIST-001 0.20.0)"
 grep -qF -- '--print-graph /src' "$WORK/mk.c.out" || fail "--print-mk: a-check-graph-Recipe ruft nicht --print-graph auf"
-echo "image-test: (1) Happy — --print-mk nativ == Container, A_CHECK_IMAGE + a-check/a-check-graph-Targets vorhanden"
+echo "image-test: (1) Happy — --print-mk nativ == Container == committete a-check.mk (Fragment-Parität), A_CHECK_IMAGE + a-check/a-check-graph-Targets vorhanden"
 
 # --- (2) Boundary: --print-config, read-only-Mount → Exit 0 -----------------
 mkdir -p "$WORK/ro"
