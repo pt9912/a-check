@@ -81,7 +81,7 @@ Against the published image (digest-pinned, network-less, read-only):
 
 ```bash
 docker run --rm --network none -v "$PWD:/src:ro" \
-  ghcr.io/pt9912/a-check@sha256:203df7ab02ec68db5f77f77660fe12523dad9fd48a6c84b95aabb080ec30de24 /src
+  ghcr.io/pt9912/a-check@sha256:24939a6b47bfbfcb9845813cd781a70fba161fb12c6593e188ac51ede5267a9c /src
 ```
 
 Consumers wire a-check in as a `make a-check` gate — **without a script copy**: the shipped

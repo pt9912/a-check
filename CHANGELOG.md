@@ -6,6 +6,8 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
+## [0.13.0] - 2026-07-09
+
 ### Added
 
 - **`--print-graph`: Architektur-Graph als Mermaid (`AC-FA-CLI-002` 0.19.0, `ADR-0024`,
