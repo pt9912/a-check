@@ -6,6 +6,8 @@
 #                 a-check-Target); nativ == Container byte-identisch.
 #   (2) Boundary: `--print-config` → dekodierbares .a-check.yml-Gerüst,
 #                 read-only-Mount, Exit 0 (schreibt nichts).
+#   (2b) Boundary:`--print-graph` → dekodierbares Mermaid-flowchart aus einer
+#                 read-only Config, Exit 0; nativ == Container (AC-FA-CLI-002).
 #   (3) Negative: `--print-mk --bogus` → Exit 2 (unbekanntes Flag).
 #   (4) Scan:     Verstoß-Fixture → Befund + Exit 1; stdout/stderr/Exit
 #                 nativ == Container byte-identisch (AC-QA-01/AC-QA-02).
@@ -48,6 +50,30 @@ cmp -s "$WORK/pc.n.out" "$WORK/pc.c.out" || fail "--print-config stdout nativ vs
 grep -q 'version: 1' "$WORK/pc.c.out" || fail "--print-config: .a-check.yml-Gerüst unerwartet"
 echo "image-test: (2) Boundary — --print-config read-only, Exit 0, dekodierbares Gerüst"
 
+# --- (2b) Boundary: --print-graph, read-only-Mount → Exit 0 (AC-FA-CLI-002) -
+cat >"$WORK/ro/.a-check.yml" <<'YML'
+version: 1
+languages:
+  go: ["**/*.go"]
+layers:
+  core: ["internal/core/**"]
+  ports: ["internal/ports/**"]
+  adapters: ["internal/adapters/**"]
+edges:
+  - {from: adapters, to: ports}
+  - {from: ports, to: core}
+allow:
+  - {from: ports, to: ports, reason: "Re-Export"}
+YML
+pg_n=0; "$WORK/a-check" --print-graph "$WORK/ro" >"$WORK/pg.n.out" 2>/dev/null || pg_n=$?
+pg_c=0; docker run --rm --network none -v "$WORK/ro":/src:ro "$IMG" --print-graph /src >"$WORK/pg.c.out" 2>"$WORK/pg.c.err" || pg_c=$?
+[ "$pg_n" -eq 0 ] || fail "--print-graph nativ: Exit $pg_n, want 0"
+[ "$pg_c" -eq 0 ] || fail "--print-graph Container (ro): Exit $pg_c, want 0 (stderr: $(cat "$WORK/pg.c.err"))"
+cmp -s "$WORK/pg.n.out" "$WORK/pg.c.out" || fail "--print-graph stdout nativ vs. Container nicht byte-identisch (AC-QA-01)"
+grep -q 'flowchart TB' "$WORK/pg.c.out" || fail "--print-graph: Mermaid-flowchart-Kopf fehlt"
+grep -qF -- '-.->|allow|' "$WORK/pg.c.out" || fail "--print-graph: gestrichelte allow-Kante fehlt"
+echo "image-test: (2b) Boundary — --print-graph read-only, Exit 0, dekodierbares Mermaid"
+
 # --- (3) Negative: unbekanntes Flag → Exit 2 -------------------------------
 neg=0; docker run --rm --network none "$IMG" --print-mk --bogus >/dev/null 2>"$WORK/neg.err" || neg=$?
 [ "$neg" -eq 2 ] || fail "unbekanntes Flag: Exit $neg, want 2"
@@ -82,4 +108,4 @@ cmp -s "$WORK/sc.n.err" "$WORK/sc.c.err" || fail "Scan stderr nativ vs. Containe
 grep -q 'core-impurity' "$WORK/sc.c.out" || fail "Scan: erwarteter core-impurity-Befund fehlt"
 echo "image-test: (4) Scan — Verstoß erkannt, nativ == Container, Exit 1"
 
-echo "image-test: OK — AC-FA-DIST-001 + AC-QA-02-Akzeptanz erfüllt"
+echo "image-test: OK — AC-FA-DIST-001 + AC-FA-CLI-002 + AC-QA-02-Akzeptanz erfüllt"

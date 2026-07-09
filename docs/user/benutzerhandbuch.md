@@ -1,6 +1,6 @@
 # Benutzerhandbuch: a-check
 
-**Handbuch-Version:** 1.27 · **Software-Version:** [aktuelles Release](../../version.md#aktuell) · **Stand:** 2026-07-05 ·
+**Handbuch-Version:** 1.28 · **Software-Version:** [aktuelles Release](../../version.md#aktuell) · **Stand:** 2026-07-09 ·
 **Autor:** pt9912 (Maintainer)
 
 ---
@@ -159,6 +159,50 @@ markers:
 `ignore_symbols` wirkt auf erkannte **Importe** (z. B. falsch-positive
 `core-impurity`/`tech-leak`); ein per `forbidden_constructs` verbotenes Konstrukt
 wird davon nicht erfasst.
+
+### 3.6 Die deklarierte Architektur visualisieren (`--print-graph`)
+
+**Voraussetzung:** Eine gültige `.a-check.yml` (Abschnitt 3.2).
+
+**Vorgehen:**
+1. Geben Sie den Architektur-Graphen als Mermaid-Flowchart aus:
+   ```bash
+   docker run --rm --network none -v "$(pwd)":/src:ro <a-check-image> --print-graph /src > architektur.mmd
+   ```
+2. Betten Sie die Ausgabe in einen `mermaid`-Codeblock eines Markdown-Dokuments
+   ein oder rendern Sie sie mit einem Mermaid-Werkzeug.
+
+**Ergebnis:** Ein Mermaid-`flowchart` der **deklarierten** Architektur: ein Knoten
+je Schicht (nach effektiver Rolle eingefärbt), eine Kante je `edges`-Eintrag, eine
+gestrichelte Kante je `allow`-Eintrag; `composition_root` und `adapter_sink`
+erscheinen als isolierte Notizknoten. Beispiel-Ausgabe (Auszug, a-checks eigene
+`.a-check.yml`):
+
+```mermaid
+flowchart TB
+    L0["adapters<br/>internal/adapter/driven/**"]:::adapter
+    L1["core<br/>internal/hexagon/core/**"]:::domain
+    L2["ports<br/>internal/hexagon/port/**"]:::port
+    C0["composition_root<br/>cmd/**<br/>internal/cli/**"]:::exempt
+    S0["adapter_sink<br/>driver-common"]:::exempt
+    L0 --> L1
+    L0 --> L2
+    L2 --> L1
+    classDef domain fill:#fff4d6,stroke:#d4a017,color:#000
+    classDef port fill:#e0f0e0,stroke:#3a8a3a,color:#000
+    classDef adapter fill:#e0ecff,stroke:#2a6ad4,color:#000
+    classDef exempt fill:#f0f0f0,stroke:#999999,stroke-dasharray:4 3,color:#000
+```
+
+**Hinweise:** Der Modus ist **read-only** und **scannt keine Quellen** — er liest
+nur `.a-check.yml` und ist deterministisch (byte-identische Ausgabe bei gleicher
+Config). Der Graph zeigt die **deklarierte Absicht**, keinen Beweis über den realen
+Code: die kategorischen Regeln (`core-impurity`, `lateral-adapter`,
+`port-direction-mismatch`) erscheinen als Legende, nicht als gezeichnete Kante. Ein
+`edges`/`allow`-Endpunkt, der auf keine Schicht zeigt, wird als eigener
+Dangling-Knoten sichtbar (statt still ignoriert). Ein ladezeitiger Config-Fehler
+(inkl. unbekannter Sprache), ein unbekanntes Flag oder ein zusätzliches Argument
+nach dem Pfad führt zu Exit-Code 2.
 
 ## 4. Konfiguration (`.a-check.yml`)
 
@@ -528,3 +572,4 @@ und die [Spezifikation](../../spec/spezifikation.md); ein Überblick steht in de
 | 1.25 | 2026-07-05 | Software-Version-Kopf verweist jetzt auf das [Release-Register](../../version.md#aktuell) statt einer literalen Nummer (slice-018, Opt 1) — die eine driftende Live-Stelle im Handbuch entfällt; die historischen „Software-Version X.Y.Z"-Zeilen bleiben als Release-Ledger. |
 | 1.26 | 2026-07-05 | §4 an Lastenheft 0.17.0: `resolution`-Absatz um das **Multi-Modul (KMP/Gradle)**-Rezept erweitert — mehrere `roots` mit geteiltem `package_base` lösen den FQN **datei-mengen-bewusst** gegen die realen Dateien auf (disjunkte Sub-Namespaces → genau ein Modul; **flache** Modul-Globs genügen, keine paket-tiefen mehr nötig); gleicher FQN real in ≥ 2 Roots **verschiedener** Schichten → Exit 2 nach dem Scan, `expect`/`actual` same-layer sauber. Löst den Ladezeit-Guard aus 1.24/Software-Version 0.10.0 ab (slice-027). |
 | 1.27 | 2026-07-06 | §4 an Lastenheft 0.18.0: `resolution`-Absatz um das **Split-Package über Modulgrenzen (deklarations-bewusst)**-Rezept erweitert — teilt sich **ein** Paket über zwei Schicht-Module und wird ein Top-Level-Symbol importiert, dessen Datei ≠ Symbolname ist (Kotlin-Extension-Funktion, zweite Klasse), löst `a-check` über die **reale Deklaration** auf (genau ein deklarierendes Modul → eindeutig; ≥ 2 verschiedene Schichten → Exit 2; kein Treffer, Paketverzeichnis in ≥ 2 Schichten → extern/fail-open; eindeutiges Paketverzeichnis → löst unverändert). Kotlin-spezifisch, keine Zusatz-Config (slice-031). |
+| 1.28 | 2026-07-09 | Neuer Abschnitt 3.6 „Die deklarierte Architektur visualisieren (`--print-graph`)": `a-check --print-graph [pfad]` rendert die deklarierte Architektur aus `.a-check.yml` als **Mermaid-Flowchart** (read-only, kein Scan, deterministisch) — ein Knoten je Schicht nach effektiver Rolle, Kante je `edges`, gestrichelte Kante je `allow`, `composition_root`/`adapter_sink` als Notizknoten, implizite Regeln als Legende; mit Beispiel-Ausgabe. Ladezeitiger Config-Fehler (inkl. unbekannter Sprache)/unbekanntes Flag/Restargument → Exit 2. Noch nicht im veröffentlichten Image (folgt mit dem nächsten Release). (Lastenheft 0.19.0, slice-032) |

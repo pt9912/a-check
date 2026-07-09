@@ -6,6 +6,21 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
+### Added
+
+- **`--print-graph`: Architektur-Graph als Mermaid (`AC-FA-CLI-002` 0.19.0, `ADR-0024`,
+  `SPEC-CLI-002`, slice-032):** `a-check --print-graph [pfad]` rendert die in `.a-check.yml`
+  **deklarierte** Architektur als Mermaid-`flowchart` auf stdout — ein Knoten je Schicht (nach
+  effektiver Rolle gefärbt), eine Kante je `edges`-Eintrag, eine gestrichelte Kante je `allow`-Eintrag,
+  `composition_root`/`adapter_sink` als isolierte Notizknoten, implizite Regeln als Legende.
+  **Read-only, kein Scan, deterministisch** (byte-identische Ausgabe; stabile interne Knoten-IDs +
+  Escaping-Vertrag, sodass Mermaid-heikle Layer-Namen die Syntax nicht brechen; unbekannte
+  `edges`/`allow`-Endpunkte werden als Dangling-Knoten sichtbar). Ladezeitiger Config-Fehler (inkl.
+  unbekannter Sprache), unbekanntes Flag oder ein Restargument nach dem Pfad → Exit 2. Umsetzung: neuer
+  `graph`-Präsentationsadapter (`ARC-007`) hinter dem driven Port `GraphPort`; `ExtractionPort` um einen
+  validation-only `Validate`-Einstieg (kein Datei-Walk) erweitert; `core.EffectiveRole` als von
+  Regel-Engine und Renderer geteilter Rollen-Resolver.
+
 ## [0.12.0] - 2026-07-06
 
 ### Fixed
