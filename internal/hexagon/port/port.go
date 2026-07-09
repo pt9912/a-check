@@ -16,9 +16,19 @@ type ConfigPort interface {
 // ExtractionPort yields the imports per source file under root (ARC-003).
 type ExtractionPort interface {
 	Extract(root string, m core.Model) ([]core.FileImports, error)
+	// Validate checks the config's language backends against the registry
+	// WITHOUT walking any file — the validation-only entry the no-scan
+	// --print-graph path uses (SPEC-CLI-002); Extract runs the same check.
+	Validate(m core.Model) error
 }
 
 // ReportPort renders findings and yields the finding exit code 0/1 (ARC-005).
 type ReportPort interface {
 	Report(findings []core.Finding) int
+}
+
+// GraphPort renders the config model as a Mermaid flowchart string, PURE (no
+// I/O), for the no-scan --print-graph mode (ARC-007, SPEC-CLI-002).
+type GraphPort interface {
+	Render(m core.Model) string
 }

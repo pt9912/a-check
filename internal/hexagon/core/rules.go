@@ -111,17 +111,27 @@ func impurityFinding(f FileImports, imp Import, srcRole, tgtRole string, isTech 
 	return Finding{f.Path, imp.Line, rule, who + imp.Symbol}, true
 }
 
-// roleOf returns a layer's role: the explicit role: (AC-FA-RULE-006), else the
-// name inference, else "" (unknown layer / only edge-checked).
-func roleOf(name string, m Model) string {
-	switch l := layerByName(name, m); {
-	case l.Name == "":
-		return ""
-	case l.Role != "":
+// EffectiveRole returns a layer's effective role: the explicit role: takes
+// precedence (AC-FA-RULE-006), else the conventional name inference
+// (core→domain, ports→port, adapters→adapter, application/app→app), else ""
+// (only edge-checked). The rule engine and the graph renderer (SPEC-CLI-002)
+// share this one resolver so the Mermaid colouring never drifts from the role
+// the engine actually enforces.
+func EffectiveRole(l Layer) string {
+	if l.Role != "" {
 		return l.Role
-	default:
-		return inferRole(name)
 	}
+	return inferRole(l.Name)
+}
+
+// roleOf returns a layer's role by name: the explicit role: (AC-FA-RULE-006), else
+// the name inference, else "" (unknown layer / only edge-checked).
+func roleOf(name string, m Model) string {
+	l := layerByName(name, m)
+	if l.Name == "" {
+		return ""
+	}
+	return EffectiveRole(l)
 }
 
 // dirOf returns a layer's explicit direction (driving|driven) or "". Unlike

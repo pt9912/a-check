@@ -95,9 +95,17 @@ func newAdapter() Adapter {
 	return a
 }
 
+// Validate checks the config's language backends against the registry without
+// walking any file (SPEC-CLI-002): the no-scan --print-graph path reuses the
+// exact backend validation of a scan without reading sources. Extract runs the
+// same check, so there is no duplicated language logic.
+func (a Adapter) Validate(m core.Model) error {
+	return a.checkLanguages(m.Languages)
+}
+
 // Extract walks root and returns the imports per source file, stably ordered.
 func (a Adapter) Extract(root string, m core.Model) ([]core.FileImports, error) {
-	if err := a.checkLanguages(m.Languages); err != nil {
+	if err := a.Validate(m); err != nil {
 		return nil, err
 	}
 	var out []core.FileImports
