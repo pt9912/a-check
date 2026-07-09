@@ -1,6 +1,6 @@
 # slice-033 — `a-check.mk` liefert ein `a-check-graph`-Target
 
-**Status:** in-progress (**2026-07-09** — spec-first CR, maintainer-initiiert; Umsetzung sofort).
+**Status:** done (**abgeschlossen 2026-07-09** — spec-first CR umgesetzt, `make ci` grün, `make a-check-graph` funktional verifiziert; noch unveröffentlicht). Closure-Notiz + Lerneintrag: §8.
 **Typ:** CR (Distribution/Convenience), Folge von slice-032.
 **Bezug:** erweitert
 [AC-FA-DIST-001](../../../../spec/lastenheft.md#ac-fa-dist-001--distribution-image---print-mk-a-checkmk)
@@ -11,7 +11,7 @@ gelieferten no-scan-Modus
 Präzisiert wird [SPEC-DIST-001](../../../../spec/spezifikation.md#spec-dist-001--laufzeitform-und-distribution).
 Kernverträge: [AC-QA-01](../../../../spec/lastenheft.md#ac-qa-01--determinismus) (deterministische Ausgabe),
 [AC-QA-03](../../../../spec/lastenheft.md#ac-qa-03--reproduzierbarkeit) (digest-gepinntes Image im Fragment).
-[Roadmap](roadmap.md).
+[Roadmap](../in-progress/roadmap.md).
 
 ## 1. Motivation
 
@@ -97,3 +97,35 @@ Komponente/Port, kein Schichtwechsel.
 - **Evidenz-/Diskrepanz-Risiko:** niedrig — die AK binden Fragment-Inhalt (`TestPrintMk`) und Lauf
   (`image-test`) an Tests.
 - **Reconciliation-Aufwand:** keiner erwartet.
+
+## 8. Closure-Notiz (nach `done`)
+
+**Abgeschlossen 2026-07-09** auf Branch `slice-033-print-mk-graph-target`.
+
+**Geliefert:** [AC-FA-DIST-001](../../../../spec/lastenheft.md#ac-fa-dist-001--distribution-image---print-mk-a-checkmk)
+erweitert (Lastenheft **0.20.0**) + [SPEC-DIST-001](../../../../spec/spezifikation.md#spec-dist-001--laufzeitform-und-distribution)
+(Spez **0.20.0**); `mkFragment` (`internal/cli/cli.go`) um das `a-check-graph`-Target; `TestPrintMk` +
+`image-test.sh`-Block (1) um die Target-Assertion; Benutzerhandbuch §3.6 `make`-Variante (Currency **1.29**);
+CHANGELOG `[Unreleased]`. **Kein ADR** (mechanisches Convenience-Target ohne Wahl-Punkte). **Kein
+Architektur-Update** — der Fragment-Inhalt ist ein Distributions-Detail von
+[ARC-006](../../../../spec/architecture.md) (Composition Root, bedient `--print-mk`).
+
+**Gate-Evidenz:** `make ci` grün (coverage 97,10 %, arch-check 0, doc-check 93/0, `image-test` inkl.
+`a-check-graph`-Target in Block (1)); `make trace-check` über die Range grün. **Funktionale Probe:** das
+erzeugte `a-check.mk` als echtes Makefile eingebunden, `make a-check-graph A_CHECK_IMAGE=a-check:dev` erzeugt
+den Mermaid-Graphen (Exit 0) — die Recipe-TAB-Einrückung stimmt.
+
+### Lerneintrag
+
+Ein `make`-Target für einen stdout-dumpenden Modus ist legitim, wenn es die Image-/Digest-/Mount-Details
+**kapselt** — aber nur **additiv** zur `A_CHECK_IMAGE`-Einzelquelle, nie mit einem zweiten Digest. Die Grenze
+Inspektion (`--print-graph`) ↔ Distribution (`a-check.mk`) ist eine **Verortungs**-Frage (welche Anforderung
+trägt es), **kein Verbot**: das Target lebt in
+[AC-FA-DIST-001](../../../../spec/lastenheft.md#ac-fa-dist-001--distribution-image---print-mk-a-checkmk),
+weil es das gelieferte Fragment betrifft — der no-scan-Modus selbst bleibt
+[AC-FA-CLI-002](../../../../spec/lastenheft.md#ac-fa-cli-002--architektur-graph-ausgabe). **Prozess-Lehre
+(Anlass dieses CR):** eine Behauptung „bewusst nicht erweitert" braucht eine **zitierbare normative Stelle**;
+fehlt sie, ist es „**nicht im Scope**", nicht „verboten" — die genaue Wortwahl entscheidet, ob ein Folge-CR
+nötig ist oder nicht.
+
+**Folge:** weitere Ausgabeformate (`--graph-format` DOT/Graphviz) bleiben eigener Folge-Slice.
