@@ -1,6 +1,6 @@
 # ADR-0024 — `--print-graph`: Mermaid als Format und Render-Umfang
 
-- **Status:** Proposed
+- **Status:** Accepted
 - **Datum:** 2026-07-09
 - **Autor:** pt9912
 - **Bezug:** [AC-FA-CLI-002](../../../spec/lastenheft.md#ac-fa-cli-002--architektur-graph-ausgabe), [AC-QA-01](../../../spec/lastenheft.md#ac-qa-01--determinismus), [AC-QA-02](../../../spec/lastenheft.md#ac-qa-02--hermetik-und-ehrliche-heuristik-grenze)
@@ -83,3 +83,4 @@ festgelegte Format- und Umfangs-Entscheidung mit echten Wahl-Punkten:
 | Datum | Ereignis |
 |---|---|
 | 2026-07-09 | Proposed — Format Mermaid + Render-Umfang v1 (deklarierte Kanten + effektive Rollen + Sonderknoten; implizite Regeln als Legende; Determinismus-Ordnung via stabile interne IDs); `tech` deferred, additive Format-Erweiterung (`--graph-format`) offen. |
+| 2026-07-09 | Proposed → Accepted (Sign-off Auftraggeber; spec-first-Review der Vertrags-/Spezifikations-Schicht bestanden). Ab jetzt immutable; Ablösung nur via Folge-ADR mit `Supersedes`. |
