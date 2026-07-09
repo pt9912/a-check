@@ -1,6 +1,6 @@
 # slice-032 — `--print-graph`: Architektur-Graph (Mermaid) aus `.a-check.yml`
 
-**Status:** open (Entwurf **abgenommen 2026-07-08** — spec-first; Umsetzung folgt als eigener Slice, noch kein Code).
+**Status:** in-progress (Entwurf **abgenommen 2026-07-08**; **in Umsetzung 2026-07-09** — Phase A: Vertrag/Spezifikation/Architektur spec-first, Code/Tests/Doku als Phase B).
 **Typ:** Feature (Inspektions-/Visualisierungs-Ausgabe), maintainer-initiiert (UX/Onboarding).
 **Bezug:** neue Anforderung im Bereich `CLI` (Schema-Konvention, siehe
 [MR-002](../../../../harness/conventions.md#mr-002--id-schema-mit-bereichskürzeln-ab-initialer-fassung));
