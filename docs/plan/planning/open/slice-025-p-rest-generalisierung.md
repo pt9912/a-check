@@ -100,10 +100,10 @@ auszuarbeiten. Hier kein AK-Entwurf.
 
 | Konsument | Stand | P-Rest-Bedarf |
 |---|---|---|
-| b-cad | Pilot-Schnitt in Arbeit (dortige slice-030) | P1 + P2 + P2c — Skript-Header dokumentiert die drei Muster präzise (Evidenz-Quelle) |
+| b-cad | Pilot-Schnitt **erledigt** (2026-07-04, dortige slice-030): `arch-check.sh` auf den 75-Zeilen-P-Rest geschrumpft | P1 + P2 + P2c — Skript-Header dokumentiert die drei Muster präzise (Evidenz-Quelle) |
 | d-check | umgestellt, 0 Skript | keiner (Go-Regeln waren vollständig kanten-förmig) |
 | grid-guide (Rust) | Pilot offen | erwartet: `unsafe`-Zonen-Monopol (Analogon zu P1) — **der natürliche zweite Evidenz-Geber** |
-| d-migrate (Kotlin) | Pilot offen; dort heute Review statt Gate | offen |
+| d-migrate (Kotlin) | Pilot offen (dort heute Review statt Gate); a-check real dagegen verifiziert ([slice-031](../done/slice-031-deklarations-index-split-package.md), 2026-07-06) — keine belegte Gate-Adoption | offen |
 | m-trace (Go+TS) | Pilot-Kandidat | offen |
 
 **Lande-Trigger:** Kandidat 1 auf Maintainer-Wort oder mit dem zweiten Konsumenten
