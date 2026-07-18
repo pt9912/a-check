@@ -115,7 +115,11 @@ auszuarbeiten. Hier kein AK-Entwurf.
   des bestehenden `forbidden_constructs` (heute Port-gebunden,
   [AC-FA-RULE-004](../../../../spec/lastenheft.md#ac-fa-rule-004--port-disziplin-regel-port-impurity))
   **vs.** beides in einem Block mit zwei Scoping-Arten. Befund-Name (`construct-leak`?)
-  und Verhältnis zum bestehenden `port-impurity`-Pfad.
+  und Verhältnis zum bestehenden `port-impurity`-Pfad. **Namens-Kollision beachten:** der
+  interne Modelltyp heißt heute bereits `Constructs` (`internal/hexagon/core/model.go`) und
+  trägt die port-gebundenen `forbidden_constructs`-Treffer; ein YAML-`constructs:`-Block
+  belegt denselben Namen — das schärft die Wahl eigener-Block-vs.-Generalisierung
+  (Verwechslungsrisiko YAML-Schlüssel ↔ Modelltyp).
 - **Kommentar-Stripping:** Roh-Text-Prüfung vor oder nach `prepSource`? (Python-Lehre aus
   slice-020: C-Stripping kann falsch-grün erzeugen; für Aufrufmuster ist ein Treffer im
   Kommentar umgekehrt falsch-rot — je Sprache entscheiden, Parität zur bash-grep-Referenz
@@ -126,6 +130,16 @@ auszuarbeiten. Hier kein AK-Entwurf.
 - **Abgrenzung dokumentieren:** `tech` = extrahierte Import-Symbole, `constructs` =
   Roh-Text — beides ausgewiesene Heuristik, keine Semantik-Behauptung
   ([AC-QA-02](../../../../spec/lastenheft.md#ac-qa-02--hermetik-und-ehrliche-heuristik-grenze)).
+- **Sichtbarkeit im `--print-graph`:** `a-check --print-graph`
+  ([AC-FA-CLI-002](../../../../spec/lastenheft.md#ac-fa-cli-002--architektur-graph-ausgabe),
+  [ADR-0024](../../adr/0024-print-graph-mermaid.md),
+  [slice-032](../done/slice-032-print-graph-mermaid.md)/[slice-033](../done/slice-033-print-mk-graph-target.md);
+  im [aktuellen Release](../../../../version.md#aktuell)) rendert die deklarierte Architektur
+  als Mermaid — aber nur `layers`/`edges`. Eine Roh-Text-`constructs`-Regel wäre dort
+  **unsichtbar**. Zu entscheiden: bewusst nicht im Graph — dann braucht die „bewusst
+  nicht"-Aussage eine zitierbare normative Stelle (Lehre aus
+  [slice-033](../done/slice-033-print-mk-graph-target.md)) — **oder** eine eigene
+  Ausweisung; Design-Frage für den Graph-Adapter, nicht für die Regel-Engine.
 - **Rückbau-Pfad:** nach Landung b-cad-Skript auf P2 schrumpfen (Fitness-Probe:
   injizierter `dlopen`-Aufruf außerhalb der Zone ⇒ Befund im a-check-Gate statt im Skript).
 
