@@ -81,13 +81,20 @@ ein ADR, der einen dokumentierten Re-Eval-Trigger auflöst, ist keine „Korrekt
 sie bleibt immutable und im Kern gültig. Inhaltlich **entkräftet** der ADR die „explizit statt
 geraten"-Begründung — z. B.: Inferenz nur als Default mit explizitem Vorrang, **Namens-** statt
 Pfad-basiert, Determinismus gewahrt. Decision: (a) Richtungs-Namens-Inferenz (Grammatik §6-E),
-(b) Port→Port kategorisch *[nur falls Entscheid 0 ⇒ B]*. Schärft die Spezifikation. Bump Lastenheft 0.7.0→0.8.0.
+(b) Port→Port kategorisch *[nur falls Entscheid 0 ⇒ B]*. Schärft die Spezifikation. Bump Lastenheft beim Landen gegen den dann-aktuellen Stand —
+die im Entwurf notierte **0.8.0 ist seither vergeben** (Stand dieser Currency-Notiz 0.20.0
+→ nächster Minor). **Currency-Notiz (nach Entwurf):** Der Folge-ADR erhält die nächste
+freie Nummer **nach [ADR-0024](../../adr/0024-print-graph-mermaid.md)**; da er **nach
+[MR-005](../../../../harness/conventions.md#mr-005--referenzmatrix-intra-spec-richtung--adrslice-disziplin-d-check-angleichung)**
+entsteht, ist er slice-token-frei zu argumentieren *oder* trägt den Provenance-Marker (die
+`adr → slice`-Disziplin gilt für ADRs ab 0021; im Repo existieren inzwischen echte
+Supersede-Präzedenzen).
 
 ## 4. Umsetzungsplan
 
 **Rückgrat = Teil A (Auto-Inferenz).** Teil-B-Schritte sind *konditional* hinter Entscheid 0.
 
-1. **Spec (A) zuerst:** [AC-FA-RULE-008](../../../../spec/lastenheft.md#ac-fa-rule-008--driving-driven-port-richtung-regel-port-direction-mismatch)-Out-of-Scope-Zeile **geschärft** (Namens-Inferenz *rein*, Glob-/Pfad-Inferenz bleibt *out*) + **3 neue AC** (Happy/Boundary/Negative) + Bump 0.8.0 + Historie; Spezifikation; Folge-ADR (Re-Eval, §3.3) + Index.
+1. **Spec (A) zuerst:** [AC-FA-RULE-008](../../../../spec/lastenheft.md#ac-fa-rule-008--driving-driven-port-richtung-regel-port-direction-mismatch)-Out-of-Scope-Zeile **geschärft** (Namens-Inferenz *rein*, Glob-/Pfad-Inferenz bleibt *out*) + **3 neue AC** (Happy/Boundary/Negative) + Bump (nächster Minor, §3.3) + Historie; Spezifikation; Folge-ADR (Re-Eval, §3.3) + Index.
 2. `rules.go` `dirOf`: Inferenz-Zweig — `driving`/`driven`-Hinweis im Schicht-**Namen** (nicht Glob; §6-A), Grammatik §6-E, wenn `Direction==""`.
 3. Tests (A): Inferenz happy / expliziter Vorrang / kein-Hinweis / **Beide-Hinweise-Konflikt** (§6-E).
 4. **[nur falls Entscheid 0 ⇒ B]** `rules.go` **eigener `case`-Arm** (`srcRole=="port" && tgtRole=="port"`) + eigener Befund-Name (§6-C) + Tests (mismatch/kategorisch/boundary).
@@ -97,7 +104,7 @@ Pfad-basiert, Determinismus gewahrt. Decision: (a) Richtungs-Namens-Inferenz (Gr
 
 **Rückgrat A:**
 - [ ] [AC-FA-RULE-008](../../../../spec/lastenheft.md#ac-fa-rule-008--driving-driven-port-richtung-regel-port-direction-mismatch)-**Out-of-Scope-Zeile geschärft**: Namens-Inferenz zugelassen, **Glob-/Pfad-Inferenz bleibt out-of-scope** (sonst öffnet der Edit zu viel).
-- [ ] **Drei neue AC** (Happy/Boundary/Negative) für die Inferenz (Anforderungs-Anlege-Prozess) + Bump 0.8.0 + Historie.
+- [ ] **Drei neue AC** (Happy/Boundary/Negative) für die Inferenz (Anforderungs-Anlege-Prozess) + Bump (nächster Minor, §3.3) + Historie.
 - [ ] Folge-ADR (Re-Evaluierung von [ADR-0012](../../adr/0012-driving-driven-richtung-orthogonale-dimension.md), `Supersedes: —`, §3.3) `Accepted` + Index; Spezifikation (Regel-/Schema-Strata) nachgezogen.
 - [ ] `dirOf`-Inferenz in `rules.go` (Grammatik §6-E); Tests (happy/Vorrang/kein-Hinweis/Beide-Hinweise).
 - [ ] `make arch-check` **0 am echten a-check-Config**. *(Beleg-Argument, nicht Teil des Hakens: unter Namens-Inferenz trägt der `adapters`-Name kein Token, §6-A.)*
