@@ -6,6 +6,20 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
+### Fixed
+
+- **`exclude` beschneidet den Verzeichnis-Walk (`ADR-0025`, `SPEC-EXTRACT-001` 0.21.0, slice-035):**
+  `exclude` filterte bisher nur einzelne Dateien — der Scan-Walk stieg trotzdem in jeden Ordner ab.
+  Ein ausgeschlossener, aber **unlesbarer** Teilbaum (z. B. ein Trivy-Cache unter `.security/**`)
+  brach den Scan mit Exit 2 ab, obwohl `.security/**` in `exclude` stand. Jetzt wird ein Verzeichnis,
+  dessen ganzer Teilbaum von einem rekursiven Muster (`**` oder `<präfix>/**`) gedeckt ist, **gar nicht
+  erst betreten** (Prune vor dem Lesen des Ordnerinhalts) — der Abbruch entfällt, große Fremdcode-
+  Teilbäume (`**/node_modules/**`, `**/dist/**`) werden übersprungen statt durchlaufen. Der Prune ist
+  **beweisbar output-äquivalent** zum Datei-Ausschluss: nur teilbaum-deckende Muster prunen (ein
+  Teil-Muster wie `src/*` prunt **nicht**, sonst gingen nicht ausgeschlossene Dateien still verloren);
+  ein **nicht** ausgeschlossener unlesbarer Ordner bricht weiterhin fail-closed ab. Realisiert die
+  Verzeichnis-Absicht von `ADR-0018`; kein Lastenheft-Bump (Schärfung des Wie).
+
 ## [0.13.0] - 2026-07-09
 
 ### Added
