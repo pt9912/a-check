@@ -1,6 +1,6 @@
 # slice-035 — `exclude` beschneidet den Verzeichnis-Walk (Prune)
 
-**Status:** in-progress — **fertig, `make ci` grün, 3× adversarisch reviewed (F-1 gefunden+gefixt), Merge ausstehend**. Bei Merge → `git mv` nach `done/`. Closure-Notiz: §7.
+**Status:** done (**abgeschlossen 2026-07-23** — `make ci` grün, 3× adversarisch reviewed, F-1 gefunden+gefixt). Closure-Notiz: §7.
 **Typ:** Defekt-Fix + Spec-Schärfung (Scan-Scope), Folge von slice-023/[ADR-0018](../../adr/0018-exclude-scan-scope.md).
 **Bezug:** schärft [SPEC-EXTRACT-001](../../../../spec/spezifikation.md#spec-extract-001--import-extraktion) via
 [ADR-0025](../../adr/0025-exclude-verzeichnis-prune.md); folgt
