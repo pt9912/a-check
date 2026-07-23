@@ -6,6 +6,8 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
+## [0.14.0] - 2026-07-23
+
 ### Fixed
 
 - **`exclude` beschneidet den Verzeichnis-Walk (`ADR-0025`, `SPEC-EXTRACT-001` 0.21.0, slice-035):**
