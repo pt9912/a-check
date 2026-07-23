@@ -401,6 +401,125 @@ func TestExtractExcludeSkipsFiles(t *testing.T) { // ADR-0018 (slice-023): exclu
 	}
 }
 
+func TestDirActionPrunePredicate(t *testing.T) { // ADR-0025 (slice-035): die reine Prune-Entscheidung — root-frei, deterministisch, diskriminierend
+	// Der load-bearing Beweis: nur rekursive Teilbaum-Muster (…/** bzw. **)
+	// prunen; Nicht-Teilbaum-Formen (…/*, …/, Datei-Globs) dürfen NICHT prunen
+	// (sonst stiller Coverage-Verlust, AC-QA-02). Deckt zugleich .git-Skip und
+	// den Wurzel-Guard (rel == ".") ab — beides über Extract kaum beobachtbar.
+	cases := []struct {
+		name    string
+		rel     string
+		dirName string
+		exclude []string
+		want    error
+	}{
+		// prune: rekursive Teilbaum-Muster
+		{".security/** prunet .security", ".security", ".security", []string{".security/**"}, filepath.SkipDir},
+		{"dist/** prunet dist", "dist", "dist", []string{"dist/**"}, filepath.SkipDir},
+		{"**/node_modules/** prunet a/node_modules", "a/node_modules", "node_modules", []string{"**/node_modules/**"}, filepath.SkipDir},
+		{"**/node_modules/** prunet tiefes b/c/node_modules", "b/c/node_modules", "node_modules", []string{"**/node_modules/**"}, filepath.SkipDir},
+		{"** prunet jedes Verzeichnis", "irgendwo", "irgendwo", []string{"**"}, filepath.SkipDir},
+		// KEIN prune: Nicht-Teilbaum-Formen (F-1: sonst über-prune → False-Green)
+		{"src/* prunet src NICHT (Single-Segment)", "src", "src", []string{"src/*"}, nil},
+		{"trailing-slash sub/ prunet NICHT", "sub", "sub", []string{"sub/"}, nil},
+		{"Datei-Glob **/*_test.go prunet core NICHT", "core", "core", []string{"**/*_test.go"}, nil},
+		{"dir/**/*.go ist nicht teilbaum-deckend → kein prune", "dir", "dir", []string{"dir/**/*.go"}, nil},
+		{"node_modules/** (root-verankert) prunet pkg/node_modules NICHT", "pkg/node_modules", "node_modules", []string{"node_modules/**"}, nil},
+		{"Präfix-Kollision: a/** prunet ab NICHT", "ab", "ab", []string{"a/**"}, nil},
+		// Sonderfälle
+		{".git wird immer geskippt", ".git", ".git", nil, filepath.SkipDir},
+		{"Scan-Wurzel wird nie geprunet (auch nicht von **)", ".", "root", []string{"**"}, nil},
+		{"leere exclude-Liste: kein prune", "any", "any", nil, nil},
+	}
+	for _, c := range cases {
+		if got := dirAction(c.rel, c.dirName, c.exclude); got != c.want {
+			t.Errorf("%s: dirAction(%q,%q,%v) = %v, want %v", c.name, c.rel, c.dirName, c.exclude, got, c.want)
+		}
+	}
+}
+
+func TestExtractExcludeNoOverPruneOnSingleStar(t *testing.T) { // ADR-0025 / F-1: ein Single-Star-Glob (src/*) darf den Teilbaum NICHT prunen
+	dir := t.TempDir()
+	if err := os.MkdirAll(filepath.Join(dir, "src", "app"), 0o755); err != nil {
+		t.Fatal(err)
+	}
+	// src/loose.go matcht src/* (Datei-Ausschluss); src/app/x.go matcht src/*
+	// NICHT (^src/[^/]*$) und darf daher NICHT durch einen Verzeichnis-Prune
+	// verloren gehen — sonst stille Coverage-Lücke (der gefixte F-1-Bug).
+	if err := os.WriteFile(filepath.Join(dir, "src", "loose.go"), []byte("package src\nimport \"os\"\n"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(filepath.Join(dir, "src", "app", "x.go"), []byte("package app\nimport \"fmt\"\n"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	// Zusätzlich eine Nicht-Sprach-Datei: deckt den fileImports-keep=false-Zweig (lang == "").
+	if err := os.WriteFile(filepath.Join(dir, "src", "app", "README.md"), []byte("# doc\n"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	m := core.Model{
+		Languages: map[string][]string{"go": {"**/*.go"}},
+		Exclude:   []string{"src/*"},
+	}
+	files, err := newAdapter().Extract(dir, m)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(files) != 1 || files[0].Path != "src/app/x.go" {
+		t.Fatalf("src/* darf src/app/x.go nicht mit-prunen (loose.go datei-ausgeschlossen, x.go bleibt), got %+v", files)
+	}
+}
+
+func TestExtractExcludePrunesNestedSubtree(t *testing.T) { // ADR-0025: End-to-End des realen Falls — ".security/**" nimmt den ganzen Teilbaum aus, Geschwister bleiben
+	dir := t.TempDir()
+	if err := os.MkdirAll(filepath.Join(dir, ".security", "cache"), 0o755); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(filepath.Join(dir, ".security", "cache", "x.go"), []byte("package cache\nimport \"os\"\n"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(filepath.Join(dir, "core.go"), []byte("package core\nimport \"fmt\"\n"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	m := core.Model{
+		Languages: map[string][]string{"go": {"**/*.go"}},
+		Exclude:   []string{".security/**"},
+	}
+	files, err := newAdapter().Extract(dir, m)
+	if err != nil {
+		t.Fatal(err)
+	}
+	// Für einen …/**-Glob sind Datei-Filter und Prune output-äquivalent (invariant);
+	// die diskriminierende Prune-Entscheidung beweist TestDirActionPrunePredicate.
+	if len(files) != 1 || files[0].Path != "core.go" {
+		t.Fatalf("verschachtelter ausgeschlossener Teilbaum muss vollständig ausfallen, Geschwister bleiben, got %+v", files)
+	}
+}
+
+func TestExtractExcludeDoesNotPruneOnFileGlob(t *testing.T) { // ADR-0025: ein Datei-Glob (**/*_test.go) prunet das enthaltende Verzeichnis NICHT
+	dir := t.TempDir()
+	if err := os.MkdirAll(filepath.Join(dir, "core"), 0o755); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(filepath.Join(dir, "core", "x.go"), []byte("package core\nimport \"os\"\n"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(filepath.Join(dir, "core", "x_test.go"), []byte("package core\nimport \"testing\"\n"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	m := core.Model{
+		Languages: map[string][]string{"go": {"**/*.go"}},
+		Exclude:   []string{"**/*_test.go"},
+	}
+	files, err := newAdapter().Extract(dir, m)
+	if err != nil {
+		t.Fatal(err)
+	}
+	// Das Verzeichnis "core" wird betreten (x.go gescannt), nur die Testdatei fällt datei-genau aus.
+	if len(files) != 1 || files[0].Path != "core/x.go" {
+		t.Fatalf("ein Datei-Glob darf das Verzeichnis nicht prunen (x.go bleibt, x_test.go fällt), got %+v", files)
+	}
+}
+
 // --- slice-022: TypeScript-Backend (AC-FA-EXTRACT-001) ---
 
 func tsSyms(src string) []string {

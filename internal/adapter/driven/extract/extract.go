@@ -113,43 +113,27 @@ func (a Adapter) Extract(root string, m core.Model) ([]core.FileImports, error) 
 		if walkErr != nil {
 			return walkErr
 		}
-		if d.IsDir() {
-			if d.Name() == ".git" {
-				return filepath.SkipDir
-			}
-			return nil
-		}
 		rel, relErr := filepath.Rel(root, p)
 		if relErr != nil {
 			return relErr
 		}
 		rel = filepath.ToSlash(rel)
+		if d.IsDir() {
+			return dirAction(rel, d.Name(), m.Exclude)
+		}
 		if core.MatchGlobs(rel, m.Exclude) {
 			// exclude removes the file from the scan BEFORE extraction: it is
 			// never read and yields neither imports nor forbidden-construct
 			// hits (ADR-0018, SPEC-EXTRACT-001).
 			return nil
 		}
-		lang := langFor(rel, m.Languages)
-		if lang == "" {
-			return nil
+		fi, keep, fErr := a.fileImports(p, rel, m)
+		if fErr != nil {
+			return fErr
 		}
-		data, readErr := os.ReadFile(p)
-		if readErr != nil {
-			return readErr
+		if keep {
+			out = append(out, fi)
 		}
-		src := prepSource(lang, string(data))
-		fi := core.FileImports{
-			Path:         rel,
-			Layer:        core.LayerOf(rel, m.Layers),
-			Language:     lang,
-			Imports:      filterIgnored(a.importsFromSource(lang, src), m.IgnoreSymbols),
-			Declarations: a.declarationsFor(lang, src),
-		}
-		if pats := m.Forbidden[fi.Layer]; len(pats) > 0 {
-			fi.Constructs = constructsFromSource(src, pats)
-		}
-		out = append(out, fi)
 		return nil
 	})
 	if err != nil {
@@ -157,6 +141,77 @@ func (a Adapter) Extract(root string, m core.Model) ([]core.FileImports, error) 
 	}
 	sort.Slice(out, func(i, j int) bool { return out[i].Path < out[j].Path })
 	return out, nil
+}
+
+// dirAction decides whether the walk descends into a directory or prunes it.
+// .git is always skipped. `exclude` prunes the directory WALK, not just file
+// extraction (ADR-0025, SPEC-EXTRACT-001): a directory whose WHOLE subtree is
+// excluded is not descended into. Pruning happens before ReadDir (WalkDir
+// contract), so an unreadable or huge excluded subtree no longer aborts the
+// scan; a NON-excluded unreadable directory still fails fail-closed via the
+// walkErr path (AC-QA-02). The root entry (rel == ".") is never pruned; single
+// files are still excluded by the caller (ADR-0018).
+func dirAction(rel, name string, exclude []string) error {
+	if name == ".git" {
+		return filepath.SkipDir
+	}
+	if rel != "." && dirExcluded(rel, exclude) {
+		return filepath.SkipDir
+	}
+	return nil
+}
+
+// dirExcluded reports whether EVERY path under dir is covered by an exclude
+// glob — the only sound condition for pruning the walk. A glob prunes dir iff it
+// is a recursive-subtree pattern: "**" (everything) or "<prefix>/**" whose
+// prefix matches dir exactly. Only "**" spans directory separators in the glob
+// engine (core.globToRegexp → ".*"); a single-segment "<dir>/*", a trailing-slash
+// "<dir>/", or a file pattern ("<dir>/*.go") covers only PART of the subtree, so
+// pruning on those would silently drop files the glob does not match — a
+// false-green (AC-QA-02). Restricting the prune to "<prefix>/**" keeps it
+// provably output-equivalent to the per-file exclude: every file under a pruned
+// dir already matches "<prefix>/.*" and would be excluded anyway; the only
+// observable effect is not descending (no abort on an unreadable/huge excluded
+// subtree, faster). Only the canonical spellings "**" and "<prefix>/**" prune;
+// non-idiomatic equivalents ("**/", "foo/**/", "a/**/**") fall back to file-level
+// exclusion — output stays correct, only the prune optimisation is skipped (a
+// documented heuristic boundary, AC-QA-02).
+func dirExcluded(dir string, exclude []string) bool {
+	for _, g := range exclude {
+		if g == "**" {
+			return true
+		}
+		if prefix, ok := strings.CutSuffix(g, "/**"); ok && core.MatchGlobs(dir, []string{prefix}) {
+			return true
+		}
+	}
+	return false
+}
+
+// fileImports extracts one source file's imports and forbidden-construct hits.
+// keep is false when the path matches no language backend — skipped, not an
+// error (SPEC-EXTRACT-001).
+func (a Adapter) fileImports(p, rel string, m core.Model) (core.FileImports, bool, error) {
+	lang := langFor(rel, m.Languages)
+	if lang == "" {
+		return core.FileImports{}, false, nil
+	}
+	data, err := os.ReadFile(p)
+	if err != nil {
+		return core.FileImports{}, false, err
+	}
+	src := prepSource(lang, string(data))
+	fi := core.FileImports{
+		Path:         rel,
+		Layer:        core.LayerOf(rel, m.Layers),
+		Language:     lang,
+		Imports:      filterIgnored(a.importsFromSource(lang, src), m.IgnoreSymbols),
+		Declarations: a.declarationsFor(lang, src),
+	}
+	if pats := m.Forbidden[fi.Layer]; len(pats) > 0 {
+		fi.Constructs = constructsFromSource(src, pats)
+	}
+	return fi, true, nil
 }
 
 func langFor(rel string, langs map[string][]string) string {

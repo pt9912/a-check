@@ -1,6 +1,6 @@
 # Benutzerhandbuch: a-check
 
-**Handbuch-Version:** 1.29 · **Software-Version:** [aktuelles Release](../../version.md#aktuell) · **Stand:** 2026-07-09 ·
+**Handbuch-Version:** 1.30 · **Software-Version:** [aktuelles Release](../../version.md#aktuell) · **Stand:** 2026-07-23 ·
 **Autor:** pt9912 (Maintainer)
 
 ---
@@ -283,6 +283,16 @@ exclude:
   - "**/dist/**"          # generierter Output
   - "**/*.d.ts"           # Typ-Generat (Achtung: "**/*.ts" matcht auch .d.ts)
 ```
+
+`exclude` beschneidet den **Verzeichnis-Walk**, nicht nur die Datei-Liste: ein
+Verzeichnis, dessen **ganzer Teilbaum** von einem rekursiven Muster gedeckt ist
+(`**/node_modules/**`, `.security/**`, `dist/**`), wird gar nicht erst betreten. Damit
+darf ein ausgeschlossener Teilbaum auch **unlesbar oder sehr groß** sein, ohne den Scan
+abzubrechen — der Prune greift vor dem Lesen des Ordnerinhalts. Nur solche `…/**`-Muster
+prunen; ein Teil-Muster wie `src/*` schließt nur die direkten Dateien aus und lässt
+`src/app/…` bewusst im Scan (kein stiller Verlust ganzer Teilbäume). Ein **nicht**
+ausgeschlossener unlesbarer Ordner bricht dagegen weiterhin mit Exit-Code 2 ab (kein
+stilles Überspringen, das eine Coverage-Lücke verstecken würde).
 
 Ein leerer Glob bricht mit Exit-Code 2 ab; ohne `exclude`-Block wird jede
 `languages`-Glob-Datei gescannt (bisheriges Verhalten). Wer zu breit ausschließt,
