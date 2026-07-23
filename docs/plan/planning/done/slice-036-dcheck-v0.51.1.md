@@ -1,6 +1,6 @@
 # slice-036 — d-check-Pin-Hebung v0.37.1 → v0.51.1
 
-**Status:** in-progress — **fertig, `make gates` grün, Merge ausstehend**. Bei Merge → `git mv` nach `done/`. Closure-Notiz: §5.
+**Status:** done (**abgeschlossen 2026-07-23** — `make ci` grün, mechanischer Pin-Bump, Fragment-Parität verifiziert). Closure-Notiz: §5.
 **Typ:** Tooling-Pin-Hebung (Harness, `doc-check`), Folge von [slice-019](../done/slice-019-dcheck-mk-print-mk-angleichung.md).
 **Bezug:** Harness-Prozess (`make doc-check` via `d-check`, [AGENTS §4](../../../../AGENTS.md#4-quality-gates)); **kein a-check-Vertrag/ADR** — der Pin betrifft das Schwester-Tool, nicht das a-check-Image. [Roadmap](../in-progress/roadmap.md).
 
@@ -49,4 +49,23 @@ eine bewusste Pin-Bump-Änderung an `d-check.mk` + Doku, wie slice-019.
 
 ## 5. Closure-Notiz (nach `done`)
 
-_(folgt nach Merge)_
+**Abgeschlossen 2026-07-23** auf Branch `slice-036-dcheck-v0.51.1`.
+
+**Geliefert:** d-check-Pin `v0.37.1` → **`v0.51.1`** (`d-check.mk` verbatim aus
+`d-check:v0.51.1 --print-mk`, einzige a-check-Anpassung = DCHECK_DIGEST-Pin
+`sha256:fede3d02…`); neues Fragment-Target `doc-targets` (Modul `targets`,
+DC-FA-TGT-001) + drei neue `--disable`-Module (`targets`/`citations`/`sources`) —
+saubere Obermenge. Doku: AGENTS §4 (Pin-Version + `doc-targets`-Zeile),
+`conventions.md` [MR-005](../../../../harness/conventions.md#mr-005--referenzmatrix-intra-spec-richtung--adrslice-disziplin-d-check-angleichung)-Notiz. Kein a-check-Vertrag/ADR/Handbuch/Release-Bump.
+
+**Gate-Evidenz:** `make ci` grün — doc-check jetzt über `d-check@…fede3d02…` (v0.51.1):
+**97 Dateien, 0 Befunde**; gate-consistency ok (`d-check.mk` wohlgeformter Tag + Digest,
+`doc-targets` in AGENTS §4). Kompatibilität über 14 Minors verifiziert.
+
+**Lernnotiz:** die v0.51.1-`doc-check` ist strenger (Modul `targets`) und fing beim ersten
+Lauf zwei tote `slice-019`-Relativlinks (Ziel liegt in `done/`, nicht `in-progress/`) + eine
+unverlinkte [MR-005](../../../../harness/conventions.md#mr-005--referenzmatrix-intra-spec-richtung--adrslice-disziplin-d-check-angleichung) im neuen Slice-Doc — der Pin-Bump härtet das Doku-Gate mit.
+
+**Folge:** Modul `targets` als advisory verdrahtet, nicht ins mandatory `doc-check` (eigener
+Härtungs-Slice bei Bedarf, Präzedenz slice-029). d-check-`citations`/`sources`-Module noch
+ungenutzt.
