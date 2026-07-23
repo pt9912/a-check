@@ -107,15 +107,16 @@ Host-Bash. `doc-trace`/`doc-complete` sind advisory `d-check`-Targets
 | Target | Zweck | Stand |
 |---|---|---|
 | `make doc-check` | Doku-Links/Anker/Kennungen via `d-check` (Schwester-Tool, digest-gepinnt, netzlos, read-only) | **real** (Bootstrap) |
-| `make doc-trace` | advisory Requirements Traceability Matrix via `d-check` (DC-FA-CLI-009; `TRACE_FLAGS=--json`) | **advisory** (d-check v0.37.1) |
-| `make doc-complete` | Vollständigkeits-Gate: Requirements-Waise ⇒ Exit 1 (DC-FA-CLI-011) | **advisory** (d-check v0.37.1) |
-| `make doc-doctor` | erklärende Diagnose mit Fix-Kandidaten (DC-FA-CLI-007) | **advisory** (d-check v0.37.1) |
-| `make doc-repair` | Reparatur-Patch (unified diff) auf stdout, git-apply-rein (DC-FA-CLI-008) | **advisory** (d-check v0.37.1) |
+| `make doc-trace` | advisory Requirements Traceability Matrix via `d-check` (DC-FA-CLI-009; `TRACE_FLAGS=--json`) | **advisory** (d-check v0.51.1) |
+| `make doc-complete` | Vollständigkeits-Gate: Requirements-Waise ⇒ Exit 1 (DC-FA-CLI-011) | **advisory** (d-check v0.51.1) |
+| `make doc-doctor` | erklärende Diagnose mit Fix-Kandidaten (DC-FA-CLI-007) | **advisory** (d-check v0.51.1) |
+| `make doc-repair` | Reparatur-Patch (unified diff) auf stdout, git-apply-rein (DC-FA-CLI-008) | **advisory** (d-check v0.51.1) |
 | `make doc-immutable` | ADR-Immutabilität (§3.5) via git-Diff (Modul `vcs`; `RANGE=`/`STAGED=1`, DC-FA-VCS-001) — **CI-durchgesetzt** über die Commit-Range ([`ci.yml`](.github/workflows/ci.yml)) | **real** (slice-029, CI) |
-| `make doc-commits` | Commit-Message-Traceability (Modul `commits`; `RANGE=`, DC-FA-COMMITS-001) | **advisory** (d-check v0.37.1) |
-| `make doc-planning` | Planning-Lifecycle-Konsistenz Roadmap ↔ `in-progress` (Modul `planning`, DC-FA-PLAN-001) | **advisory** (d-check v0.37.1) |
-| `make doc-tracked` | Getrackt-Status auflösbarer Referenz-Ziele (Modul `tracked`, DC-FA-TRK-001) | **advisory** (d-check v0.37.1) |
-| `make doc-help` | Liste der `doc-*`-Targets (Utility) | **advisory** (d-check v0.37.1) |
+| `make doc-commits` | Commit-Message-Traceability (Modul `commits`; `RANGE=`, DC-FA-COMMITS-001) | **advisory** (d-check v0.51.1) |
+| `make doc-planning` | Planning-Lifecycle-Konsistenz Roadmap ↔ `in-progress` (Modul `planning`, DC-FA-PLAN-001) | **advisory** (d-check v0.51.1) |
+| `make doc-tracked` | Getrackt-Status auflösbarer Referenz-Ziele (Modul `tracked`, DC-FA-TRK-001) | **advisory** (d-check v0.51.1) |
+| `make doc-targets` | Deklarations-Konsistenz Doku ↔ Build-Targets (Modul `targets`, DC-FA-TGT-001; neu in v0.51.1) | **advisory** (d-check v0.51.1) |
+| `make doc-help` | Liste der `doc-*`-Targets (Utility) | **advisory** (d-check v0.51.1) |
 | `make lint` | golangci-lint mit dem Projekt-Profil (§3.2, [ADR-0005](docs/plan/adr/0005-lint-profil.md)) | **real** (slice-003) |
 | `make test` | Akzeptanzkriterien der `AC-FA-*` als Go-Tests | **real** (slice-003) |
 | `make coverage-gate` | Gesamt-Coverage ≥ 90 % über `./internal/...` ([ADR-0006](docs/plan/adr/0006-coverage-gate.md)) | **real** (slice-003) |
