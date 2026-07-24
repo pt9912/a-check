@@ -2,6 +2,8 @@
 
 **English** · [Deutsch](README.de.md)
 
+[![CI](https://github.com/pt9912/a-check/actions/workflows/ci.yml/badge.svg)](https://github.com/pt9912/a-check/actions/workflows/ci.yml)
+
 Cross-language hexagonal-architecture checker — deterministic, side-effect-free,
 text-heuristic, shipped as a container image.
 

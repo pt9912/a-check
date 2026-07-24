@@ -2,6 +2,8 @@
 
 [English](README.md) · **Deutsch**
 
+[![CI](https://github.com/pt9912/a-check/actions/workflows/ci.yml/badge.svg)](https://github.com/pt9912/a-check/actions/workflows/ci.yml)
+
 Sprachübergreifender Hexagon-Architektur-Checker — deterministisch,
 seiteneffektfrei, text-heuristisch, ausgeliefert als Container-Image.
 

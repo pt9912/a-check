@@ -96,38 +96,38 @@ ADR, kein PR-Kommentar.
 ## 4. Quality Gates
 
 Nur hier gelistete Targets existieren im Makefile. Halluzinierte Gates
-sind die häufigste Form von Harness-Lüge. `doc-check` (Bootstrap),
-`lint`/`test`/`coverage-gate`/`arch-check` (slice-003), die Meta-Gates
-`gate-consistency`/`record-gates` (slice-004), `guard-selftest`
-(slice-005) und `image-test`/`ci`/`trace-check` (slice-006) sind **real**
-und grün; die Code-Gates sind Dockerfile-Stages, die Meta-Gates laufen als
-Host-Bash. `doc-trace`/`doc-complete` sind advisory `d-check`-Targets
-(DC-FA-CLI-009/011, nicht im mandatory `gates`-Aggregat).
+sind die häufigste Form von Harness-Lüge; `make gate-consistency` erzwingt
+die Übereinstimmung Doku ↔ Makefile mechanisch. Die Code-Gates sind
+Dockerfile-Stages, die Meta-Gates laufen als Host-Bash. **Mandatory** ist,
+was im `gates`-Aggregat hängt; die `doc-*`-Targets jenseits von `doc-check`
+und `doc-immutable` sind **advisory** (`d-check`-Funktionen, nicht im
+Aggregat). Ob ein Gate gerade grün ist, sagt die CI (Badge im
+[`README.md`](README.md)), nicht diese Tabelle.
 
-| Target | Zweck | Stand |
-|---|---|---|
-| `make doc-check` | Doku-Links/Anker/Kennungen via `d-check` (Schwester-Tool, digest-gepinnt, netzlos, read-only) | **real** (Bootstrap) |
-| `make doc-trace` | advisory Requirements Traceability Matrix via `d-check` (DC-FA-CLI-009; `TRACE_FLAGS=--json`) | **advisory** (d-check v0.51.1) |
-| `make doc-complete` | Vollständigkeits-Gate: Requirements-Waise ⇒ Exit 1 (DC-FA-CLI-011) | **advisory** (d-check v0.51.1) |
-| `make doc-doctor` | erklärende Diagnose mit Fix-Kandidaten (DC-FA-CLI-007) | **advisory** (d-check v0.51.1) |
-| `make doc-repair` | Reparatur-Patch (unified diff) auf stdout, git-apply-rein (DC-FA-CLI-008) | **advisory** (d-check v0.51.1) |
-| `make doc-immutable` | ADR-Immutabilität (§3.5) via git-Diff (Modul `vcs`; `RANGE=`/`STAGED=1`, DC-FA-VCS-001) — **CI-durchgesetzt** über die Commit-Range ([`ci.yml`](.github/workflows/ci.yml)) | **real** (slice-029, CI) |
-| `make doc-commits` | Commit-Message-Traceability (Modul `commits`; `RANGE=`, DC-FA-COMMITS-001) | **advisory** (d-check v0.51.1) |
-| `make doc-planning` | Planning-Lifecycle-Konsistenz Roadmap ↔ `in-progress` (Modul `planning`, DC-FA-PLAN-001) | **advisory** (d-check v0.51.1) |
-| `make doc-tracked` | Getrackt-Status auflösbarer Referenz-Ziele (Modul `tracked`, DC-FA-TRK-001) | **advisory** (d-check v0.51.1) |
-| `make doc-targets` | Deklarations-Konsistenz Doku ↔ Build-Targets (Modul `targets`, DC-FA-TGT-001; neu in v0.51.1) | **advisory** (d-check v0.51.1) |
-| `make doc-help` | Liste der `doc-*`-Targets (Utility) | **advisory** (d-check v0.51.1) |
-| `make lint` | golangci-lint mit dem Projekt-Profil (§3.2, [ADR-0005](docs/plan/adr/0005-lint-profil.md)) | **real** (slice-003) |
-| `make test` | Akzeptanzkriterien der `AC-FA-*` als Go-Tests | **real** (slice-003) |
-| `make coverage-gate` | Gesamt-Coverage ≥ 90 % über `./internal/...` ([ADR-0006](docs/plan/adr/0006-coverage-gate.md)) | **real** (slice-003) |
-| `make arch-check` | Eigen-Architektur via `a-check` selbst (Dogfooding) | **real** (slice-003) |
-| `make gate-consistency` | Meta-Gate: dokumentierte Targets ↔ Makefile, `.d-check.yml`-Module (Harness-Lügen-Schutz) + Pin-Konsistenz (Digest-Gleichheit harte Pins == `version.md#aktuell`, Version == CHANGELOG, `d-check.mk`-Deklaration; slice-018) | **real** (slice-004) |
-| `make record-gates` | Gate-Nachweis (Working-Tree-Hash) für den Stop-Hook | **real** (slice-004) |
-| `make guard-selftest` | Selbsttest des PreToolUse-Command-Guard (Tool-Call-Gate §3.1) | **real** (slice-005) |
-| `make gates` | alle inneren Gates (mandatory vor Handoff) | **real** (slice-003) |
-| `make image-test` | [AC-FA-DIST-001](spec/lastenheft.md#ac-fa-dist-001--distribution-image---print-mk-a-checkmk) + nativ==Container-Akzeptanz + Fragment-Parität (committete [`a-check.mk`](a-check.mk) == `--print-mk`, slice-034) gegen das gebaute Image | **real** (slice-006) |
-| `make ci` | CI-äquivalent: `gates` + `image-test` (Workflow `.github/workflows/ci.yml`) | **real** (slice-006) |
-| `make trace-check` | Traceability via Modul `commits` ([ADR-0021](docs/plan/adr/0021-commits-modul-trace-check.md)): `AC-*`/`ADR-*`/`MR-*`/`slice`-ID je Commit (§5; `MSGFILE=` Hook, `RANGE=` CI) | **real** (slice-006, Modul seit slice-030) |
+| Target | Zweck |
+|---|---|
+| `make doc-check` | Doku-Links/Anker/Kennungen via `d-check` (Schwester-Tool, digest-gepinnt, netzlos, read-only) |
+| `make doc-trace` | advisory Requirements Traceability Matrix via `d-check` (DC-FA-CLI-009; `TRACE_FLAGS=--json`) |
+| `make doc-complete` | Vollständigkeits-Gate: Requirements-Waise ⇒ Exit 1 (DC-FA-CLI-011) |
+| `make doc-doctor` | erklärende Diagnose mit Fix-Kandidaten (DC-FA-CLI-007) |
+| `make doc-repair` | Reparatur-Patch (unified diff) auf stdout, git-apply-rein (DC-FA-CLI-008) |
+| `make doc-immutable` | ADR-Immutabilität (§3.5) via git-Diff (Modul `vcs`; `RANGE=`/`STAGED=1`, DC-FA-VCS-001) — **CI-durchgesetzt** über die Commit-Range ([`ci.yml`](.github/workflows/ci.yml)) |
+| `make doc-commits` | Commit-Message-Traceability (Modul `commits`; `RANGE=`, DC-FA-COMMITS-001) |
+| `make doc-planning` | Planning-Lifecycle-Konsistenz Roadmap ↔ `in-progress` (Modul `planning`, DC-FA-PLAN-001) |
+| `make doc-tracked` | Getrackt-Status auflösbarer Referenz-Ziele (Modul `tracked`, DC-FA-TRK-001) |
+| `make doc-targets` | Deklarations-Konsistenz Doku ↔ Build-Targets (Modul `targets`, DC-FA-TGT-001; neu in v0.51.1) |
+| `make doc-help` | Liste der `doc-*`-Targets (Utility) |
+| `make lint` | golangci-lint mit dem Projekt-Profil (§3.2, [ADR-0005](docs/plan/adr/0005-lint-profil.md)) |
+| `make test` | Akzeptanzkriterien der `AC-FA-*` als Go-Tests |
+| `make coverage-gate` | Gesamt-Coverage ≥ 90 % über `./internal/...` ([ADR-0006](docs/plan/adr/0006-coverage-gate.md)) |
+| `make arch-check` | Eigen-Architektur via `a-check` selbst (Dogfooding) |
+| `make gate-consistency` | Meta-Gate: dokumentierte Targets ↔ Makefile, `.d-check.yml`-Module (Harness-Lügen-Schutz) + Pin-Konsistenz (Digest-Gleichheit harte Pins == `version.md#aktuell`, Version == CHANGELOG, `d-check.mk`-Deklaration; slice-018) |
+| `make record-gates` | Gate-Nachweis (Working-Tree-Hash) für den Stop-Hook |
+| `make guard-selftest` | Selbsttest des PreToolUse-Command-Guard (Tool-Call-Gate §3.1) |
+| `make gates` | alle inneren Gates (mandatory vor Handoff) |
+| `make image-test` | [AC-FA-DIST-001](spec/lastenheft.md#ac-fa-dist-001--distribution-image---print-mk-a-checkmk) + nativ==Container-Akzeptanz + Fragment-Parität (committete [`a-check.mk`](a-check.mk) == `--print-mk`, slice-034) gegen das gebaute Image |
+| `make ci` | CI-äquivalent: `gates` + `image-test` (Workflow `.github/workflows/ci.yml`) |
+| `make trace-check` | Traceability via Modul `commits` ([ADR-0021](docs/plan/adr/0021-commits-modul-trace-check.md)): `AC-*`/`ADR-*`/`MR-*`/`slice`-ID je Commit (§5; `MSGFILE=` Hook, `RANGE=` CI) |
 
 ## 5. Dokumentations-Regeln
 
