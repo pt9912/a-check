@@ -1,6 +1,6 @@
 # Benutzerhandbuch: a-check
 
-**Handbuch-Version:** 1.30 · **Software-Version:** [aktuelles Release](../../version.md#aktuell) · **Stand:** 2026-07-23 ·
+**Handbuch-Version:** 1.31 · **Software-Version:** [aktuelles Release](../../version.md#aktuell) · **Stand:** 2026-07-24 ·
 **Autor:** pt9912 (Maintainer)
 
 ---
@@ -140,10 +140,20 @@ Jeder Befund nennt die Regel. Die sieben Regeln und ihre Behebung:
 | `core-impurity` | Der Kern (`role: domain`) importiert einen Port, eine `app`- oder Adapter-Schicht oder ein Framework/Tech — die Domäne ist die innerste Schicht. | Domäne rein halten; Port-/Use-Case-Orchestrierung in eine `app`-Schicht, Tech nur im Adapter. |
 | `app-impurity` | Die Application-Schicht (`role: app`) importiert einen Adapter oder ein Framework/Tech (Domäne + Ports darf sie nutzen). | Tech/Adapter hinter einen Port legen; die App spricht nur Domäne + Ports. |
 | `lateral-adapter` | Ein Adapter importiert einen anderen Adapter. | Gemeinsame Logik in die konfigurierte Senke (`adapter_sink`) ziehen oder über einen Port führen. |
+| `lateral-slice` | Eine `app`-Datei importiert eine **fremde Use-Case-Slice derselben `app`-Schicht** (ein anderes Glob *derselben* Schicht). **Kategorisch** (Kante hebt nicht auf). Nur aktiv bei **per-Slice-Globs**; ein einziges Glob lässt die Regel inert. **Getrennte `app`-Layer** (z. B. `services`/`services_geo`) sind edge-regiert, nicht betroffen. | Fachliche Verträge zwischen Slices über **Ports** führen, nicht über direkten Slice-Code (geteilter app-Code ist heute nicht vorgesehen). |
 | `tech-leak` | Ein Framework/Tech (Muster als Substring oder Regex, `match`) erscheint außerhalb seines Adapters. | Den Tech-Zugriff in den zugeordneten Adapter kapseln. |
 | `port-impurity` | Ein Port importiert einen Adapter oder ein Framework/Tech, oder enthält ein per `forbidden_constructs` (Abschnitt 4) verbotenes Konstrukt. Domänentypen des Kerns darf ein Port referenzieren. | Den Port von Adapter-/Tech-Importen befreien (Kern-Referenzen sind erlaubt). |
 | `port-direction-mismatch` | Ein Adapter mit Richtung `driving`/`driven` importiert einen Port der *anderen* Richtung (beide deklariert) — Treiber-Adapter sprechen nur `driving`-Ports, getriebene nur `driven`-Ports. **Kategorisch** (Kante hebt nicht auf). | Den Import über die passende Richtung führen (z. B. über die `app`-Schicht), oder die Schicht-`direction` korrigieren. Ohne `direction` greift die Regel nicht. |
+| `port-locality` | Eine `app`-Datei importiert einen **im App-Baum geschachtelten** Port **außerhalb dessen Scope-Verzeichnis** — use-case-lokal (`…/createorder/ports`) ⊂ business-area (`…/order/ports`) ⊂ app-weit (`…/ports`). **Kategorisch.** Nur `app`-Importeure. Bei **klassischem Hexagonal** (Ports als Geschwister der App, `…/ports` neben `…/services`) ist die Regel **inert**. | Den Port auf die passende Ebene heben („so gemeinsam wie nötig") oder den fremden slice-lokalen Port nicht importieren. |
 | `wrong-direction` | Ein Import läuft entgegen einer erlaubten Schicht-Kante. | Die Kante in `edges` aufnehmen (falls legitim) oder den Import umdrehen. |
+
+> **Vertical-Slice-Regeln (`lateral-slice`/`port-locality`) — Config-Disziplin.** Beide leiten
+> Slice- und Port-Scope aus den `layers`-Globs ab und setzen voraus, dass die betroffenen
+> `app`-/`port`-Globs als Import-**Ziel** auflösen: sie brauchen ein **sauberes literales Präfix**,
+> also per-Slice-/per-Port-Ordner-Verzeichnis-Globs (`…/createorder/**`, `…/ports/**`). Ein Glob mit
+> Wildcard **in der Mitte** (`…/**/ports/**`) oder Datei-Endung (`…/*.go`) trägt kein solches Präfix
+> und lässt beide Regeln (wie schon die bestehende Ziel-Auflösung) für dieses Ziel wirkungslos — eine
+> ausgewiesene Heuristik-Grenze, kein stiller Fehlbefund.
 
 ### 3.5 Heuristik-Ausnahmen konfigurieren
 
@@ -208,6 +218,85 @@ nach dem Pfad führt zu Exit-Code 2.
 mit `--print-mk` neben `a-check` auch ein **`a-check-graph`**-Target — `make
 a-check-graph > architektur.mmd` erzeugt denselben Graphen über dasselbe
 digest-gepinnte Image, ohne die `docker run`-Details zu wiederholen.
+
+### 3.7 Eine Vertical-Slice-Architektur (HexSlice) absichern
+
+**Ziel:** Sie haben ein Projekt, dessen Application-Schicht in **Use-Case-Slices** organisiert ist
+(je Slice ein Ordner mit Command/Handler/Validator und einem eigenen `ports/`-Ordner), und wollen zwei
+Dinge erzwingen: (1) eine Slice greift **nicht** in eine andere hinein, (2) ein slice-lokaler Port wird
+**nur** in seiner Slice benutzt. a-check prüft das mit den Regeln `lateral-slice` und `port-locality`.
+
+**Beispielstruktur:**
+
+```text
+internal/hexagon/
+  domain/order/…                         # Domäne
+  application/order/
+    createorder/{command,handler,…}.go   # Slice A
+    createorder/ports/id_generator.go    #   ihr lokaler Port
+    cancelorder/{command,handler,…}.go   # Slice B
+    cancelorder/ports/notifier.go        #   ihr lokaler Port
+    ports/order_repository.go            # von der Business-Area geteilter Port
+internal/adapters/{inbound,outbound}/…   # Adapter
+```
+
+**Schritt 1 — jede Slice als eigenes `app`-Glob, jeder Port-Ordner als eigenes `port`-Glob.** Das ist
+die entscheidende Regel: a-check leitet Slice- und Port-Grenzen aus den Glob-**Präfixen** ab. Ein Glob
+muss deshalb ein **sauberes, literales Verzeichnispräfix** haben — also `…/createorder/**`, **nicht**
+`…/createorder/*.go` und **nicht** ein zusammenfassendes `application/**/ports/**`.
+
+```yaml
+version: 1
+languages: {go: ["**/*.go"]}
+layers:
+  domain: {globs: ["internal/hexagon/domain/**"], role: domain}
+  ports:
+    globs:
+      - "internal/hexagon/application/order/createorder/ports/**"   # use-case-lokal
+      - "internal/hexagon/application/order/cancelorder/ports/**"   # use-case-lokal
+      - "internal/hexagon/application/order/ports/**"               # business-area-geteilt
+    role: port
+  app:
+    globs:
+      - "internal/hexagon/application/order/createorder/**"          # Slice A
+      - "internal/hexagon/application/order/cancelorder/**"          # Slice B
+    role: app
+  adapters: {globs: ["internal/adapters/**"], role: adapter}
+edges:
+  - {from: app, to: domain}
+  - {from: app, to: ports}
+  - {from: ports, to: domain}
+  - {from: adapters, to: app}
+  - {from: adapters, to: domain}
+composition_root: ["cmd/**"]
+exclude: ["**/*_test.go"]
+```
+
+**Schritt 2 — `make a-check` laufen lassen.** Sauberer Code meldet nichts. Verstöße erscheinen so:
+
+```text
+…/createorder/handler.go:9: lateral-slice: app-Slice importiert fremde Slice …/cancelorder
+…/createorder/handler.go:10: port-locality: app außerhalb Port-Scope …/cancelorder: …/cancelorder/ports
+```
+
+**So beheben Sie sie:**
+
+* **`lateral-slice`** — Slice A braucht etwas aus Slice B: ziehen Sie den gemeinsamen Vertrag in einen
+  **geteilten Port** (Business-Area- oder app-weite Ebene) und sprechen Sie ihn über diesen Port an,
+  statt die fremde Slice direkt zu importieren.
+* **`port-locality`** — Slice A nutzt den **lokalen** Port von Slice B: entweder gehört der Vertrag eine
+  Ebene höher (dann in `…/order/ports/**` verschieben — „so gemeinsam wie nötig"), oder der Import ist
+  falsch und sollte über einen Port der eigenen Slice laufen.
+
+**Zwei Fallstricke:**
+
+* **Saubere Präfix-Globs sind Pflicht.** Ein `*.go`- oder `**/ports/**`-Glob hat kein literales
+  Verzeichnispräfix; a-check kann das Import-**Ziel** dann nicht als Slice/Port auflösen, und **beide
+  Regeln bleiben still wirkungslos** (Abschnitt 3.4, Kasten). Nutzen Sie durchweg `…/**`-Verzeichnisglobs.
+* **Klassisches Hexagonal ist nicht betroffen.** Liegen Ihre Ports als *Geschwister* der App
+  (`hexagon/ports/**` neben `hexagon/services/**`) statt geschachtelt in den Slices, gibt es keine
+  Slice-Lokalität — `port-locality` bleibt inert, und getrennte `app`-Schichten mit `edges` lösen kein
+  `lateral-slice` aus. Die beiden Regeln sind **opt-in** über die geschachtelte HexSlice-Struktur.
 
 ## 4. Konfiguration (`.a-check.yml`)
 
@@ -544,7 +633,8 @@ siehe „Dateien vom Scan ausnehmen" in Abschnitt 4.
 - **Sub-Einheit:** ein Unterverzeichnis innerhalb einer Adapter-Schicht — `lateral-adapter` trennt Sub-Einheiten, nie Dateinamen; Dateien direkt im Schicht-Root bilden eine gemeinsame Root-Einheit (eigene `.cpp`/`.h`-Paare melden nicht). Endungslose Importe (z. B. TypeScript `./b` oder Go-Paket-Pfade) gelten als eigene Einheit.
 - **`forbidden_constructs`:** je Schicht konfigurierte verbotene Text-Muster (für `port-impurity`).
 - **Befund:** eine gemeldete Regelverletzung (Datei, Zeile, Regel, Meldung).
-- **`core-impurity` / `app-impurity` / `lateral-adapter` / `tech-leak` / `port-impurity` / `port-direction-mismatch` / `wrong-direction`:** die sieben geprüften Regeln (Abschnitt 3.4).
+- **`core-impurity` / `app-impurity` / `lateral-adapter` / `lateral-slice` / `tech-leak` / `port-impurity` / `port-direction-mismatch` / `port-locality` / `wrong-direction`:** die neun geprüften Regeln (Abschnitt 3.4).
+- **Use-Case-Slice:** eine über ein eigenes `app`-Glob abgegrenzte Vertical Slice; `lateral-slice` isoliert sie gegeneinander (Verträge laufen über Ports). **Port-Scope:** das Verzeichnis, das den Port-Ordner besitzt (use-case-lokal ⊂ business-area ⊂ app-weit); `port-locality` erzwingt ihn.
 - **Heuristik-Grenze:** a-check erkennt Importe per Textmuster, nicht per Parser; seltene Fehltreffer sind konfigurierbar ausnehmbar.
 - **Digest-Pin:** ein `@sha256:`-Verweis auf eine exakte Image-Version für reproduzierbare Läufe.
 
@@ -589,3 +679,4 @@ und die [Spezifikation](../../spec/spezifikation.md); ein Überblick steht in de
 | 1.27 | 2026-07-06 | §4 an Lastenheft 0.18.0: `resolution`-Absatz um das **Split-Package über Modulgrenzen (deklarations-bewusst)**-Rezept erweitert — teilt sich **ein** Paket über zwei Schicht-Module und wird ein Top-Level-Symbol importiert, dessen Datei ≠ Symbolname ist (Kotlin-Extension-Funktion, zweite Klasse), löst `a-check` über die **reale Deklaration** auf (genau ein deklarierendes Modul → eindeutig; ≥ 2 verschiedene Schichten → Exit 2; kein Treffer, Paketverzeichnis in ≥ 2 Schichten → extern/fail-open; eindeutiges Paketverzeichnis → löst unverändert). Kotlin-spezifisch, keine Zusatz-Config (slice-031). |
 | 1.28 | 2026-07-09 | Neuer Abschnitt 3.6 „Die deklarierte Architektur visualisieren (`--print-graph`)": `a-check --print-graph [pfad]` rendert die deklarierte Architektur aus `.a-check.yml` als **Mermaid-Flowchart** (read-only, kein Scan, deterministisch) — ein Knoten je Schicht nach effektiver Rolle, Kante je `edges`, gestrichelte Kante je `allow`, `composition_root`/`adapter_sink` als Notizknoten, implizite Regeln als Legende; mit Beispiel-Ausgabe. Ladezeitiger Config-Fehler (inkl. unbekannter Sprache)/unbekanntes Flag/Restargument → Exit 2. Noch nicht im veröffentlichten Image (folgt mit dem nächsten Release). (Lastenheft 0.19.0, slice-032) |
 | 1.29 | 2026-07-09 | §3.6 um die `make`-Variante ergänzt: das `--print-mk`-Fragment `a-check.mk` liefert neben `a-check` jetzt ein **`a-check-graph`**-Target (`make a-check-graph > architektur.mmd`), das `--print-graph` über dasselbe digest-gepinnte Image fährt (Lastenheft/Spez 0.20.0, slice-033). Noch nicht im veröffentlichten Image (folgt mit dem nächsten Release). |
+| 1.31 | 2026-07-24 | Lastenheft 0.21.0: zwei neue Regeln der **Vertical-Slice-Achse** — `lateral-slice` (`app`-Datei importiert eine fremde Use-Case-Slice **derselben `app`-Schicht**; getrennte `app`-Layer sind edge-regiert) und `port-locality` (`app`-Datei importiert einen **im App-Baum geschachtelten** Port außerhalb dessen Scope: use-case-lokal ⊂ business-area ⊂ app-weit; Geschwister-Ports/klassisch inert); beide kategorisch, nur `app`-Importeure, opt-in über die geschachtelte Struktur. Neue **Aufgabe §3.7** „Vertical-Slice-Architektur (HexSlice) absichern" (Arbeitsanleitung mit Beispiel-Config + Behebung), §3.4-Regeltabelle (neun Regeln) + Config-Disziplin-Kasten (saubere Präfix-Globs; `**/…/**`/`*.go` lösen nicht auf), Glossar. Noch nicht im veröffentlichten Image (slice-039, [ADR-0026](../plan/adr/0026-hexslice-vertical-slice-regeln.md)). |

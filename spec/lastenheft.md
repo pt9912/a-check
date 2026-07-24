@@ -1,6 +1,6 @@
 # Lastenheft — a-check
 
-**Version:** 0.20.0
+**Version:** 0.21.0
 
 **Status:** Draft
 
@@ -244,6 +244,62 @@ Regeln bleiben unverändert.
 - **Boundary:** Given Schichten **ohne** `direction` (klassisch `role: port`/`adapter`), when `a-check` läuft, then identisches Verhalten wie 0.5.0.
 
 **Out-of-Scope:** Auto-Inferenz der Richtung aus Namen/Pfad (`driving`/`driven` im Pfad); Richtungs-Regeln zwischen Ports untereinander — späteres Inkrement.
+
+### AC-FA-RULE-009 — Slice-Isolation (Regel `lateral-slice`)
+
+**Verfeinert:** [AC-FA-RULE-006](#ac-fa-rule-006--schicht-rollen-generische-regel-anwendung) um die
+**Isolation von Use-Case-Slices** innerhalb der `app`-Rolle (Vertical-Slice-Architektur).
+
+**Beschreibung:** Innerhalb der `app`-Rolle bildet jede über ein **eigenes Schicht-Glob** deklarierte
+Use-Case-Slice eine Isolationseinheit. Eine `app`-Datei, die eine **andere** Slice **derselben
+`app`-Schicht** importiert (ein `app`-Ziel, das über ein *anderes* `app`-Glob **derselben Schicht**
+auflöst), ist ein Befund `lateral-slice`. **Kategorisch innerhalb der Schicht** — `edges`/`allow` heben
+nicht auf (wie [`lateral-adapter`](#ac-fa-rule-002--keine-lateralen-adapter-kanten-regel-lateral-adapter)
+für Adapter); nur `composition_root` befreit. **Getrennte `app`-Schichten** (verschiedene Layer, z. B.
+`services` und `services_geo`) sind dagegen **edge-regiert** — ein Import zwischen ihnen ist `wrong-direction`
+oder per Kante erlaubt, **nicht** `lateral-slice` (klassisch-hexagonale Sub-Services bleiben legitim).
+Use-Case-Slices teilen fachliche Verträge über **Ports**, nicht über direkten Slice-zu-Slice-Code. Trägt die `app`-Rolle **nur ein** Glob (keine per-Slice-Trennung),
+unterliegt sie der Regel **nicht** — Slice-Isolation ist opt-in über per-Slice-Globs
+(rückwärtskompatibel). Damit ein `app`-Ziel überhaupt als Slice auflöst, muss sein Glob als
+**Import-Ziel auflösbar** sein (literales Präfix); die Grenze der Ziel-Auflösung ist
+[AC-QA-02](#ac-qa-02--hermetik-und-ehrliche-heuristik-grenze).
+
+**Akzeptanzkriterien:**
+
+- **Happy:** Given zwei Slices mit je eigenem `app`-Glob und **keinen** gegenseitigen Importen, when `a-check` läuft, then kein Befund.
+- **Boundary:** Given eine `app`-Rolle mit **einem einzigen** Glob (keine per-Slice-Trennung), when `a-check` läuft, then **kein** `lateral-slice` (identisch zum Vor-Verhalten).
+- **Negative:** Given eine `app`-Datei in Slice A, die ein Symbol aus Slice B importiert, when `a-check` läuft, then ein Befund (`lateral-slice`) und Exit-Code 1.
+- **Negative (kategorisch):** Given denselben Cross-Slice-Import **und eine deklarierte `allow`-Kante**, when `a-check` läuft, then **dennoch** ein Befund (`lateral-slice`) — nicht über `edges`/`allow` aufhebbar.
+
+**Out-of-Scope:** geteilter `app`-Code zwischen Slices (analog `adapter_sink` ein künftiges `app_sink`); Slice-Isolation für andere Rollen als `app` (Adapter deckt `lateral-adapter`); automatische Slice-Erkennung ohne per-Slice-Glob.
+
+### AC-FA-RULE-010 — Port-Lokalität (Regel `port-locality`)
+
+**Verfeinert:** [AC-FA-RULE-004](#ac-fa-rule-004--port-disziplin-regel-port-impurity) um die
+**Lokalitäts-/Sichtbarkeits-Ebene** eines Ports (HexSlice „so lokal wie möglich, so gemeinsam wie nötig").
+
+**Beschreibung:** Ein Port hat ein **Scope-Verzeichnis**, das sich aus seiner Lage ergibt — der
+Verzeichnis-Teilbaum, der seinen Port-Ordner besitzt: **use-case-lokal ⊂ business-area ⊂ app-weit**.
+Eine `app`-Datei, die einen Port importiert, dessen Scope-Verzeichnis sie **nicht enthält** (die
+importierende Datei liegt **außerhalb** des Port-Scope), ist ein Befund `port-locality`. Die Regel
+greift **nur für im Application-Baum geschachtelte Ports** — der Port-Scope muss Vorfahr einer
+`app`-Slice sein (HexSlice: `ports/` liegt *innerhalb* der Slice/Business-Area). Liegt der Port als
+**Geschwister** der `app`-Schicht (klassisches Hexagonal, `hexagon/ports/**` neben `hexagon/services/**`),
+gibt es keine per-Slice-Lokalität und die Regel bleibt **inert**. **Kategorisch** — `edges`/`allow` heben
+nicht auf; nur `composition_root` befreit. Erfasst werden **nur `app`-Importeure**;
+ein Adapter, der einen Port **implementiert** (Implementierungs-Beziehung, richtungs-/edge-regiert,
+[AC-FA-RULE-008](#ac-fa-rule-008--driving-driven-port-richtung-regel-port-direction-mismatch)), ist
+**nicht** erfasst. Der Scope ist **pfad-abgeleitet** (keine Deklaration); die Ableitung setzt einen als
+Import-Ziel auflösbaren Port-Glob voraus (literales Präfix,
+[AC-QA-02](#ac-qa-02--hermetik-und-ehrliche-heuristik-grenze)).
+
+**Akzeptanzkriterien:**
+
+- **Happy:** Given eine `app`-Datei, die ihren **eigenen** slice-lokalen Port und einen **business-area**-Port importiert, in deren Scope sie liegt, when `a-check` läuft, then kein Befund.
+- **Boundary:** Given einen **app-weiten** Port (Scope = die App-Wurzel), when eine beliebige `app`-Datei ihn importiert, then kein Befund.
+- **Negative:** Given eine `app`-Datei in Slice A, die den **slice-lokalen** Port einer **fremden** Slice B importiert, when `a-check` läuft, then ein Befund (`port-locality`) und Exit-Code 1.
+
+**Out-of-Scope:** Port-Lokalität für **Adapter**-Importeure (Implementierungs-Beziehung); eine erzwungene explizite Scope-Deklaration in der Config (der Scope ist pfad-abgeleitet); Lokalität über Business-Area-Grenzen als eigene Ebene.
 
 ### AC-FA-EXTRACT-001 — Sprach-Backends für die Import-Extraktion
 
@@ -507,3 +563,4 @@ Konsumenten-Repos).
 | 0.18.0 | 2026-07-06 | `AC-FA-CONF-001`/`AC-FA-EXTRACT-001`: **deklarations-bewusste Auflösung für Split-Packages** (Stufe 3) — bei `mode: fixed-root` mit ≥ 2 `roots` löst ein importiertes Top-Level-Symbol, dessen Datei ≠ Symbolname ist (Kotlin-Extension-Fun, Zweitklasse), über die **reale Top-Level-Deklaration** statt nur über das Paket-Verzeichnis auf: genau ein deklarierender Root ⇒ eindeutig, ≥ 2 deklarierende Roots verschiedener Schichten ⇒ Exit 2, kein Deklarations-Treffer ⇒ **extern** (fail-open). Für deklarations-bewusste Backends sticht die echte Deklaration den bloßen Datei-Namens-Match. `AC-FA-EXTRACT-001`: **Kotlin** liefert zusätzlich Top-Level-Deklarationen; übrige Backends no-op (leeres Set), Verhalten unverändert. Ersetzt Stufe 2 (Supersede-ADR). Anlass: d-migrate-Pilot — die einzige korrekte Vollrichtungs-Config endete an einem Split-Package-Top-Level-Symbol (`asJdbc`) in Exit 2. welle-05-Härtung, slice-031. |
 | 0.19.0 | 2026-07-09 | Neu `AC-FA-CLI-002` (Architektur-Graph-Ausgabe): `a-check --print-graph [pfad]` gibt die deklarierte Architektur aus `.a-check.yml` als **Mermaid-Flowchart** auf stdout aus — ein Knoten je Schicht, eine Kante je `edge`, abgesetzte `allow`-Kante, Farbe nach effektiver Rolle; read-only, deterministisch, **kein Scan**. Ladezeitiger Config-Fehler (inkl. unbekannter Sprache), unbekanntes Flag oder Restargument nach dem Pfad → Exit 2; scanzeitige Resolution-Fehler out-of-scope. Eigenständige Inspektions-CLI, **kein** `--print-*`-Ausbau von `AC-FA-DIST-001`. slice-032. |
 | 0.20.0 | 2026-07-09 | `AC-FA-DIST-001` erweitert: das `--print-mk`-Fragment `a-check.mk` liefert zusätzlich ein **`a-check-graph`**-Target, das `--print-graph` (`AC-FA-CLI-002`) mit demselben digest-gepinnten `A_CHECK_IMAGE` und netzlosem read-only-Mount aufruft — Mermaid nach stdout, kein Scan, Exit 0; neue AK „Happy (Graph-Target)". Convenience für Konsumenten, die bereits `include a-check.mk` fahren. slice-033. |
+| 0.21.0 | 2026-07-24 | Neu **`AC-FA-RULE-009`** (`lateral-slice`: eine `app`-Datei importiert eine fremde Use-Case-Slice — verschiedene `app`-Globs — → kategorischer Befund; opt-in über per-Slice-Globs, ein einziges `app`-Glob inert) und **`AC-FA-RULE-010`** (`port-locality`: eine `app`-Datei importiert einen Port außerhalb dessen pfad-abgeleiteten Scope-Verzeichnisses — use-case-lokal ⊂ business-area ⊂ app-weit — → kategorischer Befund; nur `app`-Importeure, Adapter-Implementierung nicht erfasst). Beide gaten die **Vertical-Slice-Achse** von HexSlice (Doc `hexslice-architecture`); Voraussetzung ist ein als Import-Ziel auflösbarer `app`-/`port`-Glob (literales Präfix, `AC-QA-02`-Grenze). Evidenz: realer HexSlice-Go-Konsument. slice-039. |
