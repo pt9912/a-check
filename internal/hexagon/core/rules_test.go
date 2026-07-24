@@ -1465,3 +1465,44 @@ func TestTargetLayerWildcardSplitFailsOpen(t *testing.T) { // slice-031/ADR-0023
 		t.Fatalf("Wildcard-Import eines Split-Packages muss extern bleiben (Paket-Verzeichnis-Evidenz), got %q", got)
 	}
 }
+
+// --- slice-039 Review-Regression: klassisches Hexagonal darf NICHT feuern ---
+
+// classicModel is classic hexagonal: ports are a SIBLING of the app layer
+// (hex/ports/** next to hex/services/**), and services_geo is a SEPARATE app
+// layer with a declared edge — the b-cad topology that must stay 0.
+func classicModel() Model {
+	return Model{
+		Layers: []Layer{
+			{Name: "core", Globs: []string{"hex/domain/**"}, Role: "domain"},
+			{Name: "ports", Globs: []string{"hex/ports/driving/**", "hex/ports/driven/**"}, Role: "port"},
+			{Name: "svc", Globs: []string{"hex/services/**"}, Role: "app"},
+			{Name: "svc_geo", Globs: []string{"hex/services/geometry/**"}, Role: "app"},
+		},
+		Edges: []Edge{
+			{From: "svc", To: "ports"}, {From: "svc", To: "core"}, {From: "ports", To: "core"},
+			{From: "svc", To: "svc_geo"}, {From: "svc_geo", To: "core"},
+		},
+	}
+}
+
+func TestPortLocalitySiblingPortsNoFinding(t *testing.T) { // AC-FA-RULE-010 Review-Regression: Geschwister-Ports (klassisch) inert
+	fs := mustEval(t, classicModel(), []FileImports{
+		{Path: "hex/services/edit.go", Layer: "svc", Imports: []Import{{Symbol: "hex/ports/driving/edit_port", Line: 5}}},
+	})
+	if hasRule(fs, "port-locality") {
+		t.Fatalf("Geschwister-Ports (klassisch) dürfen kein port-locality auslösen, got %v", fs)
+	}
+}
+
+func TestLateralSliceSeparateAppLayersEdgeAllowed(t *testing.T) { // AC-FA-RULE-009 Review-Regression: getrennte app-Layer sind edge-regiert
+	fs := mustEval(t, classicModel(), []FileImports{
+		{Path: "hex/services/edit.go", Layer: "svc", Imports: []Import{{Symbol: "hex/services/geometry/stair", Line: 5}}},
+	})
+	if hasRule(fs, "lateral-slice") {
+		t.Fatalf("getrennte app-Layer mit erlaubter Kante sind kein lateral-slice, got %v", fs)
+	}
+	if len(fs) != 0 {
+		t.Fatalf("svc->svc_geo mit deklarierter Kante muss 0 sein, got %v", fs)
+	}
+}

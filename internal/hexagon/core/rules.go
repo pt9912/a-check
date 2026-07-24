@@ -8,7 +8,7 @@ import (
 	"strings"
 )
 
-// Evaluate runs the seven hexagon rules (SPEC-RULE-001) on the extracted files
+// Evaluate runs the nine hexagon rules (SPEC-RULE-001) on the extracted files
 // against the model and returns a stably sorted finding list (SPEC-DET-001).
 // Per (file, import) the most specific rule wins (first match), so an import is
 // reported once. A non-nil error is a fail-closed resolution ambiguity
@@ -70,17 +70,51 @@ func ruleFor(m Model, f FileImports, imp Import, idx fileIndex) (Finding, bool, 
 	if find, ok := impurityFinding(f, imp, srcRole, tgtRole, isTech); ok {
 		return find, true, nil // core-/app-/port-impurity (domain-seitig, kategorisch)
 	}
-	switch {
-	case srcRole == "adapter" && tgtRole == "adapter" && lateral(m, f, cand, tl):
-		return Finding{f.Path, imp.Line, "lateral-adapter", "Adapter importiert anderen Adapter " + imp.Symbol}, true, nil
-	case isTech && !tech.inAdapter(f.Path):
-		return Finding{f.Path, imp.Line, "tech-leak", "Tech " + tech.Pattern + " außerhalb " + tech.adapterLabel()}, true, nil
-	case srcRole == "adapter" && tgtRole == "port" && directionMismatch(m, f.Layer, tl):
-		return Finding{f.Path, imp.Line, "port-direction-mismatch", f.Layer + " (" + dirOf(f.Layer, m) + ") -> " + tl + " (" + dirOf(tl, m) + "): " + imp.Symbol}, true, nil
-	case tl != "" && wrongDirection(m, f, tl):
-		return Finding{f.Path, imp.Line, "wrong-direction", f.Layer + " -> " + tl + " (" + imp.Symbol + ")"}, true, nil
+	if find := connectivityRule(m, f, imp, srcRole, tgtRole, tech, isTech, cand, tl); find.Rule != "" {
+		return find, true, nil
 	}
 	return Finding{}, false, nil
+}
+
+// connectivityRule applies the connectivity rules in deterministic first-match
+// order (SPEC-RULE-001): lateral-adapter → lateral-slice → tech-leak →
+// port-direction-mismatch → port-locality → wrong-direction. Split into two
+// halves (lateral/tech, then direction/locality) to keep each under the
+// cyclomatic budget; the order across the split is preserved. Returns the zero
+// Finding when none fires; ruleFor turns a non-zero rule name into ok=true.
+func connectivityRule(m Model, f FileImports, imp Import, srcRole, tgtRole string, tech Tech, isTech bool, cand, tl string) Finding {
+	if find := lateralRule(m, f, imp, srcRole, tgtRole, tech, isTech, cand, tl); find.Rule != "" {
+		return find
+	}
+	return directionRule(m, f, imp, srcRole, tgtRole, cand, tl)
+}
+
+// lateralRule: lateral-adapter → lateral-slice → tech-leak (first-match).
+func lateralRule(m Model, f FileImports, imp Import, srcRole, tgtRole string, tech Tech, isTech bool, cand, tl string) Finding {
+	switch {
+	case srcRole == "adapter" && tgtRole == "adapter" && lateral(m, f, cand, tl):
+		return Finding{f.Path, imp.Line, "lateral-adapter", "Adapter importiert anderen Adapter " + imp.Symbol}
+	case srcRole == "app" && tl == f.Layer && lateralSlice(m, f.Path, cand):
+		return Finding{f.Path, imp.Line, "lateral-slice", "app-Slice importiert fremde Slice " + imp.Symbol}
+	case isTech && !tech.inAdapter(f.Path):
+		return Finding{f.Path, imp.Line, "tech-leak", "Tech " + tech.Pattern + " außerhalb " + tech.adapterLabel()}
+	}
+	return Finding{}
+}
+
+// directionRule: port-direction-mismatch → port-locality → wrong-direction
+// (first-match). port-locality precedes wrong-direction so an allowed app→port
+// edge cannot mask the locality violation (kategorisch, SPEC-RULE-001).
+func directionRule(m Model, f FileImports, imp Import, srcRole, tgtRole, cand, tl string) Finding {
+	switch {
+	case srcRole == "adapter" && tgtRole == "port" && directionMismatch(m, f.Layer, tl):
+		return Finding{f.Path, imp.Line, "port-direction-mismatch", f.Layer + " (" + dirOf(f.Layer, m) + ") -> " + tl + " (" + dirOf(tl, m) + "): " + imp.Symbol}
+	case srcRole == "app" && tgtRole == "port" && portLocality(m, f.Path, cand):
+		return Finding{f.Path, imp.Line, "port-locality", "app außerhalb Port-Scope " + portScope(cand, m) + ": " + imp.Symbol}
+	case tl != "" && wrongDirection(m, f, tl):
+		return Finding{f.Path, imp.Line, "wrong-direction", f.Layer + " -> " + tl + " (" + imp.Symbol + ")"}
+	}
+	return Finding{}
 }
 
 // impurityFinding reports a purity violation for a domain/app/port source (the
@@ -216,6 +250,98 @@ func sortFindings(fs []Finding) {
 
 // MatchGlobs reports whether the repo-relative path matches any of the globs.
 func MatchGlobs(path string, globs []string) bool { return matchesAny(path, globs) }
+
+// sliceOf returns the vertical-slice identity of a path (AC-FA-RULE-009): the
+// longest app-role layer-glob LITERAL prefix that matches path as a segment run
+// (segIndex, module-prefix tolerant like the target resolution). The returned
+// value is the glob prefix itself — canonical, so a source file and a
+// module-qualified candidate in the SAME slice compare equal. "" if no app glob
+// with a clean literal prefix matches (a `*.go`/`**/…` glob has none and never
+// resolves a slice — the documented AC-QA-02 boundary; slice-isolation is opt-in
+// via per-slice `**` globs).
+func sliceOf(path string, m Model) string {
+	best, bestLen := "", -1
+	for _, l := range m.Layers {
+		if EffectiveRole(l) != "app" {
+			continue
+		}
+		for _, g := range l.Globs {
+			if p := globPrefix(g); p != "" && segIndex(path, p) >= 0 && len(p) > bestLen {
+				best, bestLen = p, len(p)
+			}
+		}
+	}
+	return best
+}
+
+// portScope returns the scope directory of a port candidate (AC-FA-RULE-010):
+// the longest matching port-role glob literal prefix MINUS its last path segment
+// (the port-dir marker, typically "ports"), so `…/createorder/ports/**` scopes
+// to `…/createorder`, `…/order/ports/**` to `…/order` (business area), and
+// `…/application/ports/**` to `…/application` (app-wide). "" if no port glob
+// matches or the prefix has no parent segment (then port-locality does not fire).
+func portScope(cand string, m Model) string {
+	best, bestLen := "", -1
+	for _, l := range m.Layers {
+		if EffectiveRole(l) != "port" {
+			continue
+		}
+		for _, g := range l.Globs {
+			if p := globPrefix(g); p != "" && segIndex(cand, p) >= 0 && len(p) > bestLen {
+				best, bestLen = p, len(p)
+			}
+		}
+	}
+	if i := strings.LastIndexByte(best, '/'); i >= 0 {
+		return best[:i]
+	}
+	return ""
+}
+
+// lateralSlice reports a forbidden cross-slice app import (AC-FA-RULE-009). It
+// fires only when BOTH source and candidate resolve to a (non-empty) slice and
+// the slices differ — an unresolvable end (empty sliceOf) yields no finding
+// (AC-QA-02 boundary, not a false positive). The caller guarantees the import
+// stays WITHIN one app layer (tl == f.Layer): distinct app LAYERS are governed
+// by edges (a declared services→services_geo edge is legitimate, b-cad), so
+// slice isolation applies to the per-slice globs inside a single app layer.
+// Kategorisch within that layer: not liftable via edges/allow.
+func lateralSlice(m Model, srcPath, cand string) bool {
+	ss, sc := sliceOf(srcPath, m), sliceOf(cand, m)
+	return ss != "" && sc != "" && ss != sc
+}
+
+// portLocality reports an app import of a port outside its scope directory
+// (AC-FA-RULE-010): the importer's path does not contain the port's scope as a
+// segment run. It fires ONLY for ports NESTED within the application tree (the
+// scope is an ancestor of some app slice) — classic hexagonal, where ports are a
+// SIBLING of the app layer (`hexagon/ports` next to `hexagon/services`), has no
+// per-slice locality and must not report (b-cad regression). No finding when the
+// scope is undeterminable (empty). Kategorisch. The caller guarantees source role
+// app and target role port; adapters that implement a port are never routed here.
+func portLocality(m Model, srcPath, cand string) bool {
+	sc := portScope(cand, m)
+	return sc != "" && appTreeContains(m, sc) && segIndex(srcPath, sc) < 0
+}
+
+// appTreeContains reports whether scope is an ancestor of (or equal to) some
+// app-role layer-glob prefix — i.e. the directory lies within the application
+// tree, so a nested port's locality is meaningful (AC-FA-RULE-010). For sibling
+// ports (scope outside every app subtree) it returns false and port-locality
+// stays inert.
+func appTreeContains(m Model, scope string) bool {
+	for _, l := range m.Layers {
+		if EffectiveRole(l) != "app" {
+			continue
+		}
+		for _, g := range l.Globs {
+			if p := globPrefix(g); p != "" && segIndex(p, scope) >= 0 {
+				return true
+			}
+		}
+	}
+	return false
+}
 
 // LayerOf returns the name of the most specific layer whose glob matches the
 // repo-relative path: the longest matching glob prefix wins (consistent with
