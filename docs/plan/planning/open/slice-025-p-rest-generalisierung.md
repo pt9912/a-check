@@ -8,6 +8,19 @@
 Konfigurations-Vertrag [AC-FA-CONF-001](../../../../spec/lastenheft.md#ac-fa-conf-001--konfigurationsdatei-a-checkyml).
 [Roadmap](../in-progress/roadmap.md).
 
+> **Fortführung (2026-07-24):** Der Lande-Trigger für **Kandidat 1** (§5, „auf Maintainer-Wort")
+> ist eingetreten; die Ausführung übernimmt
+> [slice-042](slice-042-constructs-aufruf-monopol.md). Dort ist der P-Rest erstmals **mechanisch
+> vermessen** (Fixture gegen `a-check:dev`) — mit zwei Korrekturen an diesem Entwurf: die
+> Scoping-Gestalt `forbid_in` (§3) verliert ihre Evidenz und entfällt, und der
+> Roadmap-Re-Eval-Trigger „C++-quoted-Include-Split" ist damit **nicht** miterledigt (§3
+> „Wirkung"). **Kandidat 2** (§4) zerfällt nach der Nachmessung über alle fünf lokalen
+> Konsumenten in zwei Teile ([slice-042 §8](slice-042-constructs-aufruf-monopol.md)): die
+> unlayered-Klasse ist **flotten-weit** (m-trace und d-migrate haben gescannte, aber
+> schichtlose Zonen) und damit **entgated**; nur die Präfix-Allowlist mit umgekehrter
+> Beweislast bleibt gated — dafür gilt die Begründung in §4 unverändert. Dieser Entwurf
+> bleibt als Evidenz-Sammlung stehen.
+
 ## 1. Auslöser — Maintainer-Ziel: Skript-Copies verringern
 
 Das Gründungsziel von a-check (und d-check) ist die Reduktion der Skript-Kopien in den
