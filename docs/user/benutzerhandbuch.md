@@ -1,6 +1,6 @@
 # Benutzerhandbuch: a-check
 
-**Handbuch-Version:** 1.31 · **Software-Version:** [aktuelles Release](../../version.md#aktuell) · **Stand:** 2026-07-24 ·
+**Handbuch-Version:** 1.32 · **Software-Version:** [aktuelles Release](../../version.md#aktuell) · **Stand:** 2026-07-24 ·
 **Autor:** pt9912 (Maintainer)
 
 ---
@@ -207,8 +207,8 @@ flowchart TB
 **Hinweise:** Der Modus ist **read-only** und **scannt keine Quellen** — er liest
 nur `.a-check.yml` und ist deterministisch (byte-identische Ausgabe bei gleicher
 Config). Der Graph zeigt die **deklarierte Absicht**, keinen Beweis über den realen
-Code: die kategorischen Regeln (`core-impurity`, `lateral-adapter`,
-`port-direction-mismatch`) erscheinen als Legende, nicht als gezeichnete Kante. Ein
+Code: die kategorischen Regeln (`core-impurity`, `lateral-adapter`, `lateral-slice`,
+`port-direction-mismatch`, `port-locality`) erscheinen als Legende, nicht als gezeichnete Kante. Ein
 `edges`/`allow`-Endpunkt, der auf keine Schicht zeigt, wird als eigener
 Dangling-Knoten sichtbar (statt still ignoriert). Ein ladezeitiger Config-Fehler
 (inkl. unbekannter Sprache), ein unbekanntes Flag oder ein zusätzliches Argument
@@ -680,3 +680,4 @@ und die [Spezifikation](../../spec/spezifikation.md); ein Überblick steht in de
 | 1.28 | 2026-07-09 | Neuer Abschnitt 3.6 „Die deklarierte Architektur visualisieren (`--print-graph`)": `a-check --print-graph [pfad]` rendert die deklarierte Architektur aus `.a-check.yml` als **Mermaid-Flowchart** (read-only, kein Scan, deterministisch) — ein Knoten je Schicht nach effektiver Rolle, Kante je `edges`, gestrichelte Kante je `allow`, `composition_root`/`adapter_sink` als Notizknoten, implizite Regeln als Legende; mit Beispiel-Ausgabe. Ladezeitiger Config-Fehler (inkl. unbekannter Sprache)/unbekanntes Flag/Restargument → Exit 2. Noch nicht im veröffentlichten Image (folgt mit dem nächsten Release). (Lastenheft 0.19.0, slice-032) |
 | 1.29 | 2026-07-09 | §3.6 um die `make`-Variante ergänzt: das `--print-mk`-Fragment `a-check.mk` liefert neben `a-check` jetzt ein **`a-check-graph`**-Target (`make a-check-graph > architektur.mmd`), das `--print-graph` über dasselbe digest-gepinnte Image fährt (Lastenheft/Spez 0.20.0, slice-033). Noch nicht im veröffentlichten Image (folgt mit dem nächsten Release). |
 | 1.31 | 2026-07-24 | Lastenheft 0.21.0: zwei neue Regeln der **Vertical-Slice-Achse** — `lateral-slice` (`app`-Datei importiert eine fremde Use-Case-Slice **derselben `app`-Schicht**; getrennte `app`-Layer sind edge-regiert) und `port-locality` (`app`-Datei importiert einen **im App-Baum geschachtelten** Port außerhalb dessen Scope: use-case-lokal ⊂ business-area ⊂ app-weit; Geschwister-Ports/klassisch inert); beide kategorisch, nur `app`-Importeure, opt-in über die geschachtelte Struktur. Neue **Aufgabe §3.7** „Vertical-Slice-Architektur (HexSlice) absichern" (Arbeitsanleitung mit Beispiel-Config + Behebung), §3.4-Regeltabelle (neun Regeln) + Config-Disziplin-Kasten (saubere Präfix-Globs; `**/…/**`/`*.go` lösen nicht auf), Glossar. Noch nicht im veröffentlichten Image (slice-039, [ADR-0026](../plan/adr/0026-hexslice-vertical-slice-regeln.md)). |
+| 1.32 | 2026-07-24 | §3.6: die `--print-graph`-Legende nennt jetzt **alle fünf** kategorischen Regeln (`lateral-slice`/`port-locality` ergänzt). Spez 0.23.0, slice-040. Noch nicht im veröffentlichten Image. |

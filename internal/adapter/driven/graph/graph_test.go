@@ -205,3 +205,13 @@ func TestRenderUnexpectedDirectionNotDropped(t *testing.T) {
 		t.Errorf("Layer mit unerwarteter direction gedroppt (undefinierte Kanten-ID):\n%s", out)
 	}
 }
+
+func TestRenderLegendListsCategoricalRules(t *testing.T) { // slice-040: alle kategorischen Regeln in der Legende
+	m := core.Model{Layers: []core.Layer{{Name: "core", Globs: []string{"core/**"}, Role: "domain"}}}
+	out := render(m)
+	for _, want := range []string{"core-impurity", "lateral-adapter", "lateral-slice", "port-direction-mismatch", "port-locality"} {
+		if !strings.Contains(out, want) {
+			t.Errorf("Legende fehlt kategorische Regel %q:\n%s", want, out)
+		}
+	}
+}

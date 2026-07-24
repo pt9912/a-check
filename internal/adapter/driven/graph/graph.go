@@ -175,7 +175,7 @@ func writeSpecialNodes(b *strings.Builder, m core.Model, dangling []string, did 
 // edges (AC-QA-02 — the graph asserts no semantics about the real code).
 func writeLegend(b *strings.Builder) {
 	b.WriteString("    LEGEND[\"Legende — implizite Regeln (keine Kante):<br/>" +
-		"core-impurity · lateral-adapter · port-direction-mismatch<br/>" +
+		"core-impurity · lateral-adapter · lateral-slice · port-direction-mismatch · port-locality<br/>" +
 		"durchgezogen = edges · gestrichelt = allow · Farbe = effektive Rolle\"]:::legend\n")
 }
 
