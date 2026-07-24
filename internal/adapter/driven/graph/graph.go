@@ -174,9 +174,15 @@ func writeSpecialNodes(b *strings.Builder, m core.Model, dangling []string, did 
 // writeLegend emits the legend note: the implicit, categorical rules are NEVER
 // edges (AC-QA-02 — the graph asserts no semantics about the real code).
 func writeLegend(b *strings.Builder) {
-	b.WriteString("    LEGEND[\"Legende — implizite Regeln (keine Kante):<br/>" +
-		"core-impurity · lateral-adapter · lateral-slice · port-direction-mismatch · port-locality<br/>" +
-		"durchgezogen = edges · gestrichelt = allow · Farbe = effektive Rolle\"]:::legend\n")
+	b.WriteString("    LEGEND[\"Legende — implizite Regeln<br/>(nie als Kante gezeichnet):<br/>" +
+		"core-impurity<br/>" +
+		"lateral-adapter<br/>" +
+		"lateral-slice<br/>" +
+		"port-direction-mismatch<br/>" +
+		"port-locality<br/><br/>" +
+		"durchgezogen = edges<br/>" +
+		"gestrichelt = allow<br/>" +
+		"Farbe = effektive Rolle\"]:::legend\n")
 }
 
 // writeLinks emits one link per edge (stably sorted, SPEC-DET-001) using the

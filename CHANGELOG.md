@@ -6,6 +6,12 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
+### Changed
+
+- **`--print-graph`-Legende lesbarer (slice-041):** der Legenden-Knoten listet die kategorischen Regeln
+  und Stil-Hinweise jetzt **je eine pro Zeile** (statt einer langen, mitten im Wort umbrechenden Zeile).
+  Reine Präsentation — gleiche Inhalte, deterministisch, kein Vertrags-/Spec-Bump.
+
 ## [0.15.0] - 2026-07-24
 
 ### Added
