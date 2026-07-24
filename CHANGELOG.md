@@ -6,6 +6,8 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
+## [0.15.0] - 2026-07-24
+
 ### Added
 
 - **HexSlice Vertical-Slice-Regeln `lateral-slice` + `port-locality` (`AC-FA-RULE-009`/`AC-FA-RULE-010`,

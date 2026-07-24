@@ -2,7 +2,7 @@
 # Makefile des konsumierenden Repos. Erzeugt von `a-check --print-mk`.
 #
 # A_CHECK_IMAGE wird beim Release auf `@sha256:…` digest-gepinnt.
-A_CHECK_IMAGE ?= ghcr.io/pt9912/a-check@sha256:f1b8ff5e9e9ab2007d2ba88527c97f070a30fb9fe08da78b20f4be6c6b5505ac
+A_CHECK_IMAGE ?= ghcr.io/pt9912/a-check@sha256:6425c93a9a4359ef28c4da231a2d1db6f421fdaa8f96877ac89d201827c42d09
 
 .PHONY: a-check a-check-graph
 a-check: ## Architektur: Hexagon-Regeln via a-check (netzlos, read-only).
