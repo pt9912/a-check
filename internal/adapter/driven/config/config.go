@@ -51,7 +51,7 @@ type yamlLayer struct {
 type yamlConfig struct {
 	Version         int                       `yaml:"version"`
 	Languages       map[string][]string       `yaml:"languages"`
-	Layers          map[string]yaml.Node      `yaml:"layers"`
+	Layers          yaml.Node                 `yaml:"layers"` // rohe Mapping-Node: erhält die Deklarationsreihenfolge (ADR-0013 Tie-Break, slice-038)
 	Edges           []yamlEdge                `yaml:"edges"`
 	AdapterSink     string                    `yaml:"adapter_sink"`
 	Tech            []yamlTech                `yaml:"tech"`
@@ -84,7 +84,7 @@ func (Adapter) Load(path string) (core.Model, error) {
 	if yc.Version != 1 {
 		return core.Model{}, fmt.Errorf("%s: 'version: 1' erforderlich", path)
 	}
-	if len(yc.Languages) == 0 || len(yc.Layers) == 0 || len(yc.Edges) == 0 {
+	if len(yc.Languages) == 0 || yc.Layers.Kind == 0 || len(yc.Edges) == 0 {
 		return core.Model{}, fmt.Errorf("%s: Pflichtblöcke 'languages', 'layers', 'edges' erforderlich", path)
 	}
 
@@ -94,13 +94,11 @@ func (Adapter) Load(path string) (core.Model, error) {
 		CompositionRoot: yc.CompositionRoot,
 		Forbidden:       yc.Forbidden,
 	}
-	for _, name := range sortedKeys(yc.Layers) {
-		globs, role, direction, lerr := decodeLayer(yc.Layers[name], name, path)
-		if lerr != nil {
-			return core.Model{}, lerr
-		}
-		m.Layers = append(m.Layers, core.Layer{Name: name, Globs: globs, Role: role, Direction: direction})
+	layers, lerr := decodeLayers(yc.Layers, path)
+	if lerr != nil {
+		return core.Model{}, lerr
 	}
+	m.Layers = layers
 	for _, e := range yc.Edges {
 		m.Edges = append(m.Edges, core.Edge{From: e.From, To: e.To})
 	}
@@ -274,6 +272,41 @@ func cleanRoots(roots []string, lang, path string) ([]string, error) {
 // decodeLayer reads a layers entry: a glob list (`name: [globs]`) or an object
 // (`{globs, role, direction}`, AC-FA-RULE-006/008). Returns globs, role and the
 // (optional) direction.
+// decodeLayers builds the ordered layer list from the raw `layers` mapping node,
+// preserving DECLARATION ORDER (ADR-0013 tie-break: "bei Gleichstand die zuerst
+// deklarierte"; slice-038). The prior map[string]yaml.Node decode sorted keys
+// alphabetically, silently violating that contract. Decoding into a raw yaml.Node
+// keeps document order in Content — but forfeits two fail-closed checks the Go-map
+// decode gave for free, so both are reconstructed here:
+//   - Guard 1 (Kind): a non-mapping `layers:` (sequence/scalar) would misparse in
+//     the pairwise loop; require MappingNode (SPEC-CONF-001 strict decode).
+//   - Guard 2 (duplicates): yaml.v3 only flags duplicate keys when decoding into a
+//     map/struct (uniqueKeys); the Node path bypasses it, so a repeated layer name
+//     would yield two silent core.Layer entries — reject it (AC-QA-02 fail-closed).
+func decodeLayers(node yaml.Node, path string) ([]core.Layer, error) {
+	if node.Kind != yaml.MappingNode {
+		return nil, fmt.Errorf("%s: 'layers' erwartet eine Mapping (Schicht → Globs/Objekt)", path)
+	}
+	if len(node.Content) == 0 {
+		return nil, fmt.Errorf("%s: Pflichtblock 'layers' ist leer", path)
+	}
+	var layers []core.Layer
+	seen := make(map[string]bool, len(node.Content)/2)
+	for i := 0; i+1 < len(node.Content); i += 2 {
+		name := node.Content[i].Value
+		if seen[name] {
+			return nil, fmt.Errorf("%s: Schicht %q mehrfach deklariert", path, name)
+		}
+		seen[name] = true
+		globs, role, direction, lerr := decodeLayer(*node.Content[i+1], name, path)
+		if lerr != nil {
+			return nil, lerr
+		}
+		layers = append(layers, core.Layer{Name: name, Globs: globs, Role: role, Direction: direction})
+	}
+	return layers, nil
+}
+
 func decodeLayer(node yaml.Node, name, path string) ([]string, string, string, error) {
 	switch node.Kind {
 	case yaml.SequenceNode:

@@ -5,6 +5,8 @@ import (
 	"path/filepath"
 	"strings"
 	"testing"
+
+	"github.com/pt9912/a-check/internal/hexagon/core"
 )
 
 const valid = `version: 1
@@ -437,5 +439,78 @@ resolution:
 func TestResolutionMultiRootDisjointLoads(t *testing.T) { // AC-FA-CONF-001 / ADR-0022 (AC4): disjunkte Multi-Root-Config lädt (kein Ladezeit-Reject mehr)
 	if _, err := New().Load(write(t, kmpFlat)); err != nil {
 		t.Fatalf("disjunkte Multi-Root-Config muss laden (ADR-0022: statischer Guard entfällt), got %v", err)
+	}
+}
+
+// --- slice-038: Layer-Tie-Break = Deklarationsreihenfolge (Konformität ADR-0013) ---
+
+// TestLayerTieBreakUsesDeclarationOrder belegt end-to-end (über Load, NICHT LayerOf
+// direkt — sonst wird der ordnungs-zerstörende Decode umgangen, genau die Blindstelle
+// aus slice-038 §2), dass bei Literal-Präfix-Gleichstand die ZUERST DEKLARIERTE Schicht
+// gewinnt. Die Namen sind bewusst so gewählt, dass die zuerst deklarierte NICHT die
+// alphabetisch erste ist — so tötet der Test das faktisch alphabetische Alt-Verhalten.
+func TestLayerTieBreakUsesDeclarationOrder(t *testing.T) { // ADR-0013 / slice-038
+	const file = "app/orders/ports/repo.go" // matcht beide Globs; litPrefix beider = "app" (Gleichstand)
+	mk := func(first, second string) string {
+		return "version: 1\nlanguages:\n  go: [\"**/*.go\"]\nlayers:\n  " +
+			first + ": [\"app/**\"]\n  " + second + ": [\"app/**/ports/**\"]\nedges:\n  - {from: " +
+			first + ", to: " + second + "}\n"
+	}
+	// "zeta" zuerst deklariert, "alpha" zweitens: zeta > alpha alphabetisch -> nur die
+	// Deklarationsreihenfolge kann zeta gewinnen lassen.
+	m, err := New().Load(write(t, mk("zeta", "alpha")))
+	if err != nil {
+		t.Fatalf("load: %v", err)
+	}
+	if got := core.LayerOf(file, m.Layers); got != "zeta" {
+		t.Fatalf("Gleichstand muss die zuerst deklarierte 'zeta' liefern, got %q (Layers %+v)", got, m.Layers)
+	}
+	// Reihenfolge tauschen -> das Ergebnis flippt auf "alpha".
+	m2, err := New().Load(write(t, mk("alpha", "zeta")))
+	if err != nil {
+		t.Fatalf("load: %v", err)
+	}
+	if got := core.LayerOf(file, m2.Layers); got != "alpha" {
+		t.Fatalf("nach Reihenfolge-Tausch muss 'alpha' gewinnen, got %q (Layers %+v)", got, m2.Layers)
+	}
+}
+
+func TestDuplicateLayerNameFailsClosed(t *testing.T) { // slice-038 Review F-1: Node-Decode erkennt Duplikate nicht -> eigener Guard
+	body := "version: 1\nlanguages:\n  go: [\"**/*.go\"]\nlayers:\n  core: [\"core/**\"]\n  core: [\"other/**\"]\nedges:\n  - {from: core, to: core}\n"
+	if _, err := New().Load(write(t, body)); err == nil {
+		t.Fatal("expected error on duplicate layer name (fail-closed, Review F-1)")
+	}
+}
+
+func TestLayersSequenceFailsClosed(t *testing.T) { // slice-038 Review F-2: Top-Level layers als Sequence -> Exit 2
+	body := "version: 1\nlanguages:\n  go: [\"**/*.go\"]\nlayers:\n  - core\n  - adapters\nedges:\n  - {from: core, to: adapters}\n"
+	if _, err := New().Load(write(t, body)); err == nil {
+		t.Fatal("expected error for sequence layers block (Review F-2)")
+	}
+}
+
+func TestLayersScalarFailsClosed(t *testing.T) { // slice-038 Review F-2: Top-Level layers als Scalar -> Exit 2
+	body := "version: 1\nlanguages:\n  go: [\"**/*.go\"]\nlayers: nonsense\nedges:\n  - {from: a, to: b}\n"
+	if _, err := New().Load(write(t, body)); err == nil {
+		t.Fatal("expected error for scalar layers block (Review F-2)")
+	}
+}
+
+func TestLayersEmptyMappingFailsClosed(t *testing.T) { // slice-038: layers: {} -> Pflichtblock Exit 2
+	body := "version: 1\nlanguages:\n  go: [\"**/*.go\"]\nlayers: {}\nedges:\n  - {from: a, to: b}\n"
+	if _, err := New().Load(write(t, body)); err == nil {
+		t.Fatal("expected error for empty layers mapping")
+	}
+}
+
+// TestLayersMergeKeyFailsClosed pinnt die einzige beobachtbare Verhaltensänderung des
+// Node-Decodes (Review R-1): ein YAML-Merge-Key `<<` im layers-Block wird — anders als beim
+// früheren map[string]yaml.Node-Decode — NICHT mehr expandiert, sondern als Schichtname "<<"
+// gelesen und fail-closed abgewiesen (Exit 2, nicht silent-wrong). Dokumentierte Grenze
+// (AC-QA-02); die Anker-Definition selbst scheitert ohnehin schon an der Top-Level-Strictness.
+func TestLayersMergeKeyFailsClosed(t *testing.T) { // slice-038 Review R-1
+	body := "version: 1\nlanguages:\n  go: [\"**/*.go\"]\nlayers:\n  <<: {core: [\"src/core/**\"]}\n  adapters: [\"src/adapters/**\"]\nedges:\n  - {from: adapters, to: core}\n"
+	if _, err := New().Load(write(t, body)); err == nil {
+		t.Fatal("expected error for a merge key in the layers block (R-1: fail-closed, not expanded)")
 	}
 }
