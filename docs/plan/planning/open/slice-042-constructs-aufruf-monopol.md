@@ -192,7 +192,8 @@ Ausgabe weist darauf hin, dass ein gescannter Teilbaum ungeprüft bleibt.
   [slice-025 §4](slice-025-p-rest-generalisierung.md) bleibt unverändert gültig.
 
 **Empfehlung:** 2a als eigenen Folge-Slice aufsetzen (unabhängig von diesem hier — andere Regel,
-andere Evidenz, kein gemeinsamer Code-Pfad); 2b gated lassen. Damit schrumpft b-cads Skript nach
+andere Evidenz, kein gemeinsamer Code-Pfad) — angelegt als
+[slice-043](slice-043-schicht-abdeckung-sichtbar.md); 2b gated lassen. Damit schrumpft b-cads Skript nach
 diesem Slice auf **eine** Regel (P2), und die Flotte gewinnt eine Fehlerklasse, die mit dem
 b-cad-P-Rest gar nichts zu tun hatte.
 
@@ -200,4 +201,6 @@ b-cad-P-Rest gar nichts zu tun hatte.
 
 Probe 7 meldet korrekt, aber mit Loch in der Meldung: `wrong-direction:  -> ui (adapters/ui/y.h)`
 — für die schichtlose Quelldatei steht an der Stelle des Quell-Schicht-Namens nichts. Rein
-kosmetisch (Befund und Exit-Code stimmen), aber nutzersichtbar; eigener Mikro-CR, kein Vertrag.
+kosmetisch (Befund und Exit-Code stimmen), aber nutzersichtbar; kein Vertrag. Aufgenommen in
+[slice-043 §5](slice-043-schicht-abdeckung-sichtbar.md) — es ist das quell-seitige Symptom
+derselben Abdeckungs-Klasse.
