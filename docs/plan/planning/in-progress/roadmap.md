@@ -2,6 +2,20 @@
 
 **Status:** Aktiv. **Letzte Änderung:** 2026-07-24.
 
+> **Wiedereinstieg (Stand 2026-07-24 Tagesende).** `main` gepusht und CI-grün, Working Tree
+> sauber, **kein** angefangener Code-Stand. Der P-Rest-Faden ist aufgeteilt und liegt als zwei
+> Entwürfe **zur Abnahme** bereit:
+> [slice-042](../open/slice-042-constructs-aufruf-monopol.md) (`constructs`-Aufruf-Monopol,
+> Kandidat 1 entgated) und [slice-043](../open/slice-043-schicht-abdeckung-sichtbar.md)
+> (Schicht-Abdeckung sichtbar machen, Kandidat 2a entgated — flotten-weite Evidenz aus
+> m-trace/d-migrate); Kandidat 2b (Präfix-Allowlist) bleibt gated.
+> **Nächster Schritt:** die offenen Entscheide abnehmen — [slice-042 §4](../open/slice-042-constructs-aufruf-monopol.md)
+> (v. a. Schema-Ort `constructs` vs. `forbidden_constructs`) und
+> [slice-043 §3](../open/slice-043-schicht-abdeckung-sichtbar.md) (Zonen-Bildung, Bereich `CONF`
+> vs. `CLI`). Danach spec-first: Lastenheft-CR → ADR → Spezifikation → Code → Tests.
+> Ebenfalls offen wie bisher: [slice-013](../open/slice-013-driving-driven-vertiefung.md) und
+> [slice-037](../open/slice-037-hexslice-gap-analyse.md).
+
 **Format-Regel:** Die Roadmap ist eine Reihenfolge von **Wellen**, keine
 Reihenfolge von Terminen. Termine erscheinen — falls überhaupt — als
 Konsequenz der Wellen-Schätzung, nicht als Treiber. Die Roadmap steht
