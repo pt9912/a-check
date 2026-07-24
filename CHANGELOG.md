@@ -6,6 +6,32 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
+### Added
+
+- **HexSlice Vertical-Slice-Regeln `lateral-slice` + `port-locality` (`AC-FA-RULE-009`/`AC-FA-RULE-010`,
+  `ADR-0026`, `SPEC-RULE-001` 0.22.0, slice-039):** zwei neue kategorische Regeln gaten die
+  **Vertical-Slice-Achse** von HexSlice über das bestehende Rollenmodell. `lateral-slice` meldet, wenn
+  eine `app`-Datei eine **fremde Use-Case-Slice derselben `app`-Schicht** importiert (Slices = per-Glob-
+  Untereinheiten *einer* Schicht; getrennte `app`-Layer bleiben edge-regiert). `port-locality` meldet,
+  wenn eine `app`-Datei einen **im Application-Baum geschachtelten** Port außerhalb dessen pfad-
+  abgeleiteten Scope-Verzeichnisses importiert (use-case-lokal ⊂ business-area ⊂ app-weit; nur
+  `app`-Importeure, Adapter-Implementierung nicht erfasst). Beide sind **opt-in** über saubere
+  Präfix-Globs und lassen klassisch-hexagonale Configs (Geschwister-Ports, Sub-Layer mit Kante)
+  unberührt — verifiziert gegen b-cad/d-check/d-migrate (0 Befunde). Benutzerhandbuch §3.7 zeigt die
+  Einrichtung als Arbeitsanleitung.
+- **`--print-graph`-Legende nennt alle fünf kategorischen Regeln (`AC-FA-CLI-002`, `SPEC-CLI-002` 0.23.0,
+  slice-040):** die Mermaid-Legende führt zusätzlich `lateral-slice` und `port-locality` (reine
+  Legenden-Notiz, keine gezeichnete Kante).
+
+### Fixed
+
+- **Layer-Tie-Break folgt der Deklarationsreihenfolge (`ADR-0013`-Konformität, slice-038):** bei
+  Literal-Präfix-**Gleichstand** zweier `layers`-Globs entschied faktisch die alphabetische Reihenfolge
+  statt der dokumentierten „zuerst deklarierten" Schicht — `layers` wurde als Map dekodiert und
+  alphabetisch sortiert. Der Decode erhält jetzt die **Dokumentreihenfolge** (`decodeLayers` über eine
+  rohe `yaml.Node`); zwei fail-closed-Prüfungen, die der Map-Decode gratis lieferte (Duplikat-Schlüssel,
+  Nicht-Mapping-`layers`), sind explizit rekonstruiert. Kein neuer Vertrag/ADR/Lastenheft-Bump.
+
 ## [0.14.0] - 2026-07-23
 
 ### Fixed
