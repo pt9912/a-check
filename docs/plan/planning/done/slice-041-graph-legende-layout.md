@@ -29,6 +29,13 @@ Farbe = effektive Rolle
 **Kein** Verhaltens-/Vertragswechsel: dieselben fünf kategorischen Regeln + Stil-Hinweise, nur das
 Zeilen-Layout des einen Legenden-Knotens; weiterhin **pur**/deterministisch ([SPEC-CLI-002](../../../../spec/spezifikation.md#spec-cli-002--graph-renderer-vertrag)).
 
+**Nachtrag (Nutzer-Feedback: zentriert statt linksbündig):** Mermaid zentriert Knoten-Text per Default;
+ein portabel zuverlässiges „linksbündig" gibt es nicht. Der Legenden-Text ist jetzt in ein
+`<div style='text-align:left'>` gewickelt (renderer-feste HTML-Ebene wie die `<br/>`, **nicht** durch den
+Escaper). Das richtet in **freizügigen** Renderern (mermaid.live, VS Code, meist GitHub) linksbündig aus
+und wird von **strengen** Sanitizern höchstens ignoriert (fällt dann auf zentriert zurück — harmlos, keine
+Syntax). `image-test` (2b) bestätigt weiter dekodierbares Mermaid.
+
 ## 2. Definition of Done
 
 - [x] `graph.go` `writeLegend` umgestellt; `TestRenderLegendListsCategoricalRules` grün (fünf Regeln weiter vorhanden).

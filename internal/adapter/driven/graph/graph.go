@@ -174,7 +174,11 @@ func writeSpecialNodes(b *strings.Builder, m core.Model, dangling []string, did 
 // writeLegend emits the legend note: the implicit, categorical rules are NEVER
 // edges (AC-QA-02 — the graph asserts no semantics about the real code).
 func writeLegend(b *strings.Builder) {
-	b.WriteString("    LEGEND[\"Legende — implizite Regeln<br/>(nie als Kante gezeichnet):<br/>" +
+	// The label wraps a left-aligning <div>: Mermaid centers node text by default;
+	// the inline text-align works in permissive renderers and is harmlessly ignored
+	// (falls back to centered) where a strict sanitizer strips the style. Fixed
+	// renderer text — like the <br/> breaks, it is NOT run through the escaper.
+	b.WriteString("    LEGEND[\"<div style='text-align:left'>Legende — implizite Regeln<br/>(nie als Kante gezeichnet):<br/>" +
 		"core-impurity<br/>" +
 		"lateral-adapter<br/>" +
 		"lateral-slice<br/>" +
@@ -182,7 +186,7 @@ func writeLegend(b *strings.Builder) {
 		"port-locality<br/><br/>" +
 		"durchgezogen = edges<br/>" +
 		"gestrichelt = allow<br/>" +
-		"Farbe = effektive Rolle\"]:::legend\n")
+		"Farbe = effektive Rolle</div>\"]:::legend\n")
 }
 
 // writeLinks emits one link per edge (stably sorted, SPEC-DET-001) using the

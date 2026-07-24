@@ -9,8 +9,10 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 ### Changed
 
 - **`--print-graph`-Legende lesbarer (slice-041):** der Legenden-Knoten listet die kategorischen Regeln
-  und Stil-Hinweise jetzt **je eine pro Zeile** (statt einer langen, mitten im Wort umbrechenden Zeile).
-  Reine Präsentation — gleiche Inhalte, deterministisch, kein Vertrags-/Spec-Bump.
+  und Stil-Hinweise jetzt **je eine pro Zeile** (statt einer langen, mitten im Wort umbrechenden Zeile)
+  und wickelt den Text in ein `<div style='text-align:left'>` für **linksbündige** Ausrichtung, wo der
+  Renderer inline-Styles zulässt (sonst harmlos zentriert). Reine Präsentation — gleiche Inhalte,
+  deterministisch, kein Vertrags-/Spec-Bump.
 
 ## [0.15.0] - 2026-07-24
 
