@@ -82,7 +82,10 @@ verify-closure-notes: ## Struktur der Closure-Notizen in done/ (AGENTS §5): gen
 verify-slice-form: ## Form der Slice-Plaene ab slice-052 (max. 3 DoD-Punkte, benannte Lerneintrag-Form); aeltere grandfathered.
 	@bash tools/verify-slice-form.sh
 
-verify: verify-closure-notes verify-slice-form ## Verifikations-Schicht: DoD-/Closure-Fragen (vor der "fertig"-Meldung; getrennt von gates).
+verify-ac-form: ## Form neuer Akzeptanzkriterien (Happy/Boundary/Negative + Out-of-Scope); die 19 bestehenden grandfathered.
+	@bash tools/verify-ac-form.sh
+
+verify: verify-closure-notes verify-slice-form verify-ac-form ## Verifikations-Schicht: DoD-/Closure-Fragen (vor der "fertig"-Meldung; getrennt von gates).
 	@echo "[verify] Verifikations-Schicht gruen"
 
 record-gates: ## Gate-Nachweis (Working-Tree-Hash) für den Stop-Hook schreiben.

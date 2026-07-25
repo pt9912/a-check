@@ -29,7 +29,7 @@ Außenstehender, wie geplant wurde?*
 
 - [`AGENTS.md`](../../../../AGENTS.md) §5 — Rückführungen und WIP-Limit (B-6).
 - `docs/plan/planning/next/README.md` — der fehlende Ort (B-18).
-- [`roadmap.md`](roadmap.md) — Drift-Log-Abschnitt, aus dem belegbaren Verlauf befüllt (B-12).
+- [`roadmap.md`](../in-progress/roadmap.md) — Drift-Log-Abschnitt, aus dem belegbaren Verlauf befüllt (B-12).
 
 Zwei Schichten (Agenten-Briefing, Planungs-Doku).
 
@@ -55,7 +55,7 @@ wäre Prüfung um der Prüfung willen.
       Rückführungen mit ihrer je eigenen Bedingung und deklariert das **WIP-Limit = 1** (B-6).
 - [x] `docs/plan/planning/next/` existiert mit einer `README.md`, die den Zustand und seine
       Ein-/Ausgänge beschreibt (B-18).
-- [x] [`roadmap.md`](roadmap.md) trägt den Abschnitt **Historische Trigger-Verschiebungen**,
+- [x] [`roadmap.md`](../in-progress/roadmap.md) trägt den Abschnitt **Historische Trigger-Verschiebungen**,
       befüllt aus belegten Umplanungen; `make gates` und `make verify` grün (B-12).
 
 ## 6. Closure-Notiz
