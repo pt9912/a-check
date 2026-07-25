@@ -82,7 +82,20 @@
 > Zustand wurde 44 Slices lang genannt, ohne zu existieren) und trägt das **Drift-Log** dieser
 > Roadmap nach. [slice-054](../done/slice-054-ac-form.md) (3/3) setzt die **AC-Drei-Pfad-Form** für
 > neue Anforderungen; die 19 bestehenden bleiben unangetastet und namentlich grandfathered.
-> **Damit sind A, B, D und E erledigt; offen bleiben C und F.**
+> **Etappe C vollständig (2026-07-25):** [slice-055](../done/slice-055-mr-bestand.md) (1/2)
+> **widerlegt die Nummern-Kollision** aus slice-046 §4.2 — das Konventions-Template verlangt
+> ausdrücklich chronologische Nummerierung, seine abgedruckten Einträge sind Beispiele; es bleibt
+> nichts umzunummerieren. Dazu zwei neue Adaptionen: [MR-007](../../../../harness/conventions.md#mr-007--adr-vorlagen-version-v352-statt-v130) löst die veraltete
+> ADR-Vorlagen-Version ab (ohne den bestehenden Eintrag zu ändern — Disziplin wie bei
+> `Accepted`-ADRs), [MR-008](../../../../harness/conventions.md#mr-008--kein-replay-keine-agenten-telemetrie) deklariert das Fehlen von Replay und Telemetrie als bewusste
+> Abweichung samt der Folge, dass „Replay-Lauf grün" als Wellen-Closure-Kriterium hier durch
+> „`make ci` grün" ersetzt ist. [slice-056](../done/slice-056-sub-area-modus.md) (2/2) ersetzt den
+> **pauschalen Repo-Modus** durch acht Sub-Areas mit Achsen-Nachweis — alle sieben mit Modus stehen
+> auf Greenfield, der Gewinn sind die benannten **Inventur-Linien**, nicht eine Korrektur — und
+> arbeitet vier der fünf offenen LOW ab; das fünfte bleibt **begründet offen**, weil seine Heilung
+> die Immutabilitäts-Regel bräche.
+>
+> **Damit sind A, B, C, D und E erledigt; offen bleibt allein F (Betriebsmodell).**
 >
 > **Sonst kein aktiver Faden offen.** Vertagt/gated: `strict_coverage` (Folge-Slice), Kandidat 2b
 > (Präfix-Allowlist — **Begründung erodiert 2026-07-25**: P2 zerfällt in Kanten + Abdeckungs-Diagnose
