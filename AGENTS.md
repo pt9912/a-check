@@ -156,8 +156,24 @@ Aggregat). Ob ein Gate gerade grün ist, sagt die CI (Badge im
 - Neue ADRs müssen den ADR-Index aktualisieren.
 - Roadmap/Status-Geschichte lebt in `docs/plan/planning/`, nicht in der
   Architektur-Spec.
-- Slice-Lifecycle (`open → next → in-progress → done`) ist reine
-  Datei-Bewegung (`git mv`, siehe §3.3).
+- **Slice-Lifecycle** ist reine Datei-Bewegung (`git mv`, siehe §3.3) — der
+  Zustand ist das Verzeichnis, kein Feld im Dokument. **Fünf** Übergänge, drei
+  vorwärts und zwei zurück:
+
+  | von → nach | Bedingung |
+  |---|---|
+  | `open/` → `next/` | für die nächste Welle priorisiert |
+  | `next/` → `in-progress/` | Trigger eingetreten und WIP-Limit frei |
+  | `in-progress/` → `done/` | DoD erfüllt, Closure-Notiz geschrieben, Gates grün |
+  | `in-progress/` → `next/` | **Rückführung:** zu groß — zurück zur Zerlegung, nicht dehnen |
+  | `in-progress/` → `open/` | **Rückführung:** blockiert, solange der Blocker steht |
+
+  Der direkte Weg `open/ → in-progress/` bleibt zulässig; `next/` ist ein Ort,
+  keine Pflichtstation ([`next/README.md`](docs/plan/planning/next/README.md)).
+- **WIP-Limit = 1.** Es liegt **genau ein** Slice in `in-progress/` (die Roadmap
+  zählt nicht mit). Das ist eine harte Größe, kein Vorschlag: zwei aktive Slices
+  teilen sich einen Gate-Nachweis und eine Closure-Aufmerksamkeit, und beides
+  trägt nur einmal.
 - **Slice-Form:** neue Slices entstehen aus
   [`docs/plan/planning/slice.template.md`](docs/plan/planning/slice.template.md). Sie trägt die
   Größen-Regel — **höchstens drei DoD-Punkte und höchstens zwei Schichten**; passt der Slice nicht

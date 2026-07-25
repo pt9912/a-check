@@ -82,7 +82,7 @@ beider.
    Punkt), darunter still (slice-040 mit vier Punkten) — ein Grandfathering, das nur in eine
    Richtung geprüft ist, ist ein unbelegter Freibrief.
 
-**Folge-Slices:** [slice-053](slice-053-lifecycle-und-roadmap-form.md) (Etappe D, 2/3).
+**Folge-Slices:** [slice-053](../in-progress/slice-053-lifecycle-und-roadmap-form.md) (Etappe D, 2/3).
 
 ## 7. Sub-Area-Modus
 
