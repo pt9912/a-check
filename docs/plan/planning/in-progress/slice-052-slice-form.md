@@ -64,7 +64,25 @@ mit denselben Mängeln darf ihn **nicht** rot machen — sonst wäre das Grandfa
 
 ## 6. Closure-Notiz
 
-_(beim Abschluss.)_
+**Geliefert:** `docs/plan/planning/slice.template.md` als erste Slice-Vorlage des Repos und
+`make verify-slice-form` als bootstrap-aware Sensor darauf. Dieser Slice ist die erste Anwendung
+beider.
+
+**Lerneintrag — Form: neuer Sensor.**
+> Die Größen-Regel war seit slice-048 *bekannt* und wurde trotzdem im selben Atemzug gebrochen —
+> slice-047 hatte sieben DoD-Punkte, slice-046 sechs. Bekanntheit ist keine Durchsetzung. Der
+> Sensor macht aus der Regel eine Beobachtung: ein vierter Haken bricht `make verify`, *weil* die
+> Zahl gezählt und nicht eingeschätzt wird. Zugleich zeigt die Gegenprobe, dass der Stichtag
+> trägt — derselbe Mangel in slice-040 bleibt still, also politur-frei.
+
+**Zwei beobachtbare Closure-Kriterien:**
+
+1. `make verify` und `make gates` grün auf demselben Stand (je Exit 0) — belegt.
+2. Die Negativ-Probe ist **beidseitig** dokumentiert: ab Stichtag rot (slice-052 mit viertem
+   Punkt), darunter still (slice-040 mit vier Punkten) — ein Grandfathering, das nur in eine
+   Richtung geprüft ist, ist ein unbelegter Freibrief.
+
+**Folge-Slices:** [slice-053](slice-053-lifecycle-und-roadmap-form.md) (Etappe D, 2/3).
 
 ## 7. Sub-Area-Modus
 
