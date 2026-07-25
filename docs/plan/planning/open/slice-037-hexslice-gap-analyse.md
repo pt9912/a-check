@@ -321,8 +321,11 @@ beachten.
       **§4.3** über [slice-013 §0](slice-013-driving-driven-vertiefung.md) entschieden.
 - [x] **Nachmessung 2026-07-25** (§4.0a): F-1 quell-seitig behoben, ziel-seitig als
       **Falsch-Positiv** reproduziert (Fixture + Gegenprobe gegen `a-check:dev`).
-- [ ] **Abnahme A′:** die verbliebene Ziel-Seiten-Asymmetrie (§4.0a) als eigenen Umsetzungs-Slice
-      ziehen — oder als ausgewiesene Grenze dauerhaft stehen lassen (dann Doku-Warnung statt Code).
+- [x] **Abnahme A′ erfolgt (2026-07-25):** Variante 2 („kleiner Fix statt Feature") gewählt — die
+      Zuordnung wird zurückgezogen (Ziel = extern) statt nachgerüstet. Umgesetzt in
+      [slice-044](../in-progress/slice-044-ziel-glob-schattenwurf.md)
+      ([ADR-0028](../../adr/0028-ziel-glob-schattenwurf.md), Spezifikation 0.25.0). Damit sind
+      **alle** Optionen dieses Analyse-Slices entschieden; er kann mit slice-044 nach `done/`.
 
 ## 9. Closure-Notiz
 

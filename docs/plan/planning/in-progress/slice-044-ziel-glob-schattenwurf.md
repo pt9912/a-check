@@ -1,6 +1,6 @@
 # slice-044 — Unauflösbares Ziel-Glob: Zuordnung zurückziehen statt zurückfallen
 
-**Status:** in-progress — Umsetzung von **Option A′** aus
+**Status:** in-progress (Ergebnis §7, Abschluss mit dem Merge) — Umsetzung von **Option A′** aus
 [slice-037 §4.0a](../open/slice-037-hexslice-gap-analyse.md); Variante **2** („kleiner Fix statt
 Feature") am 2026-07-25 per Maintainer-Wort abgenommen.
 **Auslöser:** die Nachmessung in [slice-037 §4.0a](../open/slice-037-hexslice-gap-analyse.md) —
@@ -70,11 +70,50 @@ schon; geschärft wird das *Wie*. Präzedenz: die `exclude`-Prune-Schärfung
 
 ## 5. DoD
 
-- [ ] [ADR-0028](../../adr/0028-ziel-glob-schattenwurf.md) `Accepted` + Index; Spezifikation nachgezogen (Minor-Bump).
-- [ ] Code + Tests: Fehlbefund weg **und** vier Gegenproben grün (Nicht-Port-Ziel meldet weiter, sauberes Glob löst weiter auf, spezifischeres Literal-Glob gewinnt weiter, Glob ohne Tail-Marker unverändert).
-- [ ] **Regressions-Probe über alle lokalen Konsumenten** — keiner nutzt Innen-Wildcards, also muss jeder byte-identisch bleiben.
-- [ ] `make gates` **und** `make ci` grün mit echter Ausgabe; Benutzerhandbuch-Currency.
+- [x] [ADR-0028](../../adr/0028-ziel-glob-schattenwurf.md) `Accepted` + Index; Spezifikation nachgezogen (Minor-Bump).
+- [x] Code + Tests: Fehlbefund weg **und** vier Gegenproben grün (Nicht-Port-Ziel meldet weiter, sauberes Glob löst weiter auf, spezifischeres Literal-Glob gewinnt weiter, Glob ohne Tail-Marker unverändert).
+- [x] **Regressions-Probe über alle lokalen Konsumenten** — keiner nutzt Innen-Wildcards, also muss jeder byte-identisch bleiben.
+- [x] `make gates` **und** `make ci` grün mit echter Ausgabe; Benutzerhandbuch-Currency.
 
 ## 6. Closure-Notiz
 
 _(beim Abschluss.)_
+
+---
+
+## 7. Ergebnis (2026-07-25)
+
+Spec-first geliefert: [ADR-0028](../../adr/0028-ziel-glob-schattenwurf.md) `Accepted` →
+Spezifikation **0.25.0** ([SPEC-RULE-001](../../../../spec/spezifikation.md#spec-rule-001--regel-auswertung))
+→ Code → Tests; Benutzerhandbuch **1.34**, [CHANGELOG](../../../../CHANGELOG.md) unter `[Unreleased]`.
+
+**Verifikation:**
+
+| Probe | Ergebnis |
+|---|---|
+| Fehlbefund (`outbound` → verschachtelter Port über deklarierte Kante) | **weg** — 0 Befunde |
+| **Diskriminierungs-Probe** (Guard testweise abgeschaltet) | `TestNestedPortImportNoFalsePositive` **fällt** — der Test prüft wirklich den Fix |
+| Ziel **ohne** Tail-Marker (`…/createorder`) | `wrong-direction` meldet weiter |
+| `domain` → `application` | `core-impurity` meldet weiter (kategorisch) |
+| sauberes Literal-Glob | löst weiter auf; echter Verstoß meldet weiter |
+| Glob ohne Tail-Marker (`…/**/**`) | Verhalten unverändert |
+| kurzer Wildcard-Kopf (`src/**/ports/**`) gegen spezifischeres Literal-Glob | Zuordnung bleibt |
+| **Konsumenten-Regression** (b-cad, d-check, d-migrate, m-trace, belief-agent, HexSlice-Go-Beispiel) | je `exit=0`, 0 Befunde — unverändert |
+| `make ci` | grün (lint, Tests, Coverage, `arch-check` 0, `doc-check` 0, `image-test` OK) |
+
+**Lerneinträge**
+
+1. **Eine ausgewiesene Grenze deckt ihre Nebenwirkung nicht mit.** Dass Globs mit Innen-Wildcard
+   als Ziel nicht auflösen, stand seit [ADR-0026](../../adr/0026-hexslice-vertical-slice-regeln.md)
+   in der Doku. Was dort **nicht** stand: was stattdessen passiert. Der Rückfall auf das
+   umschließende Glob war die eigentliche Fehlerquelle — eine Grenze zu dokumentieren heißt auch,
+   das Verhalten **an** der Grenze zu benennen.
+2. **Ein Falsch-Positiv, dessen Reparatur ein Falsch-Negativ ist, wiegt schwerer als eine Lücke.**
+   Diese Klasse gehört bei der Priorisierung über die bloße „fehlt noch"-Lücke gestellt.
+3. **Über-Unterdrückung ist die naheliegende Falle beim Zurücknehmen.** Der erste Entwurf des
+   Rückzugs (nur Kopf-Vergleich) hätte **jeden** Application-Import verschluckt und die Schicht
+   still abgeschaltet — schlimmer als der Ausgangsfehler. Der Tail-Marker macht den Rückzug eng;
+   die vier Gegenproben sichern ihn.
+4. **Die Diskriminierungs-Probe gehört zum Test, nicht zum Gefühl.** Der Guard wurde testweise
+   abgeschaltet, um zu belegen, dass der neue Test ohne den Fix wirklich fällt — dieselbe Lehre wie
+   die False-Green-Regression aus [slice-035](../done/slice-035-exclude-verzeichnis-prune.md).

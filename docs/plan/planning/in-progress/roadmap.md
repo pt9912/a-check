@@ -15,9 +15,15 @@
 > **Nächster Schritt:** ein **Release**, das die Regel ausliefert — erst dann kann b-cad seine
 > P1-`grep`-Regel zurückbauen ([slice-042 §10.4](../done/slice-042-constructs-aufruf-monopol.md));
 > `[Unreleased]` trägt den Eintrag.
+> **Auch neu (2026-07-25):** [slice-044](slice-044-ziel-glob-schattenwurf.md) — ein Layer-Glob mit
+> Wildcard **in der Mitte** löst als Import-**Ziel** nicht auf und ließ den Kandidaten bisher auf die
+> **umschließende** Schicht zurückfallen; das erzeugte einen `wrong-direction`-**Fehlbefund** auf eine
+> deklarierte `adapter → ports`-Kante. Jetzt wird die Zuordnung zurückgezogen (Ziel = extern,
+> fail-open, [ADR-0028](../../adr/0028-ziel-glob-schattenwurf.md), Spez **0.25.0**, Handbuch 1.34).
+> Damit ist **Option A′** aus [slice-037](../open/slice-037-hexslice-gap-analyse.md) erledigt und
+> der dortige Analyse-Slice vollständig entschieden.
 > **Danach offen:** [slice-043](../open/slice-043-schicht-abdeckung-sichtbar.md)
-> (Schicht-Abdeckung sichtbar machen, Kandidat 2a entgated — Entscheide §3 stehen noch aus) und
-> [slice-037](../open/slice-037-hexslice-gap-analyse.md). Bei
+> (Schicht-Abdeckung sichtbar machen, Kandidat 2a entgated — Entscheide §3 stehen noch aus). Bei
 > [slice-013](../open/slice-013-driving-driven-vertiefung.md) ist **Entscheid 0 abgenommen**
 > (2026-07-25): Teil B (Port→Port) **verworfen**, Teil A (Auto-Inferenz) **vertagt** — der Slice
 > bleibt nur noch als Entwurf für A offen, mit geschärftem Trigger (§0). Kandidat 2b

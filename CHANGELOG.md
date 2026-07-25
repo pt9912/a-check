@@ -24,6 +24,22 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
   Fitness-Probe am realen Konsumenten-Baum (injizierter Aufruf gefangen, Zone grün); die vier lokalen
   Bestandskonsumenten bleiben bei 0 Befunden.
 
+### Fixed
+
+- **Kein Fehlbefund mehr bei unauflösbarem Ziel-Glob (`ADR-0028`, `SPEC-RULE-001` 0.25.0, slice-044):**
+  ein Layer-Glob mit **Wildcard in der Mitte** (`…/application/**/ports/**`) kann als Import-**Ziel**
+  nicht auflösen; der Kandidat fiel bisher auf das nächst-passende, **umschließende** Glob zurück.
+  Folge war ein **Falsch-Positiv** — ein Adapter, der über eine **deklarierte** `adapter → ports`-Kante
+  einen verschachtelten Port importiert, wurde als `wrong-direction: adapter -> application` gemeldet.
+  Besonders teuer, weil die naheliegende Reparatur (die falsche Kante deklarieren) danach **echte**
+  Verstöße dauerhaft verdeckt hätte. Jetzt wird die Zuordnung **zurückgezogen**: das Ziel gilt als
+  **extern** (kein Befund), nie als die umschließende Schicht. Der Rückzug ist eng gefasst — literaler
+  **Kopf** *und* **Tail-Marker** des anderen Globs müssen im Kandidaten vorkommen und der Kopf
+  mindestens so spezifisch sein wie der gewählte Präfix; ohne Tail-Marker bleibt alles wie bisher.
+  Die Datei→Schicht-Zuordnung (Quell-Seite) ist unberührt: Port-Dateien unter solchen Globs bleiben
+  voll geprüft. **Inert für den Bestand** — b-cad, d-check, d-migrate, m-trace, belief-agent und das
+  HexSlice-Beispiel bleiben unverändert bei 0 Befunden (keiner nutzt Innen-Wildcards).
+
 ### Changed
 
 - **Befund-Sortierung ist jetzt eine Totalordnung (`AC-QA-01`, `SPEC-DET-001`, slice-042):** neben

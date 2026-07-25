@@ -1,6 +1,6 @@
 # Benutzerhandbuch: a-check
 
-**Handbuch-Version:** 1.33 · **Software-Version:** [aktuelles Release](../../version.md#aktuell) · **Stand:** 2026-07-25 ·
+**Handbuch-Version:** 1.34 · **Software-Version:** [aktuelles Release](../../version.md#aktuell) · **Stand:** 2026-07-25 ·
 **Autor:** pt9912 (Maintainer)
 
 ---
@@ -155,6 +155,17 @@ Jeder Befund nennt die Regel. Die Regeln und ihre Behebung:
 > Wildcard **in der Mitte** (`…/**/ports/**`) oder Datei-Endung (`…/*.go`) trägt kein solches Präfix
 > und lässt beide Regeln (wie schon die bestehende Ziel-Auflösung) für dieses Ziel wirkungslos — eine
 > ausgewiesene Heuristik-Grenze, kein stiller Fehlbefund.
+>
+> **Was ein solches Glob konkret bedeutet.** Deklarieren Sie Ports über ein tiefen-agnostisches
+> `…/application/**/ports/**`, dann gilt: die Port-**Dateien** werden korrekt als `port`
+> klassifiziert (`port-impurity` und `forbidden_constructs` greifen dort), **Importe auf diese
+> Ports** bleiben aber **unbeurteilt** — a-check kann das Ziel keiner Schicht zuordnen und
+> behandelt es als repo-extern. Es entsteht **kein** Befund; die Kante ist schlicht ungegatet.
+> Wollen Sie auch die Kanten prüfen, geben Sie den Port-Globs einen sauberen literalen Präfix
+> (per Business-Area bzw. per Use-Case aufgezählt: `…/application/orders/**/ports/**` oder
+> `…/application/orders/createorder/ports/**`). Frühere Fassungen meldeten hier stattdessen
+> `wrong-direction` gegen die *umschließende* Schicht — ein Fehlbefund, der zur falschen
+> Reparatur verleitete (eine Kante deklarieren, die dann echte Verstöße verdeckt).
 
 ### 3.5 Heuristik-Ausnahmen konfigurieren
 
@@ -727,3 +738,4 @@ und die [Spezifikation](../../spec/spezifikation.md); ein Überblick steht in de
 | 1.31 | 2026-07-24 | Lastenheft 0.21.0: zwei neue Regeln der **Vertical-Slice-Achse** — `lateral-slice` (`app`-Datei importiert eine fremde Use-Case-Slice **derselben `app`-Schicht**; getrennte `app`-Layer sind edge-regiert) und `port-locality` (`app`-Datei importiert einen **im App-Baum geschachtelten** Port außerhalb dessen Scope: use-case-lokal ⊂ business-area ⊂ app-weit; Geschwister-Ports/klassisch inert); beide kategorisch, nur `app`-Importeure, opt-in über die geschachtelte Struktur. Neue **Aufgabe §3.7** „Vertical-Slice-Architektur (HexSlice) absichern" (Arbeitsanleitung mit Beispiel-Config + Behebung), §3.4-Regeltabelle (neun Regeln) + Config-Disziplin-Kasten (saubere Präfix-Globs; `**/…/**`/`*.go` lösen nicht auf), Glossar. Noch nicht im veröffentlichten Image (slice-039, [ADR-0026](../plan/adr/0026-hexslice-vertical-slice-regeln.md)). |
 | 1.32 | 2026-07-24 | §3.6: die `--print-graph`-Legende nennt jetzt **alle fünf** kategorischen Regeln (`lateral-slice`/`port-locality` ergänzt). Spez 0.23.0, slice-040. Noch nicht im veröffentlichten Image. |
 | 1.33 | 2026-07-25 | Lastenheft 0.22.0: neuer Optionalblock **`constructs`** und Regel **`construct-leak`** — ein Roh-Text-Muster darf nur in seiner **Zone** vorkommen (dieselbe Mechanik wie `tech`: `adapter` als Pfad/Liste, `match: substring\|regex`, `composition_root: allow\|forbid`), jedes Vorkommen außerhalb ist ein Befund. Damit sind Konstrukte gatebar, die **keine Import-Zeile** sind (typisch: das `dlopen`-Aufruf-Monopol im Plugin-Adapter). §4 um den Abschnitt „Roh-Text-Monopol (`constructs`)" + Beispiel-Config erweitert, §3.4-Regeltabelle um `construct-leak`, §3.5 (Allowlist wirkt nicht auf Text-Muster), §3.6-Legende. Scan-weit (auch Dateien ohne Schicht), Kommentar-Treffer zählen nicht (ausgewiesene Abweichung von einer `grep`-Regel). Noch nicht im veröffentlichten Image (slice-042, [ADR-0027](../plan/adr/0027-constructs-roh-text-monopol.md)). |
+| 1.34 | 2026-07-25 | §3.4-Kasten „Config-Disziplin" präzisiert: Ein Port-Glob mit Wildcard **in der Mitte** (`…/application/**/ports/**`) klassifiziert die Port-**Dateien** korrekt, lässt **Importe** auf diese Ports aber **unbeurteilt** (repo-extern, kein Befund) — statt wie bisher einen `wrong-direction`-**Fehlbefund** gegen die umschließende Schicht zu melden, dessen naheliegende Reparatur echte Verstöße verdeckt hätte. Wer auch die Kanten gaten will, gibt den Port-Globs einen sauberen literalen Präfix. Spez 0.25.0, [ADR-0028](../plan/adr/0028-ziel-glob-schattenwurf.md), slice-044. Noch nicht im veröffentlichten Image. |
