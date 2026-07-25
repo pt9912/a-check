@@ -8,7 +8,7 @@ Maintenance-Target für die vendored Baseline).
 **Nicht in diesem Slice:** B-3 (`verify` + `check-references`), B-4 (`closure-note-reviewer`),
 B-16 (Workflow-Skelett), B-20 (Freigabe-Checkliste) — sie folgen als 2/3 und 3/3, damit jeder
 Schnitt die Größen-Regel aus **B-1** einhält (≤ 3 DoD-Punkte, höchstens zwei Schichten).
-[Roadmap](roadmap.md).
+[Roadmap](../in-progress/roadmap.md).
 
 ---
 
@@ -142,6 +142,6 @@ mit Selbsttest und Negativ-Probe belegt.
 2. Beide Sensoren werden bei echtem Verstoß rot und nach Rücknahme wieder grün — je eine
    Negativ-Probe dokumentiert (§1.1 und DoD).
 
-**Folge-Slice:** [slice-050](slice-050-verify-schicht.md) (Etappe E, 2/3). Offen aus diesem
+**Folge-Slice:** [slice-050](../in-progress/slice-050-verify-schicht.md) (Etappe E, 2/3). Offen aus diesem
 Slice: ob die hermetische Integritäts-Hälfte von `regelwerk-check` in `make gates` gehört (§3,
 bewusst vertagt).
