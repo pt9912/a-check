@@ -45,7 +45,7 @@
 > `reviewer.md`/`.d-check.yml`, eine widersprüchliche Dateizahl-Evidenz und eine
 > Freshness-Audit-Zuordnung, die Modul 02 ausschließt) — alle vor dem Merge abgearbeitet.
 >
-> **Aktiv (in-progress, 2026-07-25):** [slice-048](slice-048-modul-delta-lesen.md) — **Etappe B**:
+> **Abgeschlossen (2026-07-25):** [slice-048](../done/slice-048-modul-delta-lesen.md) — **Etappe B**:
 > die vendored Baseline gegenlesen und die Treffer als Findings sammeln. Reine Lesearbeit, kein
 > Vertrag berührt. Auf Maintainer-Hinweis („komplett nach v3.5.2 migrieren") vom Sechs-Modul-Zuschnitt
 > auf **alle 17 Module + drei Grundlagen-Abschnitte** (2867 Zeilen) erweitert; die Erweiterung brachte

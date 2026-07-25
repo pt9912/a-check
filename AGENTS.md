@@ -129,7 +129,9 @@ Aggregat). Ob ein Gate gerade grün ist, sagt die CI (Badge im
 | `make arch-check` | Eigen-Architektur via `a-check` selbst (Dogfooding) |
 | `make gate-consistency` | Meta-Gate: dokumentierte Targets ↔ Makefile, `.d-check.yml`-Module (Harness-Lügen-Schutz) + Pin-Konsistenz (Digest-Gleichheit harte Pins == `version.md#aktuell`, Version == CHANGELOG, `d-check.mk`-Deklaration; slice-018) |
 | `make record-gates` | Gate-Nachweis (Working-Tree-Hash) für den Stop-Hook |
+| `make suppression-check` | Fitness Function zum Suppression-Verbot (§3.2, [ADR-0005](docs/plan/adr/0005-lint-profil.md)): keine `//nolint`-Direktive in den Go-Quellen — `nolintlint` prüft nur Wohlgeformtheit, nicht Existenz (slice-049) |
 | `make guard-selftest` | Selbsttest des PreToolUse-Command-Guard (Tool-Call-Gate §3.1) |
+| `make regelwerk-check` | **kein Gate** — Wartung der vendored Baseline ([MR-006](harness/conventions.md#mr-006--baseline-committet-vendored-statt-per-url-referenziert)): Integrität gegen `SHA256SUMS` fail-closed; die Freshness-Hälfte bleibt als Netz-Operation ausdrücklich ungeprüft |
 | `make gates` | alle inneren Gates (mandatory vor Handoff) |
 | `make image-test` | [AC-FA-DIST-001](spec/lastenheft.md#ac-fa-dist-001--distribution-image---print-mk-a-checkmk) + nativ==Container-Akzeptanz + Fragment-Parität (committete [`a-check.mk`](a-check.mk) == `--print-mk`, slice-034) gegen das gebaute Image |
 | `make ci` | CI-äquivalent: `gates` + `image-test` (Workflow `.github/workflows/ci.yml`) |

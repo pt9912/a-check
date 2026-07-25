@@ -35,6 +35,15 @@ linters:
     - maintidx
     - nestif
     - noctx
+    # nolintlint ist hier bewusst NICHT aktiviert (slice-049, Fund B-11).
+    # Empirisch belegt: es prüft die *Wohlgeformtheit* von //nolint-Direktiven,
+    # nicht deren Existenz. Ein wohlgeformtes, wirksames
+    # `//nolint:gochecknoglobals // Why: …` unterdrückt einen echten Verstoß und
+    # lässt `make lint` grün — die Hard Rule AGENTS.md §3.2 ("verboten") kann der
+    # Linter also gar nicht ausdrücken. Durchgesetzt wird sie stattdessen von
+    # `make suppression-check` (tools/suppression-check.sh), das jede Direktive
+    # ablehnt. Ein zusätzlich aktivierter nolintlint könnte neben diesem Verbot
+    # nie feuern und wäre eine tote Regel.
     - reassign
     - revive
     - testpackage

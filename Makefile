@@ -70,10 +70,16 @@ gate-consistency: ## Meta-Gate: dokumentierte Targets ↔ Makefile, .d-check.yml
 guard-selftest: ## Selbsttest des PreToolUse-Command-Guard (Denylist greift, Host-Toolchain blockiert).
 	@bash .claude/hooks/pretooluse-command-guard.sh --selftest
 
+suppression-check: ## Hard Rule AGENTS §3.2: keine Inline-Suppression (//nolint) in den Go-Quellen.
+	@bash tools/suppression-check.sh
+
+regelwerk-check: ## Wartung (KEIN Gate): Integritaet der vendored Baseline gegen SHA256SUMS (MR-006); Freshness bleibt ungeprueft.
+	@bash tools/regelwerk-check.sh
+
 record-gates: ## Gate-Nachweis (Working-Tree-Hash) für den Stop-Hook schreiben.
 	@bash tools/harness/record-gates.sh
 
-gates: lint test coverage-gate arch-check doc-check gate-consistency guard-selftest record-gates ## alle inneren Gates (mandatory vor Handoff).
+gates: lint test coverage-gate arch-check doc-check gate-consistency suppression-check guard-selftest record-gates ## alle inneren Gates (mandatory vor Handoff).
 
 image-test: build ## AC-FA-DIST-001 + nativ==Container-Akzeptanz gegen das gebaute Image.
 	@IMAGE=$(IMAGE) bash tools/image-test.sh
