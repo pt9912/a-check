@@ -1,6 +1,6 @@
 # Roadmap
 
-**Status:** Aktiv. **Letzte Änderung:** 2026-07-25.
+**Status:** Aktiv. **Letzte Änderung:** 2026-07-25 (Tagesende).
 
 > **Wiedereinstieg (Stand 2026-07-25).** [slice-042](../done/slice-042-constructs-aufruf-monopol.md)
 > ist **done und gemergt**: `constructs`-Roh-Text-Monopol mit der Regel `construct-leak` —
@@ -95,7 +95,58 @@
 > arbeitet vier der fünf offenen LOW ab; das fünfte bleibt **begründet offen**, weil seine Heilung
 > die Immutabilitäts-Regel bräche.
 >
-> **Damit sind A, B, C, D und E erledigt; offen bleibt allein F (Betriebsmodell).**
+> **Etappe F läuft (2026-07-25):** [slice-057](../done/slice-057-steering-loop.md) (1/3) legt den
+> **Steering-Loop-Kanal** an (`docs/plan/steering-loop.md`) — bewusst dort statt in einer
+> Wellen-Closure-Notiz, weil a-check noch keine Welle auditierbar schließt (B-13). Zwei Einträge
+> mit Vorfallszahlen aus der Commit-Historie: **SL-001** (Gate-Lauf in einer Pipe verschluckt,
+> 5 Vorfälle) ist zugleich **beantwortet** — der PreToolUse-Guard lehnt `make <gate>` in einer Pipe
+> und mit angekettetem Commit jetzt fail-closed ab; **SL-002** (brechende Verweise nach `git mv`,
+> 7 Vorfälle) ist erfasst, aber offen.
+>
+> **Damit sind A, B, C, D und E erledigt; F ist zu einem Drittel gemacht.**
+
+---
+
+## Wiedereinstieg 2026-07-26
+
+**Stand.** `main` steht unverändert auf `20ee992` (Ende Etappe A). Die Etappen B–F(1/3) liegen als
+**eine lineare Kette von 35 Commits** darüber — die sechs Branch-Namen sind Wegmarken derselben
+Kette, keine unabhängigen Zweige: `slice-057-steering-loop` ist die Spitze und **enthält alle
+anderen** (verifiziert mit `git merge-base --is-ancestor`). Wer die Spitze merged, merged alles.
+`make gates` und `make verify` sind auf der Spitze grün. Der Branch
+`slice-031-deklarations-index-split-package` ist ein Altbestand und längst in `main`.
+
+**Was als Nächstes ansteht — in dieser Reihenfolge:**
+
+1. **Review + Merge** (auf Maintainer-Wort, [Regelwerk Modul 10](../../../../.harness/baseline/v3.5.2/regelwerk/modul-10-review-harness.md)).
+   Weil es **eine** Kette ist, gibt es zwei Wege — die Wahl gehört dem Maintainer:
+   - **(a) ein Review über die ganze Kette** `main..slice-057-steering-loop` (35 Commits,
+     10 Slices) und ein Fast-Forward. Schnell, aber ein Report muss sehr viel tragen.
+   - **(b) sechs Reviews entlang der Wegmarken**, je Etappe einer — das entspricht der Praxis
+     der letzten Slices und hält die Reports lesbar. Gemergt wird trotzdem nur einmal, am Ende.
+   Empfehlung: **(b)**, mit je einem Report unter [`docs/reviews/`](../../../reviews/README.md) —
+   **neu:** die Kopf-Metadaten (Review-Art, Skill-Version, Modell-ID) sind seit slice-056 Pflicht.
+   Ein **unabhängiger** Reviewer ist angezeigt: alle zehn Slices stammen von derselben Instanz,
+   und das Etappe-A-Zweit-Review hat genau in dieser Lage sechs MEDIUM gefunden.
+2. **Etappe F (2/3)** — Carveout-Ort und Diskrepanz-Trichter: `docs/plan/carveouts/` existiert
+   nicht, obwohl `CO-NNN` seit [MR-000](../../../../harness/conventions.md#mr-000--baseline-aussage-inkl-id-schema-deklaration) deklariert ist (**B-14**); der Trichter Carveout ·
+   BF-Markierung · permanente ADR ist ungenutzt (**B-10**).
+3. **Etappe F (3/3)** — Wellen-Closure-Prozedur (**B-13**, fünf Schritte + `done/welle-NN-results.md`)
+   und Rollen-Übergaben (**B-9**). Mit B-13 wandert der Steering-Loop-Kanal an seinen
+   Baseline-Ort.
+4. **Offen aus SL-002:** eine Prüfung, die **vor** dem `git mv` meldet, welche relativen Verweise
+   brechen — gehört zu `make verify`.
+
+**Was bewusst offen bleibt** (keine Handlung nötig, nur nicht vergessen):
+`F-11` aus dem Etappe-A-Zweit-Review (Heilung bräche die Immutabilitäts-Regel,
+[slice-056 §3](../done/slice-056-sub-area-modus.md)); die Integritäts-Hälfte von
+`make regelwerk-check` ist gate-fähig, aber bewusst nicht im Aggregat
+([slice-049 §3](../done/slice-049-mechanik-sensoren.md)); `strict_coverage`, Kandidat 2b, der
+`tech.pattern`-Mikro-CR und wildcard-fähiges Ziel-Matching wie bisher.
+
+**Nicht vergessen:** `[Unreleased]` im CHANGELOG ist seit v0.16.0 leer — die Migration berührt
+**keine** Produkt-Achse (kein `AC-*`, kein `SPEC-*`, kein Code in `internal/`), es steht also kein
+Release an. Der nächste Release-Anlass wäre ein Produkt-Slice, nicht diese Etappen.
 >
 > **Sonst kein aktiver Faden offen.** Vertagt/gated: `strict_coverage` (Folge-Slice), Kandidat 2b
 > (Präfix-Allowlist — **Begründung erodiert 2026-07-25**: P2 zerfällt in Kanten + Abdeckungs-Diagnose
