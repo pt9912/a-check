@@ -77,6 +77,56 @@ jedem `v*`-Tag-Push:
    („Status", „aktuelles Release", Handbuch-Software-Version) verlinken auf
    `version.md#aktuell` und brauchen **keinen** Bump.
 
+## Freigabe-Checkliste
+
+Produktionsreife heißt **belegte** Betriebsfähigkeit, nicht „gebaut". Darum gilt hier:
+**kein Häkchen ohne Beleg.** Fehlt der Beleg, ist das Item *nicht* abgehakt — auch wenn es
+inhaltlich erfüllt wäre. Die Beleg-Pflicht ist der einzige Schutz davor, dass die Liste zur
+Bürokratie verkommt. Ein Punkt je Phase (slice-051):
+
+| # | Item | Beleg-Slot |
+|---|---|---|
+| 1 | **Spec** — jede neue/geänderte `AC-*` liegt im Lastenheft, keine ADR hat es geschärft | Lastenheft-Version + `SPEC-*`/`ARC-*`-Bumps im Diff |
+| 2 | **Architektur** — jede referenzierte ADR ist `Accepted` oder ausgewiesen `Superseded` | `make doc-immutable` über die Release-Range, Exit 0 |
+| 3 | **Planung** — die gelieferten Slices liegen in `done/` und tragen eine ausgefüllte Closure-Notiz | `make verify`, Exit 0 |
+| 4 | **Agenten** — `AGENTS.md` §4 beschreibt nur real existierende Targets | `make gate-consistency` (in `gates`), Exit 0 |
+| 5 | **Qualität** — Gates grün auf **frischem Klon** *und* in der CI mit demselben Image | CI-Run-Link + `make ci`-Ausgabe |
+| 6 | **Distribution** — OCI-Label `…image.version` == Tag; `--print-mk` gibt den neuen Digest | Job-Summary der Release-Pipeline + `docker inspect`-Zeile |
+| 7 | **Register** — Digest und Version in `version.md#aktuell`, CHANGELOG, beiden READMEs, `a-check.mk`, `cli.go` identisch | `make gates` **nach** dem Re-Pin, Exit 0 |
+| 8 | **Betrieb** — die Incident-Klausel unten ist gelesen und gilt unverändert | Verweis auf diesen Abschnitt im Release-Eintrag |
+
+**Freigabe-Eintrag:** Datum, Version, Digest und die acht Belege gehören in
+[`version.md#verlauf`](../../version.md#verlauf) bzw. die GitHub-Release-Notes — nicht in eine
+separate Datei, die niemand pflegt.
+
+### Ausdrücklich *nicht* Teil der Freigabe (Anti-Items)
+
+Ohne diese Liste wandern sie schleichend in die Pflicht:
+
+- **Replay-Lauf gegen ein Golden Set.** a-check hat keinen; die Determinismus-Aussage tragen die
+  Akzeptanztests ([SPEC-DET-001](../../spec/spezifikation.md#spec-det-001--determinismus-vertrag)).
+- **100 % Coverage.** Die Schwelle ist 90 % und steht in
+  [ADR-0006](../plan/adr/0006-coverage-gate.md); eine Anhebung wäre eine ADR, kein Release-Item.
+- **Manuelle Smoke-Tests am Image.** `make image-test` deckt den Vertrag ab; was es nicht deckt,
+  gehört als Test dorthin, nicht in eine Handprüfung vor dem Tag.
+- **Konsumenten-Pins heben.** Das ist *nach* dem Release Sache der Konsumenten
+  ([Konsum](#konsum-digest-pin)), kein Freigabe-Kriterium.
+
+### Incident-Klausel: Rollback, Fix-Forward, Konsumenten-Pin
+
+Wer nach dem Release einen Fehler findet, wählt **nicht im Vorfall** — die Regel steht hier:
+
+| Wenn … | dann | warum |
+|---|---|---|
+| Der Fehler erzeugt **falsche Befunde** (False-Positive/False-Negative) in Konsumenten-CI | **Fix-Forward**: Patch-Release, danach Pin-Hebung ankündigen | ein „Rollback" beim Digest-Pin-Modell wirkt erst, wenn *jeder* Konsument selbst zurückdreht — das dauert länger als ein Patch |
+| Das Image ist **gar nicht lauffähig** (Start bricht ab) | **Fix-Forward sofort**, zusätzlich `:latest` auf das letzte gute Release zurücksetzen | `:latest` ist die einzige Stelle, die a-check selbst zurückdrehen kann ([ADR-0007](../plan/adr/0007-latest-tag-politik.md)) |
+| Der Fehler betrifft **nur** die Doku/das Register | kein neues Image; Register und CHANGELOG korrigieren | ein Release ohne Artefakt-Änderung erzeugt nur Pin-Arbeit ohne Gegenwert |
+| Ein Konsument ist **blockiert** und der Fix braucht länger | Konsument dreht **seinen** Pin auf das letzte gute Digest zurück | die Pin-Hebung ist laut [ADR-0004](../plan/adr/0004-distribution-image-mk.md) bewusst pro Konsument — das gilt in beide Richtungen |
+
+**Kein Rollback des GHCR-Tags `vX.Y.Z` selbst.** Ein veröffentlichter Versions-Tag wird nie
+überschrieben: Konsumenten, die bereits gepinnt haben, würden sonst still ein anderes Artefakt
+bekommen — genau das, was das Digest-Pin-Modell verhindern soll.
+
 ## Konsum (Digest-Pin)
 
 Konsumenten pinnen auf den Digest, nicht auf bewegliche Tags

@@ -4,7 +4,7 @@
 [slice-048 §5](../done/slice-048-modul-delta-lesen.md).
 **Deckt:** Fund **B-3** (kein `verify`-Target) und **B-4** (`closure-note-reviewer` fehlt).
 **Nicht in diesem Slice:** B-16 (Workflow-Skelett) und B-20 (Freigabe-Checkliste) — sie folgen als
-3/3. [Roadmap](roadmap.md).
+3/3. [Roadmap](../in-progress/roadmap.md).
 
 ---
 
