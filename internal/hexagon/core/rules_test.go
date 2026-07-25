@@ -1675,3 +1675,126 @@ func TestConstructMatches(t *testing.T) { // AC-FA-RULE-011: substring (Default)
 		t.Fatal("RE2-Muster matcht falsch")
 	}
 }
+
+// --- ADR-0028: Rückzug bei unauflösbarem Ziel-Glob --------------------------
+
+// nestedPortModel bildet den HexSlice-Fall nach: die ports-Schicht wird über ein
+// TIEFEN-AGNOSTISCHES Glob deklariert (Wildcard in der Mitte) und liegt im
+// application-Teilbaum. Kanten: adapter->ports und app->ports erlaubt,
+// adapter->application NICHT.
+func nestedPortModel() Model {
+	return Model{
+		Layers: []Layer{
+			{Name: "ports", Globs: []string{"src/hexagon/application/**/ports/**"}, Role: "port"},
+			{Name: "application", Globs: []string{"src/hexagon/application/**"}, Role: "app"},
+			{Name: "domain", Globs: []string{"src/hexagon/domain/**"}, Role: "domain"},
+			{Name: "outbound", Globs: []string{"src/adapters/outbound/**"}, Role: "adapter"},
+		},
+		Edges: []Edge{
+			{From: "application", To: "ports"},
+			{From: "application", To: "domain"},
+			{From: "outbound", To: "ports"},
+			{From: "ports", To: "domain"},
+		},
+	}
+}
+
+func TestNestedPortImportNoFalsePositive(t *testing.T) { // ADR-0028: der gemessene Fehlbefund
+	fs := mustEval(t, nestedPortModel(), []FileImports{
+		{Path: "src/adapters/outbound/db.go", Layer: "outbound", Imports: []Import{
+			{Symbol: "x/src/hexagon/application/orders/createorder/ports", Line: 3},
+		}},
+	})
+	if len(fs) != 0 {
+		t.Fatalf("ein Import, dessen Ziel nur ein unauflösbares Glob deckt, ist extern — kein Befund; got %v", fs)
+	}
+}
+
+func TestNestedPortGuardKeepsNonPortTarget(t *testing.T) { // ADR-0028: keine Über-Unterdrückung
+	fs := mustEval(t, nestedPortModel(), []FileImports{
+		{Path: "src/adapters/outbound/db.go", Layer: "outbound", Imports: []Import{
+			{Symbol: "x/src/hexagon/application/orders/createorder", Line: 4}, // KEIN ports-Segment
+		}},
+	})
+	if !hasRule(fs, "wrong-direction") {
+		t.Fatalf("ein Ziel ohne den Tail-Marker bleibt der application-Schicht zugeordnet, got %v", fs)
+	}
+}
+
+func TestNestedPortGuardKeepsCategoricalRule(t *testing.T) { // ADR-0028: kategorische Regeln bleiben
+	fs := mustEval(t, nestedPortModel(), []FileImports{
+		{Path: "src/hexagon/domain/order.go", Layer: "domain", Imports: []Import{
+			{Symbol: "x/src/hexagon/application/orders/createorder", Line: 3},
+		}},
+	})
+	if !hasRule(fs, "core-impurity") {
+		t.Fatalf("domain -> application muss kategorisch melden, got %v", fs)
+	}
+}
+
+func TestCleanPrefixGlobStillResolves(t *testing.T) { // ADR-0028: der Workaround trägt weiter
+	m := nestedPortModel()
+	m.Layers[0].Globs = []string{"src/hexagon/application/orders/createorder/ports/**"} // sauberer Präfix
+	fs := mustEval(t, m, []FileImports{
+		{Path: "src/adapters/outbound/db.go", Layer: "outbound", Imports: []Import{
+			{Symbol: "x/src/hexagon/application/orders/createorder/ports", Line: 3},
+		}},
+	})
+	if len(fs) != 0 {
+		t.Fatalf("sauberes Literal-Glob löst auf die erlaubte Kante auf, got %v", fs)
+	}
+	// Gegenprobe: dieselbe Config meldet einen ECHTEN Verstoß weiter.
+	fs = mustEval(t, m, []FileImports{
+		{Path: "src/hexagon/domain/order.go", Layer: "domain", Imports: []Import{
+			{Symbol: "x/src/hexagon/application/orders/createorder/ports", Line: 3},
+		}},
+	})
+	if !hasRule(fs, "core-impurity") {
+		t.Fatalf("domain -> port bleibt kategorisch, got %v", fs)
+	}
+}
+
+func TestWildcardGlobWithoutTailMarkerDoesNotWithdraw(t *testing.T) { // ADR-0028: kein Tail-Marker ⇒ kein Rückzug
+	m := nestedPortModel()
+	m.Layers[0].Globs = []string{"src/hexagon/application/**/**"} // Prefix endet auf dem Wildcard-Segment
+	fs := mustEval(t, m, []FileImports{
+		{Path: "src/adapters/outbound/db.go", Layer: "outbound", Imports: []Import{
+			{Symbol: "x/src/hexagon/application/orders/createorder", Line: 3},
+		}},
+	})
+	if !hasRule(fs, "wrong-direction") {
+		t.Fatalf("ohne Tail-Marker bleibt das bisherige Verhalten, got %v", fs)
+	}
+}
+
+func TestMoreSpecificLiteralGlobWins(t *testing.T) { // ADR-0028: spezifischeres Literal-Glob gewinnt weiter
+	m := nestedPortModel()
+	// Ein Wildcard-Glob mit KURZEM Kopf darf eine spezifischere Literal-Zuordnung nicht kippen.
+	m.Layers = append(m.Layers, Layer{Name: "wild", Globs: []string{"src/**/ports/**"}, Role: "port"})
+	fs := mustEval(t, m, []FileImports{
+		{Path: "src/hexagon/domain/order.go", Layer: "domain", Imports: []Import{
+			{Symbol: "x/src/adapters/outbound/ports/db", Line: 3},
+		}},
+	})
+	if !hasRule(fs, "core-impurity") {
+		t.Fatalf("outbound (Präfix 21) schlägt den kurzen Wildcard-Kopf 'src' — Zuordnung bleibt, got %v", fs)
+	}
+}
+
+func TestLiteralHeadAndTail(t *testing.T) { // ADR-0028: Bausteine des Rückzugs
+	cases := []struct{ glob, head, tail string }{
+		{"src/hexagon/application/**/ports/**", "src/hexagon/application", "ports"},
+		{"src/hexagon/ports/**", "src/hexagon/ports", ""},
+		{"src/*/ports/x/**", "src", "ports/x"},
+		{"**/foo/**", "", "foo"},
+		{"src/hexagon/application/**/**", "src/hexagon/application", ""},
+	}
+	for _, c := range cases {
+		if got := literalHead(c.glob); got != c.head {
+			t.Errorf("literalHead(%q) = %q, want %q", c.glob, got, c.head)
+		}
+		if got := literalTail(c.glob); got != c.tail {
+			t.Errorf("literalTail(%q) = %q, want %q", c.glob, got, c.tail)
+		}
+	}
+}

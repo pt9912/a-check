@@ -417,7 +417,11 @@ func matchSpecificity(path string, globs []string) (int, bool) {
 // can only resolve literal prefixes (segIndex): a wildcard-bearing prefix like
 // "src/*/x" scores as its literal head "src", never its raw string length, and
 // "**/foo" scores 0.
-func litPrefixLen(g string) int {
+func litPrefixLen(g string) int { return len(literalHead(g)) }
+
+// literalHead is a glob's literal path prefix: everything before the first
+// segment carrying a wildcard. "" when the very first segment already has one.
+func literalHead(g string) string {
 	p := globPrefix(g)
 	if i := strings.IndexAny(p, "*?"); i >= 0 {
 		if j := strings.LastIndexByte(p[:i], '/'); j >= 0 {
@@ -426,7 +430,24 @@ func litPrefixLen(g string) int {
 			p = ""
 		}
 	}
-	return len(p)
+	return p
+}
+
+// literalTail is the literal segment run AFTER a glob prefix's last wildcard
+// segment — the marker that says which directory the glob really aims at
+// ("src/hexagon/application/**/ports" → "ports"). "" when the prefix ends on the
+// wildcard segment itself (then the glob names no target marker at all).
+func literalTail(g string) string {
+	p := globPrefix(g)
+	i := strings.LastIndexAny(p, "*?")
+	if i < 0 {
+		return ""
+	}
+	j := strings.IndexByte(p[i:], '/')
+	if j < 0 {
+		return ""
+	}
+	return p[i+j+1:]
 }
 
 // fileIndex is the real scanned file set, normalized for the extensionless,
@@ -623,7 +644,60 @@ func layerOfCand(cand string, layers []Layer) (string, int) {
 			}
 		}
 	}
+	if shadowedByWildcardGlob(cand, best, bestLen, layers) {
+		return "", -1 // undecidable ⇒ external (fail-open), never the enclosing layer
+	}
 	return best, bestLen
+}
+
+// shadowedByWildcardGlob reports whether the attribution to `best` must be
+// WITHDRAWN because another layer owns a glob with an INNER wildcard that could
+// cover the candidate just as well — a glob segIndex can never match, so it
+// silently contributes nothing and the candidate falls through to the enclosing
+// layer (ADR-0028).
+//
+// The classic shape is a nested-port glob `…/application/**/ports/**` next to the
+// enclosing `…/application/**`: an adapter importing that port resolved to
+// `application` and produced a wrong-direction finding on a legitimate, declared
+// `adapter → ports` edge — a false positive whose obvious "fix" (declaring the
+// wrong edge) permanently masks real violations. Failing OPEN instead is the
+// same line ADR-0023 draws for the weak evidence tier: where the layer is not
+// discriminable, do not guess.
+//
+// The withdrawal is deliberately narrow — three conditions, or the enclosing
+// attribution stands:
+//   - the other glob's literal HEAD occurs in the candidate (it reaches this region),
+//   - its literal TAIL — the marker after the wildcard, e.g. `ports` — occurs too
+//     (without it, `…/application/**/ports/**` would swallow EVERY application
+//     import and silently disable the app layer),
+//   - the head is at least as specific as the winning prefix (a more specific
+//     literal glob keeps winning).
+//
+// A glob whose prefix ends on the wildcard segment itself (no tail marker, e.g.
+// `a/**/**`) names no target and never withdraws — non-idiomatic spellings keep
+// today's behavior, as with the exclude prune (ADR-0025).
+func shadowedByWildcardGlob(cand, best string, bestLen int, layers []Layer) bool {
+	if best == "" {
+		return false // nothing attributed, nothing to withdraw
+	}
+	for _, l := range layers {
+		if l.Name == best {
+			continue
+		}
+		for _, g := range l.Globs {
+			if !strings.ContainsAny(globPrefix(g), "*?") {
+				continue // resolvable as a target: already weighed above
+			}
+			head, tail := literalHead(g), literalTail(g)
+			if head == "" || tail == "" {
+				continue
+			}
+			if segIndex(cand, head) >= 0 && segIndex(cand, tail) >= 0 && len(head) >= bestLen {
+				return true
+			}
+		}
+	}
+	return false
 }
 
 // resolveImport normalizes an import symbol into the layer-glob namespace per
