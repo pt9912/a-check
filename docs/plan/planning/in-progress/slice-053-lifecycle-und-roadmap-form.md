@@ -4,7 +4,7 @@
 [slice-048 §5](../done/slice-048-modul-delta-lesen.md).
 **Deckt:** **B-6** (Lifecycle ohne Rückführungen, WIP-Limit undeklariert), **B-18**
 (`next/` existiert nicht) und **B-12** (Roadmap ohne Drift-Log).
-**Nicht hier:** B-15 (AC-Form) — 3/3. [Roadmap](roadmap.md).
+**Nicht hier:** B-15 (AC-Form) — 3/3. [Roadmap](../in-progress/roadmap.md).
 
 ---
 
@@ -84,7 +84,7 @@ Verwerfungen oder Vertagungen. Das ist kein Planungs-Mangel, sondern das sichtba
 dass Entscheidungen an Messungen hingen — vorher stand das verstreut in Slice-Dokumenten und
 damit faktisch nirgends.
 
-**Folge-Slices:** [slice-054](slice-054-ac-form.md) (Etappe D, 3/3 — B-15, AC-Form).
+**Folge-Slices:** [slice-054](../in-progress/slice-054-ac-form.md) (Etappe D, 3/3 — B-15, AC-Form).
 
 ## 7. Sub-Area-Modus
 
