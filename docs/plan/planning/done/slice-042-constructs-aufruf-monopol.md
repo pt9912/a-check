@@ -1,12 +1,13 @@
 # slice-042 — `constructs`-Aufruf-Monopol (P-Rest-Kandidat 1, entgated)
 
-**Status:** in-progress — Entwurf **abgenommen 2026-07-25** (Maintainer-Wort: alle sieben
-Entscheide aus §4 wie empfohlen); Umsetzung spec-first in diesem Slice.
+**Status:** **done (2026-07-25)** — Entwurf abgenommen (Maintainer-Wort: alle sieben Entscheide
+aus §4 wie empfohlen), spec-first umgesetzt, reviewt und nach `main` gemergt. Ergebnis §10,
+Closure §11.
 **Auslöser:** Maintainer-Review des b-cad-P-Rests (`tools/arch-check.sh`, out-of-repo) am
 2026-07-24 mit anschließendem Umsetzungsauftrag — damit ist der Lande-Trigger
-„Kandidat 1 auf Maintainer-Wort" aus [slice-025 §5](../open/slice-025-p-rest-generalisierung.md)
+„Kandidat 1 auf Maintainer-Wort" aus [slice-025 §5](slice-025-p-rest-generalisierung.md)
 eingetreten.
-**Bezug:** führt **Kandidat 1** aus [slice-025](../open/slice-025-p-rest-generalisierung.md) aus;
+**Bezug:** führt **Kandidat 1** aus [slice-025](slice-025-p-rest-generalisierung.md) aus;
 hebt die Scoping-Mechanik von
 [AC-FA-RULE-003](../../../../spec/lastenheft.md#ac-fa-rule-003--tech-kapselung-regel-tech-leak)
 (`tech`) von Import-Symbolen auf Roh-Text; grenzt gegen die heute port-gebundenen
@@ -16,7 +17,7 @@ ab; bewegt sich an der Heuristik-Grenze
 [AC-QA-02](../../../../spec/lastenheft.md#ac-qa-02--hermetik-und-ehrliche-heuristik-grenze);
 Konfigurations-Vertrag
 [AC-FA-CONF-001](../../../../spec/lastenheft.md#ac-fa-conf-001--konfigurationsdatei-a-checkyml).
-[Roadmap](roadmap.md).
+[Roadmap](../in-progress/roadmap.md).
 
 > **Hinweis:** Der Entwurf vergibt **keine** `AC-*`/`ADR-*`-IDs — das geschieht erst im
 > Lastenheft-CR bzw. in der ADR selbst (Anlege-Prozess:
@@ -27,13 +28,13 @@ Konfigurations-Vertrag
 
 ## 1. Was dieser Slice gegenüber slice-025 neu hat
 
-[slice-025](../open/slice-025-p-rest-generalisierung.md) argumentiert die drei P-Rest-Muster **aus
+[slice-025](slice-025-p-rest-generalisierung.md) argumentiert die drei P-Rest-Muster **aus
 dem Code**. Dieser Slice hat sie erstmals **mechanisch vermessen** (§2, Fixture gegen
 `a-check:dev`) — mit einem Ergebnis, das den Scope **verengt**: eine der beiden dort
 skizzierten Scoping-Gestalten verliert ihre Evidenz (§3). Der Rest ist die Ausführung von
 Kandidat 1: eine Regel, ein Befund, ein Rückbau-Schritt beim Konsumenten.
 
-Kandidat 2 (fail-closed Import-Allowlist, [slice-025 §4](../open/slice-025-p-rest-generalisierung.md))
+Kandidat 2 (fail-closed Import-Allowlist, [slice-025 §4](slice-025-p-rest-generalisierung.md))
 bleibt **gated** — §8.
 
 ## 2. Vermessung (Fixture-Probe, 2026-07-24)
@@ -54,7 +55,7 @@ liegt der dortige P-Rest zugrunde (Regeln P1/P2/P2c).
 | 6 | `"helper.h"` (modul-lokal) | P2 rot | 0 Befunde | **echtes P2-Residuum** |
 
 **Lesart:** Die Include-Achse ist zu einem größeren Teil abgedeckt als
-[slice-025 §2](../open/slice-025-p-rest-generalisierung.md) annahm. Was a-check strukturell **nicht**
+[slice-025 §2](slice-025-p-rest-generalisierung.md) annahm. Was a-check strukturell **nicht**
 sieht, ist (a) das **Aufrufmuster** (P1 — keine Import-Zeile, gar nicht vermessbar über
 Includes) und (b) die **Default-verboten-Semantik** für Ziele, die sich auf keine Schicht
 auflösen (Proben 5/6).
@@ -63,14 +64,14 @@ auflösen (Proben 5/6).
 
 1. **`constructs` braucht nur die Monopol-Gestalt** (`adapter:`-Zone wie bei `tech`). Die
    zweite Gestalt `forbid_in:` je Schicht war in
-   [slice-025 §3](../open/slice-025-p-rest-generalisierung.md) **allein** durch P2c motiviert. Probe 3
+   [slice-025 §3](slice-025-p-rest-generalisierung.md) **allein** durch P2c motiviert. Probe 3
    zeigt: wo P2c Architektur-Gehalt hat (verbotenes Ziel), trägt a-check den Befund bereits als
    Kante — der C++-Extraktor liest `<…>` und `"…"` mit einem Regex, die Kante entsteht also
    unabhängig von der Klammer-Form. Probe 4 zeigt den Rest: eine Form-Konvention über einem
    **erlaubten** Ziel. Sie hat zudem keine Build-Wirkung, die a-check spiegeln müsste — ein
    `<../adapters/…>` löst der Präprozessor gar nicht auf (die Angle-Suche kennt das Verzeichnis
    der einbindenden Datei nicht). ⇒ **`forbid_in` entfällt aus dem CR.**
-2. **Korrektur zu [slice-025 §3 „Wirkung"](../open/slice-025-p-rest-generalisierung.md):** der
+2. **Korrektur zu [slice-025 §3 „Wirkung"](slice-025-p-rest-generalisierung.md):** der
    Roadmap-Re-Eval-Trigger „C++-quoted-Include-Split" ist damit **nicht** miterledigt; er
    bleibt offen (und ist nach Probe 3/4 auch nicht dringlich).
 3. **Kandidat 2 zerfällt in zwei Teile:** sein Residuum sind exakt die Klassen aus Probe 5
@@ -85,12 +86,12 @@ auflösen (Proben 5/6).
 | Frage | Empfehlung | Begründung |
 |---|---|---|
 | **Schema-Ort** | eigener Top-Level-Block `constructs`, **keine** Generalisierung von `forbidden_constructs` | Verschiedene Semantik: `forbidden_constructs` ist layer-gebunden und mündet in `port-impurity` ([AC-FA-RULE-004](../../../../spec/lastenheft.md#ac-fa-rule-004--port-disziplin-regel-port-impurity)); das Monopol ist **zonen**-gebunden und **scan-weit**. Eine Zusammenlegung müsste beide Scopings in einen Schlüssel pressen. |
-| **Namens-Kollision** | interner Modelltyp umbenennen (heute `Constructs` in `internal/hexagon/core/model.go`, trägt die `forbidden_constructs`-Treffer) | ein YAML-`constructs:`-Block belegt sonst denselben Namen wie ein fremd belegter Modelltyp — Verwechslungsrisiko, das [slice-025 §6](../open/slice-025-p-rest-generalisierung.md) bereits markiert |
+| **Namens-Kollision** | interner Modelltyp umbenennen (heute `Constructs` in `internal/hexagon/core/model.go`, trägt die `forbidden_constructs`-Treffer) | ein YAML-`constructs:`-Block belegt sonst denselben Namen wie ein fremd belegter Modelltyp — Verwechslungsrisiko, das [slice-025 §6](slice-025-p-rest-generalisierung.md) bereits markiert |
 | **Befund-Name** | `construct-leak` | Parallele zu `tech-leak` bei identischer Scoping-Mechanik (Zone + `composition_root: allow\|forbid`); die Regel-Reihenfolge ist in [SPEC-RULE-001](../../../../spec/spezifikation.md#spec-rule-001--regel-auswertung) nachzuziehen |
 | **Kommentar-Stripping** | **ja** — auf der bestehenden Quell-Vorbereitung aufsetzen (dieselbe, gegen die `forbidden_constructs` heute matcht) | ein `dlopen`-Treffer in einem Kommentar ist falsch-**rot**. Bewusste, auszuweisende Divergenz zur bash-grep-Referenz (grep sieht Kommentare) — die Paritätsprobe (§7) muss den Kommentar-Fall als Divergenz führen, nicht als Fehler |
 | **Scan-Menge** | scan-weit über alle `languages`-Dateien; `exclude` greift davor ([ADR-0018](../../adr/0018-exclude-scan-scope.md)/[ADR-0025](../../adr/0025-exclude-verzeichnis-prune.md)) | das Monopol gilt auch für Dateien **ohne** Layer (Probe-5-Klasse) und für die Composition Root — dort nur bei `composition_root: forbid`. **Code-Hinweis:** die heutige Auswertung überspringt Composition-Root-Dateien früh und prüft Konstrukte nur bei Rolle `port` (`internal/hexagon/core/rules.go`); beide Zweige sind zu erweitern |
 | **Muster-Sprache** | RE2 wie bei `tech` ([ADR-0015](../../adr/0015-regex-tech-muster.md)), `match: substring\|regex` | keine zweite Muster-Sprache im Vertrag |
-| **Graph-Sichtbarkeit** | **kein** Graph-Knoten, aber eine **Legendenzeile** | `--print-graph` ([AC-FA-CLI-002](../../../../spec/lastenheft.md#ac-fa-cli-002--architektur-graph-ausgabe), [ADR-0024](../../adr/0024-print-graph-mermaid.md)) rendert `layers`/`edges`; eine Roh-Text-Regel hat dort keine Kante. Die Legende ist seit [slice-040](../done/slice-040-graph-legende-vertical-slice-regeln.md)/[slice-041](../done/slice-041-graph-legende-layout.md) der etablierte Ort für Nicht-Kanten-Semantik — damit bekommt die „bewusst nicht im Graph"-Aussage eine zitierbare normative Stelle ([SPEC-CLI-002](../../../../spec/spezifikation.md#spec-cli-002--graph-renderer-vertrag)); Lehre aus [slice-033](../done/slice-033-print-mk-graph-target.md) |
+| **Graph-Sichtbarkeit** | **kein** Graph-Knoten, aber eine **Legendenzeile** | `--print-graph` ([AC-FA-CLI-002](../../../../spec/lastenheft.md#ac-fa-cli-002--architektur-graph-ausgabe), [ADR-0024](../../adr/0024-print-graph-mermaid.md)) rendert `layers`/`edges`; eine Roh-Text-Regel hat dort keine Kante. Die Legende ist seit [slice-040](../done/slice-040-graph-legende-vertical-slice-regeln.md)/[slice-041](../done/slice-041-graph-legende-layout.md) der etablierte Ort für Nicht-Kanten-Semantik — damit bekommt die „bewusst nicht im Graph"-Aussage eine zitierbare normative Stelle ([SPEC-CLI-002](../../../../spec/spezifikation.md#spec-cli-002--graph-renderer-vertrag)); Lehre aus [slice-033](slice-033-print-mk-graph-target.md) |
 
 ### 4.1 Abnahme (2026-07-25)
 
@@ -226,7 +227,7 @@ Ausgabe weist darauf hin, dass ein gescannter Teilbaum ungeprüft bleibt.
 - **2b — Präfix-Allowlist je Schicht (weiter gated).** Nur Probe 6 (modul-lokale/unauflösbare
   Specifier) braucht die eigentliche Allowlist mit umgekehrter Beweislast. Dafür steht weiterhin
   **nur** b-cad als Evidenz; die Begründung aus
-  [slice-025 §4](../open/slice-025-p-rest-generalisierung.md) bleibt unverändert gültig.
+  [slice-025 §4](slice-025-p-rest-generalisierung.md) bleibt unverändert gültig.
 
 **Empfehlung:** 2a als eigenen Folge-Slice aufsetzen (unabhängig von diesem hier — andere Regel,
 andere Evidenz, kein gemeinsamer Code-Pfad) — angelegt als
@@ -340,3 +341,34 @@ Der Vorschlag steht, die Entscheidung liegt drüben:
    [slice-043](../open/slice-043-schicht-abdeckung-sichtbar.md).
 
 Danach trägt b-cads `arch-check.sh` genau **eine** Regel.
+
+## 11. Closure-Notiz (2026-07-25)
+
+**Abgeschlossen.** DoD (§7) vollständig erfüllt: Spec-first-Reihenfolge eingehalten, `make gates`
+**und** `make ci` mit echter Ausgabe grün, Paritätsprobe gegen die P1-`grep`-Referenz des
+Konsumenten bestanden (Kommentar-Fall als deklarierte Divergenz ausgewiesen, §10.1), Fitness-Probe
+am realen Baum bestanden, Rückbau-Vorschlag formuliert (§10.4), Benutzerhandbuch-Currency (1.33).
+
+**Was noch aussteht, aber nicht zu diesem Slice gehört:** ein Release, das die Regel ausliefert —
+erst danach kann der Konsument seine `grep`-Regel zurückbauen. Der Eintrag liegt in
+[CHANGELOG](../../../../CHANGELOG.md) `[Unreleased]`.
+
+### Lerneinträge
+
+1. **Ein Treffer braucht eine Identität, keinen Namen.** Der erste Entwurf hätte den Mustertext als
+   Treffer-Kennung genutzt (wie `forbidden_constructs` es tut). Sobald zwei Einträge dasselbe Muster
+   mit verschiedenen Zonen tragen, ist das mehrdeutig — und der Ausweg wäre entweder ein
+   künstliches Duplikat-Verbot im Schema oder eine Erst-Treffer-Regel, die einen echten Verstoß
+   verschluckt. Der **Index** kostet nichts und macht beide Krücken überflüssig.
+2. **Eine neue Regel deckt auf, wo eine alte Ordnung nicht total war.** Die Befund-Sortierung
+   (Pfad, Zeile, Regel) war auf einem instabilen `sort.Slice` schon vorher nicht total — sichtbar
+   wurde es erst, als eine Regel mehrere Befunde je Zeile erzeugen konnte. Wer eine
+   Determinismus-Zusage gibt, muss die Ordnung **total** halten, nicht bloß „meistens eindeutig".
+3. **Eine geteilte Quell-Vorbereitung erbt auch ihre Ausnahmen** (§10.1a). „Kommentare zählen
+   nicht" stimmte für die C-Syntax-Sprachen und für Python nicht — weil Python dort aus gutem Grund
+   ungestrippt bleibt. Die Anforderung war zu weit formuliert; korrigiert wurde die **Aussage**,
+   nicht das Verhalten, denn die Alternative (ein `#`-Strip) hätte False-Green riskiert.
+4. **Die Paritätsprobe gehört an den realen Baum.** Die Fixture-Tests belegen die Semantik; dass
+   Muster, Zone und Zeilennummern *dieselben* Stellen treffen wie die abgelöste `grep`-Regel, zeigt
+   erst der Lauf gegen den echten Konsumenten-Baum — inklusive des Falls, in dem beide bewusst
+   **auseinandergehen**.

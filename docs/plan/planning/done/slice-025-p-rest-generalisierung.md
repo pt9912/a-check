@@ -1,6 +1,7 @@
 # slice-025 — P-Rest-Generalisierung: `constructs`-Regel (+ Import-Allowlist, gated)
 
-**Status:** open (Entwurf **abgenommen 2026-07-04** — spec-first; Umsetzung folgt als eigener Slice, noch kein Code).
+**Status:** **done (2026-07-25)** — Entwurf abgenommen 2026-07-04; seine Aufgabe (Evidenz sammeln
+und in CR-Kandidaten schneiden) ist erfüllt, die Kandidaten sind verteilt. Closure §8.
 **Bezug:** erweitert die Scoping-Semantik von
 [AC-FA-RULE-003](../../../../spec/lastenheft.md#ac-fa-rule-003--tech-kapselung-regel-tech-leak)
 (`tech`-Muster) auf Roh-Text; bewegt sich an der Heuristik-Grenze von
@@ -10,12 +11,12 @@ Konfigurations-Vertrag [AC-FA-CONF-001](../../../../spec/lastenheft.md#ac-fa-con
 
 > **Fortführung (2026-07-24):** Der Lande-Trigger für **Kandidat 1** (§5, „auf Maintainer-Wort")
 > ist eingetreten; die Ausführung übernimmt
-> [slice-042](../in-progress/slice-042-constructs-aufruf-monopol.md). Dort ist der P-Rest erstmals **mechanisch
+> [slice-042](slice-042-constructs-aufruf-monopol.md). Dort ist der P-Rest erstmals **mechanisch
 > vermessen** (Fixture gegen `a-check:dev`) — mit zwei Korrekturen an diesem Entwurf: die
 > Scoping-Gestalt `forbid_in` (§3) verliert ihre Evidenz und entfällt, und der
 > Roadmap-Re-Eval-Trigger „C++-quoted-Include-Split" ist damit **nicht** miterledigt (§3
 > „Wirkung"). **Kandidat 2** (§4) zerfällt nach der Nachmessung über alle fünf lokalen
-> Konsumenten in zwei Teile ([slice-042 §8](../in-progress/slice-042-constructs-aufruf-monopol.md)): die
+> Konsumenten in zwei Teile ([slice-042 §8](slice-042-constructs-aufruf-monopol.md)): die
 > unlayered-Klasse ist **flotten-weit** (m-trace und d-migrate haben gescannte, aber
 > schichtlose Zonen) und damit **entgated**; nur die Präfix-Allowlist mit umgekehrter
 > Beweislast bleibt gated — dafür gilt die Begründung in §4 unverändert. Dieser Entwurf
@@ -40,7 +41,7 @@ Muster braucht (naheliegend: grid-guide/Rust mit einem `unsafe`-Zonen-Monopol �
 mit dem dlopen-Monopol), beginnen die grep-Kopien wieder zu wandern. Genau das Szenario,
 das a-check gegründet hat. Dieser Slice sammelt darum die Generalisierung als
 **CR-Kandidaten** nach dem Evidenz-Muster des d-check-Delta-CR
-([slice-023](../done/slice-023-dcheck-pilot-deltas.md), [ADR-0018](../../adr/0018-exclude-scan-scope.md)).
+([slice-023](slice-023-dcheck-pilot-deltas.md), [ADR-0018](../../adr/0018-exclude-scan-scope.md)).
 
 ## 2. Die drei P-Rest-Muster (Evidenz: b-cad slice-030-Skript)
 
@@ -116,7 +117,7 @@ auszuarbeiten. Hier kein AK-Entwurf.
 | b-cad | Pilot-Schnitt **erledigt** (2026-07-04, dortige slice-030): `arch-check.sh` auf den 75-Zeilen-P-Rest geschrumpft | P1 + P2 + P2c — Skript-Header dokumentiert die drei Muster präzise (Evidenz-Quelle) |
 | d-check | umgestellt, 0 Skript | keiner (Go-Regeln waren vollständig kanten-förmig) |
 | grid-guide (Rust) | Pilot offen | erwartet: `unsafe`-Zonen-Monopol (Analogon zu P1) — **der natürliche zweite Evidenz-Geber** |
-| d-migrate (Kotlin) | Pilot offen (dort heute Review statt Gate); a-check real dagegen verifiziert ([slice-031](../done/slice-031-deklarations-index-split-package.md), 2026-07-06) — keine belegte Gate-Adoption | offen |
+| d-migrate (Kotlin) | Pilot offen (dort heute Review statt Gate); a-check real dagegen verifiziert ([slice-031](slice-031-deklarations-index-split-package.md), 2026-07-06) — keine belegte Gate-Adoption | offen |
 | m-trace (Go+TS) | Pilot-Kandidat | offen |
 
 **Lande-Trigger:** Kandidat 1 auf Maintainer-Wort oder mit dem zweiten Konsumenten
@@ -146,12 +147,12 @@ auszuarbeiten. Hier kein AK-Entwurf.
 - **Sichtbarkeit im `--print-graph`:** `a-check --print-graph`
   ([AC-FA-CLI-002](../../../../spec/lastenheft.md#ac-fa-cli-002--architektur-graph-ausgabe),
   [ADR-0024](../../adr/0024-print-graph-mermaid.md),
-  [slice-032](../done/slice-032-print-graph-mermaid.md)/[slice-033](../done/slice-033-print-mk-graph-target.md);
+  [slice-032](slice-032-print-graph-mermaid.md)/[slice-033](slice-033-print-mk-graph-target.md);
   im [aktuellen Release](../../../../version.md#aktuell)) rendert die deklarierte Architektur
   als Mermaid — aber nur `layers`/`edges`. Eine Roh-Text-`constructs`-Regel wäre dort
   **unsichtbar**. Zu entscheiden: bewusst nicht im Graph — dann braucht die „bewusst
   nicht"-Aussage eine zitierbare normative Stelle (Lehre aus
-  [slice-033](../done/slice-033-print-mk-graph-target.md)) — **oder** eine eigene
+  [slice-033](slice-033-print-mk-graph-target.md)) — **oder** eine eigene
   Ausweisung; Design-Frage für den Graph-Adapter, nicht für die Regel-Engine.
 - **Rückbau-Pfad:** nach Landung b-cad-Skript auf P2 schrumpfen (Fitness-Probe:
   injizierter `dlopen`-Aufruf außerhalb der Zone ⇒ Befund im a-check-Gate statt im Skript).
@@ -161,3 +162,23 @@ auszuarbeiten. Hier kein AK-Entwurf.
 Spec-first-Reihenfolge (Lastenheft-CR mit neuer `RULE`-ID → ADR → Spezifikation →
 Code → Tests); `make gates` grün; Fixture-Paritätsprobe gegen die drei
 b-cad-grep-Regeln (gleiche Treffer, gleiche Nicht-Treffer); Benutzerhandbuch-Currency.
+
+## 8. Closure-Notiz (2026-07-25)
+
+Dieser Slice war **kein Umsetzungs-, sondern ein Sammel-Slice**: er hat den b-cad-P-Rest als
+Evidenz aufgenommen und in CR-Kandidaten geschnitten. Diese Aufgabe ist erledigt — jeder Kandidat
+hat inzwischen sein Zuhause, und keiner davon wartet noch auf dieses Dokument:
+
+| Kandidat | Wohin |
+|---|---|
+| **1 — `constructs`-Regel** (§3) | ausgeführt in [slice-042](slice-042-constructs-aufruf-monopol.md) (**done**): [AC-FA-RULE-011](../../../../spec/lastenheft.md#ac-fa-rule-011--konstrukt-monopol-regel-construct-leak) (`construct-leak`), [ADR-0027](../../adr/0027-constructs-roh-text-monopol.md). Mit zwei Korrekturen an diesem Entwurf — die Scoping-Gestalt `forbid_in` entfiel mangels Evidenz, und der Roadmap-Re-Eval-Trigger „C++-quoted-Include-Split" ist **nicht** miterledigt |
+| **2a — Schicht-Abdeckung sichtbar machen** | entgated als [slice-043](../open/slice-043-schicht-abdeckung-sichtbar.md) (`open`, Entscheide §3 offen) — flotten-weite Evidenz, die dieser Entwurf noch nicht hatte |
+| **2b — Präfix-Allowlist je Schicht** (§4) | **weiterhin gated**; die Begründung in §4 gilt unverändert (nur ein Konsument als Evidenz). Der Faden hängt jetzt in der [Roadmap](../in-progress/roadmap.md), nicht mehr an diesem Dokument — er braucht bei Landung ohnehin einen eigenen Slice |
+
+Das Dokument bleibt als **Evidenz-Sammlung** lesbar (die drei P-Rest-Muster in §2, die
+Konsumenten-Matrix in §5); die Umsetzungs-Wahrheit steht in slice-042 und slice-043.
+
+**Lerneintrag:** ein Sammel-Slice sollte in `done/` wandern, sobald seine Kandidaten verteilt sind
+— nicht erst, wenn der letzte davon gelandet ist. Sonst steht ein Dokument in `open/`, an dem
+niemand arbeitet, und ein gated Kandidat sieht aus wie ein liegengebliebener Auftrag. Das Gating
+trägt die Roadmap (Orchestrierung), nicht der Slice.
