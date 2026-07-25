@@ -43,6 +43,76 @@ Zwei a-check-seitige Richtungs-Inkremente — **mit unterschiedlichem [ADR-0012]
   'port.out'` im x-wal-Baum (Stand 2026-06-23) → 0 Treffer; Mess-Befehl/Commit beim Abschluss
   zu hinterlegen.)*
 
+## 2a. Nachmessung 2026-07-25 — die Evidenzlage hat sich verschoben
+
+Der Entwurf datiert auf 2026-06-23 und stützt sich allein auf `x-wal`. Seither ist **b-cad**
+aktiver Konsument geworden. Nachgemessen an allen lokalen `.a-check.yml`-Konsumenten:
+
+| Konsument | `direction`-Deklarationen | Port-Schichten getrennt? |
+|---|---|---|
+| **b-cad** | **9** (`ports_driving`/`ports_driven` **und** 7 Adapter-Schichten) | **ja** |
+| d-check | 0 | nein (eine `ports`-Schicht) |
+| d-migrate | 0 | nein (fünf Port-Globs in **einer** Schicht; `adapters/driving/**`+`adapters/driven/**` ebenfalls in **einer**) |
+| m-trace | 0 | nein |
+| **belief-agent** | 0 — aber **16 von 19** Schichten heißen `inbound_*`/`outbound_*` | **keine Port-Schicht deklariert** |
+| HexSlice-Go-Beispiel | 0 (Namen `domain`/`ports`/`app`/`adapters`) | nein |
+| x-wal | — (weiterhin **keine** `.a-check.yml`) | n/a |
+| u-boot, ai-harness-init | — (keine `.a-check.yml`) | n/a |
+
+**Konsequenz 1 — das Aktiver-Konsument-Gate aus Entscheid 0 ist erfüllt**, aber von **b-cad**,
+nicht von x-wal: b-cad aktiviert die Richtung real auf Adapter- **und** Port-Seite. Der
+slice-012-Carry-forward („mindestens ein Konsument soll sie real aktivieren") ist damit
+eingelöst — der Vertagungsgrund von 2026-06-23 trägt nicht mehr.
+
+**Konsequenz 2 — Teil A gewinnt trotzdem fast nichts.** Unter der empfohlenen
+**Exact-Segment**-Grammatik (§6-E) müsste eine Schicht *genau* `driving`/`driven` heißen; b-cads
+Schichten heißen `ports_driving`, `ports_driven`, `ui_command`, `ui_view`, `io`, `geometry`,
+`persistence`, `pluginhost`, `plugins` ⇒ **0 von 9** Deklarationen eingespart. Unter einer
+Substring-/Token-Grammatik wären es **2 von 9** (nur die beiden Port-Schichten); die übrigen
+sieben tragen kein Token und blieben explizit. Die Redundanz, die Teil A beseitigen soll,
+existiert beim einzigen aktiven Konsumenten also kaum — gegen die Umkehr-Last gegenüber
+[ADR-0012](../../adr/0012-driving-driven-richtung-orthogonale-dimension.md) ist das wenig.
+
+**Konsequenz 3 — Teil B hat weiterhin null Anwendungsfälle, jetzt am aktiven Konsumenten
+gemessen.** In b-cads Port-Baum (8 `driving`-, 6 `driven`-Dateien) gibt es **keinen einzigen**
+Port→Port-Include — weder richtungs-querend noch überhaupt; die Includes der Port-Dateien zeigen
+ausschließlich auf `hexagon/model/**` und die Standardbibliothek. Die Port-Symbole werden von
+`services`, `adapters/*` und `plugin_api` genutzt, nicht von Ports untereinander. Damit ist die
+x-wal-Messung von 2026-06-23 (0 Treffer) an einem **zweiten, aktiven** Konsumenten bestätigt.
+
+> **Mess-Notiz zur Ehrlichkeit:** eine erste, grobe Zählung schien 53 Port→Port-Includes zu
+> zeigen — der Zähler traf jedoch das `src/hexagon/ports/…`-Präfix in der **Dateipfad**-Spalte
+> der `grep -n`-Ausgabe, nicht das Include-Ziel. Nach Korrektur: **0**. Die erste Zahl war ein
+> Messfehler, kein Befund.
+
+**Konsequenz 2b — belief-agent sieht aus wie das Kronzeugen-Repo für Teil A, ist es aber nicht.**
+16 von 19 Schichten heißen `inbound_cli` bzw. `outbound_*` — eine Namens-Inferenz mit
+Substring-Grammatik träfe sie alle. Drei Dinge stehen dagegen:
+1. **Falsche Vokabel (Entscheid B):** die Namen tragen `inbound`/`outbound`, nicht
+   `driving`/`driven`. Die empfohlene Vokabel greift dort **nicht**; sie zu erweitern heißt,
+   fremde Begriffe zu interpretieren — genau das, was Entscheid B ausschließen wollte.
+2. **Keine Wirkung:** belief-agent deklariert **keine Port-Schicht**. `direction` steuert allein
+   `port-direction-mismatch` ([AC-FA-RULE-008](../../../../spec/lastenheft.md#ac-fa-rule-008--driving-driven-port-richtung-regel-port-direction-mismatch)),
+   und die Regel verlangt **beide** Seiten gesetzt. Die Inferenz erzeugte dort 16 Richtungen
+   **ohne jede Prüfwirkung** — Metadaten, die nichts gaten.
+3. **Sie wäre nicht rückwärtskompatibel-neutral** (neuer Befund, im Entwurf nicht bedacht):
+   §3.1 sagt „rückwärtskompatibel: Schichten **ohne Hinweis** + ohne `direction` unverändert" —
+   korrekt, aber Schichten **mit** Hinweis und ohne `direction` ändern ihr Verhalten. Sobald ein
+   solcher Konsument später eine Port-Schicht mit Richtung ergänzt, würde eine heute **inerte
+   kategorische** Regel still scharf — ein Gate, das der Konsument nie aktiviert hat. Eine
+   Verschärfung per Inferenz braucht mindestens einen expliziten Opt-in-Schalter, sonst ist sie
+   dieselbe Klasse stiller Setzung, gegen die dieses Repo sonst fail-closed vorgeht.
+
+**Konsequenz 3b — d-migrate ist der Gegenbeweis für die Glob-Variante.** Dort trägt **eine**
+Schicht beide Tokens: `adapters: {globs: ["adapters/driven/**", "adapters/driving/**"]}`. Eine
+glob-basierte Inferenz stünde genau vor dem Konflikt-Fall aus Entscheid E — und zwar nicht
+hypothetisch, sondern in einer real existierenden Konsumenten-Config.
+
+**Konsequenz 4 — die Dogfooding-Gefahr aus Entscheid A ist real:** a-checks Eigen-Config trägt
+`adapters: ["internal/adapter/driven/**"]` — eine **Glob**-basierte Inferenz würde dort `driven`
+ableiten. Namens-basiert bleibt der Layer-Name `adapters` token-los. Die Empfehlung „Namens-basiert"
+steht damit bestätigt, falls Teil A je gezogen wird.
+
 ## 3. Entwurf (zur Abnahme)
 
 ### 3.1 Auto-Inferenz (Teil A)
@@ -124,9 +194,25 @@ Supersede-Präzedenzen).
   - **Aktiver-Konsument-Gate:** A *und* B fallen durch (x-wal nicht aktiv).
   - **ADR-Präzedenz:** A trägt **zusätzlich** die Umkehr-Last gegen [ADR-0012](../../adr/0012-driving-driven-richtung-orthogonale-dimension.md) (§3.3), B nicht.
 
-  *Empfehlung: **beide vertagen**, bis ein Konsument (x-wal o. a.) eine `.a-check.yml` mit
+  *Empfehlung von 2026-06-23: **beide vertagen**, bis ein Konsument eine `.a-check.yml` mit
   `driving`/`driven`-Adapter- **und** -Port-Schichten trägt und die Redundanz **fühlt** (der Pilot).
   Dann Teil A — mit `Amends`-ADR; Teil B nur bei nachgewiesenem Port→Port-Crossing (slice-013b).*
+
+  **Fortschreibung 2026-07-25 (§2a):** Der Pilot ist da — **b-cad** trägt die Richtung real auf
+  beiden Seiten. Das damalige Argument („kein aktiver Konsument") ist damit **verbraucht**; die
+  Nachmessung liefert aber zwei neue, schärfere:
+  - **Teil A:** der aktive Konsument spart unter der empfohlenen Grammatik **0 von 9**
+    Deklarationen (unter Substring 2 von 9). Die Redundanz, die A beseitigen soll, ist bei ihm
+    fast nicht vorhanden — zu wenig, um die Umkehr-Last gegen
+    [ADR-0012](../../adr/0012-driving-driven-richtung-orthogonale-dimension.md) zu tragen.
+    *Neue Empfehlung: vertagen — und zwar bis ein Konsument Schichten trägt, die die Grammatik
+    wirklich treffen (Namen `driving`/`driven`), statt bis „irgendein Konsument die Richtung
+    aktiviert".*
+  - **Teil B:** **0 Port→Port-Kanten** im aktiven Konsumenten (zweite Bestätigung nach x-wal).
+    *Neue Empfehlung: nicht vertagen, sondern **verwerfen** — zwei unabhängige Messungen an zwei
+    Repos zeigen, dass die Kante, die die Regel bewachen soll, in dieser Architektur gar nicht
+    vorkommt. Ein Wiedervorlage-Trigger (erster realer Port→Port-Import) ist billiger als ein
+    offener Entwurf, der Aufmerksamkeit bindet.*
 - **Entscheid A — Inferenz-Basis Name vs. Glob (*Dogfooding-kritisch*):** **Namens**-basiert
   (a-checks `adapters`-Name trägt kein Token → `arch-check` bleibt 0) vs. **Glob**-basiert
   (a-checks `internal/adapter/driven/**` trägt `driven` → würde `driven` inferieren →
