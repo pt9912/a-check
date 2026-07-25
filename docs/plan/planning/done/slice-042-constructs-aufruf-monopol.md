@@ -207,7 +207,7 @@ Betroffen ist **jeder** Konsument, dessen `languages`-Globs weiter reichen als s
 | a-check (Dogfooding) | **0** — Baum vollständig gedeckt |
 | b-cad | **0** — Baum vollständig gedeckt |
 | d-check | **0** — Baum vollständig gedeckt |
-| d-migrate | ~~der gesamte `test/`-Kotlin-Baum (kein `exclude`)~~ — **falsch, korrigiert 2026-07-25**: d-migrate hat seit dem ersten Commit ein `exclude` (`test/**`, `**/src/test/**`, …); real **0** ungedeckte Dateien. Nachmessung in [slice-043 §2a](../in-progress/slice-043-schicht-abdeckung-sichtbar.md) |
+| d-migrate | ~~der gesamte `test/`-Kotlin-Baum (kein `exclude`)~~ — **falsch, korrigiert 2026-07-25**: d-migrate hat seit dem ersten Commit ein `exclude` (`test/**`, `**/src/test/**`, …); real **0** ungedeckte Dateien. Nachmessung in [slice-043 §2a](../done/slice-043-schicht-abdeckung-sichtbar.md) |
 | m-trace | `apps/api/internal/storage/**` und `apps/api/scripts/coverage-overview/**` |
 
 Der m-trace-Fall ist der scharfe: `apps/api/internal/storage` wird von der dortigen Config in
@@ -233,7 +233,7 @@ Ausgabe weist darauf hin, dass ein gescannter Teilbaum ungeprüft bleibt.
 
 **Empfehlung:** 2a als eigenen Folge-Slice aufsetzen (unabhängig von diesem hier — andere Regel,
 andere Evidenz, kein gemeinsamer Code-Pfad) — angelegt als
-[slice-043](../in-progress/slice-043-schicht-abdeckung-sichtbar.md); 2b gated lassen. Damit schrumpft b-cads Skript nach
+[slice-043](../done/slice-043-schicht-abdeckung-sichtbar.md); 2b gated lassen. Damit schrumpft b-cads Skript nach
 diesem Slice auf **eine** Regel (P2), und die Flotte gewinnt eine Fehlerklasse, die mit dem
 b-cad-P-Rest gar nichts zu tun hatte.
 
@@ -251,7 +251,7 @@ nicht in diesen Slice gehört.
 **9.2 Leerer Quell-Schicht-Name.** Probe 7 meldet korrekt, aber mit Loch in der Meldung: `wrong-direction:  -> ui (adapters/ui/y.h)`
 — für die schichtlose Quelldatei steht an der Stelle des Quell-Schicht-Namens nichts. Rein
 kosmetisch (Befund und Exit-Code stimmen), aber nutzersichtbar; kein Vertrag. Aufgenommen in
-[slice-043 §5](../in-progress/slice-043-schicht-abdeckung-sichtbar.md) — es ist das quell-seitige Symptom
+[slice-043 §5](../done/slice-043-schicht-abdeckung-sichtbar.md) — es ist das quell-seitige Symptom
 derselben Abdeckungs-Klasse.
 
 ## 10. Umsetzung und Ergebnis (2026-07-25)
@@ -340,7 +340,7 @@ Der Vorschlag steht, die Entscheidung liegt drüben:
 2. **P2c streichen** — Empfehlung unverändert aus §3.4 (Argument: Probe 3/4 in §2).
 3. **P2 bleibt** — die Klassen aus Probe 5/6 (unauflösbare bzw. modul-lokale Specifier) deckt a-check
    weiterhin nicht; die unlayered-Hälfte davon adressiert
-   [slice-043](../in-progress/slice-043-schicht-abdeckung-sichtbar.md).
+   [slice-043](../done/slice-043-schicht-abdeckung-sichtbar.md).
 
 Danach trägt b-cads `arch-check.sh` genau **eine** Regel.
 

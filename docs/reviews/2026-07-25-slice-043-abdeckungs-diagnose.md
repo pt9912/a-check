@@ -1,13 +1,13 @@
 # Review-Synthese — slice-043: Abdeckungs-Diagnose
 
-**Datum:** 2026-07-25 · **Gegenstand:** [slice-043](../plan/planning/in-progress/slice-043-schicht-abdeckung-sichtbar.md)
+**Datum:** 2026-07-25 · **Gegenstand:** [slice-043](../plan/planning/done/slice-043-schicht-abdeckung-sichtbar.md)
 ([ADR-0029](../plan/adr/0029-abdeckungs-diagnose-advisory.md), Spezifikation 0.26.0) ·
 **Art:** Plan-Review (Regelwerk Modul 10) **vor** der Umsetzung, danach Code-Review über
 `main...HEAD`.
 
 > **Form.** Strukturierter Ein-Reviewer-Mehrwinkel-Durchgang; Reviewer und Verifier dieselbe
 > Instanz — die Rollentrennung aus Modul 8/11 ist nicht erfüllt. Die DoD-/Spec-Verifikation steht
-> getrennt in [slice-043](../plan/planning/in-progress/slice-043-schicht-abdeckung-sichtbar.md).
+> getrennt in [slice-043](../plan/planning/done/slice-043-schicht-abdeckung-sichtbar.md).
 > Kategorien nach Regelwerk `v1.3.0` Modul 10.
 
 ## Kontext-Eingang
@@ -37,7 +37,7 @@ Entwurf slice-043 (Stand 2026-07-24) · [ADR-0029](../plan/adr/0029-abdeckungs-d
 
 | # | Auflösung |
 |---|---|
-| P-1 | Evidenz in [slice-043 §2a](../plan/planning/in-progress/slice-043-schicht-abdeckung-sichtbar.md) korrigiert; die falsche Zeile auch in [slice-042 §8.1/§8.2](../plan/planning/done/slice-042-constructs-aufruf-monopol.md) berichtigt. Der Slice wurde **nicht** verworfen: die Fehlerklasse bleibt real (ein Verzeichnis, das der Konsument in einer `tech`-Regel als Architektur-Zone führt, hat keine Schicht) — nur ihre Verbreitung ist klein |
+| P-1 | Evidenz in [slice-043 §2a](../plan/planning/done/slice-043-schicht-abdeckung-sichtbar.md) korrigiert; die falsche Zeile auch in [slice-042 §8.1/§8.2](../plan/planning/done/slice-042-constructs-aufruf-monopol.md) berichtigt. Der Slice wurde **nicht** verworfen: die Fehlerklasse bleibt real (ein Verzeichnis, das der Konsument in einer `tech`-Regel als Architektur-Zone führt, hat keine Schicht) — nur ihre Verbreitung ist klein |
 | P-2 | Granularität auf **Datei-Liste** entschieden; die Zonen-Bildung entfällt ersatzlos (§0) |
 | P-3 | Gestalt **(a)** abgenommen, `strict_coverage` vertagt mit Trigger ([ADR-0029](../plan/adr/0029-abdeckungs-diagnose-advisory.md) Entscheidung 2) |
 | P-4 | Messmethode ersetzt (exakte Glob-Portierung); die verworfene Näherung ist in §2a als Fehlerquelle benannt |

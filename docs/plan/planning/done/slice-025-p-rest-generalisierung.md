@@ -172,7 +172,7 @@ hat inzwischen sein Zuhause, und keiner davon wartet noch auf dieses Dokument:
 | Kandidat | Wohin |
 |---|---|
 | **1 — `constructs`-Regel** (§3) | ausgeführt in [slice-042](slice-042-constructs-aufruf-monopol.md) (**done**): [AC-FA-RULE-011](../../../../spec/lastenheft.md#ac-fa-rule-011--konstrukt-monopol-regel-construct-leak) (`construct-leak`), [ADR-0027](../../adr/0027-constructs-roh-text-monopol.md). Mit zwei Korrekturen an diesem Entwurf — die Scoping-Gestalt `forbid_in` entfiel mangels Evidenz, und der Roadmap-Re-Eval-Trigger „C++-quoted-Include-Split" ist **nicht** miterledigt |
-| **2a — Schicht-Abdeckung sichtbar machen** | entgated als [slice-043](../in-progress/slice-043-schicht-abdeckung-sichtbar.md) (`open`, Entscheide §3 offen) — flotten-weite Evidenz, die dieser Entwurf noch nicht hatte |
+| **2a — Schicht-Abdeckung sichtbar machen** | entgated als [slice-043](../done/slice-043-schicht-abdeckung-sichtbar.md) (`open`, Entscheide §3 offen) — flotten-weite Evidenz, die dieser Entwurf noch nicht hatte |
 | **2b — Präfix-Allowlist je Schicht** (§4) | **weiterhin gated**; die Begründung in §4 gilt unverändert (nur ein Konsument als Evidenz). Der Faden hängt jetzt in der [Roadmap](../in-progress/roadmap.md), nicht mehr an diesem Dokument — er braucht bei Landung ohnehin einen eigenen Slice |
 
 Das Dokument bleibt als **Evidenz-Sammlung** lesbar (die drei P-Rest-Muster in §2, die
