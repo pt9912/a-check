@@ -2,7 +2,7 @@
 
 **Status:** open — **Entwurf zur Abnahme** (spec-first; noch keine Spec-/Code-Änderung).
 **Auslöser:** Maintainer-Nachfrage vom 2026-07-24 zu
-[slice-042 §8](slice-042-constructs-aufruf-monopol.md) („warum können andere Konsumenten das
+[slice-042 §8](../in-progress/slice-042-constructs-aufruf-monopol.md) („warum können andere Konsumenten das
 nicht gebrauchen?"). Die anschließende Nachmessung über **alle fünf** lokalen
 `.a-check.yml`-Konsumenten zeigt eine Fehlerklasse, die mit dem b-cad-P-Rest nichts zu tun hat.
 **Bezug:** macht die bewusste fail-open-Grenze aus
@@ -26,7 +26,7 @@ Determinismus [AC-QA-01](../../../../spec/lastenheft.md#ac-qa-01--determinismus)
 Ein Konsument, dessen `languages`-Globs **weiter** reichen als seine `layers`-Globs, hat
 gescannte Dateien in **keiner** Schicht. Das ist zulässig und oft gewollt — aber es erzeugt zwei
 Symptome, die der Nutzer heute nicht als *eine* Ursache erkennt (Proben aus
-[slice-042 §8.1](slice-042-constructs-aufruf-monopol.md)):
+[slice-042 §8.1](../in-progress/slice-042-constructs-aufruf-monopol.md)):
 
 | Seite | Verhalten heute | Bewertung |
 |---|---|---|
@@ -82,11 +82,11 @@ Lücke im laufenden Gate eines realen Konsumenten.
   **Ziel**-Seite (Externes ist nicht sicher abgrenzbar, §3); keine Änderung der
   Auflösungs-Semantik ([SPEC-EXTRACT-001](../../../../spec/spezifikation.md#spec-extract-001--import-extraktion));
   keine Import-Allowlist (das ist Kandidat 2b, weiter gated —
-  [slice-042 §8.2](slice-042-constructs-aufruf-monopol.md)).
+  [slice-042 §8.2](../in-progress/slice-042-constructs-aufruf-monopol.md)).
 
 ## 5. Mitzunehmen: leerer Quell-Schicht-Name
 
-Der in [slice-042 §9](slice-042-constructs-aufruf-monopol.md) notierte Mikro-CR
+Der in [slice-042 §9](../in-progress/slice-042-constructs-aufruf-monopol.md) notierte Mikro-CR
 (`wrong-direction:  -> ui` — Loch an der Stelle des Quell-Schicht-Namens) ist das **Quell-seitige
 Symptom derselben Klasse** und gehört hierher: die Meldung soll die Datei als schichtlos
 ausweisen statt einen leeren Namen zu rendern. Klein, aber nutzersichtbar; Empfehlung: in diesem
