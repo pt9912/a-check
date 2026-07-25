@@ -62,10 +62,16 @@
 > [slice-049](../done/slice-049-mechanik-sensoren.md) (1/3) hat das **Suppression-Verbot** mit einem
 > echten Sensor unterlegt — die Negativ-Probe verwarf dabei den geplanten `nolintlint`, weil er
 > Wohlgeformtheit statt Existenz prüft — und `make regelwerk-check` als **Wartungs-Target ohne
-> Gate-Anspruch** angelegt. [slice-050](slice-050-verify-schicht.md) (2/3) zieht die
+> Gate-Anspruch** angelegt. [slice-050](../done/slice-050-verify-schicht.md) (2/3) zieht die
 > **Verifikations-Schicht** ein: `make verify` neben `gates`, dazu der `closure-note-reviewer`-Skill.
 > Nebenbefund: die Closure-Pflicht war nirgends normativ verankert, obwohl 45 Slices sie
-> praktizierten — der Anker entstand erst jetzt in `AGENTS.md` §5. Offen: (3/3) mit B-16 und B-20.
+> praktizierten — der Anker entstand erst jetzt in `AGENTS.md` §5.
+> [slice-051](../done/slice-051-workflow-und-freigabe.md) (3/3) schließt die Etappe: das
+> **Workflow-Skelett** als Slash-Command (dritter Bindepunkt der Durchsetzungsschicht, die anderen
+> zwei gab es schon) und die **Freigabe-Checkliste** in `releasing.md` — acht Items, jedes mit
+> Beleg-Slot, dazu Anti-Items und eine Incident-Klausel, die festhält, dass beim Digest-Pin-Modell
+> **Fix-Forward** die Normalantwort ist. **Etappe E ist damit vollständig.** Offen benannt: der
+> Pipe-Fehler hat jetzt einen Guide, aber weiterhin keinen Sensor.
 >
 > **Sonst kein aktiver Faden offen.** Vertagt/gated: `strict_coverage` (Folge-Slice), Kandidat 2b
 > (Präfix-Allowlist — **Begründung erodiert 2026-07-25**: P2 zerfällt in Kanten + Abdeckungs-Diagnose

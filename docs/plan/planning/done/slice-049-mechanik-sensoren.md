@@ -142,6 +142,6 @@ mit Selbsttest und Negativ-Probe belegt.
 2. Beide Sensoren werden bei echtem Verstoß rot und nach Rücknahme wieder grün — je eine
    Negativ-Probe dokumentiert (§1.1 und DoD).
 
-**Folge-Slice:** [slice-050](../in-progress/slice-050-verify-schicht.md) (Etappe E, 2/3). Offen aus diesem
+**Folge-Slice:** [slice-050](slice-050-verify-schicht.md) (Etappe E, 2/3). Offen aus diesem
 Slice: ob die hermetische Integritäts-Hälfte von `regelwerk-check` in `make gates` gehört (§3,
 bewusst vertagt).

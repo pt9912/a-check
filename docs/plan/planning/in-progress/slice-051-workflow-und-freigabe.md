@@ -78,4 +78,29 @@ Zwei Schichten (Durchsetzungsschicht-Artefakte, Betriebs-Doku) — innerhalb der
 
 ## 6. Closure-Notiz
 
-_(beim Abschluss.)_
+**Geliefert:** der dritte Bindepunkt der Durchsetzungsschicht als `.claude/commands/slice.md` und
+eine Freigabe-Checkliste mit acht Beleg-Slots, Anti-Item-Liste und Incident-Klausel in
+[`releasing.md`](../../../../docs/user/releasing.md). Damit ist **Etappe E vollständig**.
+
+**Lerneintrag — Form: benannte Spec-Lücke.**
+> **Der Pipe-Fehler hat jetzt einen Guide, aber weiterhin keinen Sensor.** `make … | tail` liefert
+> den Exit-Code von `tail`; vier Vorfälle an einem Tag machen daraus nach der 3×-Regel des
+> Regelwerks eine Harness-Lücke. Dieser Slice schließt die *inferentielle* Hälfte (Schritt 6 des
+> Skeletts sagt es ausdrücklich) — die *computational* fehlt. Nach Modul 09 ist die Regel damit
+> halb durchgesetzt, dieselbe Klasse wie B-11 vor slice-049. Der Unterschied zu damals: es steht
+> hier, statt unbemerkt zu bleiben.
+
+**Zwei beobachtbare Closure-Kriterien:**
+
+1. `make gates` und `make verify` grün auf demselben Stand (je Exit 0) — belegt.
+2. Jedes der acht Freigabe-Items nennt einen konkreten Beleg (Gate-Exit, CI-Link, Job-Summary);
+   kein Item ist ohne Slot abhakbar.
+
+**Beobachtung zur Incident-Klausel:** die Regel fiel nicht aus dem Regelwerk, sondern aus a-checks
+Verteilmodell. Weil Konsumenten **Digests** pinnen, wirkt ein Rollback erst, wenn jeder von ihnen
+selbst zurückdreht — Fix-Forward ist deshalb hier die Normalantwort, nicht die Ausnahme. Ein
+allgemeines Runbook hätte das Gegenteil nahegelegt.
+
+**Folge-Slices:** Etappe **D** (Form: B-1, B-5, B-6, B-12, B-15, B-18), Etappe **C**
+(`MR-*`-Bereinigung), Etappe **F** (Betriebsmodell) — dort gehört auch der fehlende Pipe-Sensor
+hin.
