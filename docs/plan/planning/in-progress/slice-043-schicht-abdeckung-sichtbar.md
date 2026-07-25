@@ -1,5 +1,6 @@
 # slice-043 — Schicht-Abdeckung sichtbar machen (P-Rest-Kandidat 2a)
 
+**Review:** [Review-Synthese](../../../reviews/2026-07-25-slice-043-abdeckungs-diagnose.md).
 **Status:** in-progress — **Entscheide abgenommen 2026-07-25** (§0): Gestalt **(a)** — nur die
 Diagnose, `strict_coverage` **vertagt**. Umsetzung spec-first in diesem Slice.
 **Auslöser:** Maintainer-Nachfrage vom 2026-07-24 zu
@@ -15,10 +16,11 @@ Konfigurations-Vertrag
 Determinismus [AC-QA-01](../../../../spec/lastenheft.md#ac-qa-01--determinismus).
 [Roadmap](../in-progress/roadmap.md).
 
-> **Hinweis:** Entwurf zur Abnahme. Es werden hier **keine** `AC-*`/`ADR-*`-IDs vergeben
-> (Anlege-Prozess:
-> [conventions §Anforderungs-Anlege-Prozess](../../../../harness/conventions.md#anforderungs-anlege-prozess)).
-> Entscheide §3 **vor** der Umsetzung.
+> **Hinweis:** Die Entscheide aus §3 sind in **§0 abgenommen**; §1–§6 stehen als Entwurfs- und
+> Evidenz-Stand unverändert, §2a korrigiert die Evidenz aus §2. Es wurde **keine neue `AC-*`-ID**
+> vergeben (Anlege-Prozess:
+> [conventions §Anforderungs-Anlege-Prozess](../../../../harness/conventions.md#anforderungs-anlege-prozess)) —
+> die Begründung steht in §0.
 
 ---
 
@@ -235,3 +237,45 @@ d-migrate melden genau die Zonen aus §2; Gegenprobe: Zone deklarieren ⇒ Diagn
 ein injizierter Verstoß in der Zone wird gefunden; Benutzerhandbuch-Currency. Die Konsumenten
 werden **informiert**, nicht umkonfiguriert — die Config-Entscheidung (Schicht vs. `exclude`)
 liegt in ihren Repos.
+
+---
+
+## 7. Ergebnis (2026-07-25)
+
+Spec-first geliefert: [ADR-0029](../../adr/0029-abdeckungs-diagnose-advisory.md) `Accepted` →
+Spezifikation **0.26.0** ([SPEC-CLI-001](../../../../spec/spezifikation.md#spec-cli-001--aufruf-scan-wurzel-und-exit-codes))
+→ Code → Tests; Benutzerhandbuch **1.35**, [CHANGELOG](../../../../CHANGELOG.md) unter
+`[Unreleased]`, **Review-Synthese** unter [`docs/reviews/`](../../../reviews/2026-07-25-slice-043-abdeckungs-diagnose.md).
+**Kein Lastenheft-Bump, keine neue `AC-*`-ID** (§0).
+
+### 7.1 Verifikation (DoD-/Spec-Abgleich, nach Regelwerk Modul 11 getrennt vom Review)
+
+| DoD-Punkt (§4/§6) | Beleg |
+|---|---|
+| Diagnose nennt Anzahl **und** Pfade, deterministisch sortiert, zusätzlich zu den Befunden | Test `TestCoverageNotice` + `TestCoverageNoticeDeterministic` (zwei Läufe byte-identisch, Pfade in Pfad-Ordnung) |
+| Exit-Code bleibt unverändert | `TestCoverageNotice` pinnt Exit **0** bei ungedeckten Dateien ohne Befund |
+| Vollständig gedeckter Baum ⇒ **keine** Diagnose (kein Rauschen) | `TestCoverageNoticeAbsentWhenCovered`; Konsumenten-Probe: a-check, b-cad, d-check, d-migrate, belief-agent, HexSlice-Go-Beispiel **diagnose-frei** |
+| `composition_root`-Dateien zählen nicht | `TestUncoveredFiles` + `TestCoverageNotice` (Gegenprobe auf `cmd/main.go`) |
+| Kürzung nennt die Restzahl | `TestCoverageNoticeCapNamesRemainder` (13 Dateien ⇒ „… und 3 weitere") |
+| §5: leerer Quell-Schicht-Name | `TestWrongDirectionLayerlessSourceLabel` — Meldung beginnt mit `(ohne Schicht) -> ` |
+| Regressions-Probe gegen alle lokalen Konsumenten | alle sieben `exit=0`, unveränderte Befundlage; **m-trace** nennt genau seine zwei Dateien |
+| `make gates` **und** `make ci` grün | `make ci` grün: lint 0 issues, Coverage **96,20 %**, `arch-check` 0, `doc-check` 0, `image-test` OK |
+| Benutzerhandbuch-Currency | 1.35, §2 „Das Ergebnis verstehen" |
+
+**Nicht erfüllt und bewusst so:** der DoD-Punkt „`strict_coverage: true` ⇒ Exit 1" aus dem
+Entwurfs-§4 entfällt mit der Abnahme (§0) — er gehört in den vertagten Folge-Slice.
+
+### 7.2 Lerneinträge
+
+1. **Konsumenten-Evidenz gehört gemessen, nicht gelesen.** Die Behauptung „d-migrate hat kein
+   `exclude`" stand einen Tag lang in zwei Slices und hätte die Gestalt der Lösung bestimmt. Sie
+   fiel erst, als die Glob-Semantik **exakt** nachgebaut wurde — die erste Näherung über
+   Datei-Endungen war selbst falsch (sie zählte bei b-cad 41 Dateien, die nie gescannt werden).
+   Wer über fremde Configs argumentiert, muss deren Semantik reproduzieren, nicht überfliegen.
+2. **Eine korrigierte Evidenz kann den Scope halbieren, ohne den Slice zu erledigen.** Die
+   Fehlerklasse blieb real; nur ihre Verbreitung schrumpfte — und damit die angemessene
+   Maschinerie. „Kleiner bauen" war hier die richtige Antwort, nicht „vertagen" und nicht
+   „wie geplant bauen".
+3. **Eine Diagnose ist nur so viel wert, wie sie schweigt.** Dass sechs von sieben Konsumenten
+   nichts sehen, ist kein Nebenergebnis, sondern die Bedingung dafür, dass die siebte Meldung
+   gelesen wird. Das gehört in die Fitness Function, nicht in die Hoffnung.
