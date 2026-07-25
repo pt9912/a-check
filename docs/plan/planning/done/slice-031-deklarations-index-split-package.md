@@ -305,7 +305,7 @@ adapter-mod/src/main/kotlin/com/ex/pkg/Impl.kt   // package com.ex.pkg; fun Foo.
   ([slice-027](slice-027-kmp-multimodul-resolution.md) §5).
 - **Konsument:** d-migrate ist der erste reale Nutzer; nach Landung liefert der dortige Pilot die
   Fitness-Probe (Vollrichtungs-Config → 0 Befunde bzw. gemeldete echte Verstöße statt Exit 2).
-  Verwandt: die P-Rest-Sammlung [slice-025](../open/slice-025-p-rest-generalisierung.md) nennt d-migrate als
+  Verwandt: die P-Rest-Sammlung [slice-025](slice-025-p-rest-generalisierung.md) nennt d-migrate als
   offenen Pilot.
 
 ## 8. Umsetzungs-Notizen (nach Bau)
