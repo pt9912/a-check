@@ -1,27 +1,31 @@
-# slice-037 — HexSlice-Architektur: Gate-Lücken-Analyse (Entwurf zur Abnahme)
+# slice-037 — HexSlice-Architektur: Gate-Lücken-Analyse
 
-**Status:** open — Gap-Analyse; **Optionen B und C sind geliefert**, **A weitgehend**, **A′ ist der
-einzige offene Punkt** (§4.0a, Currency-Block unten). Selbst enthält dieser Slice weiterhin keine
-Spec-/Code-Änderung.
+**Status:** **done (2026-07-25)** — **alle** Optionen sind entschieden und ihre Umsetzungen
+geliefert (§10). Der Slice selbst enthält weiterhin keine Spec-/Code-Änderung; er ist die
+Analyse, aus der drei Umsetzungs-Slices und eine Vertagung hervorgingen.
 
 > **Currency 2026-07-25.** Die Analyse stammt vom 2026-07-24; seither ist ein Teil davon
 > abgearbeitet:
-> - **Option B + C geliefert** — [slice-039](../done/slice-039-hexslice-vertical-slice-regeln.md)
+> - **Option B + C geliefert** — [slice-039](slice-039-hexslice-vertical-slice-regeln.md)
 >   hat `lateral-slice` (§4.1) und `port-locality` (§4.2) als
 >   [AC-FA-RULE-009](../../../../spec/lastenheft.md#ac-fa-rule-009--slice-isolation-regel-lateral-slice)/[AC-FA-RULE-010](../../../../spec/lastenheft.md#ac-fa-rule-010--port-lokalität-regel-port-locality)
 >   umgesetzt ([ADR-0026](../../adr/0026-hexslice-vertical-slice-regeln.md)). Die
 >   Vertical-Slice-Achse ist damit gatebar — genau das, was §1 noch als „gar nicht ausdrückbar"
 >   verdikt.
-> - **Nebenbefund F-3 behoben** — [slice-038](../done/slice-038-layer-tie-break-deklarationsreihenfolge.md)
+> - **Nebenbefund F-3 behoben** — [slice-038](slice-038-layer-tie-break-deklarationsreihenfolge.md)
 >   (Tie-Break folgt der Deklarationsreihenfolge).
 > - **Option A weitgehend geliefert** — Benutzerhandbuch §3.7 („Eine Vertical-Slice-Architektur
 >   (HexSlice) absichern") ist die Anwendungs-Doku; die korrigierte Beispiel-Config liegt im
 >   HexSlice-Repo und läuft dort real gegen 0.
-> - **§4.3 (Richtung) ist entschieden, nicht mehr offen** — [slice-013 §0](slice-013-driving-driven-vertiefung.md)
+> - **§4.3 (Richtung) ist entschieden, nicht mehr offen** — [slice-013 §0](../open/slice-013-driving-driven-vertiefung.md)
 >   (2026-07-25): Port→Port verworfen, Auto-Inferenz vertagt. Für HexSlice heißt das: die
 >   Richtungs-Prüfung bleibt an richtungs-getrennte Port-Schichten gebunden, dauerhaft.
-> - **Offen bleibt A′** — und es hat sich verschärft: §4.0 ist nur zur **Hälfte** behoben, die
->   andere Hälfte ist kein Loch, sondern ein **Falsch-Positiv** (§4.0a).
+> - **A′ nachgemessen und geliefert** — §4.0 war nur zur **Hälfte** behoben; die andere Hälfte war
+>   kein Loch, sondern ein **Falsch-Positiv** (§4.0a). Behoben in
+>   [slice-044](slice-044-ziel-glob-schattenwurf.md) ([ADR-0028](../../adr/0028-ziel-glob-schattenwurf.md)):
+>   das Ziel gilt jetzt als extern statt als umschließende Schicht.
+> Damit ist **jede** Option entschieden — Closure §10.
+
 **Auslöser:** externe Frage — kann a-check die **HexSlice Architecture** (hexagonal + Vertical Slice) schon durchsetzen/gaten?
 **Externe Quelle (out-of-repo):** das Architektur-Dokument `hexslice-architecture.de.md` aus dem
 Schwester-Repo `hexslice-architecture` (Stand 2026-07-24; nicht Teil dieses Repos — daher nur
@@ -125,7 +129,7 @@ Korrektheitsfehler in a-check; **Kandidat für einen eigenen a-check-Slice** (Sp
 entweder Deklarationsreihenfolge bewahren *oder* die Spec auf „alphabetisch" korrigieren). HexSlice
 ist davon nicht blockiert (der Literal-Präfix-Workaround umgeht den Tie), aber die Ergonomie leidet.
 
-> **Behoben in [slice-038](../done/slice-038-layer-tie-break-deklarationsreihenfolge.md)** (2026-07-24,
+> **Behoben in [slice-038](slice-038-layer-tie-break-deklarationsreihenfolge.md)** (2026-07-24,
 > Konformitäts-Bugfix zu [ADR-0013](../../adr/0013-layerof-laengster-praefix.md)): der Tie-Break folgt
 > jetzt der **Deklarationsreihenfolge**. Für HexSlice heißt das — ein Konsument deklariert die
 > `ports`-Schicht **vor** `application`, und tiefen-agnostisch verschachtelte Ports (`application/**/ports/**`)
@@ -178,7 +182,7 @@ Das Herz des Ansatzes: ein Use-Case-Slice koppelt nicht an die Interna eines and
 kennt eine analoge Isolation **nur** für die Adapter-Rolle
 ([`lateral-adapter`](../../../../spec/lastenheft.md#ac-fa-rule-002--keine-lateralen-adapter-kanten-regel-lateral-adapter),
 Sub-Einheiten relativ zum Schicht-Glob-Präfix, siehe
-[slice-024](../done/slice-024-adapterseg-root-subeinheit.md)). Für die Rolle `app` gibt es
+[slice-024](slice-024-adapterseg-root-subeinheit.md)). Für die Rolle `app` gibt es
 **kein** Pendant — zwei `application/…/use-case-a` und `…/use-case-b` sind derselbe Layer,
 Cross-Import erzeugt keinen Befund.
 
@@ -210,7 +214,7 @@ Namen (verifiziert: `rules.go` `dirOf`). Basis-HexSlice modelliert Ports als *ei
 `driving`/`driven`-getrennt) — mit einer undirektionalen `ports`-Schicht ist die Regel **inert**,
 und `direction:` auf den Adaptern bleibt wirkungslos. Voll nutzbar erst, wenn ein Konsument die Ports
 richtungs-getrennt modelliert (genau das
-[slice-013](slice-013-driving-driven-vertiefung.md)-Terrain: Auto-Inferenz/Port→Port, dort *gated*).
+[slice-013](../open/slice-013-driving-driven-vertiefung.md)-Terrain: Auto-Inferenz/Port→Port, dort *gated*).
 
 ## 5. Was heute schon geht — Beispiel-`.a-check.yml` (verifiziert)
 
@@ -266,8 +270,8 @@ ausdrücklich als Ergänzung um die *feingranularen* Fitness-Functions dar, „d
 nicht abdeckt (laterale Adapter-Kanten, Port-Disziplin)". Slice-Isolation und Port-Lokalität
 sind exakt diese Klasse. Ihre Umsetzung wäre eine **Regel-Erweiterung** (neue
 `AC-FA-RULE-<NNN>`-Anforderung(en) im Lastenheft, je Folge-ADR + Spec-Schärfung), analog wie
-[slice-011](../done/slice-011-app-rolle.md) die Rolle `app` und
-[slice-012](../done/slice-012-driving-driven-layerof.md) die Richtung ergänzt hat.
+[slice-011](slice-011-app-rolle.md) die Rolle `app` und
+[slice-012](slice-012-driving-driven-layerof.md) die Richtung ergänzt hat.
 
 Die Klassifikations-Lücke (§4.0) ist **anderer Natur** — kein neues Feature, sondern eine
 **bestehende Grenze/Inkonsistenz** (Literal-Präfix-Überschattung + Spec/Impl-Tie-Break-Divergenz,
@@ -285,14 +289,14 @@ Nebenbefund F-3). Sie berührt den Kern-Resolver und gehört in einen **eigenen 
   ohne Business-Area-Aufzählung auflösen. **Unabhängig von HexSlice**, verbessert jeden Konsumenten
   mit geschachtelten Sub-Layern. *Empfehlung: nach A, priorisiert (behebt einen echten Fehler).*
 - **Option B — Slice-Isolation nachrüsten:** neue Regel `lateral-slice` (Rolle `app`,
-  Sub-Einheiten-Mechanik aus [slice-024](../done/slice-024-adapterseg-root-subeinheit.md)
+  Sub-Einheiten-Mechanik aus [slice-024](slice-024-adapterseg-root-subeinheit.md)
   wiederverwendet) + neue `AC-FA-RULE-<NNN>` + Folge-ADR + Spec. Mittlerer Aufwand, hoher
   HexSlice-Wert. **Gate wie üblich: erst ein realer Konsument, der die Slice-Kopplung *fühlt*.**
 - **Option C — Port-Lokalität nachrüsten:** Port-Scope-Begriff (§4.2). Größter Design-Anteil
   (Scope-Modell zu entscheiden); **setzt §4.0 voraus** (ohne Port-Klassifikation keine Lokalität);
   separat von B halten.
 
-**Entscheid 0 — Konsumenten-Gate (Präzedenz [slice-013 Entscheid 0](slice-013-driving-driven-vertiefung.md#6-offen--entscheidungen-zur-abnahme)):**
+**Entscheid 0 — Konsumenten-Gate (Präzedenz [slice-013 Entscheid 0](../open/slice-013-driving-driven-vertiefung.md#6-offen--entscheidungen-zur-abnahme)):**
 Gibt es einen **realen** HexSlice-Konsumenten mit `.a-check.yml`, der die fehlende
 Slice-Isolation spürt? Ohne ihn ist B/C verfrühte Ergonomie (dieselbe „aktiver-Konsument"-Linie,
 die slice-012/013 setzen). *Empfehlung: A jetzt; B/C erst mit Pilot.*
@@ -316,14 +320,14 @@ beachten.
       reproduziert: Config A/B je 0 Befunde, T2/T3 feuern; F-2 Richtung inert am Code; F-3
       alphabetischer Tie-Break in `config.go` `sortedKeys` bestätigt).
 - [x] Beispiel-`.a-check.yml` für die heute-gatebare Achse (§5), Port-Vorbehalt eingearbeitet.
-- [x] **Abnahme B/C erfolgt** (2026-07-24) und in [slice-039](../done/slice-039-hexslice-vertical-slice-regeln.md)
+- [x] **Abnahme B/C erfolgt** (2026-07-24) und in [slice-039](slice-039-hexslice-vertical-slice-regeln.md)
       umgesetzt; **A** über Benutzerhandbuch §3.7 + korrigierte Beispiel-Config geliefert;
-      **§4.3** über [slice-013 §0](slice-013-driving-driven-vertiefung.md) entschieden.
+      **§4.3** über [slice-013 §0](../open/slice-013-driving-driven-vertiefung.md) entschieden.
 - [x] **Nachmessung 2026-07-25** (§4.0a): F-1 quell-seitig behoben, ziel-seitig als
       **Falsch-Positiv** reproduziert (Fixture + Gegenprobe gegen `a-check:dev`).
 - [x] **Abnahme A′ erfolgt (2026-07-25):** Variante 2 („kleiner Fix statt Feature") gewählt — die
       Zuordnung wird zurückgezogen (Ziel = extern) statt nachgerüstet. Umgesetzt in
-      [slice-044](../in-progress/slice-044-ziel-glob-schattenwurf.md)
+      [slice-044](slice-044-ziel-glob-schattenwurf.md)
       ([ADR-0028](../../adr/0028-ziel-glob-schattenwurf.md), Spezifikation 0.25.0). Damit sind
       **alle** Optionen dieses Analyse-Slices entschieden; er kann mit slice-044 nach `done/`.
 
@@ -331,3 +335,37 @@ beachten.
 
 _(beim Abschluss: gewählte Option + Folge-Slice-Verweis; kein Gate-Beleg nötig — reine Analyse,
 kein Code/Vertrag berührt.)_
+
+## 10. Closure-Notiz (2026-07-25)
+
+Der Analyse-Slice ist **erledigt**: jede Option hat eine Entscheidung, und jede Entscheidung ihre
+Umsetzung. Wohin das Ergebnis gegangen ist:
+
+| Option / Befund | Entscheidung | Wo es gelandet ist |
+|---|---|---|
+| **A** — nur anwenden (Beispiel-Config + Nutzer-Doku) | angenommen | Benutzerhandbuch §3.7 („Eine Vertical-Slice-Architektur (HexSlice) absichern") + korrigierte Beispiel-Config im HexSlice-Repo (dort real gegen 0 verifiziert) |
+| **B** — Slice-Isolation | angenommen | [slice-039](slice-039-hexslice-vertical-slice-regeln.md): `lateral-slice`, [AC-FA-RULE-009](../../../../spec/lastenheft.md#ac-fa-rule-009--slice-isolation-regel-lateral-slice), [ADR-0026](../../adr/0026-hexslice-vertical-slice-regeln.md) |
+| **C** — Port-Lokalität | angenommen | [slice-039](slice-039-hexslice-vertical-slice-regeln.md): `port-locality`, [AC-FA-RULE-010](../../../../spec/lastenheft.md#ac-fa-rule-010--port-lokalität-regel-port-locality) |
+| **A′** — Klassifikations-/Overlap-Grenze (§4.0, §4.0a) | angenommen in **zwei** Schritten | quell-seitig [slice-038](slice-038-layer-tie-break-deklarationsreihenfolge.md) (Tie-Break = Deklarationsreihenfolge, Nebenbefund F-3); ziel-seitig [slice-044](slice-044-ziel-glob-schattenwurf.md) ([ADR-0028](../../adr/0028-ziel-glob-schattenwurf.md)) |
+| **§4.3** — Richtungs-Prüfung ohne getrennte Port-Schichten | entschieden, **nicht** gebaut | [slice-013 §0](../open/slice-013-driving-driven-vertiefung.md): Port→Port verworfen, Auto-Inferenz vertagt — die Richtung bleibt dauerhaft an richtungs-getrennte Port-Schichten gebunden |
+
+**Verdikt-Korrektur.** §1 urteilte: „a-check gatet den *Hexagon*, nicht die *Slices*." Das gilt
+nicht mehr — die Vertical-Slice-Achse ist seit [slice-039](slice-039-hexslice-vertical-slice-regeln.md)
+gatebar, und der Port-Vorbehalt aus §4.0 ist in beiden Richtungen abgearbeitet. Was **bleibt**, ist
+eine Config-**Disziplin**: Globs brauchen saubere literale Verzeichnispräfixe, sonst sind ihre Ziele
+repo-extern und ungegatet (ausgewiesen in Handbuch §3.4/§3.7, nicht mehr als Fehlbefund).
+
+### Lerneinträge
+
+1. **Eine Gap-Analyse altert schnell — und still.** Zwischen Erstfassung und Abschluss lagen ein
+   Tag und vier Slices; drei Aussagen im Verdikt waren am Ende überholt. Ein Analyse-Dokument
+   braucht darum einen **Currency-Block**, nicht nur eine Closure-Zeile: sonst zitiert jemand ein
+   Verdikt weiter, das die eigene Umsetzung längst widerlegt hat.
+2. **„Lücke" ist nicht die schlimmste Diagnose.** Die Nachmessung (§4.0a) fand an derselben Stelle
+   statt einer Lücke einen **Fehlbefund**, dessen naheliegende Reparatur ein dauerhaftes
+   Falsch-Negativ erzeugt hätte. Bei der Priorisierung gehört diese Klasse **über** das bloße
+   „fehlt noch".
+3. **Zwei Auflösungs-Pfade für dieselbe Frage driften auseinander.** Datei→Schicht und
+   Import→Schicht beantworten beide „welche Schicht?", waren aber verschieden implementiert — die
+   eine wildcard-tolerant, die andere nicht. Der Unterschied blieb jahrelang unsichtbar, weil kein
+   Konsument Globs mit Innen-Wildcard nutzte.

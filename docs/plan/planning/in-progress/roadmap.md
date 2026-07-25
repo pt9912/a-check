@@ -21,8 +21,10 @@
 > deklarierte `adapter → ports`-Kante. Jetzt wird die Zuordnung zurückgezogen (Ziel = extern,
 > fail-open, [ADR-0028](../../adr/0028-ziel-glob-schattenwurf.md), Spez **0.25.0**, Handbuch 1.34).
 > Damit ist **Option A′** aus [slice-037](../done/slice-037-hexslice-gap-analyse.md) erledigt und
-> der dortige Analyse-Slice vollständig entschieden.
-> **Danach offen:** [slice-043](../open/slice-043-schicht-abdeckung-sichtbar.md)
+> dieser Analyse-Slice vollständig entschieden — beide sind **done**
+> ([slice-037 §10](../done/slice-037-hexslice-gap-analyse.md) hält fest, wohin jede Option
+> gegangen ist).
+> **Danach offen — der letzte Faden:** [slice-043](../open/slice-043-schicht-abdeckung-sichtbar.md)
 > (Schicht-Abdeckung sichtbar machen, Kandidat 2a entgated — Entscheide §3 stehen noch aus). Bei
 > [slice-013](../open/slice-013-driving-driven-vertiefung.md) ist **Entscheid 0 abgenommen**
 > (2026-07-25): Teil B (Port→Port) **verworfen**, Teil A (Auto-Inferenz) **vertagt** — der Slice

@@ -1,9 +1,9 @@
 # slice-044 — Unauflösbares Ziel-Glob: Zuordnung zurückziehen statt zurückfallen
 
-**Status:** in-progress (Ergebnis §7, Abschluss mit dem Merge) — Umsetzung von **Option A′** aus
-[slice-037 §4.0a](../open/slice-037-hexslice-gap-analyse.md); Variante **2** („kleiner Fix statt
+**Status:** **done (2026-07-25)** — Umsetzung von **Option A′** aus
+[slice-037 §4.0a](slice-037-hexslice-gap-analyse.md); Variante **2** („kleiner Fix statt
 Feature") am 2026-07-25 per Maintainer-Wort abgenommen.
-**Auslöser:** die Nachmessung in [slice-037 §4.0a](../open/slice-037-hexslice-gap-analyse.md) —
+**Auslöser:** die Nachmessung in [slice-037 §4.0a](slice-037-hexslice-gap-analyse.md) —
 ein legitimer Adapter→Port-Import meldet `wrong-direction`, weil das Ziel auf die *umschließende*
 Schicht zurückfällt.
 **Bezug:** schärft die Ziel-Auflösung aus
@@ -11,10 +11,10 @@ Schicht zurückfällt.
 [AC-FA-RULE-005](../../../../spec/lastenheft.md#ac-fa-rule-005--schicht-richtung-regel-wrong-direction)
 (`wrong-direction`) und bewegt sich an der ausgewiesenen Grenze
 [AC-QA-02](../../../../spec/lastenheft.md#ac-qa-02--hermetik-und-ehrliche-heuristik-grenze).
-[Roadmap](roadmap.md).
+[Roadmap](../in-progress/roadmap.md).
 
 Lifecycle-Notiz: der Slice startet direkt in `in-progress/` — Analyse **und** Abnahme liegen
-bereits in [slice-037](../open/slice-037-hexslice-gap-analyse.md); ein Entwurfs-Durchlauf in
+bereits in [slice-037](slice-037-hexslice-gap-analyse.md); ein Entwurfs-Durchlauf in
 `open/` wäre eine leere Station.
 
 ---
@@ -44,7 +44,7 @@ Ein Falsch-Positiv, dessen Behebung ein Falsch-Negativ erzeugt.
 
 **Nicht** die Auflösung nachrüsten (Variante 1: `layerOfCand` wildcard-fähig machen — Eingriff in
 den Kern-Resolver mit dem Regressions-Risiko, das die 27 Falsch-Positive in
-[slice-039](../done/slice-039-hexslice-vertical-slice-regeln.md) gezeigt haben), sondern die
+[slice-039](slice-039-hexslice-vertical-slice-regeln.md) gezeigt haben), sondern die
 **Zuordnung zurückziehen**: wo ein unauflösbares Glob den Kandidaten genauso gut decken könnte,
 ist die Schicht **nicht diskriminierbar** ⇒ **extern** (fail-open), niemals die umschließende
 Schicht. Dieselbe Linie, die
@@ -116,4 +116,21 @@ Spezifikation **0.25.0** ([SPEC-RULE-001](../../../../spec/spezifikation.md#spec
    die vier Gegenproben sichern ihn.
 4. **Die Diskriminierungs-Probe gehört zum Test, nicht zum Gefühl.** Der Guard wurde testweise
    abgeschaltet, um zu belegen, dass der neue Test ohne den Fix wirklich fällt — dieselbe Lehre wie
-   die False-Green-Regression aus [slice-035](../done/slice-035-exclude-verzeichnis-prune.md).
+   die False-Green-Regression aus [slice-035](slice-035-exclude-verzeichnis-prune.md).
+
+## 8. Closure-Notiz (2026-07-25)
+
+**Abgeschlossen und nach `main` gemergt.** DoD (§5) vollständig erfüllt; das Ergebnis samt aller
+Proben steht in §7. Der Slice ist bewusst klein geblieben: eine Regel-Rücknahme, kein neues
+Feature, kein Lastenheft-Bump.
+
+**Was nicht entschieden wurde und offen bleibt:** die *vollständige* Lösung — Ziel-Matching
+wildcard-fähig machen, sodass `…/application/**/ports/**` auch als Import-Ziel auflöst — ist in
+[ADR-0028](../../adr/0028-ziel-glob-schattenwurf.md) ausdrücklich als möglich, aber nicht
+entschieden vermerkt. Sie bräuchte einen eigenen Slice mit eigener Regressions-Absicherung
+(Modul-Präfix-Toleranz des Segment-Match). Trigger: ein Konsument, der die Kanten-Prüfung für
+tiefen-agnostische Globs wirklich braucht und die Config-Disziplin nicht gehen will.
+
+**Release-Hinweis:** die Änderung liegt in [CHANGELOG](../../../../CHANGELOG.md) `[Unreleased]`,
+zusammen mit `construct-leak` aus [slice-042](slice-042-constructs-aufruf-monopol.md) — beide
+warten auf denselben nächsten Release-Schnitt.
