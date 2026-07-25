@@ -84,7 +84,7 @@ Verwerfungen oder Vertagungen. Das ist kein Planungs-Mangel, sondern das sichtba
 dass Entscheidungen an Messungen hingen — vorher stand das verstreut in Slice-Dokumenten und
 damit faktisch nirgends.
 
-**Folge-Slices:** [slice-054](../in-progress/slice-054-ac-form.md) (Etappe D, 3/3 — B-15, AC-Form).
+**Folge-Slices:** [slice-054](slice-054-ac-form.md) (Etappe D, 3/3 — B-15, AC-Form).
 
 ## 7. Sub-Area-Modus
 
