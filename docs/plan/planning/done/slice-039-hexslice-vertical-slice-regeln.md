@@ -1,7 +1,7 @@
 # slice-039 — HexSlice Vertical-Slice-Regeln: `lateral-slice` + `port-locality`
 
 **Status:** **done** (2026-07-24) — spec-first umgesetzt, adversarisches Review (b-cad-Regression gefunden+gefixt), `make ci` grün, gegen HexSlice-Beispiel + b-cad/d-check/d-migrate verifiziert. Zwei neue Regeln.
-**Auslöser:** Nutzer-Wahl [slice-037](../open/slice-037-hexslice-gap-analyse.md) **Option B + C** — die Vertical-Slice-Achse gaten. Evidenz: realer HexSlice-Go-Konsument `hexslice-architecture/lab/examples/go` (mit `.a-check.yml` + `a-check.mk`).
+**Auslöser:** Nutzer-Wahl [slice-037](slice-037-hexslice-gap-analyse.md) **Option B + C** — die Vertical-Slice-Achse gaten. Evidenz: realer HexSlice-Go-Konsument `hexslice-architecture/lab/examples/go` (mit `.a-check.yml` + `a-check.mk`).
 **Bezug:** neue Regeln unter [AC-FA-RULE-006](../../../../spec/lastenheft.md#ac-fa-rule-006--schicht-rollen-generische-regel-anwendung)-Rollenmodell; präzisiert [SPEC-RULE-001](../../../../spec/spezifikation.md#spec-rule-001--regel-auswertung); Heuristik-Grenze [AC-QA-02](../../../../spec/lastenheft.md#ac-qa-02--hermetik-und-ehrliche-heuristik-grenze). [Roadmap](../in-progress/roadmap.md).
 
 > **Hinweis:** Entwurf/Umsetzung. AC-/ADR-IDs werden beim Schreiben in `spec/` vergeben

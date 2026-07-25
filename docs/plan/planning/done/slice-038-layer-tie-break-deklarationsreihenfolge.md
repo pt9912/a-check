@@ -2,7 +2,7 @@
 
 **Status:** **done** (2026-07-24) — Code + Tests + `make ci` grün, Binary-verifiziert, Implementierungs-Review bestanden (Befund R-1 behandelt), Entscheid C clean; ff auf `main` (Konformitäts-/Bugfix; **kein** neuer Vertrag, **kein** neuer ADR, **kein** Lastenheft-Bump).
 **Auslöser:** Nebenbefund **F-3** aus der HexSlice-Gap-Analyse
-([slice-037 §4.0](../open/slice-037-hexslice-gap-analyse.md#40-port-rollen-klassifikation-verschachtelter-ports-verifiziert)).
+([slice-037 §4.0](slice-037-hexslice-gap-analyse.md#40-port-rollen-klassifikation-verschachtelter-ports-verifiziert)).
 **Bezug:** stellt die Implementierung auf den bereits akzeptierten Vertrag von
 [ADR-0013](../../adr/0013-layerof-laengster-praefix.md) her; präzisierte Regel
 [SPEC-RULE-001](../../../../spec/spezifikation.md#spec-rule-001--regel-auswertung),
@@ -34,7 +34,7 @@ fängt.
   `sortedKeys(…)` **alphabetisch** — die YAML-Deklarationsreihenfolge geht beim Decode verloren.
   `LayerOf`/`layerOfCand` iterieren diese alphabetische Slice mit striktem `>`; bei Gleichstand
   gewinnt daher die **alphabetisch erste** Schicht, nicht die zuerst deklarierte.
-- **Beobachtet** ([slice-037 §4.0](../open/slice-037-hexslice-gap-analyse.md#40-port-rollen-klassifikation-verschachtelter-ports-verifiziert),
+- **Beobachtet** ([slice-037 §4.0](slice-037-hexslice-gap-analyse.md#40-port-rollen-klassifikation-verschachtelter-ports-verifiziert),
   gegen `a-check:dev`): bei zwei Schichten mit identischem Literal-Präfix
   (`src/hexagon/application/**` vs. `src/hexagon/application/**/ports/**`) gewinnt stets
   `application` (`a` < `p`) — **auch nach YAML-Reihenfolge-Tausch**. Ein tiefen-verschachtelter
@@ -148,7 +148,7 @@ konform. Kein Zeit-/Zufalls-/Locale-Einfluss.
       `<<` in `layers` nicht mehr expandiert → fail-closed) behandelt: gepinnt + als Grenze
       dokumentiert (§4). Entscheide **A** (als Konformitäts-Bugfix, kein ADR), **B** (nur `layers`),
       **C** (Konsumenten clean), **D** (Overlap-Ergonomie an slice-037 A′ abgegrenzt) wie empfohlen.
-- [x] Folge-Notiz in [slice-037](../open/slice-037-hexslice-gap-analyse.md) §4.0/§4.3: nach dem Fix
+- [x] Folge-Notiz in [slice-037](slice-037-hexslice-gap-analyse.md) §4.0/§4.3: nach dem Fix
       genügt `ports` **vor** `application` zu deklarieren (kein Business-Area-Aufzählen nötig).
 
 ## 7. Offen / Entscheidungen zur Abnahme
@@ -171,7 +171,7 @@ konform. Kein Zeit-/Zufalls-/Locale-Einfluss.
   Gleichstand-Overlaps sichten; falls einer betroffen ist, im Closure benennen.*
 - **Entscheid D — tiefere Overlap-Ergonomie (abgrenzen):** ob ein *spezifischerer-Glob-gewinnt-
   über-Overlap*-Mechanismus (tiefen-agnostische Ports ohne Reorder) gebaut wird, ist
-  [slice-037 Option A′](../open/slice-037-hexslice-gap-analyse.md#7-optionen--offene-entscheidungen),
+  [slice-037 Option A′](slice-037-hexslice-gap-analyse.md#7-optionen--offene-entscheidungen),
   **nicht** dieser Slice. Hier nur der Tie-Break-Konformitäts-Fix; er macht den Tie **steuerbar**
   (Reorder wirkt), löst die Overlap-Ergonomie aber nicht restlos. *Empfehlung: getrennt halten.*
 
