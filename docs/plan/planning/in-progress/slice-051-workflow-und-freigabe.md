@@ -4,7 +4,7 @@
 [slice-048 §5](../done/slice-048-modul-delta-lesen.md).
 **Deckt:** Fund **B-16** (dritter Bindepunkt der Durchsetzungsschicht fehlt) und **B-20**
 (`releasing.md` ist Prozedur ohne Freigabe-Belege).
-[Roadmap](roadmap.md).
+[Roadmap](../in-progress/roadmap.md).
 
 ---
 
