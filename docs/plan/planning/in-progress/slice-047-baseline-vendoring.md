@@ -67,7 +67,7 @@ Soll-Zustand und gehört damit in Etappe D, nicht hier. Bis dahin trägt `SHA256
 - [x] Adaption als [MR-006](../../../../harness/conventions.md#mr-006--baseline-committet-vendored-statt-per-url-referenziert) deklariert, mit Nummern-Hinweis auf Etappe C.
 - [x] Vendored Baum aus dem Doku-Gate genommen, Dateizahl als Beleg.
 - [x] `make gates` grün mit echter Ausgabe.
-- [ ] **Review-Synthese** unter [`docs/reviews/`](../../../reviews/) (Regelwerk Modul 10).
+- [x] **Review-Report** unter [`docs/reviews/`](../../../reviews/2026-07-25-slice-047-baseline-vendoring.md) — erster Report in der **vendored Vorlagen-Form** (Modul 10): 0 HIGH, 2 MEDIUM (F-1 Provenienz nicht gegatet → Etappe D, F-2 Prozess), 2 LOW, 2 INFO; nicht merge-blockierend **mit begründeter Abweichung**.
 
 ## 5. Closure-Notiz
 
