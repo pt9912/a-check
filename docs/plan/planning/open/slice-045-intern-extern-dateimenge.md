@@ -1,6 +1,8 @@
 # slice-045 — Intern vs. extern über die Dateimenge (Ziel-seitige Abdeckung)
 
-**Status:** open — **Entwurf zur Abnahme** (Messung liegt vor, keine Spec-/Code-Änderung).
+**Status:** open — **entschieden 2026-07-25: jetzt nicht bauen** (§0), mit ausgewiesenen Triggern.
+Der Slice bleibt als Entwurf stehen: Messung, Entscheide und Umsetzungs-Fallstrick sind
+festgehalten, damit ein späterer Lauf nicht bei null anfängt. Keine Spec-/Code-Änderung.
 **Auslöser:** Maintainer-Nachfrage am 2026-07-25 im Anschluss an
 [slice-043](../done/slice-043-schicht-abdeckung-sichtbar.md): „87 von 180 Include-Zielen in b-cad
 lösen auf keine Schicht auf — und das können wir mit `.a-check.yml` nicht abbilden." Richtig — und
@@ -18,6 +20,56 @@ und die Heuristik-Grenze [AC-QA-02](../../../../spec/lastenheft.md#ac-qa-02--her
 > Die Entscheide §4 gehören **vor** die Umsetzung.
 
 ---
+
+## 0. Abnahme (2026-07-25) — nicht bauen, mit Trigger
+
+| # | Frage | Entscheidung |
+|---|---|---|
+| 1 | **Scope** | **(c) — jetzt nicht bauen.** Falls ein Trigger (§0.2) feuert: dann **(a)**, nur `fixed-root` |
+| 2 | **`module_base` deklarieren?** | **Nein** |
+| 3 | **Wirkung** | weder (a) noch (b) als **eigener** Mechanismus. Falls gebaut: **(a) als Anreicherung der bestehenden [ADR-0029](../../adr/0029-abdeckungs-diagnose-advisory.md)-Zeile**; ein **Befund** gehört, wenn überhaupt, in den `strict_coverage`-Slice |
+| 4 | **Verhältnis zur Quell-Diagnose** | **eine** Meldung. Zwei Objekte, **eine** Ursache — zwei Kanäle für eine Ursache sind per Konstruktion Doppelmeldung |
+
+### 0.1 Begründung
+
+**Zu 1.** Die Neigung „(a), weil korrekt und kostenlos" war an der falschen Frage gemessen: sie
+beantwortet, ob man **kann**, nicht ob es **nützt**. Nach §5.1 ist die Nachfrage (P2/2b) erodiert,
+die Messung zeigt **null** reale Fundstellen, und die Information ist über die Quell-Diagnose
+bereits sichtbar. Das ist genau die Lage, in der
+[ADR-0029](../../adr/0029-abdeckungs-diagnose-advisory.md) selbst `strict_coverage` vertagt hat
+(„für eine Strenge, die noch niemand angefragt hat") — dieselbe Elle hier anzulegen ist
+**konsistent, nicht zögerlich**.
+
+Zweites Argument: **a-check könnte das Feature nicht dogfooden.** Die Eigen-Config läuft im
+`path`-Modus (§2.3); ein `fixed-root`-only-Mechanismus würde von `make arch-check` **nie**
+ausgeführt. Ein Mechanismus, den das eigene Gate nicht fährt, hängt allein an Unit-Tests.
+
+**Zu 2.** Das Argument „Deklaration ≠ gelesenes Manifest" trägt gegenüber
+[ADR-0002](../../adr/0002-text-heuristische-extraktion.md)/[ADR-0014](../../adr/0014-resolution-roots.md)
+— die Hermetik bliebe gewahrt. Es scheitert an anderem: ein neuer Config-Schlüssel **mit
+fail-closed-Validierung** für vier Konsumenten, die dafür heute **null** Konfiguration brauchen und
+von denen ihn **keiner** angefragt hat. Und er wäre ein **zweiter Ausdruck für dieselbe Wahrheit**,
+die `segIndex` bereits präfix-tolerant löst — zwei Quellen, die auseinanderlaufen können
+(Schicht-Zuordnung sagt „intern", Dateimengen-Test sagt „extern", weil `module_base` veraltet ist).
+Die Suffix-Heuristik aus 1(b) ist damit ebenfalls erledigt: sie reproduziert genau das
+**Geister-Match-Risiko**, das [ADR-0029](../../adr/0029-abdeckungs-diagnose-advisory.md)
+§Verworfene Alternativen bereits benannt hat.
+
+**Zu 4 — konkrete Gestalt, falls es je gebaut wird:** die bestehende Diagnose-Zeile bekommt einen
+Zusatz **je Datei** („… — importiert aus n Datei(en)"). Das schärft das Signal — *ungedeckt und
+erreicht* ist etwas anderes als *ungedeckt und tot* — **ohne** zweiten Ausgabekanal, **ohne** neue
+Kürzungslogik und **ohne** zweite Determinismus-Sortierung.
+
+### 0.2 Trigger, die die Entscheidung umdrehen
+
+Einer genügt; dann gilt **(a) + 3(a) + 4 gemeinsam**:
+
+1. Ein Konsument, dessen Abdeckungs-Diagnose feuert, fragt **„welcher Import erreicht die Datei
+   eigentlich?"** — dann ist die Priorisierung **angefragt** statt vermutet.
+2. Eine Nachmessung zeigt bei einem `fixed-root`-Konsumenten **≥ 1** intern-aber-schichtloses Ziel
+   (heute: **0**).
+3. **`strict_coverage` wird gezogen** — dann fällt der ziel-seitige Test als **Nebenprodukt** an und
+   wird dort mitentschieden, nicht in einem eigenen Slice.
 
 ## 1. Die Frage
 
@@ -97,7 +149,11 @@ Der Kandidat ist **halb** tragfähig:
   abgrenzbar" beschrieben hat — für `fixed-root` ist diese Einschätzung **widerlegt**, für `path`
   **bestätigt**.
 
-## 4. Zu entscheiden vor der Umsetzung
+## 4. Zu entscheiden vor der Umsetzung — **in §0 entschieden**
+
+> Die Tabelle steht als Entscheidungs-Vorlage samt der damaligen Neigung; **abgenommen** ist §0.
+> Bei Neigung 1 wich die Entscheidung ab (dort: (a), entschieden: (c)) — die Begründung steht in
+> §0.1.
 
 | # | Frage | Optionen | Erste Neigung |
 |---|---|---|---|
@@ -158,6 +214,29 @@ Entscheidung liegt beim Konsumenten-Repo.
 | `internal/cli` | Ausgabe (analog der Quell-Seiten-Diagnose) |
 | `internal/adapter/driven/config` | **nur bei Entscheid 2** ein optionaler Modul-Präfix-Schlüssel + fail-closed-Validierung |
 | Doku | Folge-ADR, [SPEC-EXTRACT-001](../../../../spec/spezifikation.md#spec-extract-001--import-extraktion)/[SPEC-CLI-001](../../../../spec/spezifikation.md#spec-cli-001--aufruf-scan-wurzel-und-exit-codes), Benutzerhandbuch, [CHANGELOG](../../../../CHANGELOG.md), Roadmap |
+
+### 6.1 Umsetzungs-Fallstrick — `denotes()` ist als Diskriminator **unbrauchbar**
+
+Die naheliegende Wiederverwendung wäre `fileIndex.denotes()` bzw. `strength(cand) > 0`. **Das wäre
+falsch.** `strength` hat drei Stufen, und **Stufe 1 prüft nur, ob das Elternverzeichnis des
+Kandidaten existiert**:
+
+```go
+if _, ok := idx.dirs[path.Dir(c)]; ok { return 1 }
+```
+
+`#include <QWidget>` wird unter b-cads `roots: ["src"]` zum Kandidaten `src/QWidget`; dessen
+Elternverzeichnis `src` liegt in `idx.dirs` — Ergebnis **„intern"**. Am realen Baum nachgemessen:
+
+| Diskriminator | wertet die 87 externen Ziele als „intern" |
+|---|---|
+| `denotes()` / `strength(cand) > 0` (Stufe 1 genügt) | **87 von 87** — komplett falsch |
+| `strength(cand) >= 2` (Datei existiert exakt) | **0 von 87** — korrekt |
+
+Die Messung in §2.2 hat exakt gematcht, entspricht also **Stufe 2**. Eine Umsetzung muss den Test
+auf **`strength(cand) >= 2`** festnageln — mit Test **und** Kommentar, warum Stufe 1 hier nicht
+gilt. Sonst kippt der Mechanismus von „87 korrekt extern" auf „87 falsch intern", und zwar
+**still**.
 
 **DoD (bei Ausarbeitung):** spec-first (Folge-ADR → Spezifikation → Code → Tests); **Review-Synthese
 unter [`docs/reviews/`](../../../reviews/)** nach Regelwerk Modul 10; `make gates` **und** `make ci`

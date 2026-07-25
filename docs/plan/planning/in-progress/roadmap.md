@@ -30,8 +30,12 @@
 > **Neu als Entwurf (2026-07-25):** [slice-045](../open/slice-045-intern-extern-dateimenge.md) —
 > die **Ziel**-seitige Abdeckung über die gescannte Dateimenge. Messung: für `fixed-root`-Konsumenten
 > trennt der bestehende `fileIndex` intern/extern **fehlerfrei** (b-cad: 87 von 87 korrekt als extern),
-> für die vier `path`-Konsumenten nicht ohne Zusatz-Heuristik (Modul-Präfix). Halber Kandidat,
-> Entscheide §4 offen.
+> für die vier `path`-Konsumenten nicht ohne Zusatz-Heuristik (Modul-Präfix).
+> **Entschieden: jetzt nicht bauen** ([slice-045 §0](../open/slice-045-intern-extern-dateimenge.md)) —
+> null reale Fundstellen, die Nachfrage (P2/2b) ist erodiert, und a-check könnte den
+> `fixed-root`-only-Mechanismus im eigenen `path`-Modus **nicht dogfooden**. Drei Trigger drehen die
+> Entscheidung um; ein `module_base`-Schlüssel ist abgelehnt (zweite Quelle für eine Wahrheit, die
+> `segIndex` schon löst).
 > **Sonst kein aktiver Faden offen.** Vertagt/gated: `strict_coverage` (Folge-Slice), Kandidat 2b
 > (Präfix-Allowlist — **Begründung erodiert 2026-07-25**: P2 zerfällt in Kanten + Abdeckungs-Diagnose
 > + Compiler, keiner davon braucht die Beweislast-Umkehr;
