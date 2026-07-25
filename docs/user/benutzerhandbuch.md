@@ -1,6 +1,6 @@
 # Benutzerhandbuch: a-check
 
-**Handbuch-Version:** 1.34 · **Software-Version:** [aktuelles Release](../../version.md#aktuell) · **Stand:** 2026-07-25 ·
+**Handbuch-Version:** 1.35 · **Software-Version:** [aktuelles Release](../../version.md#aktuell) · **Stand:** 2026-07-25 ·
 **Autor:** pt9912 (Maintainer)
 
 ---
@@ -60,6 +60,25 @@ Docker und `make`; a-check-Interna müssen Sie nicht kennen.
   Gesamtzahl) steht auf stderr.
 - **Exit-Code 2** — Nutzungs- oder Konfigurationsfehler (z. B. fehlende oder
   ungültige `.a-check.yml`, unbekannte Option).
+
+**Zusätzlich möglich: ein Abdeckungs-Hinweis.** Liegen gescannte Dateien in **keiner** Ihrer
+`layers`-Schichten, nennt a-check sie nach der Zusammenfassung auf stderr:
+
+```text
+Hinweis: 2 gescannte Datei(en) liegen in keiner Schicht und bleiben ungeprüft:
+  apps/api/internal/storage/migrate.go
+  apps/api/scripts/coverage-overview/main.go
+  Abhilfe: Schicht in layers deklarieren oder Datei in exclude aufnehmen.
+```
+
+Das ist **kein Befund**: der Exit-Code ändert sich dadurch nicht. Der Hinweis sagt Ihnen, worüber
+a-check **nichts aussagt** — für diese Dateien greift keine Schicht-Regel, und Importe **auf** sie
+bleiben unbeurteilt. Sie entscheiden, was richtig ist: gehört das Verzeichnis zur Architektur,
+deklarieren Sie es in `layers`; gehört es nicht dazu (Werkzeuge, Generate), nehmen Sie es in
+`exclude` auf. Ist Ihr Baum vollständig gedeckt, erscheint der Hinweis **nicht**.
+Nicht mitgezählt werden `composition_root`-Dateien (die sind bestimmungsgemäß schichtlos) und
+`exclude`-Dateien (die werden nie gescannt). Ab zehn Dateien wird die Liste gekürzt und die
+Restzahl genannt.
 
 ## 3. Aufgaben
 
@@ -745,3 +764,4 @@ und die [Spezifikation](../../spec/spezifikation.md); ein Überblick steht in de
 | 1.32 | 2026-07-24 | §3.6: die `--print-graph`-Legende nennt jetzt **alle fünf** kategorischen Regeln (`lateral-slice`/`port-locality` ergänzt). Spez 0.23.0, slice-040. Noch nicht im veröffentlichten Image. |
 | 1.33 | 2026-07-25 | Lastenheft 0.22.0: neuer Optionalblock **`constructs`** und Regel **`construct-leak`** — ein Roh-Text-Muster darf nur in seiner **Zone** vorkommen (dieselbe Mechanik wie `tech`: `adapter` als Pfad/Liste, `match: substring\|regex`, `composition_root: allow\|forbid`), jedes Vorkommen außerhalb ist ein Befund. Damit sind Konstrukte gatebar, die **keine Import-Zeile** sind (typisch: das `dlopen`-Aufruf-Monopol im Plugin-Adapter). §4 um den Abschnitt „Roh-Text-Monopol (`constructs`)" + Beispiel-Config erweitert, §3.4-Regeltabelle um `construct-leak`, §3.5 (Allowlist wirkt nicht auf Text-Muster), §3.6-Legende. Scan-weit (auch Dateien ohne Schicht), Kommentar-Treffer zählen nicht (ausgewiesene Abweichung von einer `grep`-Regel). Noch nicht im veröffentlichten Image (slice-042, [ADR-0027](../plan/adr/0027-constructs-roh-text-monopol.md)). |
 | 1.34 | 2026-07-25 | §3.4-Kasten „Config-Disziplin" **und** §3.7-Fallstrick „Saubere Präfix-Globs" präzisiert. Ein Glob mit Wildcard **in der Mitte** (`…/application/**/ports/**`) hat kein literales Verzeichnispräfix; sein Import-**Ziel** gilt darum als repo-extern und wird **gar nicht beurteilt** — betroffen sind nicht nur `lateral-slice`/`port-locality`, sondern auch die **Kanten**-Prüfung (`wrong-direction`). Intakt bleibt die Datei→Schicht-Zuordnung: die Port-*Dateien* werden weiter als `port` geprüft (`port-impurity`, `forbidden_constructs`). Bisher meldete a-check hier stattdessen einen `wrong-direction`-**Fehlbefund** gegen die umschließende Schicht, dessen naheliegende Reparatur echte Verstöße verdeckt hätte. Wer die Kanten mitgaten will, gibt den Port-Globs einen sauberen literalen Präfix. Spez 0.25.0, [ADR-0028](../plan/adr/0028-ziel-glob-schattenwurf.md), slice-044. Noch nicht im veröffentlichten Image. |
+| 1.35 | 2026-07-25 | §2 „Das Ergebnis verstehen" um den **Abdeckungs-Hinweis** ergänzt: liegen gescannte Dateien in keiner `layers`-Schicht, nennt a-check sie nach der Zusammenfassung auf stderr — **kein Befund, kein Exit-Code-Wechsel**, sondern die Aussage, worüber a-check nichts aussagt (Abhilfe: `layers` oder `exclude`). `composition_root`- und `exclude`-Dateien zählen nicht; ab zehn Dateien gekürzt mit genannter Restzahl; vollständig gedeckte Bäume erzeugen keinen Hinweis. Ebenfalls sichtbar: eine schichtlose Quelldatei heißt im `wrong-direction`-Befund jetzt `(ohne Schicht)` statt gar nichts. Spez 0.26.0, [ADR-0029](../plan/adr/0029-abdeckungs-diagnose-advisory.md), slice-043. Noch nicht im veröffentlichten Image. |

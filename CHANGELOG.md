@@ -8,6 +8,19 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
 ### Added
 
+- **Abdeckungs-Diagnose für schichtlose Dateien (`ADR-0029`, `SPEC-CLI-001` 0.26.0, slice-043):** ein
+  Scan nennt jetzt auf stderr — nach der Zusammenfassung — die gescannten Dateien, die in **keinem**
+  `layers`-Glob liegen und damit **keiner Schicht-Regel** unterliegen. Bisher war diese bewusste
+  fail-open-Grenze (`AC-QA-02`) unsichtbar: ein grünes Gate über einem teilweise ungeprüften Baum
+  sah aus wie eines über einem geprüften. **Der Exit-Code bleibt unberührt** (advisory);
+  vollständige Abdeckung erzeugt **keine** Ausgabe — die Meldung ist Signal, nicht Rauschen
+  (verifiziert: sechs von sieben lokalen Konsumenten-Konfigurationen bleiben diagnose-frei).
+  `composition_root`-Dateien zählen nicht, `exclude`-Dateien sind nie im Scan; gezählt wird nur die
+  **Quell**-Seite (ein Import-**Ziel** ohne Schicht ist von repo-externem Code nicht unterscheidbar).
+  Pfade stabil sortiert, ab zehn Dateien gekürzt **mit ausgewiesener Restzahl**. Eine Opt-in-Strenge
+  (`strict_coverage` ⇒ Exit 1) ist ausdrücklich **vertagt**. Abhilfe beim Konsumenten: Schicht in
+  `layers` deklarieren oder Datei in `exclude` aufnehmen.
+
 - **Roh-Text-Konstrukt-Monopol `constructs` / Regel `construct-leak` (`AC-FA-RULE-011`, `ADR-0027`,
   `SPEC-CONF-001`/`SPEC-RULE-001`/`SPEC-EXTRACT-001` 0.24.0, slice-042):** ein neuer optionaler
   `constructs`-Block hebt die bewährte `tech`-Scoping-Mechanik — Zone als Pfad **oder** Pfad-Liste,
@@ -25,6 +38,11 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
   Bestandskonsumenten bleiben bei 0 Befunden.
 
 ### Fixed
+
+- **Kein leerer Quell-Schicht-Name mehr im `wrong-direction`-Befund (slice-043):** importierte eine
+  gescannte Datei **ohne** Schicht eine deklarierte Schicht, rendete die Meldung ein Loch
+  (`wrong-direction:  -> ui`). Sie weist die Quelle jetzt als `(ohne Schicht)` aus — das
+  quell-seitige Symptom derselben Abdeckungs-Lücke, die die neue Diagnose meldet.
 
 - **Kein Fehlbefund mehr bei unauflösbarem Ziel-Glob (`ADR-0028`, `SPEC-RULE-001` 0.25.0, slice-044):**
   ein Layer-Glob mit **Wildcard in der Mitte** (`…/application/**/ports/**`) kann als Import-**Ziel**
