@@ -60,6 +60,56 @@ guard_verdict() {
       return false;
     }
 
+    // ── Regel 2: Gate-Lauf darf nicht verschluckt werden (slice-057) ──────────
+    // Ein `make <gate> | tail` liefert den Exit-Code von tail; ein rotes Gate
+    // verschwindet spurlos. Dasselbe gilt fuer `make <gate> && git commit` —
+    // der Commit haengt dann an einem ungeprueften Lauf. Fuenf reale Vorfaelle
+    // am 2026-07-25 (Steering-Loop SL-001).
+    const GATES = new Set(["gates","verify","ci","lint","test","coverage-gate",
+      "arch-check","doc-check","image-test","trace-check","suppression-check",
+      "gate-consistency","verify-closure-notes","verify-slice-form",
+      "verify-ac-form","guard-selftest"]);
+
+    function hasGateMake(seg) {
+      const t = seg.trim().split(/\s+/).filter(Boolean).map(stripQuotes);
+      const i = t.indexOf("make");
+      if (i === -1) return false;
+      for (let k = i + 1; k < t.length; k++) {
+        if (t[k].startsWith("-") || t[k].includes("=")) continue;
+        if (GATES.has(t[k])) return true;
+      }
+      return false;
+    }
+
+    // Zitierte Argumente ausblenden: ein `make <gate>`-Muster INNERHALB eines
+    // Strings ist keine Pipeline, sondern Text (Doku, Testfall, Commit-Message).
+    // Ohne das feuerte die Regel auf ihren eigenen Selbsttest — real passiert
+    // beim Bau, siehe Steering-Loop SL-001.
+    // EHRLICHE GRENZE: ein echtes Sub-Shell-Kommando mit demselben Muster in
+    // Anfuehrungszeichen entgeht damit. Der Guard ist ein Stolperdraht, keine
+    // Sandbox (Regelwerk §Durchsetzungsschicht): er faengt die versehentliche
+    // Drift, nicht die umgeleitete.
+    const blank = t => "\u0000".repeat(t.length);
+    function stripQuoted(cmd) {
+      return cmd.replace(/"[^"]*"|'\''[^'\'']*'\''/g, m => m[0] + blank(m.slice(1, -1)) + m[0]);
+    }
+
+    function pipeViolation(raw) {
+      const cmd = stripQuoted(raw);
+      // Trennzeichen erhalten, damit die Folge-Beziehung lesbar bleibt.
+      const parts = cmd.split(/(\|\||&&|\||;|\r?\n)/);
+      for (let i = 0; i < parts.length; i++) {
+        if (!hasGateMake(parts[i])) continue;
+        const sep = parts[i + 1];
+        if (sep === "|") return true;                    // Ausgabe in eine Pipe
+        if (sep === "&&") {
+          const rest = parts.slice(i + 2).join("");
+          if (/\bgit\s+commit\b/.test(rest)) return true;  // Commit am Lauf
+        }
+      }
+      return false;
+    }
+
     let s = "";
     process.stdin.on("data", d => s += d);
     process.stdin.on("end", () => {
@@ -67,10 +117,20 @@ guard_verdict() {
       try {
         const j = JSON.parse(s);
         cmd = String((j.tool_input && j.tool_input.command) || "");
-      } catch { process.stdout.write("block"); return; } // unlesbar → fail-closed
-      process.stdout.write(scan(cmd, 0) ? "block" : "ok");
+      } catch { process.stdout.write("block-toolchain"); return; } // unlesbar → fail-closed
+      if (scan(cmd, 0)) { process.stdout.write("block-toolchain"); return; }
+      process.stdout.write(pipeViolation(cmd) ? "block-pipe" : "ok");
     });
   '
+}
+
+emit_block_pipe() {
+  cat <<'JSON'
+{
+  "decision": "block",
+  "reason": "Gate-Lauf nicht verschlucken (AGENTS.md §6, slice-057): `make <gate> | …` liefert den Exit-Code des letzten Pipe-Glieds, nicht den von make — ein rotes Gate verschwindet spurlos. Ebenso `make <gate> && git commit`: der Commit haengt dann an einem ungeprueften Lauf. Richtig: `make <gate> > /tmp/gates.log 2>&1; echo \"EXIT=$?\"` und den Commit erst nach geprueftem Exit-Code."
+}
+JSON
 }
 
 emit_block() {
@@ -92,15 +152,24 @@ if [ "${1:-}" = "--selftest" ]; then
       fail=1
     fi
   }
-  assert block '{"tool_input":{"command":"go build ./..."}}'                    "Host-go"
-  assert block '{"tool_input":{"command":"sudo apt-get install -y x"}}'         "sudo+apt-get"
-  assert block '{"tool_input":{"command":"env FOO=bar pip3 install x"}}'        "env+Zuweisung+pip3"
-  assert block '{"tool_input":{"command":"bash -lc \"npm install\""}}'          "Sub-Shell -lc npm"
-  assert block '{"tool_input":{"command":"/usr/local/bin/golangci-lint run"}}'  "absoluter Pfad golangci-lint"
+  assert block-toolchain '{"tool_input":{"command":"go build ./..."}}'                    "Host-go"
+  assert block-toolchain '{"tool_input":{"command":"sudo apt-get install -y x"}}'         "sudo+apt-get"
+  assert block-toolchain '{"tool_input":{"command":"env FOO=bar pip3 install x"}}'        "env+Zuweisung+pip3"
+  assert block-toolchain '{"tool_input":{"command":"bash -lc \"npm install\""}}'          "Sub-Shell -lc npm"
+  assert block-toolchain '{"tool_input":{"command":"/usr/local/bin/golangci-lint run"}}'  "absoluter Pfad golangci-lint"
   assert ok    '{"tool_input":{"command":"make help"}}'                         "make erlaubt"
   assert ok    '{"tool_input":{"command":"git commit -m \"erwaehnt pip und npm\""}}' "Toolname nur im Arg-String"
   assert ok    '{"tool_input":{"command":"docker run --rm img npm test"}}'      "npm als docker-Argument"
   assert ok    '{"tool_input":{"command":"grep -rn \"go \" ."}}'                "go nur im grep-Muster"
+  # Regel 2 (slice-057): Gate-Lauf nicht verschlucken.
+  assert block-pipe '{"tool_input":{"command":"make gates | tail -20"}}'              "make gates in eine Pipe"
+  assert block-pipe '{"tool_input":{"command":"make verify | grep ok"}}'              "make verify in eine Pipe"
+  assert block-pipe '{"tool_input":{"command":"make gates && git commit -m x"}}'      "Commit an ungepruefenten Lauf gekettet"
+  assert ok    '{"tool_input":{"command":"make gates > /tmp/g.log 2>&1"}}'       "Umleitung in eine Datei ist richtig"
+  assert ok    '{"tool_input":{"command":"make help | grep verify"}}'           "Nicht-Gate-Target darf gepiped werden"
+  assert ok    '{"tool_input":{"command":"grep -E x /tmp/g.log | tail -3"}}'    "Pipe ohne make"
+  assert ok    '{"tool_input":{"command":"make gates && echo fertig"}}'         "Verkettung ohne Commit"
+  assert ok    '{"tool_input":{"command":"echo \"make gates | tail\" >> doku.md"}}'   "Muster nur im Argument-String"
   if [ "$fail" -ne 0 ]; then
     echo "guard-selftest: FEHLGESCHLAGEN" >&2
     exit 1
@@ -112,7 +181,8 @@ fi
 # ── Normalmodus ──────────────────────────────────────────────────────────────
 input="$(cat)"
 verdict="$(guard_verdict "$input")"
-if [ "$verdict" = "block" ]; then
-  emit_block
-fi
+case "$verdict" in
+  block-toolchain) emit_block ;;
+  block-pipe)      emit_block_pipe ;;
+esac
 # Pass-Fall: keine Ausgabe — die normale Permission-Prüfung übernimmt.

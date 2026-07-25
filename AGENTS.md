@@ -188,6 +188,12 @@ Aggregat). Ob ein Gate gerade grün ist, sagt die CI (Badge im
   Einführung bestehenden sind **grandfathered** (vertraglich bindend, Rand- und
   Negativfälle bereits in Prosa — ein Umbau träfe die Form statt der Substanz),
   und die Grandfather-Liste wächst nicht mit.
+- **Steering-Loop:** wiederkehrende Fehlermuster werden in
+  [`docs/plan/steering-loop.md`](docs/plan/steering-loop.md) gezählt. Ab dem
+  **zweiten** gleichartigen Vorfall entsteht ein Eintrag, ab dem **dritten** ist
+  es eine Harness-Lücke und verlangt einen Guide oder Sensor — „besser
+  aufpassen" ist keine Antwort. Ein Eintrag ohne Vorfallszahl ist unzulässig:
+  die Zahl ist das Einzige, was die Schwelle prüfbar macht.
 - **Slice-Form:** neue Slices entstehen aus
   [`docs/plan/planning/slice.template.md`](docs/plan/planning/slice.template.md). Sie trägt die
   Größen-Regel — **höchstens drei DoD-Punkte und höchstens zwei Schichten**; passt der Slice nicht
