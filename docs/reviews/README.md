@@ -3,6 +3,12 @@
 Ein Review-Dokument je Slice mit Code- oder Vertragsänderung. Form nach Regelwerk Modul 10
 (Stand siehe [`harness/conventions.md` §Baseline](../../harness/conventions.md#baseline)):
 
+- **Kopf-Metadaten je Report** (aus der Vorlage
+  `.harness/baseline/v3.5.2/templates/docs/reviews/review-report.template.md`): **Review-Art**
+  (Selbst-Review oder unabhängiger Lauf), **Skill-Version** (Stand von
+  [`.harness/skills/reviewer.md`](../../.harness/skills/reviewer.md)) und **Modell-ID**. Ohne
+  sie ist ein Report nicht einordbar: derselbe Befund wiegt unterschiedlich, je nachdem, ob ihn
+  der Autor selbst oder eine unabhängige Instanz gefunden hat.
 - **Kategorien** `HIGH` / `MEDIUM` / `LOW` / `INFO`.
 - **Output-Schema je Finding:** Quelle · Pfad · Befund (beobachtbar, ohne Lösungsvorschlag) ·
   `verifizierbar` (gibt es einen Gate-Lauf, der es bestätigen würde?).

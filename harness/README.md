@@ -59,7 +59,8 @@ Stop-Hook-„frischer-Klon"-Restlücke.
 
 <!--
 Drei Spalten — KEIN Lauf-Status (Form des Baseline-Templates
-`lab/templates/harness/README.template.md` §Sensors, Stand siehe conventions.md
+`.harness/baseline/v3.5.2/templates/harness/README.template.md` §Sensors —
+vendored und damit netzlos nachschlagbar; Stand siehe conventions.md
 §Baseline). Die Bindung-Spalte trägt STRUKTURELLE Referenzen (AC-/ADR-/CO-/
 Slice-ID, Schwelle, Image-Hash) — nicht, ob ein Gate gerade grün ist.
 Lauf-Wahrheit pro Commit liegt in der CI, nicht in diesem Rang-9-Dokument.

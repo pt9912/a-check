@@ -21,7 +21,9 @@ die kanonische Quelle (Source Precedence, siehe
 
 - **Konvention:** AI-Harness-Kurs
 - **Stand:** [`v3.5.2`](https://github.com/pt9912/ai-harness-course/releases/tag/v3.5.2)
-  (Release-Tag), **committet vendored** unter
+  (Release-Tag) — **Kurs-Welle 34 · 2026-07-24**, wie im Kopf des vendored
+  [`regelwerk/README.md`](../.harness/baseline/v3.5.2/regelwerk/README.md) ausgewiesen;
+  **committet vendored** unter
   [`.harness/baseline/v3.5.2/`](../.harness/baseline/v3.5.2/regelwerk/README.md) —
   siehe [`MR-006`](#mr-006--baseline-committet-vendored-statt-per-url-referenziert)
 - **Datum der Adoption:** 2026-06-20 (`v1.3.0`); **Stand gehoben auf `v3.5.2` am 2026-07-25**
@@ -327,6 +329,40 @@ Reproduzierbarkeit):
 
 ## Modus-Deklaration pro Sub-Area
 
-| Sub-Area (Pfad / Modul) | Modus | Begründung | Graduation-Bedingung / Folge-Slice |
-|---|---|---|---|
-| `*` (Default für gesamtes Repo) | Greenfield | Projekt startet spec-first; Doc führt, Code folgt | n/a (GF) |
+Der Modus ist **pro Sub-Area** zu deklarieren, nicht pro Repo: „ein Repo hat
+einen Bootstrap-Modus" ist laut Baseline ausdrücklich ein Anti-Pattern, weil
+der Modus ein *beobachtbares Verhältnis zwischen Code und Doku* ist und nicht
+ein Etikett. Bis 2026-07-25 stand hier eine einzige `*`-Zeile; das war genau
+diese Verkürzung (Fund **B-2** aus
+[slice-048](../docs/plan/planning/done/slice-048-modul-delta-lesen.md), behoben
+in slice-056).
+
+**Qualifikation.** Eine Sektion ist eine Sub-Area, wenn sie mindestens **zwei**
+der drei Inklusions-Achsen erfüllt: (1) eine eigene `MR-NNN`-Adaption wäre
+plausibel formulierbar, (2) eine eigene Diskrepanz-/Inventur-Zeile ist sinnvoll,
+(3) es gibt eine eigene Pfad-/Datei-Familie. Zu grobe Schnitte („das Backend")
+bündeln mehrere Sub-Areas und werden ausdifferenziert.
+
+| Sub-Area (Pfad / Modul) | Achsen | Modus | Begründung | Graduation / Folge-Slice |
+|---|---|---|---|---|
+| **Spec-Straten** — `spec/` | 1,2,3 | Greenfield | Anforderung vor Code, ausnahmslos: jede `AC-*` entstand vor ihrer Implementierung; eigene Adaptionen `MR-001`/`MR-002`/`MR-004` | n/a (GF) |
+| **Entscheidungen** — `docs/plan/adr/` | 1,2,3 | Greenfield | ADR vor Code; Immutabilität maschinell durchgesetzt (`doc-immutable`) | n/a (GF) |
+| **Kern und Regeln** — `internal/hexagon/` | 1,2,3 | Greenfield | jede Regel hat eine `AC-FA-RULE-*` als Anker; Dogfooding über `arch-check` | n/a (GF) |
+| **Adapter** — `internal/adapter/` | 2,3 | Greenfield | Ports vor Adaptern; die Schichtung ist selbst gegatet | n/a (GF) |
+| **Planungs-Harness** — `docs/plan/planning/` | 1,2,3 | Greenfield | Form und Größen-Regel stehen in der Vorlage, der Sensor `verify-slice-form` prüft sie — **seit slice-052**; davor war die Praxis unbelegt | n/a (GF), erreicht mit slice-052 |
+| **Gate-/Werkzeug-Schicht** — `tools/`, `Makefile`, `Dockerfile`, `.claude/` | 1,2,3 | Greenfield | jedes Target ist in `AGENTS.md` §4 deklariert, bevor es zählt; `gate-consistency` erzwingt das | n/a (GF) |
+| **Review-Harness** — `docs/reviews/` | 2,3 | Greenfield | Konvention und Skill vor dem Report | n/a (GF) |
+| **Vendored Baseline** — `.harness/baseline/` | 1,3 | **kein Modus** | externer, unveränderter Fremdtext ([`MR-006`](#mr-006--baseline-committet-vendored-statt-per-url-referenziert)); GF/BF beschreiben das Verhältnis *eigener* Doku zu *eigenem* Code und sind hier nicht anwendbar | Aktualisierung nur als Migrations-Slice |
+
+**Alle Sub-Areas mit Modus stehen auf Greenfield.** Das ist kein Zufall und
+keine Beschönigung: das Repo ist als Greenfield gestartet und hat die
+Doc-vor-Code-Reihenfolge über 55 Slices gehalten. Der Gewinn dieser Tabelle
+liegt darum **nicht** in einer Modus-Korrektur, sondern in den benannten
+**Inventur-Linien** — ab jetzt ist pro Sektion sagbar, *was* driften würde und
+*wer* es sehen müsste. Ein `*` konnte das nicht.
+
+**Drift-Anzeichen, auf die zu achten ist** (Baseline, drei Sensoren): häufen
+sich Diskrepanzen in einer GF-Sub-Area, übertrifft der Test-Bestand die
+Spec-Anker, oder muss die Spec regelmäßig dem Code nachgezogen werden statt
+umgekehrt — dann ist die Sub-Area faktisch nach Brownfield gedriftet und die
+Zeile wird geändert, nicht die Beobachtung.

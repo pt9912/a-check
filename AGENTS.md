@@ -15,9 +15,14 @@ Strukturregeln (ID-Schemata, Verzeichniskonvention, Adaptionen ggü.
 Baseline, Modus-Deklarationen pro Sub-Area) leben in
 [`harness/conventions.md`](harness/conventions.md).
 
-Das Betriebsregelwerk der adoptierten Baseline **einmal pro Session
-lesen**, bevor der Workflow (§6) startet — und zwar **den zur Aufgabe
-gehörenden Abschnitt**, nicht das ganze Bundle. Es liegt **committet
+Das Betriebsregelwerk der adoptierten Baseline ist **Nachschlagewerk pro
+Entscheidung**, keine Pro-Session-Lektüre: Wird ein Abschnitt gebraucht, wird
+**dieser eine** gelesen — nie das ganze Bundle (Kontext-Hygiene). Auswahlregel
+nach Aufgabe: Slice schneiden oder schließen → `modul-05`; ADR schreiben →
+`modul-04`; Gate anlegen oder ändern → `modul-13`; Review führen → `modul-10`;
+DoD/Closure prüfen → `modul-11`; Ausnahme oder Diskrepanz einordnen →
+`modul-07`; Modus einer Sub-Area bestimmen → `modul-02` und
+`grundlagen-konventionen`; Release → `modul-16`. Es liegt **committet
 vendored** im Repo, also netzlos verfügbar:
 [`.harness/baseline/v3.5.2/regelwerk/README.md`](.harness/baseline/v3.5.2/regelwerk/README.md)
 ist der Index (17 Module + drei Grundlagen-Abschnitte, eine Datei je

@@ -78,7 +78,8 @@ Eine Schicht.
 ## 6. Closure-Notiz
 
 **Geliefert:** die Nummern-Kollision als Nicht-Befund belegt und im Adaptions-Block festgehalten,
-zwei neue Einträge (`MR-007` ADR-Vorlagen-Version, `MR-008` Replay/Telemetrie-Abweichung), und
+zwei neue Einträge ([MR-007](../../../../harness/conventions.md#mr-007--adr-vorlagen-version-v352-statt-v130) ADR-Vorlagen-Version,
+[MR-008](../../../../harness/conventions.md#mr-008--kein-replay-keine-agenten-telemetrie) Replay/Telemetrie-Abweichung), und
 eine selbst eingebaute Duplikation zurückgebaut.
 
 **Lerneintrag — Form: geschärfte Regel.**
@@ -92,7 +93,7 @@ eine selbst eingebaute Duplikation zurückgebaut.
 **Zwei beobachtbare Closure-Kriterien:**
 
 1. `make gates` und `make verify` grün auf demselben Stand (je Exit 0) — belegt.
-2. `MR-000` ist im Diff **unverändert**; die Korrektur seiner Versionsaussage steht ausschließlich
+2. [MR-000](../../../../harness/conventions.md#mr-000--baseline-aussage-inkl-id-schema-deklaration) ist im Diff **unverändert**; die Korrektur seiner Versionsaussage steht ausschließlich
    im neuen Eintrag — die Änderungs-Disziplin ist also nicht nur beschrieben, sondern eingehalten.
 
 **Zweiter Fund, nicht geplant:** die AC-Drei-Pfad-Regel stand längst in `conventions.md`
