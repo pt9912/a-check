@@ -140,7 +140,7 @@ func directionRule(m Model, f FileImports, imp Import, srcRole, tgtRole, cand, t
 	case srcRole == "app" && tgtRole == "port" && portLocality(m, f.Path, cand):
 		return Finding{f.Path, imp.Line, "port-locality", "app außerhalb Port-Scope " + portScope(cand, m) + ": " + imp.Symbol}
 	case tl != "" && wrongDirection(m, f, tl):
-		return Finding{f.Path, imp.Line, "wrong-direction", f.Layer + " -> " + tl + " (" + imp.Symbol + ")"}
+		return Finding{f.Path, imp.Line, "wrong-direction", layerLabel(f.Layer) + " -> " + tl + " (" + imp.Symbol + ")"}
 	}
 	return Finding{}
 }
@@ -194,6 +194,18 @@ func roleOf(name string, m Model) string {
 		return ""
 	}
 	return EffectiveRole(l)
+}
+
+// layerLabel names a layer for a finding message. A scanned file in NO layer has
+// an empty name, which rendered as a hole ("wrong-direction:  -> ui"); it is the
+// source-side symptom of the coverage gap UncoveredFiles reports, so it says so
+// instead of showing nothing (ADR-0029). Only wrong-direction can see an empty
+// source layer — every other rule requires a role, which requires a layer.
+func layerLabel(name string) string {
+	if name == "" {
+		return "(ohne Schicht)"
+	}
+	return name
 }
 
 // dirOf returns a layer's explicit direction (driving|driven) or "". Unlike
@@ -286,6 +298,32 @@ func sortFindings(fs []Finding) {
 
 // MatchGlobs reports whether the repo-relative path matches any of the globs.
 func MatchGlobs(path string, globs []string) bool { return matchesAny(path, globs) }
+
+// UncoveredFiles returns the scanned files that lie in NO layer glob, stably
+// sorted by path (ADR-0029). Those files exist for the scan but for no layer
+// rule — a deliberate fail-open boundary (AC-QA-02) that stays invisible unless
+// it is reported: a green gate over a partly unchecked tree looks exactly like a
+// green gate over a checked one.
+//
+// composition_root files are NOT counted: they are layer-less by design (the
+// wiring point is exempt from the layer rules anyway). exclude files never reach
+// this function — they are dropped before extraction (ADR-0018/ADR-0025).
+//
+// Only the SOURCE side is reported. An import TARGET that resolves to no layer
+// is the same class of gap, but there it cannot be told apart from repo-EXTERNAL
+// code (a third-party library) — reporting it would be noise. The cause is fixed
+// from the source side anyway: declare the zone, and both sides resolve.
+func UncoveredFiles(m Model, files []FileImports) []string {
+	var out []string
+	for _, f := range files {
+		if f.Layer != "" || matchesAny(f.Path, m.CompositionRoot) {
+			continue
+		}
+		out = append(out, f.Path)
+	}
+	sort.Strings(out) // stable, path-ordered (SPEC-DET-001)
+	return out
+}
 
 // sliceOf returns the vertical-slice identity of a path (AC-FA-RULE-009): the
 // longest app-role layer-glob LITERAL prefix that matches path as a segment run

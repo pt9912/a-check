@@ -1798,3 +1798,40 @@ func TestLiteralHeadAndTail(t *testing.T) { // ADR-0028: Bausteine des Rückzugs
 		}
 	}
 }
+
+// --- ADR-0029: Abdeckungs-Diagnose ------------------------------------------
+
+func TestUncoveredFiles(t *testing.T) { // ADR-0029: Quell-Seite, composition_root ausgenommen, sortiert
+	m := testModel() // composition_root: cmd/**
+	files := []FileImports{
+		{Path: "tools/gen.go", Layer: ""},
+		{Path: "core/svc.go", Layer: "core"},
+		{Path: "cmd/main.go", Layer: ""}, // Composition Root: zaehlt NICHT
+		{Path: "adapters/a/x.go", Layer: "adapters"},
+		{Path: "scripts/build.go", Layer: ""},
+	}
+	got := UncoveredFiles(m, files)
+	want := []string{"scripts/build.go", "tools/gen.go"} // stabil nach Pfad
+	if len(got) != len(want) || got[0] != want[0] || got[1] != want[1] {
+		t.Fatalf("UncoveredFiles = %v, want %v", got, want)
+	}
+}
+
+func TestUncoveredFilesFullyCovered(t *testing.T) { // ADR-0029: kein Rauschen im Normalfall
+	got := UncoveredFiles(testModel(), []FileImports{{Path: "core/svc.go", Layer: "core"}})
+	if len(got) != 0 {
+		t.Fatalf("vollstaendig gedeckter Baum darf nichts melden, got %v", got)
+	}
+}
+
+func TestWrongDirectionLayerlessSourceLabel(t *testing.T) { // ADR-0029 §5: kein leerer Quell-Name
+	fs := mustEval(t, testModel(), []FileImports{
+		{Path: "tools/gen.go", Layer: "", Imports: []Import{{Symbol: "adapters/a/x", Line: 3}}},
+	})
+	if !hasRule(fs, "wrong-direction") {
+		t.Fatalf("erwarte wrong-direction, got %v", fs)
+	}
+	if !strings.HasPrefix(fs[0].Msg, "(ohne Schicht) -> ") {
+		t.Fatalf("schichtlose Quelle muss benannt werden, got %q", fs[0].Msg)
+	}
+}

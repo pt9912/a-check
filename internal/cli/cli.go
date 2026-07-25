@@ -88,7 +88,33 @@ func Run(args []string, out, errw io.Writer) int {
 		_, _ = fmt.Fprintf(errw, "a-check: %v\n", err)
 		return 2
 	}
-	return report.New(out, errw).Report(findings)
+	code := report.New(out, errw).Report(findings)
+	writeCoverageNotice(errw, core.UncoveredFiles(m, files))
+	return code
+}
+
+// coverageNoticeLimit caps the listed paths. The cap is NOT silent: the notice
+// names how many files it left out (ADR-0029).
+const coverageNoticeLimit = 10
+
+// writeCoverageNotice reports scanned files that lie in no layer — advisory, on
+// stderr, AFTER the summary and WITHOUT touching the exit code (ADR-0029,
+// SPEC-CLI-001). Full coverage prints nothing, so the notice stays signal rather
+// than noise. Formatting lives in the composition root because it is CLI
+// presentation, not a domain decision; core owns which files qualify.
+func writeCoverageNotice(errw io.Writer, uncovered []string) {
+	if len(uncovered) == 0 {
+		return
+	}
+	_, _ = fmt.Fprintf(errw, "Hinweis: %d gescannte Datei(en) liegen in keiner Schicht und bleiben ungeprüft:\n", len(uncovered))
+	for i, p := range uncovered {
+		if i == coverageNoticeLimit {
+			_, _ = fmt.Fprintf(errw, "  … und %d weitere\n", len(uncovered)-coverageNoticeLimit)
+			break
+		}
+		_, _ = fmt.Fprintf(errw, "  %s\n", p)
+	}
+	_, _ = fmt.Fprintln(errw, "  Abhilfe: Schicht in layers deklarieren oder Datei in exclude aufnehmen.")
 }
 
 // aCheckImage is the distributed image reference, digest-pinned to the v0.14.0

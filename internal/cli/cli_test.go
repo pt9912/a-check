@@ -991,3 +991,84 @@ func TestConstructLeakDeterministic(t *testing.T) { // AC-QA-01: zwei Läufe byt
 		t.Fatalf("Ausgabe nicht byte-identisch:\n%q\n%q", a.String(), b.String())
 	}
 }
+
+// --- ADR-0029: Abdeckungs-Diagnose (End-to-End) -----------------------------
+
+const coverageCfg = `version: 1
+languages:
+  go: ["**/*.go"]
+layers:
+  core: ["internal/core/**"]
+edges:
+  - {from: core, to: core}
+composition_root: ["cmd/**"]
+`
+
+func TestCoverageNotice(t *testing.T) { // ADR-0029: Diagnose ohne Exit-Code-Wechsel
+	dir := writeRepo(t, map[string]string{
+		".a-check.yml":         coverageCfg,
+		"internal/core/svc.go": "package core\n",
+		"tools/gen.go":         "package tools\n",
+		"cmd/main.go":          "package main\n", // Composition Root: zaehlt nicht
+	})
+	var out, errb bytes.Buffer
+	if code := cli.Run([]string{dir}, &out, &errb); code != 0 {
+		t.Fatalf("die Diagnose darf den Exit-Code nicht aendern, got %d", code)
+	}
+	e := errb.String()
+	if !strings.Contains(e, "1 gescannte Datei(en) liegen in keiner Schicht") {
+		t.Fatalf("Diagnose fehlt: %q", e)
+	}
+	if !strings.Contains(e, "  tools/gen.go\n") {
+		t.Fatalf("Pfad fehlt in der Diagnose: %q", e)
+	}
+	if strings.Contains(e, "cmd/main.go") {
+		t.Fatalf("composition_root darf nicht als ungedeckt gelten: %q", e)
+	}
+	if out.Len() != 0 {
+		t.Fatalf("die Diagnose gehoert auf stderr, stdout war %q", out.String())
+	}
+}
+
+func TestCoverageNoticeAbsentWhenCovered(t *testing.T) { // ADR-0029: kein Rauschen
+	dir := writeRepo(t, map[string]string{
+		".a-check.yml":         coverageCfg,
+		"internal/core/svc.go": "package core\n",
+	})
+	var out, errb bytes.Buffer
+	cli.Run([]string{dir}, &out, &errb)
+	if strings.Contains(errb.String(), "keiner Schicht") {
+		t.Fatalf("vollstaendig gedeckter Baum darf keine Diagnose erzeugen: %q", errb.String())
+	}
+}
+
+func TestCoverageNoticeCapNamesRemainder(t *testing.T) { // ADR-0029: Kuerzung nennt ihre Groesse
+	files := map[string]string{".a-check.yml": coverageCfg, "internal/core/svc.go": "package core\n"}
+	for i := 0; i < 13; i++ {
+		files[fmt.Sprintf("tools/g%02d.go", i)] = "package tools\n"
+	}
+	var out, errb bytes.Buffer
+	cli.Run([]string{writeRepo(t, files)}, &out, &errb)
+	e := errb.String()
+	if !strings.Contains(e, "13 gescannte Datei(en)") || !strings.Contains(e, "… und 3 weitere") {
+		t.Fatalf("Kuerzung muss die Restzahl nennen: %q", e)
+	}
+}
+
+func TestCoverageNoticeDeterministic(t *testing.T) { // AC-QA-01
+	dir := writeRepo(t, map[string]string{
+		".a-check.yml":         coverageCfg,
+		"internal/core/svc.go": "package core\n",
+		"tools/b.go":           "package tools\n",
+		"tools/a.go":           "package tools\n",
+	})
+	var o1, e1, o2, e2 bytes.Buffer
+	cli.Run([]string{dir}, &o1, &e1)
+	cli.Run([]string{dir}, &o2, &e2)
+	if e1.String() != e2.String() {
+		t.Fatalf("stderr nicht byte-identisch:\n%q\n%q", e1.String(), e2.String())
+	}
+	if !strings.Contains(e1.String(), "  tools/a.go\n  tools/b.go\n") {
+		t.Fatalf("Pfade muessen stabil sortiert sein: %q", e1.String())
+	}
+}
