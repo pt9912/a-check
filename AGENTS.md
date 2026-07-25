@@ -175,13 +175,14 @@ Aggregat). Ob ein Gate gerade grün ist, sagt die CI (Badge im
   zählt nicht mit). Das ist eine harte Größe, kein Vorschlag: zwei aktive Slices
   teilen sich einen Gate-Nachweis und eine Closure-Aufmerksamkeit, und beides
   trägt nur einmal.
-- **AC-Form:** eine **neue** `AC-*` trägt vier benannte Blöcke — `**Happy Path:**`,
-  `**Boundary:**`, `**Negative:**`, `**Out-of-Scope:**` — je im Given/When/Then-Stil.
-  Der Negativpfad ist der teuerste, wenn er fehlt: ein Satz „das System *darf
-  nicht* …" spart später drei Reviews. Die **19** bei Einführung bestehenden
-  `AC-*` sind **grandfathered** — sie sind vertraglich bindend, tragen Rand- und
-  Negativfälle bereits in Prosa, und ein Umbau träfe die Form statt der Substanz.
-  `make verify` prüft die Regel; die Grandfather-Liste wächst nicht mit.
+- **AC-Form:** die Pflicht-Bausteine einer Anforderung stehen in
+  [`harness/conventions.md`](harness/conventions.md) §Anforderungs-Anlege-Prozess
+  — dort seit jeher die drei Pfade (Happy/Boundary/Negative im
+  Given/When/Then-Stil) plus Out-of-Scope. Neu ist nur die **Durchsetzung**:
+  `make verify` prüft sie ab slice-054 für **neue** `AC-*`; die **19** bei
+  Einführung bestehenden sind **grandfathered** (vertraglich bindend, Rand- und
+  Negativfälle bereits in Prosa — ein Umbau träfe die Form statt der Substanz),
+  und die Grandfather-Liste wächst nicht mit.
 - **Slice-Form:** neue Slices entstehen aus
   [`docs/plan/planning/slice.template.md`](docs/plan/planning/slice.template.md). Sie trägt die
   Größen-Regel — **höchstens drei DoD-Punkte und höchstens zwei Schichten**; passt der Slice nicht

@@ -68,6 +68,25 @@ die kanonische Quelle (Source Precedence, siehe
 
 ## Adaptions-Block
 
+**Disziplin** (aus dem Konventions-Template der Baseline): Einträge sind
+**chronologisch pro Repo** nummeriert und tragen die Pflichtfelder Datum,
+Geltungsbereich, Adaption, Begründung, Auflösungs-Trigger. An einem
+akzeptierten Eintrag wird **nichts nachträglich inhaltlich geändert** —
+Korrekturen entstehen als neuer `MR` oder als ausdrückliche Aufhebung,
+analog zur ADR-Immutabilität ([`AGENTS.md`](../AGENTS.md) §3.5).
+
+> **Zur Nummern-Frage (geprüft in slice-055, ohne Befund).** Das
+> Konventions-Template druckt konkrete Einträge ab — unter anderem eine
+> `MR-003` für das Vendoring, das dieses Repo als
+> [`MR-006`](#mr-006--baseline-committet-vendored-statt-per-url-referenziert)
+> führt. Das ist **keine** Nummern-Kollision: das Template verlangt
+> ausdrücklich *chronologische* Nummerierung, und eine chronologische
+> Vergabe kann nicht zugleich pro Titel vorgegeben sein. Die abgedruckten
+> Nummern sind Beispiel-Instanzen neben dem generischen `MR-NNN`-Muster;
+> normativ sind die Pflichtfelder und diese Disziplin. Der in
+> [slice-046 §4.2](../docs/plan/planning/open/slice-046-regelwerk-v352-migration-analyse.md)
+> als Migrations-Brocken geführte Punkt entfällt damit ersatzlos.
+
 ### MR-000 — Baseline-Aussage (inkl. ID-Schema-Deklaration)
 
 - **Datum:** 2026-06-20
@@ -226,6 +245,53 @@ die kanonische Quelle (Source Precedence, siehe
   die nächste freie — dieselbe Praxis wie in `ai-harness-init` (dort `MR-007`). Ob die
   Nummern-Identität mit dem Template hergestellt wird, entscheidet Etappe C der Migration.
 - **Auflösungs-Trigger:** permanent (Provenienz/Baseline-Konformität).
+
+### MR-007 — ADR-Vorlagen-Version: `v3.5.2` statt `v1.3.0`
+
+- **Datum:** 2026-07-25
+- **Geltungsbereich:** [`MR-000`](#mr-000--baseline-aussage-inkl-id-schema-deklaration)
+  §ID-Schema-Deklaration, Zeile zu `ADR-NNNN`
+- **Adaption:** [`MR-000`](#mr-000--baseline-aussage-inkl-id-schema-deklaration) deklariert
+  `ADR-NNNN` als vierstellig „gemäß Kurs-ADR-Vorlage `v1.3.0`". Diese Versionsangabe ist seit
+  der Migration überholt; maßgeblich ist die vendored Vorlage
+  `.harness/baseline/v3.5.2/templates/docs/plan/adr/adr.template.md`. **Das Schema selbst
+  ändert sich nicht** — vierstellig, chronologisch über den ADR-Index; abgelöst wird
+  ausschließlich die Versions-Referenz.
+- **Begründung:** `MR-000` wird **nicht** korrigiert. Die Disziplin des Adaptions-Blocks
+  verbietet nachträgliche inhaltliche Änderungen an akzeptierten Einträgen — dieselbe Logik wie
+  bei `Accepted`-ADRs ([`AGENTS.md`](../AGENTS.md) §3.5). Eine aktuell **behauptende**
+  Versionsaussage stehenzulassen wäre allerdings eine stille Falschaussage; darum dieser
+  ablösende Eintrag. Gefunden als B-7 in
+  [slice-048](../docs/plan/planning/done/slice-048-modul-delta-lesen.md).
+- **Auflösungs-Trigger:** permanent — bis zur nächsten Baseline-Migration, die ihn ihrerseits
+  ablöst.
+
+### MR-008 — Kein Replay, keine Agenten-Telemetrie
+
+- **Datum:** 2026-07-25
+- **Geltungsbereich:** gesamtes Repo; betrifft die Baseline-Module `modul-12`
+  (Replay/Evaluierung) und `modul-15` (Observability)
+- **Adaption:** a-check führt **kein** Replay-Manifest (`evals/golden/…`, Golden Sets,
+  Drift-Rate) und **keine** Agenten-Telemetrie (Tool-Call-Spans, Token-Attribution pro Rolle,
+  Cache-Counter). Beide Module bleiben unverkörpert.
+- **Begründung:** Beide adressieren die Nicht-Determinismus- und Kosten-Risiken einer
+  **Agenten-Laufzeit**. a-check ist ein deterministisches CLI: gleiche Eingabe, gleiche
+  Ausgabe, vertraglich zugesichert
+  ([SPEC-DET-001](../spec/spezifikation.md#spec-det-001--determinismus-vertrag)) und durch
+  Akzeptanztests belegt. Ein Golden Set über deterministischen Output ist ein zweiter,
+  schlechter gepflegter Testbestand; Span-Telemetrie über einen Prozess ohne Modellaufruf misst
+  nichts. Die *Reproduzierbarkeits*-Hälfte, die `modul-12` über den `image_hash` einfordert,
+  ist ohnehin erfüllt — digest-gepinnte Basis-Images und ein digest-gepinntes Release
+  ([AC-QA-03](../spec/lastenheft.md#ac-qa-03--reproduzierbarkeit)).
+- **Folgewirkung, ausdrücklich:** das Baseline-Closure-Kriterium einer Welle „Replay-Lauf grün"
+  (`modul-06`) ist für dieses Repo **unerfüllbar** und wird durch „`make ci` grün" ersetzt. Ohne
+  diese Zeile bliebe ein Wellen-Closure dauerhaft unvollständig, ohne dass jemand sagen könnte,
+  warum.
+- **Auflösungs-Trigger:** sobald a-check eine nicht-deterministische Komponente enthält (etwa
+  ein Modell-gestütztes Heuristik-Modul) oder Agenten-Läufe **im Repo selbst** abrechenbar
+  werden. Beides ist heute nicht absehbar; der Eintrag ist bis dahin **nicht** permanent,
+  sondern begründet ausgesetzt. Gefunden als B-19 in
+  [slice-048](../docs/plan/planning/done/slice-048-modul-delta-lesen.md).
 
 ## Anforderungs-Anlege-Prozess
 
