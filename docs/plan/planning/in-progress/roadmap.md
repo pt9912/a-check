@@ -47,13 +47,16 @@
 >
 > **Aktiv (in-progress, 2026-07-25):** [slice-048](slice-048-modul-delta-lesen.md) — **Etappe B**:
 > die vendored Baseline gegenlesen und die Treffer als Findings sammeln. Reine Lesearbeit, kein
-> Vertrag berührt; das Ergebnis schneidet Etappe C und D. Gelesen sind sechs Module (02/04/05/08/11/13),
-> gefunden **zehn** Abweichungen — zwei HIGH: die **Slice-Größen-Regel** (≤ 3 DoD-Punkte; a-check
-> liegt bei 4–7) und der **Modus pro Sub-Area** (Baseline verlangt ihn je berührter Sub-Area,
-> `conventions.md` deklariert einen pauschalen Repo-Modus; die `§8`-Praxis ist zweimal eingeschlafen).
-> Sieben Negativbefunde, darunter die Entwarnung, dass ADR-Form und ADR-Immutabilität konform sind.
-> **B-9/B-10** (Rollen-Übergaben, ungenutzte Carveouts) passen in keine der vier Etappen und brauchen
-> eine eigene Entscheidung.
+> Vertrag berührt. Auf Maintainer-Hinweis („komplett nach v3.5.2 migrieren") vom Sechs-Modul-Zuschnitt
+> auf **alle 17 Module + drei Grundlagen-Abschnitte** (2867 Zeilen) erweitert; die Erweiterung brachte
+> **elf** zusätzliche Funde, insgesamt **21**. Zwei HIGH: **Slice-Größen-Regel** (≤ 3 DoD-Punkte;
+> a-check liegt bei 4–7) und **Modus pro Sub-Area** (pauschaler Repo-Modus statt Begründung je
+> Sub-Area). Der Befund hinter den Befunden ist ein **Praxis-Verfall**: Modus-Begründung und
+> Steering-Loop-Eintrag existierten in slice-001…008 und sind danach eingeschlafen — Steering-Loop
+> lückenlos seit slice-009. Zwölf Negativbefunde, darunter ein vorbildlich digest-gepinnter
+> Docker-Harness und der deckungsgleiche 8-Schritt-Workflow. Die Zuordnung wächst von zwei auf
+> **vier** Folge-Etappen (C · D · **E Mechanik** · **F Betriebsmodell**), empfohlene Reihenfolge
+> **E vor D**.
 >
 > **Sonst kein aktiver Faden offen.** Vertagt/gated: `strict_coverage` (Folge-Slice), Kandidat 2b
 > (Präfix-Allowlist — **Begründung erodiert 2026-07-25**: P2 zerfällt in Kanten + Abdeckungs-Diagnose
