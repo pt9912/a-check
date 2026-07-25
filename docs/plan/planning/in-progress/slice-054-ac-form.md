@@ -3,7 +3,7 @@
 **Status:** in-progress — letzter Schnitt der **Etappe D (Form)** aus
 [slice-048 §5](../done/slice-048-modul-delta-lesen.md).
 **Deckt:** Fund **B-15** (AC-Form ohne Happy/Boundary/Negative-Pfade).
-[Roadmap](roadmap.md).
+[Roadmap](../in-progress/roadmap.md).
 
 ---
 
