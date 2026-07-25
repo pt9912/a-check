@@ -1,6 +1,7 @@
 # slice-043 — Schicht-Abdeckung sichtbar machen (P-Rest-Kandidat 2a)
 
-**Status:** open — **Entwurf zur Abnahme** (spec-first; noch keine Spec-/Code-Änderung).
+**Status:** in-progress — **Entscheide abgenommen 2026-07-25** (§0): Gestalt **(a)** — nur die
+Diagnose, `strict_coverage` **vertagt**. Umsetzung spec-first in diesem Slice.
 **Auslöser:** Maintainer-Nachfrage vom 2026-07-24 zu
 [slice-042 §8](../done/slice-042-constructs-aufruf-monopol.md) („warum können andere Konsumenten das
 nicht gebrauchen?"). Die anschließende Nachmessung über **alle fünf** lokalen
@@ -20,6 +21,29 @@ Determinismus [AC-QA-01](../../../../spec/lastenheft.md#ac-qa-01--determinismus)
 > Entscheide §3 **vor** der Umsetzung.
 
 ---
+
+## 0. Abnahme (2026-07-25)
+
+Auf Basis der Nachmessung (§2a) und der Aufwandsschätzung (§2b) entschieden:
+
+| Entscheid | Abgenommen | Begründung |
+|---|---|---|
+| **Gestalt** | **(a) — nur die Diagnose**, Exit-Code unverändert | (d) kostet das 2–2,5-fache, und der Zuwachs ist Vertrags-Maschinerie für eine Strenge, die noch niemand angefragt hat. Die Diagnose ist der Wirkmechanismus; der Schalter nützt erst, *nachdem* sie den Konsumenten auf die Lücke gestoßen hat |
+| **`strict_coverage`** | **vertagt** | eigener Folge-Slice. **Trigger:** ein Konsument, der die Diagnose sieht und sie als Gate will. Bis dahin kein Config-Schlüssel, keine neue AC-ID, keine Exit-Code-Logik |
+| **Granularität** | **Datei-Liste**, stabil nach Pfad sortiert; ab **10** Dateien gekürzt mit **ausgewiesener** Restzahl | „Zähler + Zonen" war mit d-migrates angeblichen hunderten Dateien begründet — der Fall existiert nicht (§2a). Die Kürzung ist keine stille Kappung: die Restzahl steht in der Meldung |
+| **Zonen-Bildung** | **entfällt** | war nur für die Aggregation nötig, die es jetzt nicht gibt |
+| **Abgrenzung** | `composition_root`-Dateien zählen **nicht**; `exclude`-Dateien sind ohnehin nicht im Scan | wie in §3 vorgeschlagen |
+| **Wo greift es** | **Quell-Seite** (gescannte Datei ohne Schicht) | die Ziel-Seite ist nicht sicher von repo-**externem** Code trennbar (§3) |
+| **§5 Nebenbefund** | **mitgenommen** | der leere Quell-Schicht-Name (`wrong-direction:  -> ui`) ist dasselbe Symptom, unabhängig verifiziert und billig |
+
+**Vertrags-Folge:** kein Lastenheft-Bump und **keine neue `AC-*`-ID** — eine advisory
+stderr-Zeile ohne Exit-Code-Wechsel schärft das *Wie* der bestehenden CLI-Ausgabe
+([AC-FA-CLI-001](../../../../spec/lastenheft.md#ac-fa-cli-001--aufruf-scan-wurzel-und-exit-codes)
+nennt „Zusammenfassung auf stderr"), sie erweitert den Vertrag nicht. Präzedenz:
+[ADR-0025](../../adr/0025-exclude-verzeichnis-prune.md) und
+[ADR-0028](../../adr/0028-ziel-glob-schattenwurf.md) liefen ebenso spec-only. Es entsteht eine
+**ADR** (die Entscheidung „ausweisen statt verschieben" braucht eine zitierbare Stelle) plus eine
+Schärfung in [SPEC-CLI-001](../../../../spec/spezifikation.md#spec-cli-001--aufruf-scan-wurzel-und-exit-codes).
 
 ## 1. Die Fehlerklasse
 
@@ -201,7 +225,10 @@ Slice mitnehmen, damit beide Symptome dieselbe Sprache sprechen.
 | `internal/cli` | Diagnose-Ausgabe, Exit-Code-Logik ([SPEC-CLI-001](../../../../spec/spezifikation.md#spec-cli-001--aufruf-scan-wurzel-und-exit-codes)) |
 | Doku | Lastenheft-CR, ADR, [SPEC-CONF-001](../../../../spec/spezifikation.md#spec-conf-001--konfigurationsschema)/[SPEC-DET-001](../../../../spec/spezifikation.md#spec-det-001--determinismus-vertrag), Benutzerhandbuch, [CHANGELOG](../../../../CHANGELOG.md), Roadmap |
 
-**DoD:** Spec-first (Lastenheft-CR → ADR → Spezifikation → Code → Tests); `make gates` **und**
+**DoD** (Gestalt (a), nach §0): Spec-first (**kein** Lastenheft-CR → ADR → Spezifikation → Code →
+Tests); **Review-Synthese unter [`docs/reviews/`](../../../reviews/)** nach Regelwerk Modul 10
+(kategorisierte Findings + Negativbefund-Zeilen; die DoD-Verifikation bleibt nach Modul 11
+davon getrennt); `make gates` **und**
 `make ci` grün mit echter Ausgabe; **Regressions-Probe gegen alle fünf lokalen Konsumenten**:
 a-check/b-cad/d-check bleiben diagnose-**frei** (sonst ist die Meldung Rauschen), m-trace und
 d-migrate melden genau die Zonen aus §2; Gegenprobe: Zone deklarieren ⇒ Diagnose verschwindet und
