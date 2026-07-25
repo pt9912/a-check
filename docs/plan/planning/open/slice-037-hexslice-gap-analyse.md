@@ -1,6 +1,27 @@
 # slice-037 — HexSlice-Architektur: Gate-Lücken-Analyse (Entwurf zur Abnahme)
 
-**Status:** open — **Gap-Analyse / Entwurf zur Abnahme** (keine Spec-/Code-Änderung; reine Ist-Bewertung + Optionen).
+**Status:** open — Gap-Analyse; **Optionen B und C sind geliefert**, **A weitgehend**, **A′ ist der
+einzige offene Punkt** (§4.0a, Currency-Block unten). Selbst enthält dieser Slice weiterhin keine
+Spec-/Code-Änderung.
+
+> **Currency 2026-07-25.** Die Analyse stammt vom 2026-07-24; seither ist ein Teil davon
+> abgearbeitet:
+> - **Option B + C geliefert** — [slice-039](../done/slice-039-hexslice-vertical-slice-regeln.md)
+>   hat `lateral-slice` (§4.1) und `port-locality` (§4.2) als
+>   [AC-FA-RULE-009](../../../../spec/lastenheft.md#ac-fa-rule-009--slice-isolation-regel-lateral-slice)/[AC-FA-RULE-010](../../../../spec/lastenheft.md#ac-fa-rule-010--port-lokalität-regel-port-locality)
+>   umgesetzt ([ADR-0026](../../adr/0026-hexslice-vertical-slice-regeln.md)). Die
+>   Vertical-Slice-Achse ist damit gatebar — genau das, was §1 noch als „gar nicht ausdrückbar"
+>   verdikt.
+> - **Nebenbefund F-3 behoben** — [slice-038](../done/slice-038-layer-tie-break-deklarationsreihenfolge.md)
+>   (Tie-Break folgt der Deklarationsreihenfolge).
+> - **Option A weitgehend geliefert** — Benutzerhandbuch §3.7 („Eine Vertical-Slice-Architektur
+>   (HexSlice) absichern") ist die Anwendungs-Doku; die korrigierte Beispiel-Config liegt im
+>   HexSlice-Repo und läuft dort real gegen 0.
+> - **§4.3 (Richtung) ist entschieden, nicht mehr offen** — [slice-013 §0](slice-013-driving-driven-vertiefung.md)
+>   (2026-07-25): Port→Port verworfen, Auto-Inferenz vertagt. Für HexSlice heißt das: die
+>   Richtungs-Prüfung bleibt an richtungs-getrennte Port-Schichten gebunden, dauerhaft.
+> - **Offen bleibt A′** — und es hat sich verschärft: §4.0 ist nur zur **Hälfte** behoben, die
+>   andere Hälfte ist kein Loch, sondern ein **Falsch-Positiv** (§4.0a).
 **Auslöser:** externe Frage — kann a-check die **HexSlice Architecture** (hexagonal + Vertical Slice) schon durchsetzen/gaten?
 **Externe Quelle (out-of-repo):** das Architektur-Dokument `hexslice-architecture.de.md` aus dem
 Schwester-Repo `hexslice-architecture` (Stand 2026-07-24; nicht Teil dieses Repos — daher nur
@@ -115,6 +136,41 @@ Business-Area einzeln aufgezählte** Port-Globs durchsetzbar — nicht mit *eine
 Muster. Das ist eine ausgewiesene Grenze
 ([AC-QA-02](../../../../spec/lastenheft.md#ac-qa-02--hermetik-und-ehrliche-heuristik-grenze)), keine
 stille Vollständigkeit.
+
+### 4.0a Nachmessung 2026-07-25 — F-1 ist halb behoben, der Rest ist ein **Falsch-Positiv**
+
+Gemessen gegen `a-check:dev` (Stand `main`) mit einem HexSlice-Fixture: Schichten `ports`
+(**vor** `application` deklariert, Glob **tiefen-agnostisch** `src/hexagon/application/**/ports/**`),
+`application`, `domain`, `outbound`; Kanten u. a. `outbound → ports`, **nicht** `outbound → application`.
+
+| Achse | Mechanik | Ergebnis |
+|---|---|---|
+| **Quell-Seite** (Datei → Schicht, `LayerOf`) | wertet den **literalen Präfix** (`litPrefixLen`) und bricht den Gleichstand nach **Deklarationsreihenfolge** | ✅ **behoben**: die verschachtelte Port-Datei klassifiziert als `port` — sie meldet `port-impurity` für einen Adapter-Import **und** für ein `forbidden_constructs`-Muster |
+| **Ziel-Seite** (Import → Schicht, `layerOfCand`) | matcht den **rohen** `globPrefix` als Segment-Run (`segIndex`) | ❌ **offen**: `src/hexagon/application/**/ports` enthält ein Wildcard-Segment und matcht **nie** einen realen Kandidaten — der Import fällt auf das `application`-Glob zurück |
+
+**Der Rest ist kein Loch, sondern ein Fehlbefund.** Der legitime Import eines Outbound-Adapters
+auf einen verschachtelten Port meldet:
+
+```text
+src/adapters/outbound/db.go:3: wrong-direction: outbound -> application (…/createorder/ports)
+```
+
+Die Kante `outbound → ports` **ist** deklariert; a-check sieht sie nur nicht, weil das Ziel als
+`application` auflöst. **Gegenprobe** mit business-area-/use-case-spezifischem Glob (sauberer
+literaler Präfix): **0 Befunde, Exit 0** — der Workaround aus §5 trägt weiterhin.
+
+**Warum das schwerer wiegt als die ursprüngliche Diagnose (§4.0):** eine *Lücke* lässt einen
+Verstoß durch; dieser *Falsch-Positiv* drängt den Nutzer zur falschen Reparatur — er ergänzt
+`{from: outbound, to: application}`, um sein Gate grün zu bekommen, und **verdeckt damit dauerhaft
+echte** `outbound → application`-Verstöße. Ein Falsch-Positiv, dessen naheliegende Behebung ein
+Falsch-Negativ erzeugt, ist die teuerste Sorte.
+
+**Das ist präzise Option A′** — und der Scope schrumpft dadurch: nicht „Overlap-Ergonomie
+allgemein", sondern **eine** Asymmetrie zwischen den zwei Auflösungs-Pfaden. `LayerOf` kann
+Wildcard-Präfixe verarbeiten, `layerOfCand` nicht. Die dokumentierte Grenze aus
+[ADR-0026](../../adr/0026-hexslice-vertical-slice-regeln.md) („Globs mit Wildcard in der Mitte
+lösen als Import-**Ziel** nicht auf") ist genau diese Stelle — sie ist als Grenze ausgewiesen,
+aber ihre **Nebenwirkung** (Rückfall auf das umschließende Glob statt „extern") ist es nicht.
 
 ### 4.1 Slice-Isolation (HexSlice-Regel 3)
 
@@ -260,9 +316,13 @@ beachten.
       reproduziert: Config A/B je 0 Befunde, T2/T3 feuern; F-2 Richtung inert am Code; F-3
       alphabetischer Tie-Break in `config.go` `sortedKeys` bestätigt).
 - [x] Beispiel-`.a-check.yml` für die heute-gatebare Achse (§5), Port-Vorbehalt eingearbeitet.
-- [ ] **Abnahme:** Option (A/A′/B/C) + Entscheide 0–2 durch den Maintainer entschieden.
-- [ ] Bei A: Folge-Slice „HexSlice-Anwendungs-Doku"; bei A′: a-check-Slice Tie-Break/Overlap
-      (§4.0/F-3); bei B/C: Umsetzungs-Slice mit Anforderungs-Anlage (Lastenheft-Bump, Folge-ADR, Spec).
+- [x] **Abnahme B/C erfolgt** (2026-07-24) und in [slice-039](../done/slice-039-hexslice-vertical-slice-regeln.md)
+      umgesetzt; **A** über Benutzerhandbuch §3.7 + korrigierte Beispiel-Config geliefert;
+      **§4.3** über [slice-013 §0](slice-013-driving-driven-vertiefung.md) entschieden.
+- [x] **Nachmessung 2026-07-25** (§4.0a): F-1 quell-seitig behoben, ziel-seitig als
+      **Falsch-Positiv** reproduziert (Fixture + Gegenprobe gegen `a-check:dev`).
+- [ ] **Abnahme A′:** die verbliebene Ziel-Seiten-Asymmetrie (§4.0a) als eigenen Umsetzungs-Slice
+      ziehen — oder als ausgewiesene Grenze dauerhaft stehen lassen (dann Doku-Warnung statt Code).
 
 ## 9. Closure-Notiz
 
