@@ -250,3 +250,72 @@ nicht in diesen Slice gehört.
 kosmetisch (Befund und Exit-Code stimmen), aber nutzersichtbar; kein Vertrag. Aufgenommen in
 [slice-043 §5](../open/slice-043-schicht-abdeckung-sichtbar.md) — es ist das quell-seitige Symptom
 derselben Abdeckungs-Klasse.
+
+## 10. Umsetzung und Ergebnis (2026-07-25)
+
+**Spec-first geliefert:** Lastenheft **0.22.0** (neu
+[AC-FA-RULE-011](../../../../spec/lastenheft.md#ac-fa-rule-011--konstrukt-monopol-regel-construct-leak),
+[AC-FA-CONF-001](../../../../spec/lastenheft.md#ac-fa-conf-001--konfigurationsdatei-a-checkyml) um den
+Block erweitert) → [ADR-0027](../../adr/0027-constructs-roh-text-monopol.md) `Accepted` →
+Spezifikation **0.24.0** ([SPEC-CONF-001](../../../../spec/spezifikation.md#spec-conf-001--konfigurationsschema),
+[SPEC-EXTRACT-001](../../../../spec/spezifikation.md#spec-extract-001--import-extraktion),
+[SPEC-RULE-001](../../../../spec/spezifikation.md#spec-rule-001--regel-auswertung),
+[SPEC-DET-001](../../../../spec/spezifikation.md#spec-det-001--determinismus-vertrag),
+[SPEC-CLI-002](../../../../spec/spezifikation.md#spec-cli-002--graph-renderer-vertrag)) → Code →
+Tests. Benutzerhandbuch 1.33, [CHANGELOG](../../../../CHANGELOG.md) unter `[Unreleased]`.
+
+**Ein Zusatz gegenüber §4**, aus der Umsetzung erzwungen und in
+[SPEC-DET-001](../../../../spec/spezifikation.md#spec-det-001--determinismus-vertrag) nachgezogen: die
+Befund-Sortierung bekam die **Meldung** als letzten Schlüssel (§4.1 Punkt 2) — ohne sie ist die Ordnung
+auf (Pfad, Zeile, Regel) nicht total, und zwei Treffer in einer Zeile lägen in zufälliger Reihenfolge.
+
+### 10.1 Paritätsprobe gegen die grep-Referenz (realer Konsumenten-Baum)
+
+Kopie des b-cad-Baums (read-only, netzlos, Scratchpad), dessen `.a-check.yml` um den einen
+`constructs`-Eintrag ergänzt; Referenz ist die dortige Skript-Regel P1
+(`grep -rnE '\bdl(m?open|sym|close)[[:space:]]*\(' src plugins | grep -vE '^src/adapters/plugin/'`).
+
+| Probe | grep-Referenz | a-check | Bewertung |
+|---|---|---|---|
+| unveränderter Baum | 0 Treffer | 0 Befunde, Exit 0 | Parität |
+| injizierter `dlsym(`-Aufruf in `plugins/example/example_plugin.cpp:56` | 1 Treffer | `construct-leak`, gleiche Datei **und Zeile**, Exit 1 | Parität |
+| injizierter `dlopen(`-Aufruf in `src/main.cpp:406` (Composition Root) | 1 Treffer | `construct-leak` mit `(composition_root: forbid)` | Parität |
+| injizierter `dlclose(`-Aufruf **in** `src/adapters/plugin/…` | kein Treffer (Zone) | kein Befund | Parität (Gegenprobe) |
+| Kommentar-Zeile `// … dlopen(path) …` in `src/hexagon/model/material_line.h:41` | **1 Treffer** | **kein** Befund | **deklarierte Divergenz** ([ADR-0027](../../adr/0027-constructs-roh-text-monopol.md)) |
+
+Damit ist die Fitness-Probe der DoD auf dem realen Baum erfüllt: der injizierte Aufruf außerhalb der
+Zone wird vom a-check-Gate gefunden, die Gegenprobe innerhalb der Zone bleibt grün. Dieselben Fälle
+liegen als Fixture-Tests im Repo (`internal/cli`), inklusive der maschinellen Paritätsprobe gegen eine
+nachgebaute grep-Referenz.
+
+### 10.2 Regressions-Probe (alle lokalen Konsumenten)
+
+`a-check:dev` gegen b-cad, d-check, d-migrate und m-trace: **je 0 Befunde, Exit 0** — unverändert.
+Die Regel ist opt-in; ohne `constructs`-Block ändert sich nichts.
+
+### 10.3 Gates
+
+`make ci` grün: lint 0 issues · Tests grün · Coverage **96,00 %** (Schwelle 90 %) · `arch-check`
+(Dogfooding) 0 Befunde · `doc-check` 106 Dateien, 0 Befunde · `gate-consistency` ok ·
+`guard-selftest` ok · `image-test` OK.
+
+### 10.4 Rückbau-Vorschlag an den Konsumenten (b-cad, out-of-repo)
+
+Der Vorschlag steht, die Entscheidung liegt drüben:
+
+1. **P1 streichen** und durch den Config-Eintrag ersetzen (Parität in §10.1 belegt):
+
+   ```yaml
+   constructs:
+     - {pattern: '\bdl(m?open|sym|close)\s*\(', match: regex,
+        adapter: src/adapters/plugin, composition_root: forbid}
+   ```
+
+   Voraussetzung: ein Release, das die Regel enthält (der aktuelle Pin hat sie noch nicht).
+   Ein Unterschied ist auszuweisen: der `grep` meldet auch Kommentar-Treffer, a-check nicht.
+2. **P2c streichen** — Empfehlung unverändert aus §3.4 (Argument: Probe 3/4 in §2).
+3. **P2 bleibt** — die Klassen aus Probe 5/6 (unauflösbare bzw. modul-lokale Specifier) deckt a-check
+   weiterhin nicht; die unlayered-Hälfte davon adressiert
+   [slice-043](../open/slice-043-schicht-abdeckung-sichtbar.md).
+
+Danach trägt b-cads `arch-check.sh` genau **eine** Regel.

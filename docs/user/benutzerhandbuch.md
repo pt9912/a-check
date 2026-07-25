@@ -1,6 +1,6 @@
 # Benutzerhandbuch: a-check
 
-**Handbuch-Version:** 1.32 · **Software-Version:** [aktuelles Release](../../version.md#aktuell) · **Stand:** 2026-07-24 ·
+**Handbuch-Version:** 1.33 · **Software-Version:** [aktuelles Release](../../version.md#aktuell) · **Stand:** 2026-07-25 ·
 **Autor:** pt9912 (Maintainer)
 
 ---
@@ -133,7 +133,7 @@ Release-Prozess (Tagging, Digest-Pin, GHCR) beschreibt [`releasing.md`](releasin
 
 ### 3.4 Befunde lesen und beheben
 
-Jeder Befund nennt die Regel. Die sieben Regeln und ihre Behebung:
+Jeder Befund nennt die Regel. Die Regeln und ihre Behebung:
 
 | Regel | Bedeutung | Behebung |
 |---|---|---|
@@ -145,6 +145,7 @@ Jeder Befund nennt die Regel. Die sieben Regeln und ihre Behebung:
 | `port-impurity` | Ein Port importiert einen Adapter oder ein Framework/Tech, oder enthält ein per `forbidden_constructs` (Abschnitt 4) verbotenes Konstrukt. Domänentypen des Kerns darf ein Port referenzieren. | Den Port von Adapter-/Tech-Importen befreien (Kern-Referenzen sind erlaubt). |
 | `port-direction-mismatch` | Ein Adapter mit Richtung `driving`/`driven` importiert einen Port der *anderen* Richtung (beide deklariert) — Treiber-Adapter sprechen nur `driving`-Ports, getriebene nur `driven`-Ports. **Kategorisch** (Kante hebt nicht auf). | Den Import über die passende Richtung führen (z. B. über die `app`-Schicht), oder die Schicht-`direction` korrigieren. Ohne `direction` greift die Regel nicht. |
 | `port-locality` | Eine `app`-Datei importiert einen **im App-Baum geschachtelten** Port **außerhalb dessen Scope-Verzeichnis** — use-case-lokal (`…/createorder/ports`) ⊂ business-area (`…/order/ports`) ⊂ app-weit (`…/ports`). **Kategorisch.** Nur `app`-Importeure. Bei **klassischem Hexagonal** (Ports als Geschwister der App, `…/ports` neben `…/services`) ist die Regel **inert**. | Den Port auf die passende Ebene heben („so gemeinsam wie nötig") oder den fremden slice-lokalen Port nicht importieren. |
+| `construct-leak` | Ein per `constructs` (Abschnitt 4) deklariertes **Roh-Text-Muster** steht außerhalb seiner erlaubten Zone — z. B. ein `dlopen(`-**Aufruf** außerhalb des Plugin-Adapters. Gilt **scan-weit**, auch in Dateien ohne Schicht; Treffer in Kommentaren zählen nicht. | Das Konstrukt in seine Zone verlagern (oder hinter einen Port führen). Ist die Stelle legitim, die Zone im `constructs`-Eintrag erweitern (`adapter` nimmt auch eine Liste). |
 | `wrong-direction` | Ein Import läuft entgegen einer erlaubten Schicht-Kante. | Die Kante in `edges` aufnehmen (falls legitim) oder den Import umdrehen. |
 
 > **Vertical-Slice-Regeln (`lateral-slice`/`port-locality`) — Config-Disziplin.** Beide leiten
@@ -167,8 +168,9 @@ markers:
 ```
 
 `ignore_symbols` wirkt auf erkannte **Importe** (z. B. falsch-positive
-`core-impurity`/`tech-leak`); ein per `forbidden_constructs` verbotenes Konstrukt
-wird davon nicht erfasst.
+`core-impurity`/`tech-leak`); ein per `forbidden_constructs` oder `constructs`
+erkanntes Text-Muster wird davon nicht erfasst — dort ist das Muster selbst die
+Stellschraube (präzisere Regex bzw. weitere Zone).
 
 ### 3.6 Die deklarierte Architektur visualisieren (`--print-graph`)
 
@@ -208,7 +210,8 @@ flowchart TB
 nur `.a-check.yml` und ist deterministisch (byte-identische Ausgabe bei gleicher
 Config). Der Graph zeigt die **deklarierte Absicht**, keinen Beweis über den realen
 Code: die kategorischen Regeln (`core-impurity`, `lateral-adapter`, `lateral-slice`,
-`port-direction-mismatch`, `port-locality`) erscheinen als Legende, nicht als gezeichnete Kante. Ein
+`port-direction-mismatch`, `port-locality`) und das Roh-Text-Monopol (`construct-leak`)
+erscheinen als Legende, nicht als gezeichnete Kante. Ein
 `edges`/`allow`-Endpunkt, der auf keine Schicht zeigt, wird als eigener
 Dangling-Knoten sichtbar (statt still ignoriert). Ein ladezeitiger Config-Fehler
 (inkl. unbekannter Sprache), ein unbekanntes Flag oder ein zusätzliches Argument
@@ -323,6 +326,8 @@ allow:                            # explizit erlaubte Sonderkanten/Re-Exports (o
   - {from: ports, to: ports}
 forbidden_constructs:             # Schicht -> verbotene Text-Muster (Port-Disziplin, optional)
   ports: ["impl "]
+constructs:                       # Roh-Text-Monopol: Muster nur in dieser Zone (optional)
+  - {pattern: 'dlopen\s*\(', match: regex, adapter: adapters/plugin}
 markers:
   ignore_symbols: []              # Heuristik-Ausnahmen (optional)
 ```
@@ -336,7 +341,7 @@ bildet auf eine Liste von Datei-Globs ab, z. B. `cpp: ["**/*.h", "**/*.cpp"]`,
 `rust: ["**/*.rs"]`, `kotlin: ["**/*.kt"]`, `java: ["**/*.java"]`, `python: ["**/*.py"]`,
 `csharp: ["**/*.cs"]`, `typescript: ["**/*.ts", "**/*.tsx", "**/*.mts", "**/*.cts"]`.
 **Optionalblöcke:** `adapter_sink`, `tech`, `composition_root`, `allow`,
-`forbidden_constructs`, `markers`, `resolution`, `exclude`. Fehlt ein Optionalblock, entfällt die
+`forbidden_constructs`, `constructs`, `markers`, `resolution`, `exclude`. Fehlt ein Optionalblock, entfällt die
 zugehörige Prüfung (kein stiller Standardwert) — fehlt z. B. `adapter_sink`,
 darf **kein** Adapter einen anderen importieren (strengere Auslegung). Das
 vollständige Schema steht in der [Spezifikation](../../spec/spezifikation.md).
@@ -357,6 +362,41 @@ meldet `tech-leak` auch dort (die Schicht-Regel-Ausnahme des Verdrahtungspunkts
 bleibt bestehen). Ein unbekannter `match`-Wert, eine ungültige Regex oder ein
 `composition_root`-Wert außerhalb `allow`/`forbid` bricht mit
 Exit-Code 2 ab. Treffen mehrere Muster dasselbe Symbol, greift das **zuerst notierte**.
+
+**Roh-Text-Monopol (`constructs`).** `tech` beurteilt **Import-Symbole**. Manche
+Architektur-Invarianten hängen aber an einem Konstrukt, das gar keine Import-Zeile ist —
+klassisch das dynamische Laden: `dlopen`/`dlsym`/`dlclose` dürfen nur im Plugin-Adapter
+**aufgerufen** werden, und der Aufruf kommt über einen transitiven Header oder einen lokalen
+Prototyp auch ohne eigenen `#include` aus. Dafür gibt es `constructs`: eine Top-Level-Liste
+von Einträgen `{pattern, adapter}` mit **derselben** Mechanik wie `tech` —
+`match: substring|regex` (Standard `substring`, `regex` = RE2), `adapter` als Pfad **oder**
+Pfad-Liste (die erlaubte **Zone**), `composition_root: allow|forbid` (Standard `allow`):
+
+```yaml
+constructs:
+  - pattern: '\bdl(m?open|sym|close)\s*\('   # RE2: der AUFRUF, nicht der Include
+    match: regex
+    adapter: src/adapters/plugin             # einzige erlaubte Zone
+    composition_root: forbid                 # auch die Verdrahtung darf nicht laden
+```
+
+Jedes Vorkommen **außerhalb** aller Zonen ist ein Befund `construct-leak` (Exit-Code 1). Drei
+Eigenschaften sind wichtig:
+
+- **Scan-weit.** Die Prüfung gilt für **jede** gescannte Datei — auch für Dateien, die in
+  **keinem** `layers`-Glob liegen (ein `main.cpp` außerhalb der Schichten, ein Werkzeug-Ordner).
+  Ein Monopol ist eine Aussage über den ganzen Baum. `exclude` greift wie immer davor.
+- **Kommentare zählen nicht.** Gematcht wird dieselbe kommentar-bereinigte Quelle wie bei den
+  Importen: ein `dlopen(` in einem Kommentar meldet **nicht**. Das ist eine bewusste Abweichung
+  von einem `grep`-Skript, das dieselbe Regel trägt — dort ist der Kommentar ein Falsch-Positiv.
+  Zeichenketten-Literale bleiben die bekannte Heuristik-Grenze.
+- **Unabhängig von `forbidden_constructs`.** Der ältere Block bindet Muster an eine **Schicht**
+  und meldet als `port-impurity`; `constructs` bindet an eine **Zone**, gilt scan-weit und meldet
+  als `construct-leak`. Beide Blöcke existieren nebeneinander.
+
+Ein leeres/fehlendes `pattern`, ein leerer/fehlender `adapter` (auch als leere Liste oder leerer
+Listen-Eintrag), ein unbekannter `match`-/`composition_root`-Wert oder eine ungültige Regex
+brechen mit **Exit-Code 2** ab. Ohne `constructs`-Block entfällt die Regel vollständig.
 
 **Dateien vom Scan ausnehmen (`exclude`).** Die `layers`-/`languages`-Globs kennen
 bewusst keine Negation — `exclude` ist das explizite Gegenstück: eine Top-Level-Liste
@@ -633,7 +673,8 @@ siehe „Dateien vom Scan ausnehmen" in Abschnitt 4.
 - **Sub-Einheit:** ein Unterverzeichnis innerhalb einer Adapter-Schicht — `lateral-adapter` trennt Sub-Einheiten, nie Dateinamen; Dateien direkt im Schicht-Root bilden eine gemeinsame Root-Einheit (eigene `.cpp`/`.h`-Paare melden nicht). Endungslose Importe (z. B. TypeScript `./b` oder Go-Paket-Pfade) gelten als eigene Einheit.
 - **`forbidden_constructs`:** je Schicht konfigurierte verbotene Text-Muster (für `port-impurity`).
 - **Befund:** eine gemeldete Regelverletzung (Datei, Zeile, Regel, Meldung).
-- **`core-impurity` / `app-impurity` / `lateral-adapter` / `lateral-slice` / `tech-leak` / `port-impurity` / `port-direction-mismatch` / `port-locality` / `wrong-direction`:** die neun geprüften Regeln (Abschnitt 3.4).
+- **`core-impurity` / `app-impurity` / `lateral-adapter` / `lateral-slice` / `tech-leak` / `port-impurity` / `port-direction-mismatch` / `port-locality` / `construct-leak` / `wrong-direction`:** die zehn geprüften Regeln (Abschnitt 3.4).
+- **Zone (`constructs`):** das Pfad-Fragment (oder die Liste), in dem ein Roh-Text-Muster allein vorkommen darf; alles außerhalb ist `construct-leak`. Anders als eine **Schicht** ist eine Zone nicht an `layers` gebunden — sie gilt scan-weit.
 - **Use-Case-Slice:** eine über ein eigenes `app`-Glob abgegrenzte Vertical Slice; `lateral-slice` isoliert sie gegeneinander (Verträge laufen über Ports). **Port-Scope:** das Verzeichnis, das den Port-Ordner besitzt (use-case-lokal ⊂ business-area ⊂ app-weit); `port-locality` erzwingt ihn.
 - **Heuristik-Grenze:** a-check erkennt Importe per Textmuster, nicht per Parser; seltene Fehltreffer sind konfigurierbar ausnehmbar.
 - **Digest-Pin:** ein `@sha256:`-Verweis auf eine exakte Image-Version für reproduzierbare Läufe.
@@ -681,3 +722,4 @@ und die [Spezifikation](../../spec/spezifikation.md); ein Überblick steht in de
 | 1.29 | 2026-07-09 | §3.6 um die `make`-Variante ergänzt: das `--print-mk`-Fragment `a-check.mk` liefert neben `a-check` jetzt ein **`a-check-graph`**-Target (`make a-check-graph > architektur.mmd`), das `--print-graph` über dasselbe digest-gepinnte Image fährt (Lastenheft/Spez 0.20.0, slice-033). Noch nicht im veröffentlichten Image (folgt mit dem nächsten Release). |
 | 1.31 | 2026-07-24 | Lastenheft 0.21.0: zwei neue Regeln der **Vertical-Slice-Achse** — `lateral-slice` (`app`-Datei importiert eine fremde Use-Case-Slice **derselben `app`-Schicht**; getrennte `app`-Layer sind edge-regiert) und `port-locality` (`app`-Datei importiert einen **im App-Baum geschachtelten** Port außerhalb dessen Scope: use-case-lokal ⊂ business-area ⊂ app-weit; Geschwister-Ports/klassisch inert); beide kategorisch, nur `app`-Importeure, opt-in über die geschachtelte Struktur. Neue **Aufgabe §3.7** „Vertical-Slice-Architektur (HexSlice) absichern" (Arbeitsanleitung mit Beispiel-Config + Behebung), §3.4-Regeltabelle (neun Regeln) + Config-Disziplin-Kasten (saubere Präfix-Globs; `**/…/**`/`*.go` lösen nicht auf), Glossar. Noch nicht im veröffentlichten Image (slice-039, [ADR-0026](../plan/adr/0026-hexslice-vertical-slice-regeln.md)). |
 | 1.32 | 2026-07-24 | §3.6: die `--print-graph`-Legende nennt jetzt **alle fünf** kategorischen Regeln (`lateral-slice`/`port-locality` ergänzt). Spez 0.23.0, slice-040. Noch nicht im veröffentlichten Image. |
+| 1.33 | 2026-07-25 | Lastenheft 0.22.0: neuer Optionalblock **`constructs`** und Regel **`construct-leak`** — ein Roh-Text-Muster darf nur in seiner **Zone** vorkommen (dieselbe Mechanik wie `tech`: `adapter` als Pfad/Liste, `match: substring\|regex`, `composition_root: allow\|forbid`), jedes Vorkommen außerhalb ist ein Befund. Damit sind Konstrukte gatebar, die **keine Import-Zeile** sind (typisch: das `dlopen`-Aufruf-Monopol im Plugin-Adapter). §4 um den Abschnitt „Roh-Text-Monopol (`constructs`)" + Beispiel-Config erweitert, §3.4-Regeltabelle um `construct-leak`, §3.5 (Allowlist wirkt nicht auf Text-Muster), §3.6-Legende. Scan-weit (auch Dateien ohne Schicht), Kommentar-Treffer zählen nicht (ausgewiesene Abweichung von einer `grep`-Regel). Noch nicht im veröffentlichten Image (slice-042, [ADR-0027](../plan/adr/0027-constructs-roh-text-monopol.md)). |

@@ -6,7 +6,31 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
+### Added
+
+- **Roh-Text-Konstrukt-Monopol `constructs` / Regel `construct-leak` (`AC-FA-RULE-011`, `ADR-0027`,
+  `SPEC-CONF-001`/`SPEC-RULE-001`/`SPEC-EXTRACT-001` 0.24.0, slice-042):** ein neuer optionaler
+  `constructs`-Block hebt die bewährte `tech`-Scoping-Mechanik — Zone als Pfad **oder** Pfad-Liste,
+  `match: substring|regex` (RE2), `composition_root: allow|forbid` — von **extrahierten
+  Import-Symbolen** auf **Roh-Quelltext**: das Muster darf nur in seiner Zone vorkommen, jedes
+  Vorkommen außerhalb ist ein Befund `construct-leak` (Exit 1). Damit sind Invarianten gatebar, die an
+  einem Konstrukt **ohne Import-Zeile** hängen — der Auslöser ist das `dlopen`/`dlsym`/`dlclose`-
+  **Aufruf**-Monopol eines C++-Konsumenten, das bisher als `grep`-Skript im Konsumenten-Repo lebte.
+  Die Prüfung ist **scan-weit** (auch Dateien in keinem `layers`-Glob; `exclude` greift davor) und
+  läuft auf der **kommentar-bereinigten** Quelle — ein Treffer nur im Kommentar meldet nicht, eine
+  ausgewiesene Divergenz zur `grep`-Referenz. Fail-closed beim Laden (leeres/fehlendes
+  `pattern`/`adapter`, unbekanntes `match`/`composition_root`, ungültige Regex → Exit 2); **opt-in**:
+  ohne Block ändert sich nichts. Verifiziert per Paritätsprobe gegen die `grep`-Referenz und per
+  Fitness-Probe am realen Konsumenten-Baum (injizierter Aufruf gefangen, Zone grün); die vier lokalen
+  Bestandskonsumenten bleiben bei 0 Befunden.
+
 ### Changed
+
+- **Befund-Sortierung ist jetzt eine Totalordnung (`AC-QA-01`, `SPEC-DET-001`, slice-042):** neben
+  Pfad, Zeile und Regelname entscheidet zuletzt die **Meldung**. Eine Datei-Zeile kann mehrere Befunde
+  **derselben** Regel tragen (zwei `constructs`- oder zwei `forbidden_constructs`-Muster); ohne den
+  letzten Schlüssel hing deren Reihenfolge an der internen Eingabe-Ordnung. Die Lücke bestand latent
+  bereits vor `constructs`.
 
 - **`--print-graph`-Legende lesbarer (slice-041):** der Legenden-Knoten listet die kategorischen Regeln
   und Stil-Hinweise jetzt **je eine pro Zeile** (statt einer langen, mitten im Wort umbrechenden Zeile)
