@@ -56,6 +56,51 @@ Gate finden soll — und bliebe still. **Heute latent** (nur `*_test.go` importi
 die sind dort per `exclude` aus dem Scan), also kein akuter Fehlbefund, aber eine unbemerkte
 Lücke im laufenden Gate eines realen Konsumenten.
 
+## 2a. Nachmessung 2026-07-25 — die Evidenz aus §2 war zur Hälfte falsch
+
+Vor der Abnahme neu gemessen, diesmal mit einer **exakten Portierung der Glob-Semantik**
+(`core.globToRegexp`: `**` → `.*`, `*` → `[^/]*`, verankert) statt einer Endungs-Näherung. Gezählt
+wurden Dateien, die einem `languages`-Glob entsprechen, **nicht** von `exclude` erfasst sind und in
+**keinem** `layers`-Glob liegen (`composition_root` ausgenommen, §3):
+
+| Konsument | ungedeckt | gegen §2 |
+|---|---|---|
+| a-check, b-cad, d-check, belief-agent, HexSlice-Go-Beispiel | **0** | bestätigt |
+| **d-migrate** | **0** | ✗ **§2 ist falsch** |
+| **m-trace** | **2 Dateien** | ✓ bestätigt, aber viel kleiner als „Zonen" nahelegt |
+
+**Korrektur 1 — d-migrate hat sehr wohl ein `exclude`.** §2 behauptet „der gesamte `test/`-Kotlin-Baum
+(kein `exclude`, `languages: **/*.kt`)". Tatsächlich enthält die dortige `.a-check.yml` seit ihrem
+**ersten** Commit (2026-07-06, unverändert bis heute) den Block
+`exclude: ["**/src/test/**", "**/src/testFixtures/**", "test/**", "**/build/**"]` — genau der
+behauptete Baum ist ausgeschlossen und wird nie gescannt. Die Aussage war also nicht *veraltet*,
+sondern **von Anfang an unzutreffend**; die Erstmessung hat den `exclude`-Block übersehen.
+
+**Korrektur 2 — m-trace sind zwei Dateien, keine „Zonen".**
+`apps/api/internal/storage/migrate.go` und `apps/api/scripts/coverage-overview/main.go`. Die
+`*_test.go`-Dateien derselben Verzeichnisse sind per `exclude` ohnehin draußen.
+
+**Was von der Evidenz übrig bleibt — und was nicht:**
+
+- Der **scharfe Fall bleibt scharf**: `apps/api/internal/storage` wird in m-traces `tech`-Regel
+  ausdrücklich als zulässiger `database/sql`-Halter geführt (verifiziert) und hat trotzdem keine
+  Schicht. Ein `hexagon/domain`→dorthin-Import bliebe still. Heute **latent**: die einzigen realen
+  Importeure sind `*_test.go`-Dateien, und die sind ausgeschlossen.
+- Die Begründung **„flotten-weite Evidenz"**, mit der Kandidat 2a entgated wurde
+  ([slice-042 §8](../done/slice-042-constructs-aufruf-monopol.md)), trägt jedoch **nicht**: sie
+  stützte sich auf zwei Konsumenten, und einer davon fällt weg. Real ist **ein** Konsument mit
+  **zwei** Dateien, von denen eine (`scripts/coverage-overview`) ein Werkzeug-Skript ist und
+  architektonisch kaum zählt.
+
+**Der Nebenbefund aus §5 reproduziert unverändert** (Fixture gegen `a-check:dev`, Stand `main`):
+
+```text
+tools/gen.go:3: wrong-direction:  -> ui (x/hexagon/ui/y)
+```
+
+— an der Stelle des Quell-Schicht-Namens steht nichts. Das ist unabhängig von der Zähl-Frage und
+für sich genommen ein klarer, billiger Fix.
+
 ## 3. Zu entscheiden vor der Umsetzung (ADR-Skizze)
 
 | Frage | Optionen | Erste Neigung |

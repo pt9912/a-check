@@ -206,7 +206,7 @@ Betroffen ist **jeder** Konsument, dessen `languages`-Globs weiter reichen als s
 | a-check (Dogfooding) | **0** — Baum vollständig gedeckt |
 | b-cad | **0** — Baum vollständig gedeckt |
 | d-check | **0** — Baum vollständig gedeckt |
-| d-migrate | der gesamte `test/`-Kotlin-Baum (kein `exclude`) |
+| d-migrate | ~~der gesamte `test/`-Kotlin-Baum (kein `exclude`)~~ — **falsch, korrigiert 2026-07-25**: d-migrate hat seit dem ersten Commit ein `exclude` (`test/**`, `**/src/test/**`, …); real **0** ungedeckte Dateien. Nachmessung in [slice-043 §2a](../open/slice-043-schicht-abdeckung-sichtbar.md) |
 | m-trace | `apps/api/internal/storage/**` und `apps/api/scripts/coverage-overview/**` |
 
 Der m-trace-Fall ist der scharfe: `apps/api/internal/storage` wird von der dortigen Config in
@@ -220,7 +220,8 @@ Ausgabe weist darauf hin, dass ein gescannter Teilbaum ungeprüft bleibt.
 
 - **2a — Schicht-Abdeckung sichtbar/streng machen (entgated, flotten-weite Evidenz).** Ausweisen
   (advisory) bzw. auf Opt-in fail-closed stellen, wenn gescannte Dateien in keinem Layer-Glob
-  liegen bzw. Import-Ziele auf keine Schicht auflösen. Deckt Probe 5 + 8, m-trace und d-migrate;
+  liegen bzw. Import-Ziele auf keine Schicht auflösen. Deckt Probe 5 + 8 sowie m-trace (**nicht**
+  d-migrate — die Zeile oben ist korrigiert, dortige `exclude`-Deklaration übersehen);
   **kehrt keine Beweislast um** und fasst keinen Roh-Text an — es macht nur eine bereits
   bestehende, bewusste fail-open-Grenze **sichtbar**. Der Fix beim Konsumenten ist eine Zeile
   Config (Probe 9), er muss die Lücke nur erfahren.
