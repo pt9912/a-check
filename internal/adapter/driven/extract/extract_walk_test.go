@@ -119,3 +119,45 @@ func TestConstructHitsExcludedFile(t *testing.T) {
 		t.Fatalf("ausgeschlossene Datei darf keine Konstrukt-Treffer liefern: %+v", out)
 	}
 }
+
+// TestConstructHitsPythonCommentBoundary nagelt die AUSGEWIESENE Grenze fest
+// (AC-FA-RULE-011 Boundary): die Konstrukt-Erkennung nutzt dieselbe
+// Quell-Vorbereitung wie die Import-Extraktion — und Python wird dort bewusst
+// NICHT C-gestrippt (prepSource). In einer C-Syntax-Sprache schweigt ein
+// Kommentar-Treffer also, in Python meldet er. Ein #-Strip nur für diesen Pfad
+// wäre die schlechtere Wahl: ein # im String-Literal verschluckte den Zeilenrest
+// und könnte einen ECHTEN Treffer verbergen (False-Green > Falsch-Rot).
+func TestConstructHitsPythonCommentBoundary(t *testing.T) {
+	dir := t.TempDir()
+	if err := os.WriteFile(filepath.Join(dir, "a.py"),
+		[]byte("# frueher wurde hier dlopen(p) benutzt\ndef area():\n    pass\n"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(filepath.Join(dir, "a.cpp"),
+		[]byte("// frueher wurde hier dlopen(p) benutzt\nvoid area() {}\n"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	c, err := core.NewConstruct("dlopen(", []string{"adapters/plugin"}, "", "")
+	if err != nil {
+		t.Fatal(err)
+	}
+	m := core.Model{
+		Languages:  map[string][]string{"python": {"**/*.py"}, "cpp": {"**/*.cpp"}},
+		Layers:     []core.Layer{{Name: "adapters", Globs: []string{"adapters/**"}}},
+		Constructs: []core.Construct{c},
+	}
+	out, err := New().Extract(dir, m)
+	if err != nil {
+		t.Fatal(err)
+	}
+	hits := map[string]int{}
+	for _, f := range out {
+		hits[f.Path] = len(f.ConstructHits)
+	}
+	if hits["a.cpp"] != 0 {
+		t.Errorf("C-Kommentar darf keinen Treffer erzeugen (kommentar-bereinigt), got %d", hits["a.cpp"])
+	}
+	if hits["a.py"] != 1 {
+		t.Errorf("Python-#-Kommentar MELDET (nicht C-gestrippt, ausgewiesene Grenze), got %d", hits["a.py"])
+	}
+}

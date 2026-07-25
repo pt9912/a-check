@@ -386,10 +386,14 @@ Eigenschaften sind wichtig:
 - **Scan-weit.** Die Prüfung gilt für **jede** gescannte Datei — auch für Dateien, die in
   **keinem** `layers`-Glob liegen (ein `main.cpp` außerhalb der Schichten, ein Werkzeug-Ordner).
   Ein Monopol ist eine Aussage über den ganzen Baum. `exclude` greift wie immer davor.
-- **Kommentare zählen nicht.** Gematcht wird dieselbe kommentar-bereinigte Quelle wie bei den
-  Importen: ein `dlopen(` in einem Kommentar meldet **nicht**. Das ist eine bewusste Abweichung
-  von einem `grep`-Skript, das dieselbe Regel trägt — dort ist der Kommentar ein Falsch-Positiv.
-  Zeichenketten-Literale bleiben die bekannte Heuristik-Grenze.
+- **Kommentare zählen nicht — außer in Python.** Gematcht wird dieselbe Quelle wie bei den
+  Importen. In den C-Syntax-Sprachen (C++, Go, Rust, Kotlin, Java, C#, TypeScript) sind `//` und
+  `/* */` entfernt: ein `dlopen(` im Kommentar meldet **nicht** — eine bewusste Abweichung von
+  einem `grep`-Skript, das dieselbe Regel trägt (dort ist der Kommentar ein Falsch-Positiv).
+  **Python** wird bewusst nicht gestrippt; dort meldet auch ein Treffer im `#`-Kommentar. Grund:
+  ein `#` in einer Zeichenkette würde beim Strippen den Zeilenrest verschlucken und könnte einen
+  **echten** Treffer verbergen — ein stiller Fehlbefund wiegt schwerer als ein sichtbarer
+  Falsch-Positiv. Zeichenketten-Literale bleiben in allen Sprachen die bekannte Heuristik-Grenze.
 - **Unabhängig von `forbidden_constructs`.** Der ältere Block bindet Muster an eine **Schicht**
   und meldet als `port-impurity`; `constructs` bindet an eine **Zone**, gilt scan-weit und meldet
   als `construct-leak`. Beide Blöcke existieren nebeneinander.

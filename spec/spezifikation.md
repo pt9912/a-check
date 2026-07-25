@@ -211,11 +211,16 @@ Import); sie speist die `port-impurity`-Regel
 **Konstrukt-Treffer (`constructs`).** Ebenfalls text-heuristisch, aber **zonen**-statt
 schicht-gebunden ([AC-FA-RULE-011](lastenheft.md#ac-fa-rule-011--konstrukt-monopol-regel-construct-leak)):
 je gescannter Datei wird **jeder** `constructs`-Eintrag zeilenweise gegen die **vorbereitete**
-Quelle geprüft — dieselbe Vorbereitung wie für Importe und `forbidden_constructs` (Schritt 4:
-Kommentare entfernt, Zeilennummern erhalten; Python nicht C-gestrippt). Ein Treffer, der
-ausschließlich in einem Kommentar steht, entsteht damit nicht — eine bewusste, ausgewiesene
-Divergenz zu einer `grep`-Referenz ([AC-QA-02](lastenheft.md#ac-qa-02--hermetik-und-ehrliche-heuristik-grenze));
-String-Literale bleiben die bestehende Grenze. Die Prüfung läuft über **alle** gescannten Dateien,
+Quelle geprüft — **dieselbe** Vorbereitung wie für Importe und `forbidden_constructs`
+(Schritt 4), keine eigene. Für die **C-Syntax-Sprachen** sind Kommentare damit entfernt
+(Zeilennummern erhalten): ein Treffer, der ausschließlich in einem Kommentar steht, entsteht
+dort nicht — eine bewusste, ausgewiesene Divergenz zu einer `grep`-Referenz
+([AC-QA-02](lastenheft.md#ac-qa-02--hermetik-und-ehrliche-heuristik-grenze)). Für **Python**
+gilt das **nicht**: seine Quelle wird nach Schritt 4 bewusst **nicht** C-gestrippt, und ein
+`#`-Strip wäre hier die schlechtere Wahl — ein `#` in einem String-Literal würde den Zeilenrest
+verschlucken und einen echten Treffer **verbergen** (False-Green, die schwerere Fehlerklasse).
+Ein `constructs`-Treffer in einem Python-Kommentar wird also gemeldet; das ist die ausgewiesene
+Grenze, keine stille Setzung. String-Literale bleiben in **allen** Sprachen die bestehende Grenze. Die Prüfung läuft über **alle** gescannten Dateien,
 auch über solche in **keinem** `layers`-Glob (das Monopol ist eine Aussage über den Baum, nicht
 über eine Schicht); `exclude` greift wie bisher davor. Je Treffer werden der **Index des
 `constructs`-Eintrags** und die Zeile geliefert — nicht bloß der Mustertext, damit die

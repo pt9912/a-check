@@ -288,6 +288,27 @@ Zone wird vom a-check-Gate gefunden, die Gegenprobe innerhalb der Zone bleibt gr
 liegen als Fixture-Tests im Repo (`internal/cli`), inklusive der maschinellen Paritätsprobe gegen eine
 nachgebaute grep-Referenz.
 
+### 10.1a Review-Fund F-1: die Kommentar-Ausnahme gilt für Python nicht
+
+Das Review vor dem Merge fand eine **zu weit formulierte Anforderung**: die Boundary „Treffer nur
+im Kommentar ⇒ kein Befund" stimmt nur für die **C-Syntax-Sprachen**. Die Konstrukt-Erkennung nutzt
+bewusst **dieselbe** Quell-Vorbereitung wie die Import-Extraktion — und die lässt **Python**
+ungestrippt (`prepSource`, [SPEC-EXTRACT-001](../../../../spec/spezifikation.md#spec-extract-001--import-extraktion)):
+eine `/*`-artige Bytefolge in einem Python-String würde sonst echte Importe verschlucken. Real
+gemessen (Fixture, `a-check:dev`): derselbe Kommentar-Treffer meldet in `.py`, schweigt in `.cpp`.
+
+**Entschieden: Doku korrigieren, nicht Code.** Ein `#`-Strip allein für diesen Pfad würde ein `#`
+im String-Literal mitverschlucken und könnte einen **echten** Treffer verbergen — False-Green ist
+die schwerere Fehlerklasse (Lehre aus [ADR-0025](../../adr/0025-exclude-verzeichnis-prune.md)/F-1
+dort), und eine zweite, abweichende Quell-Vorbereitung wäre genau die Drift, die
+[ADR-0027](../../adr/0027-constructs-roh-text-monopol.md) §4 vermeiden wollte. Die Grenze steht
+jetzt ausgewiesen in
+[AC-FA-RULE-011](../../../../spec/lastenheft.md#ac-fa-rule-011--konstrukt-monopol-regel-construct-leak)
+(Beschreibung + eigene Boundary-Klausel), in
+[SPEC-EXTRACT-001](../../../../spec/spezifikation.md#spec-extract-001--import-extraktion) und im
+Benutzerhandbuch — plus ein Test, der beide Sprachen gegeneinander festnagelt. Die ADR bleibt
+unberührt: sie sagt „dieselbe vorbereitete Quelle", und genau das ist eingetreten.
+
 ### 10.2 Regressions-Probe (alle lokalen Konsumenten)
 
 `a-check:dev` gegen b-cad, d-check, d-migrate und m-trace: **je 0 Befunde, Exit 0** — unverändert.
