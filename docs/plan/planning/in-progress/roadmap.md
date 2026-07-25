@@ -73,6 +73,17 @@
 > **Fix-Forward** die Normalantwort ist. **Etappe E ist damit vollständig.** Offen benannt: der
 > Pipe-Fehler hat jetzt einen Guide, aber weiterhin keinen Sensor.
 >
+> **Etappe D vollständig (2026-07-25), Reihenfolge E vor D eingehalten:**
+> [slice-052](../done/slice-052-slice-form.md) (1/3) legt die **erste Slice-Vorlage** des Repos an
+> und macht Größen-Regel (≤ 3 DoD) und benannte Lerneintrag-Form zu einem **bootstrap-aware**
+> Sensor — die 51 älteren Slices sind grandfathered, beidseitig belegt.
+> [slice-053](../done/slice-053-lifecycle-und-roadmap-form.md) (2/3) vervollständigt den Lifecycle
+> um die zwei **Rückführungen**, deklariert das **WIP-Limit = 1**, stellt `next/` wieder her (der
+> Zustand wurde 44 Slices lang genannt, ohne zu existieren) und trägt das **Drift-Log** dieser
+> Roadmap nach. [slice-054](../done/slice-054-ac-form.md) (3/3) setzt die **AC-Drei-Pfad-Form** für
+> neue Anforderungen; die 19 bestehenden bleiben unangetastet und namentlich grandfathered.
+> **Damit sind A, B, D und E erledigt; offen bleiben C und F.**
+>
 > **Sonst kein aktiver Faden offen.** Vertagt/gated: `strict_coverage` (Folge-Slice), Kandidat 2b
 > (Präfix-Allowlist — **Begründung erodiert 2026-07-25**: P2 zerfällt in Kanten + Abdeckungs-Diagnose
 > + Compiler, keiner davon braucht die Beweislast-Umkehr;
