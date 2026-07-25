@@ -71,7 +71,35 @@ Zwei Schichten (Planungs-Doku, Durchsetzungsschicht).
 
 ## 6. Closure-Notiz
 
-_(beim Abschluss.)_
+**Geliefert:** `docs/plan/steering-loop.md` als Zähl-Kanal mit zwei belegten Einträgen und die
+zweite Guard-Regel, die verschluckte Gate-Läufe fail-closed ablehnt.
+
+**Lerneintrag — Form: neuer Sensor.**
+> **Ein Guide, der nach dem vierten Vorfall geschrieben wird, verhindert den fünften nicht.**
+> slice-051 hat den Pipe-Fehler korrekt diagnostiziert und einen Guide dagegen geschrieben —
+> Schritt 6 des Workflow-Skeletts, klar formuliert. Der fünfte Vorfall passierte trotzdem, und
+> zwar von derselben Instanz, die den Guide verfasst hatte. Das ist der empirische Beleg für die
+> Modul-09-Regel „eine Hard Rule in nur einem Quadranten ist halb durchgesetzt": *inferential*
+> feedforward wirkt nicht gegen Routine, sondern nur gegen Unwissen. Prüfsatz: *wenn ein Muster
+> die 3×-Schwelle reißt, ist die Frage nicht »wie formuliere ich es deutlicher«, sondern »was
+> macht es technisch unmöglich«.*
+
+**Zwei beobachtbare Closure-Kriterien:**
+
+1. `make gates` und `make verify` grün auf demselben Stand (je Exit 0) — belegt.
+2. 13 Diskriminierungs-Proben treffen: fünf Kommandos werden abgelehnt, sechs durchgelassen
+   (darunter die Umleitung in eine Datei und das Muster im Argument-String), zwei belegen Regel 1
+   als unverändert.
+
+**Beobachtung zur Selbstanwendung:** die Regel blockierte während ihrer Entwicklung zweimal ihren
+eigenen Autor, und ein Syntax-Fehler in derselben Änderung legte kurzzeitig **jeden** Bash-Aufruf
+lahm. Beides ist in §3 festgehalten statt geglättet: ein fail-closed Wächter, der sich selbst
+blockiert, verhält sich korrekt — genau das ist der Unterschied zu einem Gate, das im Zweifel
+durchwinkt.
+
+**Folge-Slices:** Etappe F (2/3) und (3/3) — Carveout-Ort und Diskrepanz-Trichter (B-14, B-10),
+danach Wellen-Closure und Rollen-Übergaben (B-13, B-9). Aus SL-002 zusätzlich offen: eine Prüfung,
+die brechende Verweise **vor** dem `git mv` meldet.
 
 ## 7. Sub-Area-Modus
 
