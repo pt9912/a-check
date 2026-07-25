@@ -28,6 +28,16 @@ type yamlTech struct {
 	CompositionRoot string    `yaml:"composition_root"` // "allow" (default) or "forbid" (AC-FA-RULE-003 0.14.0)
 }
 
+// yamlConstruct is one `constructs` entry (AC-FA-RULE-011, ADR-0027): the same
+// shape as yamlTech — `adapter` is the ZONE (scalar or list) — but the pattern
+// matches raw source text instead of an import symbol.
+type yamlConstruct struct {
+	Pattern         string    `yaml:"pattern"`
+	Adapter         yaml.Node `yaml:"adapter"`          // scalar OR list: the allowed zone(s)
+	Match           string    `yaml:"match"`            // "substring" (default) or "regex"
+	CompositionRoot string    `yaml:"composition_root"` // "allow" (default) or "forbid"
+}
+
 type yamlMarkers struct {
 	IgnoreSymbols []string `yaml:"ignore_symbols"`
 }
@@ -55,6 +65,7 @@ type yamlConfig struct {
 	Edges           []yamlEdge                `yaml:"edges"`
 	AdapterSink     string                    `yaml:"adapter_sink"`
 	Tech            []yamlTech                `yaml:"tech"`
+	Constructs      []yamlConstruct           `yaml:"constructs"` // Roh-Text-Monopol (ADR-0027)
 	CompositionRoot []string                  `yaml:"composition_root"`
 	Allow           []yamlEdge                `yaml:"allow"`
 	Markers         *yamlMarkers              `yaml:"markers"`
@@ -110,6 +121,11 @@ func (Adapter) Load(path string) (core.Model, error) {
 		return core.Model{}, terr
 	}
 	m.Techs = techs
+	constructs, cerr := decodeConstructs(yc.Constructs, path)
+	if cerr != nil {
+		return core.Model{}, cerr
+	}
+	m.Constructs = constructs
 	if eerr := validateExclude(yc.Exclude, path); eerr != nil {
 		return core.Model{}, eerr
 	}
@@ -130,7 +146,7 @@ func (Adapter) Load(path string) (core.Model, error) {
 func decodeTechs(entries []yamlTech, path string) ([]core.Tech, error) {
 	var out []core.Tech
 	for _, t := range entries {
-		adapters, aerr := decodeTechAdapters(t.Adapter, t.Pattern, path)
+		adapters, aerr := decodeZoneList(t.Adapter, "tech-Muster", t.Pattern, path)
 		if aerr != nil {
 			return nil, aerr
 		}
@@ -143,46 +159,67 @@ func decodeTechs(entries []yamlTech, path string) ([]core.Tech, error) {
 	return out, nil
 }
 
-// decodeTechAdapters reads a tech entry's `adapter` as a scalar or a string
-// list (AC-FA-RULE-003 0.14.0). A non-empty scalar becomes a one-element list —
-// byte-identical to the pre-list behavior. An ABSENT or EMPTY adapter (also
-// `null`) fails closed (exit 2): in the pre-0.14.0 code it was a silent
-// never-leak dead entry (`strings.Contains(path, "")` is always true, so the
-// pattern never reported) — a false-green trap, not a behavior worth
+// decodeConstructs builds the raw-text construct list (AC-FA-RULE-011): same
+// zone decode as tech, then core.NewConstruct validates pattern/zone/match/
+// composition_root fail-closed (exit 2). A missing block yields nil — no rule.
+func decodeConstructs(entries []yamlConstruct, path string) ([]core.Construct, error) {
+	var out []core.Construct
+	for _, c := range entries {
+		zones, zerr := decodeZoneList(c.Adapter, "constructs-Muster", c.Pattern, path)
+		if zerr != nil {
+			return nil, zerr
+		}
+		con, cerr := core.NewConstruct(c.Pattern, zones, c.Match, c.CompositionRoot)
+		if cerr != nil {
+			return nil, fmt.Errorf("%s: %w", path, cerr)
+		}
+		out = append(out, con)
+	}
+	return out, nil
+}
+
+// decodeZoneList reads a tech/constructs entry's `adapter` as a scalar or a
+// string list (AC-FA-RULE-003 0.14.0, AC-FA-RULE-011). A non-empty scalar becomes
+// a one-element list — byte-identical to the pre-list behavior. An ABSENT or
+// EMPTY adapter (also `null`) fails closed (exit 2): in the pre-0.14.0 code it
+// was a silent never-leak dead entry (`strings.Contains(path, "")` is always
+// true, so the pattern never reported) — a false-green trap, not a behavior worth
 // preserving (Review-R1 B1; same ethos line as the empty resolution root).
 // A YAML alias is dereferenced first (yaml.Node fields keep Kind==AliasNode).
-func decodeTechAdapters(node yaml.Node, pattern, path string) ([]string, error) {
+// kind names the block in the message ("tech-Muster"/"constructs-Muster"); both
+// share the mechanic, so they share the decode.
+func decodeZoneList(node yaml.Node, kind, pattern, path string) ([]string, error) {
 	if node.Kind == yaml.AliasNode && node.Alias != nil {
 		node = *node.Alias
 	}
 	switch node.Kind {
 	case 0:
-		return nil, fmt.Errorf("%s: tech-Muster %q: adapter fehlt (Pfad oder Pfad-Liste erforderlich)", path, pattern)
+		return nil, fmt.Errorf("%s: %s %q: adapter fehlt (Pfad oder Pfad-Liste erforderlich)", path, kind, pattern)
 	case yaml.ScalarNode:
 		var s string
 		if err := node.Decode(&s); err != nil {
-			return nil, fmt.Errorf("%s: tech-Muster %q: adapter: %w", path, pattern, err)
+			return nil, fmt.Errorf("%s: %s %q: adapter: %w", path, kind, pattern, err)
 		}
 		if s == "" {
-			return nil, fmt.Errorf("%s: tech-Muster %q: leerer adapter unzulässig (war ein stiller Never-Leak-Eintrag)", path, pattern)
+			return nil, fmt.Errorf("%s: %s %q: leerer adapter unzulässig (war ein stiller Never-Leak-Eintrag)", path, kind, pattern)
 		}
 		return []string{s}, nil
 	case yaml.SequenceNode:
 		var list []string
 		if err := node.Decode(&list); err != nil {
-			return nil, fmt.Errorf("%s: tech-Muster %q: adapter: %w", path, pattern, err)
+			return nil, fmt.Errorf("%s: %s %q: adapter: %w", path, kind, pattern, err)
 		}
 		if len(list) == 0 {
-			return nil, fmt.Errorf("%s: tech-Muster %q: leere adapter-Liste unzulässig", path, pattern)
+			return nil, fmt.Errorf("%s: %s %q: leere adapter-Liste unzulässig", path, kind, pattern)
 		}
 		for _, a := range list {
 			if a == "" {
-				return nil, fmt.Errorf("%s: tech-Muster %q: leerer adapter-Listen-Eintrag unzulässig", path, pattern)
+				return nil, fmt.Errorf("%s: %s %q: leerer adapter-Listen-Eintrag unzulässig", path, kind, pattern)
 			}
 		}
 		return list, nil
 	default:
-		return nil, fmt.Errorf("%s: tech-Muster %q: adapter muss Pfad oder Pfad-Liste sein", path, pattern)
+		return nil, fmt.Errorf("%s: %s %q: adapter muss Pfad oder Pfad-Liste sein", path, kind, pattern)
 	}
 }
 

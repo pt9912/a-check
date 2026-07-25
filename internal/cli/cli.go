@@ -129,6 +129,11 @@ tech:
 composition_root: ["cmd/**", "internal/cli/**"]
 forbidden_constructs:
   ports: ["impl "]
+# constructs:                     # optional: Roh-Text-Monopol (AC-FA-RULE-011/ADR-0027) —
+#   - pattern: 'dlopen\s*\('      #   Muster nur in der Zone erlaubt, jedes Vorkommen
+#     match: regex                #   ausserhalb ist ein Befund construct-leak. Greift auch
+#     adapter: adapters/plugin    #   in Dateien ohne Schicht; Kommentare zaehlen nicht.
+#     composition_root: forbid    #   Default allow (Composition Root ausgenommen).
 markers:
   ignore_symbols: []
 # resolution:                     # optional: Import-Symbol -> Schicht je Sprache (ADR-0016/ADR-0023)

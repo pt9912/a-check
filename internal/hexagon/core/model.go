@@ -12,14 +12,31 @@ type Import struct {
 	Line   int
 }
 
-// FileImports are the imports (and forbidden-construct hits) extracted from one
-// source file, plus the architectural layer the file resolves to.
+// ConstructHit is one raw-source-text match of a `constructs` entry: the INDEX
+// of the entry in Model.Constructs plus the source line (ADR-0027). It carries
+// the index, not the pattern text, so the rule engine decides the zone on the
+// entry itself — two entries with the SAME pattern but different zones stay
+// distinguishable (a pattern-text lookup would silently pick the first).
+type ConstructHit struct {
+	Entry int
+	Line  int
+}
+
+// FileImports are the imports (and text-pattern hits) extracted from one source
+// file, plus the architectural layer the file resolves to.
 type FileImports struct {
-	Path       string
-	Layer      string
-	Language   string // source-language of this file (drives resolution, ADR-0016)
-	Imports    []Import
-	Constructs []Import
+	Path     string
+	Layer    string
+	Language string // source-language of this file (drives resolution, ADR-0016)
+	Imports  []Import
+	// ForbiddenHits are the LAYER-bound `forbidden_constructs` matches feeding
+	// port-impurity (AC-FA-RULE-004). Named apart from ConstructHits/Constructs
+	// on purpose: those are the ZONE-bound `constructs` block (ADR-0027) — one
+	// name for both would blur exactly the distinction this code must keep.
+	ForbiddenHits []Import
+	// ConstructHits are the scan-wide `constructs` matches feeding construct-leak
+	// (AC-FA-RULE-011); empty when no constructs block is configured.
+	ConstructHits []ConstructHit
 	// Declarations are the file's top-level declaration names (Kotlin: fun,
 	// val/var, class/object/interface/typealias, ADR-0023). Only a
 	// declaration-aware backend fills them (0.18.0: Kotlin); every other backend
@@ -77,6 +94,21 @@ type Tech struct {
 	match                 func(string) bool // compiled matcher; nil ⇒ substring on Pattern
 }
 
+// Construct is a RAW-SOURCE-TEXT pattern that may appear ONLY inside its owning
+// zone(s) — the `constructs` block (AC-FA-RULE-011, ADR-0027). It shares the
+// scoping mechanic of Tech (zone as path fragment or list, substring default or
+// unanchored RE2 via NewConstruct's match=="regex", per-entry composition-root
+// exemption) but matches a source LINE instead of an extracted import symbol, so
+// it catches constructs that are no import at all (a `dlopen(` call reachable
+// through a transitive header). Zones is never empty and Pattern never blank —
+// NewConstruct rejects both fail-closed.
+type Construct struct {
+	Pattern               string
+	Zones                 []string
+	ForbidCompositionRoot bool
+	match                 func(string) bool // compiled matcher; nil ⇒ substring on Pattern
+}
+
 // Model is the resolved architecture model decoded from `.a-check.yml`.
 type Model struct {
 	Languages       map[string][]string // language -> file globs
@@ -85,15 +117,19 @@ type Model struct {
 	Allow           []Edge // explicit extra allowed edges
 	AdapterSink     string // shared adapter sink (path fragment), optional
 	Techs           []Tech
-	CompositionRoot []string                    // globs, exempt from layering (+ tech-leak per entry, AC-FA-RULE-003)
+	Constructs      []Construct                 // raw-text zone monopolies (AC-FA-RULE-011)
+	CompositionRoot []string                    // globs, exempt from layering (+ tech-/construct-leak per entry, AC-FA-RULE-003/011)
 	Forbidden       map[string][]string         // layer name -> forbidden text patterns
 	IgnoreSymbols   []string                    // heuristic-boundary allowlist (markers)
 	Resolution      map[string]ResolutionConfig // language -> import resolution (ADR-0016)
 	Exclude         []string                    // file globs removed from the scan before extraction (ADR-0018)
 }
 
-// Finding is one rule violation. Its fields define the stable sort order
-// (SPEC-DET-001): Path, then Line, then Rule.
+// Finding is one rule violation. Its fields define the TOTAL sort order
+// (SPEC-DET-001): Path, then Line, then Rule, then Msg. Msg is what makes the
+// order total — one file line can carry several findings of the SAME rule (two
+// constructs or two forbidden_constructs patterns matching one line), and
+// without it their order would depend on the input ordering (AC-QA-01).
 type Finding struct {
 	Path string
 	Line int

@@ -172,7 +172,9 @@ func writeSpecialNodes(b *strings.Builder, m core.Model, dangling []string, did 
 }
 
 // writeLegend emits the legend note: the implicit, categorical rules are NEVER
-// edges (AC-QA-02 — the graph asserts no semantics about the real code).
+// edges (AC-QA-02 — the graph asserts no semantics about the real code). It is
+// also the normative place for rules that have no layer edge at all, such as the
+// raw-text monopoly construct-leak (SPEC-CLI-002, ADR-0027).
 func writeLegend(b *strings.Builder) {
 	// The label wraps a left-aligning <div>: Mermaid centers node text by default;
 	// the inline text-align works in permissive renderers and is harmlessly ignored
@@ -183,7 +185,8 @@ func writeLegend(b *strings.Builder) {
 		"lateral-adapter<br/>" +
 		"lateral-slice<br/>" +
 		"port-direction-mismatch<br/>" +
-		"port-locality<br/><br/>" +
+		"port-locality<br/>" +
+		"construct-leak<br/><br/>" +
 		"durchgezogen = edges<br/>" +
 		"gestrichelt = allow<br/>" +
 		"Farbe = effektive Rolle</div>\"]:::legend\n")

@@ -1,6 +1,7 @@
 // Package extract is the extraction adapter (ARC-003): it walks the source tree
 // and yields per-file imports text-heuristically (SPEC-EXTRACT-001), plus
-// forbidden-construct hits for port-impurity. It is a heuristic, not a parser:
+// forbidden-construct hits for port-impurity and raw-text construct hits for
+// construct-leak (ADR-0027). It is a heuristic, not a parser:
 // import-like lines in comments are stripped; the boundary is documented
 // (AC-QA-02), and `markers.ignore_symbols` provides an allowlist.
 package extract
@@ -209,9 +210,34 @@ func (a Adapter) fileImports(p, rel string, m core.Model) (core.FileImports, boo
 		Declarations: a.declarationsFor(lang, src),
 	}
 	if pats := m.Forbidden[fi.Layer]; len(pats) > 0 {
-		fi.Constructs = constructsFromSource(src, pats)
+		fi.ForbiddenHits = constructsFromSource(src, pats)
 	}
+	fi.ConstructHits = constructHits(src, m.Constructs)
 	return fi, true, nil
+}
+
+// constructHits reports every `constructs` match in the PREPARED source — the
+// same comment-stripped text the imports and forbidden_constructs see, so a hit
+// living only in a comment never fires (a declared divergence from a grep
+// reference, AC-FA-RULE-011/ADR-0027). It runs for EVERY scanned file, layer or
+// not: the monopoly is a statement about the whole tree. Each hit carries the
+// ENTRY INDEX (not the pattern text) so the rule engine decides the zone on the
+// entry itself; entry-major iteration yields the (entry, line) order of
+// SPEC-EXTRACT-001 without a sort.
+func constructHits(src string, cs []core.Construct) []core.ConstructHit {
+	if len(cs) == 0 {
+		return nil
+	}
+	lines := strings.Split(src, "\n")
+	var out []core.ConstructHit
+	for e := range cs {
+		for i, ln := range lines {
+			if cs[e].Matches(ln) {
+				out = append(out, core.ConstructHit{Entry: e, Line: i + 1})
+			}
+		}
+	}
+	return out
 }
 
 func langFor(rel string, langs map[string][]string) string {

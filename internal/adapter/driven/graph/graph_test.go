@@ -209,7 +209,9 @@ func TestRenderUnexpectedDirectionNotDropped(t *testing.T) {
 func TestRenderLegendListsCategoricalRules(t *testing.T) { // slice-040: alle kategorischen Regeln in der Legende
 	m := core.Model{Layers: []core.Layer{{Name: "core", Globs: []string{"core/**"}, Role: "domain"}}}
 	out := render(m)
-	for _, want := range []string{"core-impurity", "lateral-adapter", "lateral-slice", "port-direction-mismatch", "port-locality"} {
+	// construct-leak (AC-FA-RULE-011) steht ebenfalls hier: es hat gar keine
+	// Schicht-Kante, die Legende ist sein normativer Ort (SPEC-CLI-002).
+	for _, want := range []string{"core-impurity", "lateral-adapter", "lateral-slice", "port-direction-mismatch", "port-locality", "construct-leak"} {
 		if !strings.Contains(out, want) {
 			t.Errorf("Legende fehlt kategorische Regel %q:\n%s", want, out)
 		}

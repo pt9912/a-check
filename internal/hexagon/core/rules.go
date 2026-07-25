@@ -32,25 +32,53 @@ func Evaluate(m Model, files []FileImports) ([]Finding, error) {
 			}
 		}
 		if roleOf(f.Layer, m) == "port" {
-			for _, c := range f.Constructs {
+			for _, c := range f.ForbiddenHits {
 				fs = append(fs, Finding{Path: f.Path, Line: c.Line, Rule: "port-impurity", Msg: "verbotenes Konstrukt: " + c.Symbol})
 			}
 		}
+		fs = append(fs, constructFindings(m, f, false)...)
 	}
 	sortFindings(fs)
 	return fs, nil
 }
 
 // compositionRootFindings checks a composition-root file: it wires everything,
-// so the layer rules are exempt — but tech-leak stays active for entries with
-// `composition_root: forbid` (AC-FA-RULE-003 0.14.0); entries with the allow
-// default keep the pre-0.14.0 exemption.
+// so the layer rules are exempt — but tech-leak and construct-leak stay active
+// for entries with `composition_root: forbid` (AC-FA-RULE-003 0.14.0 /
+// AC-FA-RULE-011); entries with the allow default keep the exemption.
 func compositionRootFindings(m Model, f FileImports) []Finding {
 	var fs []Finding
 	for _, imp := range f.Imports {
 		if tech, isTech := matchTech(imp.Symbol, m.Techs); isTech && tech.ForbidCompositionRoot && !tech.inAdapter(f.Path) {
 			fs = append(fs, Finding{f.Path, imp.Line, "tech-leak", "Tech " + tech.Pattern + " außerhalb " + tech.adapterLabel() + " (composition_root: forbid)"})
 		}
+	}
+	return append(fs, constructFindings(m, f, true)...)
+}
+
+// constructFindings reports every raw-text construct hit that sits outside its
+// entry's zone(s) — the construct-leak rule (AC-FA-RULE-011). It is FILE-, not
+// import-bound and therefore outside the per-import first-match chain: two
+// patterns hitting one line yield two findings (the total finding order keeps
+// them deterministic, SPEC-DET-001). inCompositionRoot narrows the check to
+// entries that switched the wiring exemption off (`composition_root: forbid`),
+// mirroring tech-leak. The hit carries the entry INDEX; a stale index would
+// panic loudly rather than silently skip a violation (false-green).
+func constructFindings(m Model, f FileImports, inCompositionRoot bool) []Finding {
+	var fs []Finding
+	for _, h := range f.ConstructHits {
+		c := m.Constructs[h.Entry]
+		if inCompositionRoot && !c.ForbidCompositionRoot {
+			continue
+		}
+		if c.inZone(f.Path) {
+			continue
+		}
+		msg := "Konstrukt " + c.Pattern + " außerhalb " + c.zoneLabel()
+		if inCompositionRoot {
+			msg += " (composition_root: forbid)"
+		}
+		fs = append(fs, Finding{f.Path, h.Line, "construct-leak", msg})
 	}
 	return fs
 }
@@ -236,6 +264,11 @@ func directionMismatch(m Model, srcLayer, tgtLayer string) bool {
 	return sd != "" && td != "" && sd != td
 }
 
+// sortFindings imposes the TOTAL order of SPEC-DET-001: path, line, rule, msg.
+// The message is the last key on purpose — one line can carry several findings
+// of the same rule (two constructs / two forbidden_constructs patterns), and
+// with a non-total key the unstable sort.Slice would order those siblings by
+// chance (AC-QA-01).
 func sortFindings(fs []Finding) {
 	sort.Slice(fs, func(i, j int) bool {
 		if fs[i].Path != fs[j].Path {
@@ -244,7 +277,10 @@ func sortFindings(fs []Finding) {
 		if fs[i].Line != fs[j].Line {
 			return fs[i].Line < fs[j].Line
 		}
-		return fs[i].Rule < fs[j].Rule
+		if fs[i].Rule != fs[j].Rule {
+			return fs[i].Rule < fs[j].Rule
+		}
+		return fs[i].Msg < fs[j].Msg
 	})
 }
 
@@ -680,56 +716,134 @@ func segIndex(s, p string) int {
 // or an unknown compositionRoot value, which the config adapter maps to exit
 // code 2 (SPEC-CONF-001 / ADR-0015).
 func NewTech(pattern string, adapters []string, match, compositionRoot string) (Tech, error) {
-	if len(adapters) == 0 {
-		return Tech{}, fmt.Errorf("tech-Muster %q: leere adapter-Liste unzulässig", pattern)
+	const kind = "tech-Muster"
+	if err := validateZones(kind, pattern, adapters); err != nil {
+		return Tech{}, err
 	}
-	for _, a := range adapters {
-		if a == "" {
-			return Tech{}, fmt.Errorf("tech-Muster %q: leerer adapter-Eintrag unzulässig", pattern)
+	forbid, err := parseCompositionRoot(kind, pattern, compositionRoot)
+	if err != nil {
+		return Tech{}, err
+	}
+	if match == "regex" && pattern == "" {
+		return Tech{}, fmt.Errorf("tech-Muster: leeres regex-Pattern unzulässig (match: regex würde jeden Import treffen)")
+	}
+	matcher, err := compileMatch(kind, pattern, match)
+	if err != nil {
+		return Tech{}, err
+	}
+	return Tech{Pattern: pattern, Adapters: adapters, ForbidCompositionRoot: forbid, match: matcher}, nil
+}
+
+// NewConstruct builds a Construct for the `constructs` block (AC-FA-RULE-011,
+// ADR-0027): same scoping mechanic as NewTech (zone list, match mode,
+// composition-root switch), but matched against raw source LINES. Unlike tech it
+// rejects an EMPTY pattern in BOTH match modes — a blank substring pattern would
+// be a silent never-match (false-green, the class 0.14.0 closed for the empty
+// adapter). Errors map to exit code 2 (SPEC-CONF-001).
+func NewConstruct(pattern string, zones []string, match, compositionRoot string) (Construct, error) {
+	const kind = "constructs-Muster"
+	if pattern == "" {
+		return Construct{}, fmt.Errorf("%s: leeres pattern unzulässig (es würde nie melden)", kind)
+	}
+	if err := validateZones(kind, pattern, zones); err != nil {
+		return Construct{}, err
+	}
+	forbid, err := parseCompositionRoot(kind, pattern, compositionRoot)
+	if err != nil {
+		return Construct{}, err
+	}
+	matcher, err := compileMatch(kind, pattern, match)
+	if err != nil {
+		return Construct{}, err
+	}
+	return Construct{Pattern: pattern, Zones: zones, ForbidCompositionRoot: forbid, match: matcher}, nil
+}
+
+// validateZones rejects an empty zone list or a blank zone entry — both were
+// silent never-leak entries before 0.14.0 (`strings.Contains(path, "")` is always
+// true), the false-green class this project fails closed on. Both blocks spell
+// the zone key `adapter`, so the message is the same for tech and constructs.
+func validateZones(kind, pattern string, zones []string) error {
+	if len(zones) == 0 {
+		return fmt.Errorf("%s %q: leere adapter-Liste unzulässig", kind, pattern)
+	}
+	for _, z := range zones {
+		if z == "" {
+			return fmt.Errorf("%s %q: leerer adapter-Eintrag unzulässig", kind, pattern)
 		}
 	}
-	var forbid bool
-	switch compositionRoot {
+	return nil
+}
+
+// parseCompositionRoot maps the per-entry composition_root switch: "" / "allow"
+// keeps the wiring exemption, "forbid" drops it; anything else fails closed.
+func parseCompositionRoot(kind, pattern, v string) (bool, error) {
+	switch v {
 	case "", "allow":
-		forbid = false
+		return false, nil
 	case "forbid":
-		forbid = true
+		return true, nil
 	default:
-		return Tech{}, fmt.Errorf("tech-Muster %q: ungültiges composition_root %q (allow|forbid)", pattern, compositionRoot)
+		return false, fmt.Errorf("%s %q: ungültiges composition_root %q (allow|forbid)", kind, pattern, v)
 	}
-	t := Tech{Pattern: pattern, Adapters: adapters, ForbidCompositionRoot: forbid}
+}
+
+// compileMatch returns the compiled matcher for a match mode: nil for the
+// substring default (the caller falls back to a Contains on the pattern), an
+// unanchored RE2 for "regex" (ADR-0015 — linear, no backtracking), an error for
+// an unknown mode or an uncompilable expression.
+func compileMatch(kind, pattern, match string) (func(string) bool, error) {
 	switch match {
 	case "", "substring":
-		return t, nil
+		return nil, nil
 	case "regex":
-		if pattern == "" {
-			return Tech{}, fmt.Errorf("tech-Muster: leeres regex-Pattern unzulässig (match: regex würde jeden Import treffen)")
-		}
 		re, err := regexp.Compile(pattern)
 		if err != nil {
-			return Tech{}, fmt.Errorf("tech-Muster %q: ungültige Regex: %w", pattern, err)
+			return nil, fmt.Errorf("%s %q: ungültige Regex: %w", kind, pattern, err)
 		}
-		t.match = re.MatchString
-		return t, nil
+		return re.MatchString, nil
 	default:
-		return Tech{}, fmt.Errorf("tech-Muster %q: ungültiges match %q (substring|regex)", pattern, match)
+		return nil, fmt.Errorf("%s %q: ungültiges match %q (substring|regex)", kind, pattern, match)
 	}
 }
 
 // inAdapter reports whether the file path lies inside ANY of the tech's owning
 // adapters (the symbol is allowed in each listed adapter, AC-FA-RULE-003).
-func (t Tech) inAdapter(filePath string) bool {
-	for _, a := range t.Adapters {
-		if contains(filePath, a) {
+func (t Tech) inAdapter(filePath string) bool { return inAnyZone(filePath, t.Adapters) }
+
+// adapterLabel names all owning adapters in declaration order for the finding
+// message (deterministic, SPEC-RULE-001).
+func (t Tech) adapterLabel() string { return strings.Join(t.Adapters, "|") }
+
+// inZone reports whether the file lies inside ANY of the construct's zones — the
+// same substring-on-path comparison tech uses (AC-FA-RULE-011).
+func (c Construct) inZone(filePath string) bool { return inAnyZone(filePath, c.Zones) }
+
+// zoneLabel names all allowed zones in declaration order for the finding message.
+func (c Construct) zoneLabel() string { return strings.Join(c.Zones, "|") }
+
+// Matches reports whether a raw source line hits this construct's pattern: the
+// compiled regexp when set, otherwise a substring test. Exported because the
+// extraction adapter does the line scan (SPEC-EXTRACT-001) while the pattern
+// semantics stay here, next to NewConstruct.
+func (c Construct) Matches(line string) bool {
+	if c.match != nil {
+		return c.match(line)
+	}
+	return c.Pattern != "" && strings.Contains(line, c.Pattern)
+}
+
+// inAnyZone reports whether the path contains any of the zone fragments — the
+// shared zone test of tech-leak and construct-leak (substring on the file path,
+// not segment-aware; documented since 0.14.0).
+func inAnyZone(filePath string, zones []string) bool {
+	for _, z := range zones {
+		if contains(filePath, z) {
 			return true
 		}
 	}
 	return false
 }
-
-// adapterLabel names all owning adapters in declaration order for the finding
-// message (deterministic, SPEC-RULE-001).
-func (t Tech) adapterLabel() string { return strings.Join(t.Adapters, "|") }
 
 // matches reports whether imp hits this tech pattern: the compiled regexp when
 // set, otherwise a substring test on Pattern (default / literal Tech).

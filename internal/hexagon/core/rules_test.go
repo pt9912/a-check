@@ -113,7 +113,7 @@ func TestPortImpurityTech(t *testing.T) { // AC-FA-RULE-004 negative: Port impor
 
 func TestPortImpurityConstruct(t *testing.T) { // AC-FA-RULE-004 negative (construct)
 	fs := mustEval(t, testModel(), []FileImports{
-		{Path: "ports/p.go", Layer: "ports", Constructs: []Import{{Symbol: "impl ", Line: 4}}},
+		{Path: "ports/p.go", Layer: "ports", ForbiddenHits: []Import{{Symbol: "impl ", Line: 4}}},
 	})
 	if !hasRule(fs, "port-impurity") {
 		t.Fatalf("expected port-impurity from forbidden construct, got %v", fs)
@@ -261,7 +261,7 @@ func TestRoleDomainImportsAdapter(t *testing.T) { // AC-FA-RULE-006 negative (a)
 func TestRolePortConstructForeignName(t *testing.T) { // AC-FA-RULE-006 negative (b): role:port, fremder Name, Konstrukt
 	m := Model{Layers: []Layer{{Name: "api", Globs: []string{"api/**"}, Role: "port"}}}
 	fs := mustEval(t, m, []FileImports{
-		{Path: "api/p.go", Layer: "api", Constructs: []Import{{Symbol: "impl ", Line: 4}}},
+		{Path: "api/p.go", Layer: "api", ForbiddenHits: []Import{{Symbol: "impl ", Line: 4}}},
 	})
 	if !hasRule(fs, "port-impurity") {
 		t.Fatalf("expected port-impurity (role:port construct, foreign name), got %v", fs)
@@ -316,7 +316,7 @@ func TestInferenceBoundaryClassicNames(t *testing.T) { // AC-FA-RULE-006 boundar
 		t.Fatalf("core->adapter via inference must be core-impurity, got %v", coreToAdapter)
 	}
 	portConstruct := mustEval(t, m, []FileImports{
-		{Path: "ports/p.go", Layer: "ports", Constructs: []Import{{Symbol: "impl ", Line: 2}}},
+		{Path: "ports/p.go", Layer: "ports", ForbiddenHits: []Import{{Symbol: "impl ", Line: 2}}},
 	})
 	if !hasRule(portConstruct, "port-impurity") {
 		t.Fatalf("ports construct via inference must be port-impurity, got %v", portConstruct)
@@ -1504,5 +1504,174 @@ func TestLateralSliceSeparateAppLayersEdgeAllowed(t *testing.T) { // AC-FA-RULE-
 	}
 	if len(fs) != 0 {
 		t.Fatalf("svc->svc_geo mit deklarierter Kante muss 0 sein, got %v", fs)
+	}
+}
+
+// --- AC-FA-RULE-011: constructs / construct-leak (ADR-0027) -----------------
+
+// constructModel is testModel plus one raw-text monopoly: the dlopen call may
+// only appear inside adapters/plugin.
+func constructModel(t *testing.T) Model {
+	t.Helper()
+	m := testModel()
+	c, err := NewConstruct(`dl(open|sym)\s*\(`, []string{"adapters/plugin"}, "regex", "")
+	if err != nil {
+		t.Fatalf("NewConstruct: %v", err)
+	}
+	m.Constructs = []Construct{c}
+	return m
+}
+
+func TestConstructLeak(t *testing.T) { // AC-FA-RULE-011 negative
+	fs := mustEval(t, constructModel(t), []FileImports{
+		{Path: "adapters/io/reader.cpp", Layer: "adapters", ConstructHits: []ConstructHit{{Entry: 0, Line: 12}}},
+	})
+	if !hasRule(fs, "construct-leak") {
+		t.Fatalf("expected construct-leak outside the zone, got %v", fs)
+	}
+	if fs[0].Line != 12 || !strings.Contains(fs[0].Msg, "adapters/plugin") {
+		t.Fatalf("Befund muss Zeile und erlaubte Zone nennen: %+v", fs[0])
+	}
+}
+
+func TestConstructInOwnZone(t *testing.T) { // AC-FA-RULE-011 happy
+	fs := mustEval(t, constructModel(t), []FileImports{
+		{Path: "adapters/plugin/loader.cpp", Layer: "adapters", ConstructHits: []ConstructHit{{Entry: 0, Line: 12}}},
+	})
+	if len(fs) != 0 {
+		t.Fatalf("Muster in seiner Zone ist befundfrei, got %v", fs)
+	}
+}
+
+func TestConstructLeakLayerlessFile(t *testing.T) { // AC-FA-RULE-011 boundary: scan-weit, nicht layer-gebunden
+	fs := mustEval(t, constructModel(t), []FileImports{
+		{Path: "src/main.cpp", Layer: "", ConstructHits: []ConstructHit{{Entry: 0, Line: 3}}},
+	})
+	if !hasRule(fs, "construct-leak") {
+		t.Fatalf("eine Datei ohne Schicht muss das Monopol trotzdem verletzen, got %v", fs)
+	}
+}
+
+func TestConstructCompositionRootAllowedByDefault(t *testing.T) { // AC-FA-RULE-011 boundary: Default allow
+	fs := mustEval(t, constructModel(t), []FileImports{
+		{Path: "cmd/main.cpp", Layer: "", ConstructHits: []ConstructHit{{Entry: 0, Line: 3}}},
+	})
+	if len(fs) != 0 {
+		t.Fatalf("composition_root: allow (Default) nimmt die Verdrahtung aus, got %v", fs)
+	}
+}
+
+func TestConstructCompositionRootForbid(t *testing.T) { // AC-FA-RULE-011 boundary: forbid meldet auch dort
+	m := testModel()
+	c, err := NewConstruct("dlopen(", []string{"adapters/plugin"}, "", "forbid")
+	if err != nil {
+		t.Fatalf("NewConstruct: %v", err)
+	}
+	m.Constructs = []Construct{c}
+	fs := mustEval(t, m, []FileImports{
+		{Path: "cmd/main.cpp", Layer: "", ConstructHits: []ConstructHit{{Entry: 0, Line: 3}}},
+	})
+	if !hasRule(fs, "construct-leak") {
+		t.Fatalf("composition_root: forbid muss auch in der Verdrahtung melden, got %v", fs)
+	}
+	if !strings.Contains(fs[0].Msg, "composition_root: forbid") {
+		t.Fatalf("Meldung muss den abgeschalteten Ausnahme-Grund nennen: %q", fs[0].Msg)
+	}
+}
+
+func TestConstructTwoEntriesSameLineDeterministic(t *testing.T) { // AC-FA-RULE-011 Determinismus (AC-QA-01)
+	m := testModel()
+	a, err := NewConstruct("dlopen(", []string{"adapters/plugin"}, "", "")
+	if err != nil {
+		t.Fatalf("NewConstruct: %v", err)
+	}
+	b, err := NewConstruct("dlsym(", []string{"adapters/plugin"}, "", "")
+	if err != nil {
+		t.Fatalf("NewConstruct: %v", err)
+	}
+	m.Constructs = []Construct{a, b}
+	files := []FileImports{
+		{Path: "adapters/io/x.cpp", Layer: "adapters", ConstructHits: []ConstructHit{{Entry: 0, Line: 7}, {Entry: 1, Line: 7}}},
+	}
+	fs := mustEval(t, m, files)
+	if len(fs) != 2 {
+		t.Fatalf("zwei Muster in einer Zeile ⇒ zwei Befunde, got %v", fs)
+	}
+	// Totalordnung (SPEC-DET-001): gleicher Pfad/Zeile/Regel ⇒ die Meldung entscheidet.
+	if fs[0].Msg > fs[1].Msg {
+		t.Fatalf("Befunde nicht nach Meldung geordnet: %v", fs)
+	}
+	// Gegenprobe mit umgekehrter Eingabe-Reihenfolge: identische Ausgabe.
+	rev := []FileImports{
+		{Path: "adapters/io/x.cpp", Layer: "adapters", ConstructHits: []ConstructHit{{Entry: 1, Line: 7}, {Entry: 0, Line: 7}}},
+	}
+	fs2 := mustEval(t, m, rev)
+	if len(fs2) != 2 || fs2[0] != fs[0] || fs2[1] != fs[1] {
+		t.Fatalf("Ausgabe hängt an der Eingabe-Reihenfolge: %v vs %v", fs, fs2)
+	}
+}
+
+func TestConstructZoneList(t *testing.T) { // AC-FA-RULE-011: Zone als Liste
+	m := testModel()
+	c, err := NewConstruct("dlopen(", []string{"adapters/plugin", "adapters/loader"}, "", "")
+	if err != nil {
+		t.Fatalf("NewConstruct: %v", err)
+	}
+	m.Constructs = []Construct{c}
+	fs := mustEval(t, m, []FileImports{
+		{Path: "adapters/loader/l.cpp", Layer: "adapters", ConstructHits: []ConstructHit{{Entry: 0, Line: 2}}},
+	})
+	if len(fs) != 0 {
+		t.Fatalf("jede gelistete Zone erlaubt das Muster, got %v", fs)
+	}
+}
+
+func TestConstructNoBlockNoRule(t *testing.T) { // AC-FA-RULE-011 boundary: ohne Block keine Regel
+	fs := mustEval(t, testModel(), []FileImports{
+		{Path: "adapters/io/x.cpp", Layer: "adapters"},
+	})
+	if len(fs) != 0 {
+		t.Fatalf("ohne constructs-Block entfällt die Regel, got %v", fs)
+	}
+}
+
+func TestNewConstructFailsClosed(t *testing.T) { // AC-FA-RULE-011 negative (Exit 2 beim Laden)
+	cases := []struct {
+		name                          string
+		pattern                       string
+		zones                         []string
+		match, compositionRoot string
+	}{
+		{"leeres pattern", "", []string{"z"}, "", ""},
+		{"leeres pattern trotz regex", "", []string{"z"}, "regex", ""},
+		{"leere Zonen-Liste", "p", nil, "", ""},
+		{"leerer Zonen-Eintrag", "p", []string{""}, "", ""},
+		{"unbekanntes match", "p", []string{"z"}, "glob", ""},
+		{"unbekanntes composition_root", "p", []string{"z"}, "", "maybe"},
+		{"unkompilierbare Regex", "dl(", []string{"z"}, "regex", ""},
+	}
+	for _, c := range cases {
+		t.Run(c.name, func(t *testing.T) {
+			if _, err := NewConstruct(c.pattern, c.zones, c.match, c.compositionRoot); err == nil {
+				t.Fatalf("erwarte fail-closed für %s", c.name)
+			}
+		})
+	}
+}
+
+func TestConstructMatches(t *testing.T) { // AC-FA-RULE-011: substring (Default) vs. RE2
+	sub, err := NewConstruct("dlopen(", []string{"z"}, "", "")
+	if err != nil {
+		t.Fatalf("NewConstruct: %v", err)
+	}
+	if !sub.Matches("  handle = dlopen(path, RTLD_NOW);") || sub.Matches("  dlclose(h);") {
+		t.Fatal("substring-Muster matcht falsch")
+	}
+	re, err := NewConstruct(`\bdl(open|close)\s*\(`, []string{"z"}, "regex", "")
+	if err != nil {
+		t.Fatalf("NewConstruct: %v", err)
+	}
+	if !re.Matches("  dlclose (h);") || re.Matches("  handle_dlopen_wrapper;") {
+		t.Fatal("RE2-Muster matcht falsch")
 	}
 }

@@ -514,3 +514,61 @@ func TestLayersMergeKeyFailsClosed(t *testing.T) { // slice-038 Review R-1
 		t.Fatal("expected error for a merge key in the layers block (R-1: fail-closed, not expanded)")
 	}
 }
+
+// --- AC-FA-RULE-011: constructs-Block (ADR-0027) ----------------------------
+
+func TestConstructsDecode(t *testing.T) { // AC-FA-CONF-001 happy: Skalar- und Listen-Zone
+	body := valid + `constructs:
+  - {pattern: 'dlopen\s*\(', match: regex, adapter: "adapters/plugin", composition_root: forbid}
+  - {pattern: "dlsym(", adapter: ["adapters/plugin", "adapters/loader"]}
+`
+	m, err := New().Load(write(t, body))
+	if err != nil {
+		t.Fatalf("constructs-Block muss laden: %v", err)
+	}
+	if len(m.Constructs) != 2 {
+		t.Fatalf("erwarte 2 Einträge, got %+v", m.Constructs)
+	}
+	if !m.Constructs[0].ForbidCompositionRoot || m.Constructs[0].Zones[0] != "adapters/plugin" {
+		t.Fatalf("Eintrag 0 falsch dekodiert: %+v", m.Constructs[0])
+	}
+	if len(m.Constructs[1].Zones) != 2 || m.Constructs[1].ForbidCompositionRoot {
+		t.Fatalf("Eintrag 1 falsch dekodiert: %+v", m.Constructs[1])
+	}
+	if !m.Constructs[0].Matches("  h = dlopen (p);") || m.Constructs[1].Matches("  dlopen(p);") {
+		t.Fatal("Muster-Semantik (regex vs. substring) falsch übernommen")
+	}
+}
+
+func TestNoConstructsBlock(t *testing.T) { // AC-FA-CONF-001 boundary: ohne Block keine Regel
+	m, err := New().Load(write(t, valid))
+	if err != nil {
+		t.Fatalf("valid config failed: %v", err)
+	}
+	if m.Constructs != nil {
+		t.Fatalf("ohne Block bleibt die Liste leer, got %+v", m.Constructs)
+	}
+}
+
+func TestConstructsFailClosed(t *testing.T) { // AC-FA-CONF-001 negative: Exit 2 je Fehlerfall
+	cases := map[string]string{
+		"pattern fehlt":              `constructs:` + "\n" + `  - {adapter: "z"}` + "\n",
+		"leeres pattern":             `constructs:` + "\n" + `  - {pattern: "", adapter: "z"}` + "\n",
+		"adapter fehlt":              `constructs:` + "\n" + `  - {pattern: "dlopen("}` + "\n",
+		"leerer adapter":             `constructs:` + "\n" + `  - {pattern: "dlopen(", adapter: ""}` + "\n",
+		"leere adapter-Liste":        `constructs:` + "\n" + `  - {pattern: "dlopen(", adapter: []}` + "\n",
+		"leerer Listen-Eintrag":      `constructs:` + "\n" + `  - {pattern: "dlopen(", adapter: ["a", ""]}` + "\n",
+		"adapter kein Pfad":          `constructs:` + "\n" + `  - {pattern: "dlopen(", adapter: {a: b}}` + "\n",
+		"unbekanntes match":          `constructs:` + "\n" + `  - {pattern: "dlopen(", adapter: "z", match: glob}` + "\n",
+		"unbekanntes composition":    `constructs:` + "\n" + `  - {pattern: "dlopen(", adapter: "z", composition_root: maybe}` + "\n",
+		"unkompilierbare Regex":      `constructs:` + "\n" + `  - {pattern: "dl(", adapter: "z", match: regex}` + "\n",
+		"unbekannter Schlüssel":      `constructs:` + "\n" + `  - {pattern: "dlopen(", adapter: "z", zone: x}` + "\n",
+	}
+	for name, block := range cases {
+		t.Run(name, func(t *testing.T) {
+			if _, err := New().Load(write(t, valid+block)); err == nil {
+				t.Fatalf("erwarte fail-closed (Exit 2) für %s", name)
+			}
+		})
+	}
+}

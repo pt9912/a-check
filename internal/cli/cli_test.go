@@ -2,9 +2,11 @@ package cli_test
 
 import (
 	"bytes"
+	"fmt"
 	"io/fs"
 	"os"
 	"path/filepath"
+	"regexp"
 	"strings"
 	"testing"
 
@@ -815,5 +817,177 @@ func TestPrintGraphDeterminism(t *testing.T) { // AC-QA-01: zwei Läufe byte-ide
 	cli.Run([]string{"--print-graph", dir}, &o2, &e)
 	if o1.String() != o2.String() {
 		t.Fatalf("nicht deterministisch:\n%s\n---\n%s", o1.String(), o2.String())
+	}
+}
+
+// --- AC-FA-RULE-011: construct-leak End-to-End (ADR-0027) -------------------
+
+// parityCfg bildet die b-cad-Struktur nach und drückt deren grep-Regel P1
+// („dlopen/dlsym/dlclose nur in src/adapters/plugin") als constructs-Eintrag aus.
+const parityCfg = `version: 1
+languages:
+  cpp: ["**/*.cpp", "**/*.h"]
+layers:
+  model:      ["src/model/**"]
+  plugin_api: ["src/plugin_api/**"]
+  adapters:   ["src/adapters/**"]
+  plugins:    ["plugins/**"]
+edges:
+  - {from: plugins,  to: plugin_api}
+  - {from: plugins,  to: model}
+  - {from: adapters, to: model}
+composition_root: ["src/main.cpp"]
+constructs:
+  - {pattern: '\b(dlopen|dlsym|dlclose)\s*\(', match: regex, adapter: "src/adapters/plugin", composition_root: forbid}
+`
+
+// parityTree: eine Datei je Fall — in der Zone, außerhalb, in einer Datei ohne
+// Schicht, in der Composition Root, nur im Kommentar, ohne Vorkommen.
+func parityTree() map[string]string {
+	return map[string]string{
+		".a-check.yml":                   parityCfg,
+		"src/adapters/plugin/loader.cpp": "#include \"p.h\"\nvoid load() {\n  h = dlopen(path);\n  s = dlsym(h, n);\n}\n",
+		"src/adapters/io/reader.cpp":     "#include \"r.h\"\nvoid read() {\n  h = dlopen(path);\n}\n",
+		"plugins/example/p.cpp":          "#include \"a.h\"\nvoid init() { dlsym(h, n); }\n",
+		"src/main.cpp":                   "int main() {\n  dlclose(h);\n  return 0;\n}\n",
+		"src/model/geometry.cpp":         "// frueher wurde hier dlopen(path) benutzt\nvoid area() {}\n",
+		"src/model/clean.cpp":            "void volume() {}\n",
+	}
+}
+
+// grepReference re-implementiert die bash-grep-Referenz des Konsumenten:
+// zeilenweise Regex über den ROHEN Text (grep kennt keine Kommentare), alles
+// außerhalb der erlaubten Zone ist ein Treffer.
+func grepReference(t *testing.T, dir, zone string) map[string]bool {
+	t.Helper()
+	re := regexp.MustCompile(`\b(dlopen|dlsym|dlclose)\s*\(`)
+	hits := map[string]bool{}
+	err := filepath.WalkDir(dir, func(p string, d fs.DirEntry, walkErr error) error {
+		if walkErr != nil || d.IsDir() || !strings.HasSuffix(p, ".cpp") {
+			return walkErr
+		}
+		rel, relErr := filepath.Rel(dir, p)
+		if relErr != nil {
+			return relErr
+		}
+		rel = filepath.ToSlash(rel)
+		if strings.Contains(rel, zone) {
+			return nil
+		}
+		body, readErr := os.ReadFile(p)
+		if readErr != nil {
+			return readErr
+		}
+		for i, ln := range strings.Split(string(body), "\n") {
+			if re.MatchString(ln) {
+				hits[fmt.Sprintf("%s:%d", rel, i+1)] = true
+			}
+		}
+		return nil
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	return hits
+}
+
+// constructLeaks parst die Befund-Zeilen (`pfad:zeile: regel: meldung`) und
+// liefert die construct-leak-Positionen als "pfad:zeile".
+func constructLeaks(t *testing.T, stdout string) map[string]bool {
+	t.Helper()
+	out := map[string]bool{}
+	for _, ln := range strings.Split(strings.TrimSpace(stdout), "\n") {
+		if ln == "" {
+			continue
+		}
+		parts := strings.SplitN(ln, ": ", 3)
+		if len(parts) < 3 {
+			t.Fatalf("unerwartetes Befund-Format: %q", ln)
+		}
+		if parts[1] == "construct-leak" {
+			out[parts[0]] = true
+		}
+	}
+	return out
+}
+
+func TestConstructLeakParity(t *testing.T) { // AC-FA-RULE-011: Paritätsprobe gegen die grep-Referenz
+	dir := writeRepo(t, parityTree())
+	var out, errb bytes.Buffer
+	if code := cli.Run([]string{dir}, &out, &errb); code != 1 {
+		t.Fatalf("erwarte Exit 1, got %d (out=%q)", code, out.String())
+	}
+	got := constructLeaks(t, out.String())
+	want := grepReference(t, dir, "src/adapters/plugin")
+
+	// DEKLARIERTE DIVERGENZ (ADR-0027): grep sieht den Kommentar, a-check nicht.
+	const commentOnly = "src/model/geometry.cpp:1"
+	if !want[commentOnly] {
+		t.Fatalf("die grep-Referenz muss den Kommentar-Treffer sehen — sonst prüft die Probe nichts")
+	}
+	if got[commentOnly] {
+		t.Fatalf("Treffer nur im Kommentar darf a-check NICHT melden (ausgewiesene Divergenz)")
+	}
+	delete(want, commentOnly)
+
+	for pos := range want {
+		if !got[pos] {
+			t.Errorf("grep meldet %s, a-check nicht (Paritätslücke)", pos)
+		}
+	}
+	for pos := range got {
+		if !want[pos] {
+			t.Errorf("a-check meldet %s, grep nicht (Über-Meldung)", pos)
+		}
+	}
+	// Die drei erwarteten Treffer: außerhalb der Zone, ohne Schicht bzw. in der
+	// Composition Root (composition_root: forbid).
+	for _, pos := range []string{"src/adapters/io/reader.cpp:3", "plugins/example/p.cpp:2", "src/main.cpp:2"} {
+		if !got[pos] {
+			t.Errorf("erwarteter construct-leak fehlt: %s", pos)
+		}
+	}
+	if len(got) != 3 {
+		t.Errorf("erwarte genau 3 construct-leak-Befunde, got %v", got)
+	}
+}
+
+func TestConstructLeakFitness(t *testing.T) { // AC-FA-RULE-011: Fitness-Probe (injizierter Aufruf)
+	clean := map[string]string{
+		".a-check.yml":                   parityCfg,
+		"src/adapters/plugin/loader.cpp": "void load() { h = dlopen(path); }\n",
+		"src/model/geometry.cpp":         "void area() {}\n",
+	}
+	var out, errb bytes.Buffer
+	if code := cli.Run([]string{writeRepo(t, clean)}, &out, &errb); code != 0 {
+		t.Fatalf("Gegenprobe: Aufruf INNERHALB der Zone muss grün sein, got %d (out=%q)", code, out.String())
+	}
+
+	injected := map[string]string{}
+	for k, v := range clean {
+		injected[k] = v
+	}
+	injected["src/model/geometry.cpp"] = "void area() {}\nvoid sneaky() { h = dlopen(path); }\n"
+	out.Reset()
+	errb.Reset()
+	if code := cli.Run([]string{writeRepo(t, injected)}, &out, &errb); code != 1 {
+		t.Fatalf("injizierter Aufruf außerhalb der Zone muss Exit 1 geben, got %d (out=%q)", code, out.String())
+	}
+	if !strings.Contains(out.String(), "src/model/geometry.cpp:2: construct-leak:") {
+		t.Fatalf("Befund muss Datei, Zeile und Regel nennen: %q", out.String())
+	}
+	if !strings.Contains(out.String(), "src/adapters/plugin") {
+		t.Fatalf("Meldung muss die erlaubte Zone nennen: %q", out.String())
+	}
+}
+
+func TestConstructLeakDeterministic(t *testing.T) { // AC-QA-01: zwei Läufe byte-identisch
+	dir := writeRepo(t, parityTree())
+	var a, b, errb bytes.Buffer
+	cli.Run([]string{dir}, &a, &errb)
+	errb.Reset()
+	cli.Run([]string{dir}, &b, &errb)
+	if a.String() != b.String() {
+		t.Fatalf("Ausgabe nicht byte-identisch:\n%q\n%q", a.String(), b.String())
 	}
 }
