@@ -117,4 +117,4 @@ behobene Befunde im Bestand.
 Praxis ohne Regel. Solche stillen Setzungen fallen erst auf, wenn jemand einen Sensor dafür bauen
 will — der Sensor ist damit auch ein Aufdecker fehlender Normen, nicht nur ihr Vollstrecker.
 
-**Folge-Slice:** [slice-051](../in-progress/slice-051-workflow-und-freigabe.md) (Etappe E, 3/3).
+**Folge-Slice:** [slice-051](slice-051-workflow-und-freigabe.md) (Etappe E, 3/3).
