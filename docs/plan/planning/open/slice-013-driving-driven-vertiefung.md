@@ -1,6 +1,8 @@
-# slice-013 — Driving/Driven-Vertiefung (Entwurf zur Abnahme)
+# slice-013 — Driving/Driven-Vertiefung (Teil A vertagt, Teil B verworfen)
 
-**Status:** open — **Entwurf zur Abnahme** (`x-wal` ist *struktureller Kandidat*, noch kein aktiver Konsument).
+**Status:** open — **Entscheid 0 abgenommen 2026-07-25** (Maintainer-Wort, auf Basis der
+Nachmessung §2a): **Teil B (Port→Port-Richtungsregel) ist verworfen**, **Teil A (Auto-Inferenz)
+ist vertagt**. Der Slice bleibt als Entwurf für Teil A offen; die Trigger stehen in §0.
 **Bezug:** Carry-forward aus [slice-012 §7](../done/slice-012-driving-driven-layerof.md);
 verfeinert [AC-FA-RULE-008](../../../../spec/lastenheft.md#ac-fa-rule-008--driving-driven-port-richtung-regel-port-direction-mismatch);
 löst die in [ADR-0012](../../adr/0012-driving-driven-richtung-orthogonale-dimension.md)
@@ -11,6 +13,51 @@ als *out-of-scope* gestellten Richtungs-Inkremente. [Roadmap](../in-progress/roa
 > bis Freigabe in `spec/`. DoD §5 offen; Entscheidungen §6 **vor** der Umsetzung.
 
 ---
+
+## 0. Entscheid 0 — abgenommen (2026-07-25)
+
+Auf Basis der Nachmessung §2a über **neun** lokale Repos entschieden:
+
+### Teil B — Port→Port-Richtungsregel: **verworfen**
+
+Nicht vertagt, sondern verworfen. Zwei unabhängige Messungen an zwei Repos zeigen, dass die
+Kante, die die Regel bewachen soll, in dieser Architektur nicht vorkommt: x-wal (2026-06-23,
+19 `port/input`-Dateien, 0 Treffer) und **b-cad** (2026-07-25, 8 `driving`- + 6 `driven`-Port-
+Dateien, **0** Port→Port-Includes — die Port-Dateien zeigen nur auf `hexagon/model/**` und die
+Standardbibliothek). b-cad ist dabei der **einzige** Konsument mit richtungs-getrennten
+Port-Schichten überhaupt; kein zweiter kann die Regel derzeit auch nur auslösen. Eine Regel ohne
+Anwendungsfall zu bauen ist genau die Spekulation, gegen die das Konsumenten-Gate erfunden wurde.
+
+**Wiedervorlage-Trigger:** der **erste real gemessene Port→Port-Import über eine
+Richtungsgrenze** in einem aktiven Konsumenten. Dann als eigener Slice (slice-013b) neu
+aufsetzen — die Entwurfsteile §3.2/§6-C bleiben hier als Vorarbeit lesbar. Der Vertrag ändert
+sich nicht: [ADR-0012](../../adr/0012-driving-driven-richtung-orthogonale-dimension.md) führt
+Port→Port bereits als out-of-scope, diese Entscheidung bestätigt das nur.
+
+### Teil A — Auto-Inferenz der Richtung: **vertagt**
+
+Das ursprüngliche Vertagungs-Argument („kein aktiver Konsument") ist **verbraucht** — b-cad
+aktiviert die Richtung real. Vertagt wird jetzt aus zwei **anderen**, schärferen Gründen:
+
+1. **Kein messbarer Gewinn.** Beim einzigen aktiven Konsumenten spart die Inferenz unter der
+   empfohlenen Exact-Segment-Grammatik **0 von 9** Deklarationen (unter Substring 2 von 9). Bei
+   belief-agent träfe sie zwar 16 von 19 Schichten, hätte dort aber **keine Prüfwirkung** (keine
+   Port-Schicht) und bräuchte eine fremde Vokabel (`inbound`/`outbound`).
+2. **Die Inferenz ist nicht verhaltens-neutral** (§2a, Konsequenz 2b.3): eine Schicht mit
+   Namens-Hinweis und ohne `direction` bekäme still eine Richtung — und damit kann eine heute
+   **inerte kategorische** Regel später scharf werden, ohne dass der Konsument sie aktiviert hat.
+   Das ist vor der Umsetzung zu klären (Opt-in-Schalter?), nicht danach.
+
+**Geschärfter Lande-Trigger** (ersetzt den alten „ein Konsument aktiviert die Richtung"):
+
+- ein Konsument trägt Schichten, deren **Namen** die entschiedene Grammatik wirklich treffen
+  (Entscheid E) — nicht bloß Richtungs-Struktur, sondern Richtungs-**Namen**; **und**
+- die Verhaltens-Neutralität ist geklärt (Opt-in oder Nachweis, dass keine bestehende Config
+  dadurch neue Befunde bekommt).
+
+Bis dahin bleiben die Entscheide A–F (§6) unabgenommen; die Umkehr-Last gegenüber
+[ADR-0012](../../adr/0012-driving-driven-richtung-orthogonale-dimension.md) trägt weiterhin der
+Folge-ADR (§3.3).
 
 ## 1. Ziel
 
@@ -130,7 +177,7 @@ Inferenz-**Grammatik** (Exact-Segment vs. Substring; Trennzeichen/Case; Konflikt
 Hinweisen; Kollision literal `driven` vs. *enthält* `driven`) ist ein eigener Entscheid (§6-E)
 und gehört **vor Code** in Folge-ADR + Spezifikation.
 
-### 3.2 Port→Port (Teil B)
+### 3.2 Port→Port (Teil B) — **verworfen (§0)**, bleibt als Vorarbeit lesbar
 
 ```text
 Neue Regel (eigener Befund-Name, Entscheid-C): ein role:port, direction X, der einen
@@ -167,7 +214,7 @@ Supersede-Präzedenzen).
 1. **Spec (A) zuerst:** [AC-FA-RULE-008](../../../../spec/lastenheft.md#ac-fa-rule-008--driving-driven-port-richtung-regel-port-direction-mismatch)-Out-of-Scope-Zeile **geschärft** (Namens-Inferenz *rein*, Glob-/Pfad-Inferenz bleibt *out*) + **3 neue AC** (Happy/Boundary/Negative) + Bump (nächster Minor, §3.3) + Historie; Spezifikation; Folge-ADR (Re-Eval, §3.3) + Index.
 2. `rules.go` `dirOf`: Inferenz-Zweig — `driving`/`driven`-Hinweis im Schicht-**Namen** (nicht Glob; §6-A), Grammatik §6-E, wenn `Direction==""`.
 3. Tests (A): Inferenz happy / expliziter Vorrang / kein-Hinweis / **Beide-Hinweise-Konflikt** (§6-E).
-4. **[nur falls Entscheid 0 ⇒ B]** `rules.go` **eigener `case`-Arm** (`srcRole=="port" && tgtRole=="port"`) + eigener Befund-Name (§6-C) + Tests (mismatch/kategorisch/boundary).
+4. ~~**[nur falls Entscheid 0 ⇒ B]** `rules.go` **eigener `case`-Arm** (`srcRole=="port" && tgtRole=="port"`) + eigener Befund-Name (§6-C) + Tests (mismatch/kategorisch/boundary).~~ — **entfällt, Teil B ist verworfen (§0).**
 5. Doku-Sweep (Benutzerhandbuch §4 `direction`-Inferenz; ggf. README/architecture); `make gates`; 4-Linsen-Review (schriftlich); Verifikation; Closure (`done/`, Lerneintrag).
 
 ## 5. Definition of Done
@@ -179,8 +226,8 @@ Supersede-Präzedenzen).
 - [ ] `dirOf`-Inferenz in `rules.go` (Grammatik §6-E); Tests (happy/Vorrang/kein-Hinweis/Beide-Hinweise).
 - [ ] `make arch-check` **0 am echten a-check-Config**. *(Beleg-Argument, nicht Teil des Hakens: unter Namens-Inferenz trägt der `adapters`-Name kein Token, §6-A.)*
 
-**Konditional B (nur falls Entscheid 0 ⇒ B):**
-- [ ] Port→Port-Guard + eigener Befund-Name (§6-C); Tests (mismatch/kategorisch/boundary).
+**Konditional B:** ~~Port→Port-Guard + eigener Befund-Name (§6-C); Tests.~~ — **entfällt** (§0:
+Teil B verworfen; Wiedervorlage nur bei erstem real gemessenem Port→Port-Crossing).
 
 **Abschluss:**
 - [ ] Doku-Sweep; `make gates` grün; 4-Linsen-Review; Verifikation; Closure + Lerneintrag.
