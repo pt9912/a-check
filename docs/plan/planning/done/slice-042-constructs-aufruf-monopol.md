@@ -1,5 +1,6 @@
 # slice-042 — `constructs`-Aufruf-Monopol (P-Rest-Kandidat 1, entgated)
 
+**Review:** [Review-Synthese](../../../reviews/2026-07-25-slice-042-constructs-monopol.md).
 **Status:** **done (2026-07-25)** — Entwurf abgenommen (Maintainer-Wort: alle sieben Entscheide
 aus §4 wie empfohlen), spec-first umgesetzt, reviewt und nach `main` gemergt. Ergebnis §10,
 Closure §11.

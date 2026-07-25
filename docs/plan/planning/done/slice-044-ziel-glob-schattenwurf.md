@@ -1,5 +1,6 @@
 # slice-044 — Unauflösbares Ziel-Glob: Zuordnung zurückziehen statt zurückfallen
 
+**Review:** [Review-Synthese](../../../reviews/2026-07-25-slice-044-ziel-glob-schattenwurf.md).
 **Status:** **done (2026-07-25)** — Umsetzung von **Option A′** aus
 [slice-037 §4.0a](slice-037-hexslice-gap-analyse.md); Variante **2** („kleiner Fix statt
 Feature") am 2026-07-25 per Maintainer-Wort abgenommen.
