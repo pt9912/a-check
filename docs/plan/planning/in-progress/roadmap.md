@@ -27,7 +27,12 @@
 > **Auch neu (2026-07-25):** [slice-043](../done/slice-043-schicht-abdeckung-sichtbar.md) — **done**: die Abdeckungs-Diagnose weist gescannte Dateien ohne Schicht auf stderr aus (advisory, kein Exit-Code-Wechsel, [ADR-0029](../../adr/0029-abdeckungs-diagnose-advisory.md), Spez **0.26.0**, Handbuch 1.35); `strict_coverage` bleibt vertagt (Trigger in der ADR). Die Nachmessung dazu
 > korrigierte die Evidenz: real ist **ein** Konsument mit **zwei** Dateien, nicht zwei Konsumenten
 > mit Teilbäumen.
-> **Kein aktiver Faden mehr offen.** Vertagt/gated: `strict_coverage` (Folge-Slice), Kandidat 2b
+> **Neu als Entwurf (2026-07-25):** [slice-045](../open/slice-045-intern-extern-dateimenge.md) —
+> die **Ziel**-seitige Abdeckung über die gescannte Dateimenge. Messung: für `fixed-root`-Konsumenten
+> trennt der bestehende `fileIndex` intern/extern **fehlerfrei** (b-cad: 87 von 87 korrekt als extern),
+> für die vier `path`-Konsumenten nicht ohne Zusatz-Heuristik (Modul-Präfix). Halber Kandidat,
+> Entscheide §4 offen.
+> **Sonst kein aktiver Faden offen.** Vertagt/gated: `strict_coverage` (Folge-Slice), Kandidat 2b
 > (Präfix-Allowlist), der `tech.pattern`-Mikro-CR, wildcard-fähiges Ziel-Matching
 > ([ADR-0028](../../adr/0028-ziel-glob-schattenwurf.md)). **Nächster Schritt: ein Release** —
 > `[Unreleased]` trägt drei Auslieferungen (slice-042/043/044); erst danach kann b-cad seine
