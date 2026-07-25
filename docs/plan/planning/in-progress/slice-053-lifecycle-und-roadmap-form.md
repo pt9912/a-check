@@ -51,16 +51,40 @@ wäre Prüfung um der Prüfung willen.
 
 ## 5. DoD
 
-- [ ] [`AGENTS.md`](../../../../AGENTS.md) §5 führt alle **fünf** Übergänge inklusive der zwei
+- [x] [`AGENTS.md`](../../../../AGENTS.md) §5 führt alle **fünf** Übergänge inklusive der zwei
       Rückführungen mit ihrer je eigenen Bedingung und deklariert das **WIP-Limit = 1** (B-6).
-- [ ] `docs/plan/planning/next/` existiert mit einer `README.md`, die den Zustand und seine
+- [x] `docs/plan/planning/next/` existiert mit einer `README.md`, die den Zustand und seine
       Ein-/Ausgänge beschreibt (B-18).
-- [ ] [`roadmap.md`](roadmap.md) trägt den Abschnitt **Historische Trigger-Verschiebungen**,
+- [x] [`roadmap.md`](roadmap.md) trägt den Abschnitt **Historische Trigger-Verschiebungen**,
       befüllt aus belegten Umplanungen; `make gates` und `make verify` grün (B-12).
 
 ## 6. Closure-Notiz
 
-_(beim Abschluss.)_
+**Geliefert:** [`AGENTS.md`](../../../../AGENTS.md) §5 führt alle fünf Lifecycle-Übergänge und das
+WIP-Limit, `docs/plan/planning/next/` existiert wieder mit erklärender `README.md`, und die
+Roadmap trägt das Drift-Log mit sieben belegten Verschiebungen.
+
+**Lerneintrag — Form: benannte Spec-Lücke.**
+> **Ein deklarierter Zustand ohne Ort ist eine stille Setzung — und sie hält sich lange.**
+> `AGENTS.md` nannte `next/` über 44 Slices hinweg, während das Verzeichnis nicht existierte;
+> niemand stolperte darüber, *weil* der Normalweg daran vorbeiführt. Dieselbe Klasse traf in
+> slice-050 die Closure-Pflicht (gelebt, nie geschrieben) — hier ist es umgekehrt (geschrieben,
+> nie vorhanden). Prüfsatz: *jede Regel, die einen Ort nennt, gegen die Existenz des Ortes
+> prüfen — und jede gelebte Praxis gegen die Existenz einer Regel.* Beide Richtungen erzeugen
+> stille Setzungen.
+
+**Zwei beobachtbare Closure-Kriterien:**
+
+1. `make gates` und `make verify` grün auf demselben Stand (je Exit 0) — belegt.
+2. Jede Zeile des Drift-Logs nennt einen Beleg im Repo (Slice-Abschnitt oder ADR); keine Zeile
+   ist rekonstruiert.
+
+**Beobachtung zum Drift-Log:** sieben belegbare Verschiebungen an **einem** Tag, davon fünf
+Verwerfungen oder Vertagungen. Das ist kein Planungs-Mangel, sondern das sichtbare Ergebnis davon,
+dass Entscheidungen an Messungen hingen — vorher stand das verstreut in Slice-Dokumenten und
+damit faktisch nirgends.
+
+**Folge-Slices:** [slice-054](slice-054-ac-form.md) (Etappe D, 3/3 — B-15, AC-Form).
 
 ## 7. Sub-Area-Modus
 

@@ -220,3 +220,24 @@ flowchart LR
 | welle-10-regel-engine-generalisierung | 2026-06-23 | [slice-012 §7](../done/slice-012-driving-driven-layerof.md) — Rollen-Dispatch + 4-Schichten-Modell + `driving`/`driven`-Richtung + `LayerOf` längster-literaler-Präfix; [ADR-0009](../../adr/0009-rollen-basierter-regel-dispatch.md)…[ADR-0013](../../adr/0013-layerof-laengster-praefix.md) `Accepted`. Carry-forward: [slice-013](../open/slice-013-driving-driven-vertiefung.md) |
 | welle-06-sprach-backends | 2026-07-03 | [slice-022 §8](../done/slice-022-typescript-backend.md#8-closure-notiz) — vier Backends geliefert: Java ([slice-014](../done/slice-014-java-backend.md)), Python ([slice-020](../done/slice-020-python-backend.md)), C# ([slice-021](../done/slice-021-csharp-backend.md)), TypeScript ([slice-022](../done/slice-022-typescript-backend.md)); Auflösung `fixed-root` ([ADR-0016](../../adr/0016-resolution-sprach-parametrisch.md)) + `relative` ([ADR-0017](../../adr/0017-relative-resolution-modus.md)); `namespace` bleibt reserviert (Folge-Slice bei realem Pilot) |
 | welle-11-dcheck-pilot-deltas | 2026-07-03 | [slice-023 §4](../done/slice-023-dcheck-pilot-deltas.md#4-closure-notiz) — `tech.adapter`-Liste + `composition_root: allow\|forbid` + `exclude` ([ADR-0018](../../adr/0018-exclude-scan-scope.md) `Accepted`, Lastenheft/Spez 0.14.0), veröffentlicht in `v0.8.0` — d-check-Umstellung entsperrt |
+
+## Historische Trigger-Verschiebungen
+
+Das **Drift-Log** (Regelwerk Modul 6, fünfter Pflicht-Abschnitt; nachgetragen in slice-053, Fund
+B-12). Neben dem Closure-Log oben macht es die Vergangenheit der Roadmap auditierbar: dort steht,
+*was* geschlossen wurde, hier *was sich unterwegs verschoben hat*. Eine Roadmap ohne diese Tabelle
+sieht im Rückblick aus, als wäre sie immer so geplant gewesen.
+
+Aufgenommen sind nur Verschiebungen, die im Repo **belegt** sind (Slice-Dokument, ADR oder
+Roadmap-Text). Ältere Umplanungen ohne Beleg werden nicht rekonstruiert — ein erfundenes Drift-Log
+wäre schlimmer als keines.
+
+| Datum | Änderung | Grund | Beleg |
+|---|---|---|---|
+| 2026-07-05 | [ADR-0020](../../adr/0020-mehr-wurzel-phantom-guard.md) → `Superseded` durch [ADR-0022](../../adr/0022-datei-mengen-bewusste-mehr-wurzel-aufloesung.md) | der Phantom-Guard unterdrückte das Symptom, ohne die Ursache zu treffen — die Auflösung war wurzel-, nicht datei-mengen-bewusst | [slice-026 §8](../done/slice-026-kmp-mehr-root-phantom.md), [slice-027 §9](../done/slice-027-kmp-multimodul-resolution.md) |
+| 2026-07-25 | [slice-013](../open/slice-013-driving-driven-vertiefung.md) Teil B (Port→Port) **verworfen**, Teil A (Auto-Inferenz) **vertagt** | Messung: null reale Fundstellen im Bestand; die Evidenz für Teil B beruhte auf einem Mess-Fehler (Pfad-Präfix statt Kante) | [slice-013 §0](../open/slice-013-driving-driven-vertiefung.md) |
+| 2026-07-25 | Kandidat **2b** (Präfix-Allowlist) **erodiert** — bleibt gated, ohne Folge-Slice | b-cads P2 zerfällt in Kanten + Abdeckungs-Diagnose + Compiler; keiner der drei braucht die Beweislast-Umkehr | [slice-045 §5.1](../open/slice-045-intern-extern-dateimenge.md) |
+| 2026-07-25 | `strict_coverage` aus [slice-043](../done/slice-043-schicht-abdeckung-sichtbar.md) **vertagt** | die advisory Diagnose reicht für den belegten Bedarf; die harte Variante braucht erst einen Trigger | [ADR-0029](../../adr/0029-abdeckungs-diagnose-advisory.md) |
+| 2026-07-25 | [slice-045](../open/slice-045-intern-extern-dateimenge.md) **entschieden: jetzt nicht bauen** | null reale Fundstellen, erodierte Nachfrage, und a-check könnte den `fixed-root`-only-Mechanismus im eigenen `path`-Modus nicht dogfooden | [slice-045 §0](../open/slice-045-intern-extern-dateimenge.md) |
+| 2026-07-25 | Regelwerk-Migration: Etappen wachsen von **vier** auf **sechs** (A · B · C · D · **E** · **F**), Reihenfolge **E vor D** | die vollständige Baseline-Lektüre brachte elf zusätzliche Funde; die Mechanik-Funde schaffen die Sensoren, an denen die Form-Funde hängen | [slice-048 §5](../done/slice-048-modul-delta-lesen.md) |
+| 2026-07-25 | `nolintlint` als geplante Umsetzung von B-11 **verworfen**, Ersatz `make suppression-check` | Negativ-Probe: der Linter prüft Wohlgeformtheit, nicht Existenz — ein wohlgeformtes `//nolint` ließ `make lint` grün | [slice-049 §1.1](../done/slice-049-mechanik-sensoren.md) |
