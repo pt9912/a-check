@@ -1,8 +1,8 @@
 # slice-043 — Schicht-Abdeckung sichtbar machen (P-Rest-Kandidat 2a)
 
 **Review:** [Review-Synthese](../../../reviews/2026-07-25-slice-043-abdeckungs-diagnose.md).
-**Status:** in-progress — **Entscheide abgenommen 2026-07-25** (§0): Gestalt **(a)** — nur die
-Diagnose, `strict_coverage` **vertagt**. Umsetzung spec-first in diesem Slice.
+**Status:** **done (2026-07-25)** — Entscheide abgenommen (§0): Gestalt **(a)** — nur die
+Diagnose, `strict_coverage` **vertagt**. Umsetzung, Review und Merge erledigt; Ergebnis §7, Closure §8.
 **Auslöser:** Maintainer-Nachfrage vom 2026-07-24 zu
 [slice-042 §8](../done/slice-042-constructs-aufruf-monopol.md) („warum können andere Konsumenten das
 nicht gebrauchen?"). Die anschließende Nachmessung über **alle fünf** lokalen
@@ -279,3 +279,24 @@ Entwurfs-§4 entfällt mit der Abnahme (§0) — er gehört in den vertagten Fol
 3. **Eine Diagnose ist nur so viel wert, wie sie schweigt.** Dass sechs von sieben Konsumenten
    nichts sehen, ist kein Nebenergebnis, sondern die Bedingung dafür, dass die siebte Meldung
    gelesen wird. Das gehört in die Fitness Function, nicht in die Hoffnung.
+
+## 8. Closure-Notiz (2026-07-25)
+
+**Abgeschlossen und nach `main` gemergt.** DoD erfüllt (§7.1), Review-Synthese vor dem Merge
+abgelegt ([`docs/reviews/`](../../../reviews/2026-07-25-slice-043-abdeckungs-diagnose.md)).
+
+**Was der Slice bewusst *nicht* tut:** er gatet nichts. Die Abdeckungs-Lücke bleibt fail-open — sie
+wird nur sichtbar. Die Opt-in-Strenge (`strict_coverage` ⇒ Exit 1) ist ein eigener Folge-Slice mit
+dem Trigger aus [ADR-0029](../../adr/0029-abdeckungs-diagnose-advisory.md): **ein Konsument, der
+die Diagnose sieht und sie als Gate will.** Bis dahin gibt es keinen Config-Schlüssel.
+
+**Nachlauf beim Konsumenten:** m-trace sieht ab dem nächsten Release den Hinweis auf
+`apps/api/internal/storage/migrate.go` und `apps/api/scripts/coverage-overview/main.go`. Die
+Entscheidung — Schicht deklarieren oder `exclude` — liegt dort, nicht hier. Der erste Fall ist der
+architektonisch relevante: `internal/storage` wird in der dortigen `tech`-Regel bereits als Zone
+geführt.
+
+**Release-Hinweis:** die Änderung liegt in [CHANGELOG](../../../../CHANGELOG.md) `[Unreleased]`,
+zusammen mit `construct-leak` ([slice-042](slice-042-constructs-aufruf-monopol.md)) und dem
+Ziel-Glob-Rückzug ([slice-044](slice-044-ziel-glob-schattenwurf.md)) — drei Auslieferungen warten
+auf denselben Schnitt.
