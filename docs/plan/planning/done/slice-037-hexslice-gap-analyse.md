@@ -331,11 +331,6 @@ beachten.
       ([ADR-0028](../../adr/0028-ziel-glob-schattenwurf.md), Spezifikation 0.25.0). Damit sind
       **alle** Optionen dieses Analyse-Slices entschieden; er kann mit slice-044 nach `done/`.
 
-## 9. Closure-Notiz
-
-_(beim Abschluss: gewählte Option + Folge-Slice-Verweis; kein Gate-Beleg nötig — reine Analyse,
-kein Code/Vertrag berührt.)_
-
 ## 10. Closure-Notiz (2026-07-25)
 
 Der Analyse-Slice ist **erledigt**: jede Option hat eine Entscheidung, und jede Entscheidung ihre

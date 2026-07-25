@@ -175,7 +175,7 @@ konform. Kein Zeit-/Zufalls-/Locale-Einfluss.
   **nicht** dieser Slice. Hier nur der Tie-Break-Konformitäts-Fix; er macht den Tie **steuerbar**
   (Reorder wirkt), löst die Overlap-Ergonomie aber nicht restlos. *Empfehlung: getrennt halten.*
 
-## 8. Verifikations-Notiz (Umsetzung 2026-07-24)
+## 8. Closure (Verifikations-Notiz, Umsetzung 2026-07-24)
 
 - **Code:** `internal/adapter/driven/config/config.go` — `Layers` von `map[string]yaml.Node` auf eine
   rohe `yaml.Node` umgestellt; neue `decodeLayers` iteriert `Content` in Dokumentreihenfolge mit

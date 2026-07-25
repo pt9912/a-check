@@ -76,6 +76,12 @@ suppression-check: ## Hard Rule AGENTS §3.2: keine Inline-Suppression (//nolint
 regelwerk-check: ## Wartung (KEIN Gate): Integritaet der vendored Baseline gegen SHA256SUMS (MR-006); Freshness bleibt ungeprueft.
 	@bash tools/regelwerk-check.sh
 
+verify-closure-notes: ## Struktur der Closure-Notizen in done/ (AGENTS §5): genau eine, ausgefuellt, kein Platzhalter.
+	@bash tools/verify-closure-notes.sh
+
+verify: verify-closure-notes ## Verifikations-Schicht: DoD-/Closure-Fragen (vor der "fertig"-Meldung; getrennt von gates).
+	@echo "[verify] Verifikations-Schicht gruen"
+
 record-gates: ## Gate-Nachweis (Working-Tree-Hash) für den Stop-Hook schreiben.
 	@bash tools/harness/record-gates.sh
 

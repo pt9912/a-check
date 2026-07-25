@@ -123,4 +123,25 @@ Formalie war: die Probe hat den geplanten Ansatz verworfen.
 
 ## 7. Closure-Notiz
 
-_(beim Abschluss.)_
+**Geliefert:** `make suppression-check` als Fitness Function zu [`AGENTS.md`](../../../../AGENTS.md)
+§3.2 (im `gates`-Aggregat) und `make regelwerk-check` als Wartungs-Target ohne Gate-Anspruch. Beide
+mit Selbsttest und Negativ-Probe belegt.
+
+**Lerneintrag — Form: geschärfte Regel.**
+> **Der Name eines Werkzeugs ist kein Beleg für seine Semantik.** `nolintlint` klingt nach
+> „setzt das `//nolint`-Verbot durch" und prüft in Wahrheit nur die *Wohlgeformtheit* von
+> Direktiven. Wäre der Fund ohne Probe umgesetzt worden, hätte das Repo ein Gate **behauptet**,
+> das die Hard Rule nicht trägt — eine Harness-Lüge, entstanden aus gutem Willen. Prüfregel für
+> jeden künftigen Sensor: *erst die Negativ-Probe, dann die Erfolgsmeldung* — und die Probe muss
+> den Fall treffen, der wirklich durchrutschen könnte, nicht den bequemsten. Hier brauchte es
+> drei Anläufe, weil die ersten beiden an `unused` scheiterten statt am Prüfgegenstand.
+
+**Zwei beobachtbare Closure-Kriterien:**
+
+1. `make gates` grün mit `suppression-check` im Aggregat (Exit 0) — belegt.
+2. Beide Sensoren werden bei echtem Verstoß rot und nach Rücknahme wieder grün — je eine
+   Negativ-Probe dokumentiert (§1.1 und DoD).
+
+**Folge-Slice:** [slice-050](slice-050-verify-schicht.md) (Etappe E, 2/3). Offen aus diesem
+Slice: ob die hermetische Integritäts-Hälfte von `regelwerk-check` in `make gates` gehört (§3,
+bewusst vertagt).

@@ -43,4 +43,7 @@ Syntax). `image-test` (2b) bestätigt weiter dekodierbares Mermaid.
 
 ## 3. Closure-Notiz
 
-_(reine Legenden-Formatierung; noch unveröffentlicht — folgt mit dem nächsten Release.)_
+Reine Legenden-Formatierung ohne Scan-Wirkung. Die ursprüngliche Notiz sagte „noch
+unveröffentlicht" — das ist überholt: **ausgeliefert mit v0.16.0** (CHANGELOG-Abschnitt
+`[0.16.0] - 2026-07-25`). Nachgetragen in slice-050; die Stelle zeigt, dass eine Closure-Notiz
+im Futur genau so lange stimmt, bis sie niemand mehr liest.

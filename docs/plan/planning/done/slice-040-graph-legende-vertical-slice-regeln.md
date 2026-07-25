@@ -28,4 +28,6 @@ keine Semantik-Behauptung über den realen Code).
 
 ## 3. Closure-Notiz
 
-_(Gate-Beleg beim Merge; reine Legenden-Erweiterung, kein Verhaltenswechsel am Scan.)_
+Reine Legenden-Erweiterung, kein Verhaltenswechsel am Scan — der Gate-Beleg fiel folglich mit
+dem Merge zusammen. **Ausgeliefert mit v0.15.0** (CHANGELOG-Abschnitt `[0.15.0] - 2026-07-24`).
+Nachgetragen in slice-050: die Notiz bestand aus einem Satz und trug keinen Abschluss-Beleg.

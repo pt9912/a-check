@@ -58,6 +58,15 @@
 > **vier** Folge-Etappen (C · D · **E Mechanik** · **F Betriebsmodell**), empfohlene Reihenfolge
 > **E vor D**.
 >
+> **Etappe E läuft (2026-07-25), Reihenfolge E vor D per Maintainer-Wort:**
+> [slice-049](../done/slice-049-mechanik-sensoren.md) (1/3) hat das **Suppression-Verbot** mit einem
+> echten Sensor unterlegt — die Negativ-Probe verwarf dabei den geplanten `nolintlint`, weil er
+> Wohlgeformtheit statt Existenz prüft — und `make regelwerk-check` als **Wartungs-Target ohne
+> Gate-Anspruch** angelegt. [slice-050](slice-050-verify-schicht.md) (2/3) zieht die
+> **Verifikations-Schicht** ein: `make verify` neben `gates`, dazu der `closure-note-reviewer`-Skill.
+> Nebenbefund: die Closure-Pflicht war nirgends normativ verankert, obwohl 45 Slices sie
+> praktizierten — der Anker entstand erst jetzt in `AGENTS.md` §5. Offen: (3/3) mit B-16 und B-20.
+>
 > **Sonst kein aktiver Faden offen.** Vertagt/gated: `strict_coverage` (Folge-Slice), Kandidat 2b
 > (Präfix-Allowlist — **Begründung erodiert 2026-07-25**: P2 zerfällt in Kanten + Abdeckungs-Diagnose
 > + Compiler, keiner davon braucht die Beweislast-Umkehr;

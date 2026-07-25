@@ -133,6 +133,8 @@ Aggregat). Ob ein Gate gerade grün ist, sagt die CI (Badge im
 | `make guard-selftest` | Selbsttest des PreToolUse-Command-Guard (Tool-Call-Gate §3.1) |
 | `make regelwerk-check` | **kein Gate** — Wartung der vendored Baseline ([MR-006](harness/conventions.md#mr-006--baseline-committet-vendored-statt-per-url-referenziert)): Integrität gegen `SHA256SUMS` fail-closed; die Freshness-Hälfte bleibt als Netz-Operation ausdrücklich ungeprüft |
 | `make gates` | alle inneren Gates (mandatory vor Handoff) |
+| `make verify-closure-notes` | Struktur der Closure-Notizen in `done/` (§5): genau eine, ausgefüllt, kein Platzhalter, keine Floskel (slice-050) |
+| `make verify` | **Verifikations-Schicht** (getrennt von `gates`, Regelwerk Modul 11): beantwortet DoD-/Closure-Fragen statt Code-Fragen; vor der „fertig"-Meldung auszuführen |
 | `make image-test` | [AC-FA-DIST-001](spec/lastenheft.md#ac-fa-dist-001--distribution-image---print-mk-a-checkmk) + nativ==Container-Akzeptanz + Fragment-Parität (committete [`a-check.mk`](a-check.mk) == `--print-mk`, slice-034) gegen das gebaute Image |
 | `make ci` | CI-äquivalent: `gates` + `image-test` (Workflow `.github/workflows/ci.yml`) |
 | `make trace-check` | Traceability via Modul `commits` ([ADR-0021](docs/plan/adr/0021-commits-modul-trace-check.md)): `AC-*`/`ADR-*`/`MR-*`/`slice`-ID je Commit (§5; `MSGFILE=` Hook, `RANGE=` CI) |
@@ -155,6 +157,15 @@ Aggregat). Ob ein Gate gerade grün ist, sagt die CI (Badge im
   Architektur-Spec.
 - Slice-Lifecycle (`open → next → in-progress → done`) ist reine
   Datei-Bewegung (`git mv`, siehe §3.3).
+- **Closure-Pflicht:** ein Slice in `done/` trägt **genau einen**
+  Closure-Abschnitt, und der ist ausgefüllt — kein Platzhalter, keine
+  Floskel. Inhaltlich mindestens eines von dreien: ein **Lernsignal mit
+  Ursache** („X, *weil* Y"), ein **konkretes Folge-Slice** oder eine
+  **beobachtbare Architektur-Aussage**. Ohne Lerneintrag ist ein Slice
+  nicht „fertig", sondern nur „weg". Die *strukturelle* Hälfte prüft
+  `make verify` maschinell, die *semantische* (Inhalt vs. Floskel) der
+  Skill [`.harness/skills/closure-note-reviewer.md`](.harness/skills/closure-note-reviewer.md)
+  (slice-050).
 
 ## 6. Minimal Agent Workflow
 
@@ -169,3 +180,9 @@ Pro Slice:
 7. Doku/Indizes aktualisieren, falls ein öffentlicher Vertrag berührt.
 8. Ausgeführte Sensors und verbleibende Risiken berichten — keine
    Erfolgsmeldung ohne Gate-Ausführung.
+
+Beim **Abschluss** eines Slice zusätzlich `make verify` (Verifikations-Schicht,
+§4): `gates` beantwortet Code-Fragen, `verify` die DoD-/Closure-Fragen. Die
+semantische Hälfte — trägt die Notiz ein Lernsignal oder nur eine Floskel? —
+leistet der Skill
+[`.harness/skills/closure-note-reviewer.md`](.harness/skills/closure-note-reviewer.md).

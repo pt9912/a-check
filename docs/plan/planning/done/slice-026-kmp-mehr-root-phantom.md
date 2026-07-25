@@ -158,3 +158,22 @@ Spec-first-Reihenfolge (Lastenheft-CR mit geschärfter
 [SPEC-CONF-001](../../../../spec/spezifikation.md#spec-conf-001--konfigurationsschema)
 → Code → Tests); Multi-Linsen-Review vor Merge; `make gates` grün; Benutzerhandbuch:
 KMP-Rezept (tiefe paket-spezifische Globs) + Guard-Meldung dokumentiert.
+
+## 8. Closure (nachgetragen in slice-050)
+
+**done 2026-07-05** als Stufe 1 (Phantom-Guard). Der Slice lieferte nicht selbst die
+Zielauflösung, sondern den Befund und dessen Eingrenzung; die eigentliche Lösung entstand im
+hier in §4 gegateten Folge-Slice
+[slice-027](slice-027-kmp-multimodul-resolution.md) mit
+[ADR-0022](../../adr/0022-datei-mengen-bewusste-mehr-wurzel-aufloesung.md) — der zugleich
+[ADR-0020](../../adr/0020-mehr-wurzel-phantom-guard.md) auf `Superseded` setzte und damit den
+**ersten Supersede des Repos** auslöste.
+
+**Lerneintrag — Form: benannte Spec-Lücke.** Der Guard aus Stufe 1 unterdrückte das stille
+Falsch-Negativ, *ohne* die Ursache zu treffen: die Auflösung war wurzel-, nicht datei-mengen-bewusst.
+Ein Guard, der ein Symptom sichtbar macht, ersetzt keine Spezifikations-Aussage über den Fall —
+er kauft nur die Zeit, sie zu schreiben.
+
+**Nachtrags-Hinweis:** dieser Abschnitt fehlte bis 2026-07-25 vollständig und wurde beim Bau des
+Sensors `make verify` (slice-050) gefunden. Der Inhalt ist aus dem Repo-Stand belegt
+(§4 dieses Slice, slice-027 §9, [ADR-0020](../../adr/0020-mehr-wurzel-phantom-guard.md)/[ADR-0022](../../adr/0022-datei-mengen-bewusste-mehr-wurzel-aufloesung.md)), nicht rekonstruiert.

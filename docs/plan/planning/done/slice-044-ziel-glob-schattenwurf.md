@@ -76,10 +76,6 @@ schon; geschärft wird das *Wie*. Präzedenz: die `exclude`-Prune-Schärfung
 - [x] **Regressions-Probe über alle lokalen Konsumenten** — keiner nutzt Innen-Wildcards, also muss jeder byte-identisch bleiben.
 - [x] `make gates` **und** `make ci` grün mit echter Ausgabe; Benutzerhandbuch-Currency.
 
-## 6. Closure-Notiz
-
-_(beim Abschluss.)_
-
 ---
 
 ## 7. Ergebnis (2026-07-25)
