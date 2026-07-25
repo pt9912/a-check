@@ -135,11 +135,37 @@ Praxis, die laut §2 zweimal eingeschlafen ist.
 
 ## 6. DoD
 
-- [ ] Alle 17 Module und drei Grundlagen-Abschnitte gelesen; Funde mit Kategorie, Quelle und
+- [x] Alle 17 Module und drei Grundlagen-Abschnitte gelesen; Funde mit Kategorie, Quelle und
       **gemessener** Repo-Seite belegt (§1, §3).
-- [ ] Negativbefunde ausgewiesen, Schweigen nicht als Konformität gewertet (§4).
-- [ ] Zuordnung aller Funde zu C/D/E/F mit begründeter Reihenfolge (§5).
+- [x] Negativbefunde ausgewiesen, Schweigen nicht als Konformität gewertet (§4).
+- [x] Zuordnung aller Funde zu C/D/E/F mit begründeter Reihenfolge (§5).
 
 ## 7. Closure-Notiz
 
-_(beim Abschluss.)_
+**Geliefert:** 21 Funde gegen die vollständig gelesene Baseline `v3.5.2` (2867 Zeilen), zwölf
+Negativbefunde, vier geschnittene Folge-Etappen. Maintainer-Abnahme der Reihenfolge **E vor D**
+am 2026-07-25.
+
+**Lerneintrag — Form: geschärfte Regel.**
+> **Ein geerbter Arbeits-Zuschnitt verliert seine Geltung, sobald das Ziel darüber neu gesetzt
+> wird.** Der Sechs-Modul-Zuschnitt stammte aus [slice-046 §5](../open/slice-046-regelwerk-v352-migration-analyse.md)
+> und war dort richtig — er entstand *vor* der Maintainer-Vorgabe „komplett nach v3.5.2
+> migrieren". Ich habe ihn danach weitergetragen, statt ihn gegen das neue Ziel zu prüfen, und
+> zusätzlich zwei Funde (B-9/B-10) als „gehört in keine Etappe" zur Disposition gestellt — eine
+> Kategorie, die ein vollständiges Migrationsziel gar nicht kennt. Prüfregel für den nächsten
+> Etappen-Start: *steht der übernommene Zuschnitt älter als die jüngste Ziel-Aussage? Dann zuerst
+> den Zuschnitt neu schneiden, nicht die Arbeit beginnen.*
+
+**Zwei beobachtbare Closure-Kriterien:**
+
+1. `make gates` grün auf dem Stand des Slice (Exit 0) — belegt.
+2. Jeder der 21 Funde trägt eine Repo-Seite mit Messung *und* eine Etappen-Zuweisung (§3, §5);
+   kein Fund bleibt ohne Adressat.
+
+**Was anders lief:** die erste Fassung wies zehn Module als ungelesene Lücke aus und stufte B-10
+allein deshalb als INFO. Nach der vollständigen Lektüre wurde daraus LOW — eine Kategorie, die auf
+Nichtwissen beruhte, nicht auf Beobachtung. Das ist der zweite Beleg für dieselbe Ursache wie im
+Lerneintrag.
+
+**Folge-Slices:** Etappe E (Mechanik) zuerst, darin gemäß Fund **B-1** in Slices von **≤ 3
+DoD-Punkten** geschnitten statt als ein Sammel-Slice; danach D, C, F.
