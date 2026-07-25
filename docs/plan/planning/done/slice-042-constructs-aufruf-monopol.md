@@ -231,6 +231,14 @@ Ausgabe weist darauf hin, dass ein gescannter Teilbaum ungeprüft bleibt.
   **nur** b-cad als Evidenz; die Begründung aus
   [slice-025 §4](slice-025-p-rest-generalisierung.md) bleibt unverändert gültig.
 
+  > **Nachtrag 2026-07-25 — die Begründung ist erodiert.** Maintainer-Einwand: dass ein Include
+  > gar nicht auflöst, ist **Build-Integrität, Aufgabe des Compilers**, nicht die von a-check. Am
+  > realen Baum nachgemessen ([slice-045 §5.1](../open/slice-045-intern-extern-dateimenge.md)):
+  > alle Quote-Include-Ziele existieren real, es gibt keinen modul-lokalen Fall, und P2 zerfällt
+  > in drei Teile, die **Kanten**, **Abdeckungs-Diagnose** und **Compiler** abdecken — keiner
+  > davon braucht die Beweislast-Umkehr. 2b bleibt formal gated, hat aber keinen belegten Bedarf
+  > mehr.
+
 **Empfehlung:** 2a als eigenen Folge-Slice aufsetzen (unabhängig von diesem hier — andere Regel,
 andere Evidenz, kein gemeinsamer Code-Pfad) — angelegt als
 [slice-043](../done/slice-043-schicht-abdeckung-sichtbar.md); 2b gated lassen. Damit schrumpft b-cads Skript nach
@@ -338,11 +346,19 @@ Der Vorschlag steht, die Entscheidung liegt drüben:
    Voraussetzung: ein Release, das die Regel enthält (der aktuelle Pin hat sie noch nicht).
    Ein Unterschied ist auszuweisen: der `grep` meldet auch Kommentar-Treffer, a-check nicht.
 2. **P2c streichen** — Empfehlung unverändert aus §3.4 (Argument: Probe 3/4 in §2).
-3. **P2 bleibt** — die Klassen aus Probe 5/6 (unauflösbare bzw. modul-lokale Specifier) deckt a-check
-   weiterhin nicht; die unlayered-Hälfte davon adressiert
-   [slice-043](../done/slice-043-schicht-abdeckung-sichtbar.md).
+3. ~~**P2 bleibt** — die Klassen aus Probe 5/6 (unauflösbare bzw. modul-lokale Specifier) deckt
+   a-check weiterhin nicht.~~ **Revidiert 2026-07-25** ([slice-045 §5.1](../open/slice-045-intern-extern-dateimenge.md)):
+   auch **P2 ist streichbar**. Die drei Fälle, die P2 abdeckt, tragen inzwischen drei andere
+   Mechanismen: existierende, geschichtete Ziele → **Kanten** (`lateral-adapter`, verifiziert);
+   eine neu hinzugefügte schichtlose Datei → **Abdeckungs-Diagnose**
+   ([slice-043](slice-043-schicht-abdeckung-sichtbar.md)); ein nicht existierendes Ziel →
+   **Compiler** (Build-Integrität, nie a-checks Aufgabe). Im Bestand existieren ohnehin **alle**
+   Quote-Include-Ziele real, und es gibt keinen modul-lokalen Fall.
 
-Danach trägt b-cads `arch-check.sh` genau **eine** Regel.
+~~Danach trägt b-cads `arch-check.sh` genau **eine** Regel.~~ Nach der Revision von Punkt 3 kann
+das Skript auf **null** Regeln gehen. Ein Rest bleibt ausgewiesen: bei der neu-hinzugefügten
+schichtlosen Datei meldet a-check die **Datei** (advisory), nicht den **Import** — wer die Kante
+selbst als Befund will, braucht [slice-045](../open/slice-045-intern-extern-dateimenge.md).
 
 ## 11. Closure-Notiz (2026-07-25)
 

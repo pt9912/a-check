@@ -33,7 +33,10 @@
 > für die vier `path`-Konsumenten nicht ohne Zusatz-Heuristik (Modul-Präfix). Halber Kandidat,
 > Entscheide §4 offen.
 > **Sonst kein aktiver Faden offen.** Vertagt/gated: `strict_coverage` (Folge-Slice), Kandidat 2b
-> (Präfix-Allowlist), der `tech.pattern`-Mikro-CR, wildcard-fähiges Ziel-Matching
+> (Präfix-Allowlist — **Begründung erodiert 2026-07-25**: P2 zerfällt in Kanten + Abdeckungs-Diagnose
+> + Compiler, keiner davon braucht die Beweislast-Umkehr;
+> [slice-045 §5.1](../open/slice-045-intern-extern-dateimenge.md)), der `tech.pattern`-Mikro-CR,
+> wildcard-fähiges Ziel-Matching
 > ([ADR-0028](../../adr/0028-ziel-glob-schattenwurf.md)). **Nächster Schritt: ein Release** —
 > `[Unreleased]` trägt drei Auslieferungen (slice-042/043/044); erst danach kann b-cad seine
 > P1-`grep`-Regel zurückbauen.

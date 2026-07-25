@@ -108,16 +108,47 @@ Der Kandidat ist **halb** tragfähig:
 
 ## 5. Abgrenzung — was dieser Slice **nicht** löst
 
-- **Nicht P2 / Kandidat 2b.** b-cads Regel P2 verbietet „alles außerhalb der Allowlist —
-  **auflösbar oder nicht**". Ein Include, dessen Datei über einen Include-Pfad **außerhalb des
-  Scans** kommt, bliebe auch mit dem Dateimengen-Test still: er kennt nur, was gescannt wurde. Die
-  Beweislast-Umkehr bleibt ein eigener, weiterhin gated Faden
-  ([slice-042 §8.2](../done/slice-042-constructs-aufruf-monopol.md)).
+- **P2 / Kandidat 2b — Einschätzung revidiert (2026-07-25, siehe §5.1).** Frühere Fassung dieses
+  Abschnitts sagte „löst P2 nicht". Nach der Messung in §5.1 ist das **nicht mehr richtig**: P2s
+  Schutzwirkung zerfällt in drei Teile, von denen keiner eine Beweislast-Umkehr braucht. Dieser
+  Slice deckt davon den **dritten** ab (Import auf eine schichtlose, aber real gescannte Datei).
 - **Keine Rücknahme von [ADR-0029](../../adr/0029-abdeckungs-diagnose-advisory.md).** Die dortige
   Entscheidung „nur Quell-Seite" war für den damaligen Kenntnisstand richtig; dieser Slice liefert
   den Grund, sie für einen Teil der Konsumenten zu erweitern — als Folge-ADR, nicht als Korrektur.
 - **Keine Aussage über Projekte ohne `.a-check.yml`** (x-wal, u-boot, ai-harness-init): sie sind
   keine Konsumenten und liefern weder Bedarf noch Gegenevidenz.
+
+### 5.1 Warum Kandidat 2b seine Begründung verliert
+
+**Maintainer-Einwand (2026-07-25):** dass ein Include gar nicht auflöst, ist **Build-Integrität —
+Aufgabe des Compilers**, nicht von a-check. Die Prüfung dieses Einwands am realen b-cad-Baum:
+
+**Bestand:** **alle** Quote-Include-Ziele in `plugins/` + `src/plugin_api/` existieren real unter
+`src/`; es gibt **keinen** modul-lokalen Fall; der Baum hat **0** ungedeckte Dateien. Der
+P2-Zusatz „auflösbar **oder nicht**" beschreibt damit einen Fall, der im Bestand nicht vorkommt.
+
+**Injektionsproben gegen `a-check:dev`:**
+
+| Fall | Wer fängt es |
+|---|---|
+| existierende `src/`-Datei außerhalb der Allowlist (`adapters/io/…`) | **a-check**: `lateral-adapter`, Exit 1 |
+| **neue** Datei unter `src/` in keinem Layer-Glob, von einem Plugin inkludiert | **a-check**: Abdeckungs-Diagnose nennt die Datei ([ADR-0029](../../adr/0029-abdeckungs-diagnose-advisory.md)) — die *Ursache* wird sichtbar, Fix ist eine Config-Zeile |
+| Ziel existiert nicht | **Compiler** — der Build bricht ab |
+
+**Schluss:** P2 zerfällt in drei Teile, die drei verschiedene Mechanismen abdecken — Kanten,
+Diagnose, Compiler. **Keiner davon braucht die Beweislast-Umkehr**, die Kandidat 2b vorsah. Damit
+ist dessen Begründung ([slice-042 §8.2](../done/slice-042-constructs-aufruf-monopol.md),
+[slice-025 §4](../done/slice-025-p-rest-generalisierung.md)) weitgehend **erodiert** — nicht
+widerlegt (ein Konsument *könnte* Default-verboten wollen), aber ohne verbleibenden Bedarf.
+
+**Der Rest, den dieser Slice adressiert:** bei Fall 2 meldet a-check die **Datei** (advisory), nicht
+den **Import**. Wer die Kante selbst als Befund will, braucht den Dateimengen-Test — und zwar genau
+dessen `fixed-root`-Hälfte, in der b-cad liegt (§2.2).
+
+**Folge für den Rückbau beim Konsumenten:** b-cads `arch-check.sh` kann nach einem Release, das
+`construct-leak` ausliefert, auf **null** Regeln gehen — nicht, wie in
+[slice-042 §10.4](../done/slice-042-constructs-aufruf-monopol.md) angenommen, auf eine. Die
+Entscheidung liegt beim Konsumenten-Repo.
 
 ## 6. Betroffene Module (bei Umsetzung)
 
