@@ -36,6 +36,7 @@
 > `fixed-root`-only-Mechanismus im eigenen `path`-Modus **nicht dogfooden**. Drei Trigger drehen die
 > Entscheidung um; ein `module_base`-Schlüssel ist abgelehnt (zweite Quelle für eine Wahrheit, die
 > `segIndex` schon löst).
+> **Neu als Analyse (2026-07-25):** [slice-046](../open/slice-046-regelwerk-v352-migration-analyse.md) — Regelwerk-Migration **v1.3.0 → v3.5.2** (Maintainer-Vorgabe: vollständig migrieren, auch gegen bestehende `MR-*`; erst analysieren). Gemessen: alle 21 Regelwerk-Dateien geändert (+705/−1868), drei Brocken — **Vendoring-Modell** (`.harness/baseline/<tag>/`), **[MR-003](../../../../harness/conventions.md#mr-003--source-precedence-ohne-docsuser-rang)-Nummern-Kollision** mit dem Template, **Template-Abgleich** über 21 Vorlagen. Entwarnung: Modul 10 (Review-Kategorien) ist unverändert. Vier Etappen vorgeschlagen, Abnahme offen.
 > **Sonst kein aktiver Faden offen.** Vertagt/gated: `strict_coverage` (Folge-Slice), Kandidat 2b
 > (Präfix-Allowlist — **Begründung erodiert 2026-07-25**: P2 zerfällt in Kanten + Abdeckungs-Diagnose
 > + Compiler, keiner davon braucht die Beweislast-Umkehr;
