@@ -27,8 +27,13 @@ die kanonische Quelle (Source Precedence, siehe
 - **Datum der Adoption:** 2026-06-20 (`v1.3.0`); **Stand gehoben auf `v3.5.2` am 2026-07-25**
   — der Sprung ist in vier Etappen geschnitten, diese ist Etappe A (Vendoring + Stand);
   die inhaltliche Angleichung von Konventionen, `MR-*`-Bestand und Template-Konformität folgt
-  in den Etappen B–D. Bis dahin gilt: **bei Konflikt zwischen einem `MR-*` dieses Repos und
-  dem `v3.5.2`-Default gewinnt der Default** (Maintainer-Vorgabe 2026-07-25).
+  in den Etappen B–D. Für den **Migrations-Auftrag** gilt: wo eine Adaption dieses Repos nur
+  deshalb existiert, weil der `v1.3.0`-Default anders war, **gewinnt der `v3.5.2`-Default**
+  (Maintainer-Vorgabe 2026-07-25) — die Prüfung Adaption-für-Adaption ist Etappe C.
+  **Bis diese Prüfung erfolgt ist, bleiben die deklarierten `MR-*` in Kraft**: sie sind teils
+  maschinell gegatet (`MR-002`/`MR-004` über die `ids`-Muster in
+  [`.d-check.yml`](../.d-check.yml)), und ein pauschaler Vorrang würde für das heute gültige
+  ID-Schema zwei einander ausschließende Regeln nebeneinander stellen.
 
 ## Adoptierte Konventions-Quellen
 

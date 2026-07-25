@@ -37,6 +37,13 @@
 > Entscheidung um; ein `module_base`-Schlüssel ist abgelehnt (zweite Quelle für eine Wahrheit, die
 > `segIndex` schon löst).
 > **Neu als Analyse (2026-07-25):** [slice-046](../open/slice-046-regelwerk-v352-migration-analyse.md) — Regelwerk-Migration **v1.3.0 → v3.5.2** (Maintainer-Vorgabe: vollständig migrieren, auch gegen bestehende `MR-*`; erst analysieren). Gemessen: alle 21 Regelwerk-Dateien geändert (+705/−1868), drei Brocken — **Vendoring-Modell** (`.harness/baseline/<tag>/`), **[MR-003](../../../../harness/conventions.md#mr-003--source-precedence-ohne-docsuser-rang)-Nummern-Kollision** mit dem Template, **Template-Abgleich** über 21 Vorlagen. Entwarnung: Modul 10 (Review-Kategorien) ist unverändert. Vier Etappen vorgeschlagen, Abnahme offen.
+> **Auch neu (2026-07-25):** [slice-047](../done/slice-047-baseline-vendoring.md) — **done**, **Etappe A** der Migration: die
+> Baseline liegt jetzt **committet vendored** unter `.harness/baseline/v3.5.2/` (43 Dateien +
+> `SHA256SUMS`), die drei Pin-Stellen sind umgestellt, die Adaption ist als
+> [MR-006](../../../../harness/conventions.md#mr-006--baseline-committet-vendored-statt-per-url-referenziert)
+> deklariert. Ein **unabhängiges Zweit-Review** hat sechs MEDIUM gefunden (u. a. `v1.3.0`-Reste in
+> `reviewer.md`/`.d-check.yml`, eine widersprüchliche Dateizahl-Evidenz und eine
+> Freshness-Audit-Zuordnung, die Modul 02 ausschließt) — alle vor dem Merge abgearbeitet.
 > **Sonst kein aktiver Faden offen.** Vertagt/gated: `strict_coverage` (Folge-Slice), Kandidat 2b
 > (Präfix-Allowlist — **Begründung erodiert 2026-07-25**: P2 zerfällt in Kanten + Abdeckungs-Diagnose
 > + Compiler, keiner davon braucht die Beweislast-Umkehr;

@@ -1,12 +1,12 @@
 # Review-Report: slice-047 — 2026-07-25
 
 **Review-Art:** Code — geprüft gegen Plan
-([slice-047](../plan/planning/in-progress/slice-047-baseline-vendoring.md)),
+([slice-047](../plan/planning/done/slice-047-baseline-vendoring.md)),
 den Etappen-Schnitt aus [slice-046 §6](../plan/planning/open/slice-046-regelwerk-v352-migration-analyse.md)
 und die Konventionen ([`AGENTS.md`](../../AGENTS.md) Hard Rules,
 [`harness/conventions.md`](../../harness/conventions.md)).
 
-**Gegenstand:** slice-047 · Diff `origin/main...HEAD` (1 Commit, `cc3c225`) · 48 Dateien.
+**Gegenstand:** slice-047 · Commit `cc3c225` (die Harness-Änderung; die Range `origin/main...HEAD` umfasst zusätzlich `05ed884` = slice-046-Analyse, **nicht** Gegenstand dieses Reports) · 48 Dateien.
 
 **Skill:** `.harness/skills/reviewer.md` — Bestand **vor** der Baseline-Hebung (noch nicht gegen
 `v3.5.2` Modul 10 geprüft, siehe [slice-046 §3](../plan/planning/open/slice-046-regelwerk-v352-migration-analyse.md)); dieser Report folgt der **vendored Vorlage**
@@ -16,7 +16,7 @@ Repo, der das tut.
 
 **Eingangs-Kontext** (die Verträge, gegen die geprüft wurde):
 
-- Plan: [slice-047](../plan/planning/in-progress/slice-047-baseline-vendoring.md), Etappe A aus [slice-046](../plan/planning/open/slice-046-regelwerk-v352-migration-analyse.md)
+- Plan: [slice-047](../plan/planning/done/slice-047-baseline-vendoring.md), Etappe A aus [slice-046](../plan/planning/open/slice-046-regelwerk-v352-migration-analyse.md)
 - [`harness/conventions.md`](../../harness/conventions.md) §Baseline + Adaptions-Block (`MR-000`…`MR-006`)
 - [`AGENTS.md`](../../AGENTS.md) §1 (Regelwerks-Pflicht), §3 Hard Rules, §4 Gates
 - [`.d-check.yml`](../../.d-check.yml) (Doku-Gate-Konfiguration)
@@ -25,7 +25,7 @@ Repo, der das tut.
 
 > **Form-Einschränkung.** Reviewer und Verifier sind dieselbe Instanz; die Rollentrennung aus
 > Modul 8/11 ist nicht erfüllt. Die DoD-Verifikation steht getrennt in
-> [slice-047 §3/§4](../plan/planning/in-progress/slice-047-baseline-vendoring.md).
+> [slice-047 §3/§4](../plan/planning/done/slice-047-baseline-vendoring.md).
 
 ---
 
@@ -37,7 +37,7 @@ Repo, der das tut.
 - `quelle`: [AC-QA-03](../../spec/lastenheft.md#ac-qa-03--reproduzierbarkeit) (Reproduzierbarkeit, sinngemäß auf die Baseline übertragen) / `MR-006`
 - `pfad`: `.harness/baseline/v3.5.2/SHA256SUMS`
 - `befund`: Das Manifest ist im Repo erzeugt worden und belegt nur die **innere** Konsistenz des Baums. Dass dieser Baum das Release `v3.5.2` ist — die Aussage, die `conventions.md` §Baseline trifft —, prüft kein Gate; ein vertauschter oder editierter Baum bliebe unentdeckt.
-- `verifizierbar`: ja — ein Vergleich gegen das Release-Artefakt (bzw. ein mitgeliefertes Upstream-Manifest) in `gate-consistency` würde es bestätigen.
+- `verifizierbar`: teilweise — die **Asset**-Integrität ist gate-fähig (d-checks `sources`-Modul, `source-pin` auf den `sha256`); die **Freshness** („gibt es einen neueren Tag?") ist laut `modul-02-harness-bootstrap.md` §Freshness-Audit ausdrücklich eine **Netz-Operation außerhalb der Gates** und gehört nicht in `gate-consistency`. *(Korrigiert nach dem Zweit-Review, siehe Nachtrag.)*
 
 ### F-2 — Gate-Lauf an den Commit gekettet, roter `doc-check` committet
 
@@ -51,21 +51,21 @@ Repo, der das tut.
 
 - `kategorie`: LOW
 - `quelle`: Maintainability
-- `pfad`: `.d-check.yml:6`
+- `pfad`: `.d-check.yml:16-18`
 - `befund`: Der Kommentar zum `scan.ignore` begründet den Ausschluss mit `MR-006`. Etappe C ist ausdrücklich vorgesehen, die MR-Nummerierung an das Baseline-Template anzugleichen; danach zeigt der Kommentar auf eine Nummer, die es nicht mehr gibt. Kein Gate deckt Kommentar-Text ab.
 - `verifizierbar`: nein
 
-### F-4 — Plan und Ausführung liegen in einem Commit
+### F-4 — Plan und Ausführung liegen in einem Commit *(Präferenz, kein Normverstoß)*
 
-- `kategorie`: LOW
-- `quelle`: [`AGENTS.md` §3.3](../../AGENTS.md#33-git-mv--inhaltsänderung--zwei-commits) (Trennungs-Absicht, hier nicht wörtlich anwendbar) / Maintainability
+- `kategorie`: INFO
+- `quelle`: Maintainability — **keine** normative Stelle verlangt die Trennung Plan-/Umsetzungs-Commit (§3.3 gilt nur für `git mv` + Inhaltsänderung). Als Finding daher zurückgestuft; ein Befund ohne zitierbare Stelle ist selbst eine Beweislast-Umkehr.
 - `pfad`: Commit `cc3c225`
 - `befund`: Slice-Dokument und Harness-Änderung sind in einem Commit vereint (Folge eines `--amend`, der mehr aufnahm als beabsichtigt). Der Verlauf zeigt damit nicht, was geplant und was ausgeführt wurde; die Commit-Nachricht ist nachträglich auf den vollen Inhalt korrigiert.
 - `verifizierbar`: nein
 
 ### F-5 — Die Quelldatei-Kette ist aus dem Briefing verschwunden
 
-- `kategorie`: INFO
+- `kategorie`: LOW *(hochgestuft nach dem Zweit-Review: betrifft eine Präzedenz-Aussage, nicht bloß einen Hinweis)*
 - `quelle`: Maintainability
 - `pfad`: `AGENTS.md:18-33`
 - `befund`: Vor der Änderung nannte `AGENTS.md` §1 die Upstream-Quelldatei (`agents-regelwerk.md`) und die Regel „bei Konflikt gilt die Quelldatei". Jetzt verweist §1 auf den Kurs-Tree; die Derivativ-Kette läuft nur noch über `conventions.md` §Adoptierte Konventions-Quellen.
@@ -86,7 +86,7 @@ Repo, der das tut.
 - geprüft, ohne Befund: `internal/**`, `cmd/**` — kein Go-Code im Diff; `lint`, `test`, `coverage-gate` (96,20 %), `arch-check` (0 Befunde) unverändert grün.
 - geprüft, ohne Befund: `version.md`, `a-check.mk`, `README*.md` — Release-Pins unberührt, `gate-consistency` Pin-Gleichheit grün.
 - geprüft, ohne Befund: `Makefile`, `tools/**`, `.github/workflows/**` — keine Gate-Definition geändert; `gate-consistency` Doku↔Makefile grün.
-- geprüft, ohne Befund: Doku-Integrität — `doc-check` **116 Dateien / 0 Befunde**; die Dateizahl belegt, dass `scan.ignore` den vendored Baum ausnimmt (sonst 158).
+- geprüft, ohne Befund: Doku-Integrität — `doc-check` **0 Befunde**; die geprüfte Dateizahl wächst nur um die neuen Eigen-Dokumente dieses Branches (116 nach dem Vendoring-Commit), **nicht** um die 43 vendored Dateien — ohne `scan.ignore` wären es rund 158.
 - geprüft, ohne Befund: `MR-000`…`MR-005` — inhaltlich **nicht** angetastet (bewusst Etappe C); nur `MR-006` neu.
 
 ## Summary
@@ -100,19 +100,43 @@ Repo, der das tut.
 
 ## Verdikt
 
-**Merge-blockierend: nein** — abweichend von der Regel „HIGH und MEDIUM blockieren typischerweise",
-darum hier begründet statt still entschieden:
+**Merge-blockierend: nein** für die *hier* gelisteten Findings — begründet statt still entschieden:
+F-1 ist im Plan als offen ausgewiesen und einer benannten Etappe zugeordnet (Verklemmung sonst),
+F-2 betrifft den Weg, nicht den grünen Zustand.
 
-- **F-1** ist im Plan als bewusst offen ausgewiesen und einer **benannten** späteren Etappe (D)
-  zugeordnet; der Soll-Zustand für einen Gate-Check braucht Entscheidungen, die dort fallen. Der
-  Inhalt ist zudem einmalig gegen das Release-Artefakt geprüft (Negativbefund 1). Etappe A auf ein
-  Gate zu blockieren, dessen Grundlage erst D legt, wäre eine Verklemmung.
-- **F-2** betrifft den **Weg**, nicht den Zustand: das Artefakt ist grün, der fehlerhafte Commit
-  wurde per `--amend` repariert. Der Befund bleibt als Prozess-Eintrag stehen, weil er zum dritten
-  Mal auftritt — nach Modul 10 §Pflege ist damit die Schwelle erreicht, die Ursache zu adressieren
-  (Hard-Rule- oder Gate-Ergänzung) statt ein viertes Einzel-Finding zu schreiben.
+> **Dieses Verdikt trägt nicht allein.** Ein **unabhängiges Zweit-Review** (eigener Report, s.
+> Nachtrag) fand **sechs** MEDIUM statt zwei und urteilte **merge-blockierend: ja** — zu Recht: vier
+> der zusätzlichen MEDIUM hatten weder eine benannte Etappe noch ein Verklemmungs-Argument.
 
-**Übergabe:** F-1 → Etappe D (Gate-Kandidat). F-3 → Etappe C (mit der Umnummerierung mitziehen).
-F-2 → Arbeitsregel/Durchsetzungsschicht, außerhalb dieses Slices. F-4/F-5/F-6 → keine Aktion
-erwartet. Der Report ersetzt keine Verifikation — die DoD-Konformität steht in
-[slice-047 §3/§4](../plan/planning/in-progress/slice-047-baseline-vendoring.md).
+**Übergabe:** F-1 → Etappe D (Asset-Teil; Freshness bleibt Netz-Wartung). F-3 → Etappe C.
+F-2 → Durchsetzungsschicht, außerhalb dieses Slices. F-4/F-5/F-6 → keine Aktion.
+Der Report ersetzt keine Verifikation — die DoD-Konformität steht in
+[slice-047 §3/§4](../plan/planning/done/slice-047-baseline-vendoring.md).
+
+---
+
+## Nachtrag (2026-07-25) — was das unabhängige Zweit-Review korrigiert hat
+
+Report des Zweit-Reviews: [`2026-07-25-slice-047-baseline-vendoring-zweitreview.md`](2026-07-25-slice-047-baseline-vendoring-zweitreview.md).
+Es fand **zehn Findings, die hier fehlten** — Ursache war eine **Abdeckungslücke**, die der
+Negativbefund-Block korrekt *nicht* behauptete: keine Zeile für `.harness/skills/**`, für
+`docs/plan/planning/**`/`roadmap.md`, für `docs/reviews/README.md` und keine für den
+`.d-check.yml`-**Kopf**. Genau dort lagen die Befunde.
+
+Drei **Fehler in diesem Report** sind oben korrigiert (Erratum, kein Umschreiben des Urteils):
+
+| Korrektur | vorher | jetzt |
+|---|---|---|
+| `pfad` in F-3 | `.d-check.yml:6` (dort steht die Modul-Aufzählung) | `.d-check.yml:16-18` |
+| `Gegenstand` | „Diff `origin/main...HEAD` (1 Commit)" — Range und Commit-Zahl bezeichneten verschiedene Mengen | Commit `cc3c225`, Range-Umfang ausgewiesen |
+| F-1 `verifizierbar` | „in `gate-consistency`" | nach Modul 02 getrennt: Asset gate-fähig, **Freshness außerhalb der Gates** |
+
+Zwei **Kategorie-Korrekturen**: F-4 → **INFO** (das Zweit-Review bestätigt es nicht als Finding —
+es gibt keine normative Stelle für die Trennung Plan-/Umsetzungs-Commit; ein Befund ohne zitierbare
+Stelle ist selbst eine Beweislast-Umkehr). F-5 → **LOW** (Präzedenz-Aussage in einem
+Rang-8-Dokument, nicht bloß ein Hinweis).
+
+Ein **Negativbefund war zu stark**: „`MR-000`…`MR-005` inhaltlich nicht angetastet" ist textuell
+richtig, verschwieg aber, dass der neue §Baseline-Satz „bei Konflikt gewinnt der Default" ihren
+**normativen Status** änderte. Die Klausel ist daraufhin eingegrenzt worden — die deklarierten
+`MR-*` bleiben bis zur Prüfung in Etappe C ausdrücklich in Kraft.

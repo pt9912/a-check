@@ -1,7 +1,7 @@
 # .d-check.yml — a-check prüft seine eigene Doku mit dem Schwester-Tool d-check
 # (Dogfooding des Stacks). Erzeugt aus `d-check --suggest-config ai-harness-init`
 # (v0.19.0) und auf a-check angepasst: AC-Kennungen statt DC-, kein slice-Muster
-# (alle Slice-Erwähnungen sind Vorwärts-Referenzen). Baseline v1.3.0.
+# (alle Slice-Erwähnungen sind Vorwärts-Referenzen). Baseline v3.5.2 (vendored, MR-006).
 #
 # Aktiv: links, anchors, ids (AC/ADR/MR-Linkpflicht), matrix (Spec-Straten
 # verweisen nie abwärts — intra-Spec no-downward + ADR→Slice-Disziplin, MR-005),
