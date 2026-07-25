@@ -77,7 +77,32 @@ Eine Schicht.
 
 ## 6. Closure-Notiz
 
-_(beim Abschluss.)_
+**Geliefert:** die Nummern-Kollision als Nicht-Befund belegt und im Adaptions-Block festgehalten,
+zwei neue Einträge (`MR-007` ADR-Vorlagen-Version, `MR-008` Replay/Telemetrie-Abweichung), und
+eine selbst eingebaute Duplikation zurückgebaut.
+
+**Lerneintrag — Form: geschärfte Regel.**
+> **Ein Template, das Beispiele abdruckt, schreibt keine Beispiele vor.** slice-046 las eine
+> abgedruckte Nummer als Vorgabe und leitete daraus einen ganzen Migrations-Brocken ab —
+> Umnummerierung des Bestands, Bruch der Verweis-Identität, Kollisions-Auflösung. Widerlegt hat
+> das nicht eine Diskussion, sondern **derselbe Text zwei Absätze höher**: „chronologisch
+> nummeriert". Prüfsatz: *bevor eine Vorgabe aus einem Beispiel abgeleitet wird, die
+> Disziplin-Sätze desselben Abschnitts lesen — sie sagen, was am Beispiel normativ ist.*
+
+**Zwei beobachtbare Closure-Kriterien:**
+
+1. `make gates` und `make verify` grün auf demselben Stand (je Exit 0) — belegt.
+2. `MR-000` ist im Diff **unverändert**; die Korrektur seiner Versionsaussage steht ausschließlich
+   im neuen Eintrag — die Änderungs-Disziplin ist also nicht nur beschrieben, sondern eingehalten.
+
+**Zweiter Fund, nicht geplant:** die AC-Drei-Pfad-Regel stand längst in `conventions.md`
+§Anforderungs-Anlege-Prozess. Meine Deklaration in [`AGENTS.md`](../../../../AGENTS.md) §5 aus
+slice-054 war damit eine **zweite Quelle für dieselbe Wahrheit** — zurückgebaut auf einen Verweis.
+Fund B-15 bleibt gültig, aber seine Diagnose war falsch: die Regel war *deklariert und nie
+durchgesetzt*, nicht *nicht deklariert*.
+
+**Folge-Slices:** [slice-056](slice-056-sub-area-modus.md) (Etappe C, 2/2 — B-2 und die offenen
+LOW).
 
 ## 7. Sub-Area-Modus
 
