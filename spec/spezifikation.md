@@ -1,6 +1,6 @@
 # Spezifikation — a-check
 
-**Version:** 0.24.0
+**Version:** 0.25.0
 
 **Status:** Draft
 
@@ -265,7 +265,27 @@ importierenden Datei, nicht-relative Specifier und Wurzel-Escapes → **leere** 
 datei-relative (TypeScript) Importe auf, sofern der Paket-Baum den Verzeichnis-Baum spiegelt
 bzw. die `layers`-Globs verzeichnisbasiert sind. Dann werden Symbole über die `layers`-Globs des Zielpfads aufgelöst
 (**spezifischster/längster** literaler Präfix gewinnt) — die Ziel-Rolle ist die **des aufgelösten Layers**; die Reinheits-Regeln
-dispatchen über die Rolle, nicht den Namen. Die **`tech`-Muster** dagegen lösen in
+dispatchen über die Rolle, nicht den Namen.
+
+**Rückzug bei unauflösbarem Ziel-Glob.**
+Ein Glob mit **Wildcard in der Mitte** (`…/application/**/ports/**`) trägt keinen literalen Präfix
+und kann als Import-**Ziel** nie matchen. Der Kandidat darf dann **nicht** auf das nächst-passende,
+umschließende Glob zurückfallen — das ergäbe einen Befund über eine Schicht, in der das Ziel
+womöglich gar nicht liegt (ein legitimer `adapter → ports`-Import würde als
+`wrong-direction: adapter -> application` gemeldet). Stattdessen wird die Zuordnung
+**zurückgezogen**: das Ziel gilt als **extern** (fail-open, kein Befund) — dieselbe Linie wie bei
+der schwachen Evidenzstufe der Mehr-Wurzel-Auflösung. Der Rückzug greift **nur**, wenn ein Glob
+einer **anderen** Schicht alle drei Bedingungen erfüllt: sein literaler **Kopf** (vor dem ersten
+Wildcard-Segment) **und** sein literaler **Tail-Marker** (nach dem letzten Wildcard-Segment, z. B.
+`ports`) kommen beide als Segment-Run im Kandidaten vor, **und** der Kopf ist mindestens so
+spezifisch wie der Präfix der gewählten Schicht. Der Tail-Marker ist tragend: ohne ihn würde
+`…/application/**/ports/**` jeden Application-Import zurückziehen und die Schicht still abschalten.
+Ein Prefix, das auf dem Wildcard-Segment endet (kein Tail-Marker, z. B. `a/**/**`), zieht nie
+zurück. Die Prüfung ist eine reine Existenz-Aussage über die Glob-Menge — reihenfolge-unabhängig
+([SPEC-DET-001](#spec-det-001--determinismus-vertrag)). Die **Quell**-Seite (Datei → Schicht) ist
+unberührt: sie bewertet den literalen Kopf und löst solche Globs korrekt auf — die Asymmetrie
+bleibt, wird aber ausgewiesen statt in einen Fehlbefund übersetzt
+([AC-QA-02](lastenheft.md#ac-qa-02--hermetik-und-ehrliche-heuristik-grenze)). Die **`tech`-Muster** dagegen lösen in
 **Deklarationsreihenfolge** auf (**Erst-Treffer** gewinnt, `matchTech`) — uniform für
 `match: substring` und `match: regex`; es gibt für `tech` **kein** „längster Präfix"
 ([AC-FA-RULE-003](lastenheft.md#ac-fa-rule-003--tech-kapselung-regel-tech-leak)).
@@ -442,6 +462,7 @@ und [AC-QA-03](lastenheft.md#ac-qa-03--reproduzierbarkeit).
 | 0.18.0 | 2026-07-06 | `SPEC-CONF-001`/`SPEC-EXTRACT-001`: **deklarations-bewusste Mehr-Wurzel-Auflösung** (Stufe 3) — bei `fixed-root` mit ≥ 2 `roots` gewinnt für ein deklarations-bewusstes Backend (Kotlin) die **reale Top-Level-Deklaration** über den bloßen Datei-Namens-Match (Evidenz-Rangfolge deklariert > Paketverzeichnis > keine); genau ein deklarierender Root ⇒ eindeutig, ≥ 2 deklarierende Roots verschiedener Schichten ⇒ Exit 2, kein Treffer ⇒ extern (fail-open). `SPEC-EXTRACT-001`: **Kotlin** liefert zusätzlich Top-Level-Deklarationen (`fun`/Extension/`val`/`class`/`object`/`interface`/`typealias`), übrige Backends no-op (leeres Set). Folgt [`AC-FA-CONF-001`](lastenheft.md#ac-fa-conf-001--konfigurationsdatei-a-checkyml)/[`AC-FA-EXTRACT-001`](lastenheft.md#ac-fa-extract-001--sprach-backends-für-die-import-extraktion) 0.18.0. |
 | 0.19.0 | 2026-07-09 | Neu `SPEC-CLI-002` (Graph-Renderer-Vertrag: Config-Modell→Mermaid **pur**; stabile interne IDs + escaptes Label je nutzergesteuertem Text; Kante je `edges`, abgesetzte `allow`-Kante; Dangling-/Composition-Root-/Adapter-Sink-Sonderknoten; `classDef` je effektiver Rolle via geteiltem Resolver; `direction`-Subgraphs; implizite Regeln als Legende; Escaping-Vertrag; Determinismus-Ordnung; `tech` v1 deferred). `SPEC-CLI-001` um den no-scan-`--print-graph`-Modus präzisiert (load-time/config-validation-Parität inkl. unbekannter Sprache; Restargument nach dem Pfad → Exit 2; **keine** scanzeitige Fehler-Parität). Folgt [`AC-FA-CLI-002`](lastenheft.md#ac-fa-cli-002--architektur-graph-ausgabe) 0.19.0. |
 | 0.20.0 | 2026-07-09 | `SPEC-DIST-001`: das `--print-mk`-Fragment liefert zusätzlich ein `a-check-graph`-Target, das `--print-graph` ([`SPEC-CLI-002`](#spec-cli-002--graph-renderer-vertrag)) über dasselbe digest-gepinnte `A_CHECK_IMAGE` + netzlosen read-only-Mount ausführt (Mermaid→stdout, kein Scan); kein zweiter Digest. Folgt [`AC-FA-DIST-001`](lastenheft.md#ac-fa-dist-001--distribution-image---print-mk-a-checkmk) 0.20.0. |
+| 0.25.0 | 2026-07-25 | `SPEC-RULE-001`: **Rückzug bei unauflösbarem Ziel-Glob** — ein Glob mit Wildcard in der Mitte (`…/application/**/ports/**`) kann als Import-**Ziel** nie matchen; der Kandidat fällt jetzt **nicht mehr** auf das umschließende Glob zurück, sondern gilt als **extern** (fail-open). Der Rückfall erzeugte einen **Fehlbefund** (`wrong-direction` auf eine deklarierte `adapter → ports`-Kante), dessen naheliegende Reparatur ein dauerhaftes Falsch-Negativ nach sich zieht. Rückzug eng gefasst: literaler **Kopf** *und* **Tail-Marker** des anderen Globs müssen im Kandidaten vorkommen, und der Kopf muss mindestens so spezifisch sein wie der gewählte Präfix; ohne Tail-Marker kein Rückzug. Quell-Seite (Datei→Schicht) unberührt; reihenfolge-unabhängig ([AC-QA-01](lastenheft.md#ac-qa-01--determinismus)), kein Lastenheft-Bump ([ADR-0028](../docs/plan/adr/0028-ziel-glob-schattenwurf.md)). |
 | 0.24.0 | 2026-07-25 | `SPEC-CONF-001`/`SPEC-EXTRACT-001`/`SPEC-RULE-001`: neuer Optionalblock **`constructs`** — Roh-Text-Muster mit erlaubter **Zone** (`adapter` als Pfad/Pfad-Liste, `match: substring\|regex`, `composition_root: allow\|forbid`; Schlüssel/Defaults/fail-closed-Fälle deckungsgleich mit `tech`, zusätzlich leeres `pattern` auch bei `substring` → Exit 2) und die Regel **`construct-leak`**: jedes Vorkommen außerhalb aller Zonen ist ein Befund. Auswertung **datei**- statt import-bezogen (außerhalb der Erst-Treffer-Kette) und **scan-weit** inkl. Dateien in keinem `layers`-Glob; gematcht wird die **vorbereitete** (kommentar-bereinigte) Quelle — ausgewiesene Divergenz zur `grep`-Referenz ([AC-QA-02](lastenheft.md#ac-qa-02--hermetik-und-ehrliche-heuristik-grenze)); Treffer tragen den **Eintrags-Index**, nicht den Mustertext. `SPEC-DET-001`: Befund-Totalordnung um **`meldung`** als letzten Schlüssel erweitert (dieselbe Datei/Zeile/Regel kann mehrfach auftreten). `SPEC-CLI-002`: Legende nennt `construct-leak` als Nicht-Kanten-Semantik. Folgt [`AC-FA-RULE-011`](lastenheft.md#ac-fa-rule-011--konstrukt-monopol-regel-construct-leak)/[`AC-FA-CONF-001`](lastenheft.md#ac-fa-conf-001--konfigurationsdatei-a-checkyml) 0.22.0 ([ADR-0027](../docs/plan/adr/0027-constructs-roh-text-monopol.md)). |
 | 0.23.0 | 2026-07-24 | `SPEC-CLI-002`: die Graph-Legende nennt jetzt **alle fünf** kategorischen Regeln — `lateral-slice` und `port-locality` ([AC-FA-RULE-009](lastenheft.md#ac-fa-rule-009--slice-isolation-regel-lateral-slice)/[AC-FA-RULE-010](lastenheft.md#ac-fa-rule-010--port-lokalität-regel-port-locality), 0.22.0) ergänzen `core-impurity`/`lateral-adapter`/`port-direction-mismatch`; reine Legenden-Notiz, keine gezeichnete Kante ([AC-QA-02](lastenheft.md#ac-qa-02--hermetik-und-ehrliche-heuristik-grenze)). Nachzug zu [`AC-FA-CLI-002`](lastenheft.md#ac-fa-cli-002--architektur-graph-ausgabe). |
 | 0.22.0 | 2026-07-24 | `SPEC-RULE-001`: zwei neue kategorische Regeln über das Rollenmodell — **`lateral-slice`** (`app`-Datei importiert `app`-Ziel anderer Slice-Identität; `sliceOf` = längstes `app`-Glob-Literalpräfix; opt-in über per-Slice-Globs) und **`port-locality`** (`app`-Datei importiert `port` außerhalb dessen `portScope` = längstes `port`-Glob-Literalpräfix minus letztem Segment; nur `app`-Importeure). Erst-Treffer-Kette um beide erweitert (`port-locality` vor `wrong-direction`). Voraussetzung: als Import-Ziel auflösbare `app`/`port`-Globs (sauberes literales Präfix; `**/…/**`/`*.go` lösen nicht auf — [AC-QA-02](lastenheft.md#ac-qa-02--hermetik-und-ehrliche-heuristik-grenze)-Grenze). Folgt [`AC-FA-RULE-009`](lastenheft.md#ac-fa-rule-009--slice-isolation-regel-lateral-slice)/[`AC-FA-RULE-010`](lastenheft.md#ac-fa-rule-010--port-lokalität-regel-port-locality) 0.21.0 ([ADR-0026](../docs/plan/adr/0026-hexslice-vertical-slice-regeln.md)). |
