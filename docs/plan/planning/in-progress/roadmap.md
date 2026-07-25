@@ -44,6 +44,17 @@
 > deklariert. Ein **unabhängiges Zweit-Review** hat sechs MEDIUM gefunden (u. a. `v1.3.0`-Reste in
 > `reviewer.md`/`.d-check.yml`, eine widersprüchliche Dateizahl-Evidenz und eine
 > Freshness-Audit-Zuordnung, die Modul 02 ausschließt) — alle vor dem Merge abgearbeitet.
+>
+> **Aktiv (in-progress, 2026-07-25):** [slice-048](slice-048-modul-delta-lesen.md) — **Etappe B**:
+> die vendored Baseline gegenlesen und die Treffer als Findings sammeln. Reine Lesearbeit, kein
+> Vertrag berührt; das Ergebnis schneidet Etappe C und D. Gelesen sind sechs Module (02/04/05/08/11/13),
+> gefunden **zehn** Abweichungen — zwei HIGH: die **Slice-Größen-Regel** (≤ 3 DoD-Punkte; a-check
+> liegt bei 4–7) und der **Modus pro Sub-Area** (Baseline verlangt ihn je berührter Sub-Area,
+> `conventions.md` deklariert einen pauschalen Repo-Modus; die `§8`-Praxis ist zweimal eingeschlafen).
+> Sieben Negativbefunde, darunter die Entwarnung, dass ADR-Form und ADR-Immutabilität konform sind.
+> **B-9/B-10** (Rollen-Übergaben, ungenutzte Carveouts) passen in keine der vier Etappen und brauchen
+> eine eigene Entscheidung.
+>
 > **Sonst kein aktiver Faden offen.** Vertagt/gated: `strict_coverage` (Folge-Slice), Kandidat 2b
 > (Präfix-Allowlist — **Begründung erodiert 2026-07-25**: P2 zerfällt in Kanten + Abdeckungs-Diagnose
 > + Compiler, keiner davon braucht die Beweislast-Umkehr;
