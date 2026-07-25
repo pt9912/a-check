@@ -15,17 +15,23 @@ Strukturregeln (ID-Schemata, Verzeichniskonvention, Adaptionen ggü.
 Baseline, Modus-Deklarationen pro Sub-Area) leben in
 [`harness/conventions.md`](harness/conventions.md).
 
-Das Betriebsregelwerk der adoptierten Baseline in Agenten-Kurzform
-einmal pro Session lesen, bevor der Workflow (§6) startet. Lese-Form:
-das nach Modulen und Grundlagen-Abschnitten aufgeteilte Release-Bundle
-[`lab-regelwerk.zip`](https://github.com/pt9912/ai-harness-course/releases/download/v1.3.0/lab-regelwerk.zip)
-(`v1.3.0`) — so lädt ein Agent einen einzelnen Abschnitt, ohne das
-gesamte Regelwerk im Kontext zu halten. Das Bundle ist eine derivative
-Sicht auf die Quelldatei
-[`agents-regelwerk.md`](https://raw.githubusercontent.com/pt9912/ai-harness-course/v1.3.0/kurs/de/agents-regelwerk.md);
-bei Konflikt gilt die Quelldatei, über ihr die kanonischen Quellen
-(Source Precedence). Der adoptierte Stand steht in
-[`harness/conventions.md`](harness/conventions.md) §Baseline.
+Das Betriebsregelwerk der adoptierten Baseline **einmal pro Session
+lesen**, bevor der Workflow (§6) startet — und zwar **den zur Aufgabe
+gehörenden Abschnitt**, nicht das ganze Bundle. Es liegt **committet
+vendored** im Repo, also netzlos verfügbar:
+[`.harness/baseline/v3.5.2/regelwerk/README.md`](.harness/baseline/v3.5.2/regelwerk/README.md)
+ist der Index (17 Module + drei Grundlagen-Abschnitte, eine Datei je
+Abschnitt); die Ziel-Formen daneben unter
+[`templates/`](.harness/baseline/v3.5.2/templates/README.md). Integrität:
+`.harness/baseline/v3.5.2/SHA256SUMS`.
+
+Das vendored Regelwerk ist ein **didaktik-freier Extrakt** und trägt keine
+eigene Normativität: bei Konflikt gilt der Kurs
+([`v3.5.2`](https://github.com/pt9912/ai-harness-course/tree/v3.5.2)), über
+ihm die kanonischen Quellen (Source Precedence). Der adoptierte Stand und
+die Vendoring-Begründung stehen in
+[`harness/conventions.md`](harness/conventions.md) §Baseline bzw.
+[`MR-006`](harness/conventions.md#mr-006--baseline-committet-vendored-statt-per-url-referenziert).
 
 ## 2. Kanonische Quellen (Source Precedence)
 

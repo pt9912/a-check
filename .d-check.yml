@@ -13,6 +13,10 @@
 # doc-planning), nicht im Default.
 scan:
   roots: ["."]
+  # .harness/baseline/: committet vendored Baseline (MR-006) — externer,
+  # unveraenderter Fremdtext mit eigenen Platzhaltern/Templates; nicht
+  # a-checks Doku, darum nicht gegen a-checks Kennungs-/Linkregeln pruefen.
+  ignore: [".harness/baseline/**"]
 
 modules: [links, anchors, ids, matrix, spans, hostpaths]
 

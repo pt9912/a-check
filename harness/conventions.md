@@ -20,24 +20,31 @@ die kanonische Quelle (Source Precedence, siehe
 ## Baseline
 
 - **Konvention:** AI-Harness-Kurs
-- **Stand:** [`v1.3.0`](https://github.com/pt9912/ai-harness-course/releases/tag/v1.3.0)
-  (Release-Tag, von Beginn an gepinnt)
-- **Datum der Adoption:** 2026-06-20
+- **Stand:** [`v3.5.2`](https://github.com/pt9912/ai-harness-course/releases/tag/v3.5.2)
+  (Release-Tag), **committet vendored** unter
+  [`.harness/baseline/v3.5.2/`](../.harness/baseline/v3.5.2/regelwerk/README.md) —
+  siehe [`MR-006`](#mr-006--baseline-committet-vendored-statt-per-url-referenziert)
+- **Datum der Adoption:** 2026-06-20 (`v1.3.0`); **Stand gehoben auf `v3.5.2` am 2026-07-25**
+  — der Sprung ist in vier Etappen geschnitten, diese ist Etappe A (Vendoring + Stand);
+  die inhaltliche Angleichung von Konventionen, `MR-*`-Bestand und Template-Konformität folgt
+  in den Etappen B–D. Bis dahin gilt: **bei Konflikt zwischen einem `MR-*` dieses Repos und
+  dem `v3.5.2`-Default gewinnt der Default** (Maintainer-Vorgabe 2026-07-25).
 
 ## Adoptierte Konventions-Quellen
 
-- **Extern (Lehrmaterial):**
-  [`ai-harness-course@v1.3.0`](https://github.com/pt9912/ai-harness-course/tree/v1.3.0)
-  (Templates: `lab/templates/`, Konventionen:
-  `kurs/de/grundlagen/konventionen.md`).
-- **Extern (Agenten-Destillat):**
-  [`agents-regelwerk.md`](https://raw.githubusercontent.com/pt9912/ai-harness-course/v1.3.0/kurs/de/agents-regelwerk.md)
-  — operatives Regelwerk für Code-Agenten ohne Didaktik; derivativ,
-  bei Konflikt gilt das Lehrmaterial. Lese-Form: das nach Modulen und
-  Grundlagen-Abschnitten aufgeteilte Release-Bundle
-  [`lab-regelwerk.zip`](https://github.com/pt9912/ai-harness-course/releases/download/v1.3.0/lab-regelwerk.zip)
-  (`v1.3.0`), damit ein Agent einzelne Abschnitte laden kann, ohne das
-  gesamte Regelwerk im Kontext zu halten.
+- **Vendored Baseline (Regelwerk + Templates) — die Lese-Form:**
+  [`.harness/baseline/v3.5.2/regelwerk/README.md`](../.harness/baseline/v3.5.2/regelwerk/README.md)
+  (Index) und
+  [`.harness/baseline/v3.5.2/templates/README.md`](../.harness/baseline/v3.5.2/templates/README.md),
+  materialisiert aus dem self-contained `lab-regelwerk.zip` des Releases; Integrität über
+  `.harness/baseline/v3.5.2/SHA256SUMS`. **Netzlos** auf jedem Checkout, pro Abschnitt eine
+  Datei — ein Agent lädt den benötigten Abschnitt, nie das ganze Bundle
+  ([`MR-006`](#mr-006--baseline-committet-vendored-statt-per-url-referenziert)).
+- **Extern (Lehrmaterial, maßgeblich für den Inhalt):**
+  [`ai-harness-course@v3.5.2`](https://github.com/pt9912/ai-harness-course/tree/v3.5.2)
+  (Kurs unter `kurs/de/`). Das vendored Regelwerk ist ein **didaktik-freier Extrakt** und
+  trägt keine eigene Normativität: bei Konflikt gilt der Kurs, über ihm die kanonischen
+  Quellen dieses Repos (Source Precedence).
 - **Konventions-Vorbild (Harness-Form):**
   [`d-check`](https://github.com/pt9912/d-check) — Schwester-Tool im
   selben Stack; Harness-Form (`AGENTS.md`/`harness/`-Trias),
@@ -185,6 +192,35 @@ die kanonische Quelle (Source Precedence, siehe
   gepinntes `d-check` unterstützt die Schlüssel (verifiziert 2026-07-04 gegen v0.35.0);
   der Pin ist seit slice-019 auf `v0.37.1`, seit slice-036 auf `v0.51.1` gehoben.
 - **Auflösungs-Trigger:** permanent.
+
+### MR-006 — Baseline committet vendored statt per URL referenziert
+
+- **Datum:** 2026-07-25
+- **Geltungsbereich:** [`AGENTS.md`](../AGENTS.md) §1, [§Baseline](#baseline),
+  [`harness/README.md` §Guides](README.md#guides-feedforward-quellen)
+- **Adaption:** Provenienz/Konkretisierung, **keine** inhaltliche Abweichung vom
+  `v3.5.2`-Default — im Gegenteil: sie **stellt ihn her**. Regelwerk *und* Templates der
+  Baseline liegen **committet vendored** unter
+  `.harness/baseline/v3.5.2/{regelwerk,templates}/`, materialisiert aus dem
+  self-contained `lab-regelwerk.zip` des Releases, mit `SHA256SUMS` als
+  Integritätsmanifest. Bis dahin referenzierte dieses Repo die Baseline **nur per URL**
+  (Modell `v1.3.0`).
+- **Begründung:** Weil `regelwerk/` und `templates/` **parallel** vendored liegen, lösen die
+  `../templates/…`-Verweise des Regelwerks („so sieht das Artefakt aus") **netzlos lokal**
+  auf — ein URL-Verweis kann das nicht. Der Nachschlag wird damit reproduzierbar über den
+  `<tag>` und unabhängig von Netz und Login; die Kontext-Hygiene bleibt gewahrt, weil pro
+  Abschnitt eine Datei geladen wird statt des ganzen Bundles. Real-Vorbild in der Flotte:
+  `ai-harness-init` (dortige `MR-007`, vendored `v3.5.1`).
+- **Abgrenzung:** Der vendored Baum ist **externer, unveränderter Fremdtext** mit eigenen
+  Platzhaltern und Template-Kennungen — er ist **nicht** a-checks Doku. Darum nimmt
+  [`.d-check.yml`](../.d-check.yml) ihn per `scan.ignore` aus dem Doku-Gate: sonst prüfte
+  `doc-check` fremde Platzhalter gegen a-checks Kennungs- und Linkregeln.
+- **Nummern-Hinweis:** Das `conventions.template.md` der Baseline führt diese Adaption als
+  `MR-003`. Diese Nummer ist hier belegt
+  ([`MR-003`](#mr-003--source-precedence-ohne-docsuser-rang), aufgelöst 2026-06-21), darum
+  die nächste freie — dieselbe Praxis wie in `ai-harness-init` (dort `MR-007`). Ob die
+  Nummern-Identität mit dem Template hergestellt wird, entscheidet Etappe C der Migration.
+- **Auflösungs-Trigger:** permanent (Provenienz/Baseline-Konformität).
 
 ## Anforderungs-Anlege-Prozess
 
