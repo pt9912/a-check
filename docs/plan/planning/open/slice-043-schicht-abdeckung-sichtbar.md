@@ -101,6 +101,61 @@ tools/gen.go:3: wrong-direction:  -> ui (x/hexagon/ui/y)
 — an der Stelle des Quell-Schicht-Namens steht nichts. Das ist unabhängig von der Zähl-Frage und
 für sich genommen ein klarer, billiger Fix.
 
+## 2b. Aufwandsschätzung für Gestalt (d) — Diagnose **plus** `strict_coverage`
+
+Am Code durchgezählt (Stand `main`), nicht geschätzt aus dem Gefühl.
+
+### Was (d) anfassen muss
+
+| Ort | Änderung | Größe |
+|---|---|---|
+| `spec/lastenheft.md` | **neue Anforderung** (Bereich `CONF` oder `CLI` — der Entscheid steht noch aus) mit drei AK + Out-of-Scope, Versions-Bump **0.23.0**, Historie | ~30 Zeilen, **neue AC-ID** |
+| `docs/plan/adr/` | Folge-ADR: warum **opt-in** statt Default (ein Default-Exit-1 bräche bestehende grüne Gates), warum nur die **Quell**-Seite, wie die Zone gebildet wird | ~90 Zeilen |
+| `spec/spezifikation.md` | [SPEC-CONF-001](../../../../spec/spezifikation.md#spec-conf-001--konfigurationsschema) (neuer Schlüssel), [SPEC-CLI-001](../../../../spec/spezifikation.md#spec-cli-001--aufruf-scan-wurzel-und-exit-codes) (stderr-Ausgabe **und** Exit-Code-Bedingung), [SPEC-DET-001](../../../../spec/spezifikation.md#spec-det-001--determinismus-vertrag) (stabile Zonen-Ordnung) + Historie | ~25 Zeilen, **3 Abschnitte** |
+| `internal/adapter/driven/config` | `strict_coverage` im Schema + Model-Feld. Die Negativ-AK („Nicht-Bool ⇒ Exit 2") fällt **gratis** an — der strikte Decoder scheitert schon am Typ | ~5 Zeilen |
+| `internal/hexagon/core` | Abdeckungs-Ermittlung + Zonen-Bildung, stabil sortiert. Die Daten liegen bereits vor (`FileImports.Layer == ""`), es braucht keine Extraktions-Änderung | ~60 Zeilen |
+| `internal/cli` | Diagnose ausgeben + Exit-Code-Kombination (darf eine 1 nie zu 0 machen) | ~15 Zeilen |
+| Tests | AK-Tests (Diagnose da/nicht da, `strict` ⇒ Exit 1, Nicht-Bool ⇒ Exit 2, Determinismus) + Unit-Tests der Zonen-Bildung | ~120 Zeilen |
+| Handbuch, CHANGELOG, Roadmap | neuer Abschnitt + Glossar + Historie | ~35 Zeilen |
+
+### Was **nicht** nötig ist (geprüft)
+
+- **Keine Port-/Architektur-Änderung.** Die Diagnose muss nicht durch `ReportPort` — die
+  Composition Root schreibt schon heute nach `errw` (`a-check: %v`). Damit entfällt ein
+  `spec/architecture.md`-Bump ([ARC-005](../../../../spec/architecture.md)).
+- **Kein `image-test`-Bruch.** Block (4) vergleicht stdout **und stderr** byte-identisch
+  nativ↔Container; sein Fixture ist aber vollständig gedeckt, es entstünde dort keine Diagnose.
+  Die Byte-Identität hielte ohnehin, solange die Zonen-Ordnung deterministisch ist.
+- **Keine Extraktions-Änderung.** `LayerOf` liefert schon `""` für ungedeckte Dateien.
+
+### Der Vergleich
+
+| | Gestalt (a): nur Diagnose | Gestalt (d): Diagnose + `strict_coverage` |
+|---|---|---|
+| Lastenheft | **kein Bump** möglich (advisory stderr-Zeile ohne Exit-Code-Wechsel = Schärfung des *Wie*, Präzedenz [ADR-0025](../../adr/0025-exclude-verzeichnis-prune.md)) | **neue AC-ID** + Bump 0.23.0 |
+| ADR | ja (eine Entscheidung: Ausweisen statt Verschieben) | ja, mit **zusätzlicher** Opt-in-/Gate-Begründung |
+| Spezifikation | 1 Abschnitt ([SPEC-CLI-001](../../../../spec/spezifikation.md#spec-cli-001--aufruf-scan-wurzel-und-exit-codes)) | 3 Abschnitte |
+| Config-Vertrag | **keiner** | neuer Schlüssel + fail-closed |
+| Exit-Code-Logik | **keine** | ja (Kombination mit dem Befund-Exit) |
+| Code + Tests | ~110 Zeilen | ~200 Zeilen |
+
+**Verhältnis: (d) ist rund das 2–2,5-fache von (a)** — und der Zuwachs ist fast vollständig
+**Vertrags-Maschinerie** (neue AC-ID, Config-Schlüssel mit Validierung, Exit-Code-Semantik, eine
+ADR-Begründung für eine Strenge, die noch niemand angefragt hat), nicht Erkennungs-Logik. Die
+Erkennung selbst ist in beiden Gestalten dieselben ~60 Zeilen.
+
+### Zwei Punkte, die die Schätzung relativieren
+
+1. **Die Zonen-Bildung — der einzige noch offene Entscheid (§3) — verliert mit §2a ihren Anlass.**
+   „Zähler + Zonen" war damit begründet, dass d-migrates `test/`-Baum „hunderte Dateien" umfasse
+   und eine Datei-Liste die Meldung unlesbar mache. Dieser Fall existiert nicht. Bei **zwei**
+   Dateien ist die Datei-Liste die Meldung — kein Aggregations-Entscheid nötig, kein
+   Determinismus-Risiko jenseits einer Pfad-Sortierung.
+2. **`strict_coverage: true` würde m-traces grünes Gate rot machen** (2 Dateien). Das ist als
+   Opt-in zulässig, heißt aber: der Schalter nützt erst, wenn der Konsument die zwei Dateien
+   deklariert oder ausschließt — also **nachdem** ihn die Diagnose darauf gestoßen hat. Die
+   Diagnose ist der Wirkmechanismus; die Strenge ist die Kür danach.
+
 ## 3. Zu entscheiden vor der Umsetzung (ADR-Skizze)
 
 | Frage | Optionen | Erste Neigung |
