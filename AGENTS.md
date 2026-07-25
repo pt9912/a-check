@@ -133,6 +133,7 @@ Aggregat). Ob ein Gate gerade grün ist, sagt die CI (Badge im
 | `make guard-selftest` | Selbsttest des PreToolUse-Command-Guard (Tool-Call-Gate §3.1) |
 | `make regelwerk-check` | **kein Gate** — Wartung der vendored Baseline ([MR-006](harness/conventions.md#mr-006--baseline-committet-vendored-statt-per-url-referenziert)): Integrität gegen `SHA256SUMS` fail-closed; die Freshness-Hälfte bleibt als Netz-Operation ausdrücklich ungeprüft |
 | `make gates` | alle inneren Gates (mandatory vor Handoff) |
+| `make verify-slice-form` | Form der Slice-Pläne ab slice-052: höchstens drei DoD-Punkte, benannte Lerneintrag-Form; ältere grandfathered (bootstrap-aware, slice-052) |
 | `make verify-closure-notes` | Struktur der Closure-Notizen in `done/` (§5): genau eine, ausgefüllt, kein Platzhalter, keine Floskel (slice-050) |
 | `make verify` | **Verifikations-Schicht** (getrennt von `gates`, Regelwerk Modul 11): beantwortet DoD-/Closure-Fragen statt Code-Fragen; vor der „fertig"-Meldung auszuführen |
 | `make image-test` | [AC-FA-DIST-001](spec/lastenheft.md#ac-fa-dist-001--distribution-image---print-mk-a-checkmk) + nativ==Container-Akzeptanz + Fragment-Parität (committete [`a-check.mk`](a-check.mk) == `--print-mk`, slice-034) gegen das gebaute Image |
@@ -157,6 +158,12 @@ Aggregat). Ob ein Gate gerade grün ist, sagt die CI (Badge im
   Architektur-Spec.
 - Slice-Lifecycle (`open → next → in-progress → done`) ist reine
   Datei-Bewegung (`git mv`, siehe §3.3).
+- **Slice-Form:** neue Slices entstehen aus
+  [`docs/plan/planning/slice.template.md`](docs/plan/planning/slice.template.md). Sie trägt die
+  Größen-Regel — **höchstens drei DoD-Punkte und höchstens zwei Schichten**; passt der Slice nicht
+  hinein, wird er **zerlegt, nicht gedehnt** — und verlangt den Lerneintrag in einer von drei
+  **benannten** Formen (geschärfte Regel · neuer Sensor · benannte Spec-Lücke). `make verify`
+  prüft beides ab slice-052; ältere Slices sind grandfathered.
 - **Closure-Pflicht:** ein Slice in `done/` trägt **genau einen**
   Closure-Abschnitt, und der ist ausgefüllt — kein Platzhalter, keine
   Floskel. Inhaltlich mindestens eines von dreien: ein **Lernsignal mit
