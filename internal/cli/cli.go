@@ -120,7 +120,7 @@ func writeCoverageNotice(errw io.Writer, uncovered []string) {
 // aCheckImage is the distributed image reference, digest-pinned to the v0.14.0
 // release (AC-QA-03, ADR-0007): consumers pin the immutable digest, not a
 // moving tag. Pin-Hebung is a conscious commit (ADR-0004).
-const aCheckImage = "ghcr.io/pt9912/a-check@sha256:6425c93a9a4359ef28c4da231a2d1db6f421fdaa8f96877ac89d201827c42d09"
+const aCheckImage = "ghcr.io/pt9912/a-check@sha256:aef28cfe25bb054b1b0eb28420222a45b9f6ce9425b7ffd0f55e6ae56f295b56"
 
 const mkFragment = `# a-check.mk — Architektur-Gate via a-check, zum ` + "`include`" + ` in das
 # Makefile des konsumierenden Repos. Erzeugt von ` + "`a-check --print-mk`" + `.

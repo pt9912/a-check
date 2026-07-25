@@ -6,6 +6,8 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
+## [0.16.0] - 2026-07-25
+
 ### Added
 
 - **Abdeckungs-Diagnose für schichtlose Dateien (`ADR-0029`, `SPEC-CLI-001` 0.26.0, slice-043):** ein
