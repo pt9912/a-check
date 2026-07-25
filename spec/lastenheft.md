@@ -1,6 +1,6 @@
 # Lastenheft — a-check
 
-**Version:** 0.21.0
+**Version:** 0.22.0
 
 **Status:** Draft
 
@@ -301,6 +301,44 @@ Import-Ziel auflösbaren Port-Glob voraus (literales Präfix,
 
 **Out-of-Scope:** Port-Lokalität für **Adapter**-Importeure (Implementierungs-Beziehung); eine erzwungene explizite Scope-Deklaration in der Config (der Scope ist pfad-abgeleitet); Lokalität über Business-Area-Grenzen als eigene Ebene.
 
+### AC-FA-RULE-011 — Konstrukt-Monopol (Regel `construct-leak`)
+
+**Verallgemeinert:** die Scoping-Mechanik von
+[AC-FA-RULE-003](#ac-fa-rule-003--tech-kapselung-regel-tech-leak) (`tech`) von **extrahierten
+Import-Symbolen** auf **Roh-Quelltext**. **Abgrenzung:** die schichtgebundenen
+`forbidden_constructs` aus [AC-FA-RULE-004](#ac-fa-rule-004--port-disziplin-regel-port-impurity)
+(Befund `port-impurity`) bleiben unverändert — anderer Geltungsbereich (Schicht statt Zone),
+anderer Befund.
+
+**Beschreibung:** Ein optionaler `constructs`-Block deklariert Roh-Text-Muster, die **nur** in
+der/den ihnen zugeordneten **Zone(n)** vorkommen dürfen; jedes Vorkommen außerhalb ist ein Befund
+`construct-leak` (Datei, Zeile, Muster, erlaubte Zone[n]) und Exit-Code 1. Damit werden
+Konstrukte prüfbar, die **keine Import-Zeile** sind und die die Import-Extraktion darum
+grundsätzlich nicht sieht — etwa ein Funktionsaufruf (`dlopen(`), der über einen transitiven
+Header oder einen lokalen Prototyp ohne eigenen Include auskommt. Die Zone wird wie bei
+[AC-FA-RULE-003](#ac-fa-rule-003--tech-kapselung-regel-tech-leak) deklariert: `adapter` als
+nicht-leerer Pfad **oder** Pfad-**Liste** (das Muster ist in **jeder** gelisteten Zone erlaubt),
+`match: substring` (Default) **oder** `regex` (RE2), `composition_root: allow` (Default) oder
+`forbid` je Eintrag. Die Prüfung ist **scan-weit**: sie gilt für **jede** gescannte Datei — auch
+für Dateien, die in **keinem** `layers`-Glob liegen —, während `exclude` wie bisher **vor** dem
+Scan greift; die Composition Root ist ausgenommen, sofern der Eintrag nicht `composition_root:
+forbid` deklariert. Gematcht wird auf **derselben kommentar-bereinigten Quell-Vorbereitung** wie
+`forbidden_constructs`: ein Treffer, der ausschließlich in einem Kommentar steht, ist **kein**
+Befund — eine bewusste, ausgewiesene Divergenz zu einer `grep`-Referenz, die Kommentare mitsieht.
+Text-Heuristik, kein Parser: Treffer in String-Literalen bleiben die dokumentierte Grenze
+([AC-QA-02](#ac-qa-02--hermetik-und-ehrliche-heuristik-grenze)).
+
+**Akzeptanzkriterien:**
+
+- **Happy:** Given ein `constructs`-Eintrag (Muster `dlopen`, Zone `adapters/plugin`), when eine Datei in `adapters/io` das Muster enthält, then ein Befund (`construct-leak`) mit Datei, Zeile, Muster und erlaubter Zone und Exit-Code 1; eine Datei **in** der Zone bleibt befundfrei.
+- **Boundary (schichtlose Datei):** Given eine Datei, die einem `languages`-Glob, aber **keinem** `layers`-Glob entspricht, when sie das Muster außerhalb der Zone enthält, then ein Befund — die Roh-Text-Prüfung ist scan-weit, nicht layer-gebunden.
+- **Boundary (Composition Root):** Given das Muster in der deklarierten Composition Root, when der Eintrag `composition_root: forbid` trägt, then ein Befund; mit dem Default `allow` **kein** Befund.
+- **Boundary (Kommentar):** Given ein Treffer, der ausschließlich in einem Kommentar steht, when `a-check` läuft, then **kein** Befund (deklarierte Divergenz zur `grep`-Referenz).
+- **Negative:** Given ein Eintrag mit leerem/fehlendem `pattern` oder `adapter`, unbekanntem `match`-/`composition_root`-Wert oder einer als Regex nicht kompilierbaren `pattern`, when `a-check` lädt, then Exit-Code 2 (fail-closed, Muster der 0.14.0-Härtung von [AC-FA-RULE-003](#ac-fa-rule-003--tech-kapselung-regel-tech-leak)).
+- **Determinismus:** Given zwei `constructs`-Muster, die **dieselbe Zeile** derselben Datei treffen und beide außerhalb ihrer Zone liegen, when `a-check` läuft, then zwei Befunde in stabiler, byte-identisch reproduzierbarer Reihenfolge ([AC-QA-01](#ac-qa-01--determinismus)).
+
+**Out-of-Scope:** kein Parser — String-Literale bleiben Text-Heuristik ([AC-QA-02](#ac-qa-02--hermetik-und-ehrliche-heuristik-grenze)); keine RE2-fremden Features (Lookaround/Backreferences); keine Auto-Inferenz von Zonen; ein **Zonen-Verbot je Schicht** (`forbid_in`: Muster in bestimmten Schichten verboten, anderswo egal) — die Evidenz dafür deckt a-check bereits als Kante ab; eine fail-closed **Import-Allowlist** je Schicht (umgekehrte Beweislast auf Roh-Specifiern) — eigener, weiterhin gated Faden; eine eigene **Graph-Kante** für `constructs` ([AC-FA-CLI-002](#ac-fa-cli-002--architektur-graph-ausgabe) zeigt Nicht-Kanten-Semantik als Legende, nicht als Verbindung).
+
 ### AC-FA-EXTRACT-001 — Sprach-Backends für die Import-Extraktion
 
 **Beschreibung:** Pro Sprache liefert ein Backend die Menge „welche
@@ -429,6 +467,11 @@ matchende Dateien **vor** der Extraktion vollständig vom Scan aus (z. B.
 Test-Dateien wie `**/*_test.go` oder generierter Code — die Glob-Engine der
 `layers` kennt bewusst keine Negation, `exclude` ist das explizite Gegenstück);
 fehlt er, wird jede `languages`-Glob-Datei gescannt (bisheriges Verhalten).
+Ein optionaler **`constructs`**-Block deklariert Roh-Text-Muster mit ihrer erlaubten Zone
+(`{pattern, adapter}` — `adapter` als Pfad oder Pfad-Liste — mit optionalem
+`match: substring|regex` und `composition_root: allow|forbid`, dieselbe Scoping-Mechanik wie
+`tech`, [AC-FA-RULE-011](#ac-fa-rule-011--konstrukt-monopol-regel-construct-leak)); fehlt er,
+entfällt die Regel `construct-leak`.
 Ein optionaler `resolution`-Block deklariert **je Sprache**, wie Import-Symbole auf Schichten
 aufgelöst werden — Map Sprache → `{mode, roots, package_base}`, `mode ∈ {path (Default),
 fixed-root, relative}` (`namespace` reserviert); fehlt er (oder eine Sprache darin), gilt
@@ -445,7 +488,9 @@ unbekanntem `match`-Wert, einer als Regex nicht kompilierbaren `pattern`, einem 
 außerhalb der unterstützten Backends aus [AC-FA-EXTRACT-001](#ac-fa-extract-001--sprach-backends-für-die-import-extraktion),
 einem reservierten/unbekannten `resolution.mode` oder `roots`/`package_base` bei `mode: relative`,
 einer **leeren** `tech.adapter`-Liste oder einem leeren/fehlenden `tech.adapter`, einem `composition_root`-Wert außerhalb
-`{allow, forbid}` oder einem ungültigen `exclude`-Glob).
+`{allow, forbid}`, einem ungültigen `exclude`-Glob oder einem `constructs`-Eintrag mit
+leerem/fehlendem `pattern`/`adapter`, unbekanntem `match`/`composition_root` bzw. nicht
+kompilierbarer Regex).
 Bei `mode: fixed-root` mit **≥ 2** `roots` (geteiltes `package_base`, Paket-Namespaces über
 mehrere Module — Gradle-Multi-Modul, auch **Split-Packages**, bei denen dasselbe Paket real
 über mehrere Modul-Roots verteilt ist) wird der interne FQN **datei-mengen-bewusst** aufgelöst.
@@ -482,6 +527,7 @@ bleibt still extern; datei-tiefe Globs sind eine heuristische Grenze.
 - **Happy (`exclude`):** Given `exclude: ["**/*_test.go"]` und ein Tech-/Schicht-Verstoß **nur** in einer Test-Datei, when `a-check` läuft, then kein Befund (die Datei wird nicht gescannt).
 - **Boundary (`exclude`):** Given eine Config **ohne** `exclude`, when `a-check` läuft, then byte-identische Ausgabe wie bisher.
 - **Negative (neue Schlüssel):** Given eine **leere** `tech.adapter`-Liste, ein leerer/fehlender `tech.adapter`, ein `composition_root` mit einem Wert außerhalb `{allow, forbid}` **oder** ein ungültiger `exclude`-Glob, when `a-check` lädt, then Exit-Code 2.
+- **Negative (`constructs`):** Given einen `constructs`-Eintrag mit leerem/fehlendem `pattern` oder `adapter`, unbekanntem `match`-/`composition_root`-Wert **oder** einer als Regex nicht kompilierbaren `pattern`, when `a-check` lädt, then Exit-Code 2 ([AC-FA-RULE-011](#ac-fa-rule-011--konstrukt-monopol-regel-construct-leak)).
 - **Happy (Multi-Modul disjunkt):** Given `mode: fixed-root` mit ≥ 2 `roots` + geteiltem `package_base` und disjunkten Paket-Sub-Namespaces je Modul (KMP: `mod-a/…/domain`, `mod-b/…/application` mit flachen Modul-Globs), when eine `domain`-Datei `com.ex.application.B` importiert, then löst der FQN datei-mengen-bewusst auf das reale Modul (Schicht `application`) auf und die verbotene Kante wird gemeldet (Exit 1) — **statt** stiller Fehlklassifikation (vor der datei-mengen-bewussten Auflösung: 0 Befunde, `AC-QA-02`).
 - **Happy (Split-Package / Top-Level-Symbol):** Given `mode: fixed-root` mit ≥ 2 `roots`, ein **Split-Package** über zwei Schicht-Roots (`ports`, `adapters`) und ein Kotlin-Top-Level-Symbol, dessen Datei **≠** Symbolname ist (Extension-Fun `asJdbc` bzw. Zweitklasse), **genau in einem** Root deklariert, when eine Datei es importiert, then löst der FQN über die reale Top-Level-Deklaration auf die Schicht dieses Roots auf — **kein Exit 2** (vor der deklarations-bewussten Auflösung: Exit 2). Trägt Root A eine gleichnamige Datei, die das Symbol **nicht** deklariert, und Root B die echte Deklaration, then löst er auf **Root B**.
 - **Boundary (Mehr-Wurzel, gleiche Schicht):** Given denselben FQN real unter ≥ 2 Roots, die **dieselbe** Schicht treffen (`expect`/`actual`), when `a-check` läuft, then löst er sauber auf — kein Exit 2.
@@ -564,3 +610,4 @@ Konsumenten-Repos).
 | 0.19.0 | 2026-07-09 | Neu `AC-FA-CLI-002` (Architektur-Graph-Ausgabe): `a-check --print-graph [pfad]` gibt die deklarierte Architektur aus `.a-check.yml` als **Mermaid-Flowchart** auf stdout aus — ein Knoten je Schicht, eine Kante je `edge`, abgesetzte `allow`-Kante, Farbe nach effektiver Rolle; read-only, deterministisch, **kein Scan**. Ladezeitiger Config-Fehler (inkl. unbekannter Sprache), unbekanntes Flag oder Restargument nach dem Pfad → Exit 2; scanzeitige Resolution-Fehler out-of-scope. Eigenständige Inspektions-CLI, **kein** `--print-*`-Ausbau von `AC-FA-DIST-001`. slice-032. |
 | 0.20.0 | 2026-07-09 | `AC-FA-DIST-001` erweitert: das `--print-mk`-Fragment `a-check.mk` liefert zusätzlich ein **`a-check-graph`**-Target, das `--print-graph` (`AC-FA-CLI-002`) mit demselben digest-gepinnten `A_CHECK_IMAGE` und netzlosem read-only-Mount aufruft — Mermaid nach stdout, kein Scan, Exit 0; neue AK „Happy (Graph-Target)". Convenience für Konsumenten, die bereits `include a-check.mk` fahren. slice-033. |
 | 0.21.0 | 2026-07-24 | Neu **`AC-FA-RULE-009`** (`lateral-slice`: eine `app`-Datei importiert eine fremde Use-Case-Slice — verschiedene `app`-Globs — → kategorischer Befund; opt-in über per-Slice-Globs, ein einziges `app`-Glob inert) und **`AC-FA-RULE-010`** (`port-locality`: eine `app`-Datei importiert einen Port außerhalb dessen pfad-abgeleiteten Scope-Verzeichnisses — use-case-lokal ⊂ business-area ⊂ app-weit — → kategorischer Befund; nur `app`-Importeure, Adapter-Implementierung nicht erfasst). Beide gaten die **Vertical-Slice-Achse** von HexSlice (Doc `hexslice-architecture`); Voraussetzung ist ein als Import-Ziel auflösbarer `app`-/`port`-Glob (literales Präfix, `AC-QA-02`-Grenze). Evidenz: realer HexSlice-Go-Konsument. slice-039. |
+| 0.22.0 | 2026-07-25 | Neu **`AC-FA-RULE-011`** (`construct-leak`: ein optionaler `constructs`-Block hebt die `tech`-Scoping-Mechanik — Zone als Pfad/Pfad-Liste, `match: substring\|regex`, `composition_root: allow\|forbid` — von extrahierten Import-Symbolen auf **Roh-Quelltext**; jedes Vorkommen außerhalb der Zone ist ein Befund, Exit 1). Prüfung **scan-weit** (auch Dateien in keinem `layers`-Glob; `exclude` greift davor), auf derselben kommentar-bereinigten Quelle wie `forbidden_constructs` — ein Treffer nur im Kommentar meldet nicht (ausgewiesene Divergenz zur `grep`-Referenz). `AC-FA-CONF-001` um den Block + fail-closed-Decoding erweitert. Damit werden Konstrukte prüfbar, die keine Import-Zeile sind (Aufruf-Monopol `dlopen`); die schichtgebundenen `forbidden_constructs`/`AC-FA-RULE-004` bleiben unberührt. Evidenz: b-cad-P-Rest (Regel P1), Fixture-vermessen. slice-042 (Kandidat 1 aus slice-025). |

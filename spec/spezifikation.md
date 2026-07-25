@@ -1,6 +1,6 @@
 # Spezifikation — a-check
 
-**Version:** 0.23.0
+**Version:** 0.24.0
 
 **Status:** Draft
 
@@ -59,6 +59,8 @@ markers:                        # Heuristik-Grenze: Allowlist/Marker-Ausnahmen (
   ignore_symbols: ["Queue.h"]
 forbidden_constructs:           # Schicht → verbotene Text-Muster (Port-Disziplin, optional)
   ports: ["impl "]
+constructs:                     # Roh-Text-Monopol: Muster → erlaubte Zone(n) (optional)
+  - {pattern: 'dlopen\s*\(', match: regex, adapter: adapters/plugin, composition_root: forbid}
 resolution:                     # Symbol→Layer-Auflösung je Sprache (optional)
   go:     {mode: path}                          # Default (== weggelassen)
   cpp:    {mode: fixed-root, roots: ["src"]}
@@ -71,7 +73,7 @@ resolution:                     # Symbol→Layer-Auflösung je Sprache (optional
   unbekannter Schlüssel → Exit 2 (die Menge steht **normativ nur** dort, hier bloß verwiesen —
   **kein Duplikat**).
 - **Optionalblöcke:** `adapter_sink`, `tech`, `composition_root`, `allow`,
-  `markers`, `forbidden_constructs`, `resolution`, `exclude`. Fehlt ein Optionalblock, entfällt die
+  `markers`, `forbidden_constructs`, `constructs`, `resolution`, `exclude`. Fehlt ein Optionalblock, entfällt die
   zugehörige Prüfung — nicht still, sondern bewusst nicht-konfiguriert. Die je
   Block präzisierte Anforderung:
   - `adapter_sink` → gemeinsame Senke aus [AC-FA-RULE-002](lastenheft.md#ac-fa-rule-002--keine-lateralen-adapter-kanten-regel-lateral-adapter); fehlt sie, darf **kein** Adapter einen anderen importieren (strengere Auslegung).
@@ -80,8 +82,9 @@ resolution:                     # Symbol→Layer-Auflösung je Sprache (optional
   - `allow` → konfigurativ erlaubte Sonderkante/Re-Export ([AC-FA-RULE-005](lastenheft.md#ac-fa-rule-005--schicht-richtung-regel-wrong-direction) / [AC-FA-RULE-004](lastenheft.md#ac-fa-rule-004--port-disziplin-regel-port-impurity) Boundary).
   - `markers` → dokumentierte Heuristik-Ausnahme ([AC-QA-02](lastenheft.md#ac-qa-02--hermetik-und-ehrliche-heuristik-grenze)).
   - `forbidden_constructs` → schichtbezogen verbotene Konstrukte ([AC-FA-RULE-004](lastenheft.md#ac-fa-rule-004--port-disziplin-regel-port-impurity)); als Text-Muster geprüft (siehe [SPEC-EXTRACT-001](#spec-extract-001--import-extraktion)).
+  - `constructs` → **Roh-Text-Monopol** je Muster ([AC-FA-RULE-011](lastenheft.md#ac-fa-rule-011--konstrukt-monopol-regel-construct-leak)): Liste von Einträgen `{pattern, adapter}` mit optionalem `match: substring|regex` (Default `substring`; `regex` = **RE2**, unverankerter Suchlauf) und optionalem `composition_root: allow|forbid` (Default `allow`). `adapter` ist die **Zone** — ein nicht-leeres Pfad-Fragment **oder** eine Pfad-**Liste**; das Muster ist in **jeder** gelisteten Zone erlaubt, der Zonen-Abgleich ist derselbe Teilstring-Vergleich auf dem Dateipfad wie bei `tech`. Schlüssel, Defaults und fail-closed-Fälle sind mit `tech` **deckungsgleich** — leeres/fehlendes `pattern`, leeres/fehlendes `adapter` (Skalar wie Liste), leerer Listen-Eintrag, unbekanntes `match`, unbekanntes `composition_root` oder eine nicht kompilierbare Regex → Exit 2. Anders als bei `tech` ist auch bei `match: substring` ein **leeres** `pattern` unzulässig (es wäre ein stiller Never-Match). Unterschied zu `tech`: gematcht wird **Roh-Quelltext** statt eines extrahierten Import-Symbols ([SPEC-EXTRACT-001](#spec-extract-001--import-extraktion)); Unterschied zu `forbidden_constructs`: das Scoping ist **zonen**-gebunden und scan-weit statt schicht-gebunden, der Befund heißt `construct-leak` ([SPEC-RULE-001](#spec-rule-001--regel-auswertung)). Fehlt der Block, entfällt `construct-leak`.
   - `resolution` → Symbol→Layer-Auflösung **je Sprache** (Map Sprache → `{mode, roots, package_base}`); `mode ∈ {path (Default), fixed-root, relative}`, `namespace` **reserviert** → Exit 2. `fixed-root`: `roots` vorangestellt; **bei gesetztem `package_base`** (gepunktete Sprache) zusätzlich Präfix-Strip + `.`→`/` (eine Pfad-Sprache wie C++ behält ihre `.`-Endungen); greift nur, wenn der Paket-Baum den Verzeichnis-Baum spiegelt ([AC-QA-02](lastenheft.md#ac-qa-02--hermetik-und-ehrliche-heuristik-grenze)). `relative`: Specifier, die `.`/`..` sind oder mit `./`/`../` beginnen, werden lexikalisch gegen das **Verzeichnis der importierenden Datei** normalisiert (`path.Clean`-Semantik); alle anderen Specifier (Bare-Imports) sowie Wurzel-Escapes (führendes `..` **nach** der Normalisierung) liefern eine **leere** Kandidatenmenge — das Roh-Symbol wird nicht als Pfad-Kandidat weitergereicht (kein Geister-Match, [AC-QA-02](lastenheft.md#ac-qa-02--hermetik-und-ehrliche-heuristik-grenze)); `roots`/`package_base` sind bei `relative` unzulässig → Exit 2; Endungs-Agnostik gilt, solange die `layers`-Glob-Präfixe oberhalb der Dateiebene enden (verzeichnisbasierte Globs). **Mehr-Wurzel-Auflösung (deklarations-bewusst, fail-closed):** `fixed-root` mit **≥ 2** `roots` löst den internen FQN gegen die **real gescannten Dateien** auf. Für ein **deklarations-bewusstes** Backend (Kotlin, [SPEC-EXTRACT-001](#spec-extract-001--import-extraktion)) gilt eine Evidenz-Rangfolge, stärkste zuerst: (1) **deklariert** — eine gescannte Datei im Paket-Verzeichnis `root/pkg/` trägt das Symbol als **Top-Level-Deklaration** (unabhängig vom Dateinamen); (2) **nur-Paketverzeichnis** — `root/pkg/` existiert, aber keine Datei deklariert das Symbol (eine gleichnamige, das Symbol **nicht** deklarierende Datei — und ein **Wildcard-/Paket-Import** `a.b.*` → `a/b/`, der ein ganzes Paket-Verzeichnis trifft — zählt nur hier); (3) **keine** (Phantom, extern). Die echte Deklaration **sticht** damit den bloßen Datei-Namens-Match. Für die übrigen (nicht deklarations-bewussten) Backends gilt unverändert der Datei-Namens-Match (endungs-agnostisch, package==directory: ein Wildcard-/Paket-Import — Symbol mit Trailing-Dot — trifft das Paket-Verzeichnis, ein Symbol dessen Datei mit gestrippter Endung oder sein Paket-Verzeichnis). Die Schicht wird am Pfad des **auflösenden** Kandidaten via [SPEC-RULE-001](#spec-rule-001--regel-auswertung) bestimmt, nicht am Wurzel-Präfix. Es entscheidet die **stärkste vorhandene Evidenzstufe**; auf ihr löst **genau ein** Root (oder alle dieselbe Schicht). ≥ 2 Roots **verschiedener** Schichten auf der stärksten Stufe: auf Stufe **deklariert** (bzw. für nicht deklarations-bewusste Backends: Datei-Match) ⇒ echte Mehrdeutigkeit, **Exit 2 nach dem Scan** (ein FQN muss in höchstens eine Schicht auflösen; `expect`/`actual` same-layer löst sauber); auf Stufe **nur-Paketverzeichnis** (kein Deklarations-Treffer) ⇒ **extern** (fail-open — ohne Deklaration nicht diskriminierbar). Die Stufe *nur-Paketverzeichnis* **löst** damit rückwärtskompatibel, solange sie eindeutig ist; ganz ohne Evidenz ⇒ extern. Grenzen ([AC-QA-02](lastenheft.md#ac-qa-02--hermetik-und-ehrliche-heuristik-grenze)): ein intern gemeintes Symbol ohne Top-Level-Deklaration in gescanntem Code (verschachtelte Klasse, `object`-Member, generiert, Star-Import) bleibt still extern; die Deklarations-Auflösung ist **Kotlin-only** (übrige Backends: package==directory); datei-tiefe Globs sind eine heuristische Grenze. Fehlt der Block (oder eine Sprache) → Import-als-Pfad. Nutzt Sprache **und Pfad** der Quelldatei ([SPEC-RULE-001](#spec-rule-001--regel-auswertung)/[SPEC-EXTRACT-001](#spec-extract-001--import-extraktion)).
-  - `exclude` → **Scan-Scope**: Datei-Globs relativ zur Scan-Wurzel (dieselbe Glob-Semantik wie `layers`/`languages`); eine matchende Datei wird **vor** der Extraktion vollständig vom Scan ausgenommen — sie existiert für keine Prüfung (weder Import- noch `forbidden_constructs`-Erkennung, [SPEC-EXTRACT-001](#spec-extract-001--import-extraktion)). Der Ausschluss wirkt auf den **Verzeichnis-Walk**: ein Verzeichnis, dessen **ganzer Teilbaum** von einem rekursiven Muster (`**` oder `<präfix>/**`) gedeckt ist, wird **beschnitten** (nicht betreten) statt durchlaufen und dann datei-weise gefiltert — der Prune greift **vor** dem Lesen des Verzeichnisinhalts, sodass ein ausgeschlossener Teilbaum auch unlesbar oder sehr groß sein darf, ohne den Scan abzubrechen; er ist beweisbar output-äquivalent zum Datei-Ausschluss (nicht-teilbaum-deckende Muster wie `<dir>/*` prunen **nicht**, [SPEC-EXTRACT-001](#spec-extract-001--import-extraktion)). Ein leerer Glob → Exit 2 (der ungültige Fall der ansonsten totalen Glob-Engine). Fehlt der Block, wird jede `languages`-Glob-Datei gescannt — byte-identisch zum bisherigen Verhalten ([AC-FA-CONF-001](lastenheft.md#ac-fa-conf-001--konfigurationsdatei-a-checkyml)).
+  - `exclude` → **Scan-Scope**: Datei-Globs relativ zur Scan-Wurzel (dieselbe Glob-Semantik wie `layers`/`languages`); eine matchende Datei wird **vor** der Extraktion vollständig vom Scan ausgenommen — sie existiert für keine Prüfung (weder Import- noch `forbidden_constructs`- noch `constructs`-Erkennung, [SPEC-EXTRACT-001](#spec-extract-001--import-extraktion)). Der Ausschluss wirkt auf den **Verzeichnis-Walk**: ein Verzeichnis, dessen **ganzer Teilbaum** von einem rekursiven Muster (`**` oder `<präfix>/**`) gedeckt ist, wird **beschnitten** (nicht betreten) statt durchlaufen und dann datei-weise gefiltert — der Prune greift **vor** dem Lesen des Verzeichnisinhalts, sodass ein ausgeschlossener Teilbaum auch unlesbar oder sehr groß sein darf, ohne den Scan abzubrechen; er ist beweisbar output-äquivalent zum Datei-Ausschluss (nicht-teilbaum-deckende Muster wie `<dir>/*` prunen **nicht**, [SPEC-EXTRACT-001](#spec-extract-001--import-extraktion)). Ein leerer Glob → Exit 2 (der ungültige Fall der ansonsten totalen Glob-Engine). Fehlt der Block, wird jede `languages`-Glob-Datei gescannt — byte-identisch zum bisherigen Verhalten ([AC-FA-CONF-001](lastenheft.md#ac-fa-conf-001--konfigurationsdatei-a-checkyml)).
 - **Schicht-Rollen** ([AC-FA-RULE-006](lastenheft.md#ac-fa-rule-006--schicht-rollen-generische-regel-anwendung)): ein `layers`-Eintrag ist **entweder** eine Glob-Liste (`name: [globs]`) **oder** ein Objekt `{globs: [...], role: domain|app|port|adapter, direction: driving|driven}` (`direction` optional). Fehlt `role`, wird es aus konventionellen Namen abgeleitet (`core`→`domain`, `ports`→`port`, `adapters`→`adapter`, `application`/`app`→`app`); `role:` hat Vorrang. Die Reinheits-Regeln (`core-impurity`/`app-impurity`/`port-impurity`/`lateral-adapter`) greifen über die Rolle, nicht den Namen — fremd benannte Schichten sind damit voll prüfbar. Optional trägt eine `port`-/`adapter`-Schicht zusätzlich `direction` ∈ {`driving`, `driven`} (**orthogonal** zur Rolle, [AC-FA-RULE-008](lastenheft.md#ac-fa-rule-008--driving-driven-port-richtung-regel-port-direction-mismatch)); die Connectivity-Regel `port-direction-mismatch` prüft, dass ein Adapter nur Ports **seiner** Richtung importiert — ohne `direction` keine Prüfung.
 - Kein Include/Vererbung zwischen Config-Dateien (Lastenheft-Out-of-Scope).
 
@@ -110,7 +113,7 @@ gewählte Backend die Menge der importierten Symbole/Module:
      Die Scan-Wurzel selbst wird nie geprunet.
    - Eine **Datei**, die einem `exclude`-Glob entspricht, wird **vor** der
      Extraktion vollständig ausgenommen — sie wird nicht gelesen und liefert
-     weder Import- noch `forbidden_constructs`-Treffer.
+     weder Import- noch `forbidden_constructs`- noch `constructs`-Treffer.
    Der Prune greift **vor** dem Lesen des Verzeichnisinhalts: ein unlesbarer
    oder sehr großer ausgeschlossener Teilbaum bricht den Scan nicht ab. Ein
    **nicht** ausgeschlossener unlesbarer Ordner bricht dagegen weiterhin
@@ -205,6 +208,23 @@ Schicht — dieselbe Muster-Mechanik, anderer Treffertyp (Sprachkonstrukt statt
 Import); sie speist die `port-impurity`-Regel
 ([SPEC-RULE-001](#spec-rule-001--regel-auswertung)).
 
+**Konstrukt-Treffer (`constructs`).** Ebenfalls text-heuristisch, aber **zonen**-statt
+schicht-gebunden ([AC-FA-RULE-011](lastenheft.md#ac-fa-rule-011--konstrukt-monopol-regel-construct-leak)):
+je gescannter Datei wird **jeder** `constructs`-Eintrag zeilenweise gegen die **vorbereitete**
+Quelle geprüft — dieselbe Vorbereitung wie für Importe und `forbidden_constructs` (Schritt 4:
+Kommentare entfernt, Zeilennummern erhalten; Python nicht C-gestrippt). Ein Treffer, der
+ausschließlich in einem Kommentar steht, entsteht damit nicht — eine bewusste, ausgewiesene
+Divergenz zu einer `grep`-Referenz ([AC-QA-02](lastenheft.md#ac-qa-02--hermetik-und-ehrliche-heuristik-grenze));
+String-Literale bleiben die bestehende Grenze. Die Prüfung läuft über **alle** gescannten Dateien,
+auch über solche in **keinem** `layers`-Glob (das Monopol ist eine Aussage über den Baum, nicht
+über eine Schicht); `exclude` greift wie bisher davor. Je Treffer werden der **Index des
+`constructs`-Eintrags** und die Zeile geliefert — nicht bloß der Mustertext, damit die
+Regel-Auswertung die Zone am Eintrag selbst entscheidet und zwei Einträge mit gleichem Muster,
+aber verschiedenen Zonen nicht verwechselt werden können. Ergebnis je Datei: dedupliziert je
+(Eintrag, Zeile) und stabil sortiert nach (Eintrag, Zeile)
+([SPEC-DET-001](#spec-det-001--determinismus-vertrag)). Die Treffer speisen die
+`construct-leak`-Regel ([SPEC-RULE-001](#spec-rule-001--regel-auswertung)).
+
 ## SPEC-RULE-001 — Regel-Auswertung
 
 Präzisiert die sieben Hexagon-Regeln `AC-FA-RULE-*`; ihre Anwendung über
@@ -225,6 +245,7 @@ Meldung); ≥ 1 Befund ⇒ Exit-Code 1.
 | `port-direction-mismatch` | Datei mit Rolle `adapter` und Richtung `direction` X importiert eine `port`-Rolle mit Richtung Y (X ≠ Y, **beide gesetzt**) — ein Treiber-Adapter spricht nur `driving`-Ports, ein getriebener nur `driven`-Ports; **orthogonal** zur Rolle, ohne `direction` keine Prüfung. **Kategorisch** (nicht über `edges`/`allow` aufhebbar, wie `lateral-adapter`) | [AC-FA-RULE-008](lastenheft.md#ac-fa-rule-008--driving-driven-port-richtung-regel-port-direction-mismatch) |
 | `port-locality` | Datei mit Rolle `app` importiert ein **im Application-Baum geschachteltes** `port`-Ziel, dessen **Scope-Verzeichnis** ihren Pfad nicht enthält — `portScope ≠ "" ∧ appTreeContains(portScope) ∧ segIndex(quelle, portScope) < 0`, wobei `portScope(k)` = das **längste `port`-Rollen-Glob-Literalpräfix**, das `k` matcht, **minus seinem letzten Pfad-Segment** (Port-Ordner-Marker, typisch `ports`): use-case-lokal (`…/createorder`) ⊂ business-area (`…/order`) ⊂ app-weit (`…/application`). `appTreeContains(s)` = `s` ist Vorfahr eines `app`-Glob-Präfixes (der Port liegt *im* App-Baum). **Geschwister-Ports** (klassisch, `…/ports` neben `…/services`) → `appTreeContains` false → **inert**. **Nur `app`-Importeure** (ein Adapter, der einen Port implementiert, ist nicht erfasst). **Kategorisch** (nicht über `edges`/`allow` aufhebbar) | [AC-FA-RULE-010](lastenheft.md#ac-fa-rule-010--port-lokalität-regel-port-locality) |
 | `wrong-direction` | ein Import quert eine Schicht-Kante entgegen `edges`/`allow` | [AC-FA-RULE-005](lastenheft.md#ac-fa-rule-005--schicht-richtung-regel-wrong-direction) |
+| `construct-leak` | ein `constructs`-Muster (Substring oder RE2, je `match`) erscheint im **Roh-Quelltext** einer Datei außerhalb **aller** seiner Zonen (`adapter` als Pfad oder Pfad-Liste) — und außerhalb `composition_root`, sofern der Eintrag nicht `composition_root: forbid` deklariert. **Nicht** import-, sondern **datei**-bezogen: die Regel wertet die Konstrukt-Treffer je Datei aus (wie der konstrukt-basierte Zweig von `port-impurity`) und gilt **scan-weit**, auch für Dateien in **keinem** `layers`-Glob | [AC-FA-RULE-011](lastenheft.md#ac-fa-rule-011--konstrukt-monopol-regel-construct-leak) |
 
 Die Schicht einer Datei ergibt sich aus dem **spezifischsten** passenden `layers`-Glob
 (längster **literaler** Präfix vor dem ersten Wildcard-Segment, konsistent mit der
@@ -265,13 +286,18 @@ Pro (Datei, Import) gilt **deterministische Erst-Treffer-Reihenfolge** in der
 Tabellen-Reihenfolge (`core-impurity` → `app-impurity` → `port-impurity` →
 `lateral-adapter` → `lateral-slice` → `tech-leak` → `port-direction-mismatch` →
 `port-locality` → `wrong-direction`); ein Import erzeugt höchstens einen Befund.
+**`construct-leak` steht außerhalb dieser Kette**: es bewertet keine Importe, sondern die
+Roh-Text-Treffer einer Datei ([SPEC-EXTRACT-001](#spec-extract-001--import-extraktion)) — je
+Treffer außerhalb seiner Zone genau ein Befund. Treffen zwei `constructs`-Muster **dieselbe
+Zeile** und liegen beide außerhalb ihrer Zone, entstehen **zwei** Befunde; ihre Reihenfolge ist
+über die Totalordnung aus [SPEC-DET-001](#spec-det-001--determinismus-vertrag) festgelegt.
 `port-locality` steht **vor** `wrong-direction`, damit eine erlaubte `app → port`-Kante die
 Lokalitäts-Verletzung nicht maskiert (kategorisch).
 Dateien unter `composition_root` sind als Verdrahtungspunkt von **allen**
 Schicht-Regeln ausgenommen — sie importieren bestimmungsgemäß quer über die
-Schichten — und von `tech-leak` **je `tech`-Eintrag**: bei
+Schichten — und von `tech-leak` bzw. `construct-leak` **je Eintrag**: bei
 `composition_root: allow` (Default) wie bisher, bei `composition_root: forbid`
-prüft `tech-leak` den Eintrag auch dort weiter
+prüft die jeweilige Regel den Eintrag auch dort weiter
 ([SPEC-CONF-001](#spec-conf-001--konfigurationsschema)); die
 Schicht-Regel-Ausnahme bleibt davon unberührt. `exclude`-Dateien erreichen die
 Regel-Auswertung nie (Scan-Scope, [SPEC-EXTRACT-001](#spec-extract-001--import-extraktion)).
@@ -332,6 +358,9 @@ Mermaid-`flowchart`-String ab; die Composition Root schreibt ihn nach stdout.
   Subgraph-Grenzen queren.
 - **Legende:** die impliziten, kategorischen Constraints (`core-impurity`, `lateral-adapter`,
   `lateral-slice`, `port-direction-mismatch`, `port-locality`) erscheinen als Legende/Notiz, **nicht** als gezeichnete Kante
+  — ebenso das Roh-Text-Monopol `construct-leak`
+  ([AC-FA-RULE-011](lastenheft.md#ac-fa-rule-011--konstrukt-monopol-regel-construct-leak)), das
+  gar keine Schicht-Kante hat: die Legende ist der **normative Ort** für Nicht-Kanten-Semantik
   ([AC-QA-02](lastenheft.md#ac-qa-02--hermetik-und-ehrliche-heuristik-grenze): ehrliche Ausgabe, keine
   Semantik-Behauptung über den realen Code).
 - **Escaping-Vertrag:** jeder nutzergesteuerte Text (Layer-Namen, `composition_root`-Globs,
@@ -351,7 +380,11 @@ Präzisiert [AC-QA-01](lastenheft.md#ac-qa-01--determinismus).
 
 Identische Eingabe (Repo-Stand + `.a-check.yml` + Image-Digest) ⇒
 **byte-identische** Ausgabe und identischer Exit-Code. Befunde werden nach
-einer Totalordnung sortiert: `pfad`, dann `zeile`, dann `regelname`.
+einer Totalordnung sortiert: `pfad`, dann `zeile`, dann `regelname`, dann
+**`meldung`**. Der letzte Schlüssel macht die Ordnung erst total: dieselbe Datei/Zeile
+kann mehrere Befunde **derselben** Regel tragen (zwei `constructs`-Muster oder zwei
+`forbidden_constructs`-Muster in einer Zeile), und ohne ihn hinge deren Reihenfolge an der
+internen Eingabe-Ordnung.
 Extraktions-Symbolmengen werden stabil sortiert. Keine Zeitstempel,
 Zufalls- oder locale-abhängige Reihenfolgen in der Ausgabe.
 
@@ -404,6 +437,7 @@ und [AC-QA-03](lastenheft.md#ac-qa-03--reproduzierbarkeit).
 | 0.18.0 | 2026-07-06 | `SPEC-CONF-001`/`SPEC-EXTRACT-001`: **deklarations-bewusste Mehr-Wurzel-Auflösung** (Stufe 3) — bei `fixed-root` mit ≥ 2 `roots` gewinnt für ein deklarations-bewusstes Backend (Kotlin) die **reale Top-Level-Deklaration** über den bloßen Datei-Namens-Match (Evidenz-Rangfolge deklariert > Paketverzeichnis > keine); genau ein deklarierender Root ⇒ eindeutig, ≥ 2 deklarierende Roots verschiedener Schichten ⇒ Exit 2, kein Treffer ⇒ extern (fail-open). `SPEC-EXTRACT-001`: **Kotlin** liefert zusätzlich Top-Level-Deklarationen (`fun`/Extension/`val`/`class`/`object`/`interface`/`typealias`), übrige Backends no-op (leeres Set). Folgt [`AC-FA-CONF-001`](lastenheft.md#ac-fa-conf-001--konfigurationsdatei-a-checkyml)/[`AC-FA-EXTRACT-001`](lastenheft.md#ac-fa-extract-001--sprach-backends-für-die-import-extraktion) 0.18.0. |
 | 0.19.0 | 2026-07-09 | Neu `SPEC-CLI-002` (Graph-Renderer-Vertrag: Config-Modell→Mermaid **pur**; stabile interne IDs + escaptes Label je nutzergesteuertem Text; Kante je `edges`, abgesetzte `allow`-Kante; Dangling-/Composition-Root-/Adapter-Sink-Sonderknoten; `classDef` je effektiver Rolle via geteiltem Resolver; `direction`-Subgraphs; implizite Regeln als Legende; Escaping-Vertrag; Determinismus-Ordnung; `tech` v1 deferred). `SPEC-CLI-001` um den no-scan-`--print-graph`-Modus präzisiert (load-time/config-validation-Parität inkl. unbekannter Sprache; Restargument nach dem Pfad → Exit 2; **keine** scanzeitige Fehler-Parität). Folgt [`AC-FA-CLI-002`](lastenheft.md#ac-fa-cli-002--architektur-graph-ausgabe) 0.19.0. |
 | 0.20.0 | 2026-07-09 | `SPEC-DIST-001`: das `--print-mk`-Fragment liefert zusätzlich ein `a-check-graph`-Target, das `--print-graph` ([`SPEC-CLI-002`](#spec-cli-002--graph-renderer-vertrag)) über dasselbe digest-gepinnte `A_CHECK_IMAGE` + netzlosen read-only-Mount ausführt (Mermaid→stdout, kein Scan); kein zweiter Digest. Folgt [`AC-FA-DIST-001`](lastenheft.md#ac-fa-dist-001--distribution-image---print-mk-a-checkmk) 0.20.0. |
+| 0.24.0 | 2026-07-25 | `SPEC-CONF-001`/`SPEC-EXTRACT-001`/`SPEC-RULE-001`: neuer Optionalblock **`constructs`** — Roh-Text-Muster mit erlaubter **Zone** (`adapter` als Pfad/Pfad-Liste, `match: substring\|regex`, `composition_root: allow\|forbid`; Schlüssel/Defaults/fail-closed-Fälle deckungsgleich mit `tech`, zusätzlich leeres `pattern` auch bei `substring` → Exit 2) und die Regel **`construct-leak`**: jedes Vorkommen außerhalb aller Zonen ist ein Befund. Auswertung **datei**- statt import-bezogen (außerhalb der Erst-Treffer-Kette) und **scan-weit** inkl. Dateien in keinem `layers`-Glob; gematcht wird die **vorbereitete** (kommentar-bereinigte) Quelle — ausgewiesene Divergenz zur `grep`-Referenz ([AC-QA-02](lastenheft.md#ac-qa-02--hermetik-und-ehrliche-heuristik-grenze)); Treffer tragen den **Eintrags-Index**, nicht den Mustertext. `SPEC-DET-001`: Befund-Totalordnung um **`meldung`** als letzten Schlüssel erweitert (dieselbe Datei/Zeile/Regel kann mehrfach auftreten). `SPEC-CLI-002`: Legende nennt `construct-leak` als Nicht-Kanten-Semantik. Folgt [`AC-FA-RULE-011`](lastenheft.md#ac-fa-rule-011--konstrukt-monopol-regel-construct-leak)/[`AC-FA-CONF-001`](lastenheft.md#ac-fa-conf-001--konfigurationsdatei-a-checkyml) 0.22.0 ([ADR-0027](../docs/plan/adr/0027-constructs-roh-text-monopol.md)). |
 | 0.23.0 | 2026-07-24 | `SPEC-CLI-002`: die Graph-Legende nennt jetzt **alle fünf** kategorischen Regeln — `lateral-slice` und `port-locality` ([AC-FA-RULE-009](lastenheft.md#ac-fa-rule-009--slice-isolation-regel-lateral-slice)/[AC-FA-RULE-010](lastenheft.md#ac-fa-rule-010--port-lokalität-regel-port-locality), 0.22.0) ergänzen `core-impurity`/`lateral-adapter`/`port-direction-mismatch`; reine Legenden-Notiz, keine gezeichnete Kante ([AC-QA-02](lastenheft.md#ac-qa-02--hermetik-und-ehrliche-heuristik-grenze)). Nachzug zu [`AC-FA-CLI-002`](lastenheft.md#ac-fa-cli-002--architektur-graph-ausgabe). |
 | 0.22.0 | 2026-07-24 | `SPEC-RULE-001`: zwei neue kategorische Regeln über das Rollenmodell — **`lateral-slice`** (`app`-Datei importiert `app`-Ziel anderer Slice-Identität; `sliceOf` = längstes `app`-Glob-Literalpräfix; opt-in über per-Slice-Globs) und **`port-locality`** (`app`-Datei importiert `port` außerhalb dessen `portScope` = längstes `port`-Glob-Literalpräfix minus letztem Segment; nur `app`-Importeure). Erst-Treffer-Kette um beide erweitert (`port-locality` vor `wrong-direction`). Voraussetzung: als Import-Ziel auflösbare `app`/`port`-Globs (sauberes literales Präfix; `**/…/**`/`*.go` lösen nicht auf — [AC-QA-02](lastenheft.md#ac-qa-02--hermetik-und-ehrliche-heuristik-grenze)-Grenze). Folgt [`AC-FA-RULE-009`](lastenheft.md#ac-fa-rule-009--slice-isolation-regel-lateral-slice)/[`AC-FA-RULE-010`](lastenheft.md#ac-fa-rule-010--port-lokalität-regel-port-locality) 0.21.0 ([ADR-0026](../docs/plan/adr/0026-hexslice-vertical-slice-regeln.md)). |
 | 0.21.0 | 2026-07-23 | `SPEC-EXTRACT-001`/`SPEC-CONF-001`: **`exclude` beschneidet den Verzeichnis-Walk** (Prune), nicht nur die Datei-Extraktion — ein Verzeichnis wird nicht betreten, wenn ein **rekursives Teilbaum-Muster** (`**` oder `<präfix>/**`) seinen ganzen Teilbaum deckt (`.security/**`, `**/node_modules/**`, `dist/**`); nicht-teilbaum-deckende Muster (`<dir>/*`, `<dir>/`, Datei-Globs) prunen **nicht** (sonst False-Green), der Prune ist so beweisbar output-äquivalent zum Datei-Ausschluss; Scan-Wurzel nie geprunet. Prune **vor** dem Lesen des Verzeichnisinhalts ⇒ ein unlesbarer/sehr großer ausgeschlossener Teilbaum bricht den Scan nicht mehr ab; ein **nicht** ausgeschlossener unlesbarer Ordner bleibt fail-closed ([`AC-QA-02`](lastenheft.md#ac-qa-02--hermetik-und-ehrliche-heuristik-grenze)). Realisiert die Verzeichnis-Absicht von [ADR-0018](../docs/plan/adr/0018-exclude-scan-scope.md) ([ADR-0025](../docs/plan/adr/0025-exclude-verzeichnis-prune.md)). Folgt [`AC-FA-CONF-001`](lastenheft.md#ac-fa-conf-001--konfigurationsdatei-a-checkyml) 0.20.0 (kein Lastenheft-Bump — Schärfung des Wie). |
