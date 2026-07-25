@@ -93,4 +93,28 @@ nachgetragene Historie wäre schlimmer als die Lücke.
 
 ## 6. Closure-Notiz
 
-_(beim Abschluss.)_
+**Geliefert:** `make verify` als eigene Schicht neben `gates`, die Closure-Pflicht als normativer
+Anker in [`AGENTS.md`](../../../../AGENTS.md) §5, der übersetzte
+[`closure-note-reviewer`](../../../../.harness/skills/closure-note-reviewer.md)-Skill und sechs
+behobene Befunde im Bestand.
+
+**Lerneintrag — Form: geschärfte Regel.**
+> **Ein neuer Sensor über einem gewachsenen Bestand meldet zuerst sich selbst.** Von vier
+> Befund-Wellen waren drei Fehlalarme des eigenen Musters — die Bestandsform hieß anders, als ich
+> annahm (`## N. Closure`, nicht `Closure-Notiz`), und ein Nachbar-Abschnitt (`Closure-Trigger`)
+> sah aus wie eine Doppelung. Wer beim ersten roten Lauf den Bestand korrigiert statt das Muster,
+> schreibt die Realität auf den Sensor um. Prüfregel: *jede Befundklasse eines neuen Sensors
+> einmal einzeln ansehen, bevor irgendetwas am Prüfgegenstand geändert wird* — hier hätte die
+> Abkürzung fünf Slices fälschlich „repariert".
+
+**Zwei beobachtbare Closure-Kriterien:**
+
+1. `make verify` und `make gates` grün auf demselben Stand (je Exit 0) — belegt.
+2. Alle 45 Slices in `done/` tragen genau einen ausgefüllten Closure-Abschnitt; jeder der sechs
+   Nachträge ist im Ziel-Slice als Nachtrag gekennzeichnet und aus dem Repo-Stand belegt.
+
+**Benannte Spec-Lücke (zweiter Lerneintrag):** die Closure-Pflicht war 45 Slices lang gelebte
+Praxis ohne Regel. Solche stillen Setzungen fallen erst auf, wenn jemand einen Sensor dafür bauen
+will — der Sensor ist damit auch ein Aufdecker fehlender Normen, nicht nur ihr Vollstrecker.
+
+**Folge-Slice:** [slice-051](../in-progress/slice-051-workflow-und-freigabe.md) (Etappe E, 3/3).
