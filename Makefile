@@ -85,6 +85,9 @@ verify-slice-form: ## Form der Slice-Plaene ab slice-052 (max. 3 DoD-Punkte, ben
 verify-ac-form: ## Form neuer Akzeptanzkriterien (Happy/Boundary/Negative + Out-of-Scope); die 19 bestehenden grandfathered.
 	@bash tools/verify-ac-form.sh
 
+verify-slice-links: ## Verweise wandernder Slices ueberleben den Lifecycle-Wechsel (SL-002); done/ ist Endzustand und ausgenommen.
+	@bash tools/verify-slice-links.sh
+
 # Die drei Teil-Sensoren laufen als Sequenz im selben Rezept, NICHT als
 # Prerequisites: make bricht sonst beim ersten roten Target ab, und wer zwei
 # Verstoesse in verschiedenen Bereichen hat, sieht nur den ersten (Review
@@ -96,6 +99,7 @@ verify: ## Verifikations-Schicht: DoD-/Closure-Fragen (vor der "fertig"-Meldung;
 	bash tools/verify-closure-notes.sh || fail=1; \
 	bash tools/verify-slice-form.sh    || fail=1; \
 	bash tools/verify-ac-form.sh       || fail=1; \
+	bash tools/verify-slice-links.sh   || fail=1; \
 	if [ "$$fail" -ne 0 ]; then \
 	  echo "[verify] FAIL — mindestens eine Verifikations-Frage ist offen; alle Befunde stehen oben." >&2; \
 	  exit 1; \

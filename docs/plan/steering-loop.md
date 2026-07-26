@@ -68,8 +68,16 @@ ohne Ort nicht überlebt.
      **vor** dem `git mv` und nennt die zustandsunabhängige Form (`../in-progress/roadmap.md`),
      die aus beiden Verzeichnissen auflöst. Inferential feedforward — es ordnet an, es erzwingt
      nicht.
-  2. *Sensor:* **weiterhin offen.** Eine Prüfung, die vor dem `git mv` meldet, welche Verweise
-     brechen werden; gehört zu `make verify`.
+  2. *Sensor:* **geliefert** (slice-060) — `make verify-slice-links`, eingehängt in `make verify`.
+     Er sagt nicht voraus, wohin verschoben wird, sondern prüft eine **Invariante**: ein relativer
+     Verweis muss aus **jedem** Lifecycle-Verzeichnis auflösen. Damit fällt auch das *Anlegen* aus
+     einer Vorlage anderer Verzeichnistiefe darunter — der Fall, der den achten und neunten Vorfall
+     verursachte und den ein reiner `git mv`-Wächter nie gesehen hätte. Belegt durch beide
+     Richtungen: ein präfixloser `roadmap.md`-Verweis macht ihn rot, die Form
+     `../in-progress/roadmap.md` grün.
+- **Damit ist SL-002 in beiden Quadranten durchgesetzt** (`modul-09`): Guide in Schritt 9 des
+  Workflow-Skeletts, Sensor in `make verify`. Der Eintrag bleibt stehen — gelöscht wird nichts,
+  ein leerer Steering-Loop bedeutet „nie beobachtet", nicht „nichts passiert".
 - **Zwei Vorfälle nach dem Guide** (2026-07-26, in slice-058): das Anlegen aus einer Vorlage
   anderer Verzeichnistiefe erzeugte acht gebrochene Verweise, das Schreiben der Closure-Notiz
   über genau diesen Befund zwei weitere — beide Male von `doc-check` **vor** dem Commit gefangen.
