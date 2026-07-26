@@ -26,6 +26,12 @@ Eine ADR schärft die Spezifikation, **nie** das Lastenheft.
 ## Während der Arbeit
 
 5. Engsten nützlichen Sensor laufen lassen (eine Testdatei, ein Target) — nicht gleich `gates`.
+
+   **Baust du selbst einen Sensor über Markdown?** Dann blende Zitat-Kontexte von Anfang an aus —
+   Inline-Code, Code-Blöcke, Argument-Strings. Text, der *über* ein Muster spricht, ist nicht das
+   Muster. Dreimal in Folge hat ein neuer Sensor sonst im ersten Lauf sein eigenes Umfeld gemeldet
+   ([`SL-004`](../../docs/plan/steering-loop.md)). Eine Fixture mit **zitiertem** Muster gehört in
+   den Selbsttest: sie trifft das Muster beinahe und prüft es damit wirklich.
 6. Repo-weiter Gate-Lauf vor dem Handoff:
 
    ```sh
@@ -69,6 +75,13 @@ Eine ADR schärft die Spezifikation, **nie** das Lastenheft.
 
 10. Berichten: welche Sensoren liefen, mit echter Ausgabe, und welche Risiken offen bleiben.
     **Keine Erfolgsmeldung ohne Gate-Ausgabe.**
+
+    **Der Commit-Betreff nennt, was im Diff steht.** Wandert Substanz eines anderen Slice mit, ist
+    das ein eigener Commit mit dessen ID — nicht ein Anhängsel an den gerade offenen. `trace-check`
+    fängt das nicht: es prüft, *ob* eine ID genannt ist, nicht ob sie die Arbeit bezeichnet.
+    Dreimal ist so die Substanz eines Folge-Slice in einem `docs(planning)`-Commit des Vorgängers
+    gelandet ([`SL-003`](../../docs/plan/steering-loop.md)); die Arbeit war jedes Mal in Ordnung,
+    verloren ging die Auffindbarkeit.
 
 ## Hard Rules, die nie gebrochen werden
 

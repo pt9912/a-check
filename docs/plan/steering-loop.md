@@ -92,6 +92,71 @@ ohne Ort nicht überlebt.
   seine Erfassung, wenn sie ein eigenes Werkzeug braucht. Der Eintrag hält die Zählung fest,
   damit die Lücke nicht ein achtes Mal als Einzelfall durchgeht.
 
+## SL-003 — Commit-Betreff bezeichnet nicht die enthaltene Arbeit
+
+- **Beobachtung:** Ein Commit trägt substanzielle Arbeit unter einem Betreff, der sie nicht nennt —
+  typischerweise wandert die Substanz eines Folge-Slice in einen `docs(planning)`- oder
+  `fix(planning)`-Commit des Vorgängers. Spiegelbildlich nennen `feat`-Commits Substanz, die sie
+  nicht enthalten. `make trace-check` ist dabei **grün**: eine ID ist genannt, sie bezeichnet nur
+  nicht die geleistete Arbeit. Damit wird `git log -S` und die Rückverfolgung „welcher Slice hat
+  das gebracht" unzuverlässig — dieselbe Begründung, die hinter Hard Rule
+  [`AGENTS.md`](../../AGENTS.md) §3.3 steht.
+- **Vorfälle:** **drei** am 2026-07-25, alle in der `v3.5.2`-Migrations-Kette:
+  - `615e37f` „docs(planning): slice-049 Closure" — **408** Zeilen, liefert die Substanz von
+    slice-050 (`tools/verify-closure-notes.sh`, `make verify`, `closure-note-reviewer.md`, das
+    slice-050-Plandokument).
+  - `f57289d` „fix(planning): slice-050 Roadmap-Link nach dem Verschieben" — **200** Zeilen,
+    liefert die Substanz von slice-051 (`.claude/commands/slice.md`, Freigabe-Checkliste in
+    `releasing.md`, das slice-051-Plandokument).
+  - `d436da9` „docs(planning): slice-052 Folge-Slice-Link auf den Ziel-Pfad" — **115** Zeilen,
+    liefert die Substanz von slice-053 (Lifecycle und WIP-Limit in `AGENTS.md`,
+    `next/README.md`).
+
+  Dazu zwei spiegelbildliche Fälle: `0f868d7` („feat(harness): Verifikations-Schicht `make verify`
+  + Closure-Note-Reviewer") ändert **2** Zeilen und ist ein Link-Fix; `4f9fa5c` („feat(harness):
+  Lifecycle vollstaendig, next/ wiederhergestellt, Drift-Log") liefert von drei genannten Dingen
+  nur das Drift-Log. Belegt durch einen Abgleich **aller 36** Commits der Kette; die übrigen 32
+  sind konsistent.
+- **Klasse:** Schwelle überschritten (3×) ⇒ Harness-Lücke.
+- **Antwort (Guide, slice-061):** Schritt 10 des Workflow-Skeletts — der Betreff nennt, was im
+  Diff steht; wandert Substanz eines anderen Slice mit, ist es ein eigener Commit mit dessen ID.
+- **Antwort (Sensor): offen, aber vorbereitet.** Die Hypothese *„ein `docs(planning)`/
+  `fix(planning)`-Commit ändert nur `docs/plan/planning/`"* wurde gegen die Historie geprüft und
+  **diskriminiert sauber**: sie fängt alle drei Vorfälle und lässt fünf geprüfte legitime
+  `docs(planning)`-Commits durch, ohne Rauschen. Sie wird **nicht** in slice-061 gebaut, weil die
+  zugrunde liegende Regel — welcher Commit-Typ welche Pfade berühren darf — im Repo noch nicht
+  deklariert ist; ein Sensor würde sie erfinden statt durchsetzen. Erst die Konvention, dann ihr
+  Sensor (dieselbe Reihenfolge wie bei der Closure-Pflicht vor slice-050).
+- **Warum das zählt, obwohl nichts kaputt ist:** die Arbeit war jedes Mal vollständig und die
+  Gates grün. Beschädigt ist ausschließlich die **Auffindbarkeit** — und die fällt erst auf, wenn
+  jemand Monate später fragt, woher eine Regel kommt.
+
+## SL-004 — Ein neuer Doku-Sensor meldet im ersten Lauf sein eigenes Umfeld
+
+- **Beobachtung:** Ein frisch gebauter Sensor über Markdown beanstandet Text, der *über* seinen
+  Prüfgegenstand spricht, statt ihn zu sein — zitierte Muster in Inline-Code, Code-Blöcken oder
+  Argument-Strings. Die Korrektur ist jedes Mal dieselbe: Zitat-Kontexte vor der Auswertung
+  ausblenden.
+- **Vorfälle:** **drei**, je beim ersten scharfen Lauf:
+  - [slice-050](planning/done/slice-050-verify-schicht.md) — `verify-closure-notes`: drei
+    Fehlalarm-Wellen, darunter ein Kursiv-Regex, der substanziellen Text als Platzhalter las.
+  - [slice-057](planning/done/slice-057-steering-loop.md) — Guard-Regel 2: Fehlalarm auf das
+    Pipe-Muster in einem Argument-String; Ursache der Quote-Behandlung.
+  - [slice-060](planning/done/slice-060-slice-link-invariante.md) — `verify-slice-links`:
+    Fehlalarm auf einen Verweis, den das eigene Slice-Dokument in Backticks **zitiert**.
+- **Klasse:** Schwelle überschritten (3×) ⇒ Harness-Lücke.
+- **Antwort (Guide, slice-061):** Schritt 5 des Workflow-Skeletts — wer einen Sensor über Markdown
+  baut, blendet Zitat-Kontexte **von Anfang an** aus und nimmt eine Fixture mit zitiertem Muster
+  in den Selbsttest auf.
+- **Kein Sensor, ausdrücklich:** das Muster betrifft **Bauwissen** über Sensoren, nicht einen
+  wiederkehrenden Laufzeit-Fehler. Es gibt keinen Lauf, in dem es sich zeigen könnte — der Guide
+  ist hier die vollständige Antwort, nicht die halbe. Das unterscheidet den Eintrag von `SL-001`
+  und `SL-002`, wo der Guide nachweislich zu schwach war.
+- **Nebenbeobachtung:** in allen drei Fällen war der Fehlalarm **nützlich** — er entstand, weil der
+  Sensor scharf genug war, und führte je zu einer präziseren Regel. Gefährlich ist nicht der
+  Fehlalarm, sondern seine Behandlung: wird der *Text* angepasst statt des *Sensors*, ist die
+  Beobachtung verloren.
+
 ---
 
 ## Pflege
