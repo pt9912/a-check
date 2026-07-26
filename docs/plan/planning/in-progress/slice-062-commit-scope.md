@@ -90,7 +90,41 @@ beim Schreiben des Skripts noch nicht gibt.
 
 ## 6. Closure-Notiz
 
-_(beim Abschluss ausfüllen)_
+**Geliefert:** die Commit-Scope-Konvention in [`AGENTS.md`](../../../../AGENTS.md) §5 und ihr
+Sensor `make commit-scope-check` — in der `GATES`-Liste, in §4 deklariert und in der CI über die
+Commit-Range neben `trace-check`. [`SL-003`](../../steering-loop.md) trägt fünf Vorfälle und ist
+damit in beiden Quadranten durchgesetzt.
+
+**Lerneintrag — Form: geschärfte Regel.**
+> **Eine Stichprobe belegt Rauschfreiheit nur für die Menge, aus der sie gezogen ist.** slice-061
+> nannte den Sensorentwurf „nachweislich rauschfrei" — geprüft an **acht** Commits, alle aus der
+> Migrations-Kette. Über die volle Historie fiel die allgemeine Form sofort: 31 Treffer bei 193
+> `docs(...)`-Commits, *weil* `docs(spec)` legitim `spec/` und `docs(adr)` legitim ADRs ändert —
+> Fälle, die in der Kette schlicht nicht vorkamen. Die Behauptung war nicht falsch gemessen,
+> sondern falsch **verallgemeinert**. Prüfsatz: *bevor eine Sensor-Hypothese „rauschfrei" heißt,
+> die Grundgesamtheit benennen, gegen die sie geprüft wurde — und prüfen, ob der Bestand außerhalb
+> davon andere Fälle enthält.* Getragen hat die Regel am Ende nur scope-spezifisch, und genau so
+> ist sie deklariert.
+
+**Zwei beobachtbare Closure-Kriterien:**
+
+1. `make gates` und `make verify` grün auf demselben Stand (je Exit 0) — belegt.
+2. Drei Läufe mit unterschiedlichem Ergebnis, je belegt: ein Commit mit Scope `(planning)`, der
+   `Makefile` ändert, ergibt **EXIT=1** mit Nennung der fremden Pfade; ein `(planning)`-Commit, der
+   nur `docs/plan/planning/` ändert, **EXIT=0**; über die **gesamte** Historie **EXIT=0** mit
+   `74 vor Einfuehrung der Regel (grandfathered)` — der Bestand wird nicht rot, ohne dass ein
+   Stichtags-Hash nötig wäre.
+
+**Selbstanwendung, unbequem:** der fünfte `SL-003`-Vorfall ist `f0e7805` — der Commit, mit dem
+slice-061 den Eintrag `SL-003` **anlegte**. Der Guide aus jenem Slice hat seinen ersten Vorfall
+nicht verhindert. Das ist zum dritten Mal dieselbe Beobachtung (`SL-001` vor slice-057, `SL-002`
+vor slice-060) und stützt die Modul-09-Regel deutlicher als jedes Zitat: *inferential feedforward*
+wirkt gegen Unwissen, nicht gegen Routine. Wäre der Sensor in slice-061 gebaut worden, hätte er
+den eigenen Commit gefangen.
+
+**Folge-Slices:** die verbliebene Doku-Arbeit der Review-Serie (slice-048-Korrekturen,
+Status-Felder, INFO-Kategorie, Zahlenpaar). Aus diesem Slice selbst: keine — die Ausweitung auf
+weitere Scopes ist ausdrücklich an eine neue Messung gebunden, nicht an einen Folge-Slice.
 
 ## 7. Sub-Area-Modus
 
