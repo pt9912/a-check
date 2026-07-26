@@ -17,14 +17,25 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
-# Muster als Zeichenklasse, damit dieses Skript nicht sich selbst und nicht die
-# erklärenden Kommentare in .golangci.yml/AGENTS.md trifft — gesucht wird nur in
-# *.go.
-PATTERN='//[[:space:]]*(nolint|lint:ignore)'
-
+# Dass dieses Skript und die erklärenden Kommentare in .golangci.yml/AGENTS.md
+# nicht selbst getroffen werden, folgt allein daraus, dass nur *.go gescannt wird
+# — nicht aus dem Muster (Korrektur aus dem Review 2026-07-26, R-049-F5).
+#
+# Geprüft wird der Text nach dem ERSTEN `//` einer Zeile. Nur dort kann eine
+# wirksame Direktive stehen: ein `//nolint` weiter hinten liegt bereits INNERHALB
+# eines Kommentars und ist für den Compiler wie für golangci-lint bloßer Text.
+# Ein zeilenweites Muster meldete darum die Zeile
+#   // Hinweis: bitte kein //nolint verwenden.
+# als Direktive — real aufgetreten und Anlass dieser Korrektur (R-049-F3).
+# EHRLICHE GRENZE (AC-QA-02): die Zeichenfolge in einem String-Literal
+# (`s := "//nolint"`) wird weiterhin gemeldet. Fail-closed und selten; ein
+# Go-Parser wäre die einzige saubere Antwort und steht in keinem Verhältnis.
 scan() {  # $1 = Wurzelverzeichnis
   find "$1" -name '*.go' -type f -print0 \
-    | xargs -0 -r grep -nEH "$PATTERN" 2>/dev/null || true
+    | xargs -0 -r awk -F'//' \
+        'NF > 1 && $2 ~ /^[[:space:]]*(nolint|lint:ignore)/ {
+           print FILENAME ":" FNR ":" $0
+         }' 2>/dev/null || true
 }
 
 # Selbsttest (Fitness Function der Fitness Function): eine Fixture mit Direktive
@@ -37,7 +48,12 @@ self_test() {
   mkdir -p "$tmp/pos" "$tmp/neg"
   printf 'package p\n\nvar x = 1 //nolint:gochecknoglobals // Why: Fixture\n' > "$tmp/pos/a.go"
   printf 'package p\n\n//lint:ignore SA1000 Fixture\nvar y = 2\n' > "$tmp/pos/b.go"
+  # Negativ-Fixturen. Die zweite ist die eigentliche Probe: sie enthält die
+  # Zeichenfolge `//nolint` wörtlich, aber innerhalb eines Kommentars — genau der
+  # Fall, den das alte Muster fälschlich meldete. Die erste konnte das Muster nie
+  # treffen (kein `//`-Präfix) und belegte darum nichts (R-049-F3).
   printf 'package p\n\n// ein gewoehnlicher Kommentar ueber nolint-Regeln\nvar z = 3\n' > "$tmp/neg/c.go"
+  printf 'package p\n\n// Hinweis: bitte kein //nolint verwenden.\nvar w = 4\n' > "$tmp/neg/d.go"
 
   if [ "$(scan "$tmp/pos" | wc -l)" -ne 2 ]; then
     echo "suppression-check: Selbsttest FEHLGESCHLAGEN — Direktiven nicht erkannt (Muster tot)" >&2

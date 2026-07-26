@@ -25,7 +25,23 @@ cd "$(dirname "$0")/.."
 BASE_DIR=".harness/baseline"
 RELEASES_URL="https://github.com/pt9912/ai-harness-course/releases"
 
-tag="$(find "$BASE_DIR" -mindepth 1 -maxdepth 1 -type d -printf '%f\n' 2>/dev/null | sort | tail -1 || true)"
+# Stand-Auswahl nach VERSIONS-, nicht Zeichenordnung (`sort -V`, GNU coreutils).
+# Mit reinem `sort` gewann `v3.5.2` gegen `v3.10.0`, und das Target haette den
+# alten Stand geprueft und "Integritaet ok" gemeldet — belegt im Review
+# 2026-07-26 (R-049-F4). Der Fall tritt genau waehrend einer Migration ein, also
+# dann, wenn dieses Target gebraucht wird.
+tags="$(find "$BASE_DIR" -mindepth 1 -maxdepth 1 -type d -printf '%f\n' 2>/dev/null | sort -V || true)"
+tag="$(printf '%s\n' "$tags" | tail -1)"
+
+# Mehrere vendored Staende sind zulaessig (Migration), aber die Auswahl darf
+# nicht stillschweigend passieren: sonst bleibt der nicht gewaehlte Stand
+# ungeprueft, ohne dass es jemand sieht.
+n_tags="$(printf '%s\n' "$tags" | grep -c . || true)"
+if [ "$n_tags" -gt 1 ]; then
+  echo "regelwerk-check: HINWEIS — $n_tags vendored Staende gefunden; geprueft wird der hoechste ($tag)."
+  echo "  ungeprueft bleiben: $(printf '%s\n' "$tags" | grep -v "^$tag$" | tr '\n' ' ')"
+fi
+
 if [ -z "$tag" ]; then
   echo "regelwerk-check: FAIL — keine vendored Baseline unter $BASE_DIR/ gefunden (MR-006)." >&2
   exit 1

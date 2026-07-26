@@ -42,7 +42,11 @@ applies() {  # $1 = Pfad -> 0 = geprueft, 1 = grandfathered
 
 check_file() {  # $1 = Datei, $2 = "done" oder "offen"; Befunde auf stdout
   local f="$1" phase="$2" n fail=0 body
-  n="$(grep -cE '^- \[[ x]\] ' "$f" || true)"
+  # Nur Checkboxen IM DoD-Abschnitt zaehlen — dieselbe Abschnitts-Disziplin wie
+  # in closure_body() und in verify-ac-form.sh. Eine dateiweite Zaehlung meldete
+  # eine Checkliste in "Was offen bleibt" als DoD-Ueberschreitung (Review
+  # 2026-07-26, R-052-F3; im Bestand noch aequivalent, also latent).
+  n="$(awk '/^#+ .*DoD/{i=1;next} i&&/^#+ /{i=0} i&&/^- \[[ x]\] /{c++} END{print c+0}' "$f")"
   if [ "$n" -gt "$MAX_DOD" ]; then
     echo "$f: $n DoD-Punkte — hoechstens $MAX_DOD erlaubt (Groessen-Regel B-1); zerlegen statt dehnen"
     fail=1
@@ -66,11 +70,20 @@ self_test() {
   { echo '## 5. DoD'; for i in 1 2 3 4; do echo "- [x] p$i"; done;
     echo '## 6. Closure-Notiz'; echo '**Form: neuer Sensor**'; } > "$tmp/zu-gross.md"
   { echo '## 5. DoD'; echo '- [x] a'; echo '## 6. Closure-Notiz'; echo 'Lief gut.'; } > "$tmp/ohne-form.md"
+  # Abschnitts-Schnitt: Checkboxen AUSSERHALB des DoD-Abschnitts duerfen nicht
+  # mitzaehlen. Dateiweit gezaehlt haette diese Fixture 4 Punkte und waere rot
+  # geworden, obwohl ihr DoD nur zwei traegt (R-052-F3).
+  { echo '## 4. Was offen bleibt'; echo '- [ ] spaeter x'; echo '- [ ] spaeter y';
+    echo '## 5. DoD'; echo '- [x] a'; echo '- [x] b'; echo '## 6. Closure-Notiz';
+    echo '**Lerneintrag — Form: neuer Sensor.** X, weil Y.'; } > "$tmp/checkbox-ausserhalb.md"
 
-  if ! check_file "$tmp/gut.md" done >/dev/null; then
-    echo "verify-slice-form: Selbsttest FEHLGESCHLAGEN — konforme Fixture beanstandet" >&2
-    rm -rf "$tmp"; exit 2
-  fi
+  local good
+  for good in gut checkbox-ausserhalb; do
+    if ! check_file "$tmp/$good.md" done >/dev/null; then
+      echo "verify-slice-form: Selbsttest FEHLGESCHLAGEN — konforme Fixture '$good' beanstandet" >&2
+      rm -rf "$tmp"; exit 2
+    fi
+  done
   local bad
   for bad in zu-gross ohne-form; do
     if check_file "$tmp/$bad.md" done >/dev/null; then
