@@ -56,23 +56,16 @@ Eine ADR schärft die Spezifikation, **nie** das Lastenheft.
 
 9. Lifecycle: `git mv` in den nächsten Zustand als **eigener** Commit, ohne Inhaltsänderung.
 
-   **Vorher die relativen Verweise prüfen.** Der Verschiebe-Commit liegt *hinter* dem Gate-Lauf
-   aus Schritt 6 und ist damit ungeprüft — genau dort entstanden die roten Slice-Endstände, die
-   [`SL-002`](../../docs/plan/steering-loop.md) zählt. Ein Verweis, der aus `in-progress/`
-   auflöst, tut es aus `done/` nicht mehr:
+   **Die Verweis-Prüfung läuft in Schritt 8 bereits mit:** `make verify` enthält seit slice-060
+   `verify-slice-links`. Es prüft die Invariante *„jeder relative Verweis löst aus **jedem**
+   Lifecycle-Verzeichnis auf"* — wer dort grün ist, übersteht den `git mv`.
 
-   ```sh
-   # Welche Verweise bräche der Wechsel nach done/?
-   grep -oE '\]\([^)]*\)' <datei> | sed 's/^](//;s/)$//;s/#.*//' \
-     | grep -vE '^https?:|^$' | while read -r l; do
-         [ -e "docs/plan/planning/done/$l" ] || echo "BRICHT: $l"
-       done
-   ```
-
+   Ist es rot, ist die Korrektur ein **eigener** Commit **vor** dem `git mv` (Hard Rule §3.3).
    Der kritische Fall ist die **präfixlose** Nachbardatei (`roadmap.md`), nicht der Pfad mit
-   `../` — eine Prüfung, die nur `../`-Verweise ansieht, übersieht ihn. Richtig ist die
-   **zustandsunabhängige** Form: `../in-progress/roadmap.md` löst aus beiden Verzeichnissen auf.
-   Korrektur als eigener Commit **vor** dem `git mv` (Hard Rule §3.3).
+   `../`; richtig ist die zustandsunabhängige Form `../in-progress/roadmap.md`, die aus allen
+   Lifecycle-Verzeichnissen auflöst. Diese Prüfung von Hand nachzubauen lohnt nicht — ein
+   naives `grep` über die Links meldet auch **zitierte** Verweise in Backticks, was der Sensor
+   ausdrücklich ausnimmt ([`SL-002`](../../docs/plan/steering-loop.md)).
 
 10. Berichten: welche Sensoren liefen, mit echter Ausgabe, und welche Risiken offen bleiben.
     **Keine Erfolgsmeldung ohne Gate-Ausgabe.**
