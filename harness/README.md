@@ -118,6 +118,42 @@ Lauf-Wahrheit pro Commit liegt in der CI, nicht in diesem Rang-9-Dokument.
 - Dieses Repo ist kein produktiver Service; das Produkt ist ein
   CLI-Tool/Container-Image plus mitgelieferte `a-check.mk`.
 
+## Rollen und ihre Übergabe-Artefakte
+
+`modul-08` nennt sechs Rollen (Planner → Architect → Implementation → Reviewer → Verifier →
+Validator) und **neun Übergaben**. Die Regel dahinter: *ohne Artefakt gibt es keinen Rollenwechsel,
+nur einen Kontext-Switch* — und Rollen-Trennung ist **Kontext**-Trennung, nicht
+Personen-Trennung. Eine Instanz darf mehrere Rollen spielen, aber nicht im selben Kontextfenster;
+sonst wiederholen sich die blinden Flecken.
+
+Sieben der neun Artefakte existieren in a-check bereits — unter eigenen Namen. Die Zuordnung
+(angelegt in slice-066, Fund **B-9**):
+
+| Übergabe | Artefakt in a-check |
+|---|---|
+| Planner → Architect | Slice-Plan mit `AC-*`-Bezug (§Deckt / §Betroffene Module) |
+| Architect → Planner | ADR unter [`docs/plan/adr/`](../docs/plan/adr/README.md) mit `Schärft:`-Feld |
+| Planner → Implementation | die Slice-Datei in `in-progress/` — der `git mv` **ist** die Übergabe |
+| Implementation → Reviewer | Commit-Range plus Slice-Plan-Verweis |
+| Reviewer → Implementation | Review-Report unter [`docs/reviews/`](../docs/reviews/README.md), Findings HIGH/MEDIUM/LOW/INFO mit Kopf-Metadaten |
+| Implementation → Verifier | abgehakte DoD-Punkte plus Sensor-Belege (Gate-Ausgabe mit Exit-Code) |
+| Verifier → Planner | `make verify` (Exit-Code) plus Closure-Notiz mit zwei beobachtbaren Kriterien |
+| Verifier → Validator | **fehlt** — siehe unten |
+| Validator → Planner | **fehlt** — siehe unten |
+
+**Die Validator-Kante fehlt, und das ist benannt statt erfunden.** Validation fragt „bauen wir das
+Richtige?" (gegen realen Bedarf), Verifikation „bauen wir es richtig?" (gegen Plan/DoD). a-check
+verifiziert maschinell, validiert aber nicht über ein Artefakt: Rückmeldung der Konsumenten läuft
+heute über Issues und über die Adoption eines Releases, nicht über einen Validierungsbeleg. Der
+gefährlichste Fall wäre *Verifikation grün, Validation rot* — perfekt das Falsche gebaut. Wer die
+Kante schließen will, braucht einen Abnehmer außerhalb des Repos und ein Artefakt, das dessen
+Urteil festhält; beides ist heute nicht vorhanden.
+
+**Kontext-Trennung, real angewandt:** die Review-Serie vom 2026-07-26 lief in einem **anderen
+Kontextfenster** als die Implementierung — formal eine Rollen-Trennung, aber in derselben
+Modell-Familie. Die Reports weisen sich darum ausdrücklich als *Selbst-Review* aus; ein
+unabhängiger Lauf bleibt eine eigene Übergabe.
+
 ## Minimal agent workflow
 
 1. Diese Datei lesen.
