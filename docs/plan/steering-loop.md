@@ -62,11 +62,24 @@ ohne Ort nicht überlebt.
 - **Klasse:** Schwelle überschritten (3×) ⇒ Harness-Lücke.
 - **Bisherige Antwort:** keine. Der Befund wird zuverlässig gefangen (`doc-check` ist grün-scharf),
   aber **nach** dem Commit — der Zyklus kostet je einen Nachzieh-Commit.
-- **Antwort:** **offen.** Zwei Kandidaten, beide nicht in slice-057 gebaut:
-  1. *Guide:* die Slice-Vorlage schreibt Verweise auf Nachbar-Slices grundsätzlich
-     zustandsunabhängig (`../done/…` erst beim Abschluss) — billig, aber wieder nur inferential.
-  2. *Sensor:* eine Prüfung, die **vor** dem `git mv` meldet, welche Verweise brechen werden.
-     Das ist der wirksamere Weg und gehört zu `make verify`.
+- **Antwort:** **halb gebaut** (Stand slice-059). Zwei Kandidaten:
+  1. *Guide:* **geliefert** — Schritt 9 des Workflow-Skeletts
+     ([`.claude/commands/slice.md`](../../.claude/commands/slice.md)) verlangt die Verweis-Prüfung
+     **vor** dem `git mv` und nennt die zustandsunabhängige Form (`../in-progress/roadmap.md`),
+     die aus beiden Verzeichnissen auflöst. Inferential feedforward — es ordnet an, es erzwingt
+     nicht.
+  2. *Sensor:* **weiterhin offen.** Eine Prüfung, die vor dem `git mv` meldet, welche Verweise
+     brechen werden; gehört zu `make verify`.
+- **Zwei Vorfälle nach dem Guide** (2026-07-26, in slice-058): das Anlegen aus einer Vorlage
+  anderer Verzeichnistiefe erzeugte acht gebrochene Verweise, das Schreiben der Closure-Notiz
+  über genau diesen Befund zwei weitere — beide Male von `doc-check` **vor** dem Commit gefangen.
+  Damit steht der Vorfallszähler bei **neun**, und die Beobachtung ist allgemeiner als der
+  Eintragstitel: relative Verweise brechen nicht nur beim `git mv`, sondern bei jedem Wechsel der
+  Verzeichnistiefe. Das wiederholt die Lehre aus [SL-001](#sl-001--gate-lauf-in-einer-pipe-verschluckt)
+  — ein Guide wirkt nicht gegen Routine.
+- **Vorgabe für den Sensor, aus slice-058 gelernt:** der kritische Fall ist die **präfixlose**
+  Nachbardatei (`roadmap.md`), nicht der Pfad mit `../`. Der erste Anlauf der manuellen Prüfung
+  sah nur `../`-Verweise an und verfehlte damit ausgerechnet den einzigen brechenden.
 - **Warum hier stehen bleiben:** die Antwort auf ein Muster gehört nicht in denselben Slice wie
   seine Erfassung, wenn sie ein eigenes Werkzeug braucht. Der Eintrag hält die Zählung fest,
   damit die Lücke nicht ein achtes Mal als Einzelfall durchgeht.

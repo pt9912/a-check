@@ -85,8 +85,22 @@ verify-slice-form: ## Form der Slice-Plaene ab slice-052 (max. 3 DoD-Punkte, ben
 verify-ac-form: ## Form neuer Akzeptanzkriterien (Happy/Boundary/Negative + Out-of-Scope); die 19 bestehenden grandfathered.
 	@bash tools/verify-ac-form.sh
 
-verify: verify-closure-notes verify-slice-form verify-ac-form ## Verifikations-Schicht: DoD-/Closure-Fragen (vor der "fertig"-Meldung; getrennt von gates).
-	@echo "[verify] Verifikations-Schicht gruen"
+# Die drei Teil-Sensoren laufen als Sequenz im selben Rezept, NICHT als
+# Prerequisites: make bricht sonst beim ersten roten Target ab, und wer zwei
+# Verstoesse in verschiedenen Bereichen hat, sieht nur den ersten (Review
+# 2026-07-26, R-052-F4). Eine Verifikations-Schicht beantwortet drei
+# unabhaengige Fragen — sie soll alle drei beantworten, auch wenn eine mit Nein
+# ausgeht. Die Einzel-Targets bleiben fuer den gezielten Aufruf bestehen.
+verify: ## Verifikations-Schicht: DoD-/Closure-Fragen (vor der "fertig"-Meldung; getrennt von gates).
+	@fail=0; \
+	bash tools/verify-closure-notes.sh || fail=1; \
+	bash tools/verify-slice-form.sh    || fail=1; \
+	bash tools/verify-ac-form.sh       || fail=1; \
+	if [ "$$fail" -ne 0 ]; then \
+	  echo "[verify] FAIL — mindestens eine Verifikations-Frage ist offen; alle Befunde stehen oben." >&2; \
+	  exit 1; \
+	fi; \
+	echo "[verify] Verifikations-Schicht gruen"
 
 record-gates: ## Gate-Nachweis (Working-Tree-Hash) für den Stop-Hook schreiben.
 	@bash tools/harness/record-gates.sh

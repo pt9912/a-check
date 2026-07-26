@@ -65,10 +65,18 @@ guard_verdict() {
     // verschwindet spurlos. Dasselbe gilt fuer `make <gate> && git commit` —
     // der Commit haengt dann an einem ungeprueften Lauf. Fuenf reale Vorfaelle
     // am 2026-07-25 (Steering-Loop SL-001).
+    // Vollstaendig gegen die deklarierten Pruef-Targets (AGENTS.md §4). Der
+    // `--selftest` haelt die Liste dagegen aktuell — ohne ihn driftete sie:
+    // `doc-immutable` fehlte, obwohl es als CI-durchgesetzt gefuehrt wird, und
+    // `make doc-immutable | tail` lief ungehindert durch (Review 2026-07-26,
+    // R-057-F1). Nicht enthalten sind Targets, deren Ausgabe bestimmungsgemaess
+    // weiterverarbeitet wird — siehe NICHT_PRUEFEND im Selbsttest.
     const GATES = new Set(["gates","verify","ci","lint","test","coverage-gate",
       "arch-check","doc-check","image-test","trace-check","suppression-check",
       "gate-consistency","verify-closure-notes","verify-slice-form",
-      "verify-ac-form","guard-selftest"]);
+      "verify-ac-form","guard-selftest","doc-complete","doc-immutable",
+      "doc-commits","doc-planning","doc-tracked","doc-targets",
+      "regelwerk-check"]);
 
     function hasGateMake(seg) {
       const t = seg.trim().split(/\s+/).filter(Boolean).map(stripQuotes);
@@ -170,6 +178,31 @@ if [ "${1:-}" = "--selftest" ]; then
   assert ok    '{"tool_input":{"command":"grep -E x /tmp/g.log | tail -3"}}'    "Pipe ohne make"
   assert ok    '{"tool_input":{"command":"make gates && echo fertig"}}'         "Verkettung ohne Commit"
   assert ok    '{"tool_input":{"command":"echo \"make gates | tail\" >> doku.md"}}'   "Muster nur im Argument-String"
+  assert block-pipe '{"tool_input":{"command":"make doc-immutable | tail -1"}}'  "doc-immutable ist CI-durchgesetzt"
+  assert ok    '{"tool_input":{"command":"make doc-repair | git apply -"}}'     "doc-repair liefert einen Patch auf stdout"
+
+  # ── Drift-Waechter fuer die GATES-Liste (slice-059, R-057-F1) ───────────────
+  # Ohne ihn ist die Liste eine Momentaufnahme: ein neues Pruef-Target waere
+  # ungeschuetzt, und niemand saehe es. `gate-consistency` gleicht Doku gegen
+  # Makefile ab — diese Liste gegen nichts. Jetzt gegen beide Make-Fragmente.
+  #
+  # NICHT_PRUEFEND: Targets, deren Ausgabe bestimmungsgemaess weiterverarbeitet
+  # wird oder die keinen Pruef-Exit-Code tragen. Sie DUERFEN in eine Pipe —
+  # `make doc-repair | git apply -` ist der vorgesehene Aufruf, und ein Guard,
+  # der ihn blockiert, wuerde umgangen statt befolgt.
+  NICHT_PRUEFEND="help doc-help doc-doctor doc-repair doc-trace compile build arch-graph a-check a-check-graph record-gates hooks"
+  gates_liste="$(sed -n '/const GATES = new Set(\[/,/\]);/p' "$0" | grep -oE '"[a-z][a-z0-9-]*"' | tr -d '"' | tr '\n' ' ')"
+  alle_targets="$(grep -hoE '^[a-z][a-z0-9-]*:' Makefile d-check.mk 2>/dev/null | tr -d ':' | sort -u)"
+  for t in $alle_targets; do
+    case " $NICHT_PRUEFEND " in *" $t "*) continue ;; esac
+    case " $gates_liste " in
+      *" $t "*) ;;
+      *) echo "guard-selftest FAIL: Pruef-Target '$t' fehlt in der GATES-Liste (Regel 2 greift dort nicht)" >&2
+         echo "  -> aufnehmen, oder in NICHT_PRUEFEND begruenden, falls seine Ausgabe gepiped werden soll" >&2
+         fail=1 ;;
+    esac
+  done
+
   if [ "$fail" -ne 0 ]; then
     echo "guard-selftest: FEHLGESCHLAGEN" >&2
     exit 1
