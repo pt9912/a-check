@@ -9,7 +9,9 @@ da (Review 2026-07-26, Etappe B F-5).
 und **F-3** aus
 [`docs/reviews/2026-07-26-etappe-d-slice-052-053-054.md`](../../../reviews/2026-07-26-etappe-d-slice-052-053-054.md).
 **Bezug:** Review-Serie zur Migrations-Kette B–F (2026-07-26), erster von drei Fix-Schnitten.
-[Roadmap](roadmap.md).
+[Roadmap](../in-progress/roadmap.md) — der Verweis ist bewusst **zustandsunabhängig** geschrieben
+(`../in-progress/…` statt `roadmap.md`): so löst er aus `in-progress/` **und** aus `done/` auf und
+überlebt den Lifecycle-`git mv`. Guide-Kandidat 1 aus [SL-002](../../steering-loop.md).
 
 ---
 
