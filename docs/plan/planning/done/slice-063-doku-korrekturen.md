@@ -89,8 +89,8 @@ die zustandsfreie Status-Zeile in **14** Dateien unter `done/`.
 1. `make gates` und `make verify` grün auf demselben Stand (je Exit 0) — belegt.
 2. `grep -l '^\*\*Status:\*\* in-progress' docs/plan/planning/done/*.md` liefert **keinen**
    Treffer mehr (vorher 14); jeder der vier slice-048-Nachträge nennt das Artefakt, gegen das
-   nachgerechnet wurde (`.d-check.yml` §matrix, Zeilenzählung der vendored Baseline, `MR-008`,
-   der `Aufgelöst`-Block in `MR-003`).
+   nachgerechnet wurde (`.d-check.yml` §matrix, Zeilenzählung der vendored Baseline, [MR-008](../../../../harness/conventions.md#mr-008--kein-replay-keine-agenten-telemetrie),
+   der `Aufgelöst`-Block in [MR-003](../../../../harness/conventions.md#mr-003--source-precedence-ohne-docsuser-rang)).
 
 **Eigene Fehlmessung, korrigiert:** der Review-Fund nannte **fünf** betroffene Status-Felder, weil
 er nur gegen `main` zählte — real sind es **14**, die Kette hat neun weitere hinzugefügt. Dieselbe
