@@ -103,14 +103,24 @@
 > und mit angekettetem Commit jetzt fail-closed ab; **SL-002** (brechende Verweise nach `git mv`,
 > 7 Vorfälle) ist erfasst, aber offen.
 >
-> **Damit sind A, B, C, D und E erledigt; F ist zu einem Drittel gemacht.**
+> **Etappe F abgeschlossen (2026-07-26):** [slice-065](../done/slice-065-carveout-ort-und-trichter.md)
+> (2/3) legt den **Carveout-Ort** an und verankert den **Diskrepanz-Trichter** (B-14, B-10) — der
+> Bestand wurde durch den Trichter geschickt und ergab **null** Carveouts, alle fünf bestehenden
+> Ausnahmen fallen begründet in ADR bzw. `MR-*` oder sind bootstrap-aware Gates.
+> [slice-066](../done/slice-066-wellen-closure-und-rollen.md) (3/3) liefert die
+> **Fünf-Schritt-Wellen-Closure** mit Beleg je Schritt (B-13) und ordnet **alle neun**
+> Rollen-Übergaben aus `modul-08` realen Artefakten zu (B-9) — sieben existierten bereits unter
+> eigenen Namen, die **Validator-Kante** bleibt als benannte Lücke offen.
+>
+> **Damit sind A bis F erledigt: die `v3.5.2`-Migration ist vollständig.** Alle 21 Funde aus
+> slice-048 sind abgearbeitet oder begründet geschlossen.
 
 ---
 
 ## Stand 2026-07-26 (nach Review-Serie und Fix-Schnitten)
 
-**Etappe F ist zu einem Drittel gemacht; darüber liegen eine Review-Serie und sieben
-Fix-Slices.** Die Kette über `main` umfasst **56 Commits** (Stand vor dem Merge; die im
+**Die `v3.5.2`-Migration ist vollständig (Etappen A–F); darüber liegen eine Review-Serie und
+neun Fix- bzw. Abschluss-Slices.** Die Kette über `main` umfasst **56 Commits** (Stand vor dem Merge; die im
 vorherigen Wiedereinstiegs-Block genannten „35" bezogen sich auf den Stand am Morgen).
 
 **Review-Serie (2026-07-26).** Sechs Reports unter [`docs/reviews/`](../../../reviews/README.md),
@@ -134,6 +144,8 @@ sind **Selbst-Reviews** — ein unabhängiger Lauf bleibt angezeigt.
 | [062](../done/slice-062-commit-scope.md) | Commit-Scope-Konvention + `commit-scope-check` |
 | [063](../done/slice-063-doku-korrekturen.md) | vier Nachträge in slice-048, 14 Status-Felder |
 | [064](../done/slice-064-guard-verkettung.md) | Guard-Regel 2 greift in **jeder** Verkettung |
+| [065](../done/slice-065-carveout-ort-und-trichter.md) | Carveout-Ort und Diskrepanz-Trichter (Etappe F 2/3) |
+| [066](../done/slice-066-wellen-closure-und-rollen.md) | Wellen-Closure-Prozedur und Rollen-Übergaben (Etappe F 3/3) |
 
 **[Steering-Loop](../../steering-loop.md): vier Einträge.** `SL-001` (sechs Vorfälle) und `SL-002`
 (neun) sind in **beiden** Quadranten durchgesetzt, `SL-003` (fünf) ebenfalls seit slice-062;
@@ -143,14 +155,14 @@ wurden je von einem Sensor gefangen, nicht von Aufmerksamkeit.
 
 **Was als Nächstes ansteht:**
 
-1. **Etappe F (2/3)** — Carveout-Ort und Diskrepanz-Trichter: `docs/plan/carveouts/` existiert
-   nicht, obwohl `CO-NNN` seit [MR-000](../../../../harness/conventions.md#mr-000--baseline-aussage-inkl-id-schema-deklaration)
-   deklariert ist (**B-14**); der Trichter Carveout · BF-Markierung · permanente ADR ist ungenutzt
-   (**B-10**).
-2. **Etappe F (3/3)** — Wellen-Closure-Prozedur (**B-13**) und Rollen-Übergaben (**B-9**). Mit
-   B-13 wandert der Steering-Loop-Kanal an seinen Baseline-Ort.
-3. **Ein unabhängiges Review** über die Kette, falls gewünscht — die vorliegenden Reports sind
-   Selbst-Reviews derselben Modell-Familie.
+1. **Ein unabhängiges Review** über die Kette, falls gewünscht — die sechs vorliegenden Reports
+   sind Selbst-Reviews derselben Modell-Familie und weisen sich als solche aus.
+2. **Erster realer Wellen-Abschluss.** Die Fünf-Schritt-Prozedur
+   ([`planning/README.md`](../README.md)) ist **deklariert, nicht belegt**; ihr erster Durchlauf
+   ist ihre Probe. Bis dahin bleibt der Steering-Loop-Kanal der laufende Zähl-Ort.
+3. **Produkt-Achse.** Die Migration und die Fix-Schnitte haben **keinen** Vertrag berührt (kein
+   `AC-*`, kein `SPEC-*`, kein Code in `internal/`). Der nächste Release-Anlass ist ein
+   Produkt-Slice — offen sind unverändert slice-013 (Entwurf) und slice-025.
 
 **Was bewusst offen bleibt** (keine Handlung nötig, nur nicht vergessen):
 `F-11` aus dem Etappe-A-Zweit-Review (Heilung bräche die Immutabilitäts-Regel,
