@@ -1,6 +1,6 @@
 # slice-012 — Driving/Driven-Richtung + `LayerOf` längster-Präfix (welle-10b / b2b)
 
-**Status:** in-progress (Entwurf zur Abnahme).
+**Status:** *(der Zustand ist das Verzeichnis dieser Datei, nicht dieses Feld — korrigiert in slice-063; historisch: „Entwurf zur Abnahme")*
 **Welle:** welle-10-regel-engine-generalisierung (Inkrement **b2b**, Abschluss).
 **Bezug:** Re-Evaluierungs-Trigger aus [ADR-0010](../../adr/0010-layer-relativer-adapterseg-laengster-praefix.md) (`LayerOf`) und [ADR-0011](../../adr/0011-domain-application-trennung-rolle-app.md) (`driving`/`driven`-Ports); verfeinert den Rollen-Mechanismus [AC-FA-RULE-006](../../../../spec/lastenheft.md#ac-fa-rule-006--schicht-rollen-generische-regel-anwendung); [Roadmap welle-10](../in-progress/roadmap.md).
 

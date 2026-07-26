@@ -1,6 +1,6 @@
 # slice-018 — Versions-Register (`version.md`) + Pin-Gate
 
-**Status:** in-progress (**in Umsetzung** — Opt 1 + 3 abgenommen 2026-07-05, Modul-Vertrag
+**Status:** *(der Zustand ist das Verzeichnis dieser Datei, nicht dieses Feld — korrigiert in slice-063)* (historisch: **in Umsetzung** — Opt 1 + 3 abgenommen 2026-07-05, Modul-Vertrag
 gegen d-check-Handbuch `v0.37.1`/1.21 re-verifiziert; Entscheide in §6, Umsetzung in §7).
 **Typ:** interne Release-Hygiene, nicht konsumenten-gated.
 **Bezug:** schärft [AC-QA-03](../../../../spec/lastenheft.md#ac-qa-03--reproduzierbarkeit)

@@ -1,6 +1,6 @@
 # slice-052 — Etappe D (1/3): Slice-Form als Vorlage und Sensor
 
-**Status:** in-progress — erster Schnitt der **Etappe D (Form)** aus
+**Status:** *(der Zustand ist das Verzeichnis dieser Datei, nicht dieses Feld — korrigiert in slice-063)* — erster Schnitt der **Etappe D (Form)** aus
 [slice-048 §5](../done/slice-048-modul-delta-lesen.md).
 **Deckt:** Fund **B-1** (Größen-Regel nirgends abgebildet) und **B-5** (Lerneintrag-Form nicht
 benannt). **Nicht hier:** B-6/B-18/B-12 (Lifecycle und Roadmap-Form) und B-15 (AC-Form) — 2/3 und

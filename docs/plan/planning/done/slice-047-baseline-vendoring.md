@@ -1,6 +1,6 @@
 # slice-047 — Etappe A: Baseline committet vendoren (`v1.3.0` → `v3.5.2`)
 
-**Status:** in-progress — Etappe **A** aus
+**Status:** *(der Zustand ist das Verzeichnis dieser Datei, nicht dieses Feld — korrigiert in slice-063)* — Etappe **A** aus
 [slice-046 §6](../open/slice-046-regelwerk-v352-migration-analyse.md), am 2026-07-25 per
 Maintainer-Wort gezogen („A zuerst"). Ergebnis §3, [Erst-Report](../../../reviews/2026-07-25-slice-047-baseline-vendoring.md) + [Zweit-Review](../../../reviews/2026-07-25-slice-047-baseline-vendoring-zweitreview.md), Closure §5.
 **Auslöser:** Maintainer-Vorgabe: **vollständige Migration nach `v3.5.2`**, auch gegen bestehende

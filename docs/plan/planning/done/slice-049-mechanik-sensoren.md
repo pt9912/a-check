@@ -1,6 +1,6 @@
 # slice-049 — Etappe E (1/3): zwei fehlende Sensoren nachrüsten
 
-**Status:** in-progress — erster Schnitt der **Etappe E (Mechanik)** aus
+**Status:** *(der Zustand ist das Verzeichnis dieser Datei, nicht dieses Feld — korrigiert in slice-063)* — erster Schnitt der **Etappe E (Mechanik)** aus
 [slice-048 §5](../done/slice-048-modul-delta-lesen.md); Reihenfolge **E vor D** am 2026-07-25 per
 Maintainer-Wort abgenommen.
 **Deckt:** Fund **B-11** (Suppression-Verbot halb durchgesetzt) und **B-8** (kein

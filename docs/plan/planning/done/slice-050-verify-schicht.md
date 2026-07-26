@@ -1,6 +1,6 @@
 # slice-050 — Etappe E (2/3): Verifikations-Schicht einziehen
 
-**Status:** in-progress — zweiter Schnitt der **Etappe E (Mechanik)** aus
+**Status:** *(der Zustand ist das Verzeichnis dieser Datei, nicht dieses Feld — korrigiert in slice-063)* — zweiter Schnitt der **Etappe E (Mechanik)** aus
 [slice-048 §5](../done/slice-048-modul-delta-lesen.md).
 **Deckt:** Fund **B-3** (kein `verify`-Target) und **B-4** (`closure-note-reviewer` fehlt).
 **Nicht in diesem Slice:** B-16 (Workflow-Skelett) und B-20 (Freigabe-Checkliste) — sie folgen als

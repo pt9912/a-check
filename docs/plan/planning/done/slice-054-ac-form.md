@@ -1,6 +1,6 @@
 # slice-054 — Etappe D (3/3): AC-Form für neue Anforderungen
 
-**Status:** in-progress — letzter Schnitt der **Etappe D (Form)** aus
+**Status:** *(der Zustand ist das Verzeichnis dieser Datei, nicht dieses Feld — korrigiert in slice-063)* — letzter Schnitt der **Etappe D (Form)** aus
 [slice-048 §5](../done/slice-048-modul-delta-lesen.md).
 **Deckt:** Fund **B-15** (AC-Form ohne Happy/Boundary/Negative-Pfade).
 [Roadmap](../in-progress/roadmap.md).

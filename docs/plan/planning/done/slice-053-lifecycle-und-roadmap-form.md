@@ -1,6 +1,6 @@
 # slice-053 — Etappe D (2/3): Lifecycle vervollständigen, Roadmap-Drift sichtbar machen
 
-**Status:** in-progress — zweiter Schnitt der **Etappe D (Form)** aus
+**Status:** *(der Zustand ist das Verzeichnis dieser Datei, nicht dieses Feld — korrigiert in slice-063)* — zweiter Schnitt der **Etappe D (Form)** aus
 [slice-048 §5](../done/slice-048-modul-delta-lesen.md).
 **Deckt:** **B-6** (Lifecycle ohne Rückführungen, WIP-Limit undeklariert), **B-18**
 (`next/` existiert nicht) und **B-12** (Roadmap ohne Drift-Log).

@@ -1,6 +1,6 @@
 # slice-056 — Etappe C (2/2): Modus pro Sub-Area, offene LOW
 
-**Status:** in-progress — letzter Schnitt der **Etappe C**.
+**Status:** *(der Zustand ist das Verzeichnis dieser Datei, nicht dieses Feld — korrigiert in slice-063)* — letzter Schnitt der **Etappe C**.
 **Deckt:** den echten Kern von Fund **B-2** (pauschaler Repo-Modus) und die offenen LOW **F-7**
 bis **F-11** aus dem Etappe-A-Zweit-Review.
 [Roadmap](../in-progress/roadmap.md).

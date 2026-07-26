@@ -1,6 +1,6 @@
 # slice-057 — Etappe F (1/3): Steering-Loop-Kanal und der erste Sensor daraus
 
-**Status:** in-progress — erster Schnitt der **Etappe F (Betriebsmodell)** aus
+**Status:** *(der Zustand ist das Verzeichnis dieser Datei, nicht dieses Feld — korrigiert in slice-063)* — erster Schnitt der **Etappe F (Betriebsmodell)** aus
 [slice-048 §5](../done/slice-048-modul-delta-lesen.md).
 **Deckt:** Fund **B-21** (kein Steering-Loop-Kanal) und den daraus fälligen Sensor zum
 Pipe-Fehler, den [slice-051](../done/slice-051-workflow-und-freigabe.md) ausdrücklich offen ließ.

@@ -1,6 +1,6 @@
 # slice-014 — Java-Sprach-Backend (welle-06-sprach-backends)
 
-**Status:** in-progress (Entwurf zur Abnahme).
+**Status:** *(der Zustand ist das Verzeichnis dieser Datei, nicht dieses Feld — korrigiert in slice-063; historisch: „Entwurf zur Abnahme")*
 **Welle:** welle-06-sprach-backends (erster Trigger — Konsumenten-Bedarf).
 **Bezug:** erweitert [AC-FA-EXTRACT-001](../../../../spec/lastenheft.md#ac-fa-extract-001--sprach-backends-für-die-import-extraktion)
 um Java; innerhalb [ADR-0002](../../adr/0002-text-heuristische-extraktion.md)

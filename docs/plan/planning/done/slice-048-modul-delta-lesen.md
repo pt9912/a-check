@@ -1,6 +1,6 @@
 # slice-048 — Etappe B: Modul-Delta gegen `v3.5.2` lesen
 
-**Status:** in-progress — Etappe **B** aus
+**Status:** *(der Zustand ist das Verzeichnis dieser Datei, nicht dieses Feld — korrigiert in slice-063)* — Etappe **B** aus
 [slice-046 §6](../open/slice-046-regelwerk-v352-migration-analyse.md), am 2026-07-25 per
 Maintainer-Wort gezogen. Ergebnis §2–§5.
 **Auslöser:** Etappe A ([slice-047](../done/slice-047-baseline-vendoring.md)) hat die Baseline
@@ -11,7 +11,7 @@ Kein Vertrag der Produkt-Achse berührt. [Roadmap](../in-progress/roadmap.md).
 > **Lese-Umfang korrigiert (2026-07-25):** die erste Fassung las **sechs** Module und wies den Rest
 > als Lücke aus. Auf Maintainer-Hinweis — *„wir wollen nach Regelwerk v3.5.2 migrieren"* — ist der
 > Zuschnitt hinfällig: eine vollständige Migration verträgt keine ungelesenen Module. Jetzt sind
-> **alle 17 Module und alle drei Grundlagen-Abschnitte gelesen** (2867 Zeilen). Die Erweiterung
+> **alle 17 Module und alle drei Grundlagen-Abschnitte gelesen** (2778 Zeilen; 2867 mit der Index-README). Die Erweiterung
 > brachte **elf** zusätzliche Funde (B-11 … B-21), darunter drei, die ohne sie unsichtbar
 > geblieben wären.
 
@@ -22,7 +22,7 @@ Kein Vertrag der Produkt-Achse berührt. [Roadmap](../in-progress/roadmap.md).
 
 ## 1. Gelesen
 
-**Vollständig (20 Dateien, 2867 Zeilen):** `modul-00` … `modul-16` sowie die drei
+**Vollständig (20 Dateien, 2778 Zeilen; mit der Index-`README.md` 21 Dateien und 2867 Zeilen — Zahl in slice-063 präzisiert):** `modul-00` … `modul-16` sowie die drei
 Grundlagen-Abschnitte (Konventionen, Klassifikation, Durchsetzungsschicht).
 
 Keine ausgewiesene Lese-Lücke mehr. Wo ein Modul **nicht** zu einem Fund führt, steht das als
@@ -75,7 +75,7 @@ außerhalb des Repos, also genau dort, wo der nächste Lauf sie nicht zwingend s
 
 | # | Kat. | Quelle | Befund (gemessen) |
 |---|---|---|---|
-| **B-3** | **MEDIUM** | `modul-11`, `grundlagen-konventionen` §Referenz-Richtung | **Kein `verify`-Target.** Baseline trennt `make gates` (Code-Fragen) von `verify:` (DoD-/Closure-Fragen) und hängt dort u. a. `check-references` fail-closed ein. a-check hat **kein** `verify`; die DoD-Prüfung ist Prosa im Slice — Behauptung ohne Sensor. |
+| **B-3** | **MEDIUM** | `modul-11`, `grundlagen-konventionen` §Referenz-Richtung | **Kein `verify`-Target.** Baseline trennt `make gates` (Code-Fragen) von `verify:` (DoD-/Closure-Fragen) und hängt dort u. a. `check-references` fail-closed ein. a-check hat **kein** `verify`; die DoD-Prüfung ist Prosa im Slice — Behauptung ohne Sensor. *(Korrektur, nachgetragen in slice-063: der `check-references`-Teil trifft nicht zu. Die Referenz-Richtung ist bereits maschinell durchgesetzt — `matrix`-Modul in [`.d-check.yml`](../../../../.d-check.yml), gedeckt durch [MR-005](../../../../harness/conventions.md#mr-005--referenzmatrix-intra-spec-richtung--adrslice-disziplin-d-check-angleichung), Lauf über `make doc-check`. Der fehlende `verify`-Teil des Fundes bleibt gültig und wurde in slice-050 umgesetzt.)* |
 | **B-11** | **MEDIUM** | `modul-09` §Hard Rules („zwei Quadranten") | **Suppression-Verbot ist halb durchgesetzt.** `AGENTS.md` §3.2 verbietet `//nolint`; `.golangci.yml` erklärt das in **Zeile 3 als Kommentar** — aber `nolintlint` ist **nicht** unter den aktivierten Lintern. Die Hard Rule hat den inferential-feedforward-Quadranten und **keinen** computational-feedback-Quadranten; ein `//nolint` im Code liefe heute durch `make lint`. Billigster Fix im ganzen Bericht: einen Linter aktivieren. |
 | **B-21** | **MEDIUM** | `grundlagen-klassifikation` §Steering Loop, `modul-06` §Closure | **Kein Steering-Loop-Kanal.** Die 3×-Regel braucht einen Ort, an dem wiederkehrende Fehlermuster gezählt werden — Baseline: Steering-Loop-Einträge in der Wellen-Closure-Notiz. a-check hat den Bezug in slice-001…008 und **seither in keinem** der 40 folgenden Slices (§2). Konkreter Beleg für die Kosten: der Pipe-Fehler mit 4 Vorfällen an einem Tag hat bis heute keinen Sensor. |
 | **B-4** | **MEDIUM** | `modul-11`, `modul-05` §Closure | **`closure-note-reviewer` fehlt.** Die Vorlage liegt seit Etappe A vendored (`templates/.harness/skills/closure-note-reviewer.template.md`, `SHA256SUMS` Zeile 35), und `reviewer.md` verweist selbst auf den „Schwester-Skill … (Modul 11)". `.harness/skills/` trägt nur `reviewer.md`. Der fehlende Skill trägt die semantische Prüfung „Lerneintrag vs. Floskel". |
@@ -91,7 +91,7 @@ außerhalb des Repos, also genau dort, wo der nächste Lauf sie nicht zwingend s
 | **B-17** | **LOW** | `grundlagen-konventionen` §Source Precedence | **[MR-003](../../../../harness/conventions.md#mr-003--source-precedence-ohne-docsuser-rang) ist gegenstandslos geworden.** Die Adaption hieß „Source Precedence **ohne** `docs/user`-Rang". In `v3.5.2` führt die Default-Reihenfolge `docs/user/*.md` selbst auf **Rang 5** — und `AGENTS.md` §2 listet es real auf Rang 6. Die Abweichung beschreibt heute den Normalfall; sie gehört gestrichen, nicht gepflegt. |
 | **B-8** | **LOW** | `modul-13` §Vorhanden ≠ behauptet | **Maintenance-Target fehlt.** Modul 13 nennt `regelwerk-check` als Beispiel für „vorhanden, aber nicht als Gate behauptet". Genau dorthin gehört der **Freshness-Audit** aus [slice-047](../done/slice-047-baseline-vendoring.md) (Etappe-A-Fund F-6), der als Netz-Operation nicht in `gates` darf. |
 | **B-20** | **LOW** | `modul-16` §Produktionsfreigabe | **`releasing.md` ist Prozedur, keine Freigabe-Checkliste.** Fünf Abschnitte (Stand · Versionsquelle · Auslösen · Konsum · Aufruf-Referenz), **null** Checklisten-Items mit Beleg-Slot, keine Anti-Item-Liste, keine Incident-Klausel. Für ein Repo, das ein digest-gepinntes Image in fremde CI-Läufe ausliefert, ist die Beleg-Pflicht die eigentlich interessante Hälfte. |
-| **B-19** | **INFO** | `modul-12`, `modul-15` | **Replay und Telemetrie fehlen vollständig** — kein `evals/golden/`, kein Replay-Manifest, keine Span-/Token-Metrik. Folgewirkung: das Baseline-Closure-Kriterium „Replay-Lauf grün" (`modul-06`) ist für a-check **unerfüllbar**. Für ein deterministisches CLI-Tool ohne Agenten-Laufzeit ist der volle Apparat vermutlich unverhältnismäßig — dann gehört er als **bewusste Abweichung mit `MR-*`** deklariert, nicht stillschweigend ausgelassen. |
+| **B-19** | **INFO** | `modul-12`, `modul-15` | **Replay und Telemetrie fehlen vollständig** — kein `evals/golden/`, kein Replay-Manifest, keine Span-/Token-Metrik. Folgewirkung: das Baseline-Closure-Kriterium „Replay-Lauf grün" (`modul-06`) ist für a-check **unerfüllbar**. Für ein deterministisches CLI-Tool ohne Agenten-Laufzeit ist der volle Apparat vermutlich unverhältnismäßig — dann gehört er als **bewusste Abweichung mit `MR-*`** deklariert, nicht stillschweigend ausgelassen. *(Vermerk aus slice-063: die Kategorie **INFO** passt nicht zur abgeleiteten Handlung — `modul-10` definiert sie als „Hinweis, keine Aktion erwartet", der Befund formuliert aber einen Auftrag und hat real zu [MR-008](../../../../harness/conventions.md#mr-008--kein-replay-keine-agenten-telemetrie) geführt. Die Einstufung bleibt **unverändert** stehen: sie ist Beleg ihres Zeitpunkts, und eine nachträglich „richtig" gesetzte Kategorie wäre Geschichtsklitterung.)* |
 
 ## 4. Negativbefunde (geprüft, ohne Befund)
 
@@ -106,13 +106,15 @@ außerhalb des Repos, also genau dort, wo der nächste Lauf sie nicht zwingend s
 - geprüft, ohne Befund: **Sensors-Tabelle ohne Lauf-Status** (`modul-13`, `grundlagen-konventionen`) — `harness/README.md` trägt keine Status-Spalte; Rückbau lief bereits am 2026-07-25.
 - geprüft, ohne Befund: **Gate-Landschaft** — 13 Targets über sechs Sensor-Klassen; die Modul-13-Warnung „nur die generischen sechs" trifft nicht zu.
 - geprüft, ohne Befund: **Traceability-Constraint** (`grundlagen-konventionen`) — Commit-Hook plus CI-Range über `make trace-check`, ID-Pflicht in `AGENTS.md` §5.
-- geprüft, ohne Befund: **Spec-Stratifizierung** (`modul-03`, `grundlagen-konventionen`) — drei Straten mit `LH-`/`SPEC-`/`ARC-`-Präfixen vorhanden; „ADR schärft Spezifikation, nie das Lastenheft" ist als `AGENTS.md` §3.4/§5 verkörpert. *(Die maschinelle Hälfte — `check-references` — fehlt, siehe B-3.)*
+- geprüft, ohne Befund: **Spec-Stratifizierung** (`modul-03`, `grundlagen-konventionen`) — drei Straten mit `LH-`/`SPEC-`/`ARC-`-Präfixen vorhanden; „ADR schärft Spezifikation, nie das Lastenheft" ist als `AGENTS.md` §3.4/§5 verkörpert. *(Korrektur, nachgetragen in slice-063: der ursprüngliche Zusatz „die maschinelle Hälfte fehlt" war falsch — das `matrix`-Modul prüft die Referenz-Richtung fail-closed über `make doc-check`, siehe [MR-005](../../../../harness/conventions.md#mr-005--referenzmatrix-intra-spec-richtung--adrslice-disziplin-d-check-angleichung).)*
 - geprüft, ohne Befund: **Fehlannahme-Regeln** `modul-00` — keine der vier trifft auf a-check zu; das Repo führt Spec, ADRs und Sensoren statt Prompt-Wissen.
 
 ## 5. Etappen-Zuordnung
 
 - **Etappe C** (`MR-*`-Bereinigung): **B-7** (`v1.3.0`-Aussage), **B-17** ([MR-003](../../../../harness/conventions.md#mr-003--source-precedence-ohne-docsuser-rang)
-  gegenstandslos),
+  gegenstandslos — **entfallen, Vermerk aus slice-063:** der Fund war schon bei seiner Entstehung
+  erledigt, weil der Eintrag seit 2026-06-21 einen ausdrücklichen `Aufgelöst`-Block trägt; Etappe C
+  hat ihn folgerichtig nicht behandelt, das aber nirgends gesagt. Es bleibt nichts zu tun),
   **B-2**-Teil (pauschaler Repo-Modus ist gegen die Baseline falsch geschnitten), **B-19**
   (bewusste Abweichung deklarieren statt auslassen) — dazu die Nummern-Kollision aus slice-046 und
   die sieben LOW aus dem Etappe-A-Zweit-Review.
@@ -142,7 +144,7 @@ Praxis, die laut §2 zweimal eingeschlafen ist.
 
 ## 7. Closure-Notiz
 
-**Geliefert:** 21 Funde gegen die vollständig gelesene Baseline `v3.5.2` (2867 Zeilen), zwölf
+**Geliefert:** 21 Funde gegen die vollständig gelesene Baseline `v3.5.2` (2778 Zeilen, plus Index-README 2867), zwölf
 Negativbefunde, vier geschnittene Folge-Etappen. Maintainer-Abnahme der Reihenfolge **E vor D**
 am 2026-07-25.
 
