@@ -203,6 +203,14 @@ Aggregat). Ob ein Gate gerade grün ist, sagt die CI (Badge im
   Einführung bestehenden sind **grandfathered** (vertraglich bindend, Rand- und
   Negativfälle bereits in Prosa — ein Umbau träfe die Form statt der Substanz),
   und die Grandfather-Liste wächst nicht mit.
+- **Diskrepanz-Trichter:** eine Ausnahme von einer Regel oder einem Gate wird **nicht** ad hoc
+  gesetzt, sondern über zwei Fragen eingeordnet — Granularität **vor** Temporalität: Cluster im
+  selben Geltungsbereich ⇒ BF-Sub-Area-Markierung in
+  [`harness/conventions.md`](harness/conventions.md#modus-deklaration-pro-sub-area); einzelne
+  Diskrepanz mit erreichbarem Trigger ⇒ **Carveout** unter
+  [`docs/plan/carveouts/`](docs/plan/carveouts/README.md); Trigger nie erreichbar ⇒ permanente
+  ADR. Bootstrap-aware Gates gehören in keine der drei Klassen — sie stufen die Prüfung, sie
+  nehmen keine Diskrepanz aus (slice-065).
 - **Steering-Loop:** wiederkehrende Fehlermuster werden in
   [`docs/plan/steering-loop.md`](docs/plan/steering-loop.md) gezählt. Ab dem
   **zweiten** gleichartigen Vorfall entsteht ein Eintrag, ab dem **dritten** ist
