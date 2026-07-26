@@ -97,23 +97,39 @@ guard_verdict() {
     // Anfuehrungszeichen entgeht damit. Der Guard ist ein Stolperdraht, keine
     // Sandbox (Regelwerk §Durchsetzungsschicht): er faengt die versehentliche
     // Drift, nicht die umgeleitete.
+    //
+    // Heredoc-Inhalte sind DATEN, kein Kommando: eine Commit-Message oder ein
+    // Dateiinhalt darf ein Gate-Muster zitieren, ohne es auszufuehren. Ohne das
+    // blockierte die in slice-064 verschaerfte Regel ihren eigenen Commit, weil
+    // dessen Message den abgelehnten Aufruf zitiert (SL-004 — ein Sensor meldet
+    // sein eigenes Umfeld, vierter Vorfall). GRENZE wie bei Sub-Shell-Strings:
+    // ein Heredoc an einen Interpreter (`bash <<EOF`) entgeht ebenfalls.
+    function stripHeredoc(cmd) {
+      return cmd.replace(
+        /<<-?\s*[\x27"]?([A-Za-z_][A-Za-z0-9_]*)[\x27"]?\r?\n[\s\S]*?\r?\n\1\b/g,
+        (m, tag) => "<<" + tag + "\n" + tag);
+    }
     const blank = t => "\u0000".repeat(t.length);
     function stripQuoted(cmd) {
       return cmd.replace(/"[^"]*"|'\''[^'\'']*'\''/g, m => m[0] + blank(m.slice(1, -1)) + m[0]);
     }
 
     function pipeViolation(raw) {
-      const cmd = stripQuoted(raw);
+      const cmd = stripQuoted(stripHeredoc(raw));
       // Trennzeichen erhalten, damit die Folge-Beziehung lesbar bleibt.
       const parts = cmd.split(/(\|\||&&|\||;|\r?\n)/);
       for (let i = 0; i < parts.length; i++) {
         if (!hasGateMake(parts[i])) continue;
         const sep = parts[i + 1];
         if (sep === "|") return true;                    // Ausgabe in eine Pipe
-        if (sep === "&&") {
-          const rest = parts.slice(i + 2).join("");
-          if (/\bgit\s+commit\b/.test(rest)) return true;  // Commit am Lauf
-        }
+        // Commit am Lauf — in JEDER Verkettung, nicht nur nach `&&`.
+        // Bis slice-064 hing diese Pruefung an `sep === "&&"`; ein Commit nach
+        // `;` oder Zeilenumbruch fiel durch. Genau so ging 1a9f270 mit rotem
+        // `make gates` heraus (SL-001, sechster Vorfall) — und zwar in der
+        // Schreibweise, die der Guide selbst nahelegt: wer die Umleitung in eine
+        // Datei befolgt, verkettet danach mit `;`.
+        const rest = parts.slice(i + 2).join("");
+        if (/\bgit\s+commit\b/.test(rest)) return true;
       }
       return false;
     }
@@ -136,7 +152,7 @@ emit_block_pipe() {
   cat <<'JSON'
 {
   "decision": "block",
-  "reason": "Gate-Lauf nicht verschlucken (AGENTS.md §6, slice-057): `make <gate> | …` liefert den Exit-Code des letzten Pipe-Glieds, nicht den von make — ein rotes Gate verschwindet spurlos. Ebenso `make <gate> && git commit`: der Commit haengt dann an einem ungeprueften Lauf. Richtig: `make <gate> > /tmp/gates.log 2>&1; echo \"EXIT=$?\"` und den Commit erst nach geprueftem Exit-Code."
+  "reason": "Gate-Lauf nicht verschlucken (AGENTS.md §6, slice-057): `make <gate> | …` liefert den Exit-Code des letzten Pipe-Glieds, nicht den von make — ein rotes Gate verschwindet spurlos. Ebenso ein `git commit` nach einem Gate-Lauf im SELBEN Aufruf — gleich mit welcher Verkettung (`&&`, `;`, Zeilenumbruch): der Commit haengt dann an einem Lauf, dessen Exit-Code niemand gelesen hat. Richtig: `make <gate> > /tmp/gates.log 2>&1; echo \"EXIT=$?\"` als eigener Aufruf, den Exit-Code lesen, und den Commit erst danach in einem ZWEITEN Aufruf."
 }
 JSON
 }
@@ -179,6 +195,13 @@ if [ "${1:-}" = "--selftest" ]; then
   assert ok    '{"tool_input":{"command":"make gates && echo fertig"}}'         "Verkettung ohne Commit"
   assert ok    '{"tool_input":{"command":"echo \"make gates | tail\" >> doku.md"}}'   "Muster nur im Argument-String"
   assert block-pipe '{"tool_input":{"command":"make doc-immutable | tail -1"}}'  "doc-immutable ist CI-durchgesetzt"
+  # slice-064: der reale Fall aus 1a9f270 — Commit nach `;` statt nach `&&`.
+  assert block-pipe '{"tool_input":{"command":"make gates > /tmp/g.log 2>&1; git commit -m x"}}'   "Commit nach ; am Gate-Lauf"
+  assert block-pipe '{"tool_input":{"command":"make gates > /tmp/g.log 2>&1\ngit commit -m x"}}'   "Commit nach Zeilenumbruch"
+  assert ok    '{"tool_input":{"command":"make gates > /tmp/g.log 2>&1; echo \"EXIT=$?\""}}'  "vorgeschriebene Form ohne Commit"
+  # SL-004: ein Heredoc, das das Muster ZITIERT, ist kein Aufruf. Diese Fixture
+  # trifft das Muster beinahe und prueft es damit wirklich (Lehre slice-058).
+  assert ok    '{"tool_input":{"command":"git commit -F - <<EOF\nfix: make gates > log 2>&1; git commit -m x wird abgelehnt\nEOF"}}'  "Gate-Muster nur im Heredoc zitiert"
   assert ok    '{"tool_input":{"command":"make doc-repair | git apply -"}}'     "doc-repair liefert einen Patch auf stdout"
 
   # ── Drift-Waechter fuer die GATES-Liste (slice-059, R-057-F1) ───────────────

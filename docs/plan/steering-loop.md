@@ -41,9 +41,20 @@ ohne Ort nicht überlebt.
   `make <gate> | …` und `make <gate> && git commit` fail-closed ab
   (`.claude/hooks/pretooluse-command-guard.sh`, Regel 2). Richtig ist
   `make <gate> > datei 2>&1` mit getrennt geprüftem Exit-Code.
+- **Sechster Vorfall (2026-07-26) — und eine Lücke in der Antwort selbst.** `1a9f270` ging mit
+  **rotem** `make gates` heraus (Exit 2). Der Lauf war vorschriftsmäßig in eine Datei umgeleitet
+  und der Exit-Code ausgegeben — gelesen wurde er nicht, und der Commit folgte im selben
+  Tool-Call nach einem `;`. Die Guard-Regel prüfte den Rest auf `git commit` **nur** nach `&&`;
+  bei `;` oder Zeilenumbruch fiel sie durch. Die Lücke traf damit genau die Schreibweise, die der
+  Guide selbst nahelegt: wer die Umleitung befolgt, verkettet danach mit `;`.
+  **Geschlossen in slice-064** — die Prüfung gilt jetzt für jede Verkettung, belegt durch
+  Selbsttest-Fixture *und* Live-Probe im echten Tool-Call.
 - **Grenze, ehrlich:** die Regel ist quote-bewusst und greift darum nicht, wenn dasselbe Muster
   in einem Sub-Shell-String steht. Der Guard ist ein *Stolperdraht, keine Sandbox*; er fängt die
-  versehentliche Drift, nicht die umgeleitete.
+  versehentliche Drift, nicht die umgeleitete. **Ebenfalls bewusst abgelehnt** wird seit
+  slice-064 die geprüfte Verzweigung (`if make gates; then git commit; fi`): von außen ist
+  „Exit-Code gelesen" nicht von „ausgegeben und ignoriert" zu unterscheiden, und ein Guard, der
+  das zu erraten versucht, wird unzuverlässig. Der Commit gehört in einen eigenen Aufruf.
 - **Beleg:** 13 Diskriminierungs-Proben (fünf müssen greifen, sechs dürfen nicht, zwei für die
   unveränderte Regel 1), plus sieben Fälle im `--selftest` an `make gates`.
 - **Nebenbeobachtung:** die Regel feuerte **während ihrer eigenen Entwicklung** zweimal auf den
