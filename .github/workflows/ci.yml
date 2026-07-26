@@ -66,6 +66,8 @@ jobs:
           fi
           echo "Prüfe Commit-Range: $RANGE"
           make trace-check RANGE="$RANGE"
+          echo "Commit-Scope-Konsistenz (AGENTS §5, SL-003) über die Range:"
+          make commit-scope-check RANGE="$RANGE"
           echo "ADR-Immutabilität (vcs) über die Range:"
           make doc-immutable RANGE="$RANGE"
 

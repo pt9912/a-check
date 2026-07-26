@@ -120,7 +120,24 @@ ohne Ort nicht überlebt.
 - **Klasse:** Schwelle überschritten (3×) ⇒ Harness-Lücke.
 - **Antwort (Guide, slice-061):** Schritt 10 des Workflow-Skeletts — der Betreff nennt, was im
   Diff steht; wandert Substanz eines anderen Slice mit, ist es ein eigener Commit mit dessen ID.
-- **Antwort (Sensor): offen, aber vorbereitet.** Die Hypothese *„ein `docs(planning)`/
+- **Fünfter Vorfall — der Eintrag selbst (2026-07-26):** `f0e7805` („docs(planning): SL-003 und
+  SL-004") ändert `.claude/commands/slice.md` und `docs/plan/steering-loop.md`. Der Commit, der
+  diesen Eintrag anlegt, begeht ihn. Dazu `7faa708` („docs(planning): slice-043 in-progress →
+  done") mit einem Review-Report im selben Commit — Zähler damit bei **fünf**. Der Guide aus
+  slice-061 hat seinen ersten Vorfall nicht verhindert; dieselbe Lage wie bei `SL-001` vor
+  slice-057 und `SL-002` vor slice-060, zum dritten Mal belegt.
+- **Antwort (Sensor): gebaut (slice-062)** — `make commit-scope-check`, in der CI über die
+  Commit-Range neben `trace-check`. Die Regel steht in [`AGENTS.md`](../../AGENTS.md) §5 und gilt
+  **nur für den Scope `(planning)`**: dort ist sie über die ganze Historie rauschfrei (fünf
+  Treffer bei 74, alle echt), während sie für `docs(...)` allgemein 31 Treffer bei 193 erzeugte —
+  `docs(spec)` ändert legitim `spec/`, `docs(adr)` legitim ADRs. Jeder Commit wird an der Fassung
+  gemessen, die zu **seinem** Zeitpunkt galt; ältere sind damit grandfathered, ohne dass ein
+  Stichtags-Hash nötig wäre.
+- **Frühere Einschätzung, korrigiert:** slice-061 hielt den Sensor für „nachweislich rauschfrei",
+  geprüft an acht Commits. Über die volle Historie trug das nur scope-spezifisch. Die Stichprobe
+  war zu klein für die Behauptung — festgehalten, weil dieselbe Verkürzung den nächsten
+  Sensorentwurf treffen kann.
+- **Antwort (Sensor), Entwurfsstand vor slice-062:** Die Hypothese *„ein `docs(planning)`/
   `fix(planning)`-Commit ändert nur `docs/plan/planning/`"* wurde gegen die Historie geprüft und
   **diskriminiert sauber**: sie fängt alle drei Vorfälle und lässt fünf geprüfte legitime
   `docs(planning)`-Commits durch, ohne Rauschen. Sie wird **nicht** in slice-061 gebaut, weil die

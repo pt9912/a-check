@@ -146,6 +146,7 @@ Aggregat). Ob ein Gate gerade grün ist, sagt die CI (Badge im
 | `make image-test` | [AC-FA-DIST-001](spec/lastenheft.md#ac-fa-dist-001--distribution-image---print-mk-a-checkmk) + nativ==Container-Akzeptanz + Fragment-Parität (committete [`a-check.mk`](a-check.mk) == `--print-mk`, slice-034) gegen das gebaute Image |
 | `make ci` | CI-äquivalent: `gates` + `image-test` (Workflow `.github/workflows/ci.yml`) |
 | `make trace-check` | Traceability via Modul `commits` ([ADR-0021](docs/plan/adr/0021-commits-modul-trace-check.md)): `AC-*`/`ADR-*`/`MR-*`/`slice`-ID je Commit (§5; `MSGFILE=` Hook, `RANGE=` CI) |
+| `make commit-scope-check` | Commit-Scope `(planning)` berührt nur `docs/plan/planning/` (§5, [`SL-003`](docs/plan/steering-loop.md)); misst jeden Commit an der zu seinem Zeitpunkt geltenden Fassung (`RANGE=` wie `trace-check`, slice-062) |
 
 ## 5. Dokumentations-Regeln
 
@@ -157,6 +158,19 @@ Aggregat). Ob ein Gate gerade grün ist, sagt die CI (Badge im
   beim Spec-/ADR-Schreiben nach dem deklarierten Schema vergeben (siehe
   [`harness/conventions.md`](harness/conventions.md)) — nie ad hoc im
   Commit/PR; Agenten referenzieren IDs, sie erfinden keine.
+- **Commit-Scope `(planning)`:** ein Commit mit diesem Scope (`docs(planning)`,
+  `fix(planning)`, `chore(planning)`) berührt **ausschließlich**
+  `docs/plan/planning/`. Wandert Substanz eines anderen Bereichs mit, ist das ein
+  eigener Commit mit passendem Scope. Durchgesetzt durch `make commit-scope-check`
+  (slice-062); jeder Commit wird an der Fassung gemessen, die zu **seinem**
+  Zeitpunkt galt, ältere sind damit grandfathered.
+  **Warum nur dieser Scope:** über die gesamte Historie ist die Regel hier
+  rauschfrei — fünf Treffer bei 74 Commits, alle fünf echte Diskrepanzen
+  ([`SL-003`](docs/plan/steering-loop.md)). Für `docs(...)` allgemein wären es 31
+  bei 193, weil `docs(spec)` legitim `spec/` und `docs(adr)` legitim ADRs ändert;
+  eine Regel, die den Bestand massenhaft bricht, wird abgeschaltet statt befolgt.
+  Ein weiterer Scope wird erst geregelt, wenn er auffällt — und dann gemessen,
+  nicht geraten.
 - Neue oder geänderte `AC-*`-Anforderungen entstehen nur in
   [`spec/lastenheft.md`](spec/lastenheft.md) — nie per ADR (ADRs schärfen
   die Spezifikation, nicht das Lastenheft).
