@@ -107,60 +107,62 @@
 
 ---
 
-## Wiedereinstieg 2026-07-26
+## Stand 2026-07-26 (nach Review-Serie und Fix-Schnitten)
 
-**Stand.** `main` steht unverändert auf `20ee992` (Ende Etappe A). Die Etappen B–F(1/3) liegen als
-**eine lineare Kette von 35 Commits** darüber — die sechs Branch-Namen sind Wegmarken derselben
-Kette, keine unabhängigen Zweige: `slice-057-steering-loop` ist die Spitze und **enthält alle
-anderen** (verifiziert mit `git merge-base --is-ancestor`). Wer die Spitze merged, merged alles.
-`make gates` und `make verify` sind auf der Spitze grün. Der Branch
-`slice-031-deklarations-index-split-package` ist ein Altbestand und längst in `main`.
+**Etappe F ist zu einem Drittel gemacht; darüber liegen eine Review-Serie und sieben
+Fix-Slices.** Die Kette über `main` umfasst **56 Commits** (Stand vor dem Merge; die im
+vorherigen Wiedereinstiegs-Block genannten „35" bezogen sich auf den Stand am Morgen).
 
-**Was als Nächstes ansteht — in dieser Reihenfolge:**
+**Review-Serie (2026-07-26).** Sechs Reports unter [`docs/reviews/`](../../../reviews/README.md),
+je einer pro Wegmarke der Migrations-Kette, plus ein Nachtrag. **22 Findings** (4 HIGH, 9 MEDIUM,
+8 LOW, 1 INFO), keiner merge-blockierend. Alle vier HIGH liegen in **einer** Klasse: Aussagen über
+die Arbeit, die sich mit der Arbeit nicht decken — zwei gate-rote Wegmarken-Endstände trotz
+„Gates grün — belegt", zweimal vertauschte Commit-Etiketten. Die **Substanz** war durchweg
+belastbar: jeder gelieferte Sensor wurde mit einer eigenen Negativ-Probe nachgestellt. Ein
+zunächst als HIGH notierter Fund ist an der Gegenprobe gefallen und wurde
+[zurückgezogen](../../../reviews/2026-07-26-nachtrag-etappe-c-f2-zurueckgezogen.md). Die Reports
+sind **Selbst-Reviews** — ein unabhängiger Lauf bleibt angezeigt.
 
-1. **Review + Merge** (auf Maintainer-Wort, [Regelwerk Modul 10](../../../../.harness/baseline/v3.5.2/regelwerk/modul-10-review-harness.md)).
-   Weil es **eine** Kette ist, gibt es zwei Wege — die Wahl gehört dem Maintainer:
-   - **(a) ein Review über die ganze Kette** `main..slice-057-steering-loop` (35 Commits,
-     10 Slices) und ein Fast-Forward. Schnell, aber ein Report muss sehr viel tragen.
-   - **(b) sechs Reviews entlang der Wegmarken**, je Etappe einer — das entspricht der Praxis
-     der letzten Slices und hält die Reports lesbar. Gemergt wird trotzdem nur einmal, am Ende.
-   Empfehlung: **(b)**, mit je einem Report unter [`docs/reviews/`](../../../reviews/README.md) —
-   **neu:** die Kopf-Metadaten (Review-Art, Skill-Version, Modell-ID) sind seit slice-056 Pflicht.
-   Ein **unabhängiger** Reviewer ist angezeigt: alle zehn Slices stammen von derselben Instanz,
-   und das Etappe-A-Zweit-Review hat genau in dieser Lage sechs MEDIUM gefunden.
-2. **Etappe F (2/3)** — Carveout-Ort und Diskrepanz-Trichter: `docs/plan/carveouts/` existiert
-   nicht, obwohl `CO-NNN` seit [MR-000](../../../../harness/conventions.md#mr-000--baseline-aussage-inkl-id-schema-deklaration) deklariert ist (**B-14**); der Trichter Carveout ·
-   BF-Markierung · permanente ADR ist ungenutzt (**B-10**).
-3. **Etappe F (3/3)** — Wellen-Closure-Prozedur (**B-13**, fünf Schritte + `done/welle-NN-results.md`)
-   und Rollen-Übergaben (**B-9**). Mit B-13 wandert der Steering-Loop-Kanal an seinen
-   Baseline-Ort.
-4. **Offen aus SL-002:** eine Prüfung, die **vor** dem `git mv` meldet, welche relativen Verweise
-   brechen — gehört zu `make verify`.
+**Fix-Schnitte (slice-058 … slice-064), alle abgeschlossen:**
+
+| Slice | Gegenstand |
+|---|---|
+| [058](../done/slice-058-sensor-praezision.md) | drei Sensor-Ungenauigkeiten in `tools/` |
+| [059](../done/slice-059-durchsetzungs-luecken.md) | Guard-Gate-Liste mit **Drift-Wächter**, `verify` ohne Befund-Maskierung, Schritt 9 |
+| [060](../done/slice-060-slice-link-invariante.md) | `verify-slice-links` — SL-002 als **Invariante** statt Vorhersage |
+| [061](../done/slice-061-steering-loop-eintraege.md) | `SL-003` und `SL-004` angelegt |
+| [062](../done/slice-062-commit-scope.md) | Commit-Scope-Konvention + `commit-scope-check` |
+| [063](../done/slice-063-doku-korrekturen.md) | vier Nachträge in slice-048, 14 Status-Felder |
+| [064](../done/slice-064-guard-verkettung.md) | Guard-Regel 2 greift in **jeder** Verkettung |
+
+**[Steering-Loop](../../steering-loop.md): vier Einträge.** `SL-001` (sechs Vorfälle) und `SL-002`
+(neun) sind in **beiden** Quadranten durchgesetzt, `SL-003` (fünf) ebenfalls seit slice-062;
+`SL-004` (vier) hat bewusst nur einen Guide — es beschreibt Bauwissen, für das es keinen
+Beobachtungspunkt gibt. **Vier der Vorfälle stammen aus den eigenen Läufen dieser Serie** und
+wurden je von einem Sensor gefangen, nicht von Aufmerksamkeit.
+
+**Was als Nächstes ansteht:**
+
+1. **Etappe F (2/3)** — Carveout-Ort und Diskrepanz-Trichter: `docs/plan/carveouts/` existiert
+   nicht, obwohl `CO-NNN` seit [MR-000](../../../../harness/conventions.md#mr-000--baseline-aussage-inkl-id-schema-deklaration)
+   deklariert ist (**B-14**); der Trichter Carveout · BF-Markierung · permanente ADR ist ungenutzt
+   (**B-10**).
+2. **Etappe F (3/3)** — Wellen-Closure-Prozedur (**B-13**) und Rollen-Übergaben (**B-9**). Mit
+   B-13 wandert der Steering-Loop-Kanal an seinen Baseline-Ort.
+3. **Ein unabhängiges Review** über die Kette, falls gewünscht — die vorliegenden Reports sind
+   Selbst-Reviews derselben Modell-Familie.
 
 **Was bewusst offen bleibt** (keine Handlung nötig, nur nicht vergessen):
 `F-11` aus dem Etappe-A-Zweit-Review (Heilung bräche die Immutabilitäts-Regel,
 [slice-056 §3](../done/slice-056-sub-area-modus.md)); die Integritäts-Hälfte von
 `make regelwerk-check` ist gate-fähig, aber bewusst nicht im Aggregat
-([slice-049 §3](../done/slice-049-mechanik-sensoren.md)); `strict_coverage`, Kandidat 2b, der
+([slice-049 §3](../done/slice-049-mechanik-sensoren.md)); der `SL-003`-Sensor deckt nur den
+Scope `(planning)`, weitere erst nach eigener Messung; `strict_coverage`, Kandidat 2b, der
 `tech.pattern`-Mikro-CR und wildcard-fähiges Ziel-Matching wie bisher.
 
-**Nicht vergessen:** `[Unreleased]` im CHANGELOG ist seit v0.16.0 leer — die Migration berührt
-**keine** Produkt-Achse (kein `AC-*`, kein `SPEC-*`, kein Code in `internal/`), es steht also kein
-Release an. Der nächste Release-Anlass wäre ein Produkt-Slice, nicht diese Etappen.
->
-> **Sonst kein aktiver Faden offen.** Vertagt/gated: `strict_coverage` (Folge-Slice), Kandidat 2b
-> (Präfix-Allowlist — **Begründung erodiert 2026-07-25**: P2 zerfällt in Kanten + Abdeckungs-Diagnose
-> + Compiler, keiner davon braucht die Beweislast-Umkehr;
-> [slice-045 §5.1](../open/slice-045-intern-extern-dateimenge.md)), der `tech.pattern`-Mikro-CR,
-> wildcard-fähiges Ziel-Matching
-> ([ADR-0028](../../adr/0028-ziel-glob-schattenwurf.md)). **Nächster Schritt: ein Release** —
-> `[Unreleased]` trägt drei Auslieferungen (slice-042/043/044); erst danach kann b-cad seine
-> P1-`grep`-Regel zurückbauen.
-> Bei
-> [slice-013](../open/slice-013-driving-driven-vertiefung.md) ist **Entscheid 0 abgenommen**
-> (2026-07-25): Teil B (Port→Port) **verworfen**, Teil A (Auto-Inferenz) **vertagt** — der Slice
-> bleibt nur noch als Entwurf für A offen, mit geschärftem Trigger (§0). Kandidat 2b
-> (Präfix-Allowlist) bleibt gated und hängt hier, nicht mehr an einem Slice in `open/`.
+**Nicht vergessen:** `[Unreleased]` im CHANGELOG ist seit v0.16.0 leer — die Migration und die
+Fix-Schnitte berühren **keine** Produkt-Achse (kein `AC-*`, kein `SPEC-*`, kein Code in
+`internal/`), es steht also kein Release an. Der nächste Release-Anlass wäre ein Produkt-Slice.
 
 **Format-Regel:** Die Roadmap ist eine Reihenfolge von **Wellen**, keine
 Reihenfolge von Terminen. Termine erscheinen — falls überhaupt — als
