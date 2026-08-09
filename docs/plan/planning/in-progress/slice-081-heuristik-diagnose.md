@@ -191,7 +191,17 @@ sondern begrenzt sie:** `#include "adapters/ui/panel.h"` aus `src/core/` bleibt 
 ein Verstoß ist — das Symbol trägt das `src/`-Präfix nicht und löst auf keine Schicht auf. Diese
 Klasse meldet die Diagnose bewusst **nicht** (von repo-externem Code nicht unterscheidbar,
 [ADR-0031](../../adr/0031-heuristik-grenzen-diagnose.md) Entscheidung 5). Der Bedarf für die
-Ziel-Seiten-Diagnose aus `CR-2` ist damit an einem laufenden Beispiel belegt, nicht nur behauptet.
+Ziel-Seiten-Diagnose aus [slice-085](../open/slice-085-schicht-ohne-aufloesung.md) (`CR-2`) ist
+damit an einem laufenden Beispiel belegt, nicht nur behauptet.
+
+**Lerneintrag — Form: neuer Sensor.** Als Prüfsatz: *Ein Index, der von Hand gepflegt wird, braucht
+einen Sensor in der Richtung Baum → Index; die Richtung Index → Baum fällt beim Verlinken ohnehin
+auf.* `doc-check` deckt die eine Richtung vollständig ab — jeder Link muss auflösen —, und genau
+deshalb sah der ADR-Index vollständig aus, obwohl ihm ein Eintrag fehlte: was nicht verlinkt ist,
+kann auch nicht ins Leere zeigen. Dasselbe Muster hat
+[slice-071](../done/slice-071-sensor-scope-vollstaendig.md) für das Regelwerk-Manifest gefunden;
+dass es hier ein zweites Mal auftritt, macht es zur Klasse und nicht zum Einzelfall. Zu prüfen sind
+alle handgepflegten Indizes des Repos, nicht nur der ADR-Index.
 
 ## 7. Sub-Area-Modus
 
