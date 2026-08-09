@@ -162,7 +162,7 @@ vier bestätigt:
 verlangt bei Nichtpassung ausdrücklich Zerlegen statt Dehnen, und aus fünf Funden sind sieben
 geworden. Neuer Schnitt nach **Fehlermechanismus**, ein Mechanismus je Slice:
 [slice-068](../plan/planning/done/slice-068-phony-vollstaendig.md) (Target läuft gar nicht) ·
-[slice-069](../plan/planning/open/slice-069-sensor-fehler-propagierung.md) (Sensor verschluckt
+[slice-069](../plan/planning/in-progress/slice-069-sensor-fehler-propagierung.md) (Sensor verschluckt
 einen Fehler) ·
 [slice-070](../plan/planning/open/slice-070-grundgesamtheit-messen.md) („nichts gefunden" ≠
 „nichts da") ·
