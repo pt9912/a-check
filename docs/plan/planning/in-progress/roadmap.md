@@ -23,8 +23,15 @@ trotzdem schließen → der Audit fällt durch, weil Slices unbelegt sind."
 in seiner Closure-Notiz unter `done/`. Alle liegen dort — mit einer Ausnahme:
 [slice-046](../open/slice-046-regelwerk-v352-migration-analyse.md) liegt weiterhin in `open/` und
 trägt eine offene Abnahme, während das bisherige Closure-Log „alle Slices in `done/`" behauptete.
-Die Slices für die 15 Review-Findings sind **noch nicht geschnitten**; solange sie fehlen, ist die
-Slice-Liste dieser Welle unvollständig. Sie zu schneiden ist der nächste Zug.
+Für die 15 Review-Findings ist **Gruppe A** geschnitten — nach Fehlermechanismus, ein Mechanismus
+je Slice: [slice-068](../open/slice-068-phony-vollstaendig.md) (Target läuft gar nicht) ·
+[slice-069](../open/slice-069-sensor-fehler-propagierung.md) (Sensor verschluckt einen Fehler) ·
+[slice-070](../open/slice-070-grundgesamtheit-messen.md) („nichts gefunden" ≠ „nichts da") ·
+[slice-071](../open/slice-071-sensor-scope-vollstaendig.md) (nur ein Teil des Bestands gemessen).
+Ein erster Sammel-Entwurf über alle fünf Funde wurde nach einem unabhängigen **Plan**-Review
+([Report](../../../reviews/2026-08-09-slice-068-plan-review.md), 4 HIGH) zurückgezogen und zerlegt;
+dabei kamen zwei weitere False-Greens hinzu. Die Gruppen **B**, **C** und **D** sind **noch nicht
+geschnitten** — solange sie fehlen, ist die Slice-Liste dieser Welle unvollständig.
 
 **Trigger (beobachtbar).** Die Welle schließt, wenn alle ihre Slices in `done/` liegen —
 [slice-046](../open/slice-046-regelwerk-v352-migration-analyse.md) eingeschlossen —, jedes im
