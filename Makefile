@@ -99,12 +99,19 @@ verify-slice-links: ## Verweise wandernder Slices ueberleben den Lifecycle-Wechs
 commit-scope-check: ## Commit-Scope (planning) beruehrt nur docs/plan/planning/ (AGENTS §5, SL-003). MSGFILE=<datei> (Hook, prueft den Index VOR dem Commit), RANGE=a..b (CI), sonst HEAD~1..HEAD.
 	@MSGFILE="$(MSGFILE)" RANGE="$(RANGE)" bash tools/commit-scope-check.sh
 
-# Die drei Teil-Sensoren laufen als Sequenz im selben Rezept, NICHT als
+# Die Teil-Sensoren laufen als Sequenz im selben Rezept, NICHT als
 # Prerequisites: make bricht sonst beim ersten roten Target ab, und wer zwei
 # Verstoesse in verschiedenen Bereichen hat, sieht nur den ersten (Review
-# 2026-07-26, R-052-F4). Eine Verifikations-Schicht beantwortet drei
-# unabhaengige Fragen — sie soll alle drei beantworten, auch wenn eine mit Nein
+# 2026-07-26, R-052-F4). Eine Verifikations-Schicht beantwortet mehrere
+# unabhaengige Fragen — sie soll ALLE beantworten, auch wenn eine mit Nein
 # ausgeht. Die Einzel-Targets bleiben fuer den gezielten Aufruf bestehen.
+#
+# OHNE ZAHLENANGABE, bewusst (slice-077, Fund F-15): hier stand "die drei
+# Teil-Sensoren", waehrend das Rezept vier ausfuehrt — die vierte kam mit
+# verify-slice-links (slice-060) hinzu, ohne dass jemand die Zahl nachzog. Die
+# Zahl war nie die Aussage; die Aussage ist "alle, nicht nur die erste". Eine
+# Angabe, die bei jeder Erweiterung mitgepflegt werden muss und keinen Inhalt
+# traegt, ist eine Drift-Quelle ohne Gegenwert.
 verify: ## Verifikations-Schicht: DoD-/Closure-Fragen (vor der "fertig"-Meldung; getrennt von gates).
 	@fail=0; \
 	bash tools/verify-closure-notes.sh || fail=1; \

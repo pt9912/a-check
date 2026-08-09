@@ -191,10 +191,13 @@ Aggregat). Ob ein Gate gerade grün ist, sagt die CI (Badge im
 
   Der direkte Weg `open/ → in-progress/` bleibt zulässig; `next/` ist ein Ort,
   keine Pflichtstation ([`next/README.md`](docs/plan/planning/next/README.md)).
-- **WIP-Limit = 1.** Es liegt **genau ein** Slice in `in-progress/` (die Roadmap
-  zählt nicht mit). Das ist eine harte Größe, kein Vorschlag: zwei aktive Slices
+- **WIP-Limit = 1.** Es liegt **höchstens ein** Slice in `in-progress/` (die Roadmap
+  zählt nicht mit). Das ist eine harte Obergrenze, kein Vorschlag: zwei aktive Slices
   teilen sich einen Gate-Nachweis und eine Closure-Aufmerksamkeit, und beides
-  trägt nur einmal.
+  trägt nur einmal. **Null ist zulässig** — nach jedem Abschluss der Normalfall,
+  bis der nächste Slice gezogen wird. Bis slice-077 stand hier „genau ein"; das
+  machte aus dem Baseline-Maximum zusätzlich ein Minimum und erklärte den
+  regulären Leerlauf zum Regelverstoß.
 - **AC-Form:** die Pflicht-Bausteine einer Anforderung stehen in
   [`harness/conventions.md`](harness/conventions.md) §Anforderungs-Anlege-Prozess
   — dort seit jeher die drei Pfade (Happy/Boundary/Negative im
