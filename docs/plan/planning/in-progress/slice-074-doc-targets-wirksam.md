@@ -103,17 +103,48 @@ Die dritte Zeile ist nicht Beiwerk: mit `makefiles: [Makefile]` allein wären es
 
 ## 5. DoD
 
-- [ ] `.d-check.yml` trägt einen `targets:`-Block, und `make doc-targets` meldet beide Richtungen.
-      Beleg: die ersten beiden Proben aus §3, vorher Exit 0, nachher Exit ≠ 0.
-- [ ] Die `AGENTS.md`-§4-Zeile nennt den tatsächlichen Status des Targets (im Aggregat oder
+- [x] `.d-check.yml` trägt einen `targets:`-Block, und `make doc-targets` meldet beide Richtungen.
+      Beleg: Phantom-Target in `AGENTS.md` → Exit 2 · `phantom-target gate-phantom`;
+      undokumentiertes Rezept-Target → Exit 2 · `neues-gate gate-undocumented`. Vor diesem Slice
+      lieferten **beide** Fixtures Exit 0 mit „0 Befund(e)".
+- [x] Die `AGENTS.md`-§4-Zeile nennt den tatsächlichen Status des Targets (im Aggregat oder
       nicht). Beleg: `make gate-consistency` grün, das Doku ↔ Makefile prüft.
-- [ ] `make gates` grün und **ohne neue Falsch-Positive** — **Ausgabe in eine Datei**, Exit-Code
+- [x] `make gates` grün und **ohne neue Falsch-Positive** — **Ausgabe in eine Datei**, Exit-Code
       getrennt geprüft, nie in eine Pipe.
 
 ## 6. Closure-Notiz
 
-_(beim Abschluss ausfüllen — genau **ein** solcher Abschnitt je Slice,
-[`AGENTS.md`](../../../../AGENTS.md) §5; `make verify` prüft das.)_
+**Geliefert:** [`.d-check.yml`](../../../../.d-check.yml) trägt einen `targets:`-Block mit
+`makefiles: [Makefile, d-check.mk]`; die `AGENTS.md`-§4-Zeile weist das Target als **nicht im
+`gates`-Aggregat** aus und nennt den Grund. `make doc-targets` prüft damit, was es zu prüfen
+behauptet.
+
+**Lerneintrag — Form: geschärfte Regel.** Als Prüfsatz: *Ein Gate einzubinden heißt nicht, es zu
+konfigurieren — und ein unkonfiguriertes Modul meldet grün, nicht „unklar".*
+
+**Die Ursache** ist eine Lücke zwischen zwei Arbeitsschritten, die niemandem gehörte: das Target
+kam mit dem d-check-Pin-Bump ins Repo und wurde ordnungsgemäß in `AGENTS.md` §4 dokumentiert — der
+Konfigblock, ohne den es wirkungslos ist, gehörte weder zum Pin-Bump noch zur Doku-Zeile. Kein
+Sensor konnte es fangen: `gate-consistency` prüft, ob ein dokumentiertes Target **existiert**,
+nicht ob es etwas **tut**. Und d-check selbst bricht bei aktiviertem, aber unkonfiguriertem Modul
+nicht fail-closed ab, sondern meldet `0 Befund(e)`.
+
+**Besonders belastend:** das Modul war laut d-checks `slice-063` (v0.38.0) ausdrücklich als
+Ablösung von `gate-consistency.sh` gebaut, **mit Paritäts-Mutations-Beleg gegen genau dieses
+Skript**. Es stand dreizehn Minor-Versionen bereit und lief die ganze Zeit ins Leere.
+
+**Zwei beobachtbare Closure-Kriterien:**
+
+1. Ein Phantom-Target in einer `AGENTS.md`-Tabellenzeile macht `make doc-targets` rot
+   (`gate-phantom`), ein undokumentiertes Rezept-Target ebenso (`gate-undocumented`) — beide
+   Fixtures lieferten vor diesem Slice Exit 0.
+2. Der unveränderte Bestand bleibt bei allen drei betroffenen Läufen grün (`doc-targets`,
+   `gate-consistency`, `doc-check`) — die Konfiguration tauscht keine Falsch-Negative gegen
+   Falsch-Positive.
+
+**Folge-Slices:** [slice-073](../open/slice-073-dcheck-statt-eigenbau.md) entscheidet, ob
+`gate-consistency` (1)+(2) entfällt und `doc-targets` ins Aggregat wandert. Bis dahin läuft die
+Prüfung **doppelt** — bewusst und in `AGENTS.md` benannt.
 
 ## 7. Sub-Area-Modus
 

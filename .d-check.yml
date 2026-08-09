@@ -95,3 +95,17 @@ commits:
     - 'MR-\d{3}'
     - 'slice-\d+'
   exempt-pattern: '^(Merge |Revert )'
+
+# Modul `targets` (DC-FA-TGT-001): Deklarations-Konsistenz Doku <-> Build-Targets.
+# Ohne diesen Block laeuft `make doc-targets` wirkungslos — d-check aktiviert das
+# Modul per --enable, findet keine Konfiguration und meldet 0 Befunde, Exit 0
+# (slice-074). `makefiles` nennt BEIDE Fragmente: doc-tracked/doc-targets/doc-help
+# stehen in d-check.mk, mit [Makefile] allein waeren sie drei Falsch-Positive.
+# `exempt-targets` haelt dieselbe Utility-Menge wie UTILITY_TARGETS in
+# tools/gate-consistency.sh — solange beide Pruefer laufen, muessen sie sich
+# nicht widersprechen (die Abloesung entscheidet slice-073).
+targets:
+  makefiles: [Makefile, d-check.mk]
+  doc-tables: [AGENTS.md]
+  authority: AGENTS.md
+  exempt-targets: [help, build, compile, hooks, arch-graph]
