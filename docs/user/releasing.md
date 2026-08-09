@@ -64,18 +64,19 @@ jedem `v*`-Tag-Push:
    **Platzhalter** aus, keinen Digest
    ([ADR-0030](../plan/adr/0030-kein-digest-im-generierten-fragment.md),
    [AC-QA-03](../../spec/lastenheft.md#ac-qa-03--reproduzierbarkeit)) — ein Binary kann den
-   Digest des Image, in dem es läuft, nicht kennen. Bis slice-083 stand hier, `--print-mk`
-   gebe „den **aktuell** digest-gepinnten `A_CHECK_IMAGE`" aus; das war strukturell unmöglich
-   und hat einen realen Fehlpin verursacht.
+   Digest des Image, in dem es läuft, nicht kennen. **Wer Konsumenten auf `--print-mk` als
+   Digest-Quelle verweist, erzeugt einen Fehlpin auf das Vorgänger-Release.**
 6. **Register-Re-Pin + CHANGELOG-Schnitt** (slice-018): den CHANGELOG `[Unreleased]` →
    `[X.Y.Z] - <Datum>` schneiden **und** — im **selben** Commit, sonst Versions-Drift —
    den neuen Digest + die neue Version an [`version.md#aktuell`](../../version.md#aktuell)
    (Version, Datum, voller `@sha256:`-Digest) plus eine neue
    [Verlaufs](../../version.md#verlauf)-Zeile und den wandernden `<a id>`-Anker nachziehen.
-   Die harten Pins ([`a-check.mk`](../../a-check.mk),
-   [`internal/cli/cli.go`](../../internal/cli/cli.go)) und die `docker run`-Beispiele in
+   Der harte Pin [`a-check.mk`](../../a-check.mk) und die `docker run`-Beispiele in
    **beiden** READMEs ([`README.md`](../../README.md) + [`README.de.md`](../../README.de.md))
-   tragen den Digest verbatim; vergisst der Re-Pin eine davon, meldet
+   tragen den Digest verbatim — **drei** Stellen plus `version.md#aktuell`. `internal/cli/cli.go`
+   trägt **keinen** Digest: das erzeugte Fragment führt dort einen Platzhalter
+   ([ADR-0030](../plan/adr/0030-kein-digest-im-generierten-fragment.md)). Vergisst der Re-Pin eine
+   der drei, meldet
    `make gates` (via `tools/gate-consistency.sh`) die Digest- bzw. Versions-Drift
    **rot** — statt sie wie früher nur per Zufalls-Audit aufzudecken. Die Prosa-Erwähnungen
    („Status", „aktuelles Release", Handbuch-Software-Version) verlinken auf
@@ -96,7 +97,7 @@ Bürokratie verkommt. Ein Punkt je Phase (slice-051):
 | 4 | **Agenten** — `AGENTS.md` §4 beschreibt nur real existierende Targets | `make gate-consistency` (in `gates`), Exit 0 |
 | 5 | **Qualität** — Gates grün auf **frischem Klon** *und* in der CI mit demselben Image | CI-Run-Link + `make ci`-Ausgabe |
 | 6 | **Distribution** — OCI-Label `…image.version` == Tag; `--print-mk` gibt einen **Platzhalter**, keinen konkreten Digest ([ADR-0030](../plan/adr/0030-kein-digest-im-generierten-fragment.md)) | Job-Summary der Release-Pipeline + `docker inspect`-Zeile + `make image-test` Exit 0 (prüft beides mechanisch) |
-| 7 | **Register** — Digest und Version in `version.md#aktuell`, CHANGELOG, beiden READMEs, `a-check.mk`, `cli.go` identisch | `make gates` **nach** dem Re-Pin, Exit 0 |
+| 7 | **Register** — Digest und Version in `version.md#aktuell`, CHANGELOG, beiden READMEs und `a-check.mk` identisch (`cli.go` trägt keinen Digest, sondern den Platzhalter) | `make gates` **nach** dem Re-Pin, Exit 0 |
 | 8 | **Betrieb** — die Incident-Klausel unten ist gelesen und gilt unverändert | Verweis auf diesen Abschnitt im Release-Eintrag |
 
 **Freigabe-Eintrag:** Datum, Version, Digest und die acht Belege gehören in
