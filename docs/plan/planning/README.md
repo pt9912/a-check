@@ -6,7 +6,12 @@ abschließbaren Vorhaben. Der Slice-Zyklus ist eine Zustandsmaschine über Verze
 liegt eine Ebene darüber und schließt über eine **Prozedur**, nicht über einen Datei-Übergang.
 
 - Slice-Form: [`slice.template.md`](slice.template.md) — höchstens drei DoD-Punkte, höchstens
-  zwei Schichten, benannte Lerneintrag-Form. Maschinell geprüft von `make verify`.
+  zwei Schichten, benannte Lerneintrag-Form. **Maschinell geprüft von `make verify` sind die
+  DoD-Zahl und die benannte Lerneintrag-Form**; „höchstens zwei Schichten" ist **Review-Sache**
+  und ausdrücklich kein Gate — was eine Schicht ist, ist eine Ermessensfrage über Modul-Grenzen,
+  und ein Zähler darüber wäre Schein-Genauigkeit
+  ([`tools/verify-slice-form.sh`](../../../tools/verify-slice-form.sh) trägt dieselbe Begründung).
+  Bis slice-076 las sich diese Zeile, als fiele alle drei Punkte ein Gate.
 - Sequenzierungs-Autorität ist die [Roadmap](in-progress/roadmap.md); sie bleibt es auch nach
   einer Wellen-Closure.
 

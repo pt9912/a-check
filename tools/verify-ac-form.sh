@@ -16,9 +16,22 @@
 # Regel. Genau das macht die Liste zum Beleg dafuer, dass die Regel ab jetzt
 # greift — eine Datums- oder Nummern-Heuristik haette diese Eigenschaft nicht.
 #
-# NICHT geprueft (ehrliche Grenze, AC-QA-02): ob der Satz hinter "Boundary:"
-# wirklich einen Randfall beschreibt. Das ist semantisch und bleibt Review-Sache;
-# ein Regex darueber wuerde Form-Erfuellung mit Inhalt verwechseln.
+# NICHT geprueft (ehrliche Grenze, AC-QA-02) — ZWEI Stufen, beide Review-Sache:
+#
+#   (1) INHALT: ob der Satz hinter "Boundary:" wirklich einen Randfall
+#       beschreibt. Das ist semantisch; ein Regex darueber wuerde
+#       Form-Erfuellung mit Inhalt verwechseln.
+#   (2) STIL: ob das Kriterium im Given/When/Then-Stil formuliert ist
+#       (slice-076, Fund F-3). Geprueft wird nur, DASS die vier Bausteine
+#       benannt sind — ein AC mit viermal "beliebiger Text" besteht.
+#
+# Warum (2) nicht nachgezogen wurde: Given/When/Then ist Prosa. Ein Regex auf
+# die drei Woerter pruefte ihr Vorkommen, nicht die Form — "Given/When/Then" als
+# blosse Aufzaehlung wuerde bestehen, ein sauber formulierter Satz ohne die
+# Reizwoerter durchfallen. Das ist dieselbe Schein-Genauigkeit, die
+# verify-slice-form beim Schichten-Zaehler ausdruecklich ablehnt (B-1). Statt den
+# Sensor zu dehnen, hat slice-076 die ZUSAGE in harness/conventions.md
+# zurueckgenommen: sie nennt jetzt, was maschinell faellt und was nicht.
 set -euo pipefail
 cd "$(dirname "$0")/.."
 

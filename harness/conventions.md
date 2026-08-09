@@ -310,6 +310,11 @@ Pflicht-Bausteine pro Anforderung:
   deklariert. Nichtfunktionale Anforderungen: `AC-QA-<NN>`.
 - **Drei Akzeptanzkriterien** (Happy/Boundary/Negative im
   Given/When/Then-Stil) plus explizite **Out-of-Scope**-Liste.
+  **Maschinell geprüft ist davon nur, dass die vier Bausteine benannt sind**
+  (`make verify-ac-form`, ab slice-054); ob ein Kriterium tatsächlich im
+  Given/When/Then-Stil formuliert ist, bleibt **Review-Sache** — dieselbe Grenze
+  wie bei „höchstens zwei Schichten" der Slice-Form. Bis slice-076 las sich diese
+  Zeile, als wäre auch der Stil durchgesetzt.
 - **Versions-Bump + Historie-Zeile** im Lastenheft.
 - **Schärfungs-Richtung:** ADRs dürfen die Spezifikation schärfen,
   nie das Lastenheft (siehe `MR-001`-Begründung); wer das Lastenheft
