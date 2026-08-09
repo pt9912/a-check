@@ -1,6 +1,6 @@
 # Roadmap
 
-**Status:** Aktiv. **Letzte Änderung:** 2026-07-26.
+**Status:** Aktiv. **Letzte Änderung:** 2026-08-09.
 
 > **Was hier steht — und was nicht.** Diese Roadmap ist eine Reihenfolge von **Wellen**, kein
 > Statusbericht über Slices (`modul-06`: *„nicht ‚wann?', sondern ‚in welcher Reihenfolge
@@ -10,23 +10,38 @@
 
 ## Aktuelle Welle
 
-**Keine laufende Welle.** `welle-12-regelwerk-migration` ist am 2026-07-26 geschlossen
-(Closure-Log unten); die nächste ist noch nicht gezogen.
+**`welle-12-regelwerk-migration` — wieder offen.** Sie stand vom 2026-07-26 bis zum 2026-08-09 im
+Closure-Log. Der erste unabhängige Review
+([Report](../../../reviews/2026-08-09-welle-12-unabhaengig.md)) hat ihr Closure-Kriterium
+widerlegt; die Closure ist zurückgezogen. Das ist Modul-6-Ausgang **(b)** — Welle offen lassen,
+Verschiebung im Drift-Log ausweisen — und nicht Ausgang (a), unter dem sie bis heute stand: „Welle
+trotzdem schließen → der Audit fällt durch, weil Slices unbelegt sind."
 
-Das ist ein Zustand, kein Versäumnis: die Migration hat keine Produkt-Achse berührt, und der
-nächste Zug gehört dem Maintainer. Die Kandidaten stehen unter *Nächste Wellen* — jeder mit
-beobachtbarem Trigger, keiner mit Datum.
+**Slice-IDs.** Der Bestand der Etappen A–F ist die Spanne
+[slice-046](../open/slice-046-regelwerk-v352-migration-analyse.md) …
+[slice-067](../done/slice-067-roadmap-form.md); was jeder einzelne geliefert und gelernt hat, steht
+in seiner Closure-Notiz unter `done/`. Alle liegen dort — mit einer Ausnahme:
+[slice-046](../open/slice-046-regelwerk-v352-migration-analyse.md) liegt weiterhin in `open/` und
+trägt eine offene Abnahme, während das bisherige Closure-Log „alle Slices in `done/`" behauptete.
+Die Slices für die 15 Review-Findings sind **noch nicht geschnitten**; solange sie fehlen, ist die
+Slice-Liste dieser Welle unvollständig. Sie zu schneiden ist der nächste Zug.
 
-**Sobald eine Welle gezogen wird**, trägt dieser Abschnitt ihre drei Pflicht-Bestandteile:
-Slice-IDs · Trigger als beobachtbare Bedingung · Closure-Kriterien. Der Abschluss läuft über die
-Fünf-Schritt-Prozedur in [`planning/README.md`](../README.md), deren erster realer Durchlauf
-zugleich ihre Probe ist.
+**Trigger (beobachtbar).** Die Welle schließt, wenn alle ihre Slices in `done/` liegen —
+[slice-046](../open/slice-046-regelwerk-v352-migration-analyse.md) eingeschlossen —, jedes im
+Report belegte False-Green behoben ist **und je Behebung eine Gegenprobe existiert, die vorher rot
+war**, und `make ci` grün läuft. Ein Sensor, der nach der Korrektur grün meldet, ohne dass jemand
+ihn rot gesehen hat, belegt nichts — das ist die Lehre des Reports.
+
+**Closure-Kriterien.** Die Fünf-Schritt-Prozedur aus [`planning/README.md`](../README.md) mit allen
+fünf Belegen, einschließlich `done/welle-12-results.md`. Die Grandfather-Klausel dort nennt
+namentlich `welle-00` … `welle-11`; `welle-12` ist nicht darunter und damit die erste Welle, für
+die die Prozedur gilt. Ihr Abschluss ist zugleich deren Probe — die bis hierher zweimal
+verschoben wurde.
 
 ## Nächste Wellen
 
 | Welle | Trigger (beobachtbar) | Wichtigste Slices | Aufwand |
 |---|---|---|---|
-| unabhängiges Review der Migration | Maintainer startet einen Review-Lauf außerhalb dieser Modell-Familie | prüft `welle-12` | S |
 | driving/driven-Vertiefung (Teil A) | ein Konsument mit Richtungs-**Namen**, die die Grammatik treffen, **plus** geklärte Verhaltens-Neutralität | [slice-013](../open/slice-013-driving-driven-vertiefung.md) | M |
 | Namespace-Auflösung (C#) | ein C#-Konsument, dessen Namespace ≠ Verzeichnis ist | Folge-ADR + Backend-Slice | M |
 | Ziel-seitige Abdeckung | eine der drei Bedingungen aus [slice-045 §0](../open/slice-045-intern-extern-dateimenge.md) tritt ein | [slice-045](../open/slice-045-intern-extern-dateimenge.md) | M |
@@ -72,7 +87,6 @@ flowchart LR
 | welle-10-regel-engine-generalisierung | 2026-06-23 | [slice-012 §7](../done/slice-012-driving-driven-layerof.md) — Rollen-Dispatch + 4-Schichten-Modell + `driving`/`driven`-Richtung + `LayerOf` längster-literaler-Präfix; [ADR-0009](../../adr/0009-rollen-basierter-regel-dispatch.md)…[ADR-0013](../../adr/0013-layerof-laengster-praefix.md) `Accepted`. Carry-forward: [slice-013](../open/slice-013-driving-driven-vertiefung.md) |
 | welle-06-sprach-backends | 2026-07-03 | [slice-022 §8](../done/slice-022-typescript-backend.md#8-closure-notiz) — vier Backends geliefert: Java ([slice-014](../done/slice-014-java-backend.md)), Python ([slice-020](../done/slice-020-python-backend.md)), C# ([slice-021](../done/slice-021-csharp-backend.md)), TypeScript ([slice-022](../done/slice-022-typescript-backend.md)); Auflösung `fixed-root` ([ADR-0016](../../adr/0016-resolution-sprach-parametrisch.md)) + `relative` ([ADR-0017](../../adr/0017-relative-resolution-modus.md)); `namespace` bleibt reserviert (Folge-Slice bei realem Pilot) |
 | welle-11-dcheck-pilot-deltas | 2026-07-03 | [slice-023 §4](../done/slice-023-dcheck-pilot-deltas.md#4-closure-notiz) — `tech.adapter`-Liste + `composition_root: allow\|forbid` + `exclude` ([ADR-0018](../../adr/0018-exclude-scan-scope.md) `Accepted`, Lastenheft/Spez 0.14.0), veröffentlicht in `v0.8.0` — d-check-Umstellung entsperrt |
-| welle-12-regelwerk-migration | 2026-07-26 | Etappen A–F: [slice-047](../done/slice-047-baseline-vendoring.md) · [slice-048](../done/slice-048-modul-delta-lesen.md) · [slice-049](../done/slice-049-mechanik-sensoren.md)…[slice-051](../done/slice-051-workflow-und-freigabe.md) · [slice-052](../done/slice-052-slice-form.md)…[slice-054](../done/slice-054-ac-form.md) · [slice-055](../done/slice-055-mr-bestand.md)/[slice-056](../done/slice-056-sub-area-modus.md) · [slice-057](../done/slice-057-steering-loop.md)/[slice-065](../done/slice-065-carveout-ort-und-trichter.md)/[slice-066](../done/slice-066-wellen-closure-und-rollen.md); dazu die Review-Serie ([`docs/reviews/`](../../../reviews/README.md)) und die Fix-Schnitte [slice-058](../done/slice-058-sensor-praezision.md)…[slice-064](../done/slice-064-guard-verkettung.md). Closure-Kriterium erfüllt: alle Slices in `done/`, `make ci` grün. **Ohne** `welle-12-results.md` — die Fünf-Schritt-Prozedur gilt ab der nächsten Welle ([slice-066](../done/slice-066-wellen-closure-und-rollen.md)) |
 
 ## Historische Trigger-Verschiebungen
 
@@ -94,6 +108,7 @@ wäre schlimmer als keines.
 | 2026-07-25 | [slice-045](../open/slice-045-intern-extern-dateimenge.md) **entschieden: jetzt nicht bauen** | null reale Fundstellen, erodierte Nachfrage, und a-check könnte den `fixed-root`-only-Mechanismus im eigenen `path`-Modus nicht dogfooden | [slice-045 §0](../open/slice-045-intern-extern-dateimenge.md) |
 | 2026-07-25 | Regelwerk-Migration: Etappen wachsen von **vier** auf **sechs** (A · B · C · D · **E** · **F**), Reihenfolge **E vor D** | die vollständige Baseline-Lektüre brachte elf zusätzliche Funde; die Mechanik-Funde schaffen die Sensoren, an denen die Form-Funde hängen | [slice-048 §5](../done/slice-048-modul-delta-lesen.md) |
 | 2026-07-25 | `nolintlint` als geplante Umsetzung von B-11 **verworfen**, Ersatz `make suppression-check` | Negativ-Probe: der Linter prüft Wohlgeformtheit, nicht Existenz — ein wohlgeformtes `//nolint` ließ `make lint` grün | [slice-049 §1.1](../done/slice-049-mechanik-sensoren.md) |
+| 2026-08-09 | `welle-12-regelwerk-migration`: **Closure zurückgezogen**, Welle zurück nach *Aktuelle Welle*. Zugleich verlässt die Zeile „unabhängiges Review der Migration" *Nächste Wellen* — ihr Trigger ist gefeuert | Der erste Review außerhalb der Claude-Modellfamilie widerlegte das Closure-Kriterium „alle Slices in `done/`": [slice-046](../open/slice-046-regelwerk-v352-migration-analyse.md) liegt weiterhin in `open/`. Dazu 11 HIGH — darunter fünf Sensoren, die falsch-grün melden, und die Selbst-Ausnahme von der eigenen Closure-Prozedur. Damit gilt Modul-6-Ausgang **(b)** statt des bisherigen **(a)** („der Audit fällt durch") | [Review-Report 2026-08-09](../../../reviews/2026-08-09-welle-12-unabhaengig.md) |
 
 **Format-Regel:** Die Roadmap ist eine Reihenfolge von **Wellen**, keine
 Reihenfolge von Terminen. Termine erscheinen — falls überhaupt — als
