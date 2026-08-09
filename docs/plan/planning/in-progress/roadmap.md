@@ -36,10 +36,13 @@ deklarierte Grenze ausgewiesen** — „alle Slices done" allein genügt nicht, 
 Fünf-Schritt-Prozedur.
 
 **Nicht in dieser Welle, obwohl offen:**
-[slice-079](../open/slice-079-gate-consistency-abloesen.md) (Harness-Nachlauf, ohne Welle) und
-[slice-080](../open/slice-080-verify-abloesung-dcheck.md) (wartet auf ein d-check-Release). Ein
+[slice-079](../open/slice-079-gate-consistency-abloesen.md) (Harness-Nachlauf, ohne Welle),
+[slice-080](../open/slice-080-verify-abloesung-dcheck.md) (wartet auf ein d-check-Release) und
+[slice-087](../open/slice-087-index-vollstaendigkeit.md) (Harness-Sensor, Trigger „sofort" — der
+ADR-Index-Fehler trat am 2026-08-09 zweimal auf, das zweite Mal nachdem er benannt war). Ein
 Slice, der auf ein Fremdrepo wartet, gehört in keine Welle — er würde ihren Closure-Trigger auf
-unbestimmte Zeit blockieren.
+unbestimmte Zeit blockieren. slice-087 wartet auf nichts, gehört aber inhaltlich zum Harness und
+nicht zu den Konsumenten-Befunden.
 
 ## Nächste Wellen
 
