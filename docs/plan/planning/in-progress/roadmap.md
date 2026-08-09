@@ -30,8 +30,11 @@ je Slice: [slice-068](../done/slice-068-phony-vollstaendig.md) (Target läuft ga
 [slice-071](../open/slice-071-sensor-scope-vollstaendig.md) (nur ein Teil des Bestands gemessen).
 Ein erster Sammel-Entwurf über alle fünf Funde wurde nach einem unabhängigen **Plan**-Review
 ([Report](../../../reviews/2026-08-09-slice-068-plan-review.md), 4 HIGH) zurückgezogen und zerlegt;
-dabei kamen zwei weitere False-Greens hinzu. Die Gruppen **B**, **C** und **D** sind **noch nicht
-geschnitten** — solange sie fehlen, ist die Slice-Liste dieser Welle unvollständig.
+dabei kamen zwei weitere False-Greens hinzu. `slice-068` und `slice-069` liegen in `done/`.
+Aus der Arbeit an ihnen kam [slice-072](../open/slice-072-scope-sensor-praeventiv.md) hinzu — kein
+False-Green, sondern ein Sensor, der erst nach dem Push greift; der Auslöser war ein realer roter
+CI-Lauf. Die Gruppen **B**, **C** und **D** sind **noch nicht geschnitten** — solange sie fehlen,
+ist die Slice-Liste dieser Welle unvollständig.
 
 **Trigger (beobachtbar).** Die Welle schließt, wenn alle ihre Slices in `done/` liegen —
 [slice-046](../open/slice-046-regelwerk-v352-migration-analyse.md) eingeschlossen —, jedes im
