@@ -8,6 +8,24 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
 ### Changed
 
+- **BREAKING: `--print-mk` gibt einen Platzhalter statt eines Digests aus (`ADR-0030`,
+  `SPEC-DIST-001` 0.27.0, slice-083).** Das erzeugte Fragment trug bisher einen konkreten
+  `A_CHECK_IMAGE`-Digest — zwangsläufig den des **Vorgänger**-Release, weil das Binary den Digest
+  des Image, in dem es läuft, nicht kennen kann (er entsteht erst beim Push). Der Wert sah
+  autoritativ aus und war falsch; **bei einem Konsumenten hat das einen realen Fehlpin verursacht.**
+  Jetzt steht dort `ghcr.io/pt9912/a-check@sha256:SETZE-HIER-DEN-RELEASE-DIGEST-EIN` — bewusst
+  **kein gültiger Image-Verweis**, sodass eine unveränderte Übernahme sichtbar abbricht, statt still
+  ein fremdes Release zu ziehen. **Migration:** nach `--print-mk` den Digest des Release eintragen,
+  aus dem das Fragment stammt (Release-Notes oder
+  `docker image inspect --format '{{index .RepoDigests 0}}' <image>:<tag>`). Die **committete**
+  `a-check.mk` dieses Repos trägt weiterhin den echten Digest; die Fragment-Paritäts-Prüfung in
+  `tools/image-test.sh` vergleicht seit diesem Release alles **außer** der Pin-Zeile.
+- **`--print-mk` ruft die Container-Runtime über `$(DOCKER)` (slice-082).** Das Fragment setzte
+  wörtlich `docker` ein; ein Repo mit einer `DOCKER`-Indirektion (podman, nerdctl, ein Wrapper)
+  fuhr damit die Hälfte seiner Targets anders als die andere. Jetzt steht `DOCKER ?= docker` im
+  Kopf und alle Rezepte rufen `$(DOCKER)`. **Reihenfolge beachten:** `?=` greift nur, wenn `DOCKER`
+  noch nicht belegt ist — eine eigene Runtime gehört **vor** das `include` oder wird hart mit `=`
+  gesetzt.
 - **BREAKING: `forbidden_constructs` bricht fail-closed statt still zu wirken (`ADR-0033`,
   `SPEC-CONF-001` 0.30.0, slice-086).** Der Block wurde bisher **ungeprüft** durchgereicht und hatte
   **vier** stille Ausgänge, die alle mit Exit 0 endeten: (a) die genannte Schicht existiert **nicht**
@@ -22,6 +40,16 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
   lokalen Konsumenten-Konfigurationen nutzt **keine** den Block. Die Bindung an `role: port` bleibt —
   sie löst `AC-FA-RULE-004` („Port-Disziplin") ein; eine Ausweitung wäre eine Lastenheft-Änderung
   und bleibt einem eigenen Slice vorbehalten.
+
+### Documentation
+
+- **Heuristik-Grenzen im Benutzerhandbuch, wo Konsumenten lesen (slice-084).** §6 („a-check findet
+  nichts, obwohl Verstöße erwartet werden") führt jetzt die Import-Formen auf, die die
+  text-heuristische Extraktion **nicht** greift: mehrere Direktiven auf einer Zeile (`import a, b`,
+  `using A; using B;` — nur die erste zählt), relative Python-Importe, kompaktes TypeScript ohne
+  Whitespace, import-ähnliche Zeilen in Strings/Docstrings. Die vollständige Liste stand bisher nur
+  im Lastenheft; hier stehen die, die beim Konfigurieren auffallen. Zwei davon meldet a-check seit
+  diesem Release zusätzlich zur Laufzeit (Grenz-Diagnose).
 
 ### Added
 

@@ -7,9 +7,12 @@
 > beweglichem Tag; darum trägt die Aktuell-Zeile zusätzlich den **vollen
 > Release-Digest** — die **eine Wahrheit**, gegen die
 > [`tools/gate-consistency.sh`](tools/gate-consistency.sh) die harten Pins
-> ([`a-check.mk`](a-check.mk), [`internal/cli/cli.go`](internal/cli/cli.go) und die
+> ([`a-check.mk`](a-check.mk) und die
 > `docker run`-Beispiele in [`README.md`](README.md) + [`README.de.md`](README.de.md)) auf Gleichheit prüft
-> (slice-018). **Kein Duplikat** der Detail-Changes — die stehen im
+> (slice-018). `internal/cli/cli.go` war bis slice-083 eine vierte Pin-Stelle; seit dort das
+> **erzeugte** Fragment einen Platzhalter statt eines Digests trägt
+> ([ADR-0030](docs/plan/adr/0030-kein-digest-im-generierten-fragment.md)), gibt es dort keinen Pin
+> mehr zu prüfen. **Kein Duplikat** der Detail-Changes — die stehen im
 > [CHANGELOG](CHANGELOG.md); hier nur Versions-Koordinaten (Version, Datum,
 > Digest, Tag). **Fremde** Versionen (d-check, Baseline) gehören nicht hierher,
 > sondern verlinken auf ihre eigene Quelle.

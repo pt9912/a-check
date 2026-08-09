@@ -103,16 +103,62 @@ erst die Konvention, dann ihr Sensor. Als Folge-Slice benannt, nicht mitgebaut.
 
 ## 5. DoD
 
-- [ ] Die Anleitung in §3.3 ist **durchgespielt** und führt zu einem laufenden Gate — inklusive
-      Digest-Schritt und `DOCKER`-Indirektion mit ihrer Reihenfolge-Regel.
-- [ ] Handbuch-Historie, `CHANGELOG` und `version.md` nennen den vollständigen Stand der Welle.
-      Beleg: die fünf Proben aus §3.
-- [ ] `make gates` grün — Ausgabe in eine Datei, Exit-Code getrennt geprüft, nie in eine Pipe.
+- [x] Die Anleitung in §3.3 ist **durchgespielt** — in einem leeren Fremd-Repo, Schritt für
+      Schritt: ohne Schritt 2 sichtbarer Abbruch, mit Schritt 2 `gesamt: 0 Befund(e)`, Exit 0.
+      Die `DOCKER`-Reihenfolge-Regel ist in **beiden** Richtungen belegt (Closure-Notiz).
+- [x] Handbuch-Historie (`1.36`–`1.39`), `CHANGELOG` und `version.md` nennen den vollständigen
+      Stand der Welle. Beleg: die fünf Proben aus §3, alle gemessen.
+- [x] `make gates` grün — Ausgabe in eine Datei, Exit-Code getrennt geprüft.
 
 ## 6. Closure-Notiz
 
-_(beim Abschluss ausfüllen — genau **ein** solcher Abschnitt je Slice,
-[`AGENTS.md`](../../../../AGENTS.md) §5; `make verify` prüft das.)_
+**Die Anleitung wurde nicht gelesen, sondern gefahren.** In einem leeren Fremd-Repo, Schritt für
+Schritt wie in §3.3 — das ist der Unterschied zwischen „steht richtig da" und „funktioniert":
+
+```text
+Schritt 1  --print-mk > a-check.mk
+           A_CHECK_IMAGE ?= ghcr.io/pt9912/a-check@sha256:SETZE-HIER-DEN-RELEASE-DIGEST-EIN
+Schritt 3+4 OHNE Schritt 2  ->  make: *** [a-check.mk:30: a-check] Fehler 125   (sichtbarer Abbruch)
+Schritt 2 ausgefuehrt, dann 4  ->  gesamt: 0 Befund(e)                          EXIT=0
+```
+
+**Die `DOCKER`-Reihenfolge-Regel ist in beiden Richtungen belegt** — die Falle ist real, nicht
+theoretisch:
+
+```text
+(a) DOCKER = echo  VOR  dem include  ->  echo run --rm …      (Indirektion greift)
+(b) DOCKER ?= echo NACH dem include  ->  docker run --rm …    (greift NICHT)
+```
+
+**Beobachtbare Architektur-Aussage: die Doku-Orte haben verschiedene Halbwertszeiten, und nur einer
+davon ist gegatet.** Von den sechs Fundstellen war genau eine mechanisch fassbar — der
+`version.md`-Pin-Drift, den `gate-consistency` prüft, sobald sich der Digest ändert. Die anderen
+fünf sind Prosa: eine Anleitung, die einen Schritt zu wenig hat; eine Historie, die eine Zeile zu
+kurz ist; ein Glossar-Eintrag, der den Fließtext ersetzt. **Kein Sensor sieht sie**, und der einzige
+Zeitpunkt, an dem sie auffallen, ist der Moment, in dem jemand sie benutzt. Für dieses Repo heißt
+das: Doku-Nachzug ist keine Fleißaufgabe nach dem Bau, sondern Teil des Bauens — sonst liefert das
+nächste Release eine Anleitung in den Fehler aus, den es gerade behoben hat.
+
+**Der schwerste Fund war zugleich der peinlichste.** §3.3 beschrieb den `--print-mk`-Weg ohne den
+seit [slice-083](../done/slice-083-print-mk-digest-selbstbezug.md) zwingenden Digest-Schritt und
+behauptete obendrein, das Fragment *pinne* das Image. Das ist wörtlich die Anleitung, der der
+Konsument gefolgt ist, dessen Fehlpin diese Welle ausgelöst hat — der Fix war gebaut, die Anleitung
+dazu nicht. Zwischen „behoben" und „ausgeliefert" lag ein Handbuch-Abschnitt.
+
+**Lerneintrag — Form: benannte Spec-Lücke.** Als Prüfsatz: *Ändert ein Slice das Verhalten eines
+Kommandos, das im Handbuch eine Schritt-für-Schritt-Anleitung hat, ist die Anleitung Teil des
+Slice — nicht sein Nachlauf.* Der Workflow-Schritt 7 nennt das Benutzerhandbuch bereits, aber als
+Sammelbegriff („falls ein öffentlicher Vertrag berührt ist"). Was fehlt, ist die Schärfung: eine
+**Anleitung** ist berührt, sobald sich einer ihrer Schritte ändert — auch wenn der Vertrag
+formal gleich bleibt. Bei [slice-082](../done/slice-082-print-mk-docker-indirektion.md) blieb der
+Vertrag sogar unverändert, und trotzdem fehlte dem Handbuch danach ein ganzes Konzept
+(`$(DOCKER)`).
+
+**Bewusst ohne Sensor** (§3): Ein Vollständigkeits-Wächter über CHANGELOG und Handbuch-Historie
+wäre die naheliegende Antwort auf fünf übersprungene Nachzüge. Er gehört aber erst geschnitten,
+wenn die Regel steht, *wann* ein Eintrag Pflicht ist — sonst erfindet der Sensor sie. Dieselbe
+Reihenfolge wie bei [`SL-003`](../../steering-loop.md#sl-003--commit-betreff-bezeichnet-nicht-die-enthaltene-arbeit),
+wo die Konvention der Mechanik vorausging.
 
 ## 7. Sub-Area-Modus
 

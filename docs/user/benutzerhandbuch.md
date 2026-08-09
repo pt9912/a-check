@@ -173,11 +173,22 @@ a-check prüft nie mit geratenen Standardwerten.
    ```bash
    docker run --rm <a-check-image> --print-mk > a-check.mk
    ```
-2. Binden Sie es in Ihr `Makefile` ein:
+2. **Tragen Sie den Release-Digest ein.** Das erzeugte Fragment enthält an dieser Stelle
+   einen **Platzhalter**, keinen Digest:
+   ```makefile
+   A_CHECK_IMAGE ?= ghcr.io/pt9912/a-check@sha256:SETZE-HIER-DEN-RELEASE-DIGEST-EIN
+   ```
+   Ersetzen Sie ihn durch den Digest des Release, aus dem das Fragment stammt. Zwei Quellen:
+   ```bash
+   # a) auf dem Host, der das Image gezogen hat:
+   docker image inspect --format '{{index .RepoDigests 0}}' <image>:<tag>
+   # b) die Release-Notes auf GitHub
+   ```
+3. Binden Sie es in Ihr `Makefile` ein:
    ```makefile
    include a-check.mk
    ```
-3. Rufen Sie das Gate auf:
+4. Rufen Sie das Gate auf:
    ```bash
    make a-check
    ```
@@ -185,15 +196,35 @@ a-check prüft nie mit geratenen Standardwerten.
 **Ergebnis:** `make a-check` prüft das Repository netzlos und read-only und
 schlägt bei Befunden fehl (Exit-Code 1).
 
-**Hinweise:** Das Fragment pinnt das veröffentlichte Image über `A_CHECK_IMAGE`
-(`@sha256:`-Digest). Für lokale Entwicklung gegen einen ungetaggten Stand bauen Sie
-zuerst `make build` und überschreiben das Image beim Aufruf:
+**Warum Schritt 2 nicht entfallen kann.** a-check kann den Digest des Image, in dem es läuft,
+nicht kennen — der entsteht erst beim Push, das Binary ist vorher gebaut. Ein eingebackener Wert
+nennte darum immer den **Vorgänger** und sähe dabei autoritativ aus. Der Platzhalter ist bewusst
+**kein gültiger Image-Verweis**: eine unveränderte Übernahme bricht sichtbar ab, statt still ein
+fremdes Release zu ziehen.
+
+**Eine andere Container-Runtime (podman, nerdctl, ein `docker`-Wrapper).** Das Fragment ruft die
+Runtime über `$(DOCKER)` und setzt am Anfang:
+```makefile
+DOCKER ?= docker
+```
+**Die Reihenfolge zählt:** `?=` setzt nur, wenn `DOCKER` noch nicht belegt ist. Definieren Sie Ihre
+Runtime deshalb **vor** dem `include` — oder hart mit `=`:
+```makefile
+DOCKER = podman          # vor dem include, oder hart mit =
+include a-check.mk
+```
+Ein `DOCKER ?= podman` **nach** dem `include` greift nicht mehr, weil das Fragment die Variable
+dann bereits gesetzt hat.
+
+**Für lokale Entwicklung** gegen einen ungetaggten Stand bauen Sie zuerst `make build` und
+überschreiben das Image beim Aufruf:
 ```bash
 make a-check A_CHECK_IMAGE=a-check:dev
 ```
 Heben Sie den `@sha256:`-Digest-Pin bewusst per Commit an, damit CI-Läufe
 reproduzierbar bleiben. Vergleiche
-das mitgelieferte [`a-check.mk`](../../a-check.mk) dieses Repos. Den
+das mitgelieferte [`a-check.mk`](../../a-check.mk) dieses Repos — es trägt den echten Digest, weil
+es committet ist; das **erzeugte** Fragment trägt den Platzhalter. Den
 Release-Prozess (Tagging, Digest-Pin, GHCR) beschreibt [`releasing.md`](releasing.md).
 
 ### 3.4 Befunde lesen und beheben
@@ -427,6 +458,26 @@ bildet auf eine Liste von Datei-Globs ab, z. B. `cpp: ["**/*.h", "**/*.cpp"]`,
 zugehörige Prüfung (kein stiller Standardwert) — fehlt z. B. `adapter_sink`,
 darf **kein** Adapter einen anderen importieren (strengere Auslegung). Das
 vollständige Schema steht in der [Spezifikation](../../spec/spezifikation.md).
+
+**Verbotene Konstrukte je Schicht (`forbidden_constructs`).** Der Block bindet Text-Muster an eine
+**Schicht** und meldet Treffer als `port-impurity`. Ausgewertet wird er **nur für Schichten mit der
+Rolle `port`** — das ist die Port-Disziplin
+([`AC-FA-RULE-004`](../../spec/lastenheft.md#ac-fa-rule-004--port-disziplin-regel-port-impurity):
+*„Ports … tragen keine implementierungs-/dialekt-spezifischen Konstrukte"*), keine Einschränkung,
+die sich umgehen ließe.
+
+Ein Eintrag, der **nie melden könnte**, bricht deshalb beim Laden mit **Exit-Code 2** statt still
+zu wirken:
+
+| Eintrag | Grund |
+|---|---|
+| Schicht steht nicht in `layers` | Tippfehler — nichts würde je geprüft |
+| Schicht hat nicht die Rolle `port` | wird nicht ausgewertet (Port-Disziplin) |
+| leeres Muster (`ports: [""]`) | Never-Match |
+| leere Musterliste (`ports: []`) | Never-Match, eine Ebene höher |
+
+Brauchen Sie ein Verbot für eine Schicht **ohne** die Rolle `port`, ist `constructs` das Gegenstück
+(siehe unten) — aber **kein Ersatz**: es arbeitet mit Zonen statt Schichten.
 
 **Tech-Muster (`match`, Adapter-Liste, `composition_root`).** Ein `tech`-Eintrag ist
 `{pattern, adapter}` mit optionalem `match: substring|regex` (Standard `substring`).
@@ -749,10 +800,10 @@ oder ein zu breiter `exclude`-Glob nimmt die betroffenen Dateien vom Scan aus.
    von [`AC-FA-EXTRACT-001`](../../spec/lastenheft.md#ac-fa-extract-001--sprach-backends-für-die-import-extraktion)
    im Lastenheft; hier stehen die, die beim Konfigurieren auffallen.
 
-   **Die ersten beiden Formen müssen Sie nicht mehr suchen:** a-check meldet sie beim Scan
-   selbst, mit Datei und Zeile (Grenz-Hinweis, Abschnitt 2). Prüfen Sie zuerst dort — steht Ihre
-   Datei in dem Hinweis, ist die Schreibweise die Ursache. Die übrigen Formen der Tabelle bleiben
-   still; für sie ist diese Liste die Quelle.
+   **Die ersten beiden Formen müssen Sie nicht suchen:** a-check meldet sie beim Scan selbst, mit
+   Datei und Zeile (Grenz-Hinweis, Abschnitt 2). Prüfen Sie zuerst dort — steht Ihre Datei in dem
+   Hinweis, ist die Schreibweise die Ursache. Die übrigen Formen der Tabelle bleiben still; für sie
+   ist diese Liste die Quelle.
 
 ### Fehler: ein `tech-leak`/`core-impurity`-Befund ist falsch-positiv
 
@@ -843,3 +894,7 @@ und die [Spezifikation](../../spec/spezifikation.md); ein Überblick steht in de
 | 1.33 | 2026-07-25 | Lastenheft 0.22.0: neuer Optionalblock **`constructs`** und Regel **`construct-leak`** — ein Roh-Text-Muster darf nur in seiner **Zone** vorkommen (dieselbe Mechanik wie `tech`: `adapter` als Pfad/Liste, `match: substring\|regex`, `composition_root: allow\|forbid`), jedes Vorkommen außerhalb ist ein Befund. Damit sind Konstrukte gatebar, die **keine Import-Zeile** sind (typisch: das `dlopen`-Aufruf-Monopol im Plugin-Adapter). §4 um den Abschnitt „Roh-Text-Monopol (`constructs`)" + Beispiel-Config erweitert, §3.4-Regeltabelle um `construct-leak`, §3.5 (Allowlist wirkt nicht auf Text-Muster), §3.6-Legende. Scan-weit (auch Dateien ohne Schicht), Kommentar-Treffer zählen nicht (ausgewiesene Abweichung von einer `grep`-Regel). **Ausgeliefert mit [v0.16.0](../../version.md#aktuell)** (slice-042, [ADR-0027](../plan/adr/0027-constructs-roh-text-monopol.md)). |
 | 1.34 | 2026-07-25 | §3.4-Kasten „Config-Disziplin" **und** §3.7-Fallstrick „Saubere Präfix-Globs" präzisiert. Ein Glob mit Wildcard **in der Mitte** (`…/application/**/ports/**`) hat kein literales Verzeichnispräfix; sein Import-**Ziel** gilt darum als repo-extern und wird **gar nicht beurteilt** — betroffen sind nicht nur `lateral-slice`/`port-locality`, sondern auch die **Kanten**-Prüfung (`wrong-direction`). Intakt bleibt die Datei→Schicht-Zuordnung: die Port-*Dateien* werden weiter als `port` geprüft (`port-impurity`, `forbidden_constructs`). Bisher meldete a-check hier stattdessen einen `wrong-direction`-**Fehlbefund** gegen die umschließende Schicht, dessen naheliegende Reparatur echte Verstöße verdeckt hätte. Wer die Kanten mitgaten will, gibt den Port-Globs einen sauberen literalen Präfix. Spez 0.25.0, [ADR-0028](../plan/adr/0028-ziel-glob-schattenwurf.md), slice-044. **Ausgeliefert mit [v0.16.0](../../version.md#aktuell).** |
 | 1.35 | 2026-07-25 | §2 „Das Ergebnis verstehen" um den **Abdeckungs-Hinweis** ergänzt: liegen gescannte Dateien in keiner `layers`-Schicht, nennt a-check sie nach der Zusammenfassung auf stderr — **kein Befund, kein Exit-Code-Wechsel**, sondern die Aussage, worüber a-check nichts aussagt (Abhilfe: `layers` oder `exclude`). `composition_root`- und `exclude`-Dateien zählen nicht; ab zehn Dateien gekürzt mit genannter Restzahl; vollständig gedeckte Bäume erzeugen keinen Hinweis. Ebenfalls sichtbar: eine schichtlose Quelldatei heißt im `wrong-direction`-Befund jetzt `(ohne Schicht)` statt gar nichts. Spez 0.26.0, [ADR-0029](../plan/adr/0029-abdeckungs-diagnose-advisory.md), slice-043. **Ausgeliefert mit [v0.16.0](../../version.md#aktuell).** |
+| 1.36 | 2026-08-09 | §6 „a-check findet nichts, obwohl Verstöße erwartet werden" um eine **Tabelle der nicht extrahierten Import-Formen** ergänzt (Mehrfach-Direktiven auf einer Zeile, relative Python-Importe, kompaktes TypeScript ohne Whitespace, import-ähnliche Zeilen in Strings/Docstrings) — sie fallen beim Konfigurieren auf, standen aber nur im Lastenheft. Ausgewiesene Heuristik-Grenze ([`AC-QA-02`](../../spec/lastenheft.md#ac-qa-02--hermetik-und-ehrliche-heuristik-grenze)), kein Fehler (slice-084). |
+| 1.37 | 2026-08-09 | §2 um den **Grenz-Hinweis** ergänzt: a-check nennt jetzt mit Datei, Zeile und Grund die Import-Zeilen, deren **Schreibweise** zu keiner prüfbaren Kante führt — nicht extrahierte Formen (relativer Python-Import, zweite Direktive auf derselben Zeile) und `./`/`../`-Pfade unter einem `resolution`-Modus, der sie nicht auflöst. **Kein Befund, kein Exit-Code-Wechsel**; erscheint gerade auch bei null Befunden, weil er dort „sauber" von „nicht angesehen" trennt. §6 verweist für die zwei gemeldeten Formen darauf. Spez 0.28.0, [ADR-0031](../plan/adr/0031-heuristik-grenzen-diagnose.md), slice-081. |
+| 1.38 | 2026-08-09 | §2 um den **Auflösungs-Hinweis** ergänzt: löst im **ganzen** Scan kein Import-Symbol auf eine Schicht auf, obwohl Symbole extrahiert wurden, nennt a-check je Schicht Datei- und Symbolzahl — die gefährlichste Konfiguration, weil alles grün aussieht und nichts geprüft wird (typisch: `layers`-Globs mit einem Präfix, das in den echten Importpfaden fehlt). Auslösung **repo-weit, nicht je Schicht**: eine einzelne Schicht ohne auflösende Importe ist normal (abhängigkeitsfreier Kern) — daraus folgt ausdrücklich, dass ein **Teil**ausfall still bleibt. Spez 0.29.0, [ADR-0032](../plan/adr/0032-aufloesungs-diagnose-repoweit.md), slice-085. |
+| 1.39 | 2026-08-09 | §4: neuer Absatz **„Verbotene Konstrukte je Schicht (`forbidden_constructs`)"** — der Block gilt nur für Schichten mit der Rolle `port`, und ein Eintrag, der nie melden könnte (unbekannte Schicht, andere Rolle, leeres Muster, leere Musterliste), bricht jetzt mit **Exit-Code 2** statt still zu wirken; bis `v0.16.0` waren alle vier Fälle stumm. Ergänzt um die Abgrenzung zu `constructs` (Blacklist je Schicht ↔ Monopol je Zone — komplementär, nicht austauschbar) und den Glossar-Eintrag. §3.3 zugleich korrigiert: das **erzeugte** `--print-mk`-Fragment trägt einen **Platzhalter** statt eines Digests (neuer Pflicht-Schritt 2 mit beiden Bezugsquellen) und ruft die Runtime über `$(DOCKER)` — inklusive der Reihenfolge-Regel, dass `DOCKER` **vor** dem `include` gesetzt sein muss. Spez 0.30.0, [ADR-0033](../plan/adr/0033-forbidden-constructs-fail-closed.md)/[ADR-0030](../plan/adr/0030-kein-digest-im-generierten-fragment.md), slice-086/083/082/088. |
