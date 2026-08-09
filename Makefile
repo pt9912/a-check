@@ -96,8 +96,8 @@ verify-ac-form: ## Form neuer Akzeptanzkriterien (Happy/Boundary/Negative + Out-
 verify-slice-links: ## Verweise wandernder Slices ueberleben den Lifecycle-Wechsel (SL-002); done/ ist Endzustand und ausgenommen.
 	@bash tools/verify-slice-links.sh
 
-commit-scope-check: ## Commit-Scope (planning) beruehrt nur docs/plan/planning/ (AGENTS §5, SL-003); RANGE= wie bei trace-check.
-	@RANGE="$(RANGE)" bash tools/commit-scope-check.sh
+commit-scope-check: ## Commit-Scope (planning) beruehrt nur docs/plan/planning/ (AGENTS §5, SL-003). MSGFILE=<datei> (Hook, prueft den Index VOR dem Commit), RANGE=a..b (CI), sonst HEAD~1..HEAD.
+	@MSGFILE="$(MSGFILE)" RANGE="$(RANGE)" bash tools/commit-scope-check.sh
 
 # Die drei Teil-Sensoren laufen als Sequenz im selben Rezept, NICHT als
 # Prerequisites: make bricht sonst beim ersten roten Target ab, und wer zwei

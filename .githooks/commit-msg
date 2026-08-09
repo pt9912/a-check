@@ -1,14 +1,32 @@
 #!/usr/bin/env bash
-# commit-msg-Hook — Traceability-Gate via Modul commits (ADR-0021, slice-030).
+# commit-msg-Hook — die beiden Pending-Prüfungen, die einen Commit VOR seiner
+# Entstehung betreffen:
 #
-# Verlangt mindestens eine AC-/ADR-/MR-/slice-ID in der Commit-Message
-# (harness/README.md §Traceability rules). Läuft jetzt über das d-check-Modul
-# commits (Image) statt des kopierten Skripts: `make trace-check MSGFILE="$1"`
-# pipet die Pending-Message über stdin an `d-check --commit-msg -`.
+#   1. Traceability (ADR-0021, slice-030): mindestens eine AC-/ADR-/MR-/slice-ID
+#      in der Message, via d-check-Modul `commits`.
+#   2. Commit-Scope (AGENTS.md §5, SL-003, slice-072): ein `(planning)`-Scope
+#      berührt nur `docs/plan/planning/` — geprüft gegen den git-INDEX.
+#
+# WARUM BEIDE HIER. Ein Sensor, der erst in der CI greift, meldet korrekt und
+# trotzdem zu spät: nach dem Push ist die Korrektur ein Rebase auf
+# veröffentlichter Historie. Am 2026-08-09 real aufgetreten (CI-Run
+# 31301467076) — drei `(planning)`-Commits, alle mit grünem `make gates` davor,
+# weil `commit-scope-check` in keinem lokalen Aggregat hing.
+#
+# BEIDE LAUFEN IMMER, auch wenn die erste rot ist. Wer zwei Verstöße hat, soll
+# beide sehen statt zweimal committen zu müssen (dieselbe Disziplin wie
+# `make verify`, Review 2026-07-26 R-052-F4).
+#
 # Installiert via `make hooks` (git config core.hooksPath .githooks) — opt-in pro
-# Klon; die klon-unabhängige Kontrolle ist der CI-Range-Check (.github/workflows/ci.yml).
+# Klon; die klon-unabhängige Kontrolle bleibt der CI-Range-Check
+# (.github/workflows/ci.yml). Ein Hook, der sich nicht umgehen ließe, existiert
+# in git nicht; ihn als Sicherheit auszugeben wäre eine Harness-Lüge.
 #
-# EINE Wahrheit: ruft dasselbe Gate/Modul wie CI und `make trace-check`.
+# EINE Wahrheit: ruft dieselben Targets wie CI und die lokalen Läufe.
 set -euo pipefail
 cd "$(git rev-parse --show-toplevel)"
-exec make trace-check MSGFILE="$1"
+
+fail=0
+make trace-check       MSGFILE="$1" || fail=1
+make commit-scope-check MSGFILE="$1" || fail=1
+exit "$fail"
