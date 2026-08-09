@@ -14,10 +14,18 @@ wird nie erreicht.
 | **3×** | **Lücke im Harness** | **Guide oder Sensor nachziehen** |
 
 **Warum hier und nicht in einer Wellen-Closure-Notiz.** Die Baseline verortet Steering-Loop-Einträge
-in `done/welle-NN-results.md`. a-check hat bis heute **keine** Welle auditierbar geschlossen
-(Fund B-13 aus [slice-048](planning/done/slice-048-modul-delta-lesen.md), offen); ein Kanal, der
-auf ein nicht existierendes Artefakt wartet, sammelt nichts. Dieses Register ist darum der
-Zwischenschritt — es wandert in die Wellen-Closure, sobald es sie gibt.
+in `done/welle-NN-results.md`. Als dieses Register entstand, hatte a-check **keine** Welle
+auditierbar geschlossen (Fund B-13 aus
+[slice-048](planning/done/slice-048-modul-delta-lesen.md)); ein Kanal, der auf ein nicht
+existierendes Artefakt wartet, sammelt nichts.
+
+**Stand 2026-08-09: zwei Wellen sind geschlossen** ([`welle-12`](planning/done/welle-12-results.md),
+[`welle-13`](planning/done/welle-13-results.md)) — und das Register bleibt trotzdem der Ort. Die
+Closure-Prozedur **zieht** die Einträge von hier, sie verschiebt sie nicht dorthin
+([`planning/README.md` §Wellen-Closure-Prozedur](planning/README.md#wellen-closure-prozedur),
+slice-066). Der Grund ist derselbe wie bei der Entstehung, nur andersherum gelesen: ein Zähler, der
+erst bei der nächsten Closure entstünde, zählt zwischen zwei Wellen nichts. Der frühere Satz „es
+wandert in die Wellen-Closure, sobald es sie gibt" ist damit überholt.
 
 **Angelegt:** slice-057, Fund **B-21**. Die Praxis existierte in slice-001…008 und schlief danach
 **lückenlos** ein (40 Slices ohne einen einzigen Eintrag) — der erste Beleg dafür, dass ein Kanal
@@ -184,6 +192,77 @@ ohne Ort nicht überlebt.
   Sensor scharf genug war, und führte je zu einer präziseren Regel. Gefährlich ist nicht der
   Fehlalarm, sondern seine Behandlung: wird der *Text* angepasst statt des *Sensors*, ist die
   Beobachtung verloren.
+
+## SL-005 — Eine neue Datei wird nicht in ihren handgepflegten Index eingetragen
+
+- **Beobachtung:** Eine ADR entsteht, wird verlinkt, referenziert und geprüft — nur die Zeile im
+  Index [`docs/plan/adr/README.md`](adr/README.md) fehlt. `make gates` bleibt **grün**, weil
+  `doc-check` prüft, dass jeder Link **auflöst**, nicht dass jede Datei **verlinkt ist**. Was nicht
+  verlinkt ist, kann auch nicht ins Leere zeigen; der Index sieht darum immer vollständig aus.
+- **Vorfälle:** **zwei**, beide am 2026-08-09:
+  - [ADR-0030](adr/0030-kein-digest-im-generierten-fragment.md), angelegt in
+    [slice-083](planning/done/slice-083-print-mk-digest-selbstbezug.md) — bemerkt in
+    [slice-081](planning/done/slice-081-heuristik-diagnose.md), beim Nachtragen der nächsten ADR.
+  - [ADR-0031](adr/0031-heuristik-grenzen-diagnose.md), angelegt in
+    [slice-081](planning/done/slice-081-heuristik-diagnose.md) — bemerkt in
+    [slice-085](planning/done/slice-085-schicht-ohne-aufloesung.md), wieder nur beim Nachtragen der
+    nächsten.
+- **Klasse:** Symptom (2×). **Der zweite Vorfall wiegt schwerer als der erste**: Er passierte,
+  **nachdem** der Fehler diagnostiziert, benannt und als Folge-Slice festgehalten war — beim
+  allernächsten ADR. Dieselbe Lehre wie bei [SL-001](#sl-001--gate-lauf-in-einer-pipe-verschluckt)
+  und [SL-002](#sl-002--relative-verweise-brechen-beim-git-mv-in-den-nächsten-zustand), diesmal
+  ohne dass überhaupt ein Guide dazwischenstand: **Wissen allein verhindert den Fehler nicht.**
+- **Dieselbe Asymmetrie an anderer Stelle:** [slice-071](planning/done/slice-071-sensor-scope-vollstaendig.md)
+  fand sie bei `regelwerk-check` — geprüft wurde Manifest → Baum, nicht Baum → Manifest; die Lösung
+  war ein `comm -13` über beide Mengen. Zwei Vorkommen in **verschiedenen** Sensoren machen die
+  fehlende Gegenrichtung zur Klasse, nicht zum Einzelfall.
+- **Antwort:** **geschnitten, nicht gebaut** —
+  [slice-087](planning/open/slice-087-index-vollstaendigkeit.md), Trigger „sofort". Der Slice trägt
+  die Vorarbeit: Bestandsmessung (genau **ein** handgepflegter Datei-Index im Repo) und die
+  d-check-Abdeckung (kein Modul deckt die Richtung Ziel → Verweis; `--trace --require-complete`
+  findet **Anforderungs**-Waisen, nicht Datei-Waisen — die RTM listete
+  [ADR-0031](adr/0031-heuristik-grenzen-diagnose.md) korrekt, **während** sie im Index fehlte).
+  Offen bleibt dort der Entscheid lokaler Sensor gegen d-check-CR.
+- **Warum das zählt, obwohl nichts kaputt ist:** wie bei
+  [SL-003](#sl-003--commit-betreff-bezeichnet-nicht-die-enthaltene-arbeit) ist der Schaden reine
+  **Auffindbarkeit** — und ausgerechnet im Register der immutablen Entscheidungen dieses Repos.
+
+## SL-006 — Dateiname oder Anker aus dem Gedächtnis statt aus der Quelle
+
+- **Beobachtung:** Ein Verweis wird geschrieben, wie er heißen *müsste*, statt wie er heißt —
+  Slice-Dateinamen aus der Slice-Nummer erraten, Heading-Anker aus der Überschrift konstruiert,
+  in einem Fall ein Platzhalter-Anker (`#ac-fa-fa-cli-001-platzhalter`), der beim Schreiben
+  entstand und stehen blieb. `doc-check` fängt jeden dieser Fälle zuverlässig; die Kosten sind
+  eine Korrekturrunde je Vorfall.
+- **Vorfälle:** **mindestens sieben**, über zwei Wellen:
+  - `welle-12`: zwei geratene Dateinamen, ein falscher Anker
+    ([`welle-12-results.md`](planning/done/welle-12-results.md) §Was funktionierte).
+  - `welle-13`: `slice-071-gegenrichtung-und-scope.md` statt
+    `slice-071-sensor-scope-vollstaendig.md`; `#mr-001--adrs-schärfen-die-spezifikation-nie-das-lastenheft`
+    statt `#mr-001--source-precedence-mit-eigener-spezifikations-schicht`; der Platzhalter-Anker in
+    [ADR-0033](adr/0033-forbidden-constructs-fail-closed.md); eine unverlinkte Spezifikations-Kennung
+    in [slice-081](planning/done/slice-081-heuristik-diagnose.md).
+- **Klasse:** Schwelle überschritten (3×) ⇒ Harness-Lücke.
+- **Antwort: der Sensor existiert und wirkt** — `doc-check` ist grün-scharf und hat **jeden** Fall
+  gefangen, keiner ging heraus. Was fehlt, ist die Vermeidung: der Verweis wird geschrieben, bevor
+  die Quelle angesehen wurde. Ein `ls` über das Zielverzeichnis bzw. ein `grep` nach der Überschrift
+  in der Zieldatei kostet einen Aufruf und ersetzt die Korrekturrunde.
+- **Dieser Eintrag hat sich beim Schreiben selbst ausgelöst** — zweimal `id-unlinked`, weil er
+  Kennungen **zitiert**, um über sie zu sprechen (eine im Fließtext, eine in einem
+  Beispiel-Kommando). Das ist die [SL-004](#sl-004--ein-neuer-doku-sensor-meldet-im-ersten-lauf-sein-eigenes-umfeld)-Klasse
+  aus der Gegenrichtung: dort meldet ein neuer Sensor sein Umfeld, hier meldet ein bestehender
+  Sensor einen Text, der über seinen Prüfgegenstand spricht. Behoben durch Umformulieren — die
+  Kennungen sind jetzt benannt statt zitiert. **Der Sensor blieb unangetastet**; das ist die Regel
+  aus `SL-004`: wird der Text angepasst statt des Sensors, ist die Beobachtung gerettet, wird der
+  Sensor entschärft, ist sie verloren.
+- **Kein zweiter Sensor, ausdrücklich:** ein Sensor, der dasselbe wie `doc-check` prüft, nur früher,
+  wäre Doppelung. Der Unterschied zu [SL-002](#sl-002--relative-verweise-brechen-beim-git-mv-in-den-nächsten-zustand)
+  ist wesentlich: dort brach der Verweis **nach** dem Commit bei einem Verzeichniswechsel, hier ist
+  er von Anfang an falsch und wird vor dem Commit gefangen. Der Eintrag zählt, was die Zyklen
+  kostet — er verlangt kein Werkzeug.
+- **Nebenbeobachtung:** die Fehlerrate ist bei **Ankern** höher als bei Dateinamen, und dort am
+  höchsten, wo der Anker aus einer Überschrift mit Bindestrich-Kette entsteht. Die
+  Konstruktionsregel ist ableitbar — genau deshalb wird sie geraten statt nachgesehen.
 
 ---
 

@@ -6,7 +6,7 @@
 **Deckt:** `CR-4` des Konsumenten-Einsatzes (2026-08-09);
 [SPEC-CONF-001](../../../../spec/spezifikation.md#spec-conf-001--konfigurationsschema),
 [AC-FA-RULE-004](../../../../spec/lastenheft.md#ac-fa-rule-004--port-disziplin-regel-port-impurity).
-**Bezug:** Welle [`welle-13-konsumenten-befunde`](../welle-13-konsumenten-befunde.md).
+**Bezug:** Welle [`welle-13-konsumenten-befunde`](../done/welle-13-konsumenten-befunde.md).
 
 ---
 

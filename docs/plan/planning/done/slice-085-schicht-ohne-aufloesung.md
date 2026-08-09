@@ -6,7 +6,7 @@
 **Deckt:** `CR-2` des Konsumenten-Einsatzes (2026-08-09);
 [AC-QA-02](../../../../spec/lastenheft.md#ac-qa-02--hermetik-und-ehrliche-heuristik-grenze),
 [SPEC-RULE-001](../../../../spec/spezifikation.md#spec-rule-001--regel-auswertung).
-**Bezug:** Welle [`welle-13-konsumenten-befunde`](../welle-13-konsumenten-befunde.md); Vorbild ist
+**Bezug:** Welle [`welle-13-konsumenten-befunde`](../done/welle-13-konsumenten-befunde.md); Vorbild ist
 die Abdeckungs-Diagnose aus [slice-043](../done/slice-043-schicht-abdeckung-sichtbar.md) /
 [ADR-0029](../../adr/0029-abdeckungs-diagnose-advisory.md).
 
