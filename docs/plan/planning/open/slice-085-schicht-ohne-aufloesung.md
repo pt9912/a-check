@@ -43,7 +43,7 @@ Importe, nicht bei den Quellen.
 **Der Konsument erkannte es nur, weil er einen Verstoß einbaute.** Genau das soll das Werkzeug
 abnehmen.
 
-**Abgrenzung zu [slice-081](../in-progress/slice-081-heuristik-diagnose.md):** dort wird eine Zeile gar
+**Abgrenzung zu [slice-081](../done/slice-081-heuristik-diagnose.md):** dort wird eine Zeile gar
 nicht **extrahiert**; hier wird sie extrahiert und löst auf **keine Schicht auf**. Zwei
 verschiedene Blindstellen, zwei Diagnosen — eine gemeinsame würde beide Ursachen verwischen.
 
@@ -88,7 +88,7 @@ Importe ist kein Befund, sondern normal.
   Konfigurationsfrage des Konsumenten (`resolution`), keine Werkzeug-Grenze. Die Diagnose sagt ihm,
   **dass** er sie hat.
 - **`CR-1`** — nicht extrahierte Schreibweisen sind
-  [slice-081](../in-progress/slice-081-heuristik-diagnose.md).
+  [slice-081](../done/slice-081-heuristik-diagnose.md).
 
 ## 5. DoD
 

@@ -5,7 +5,7 @@
 [`AGENTS.md`](../../../../AGENTS.md) §3.3/§5).
 **Deckt:** Konsumenten-Befund vom 2026-08-09 (Mehrfach-Direktiven);
 [AC-QA-02](../../../../spec/lastenheft.md#ac-qa-02--hermetik-und-ehrliche-heuristik-grenze).
-**Bezug:** [slice-081](../in-progress/slice-081-heuristik-diagnose.md) — die Laufzeit-Diagnose löst dasselbe
+**Bezug:** [slice-081](../done/slice-081-heuristik-diagnose.md) — die Laufzeit-Diagnose löst dasselbe
 Problem grundsätzlicher; dieser Slice ist die Sofortmaßnahme.
 
 ---
@@ -14,7 +14,7 @@ Problem grundsätzlicher; dieser Slice ist die Sofortmaßnahme.
 
 **Beginn:** sofort. Reine Doku-Currency, kein Vertrag berührt, kein Entscheid offen.
 
-**Verwerfen**, falls [slice-081](../in-progress/slice-081-heuristik-diagnose.md) zuerst gebaut wird **und** seine
+**Verwerfen**, falls [slice-081](../done/slice-081-heuristik-diagnose.md) zuerst gebaut wird **und** seine
 Diagnose die betroffenen Formen vollständig meldet — dann wäre der Handbuch-Nachtrag ein zweiter,
 schlechter gepflegter Ort für dieselbe Aussage. Bis dahin steht der Bedarf.
 
@@ -75,7 +75,7 @@ Eine Fixture gibt es nicht und wäre gelogen: der Fehler ist ein fehlender Ort, 
   ein vollständiges Duplikat driftet garantiert. Aufzunehmen ist, was einen Konsumenten beim
   **Konfigurieren** trifft — nicht, was ein Abnahme-Kriterium abgrenzt.
 - **Die Grenze schließen.** `FindAllString` statt `FindStringSubmatch` wäre eine
-  Verhaltensänderung mit Vertragsbezug — das ist [slice-081](../in-progress/slice-081-heuristik-diagnose.md) oder
+  Verhaltensänderung mit Vertragsbezug — das ist [slice-081](../done/slice-081-heuristik-diagnose.md) oder
   ein eigener Schnitt, nicht dieser.
 
 ## 5. DoD
@@ -126,7 +126,7 @@ driften. Der Absatz verweist stattdessen auf die vollständige Liste.
    nicht unter der Sprache — nachprüfbar an der Abschnitts-Überschrift.
 
 **Folge-Slices:** keine. **Verwerfungs-Bedingung nicht eingetreten:**
-[slice-081](../in-progress/slice-081-heuristik-diagnose.md) ist noch nicht gebaut, der Handbuch-Eintrag
+[slice-081](../done/slice-081-heuristik-diagnose.md) ist noch nicht gebaut, der Handbuch-Eintrag
 also weiterhin die einzige Stelle, an der ein Konsument die Grenze findet. Liefert 081 später eine
 Laufzeit-Diagnose, bleibt dieser Eintrag trotzdem sinnvoll — er erklärt *warum*, die Diagnose sagt
 nur *dass*.

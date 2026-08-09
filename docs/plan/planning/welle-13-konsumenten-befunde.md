@@ -41,7 +41,7 @@ Versprechen am **Repo** eingelöst ist — nicht nur im Lastenheft.
 - **Jeder Befund ist entweder behoben oder als deklarierte Grenze ausgewiesen** — kein
   Befund bleibt unbeantwortet liegen. Das ist die inhaltliche Bedingung; „alle Slices done" allein
   wäre sie nicht, weil ein Slice auch mit dem Ergebnis „bleibt so" schließen kann.
-- Für die spec-first-Slices ([slice-081](in-progress/slice-081-heuristik-diagnose.md),
+- Für die spec-first-Slices ([slice-081](done/slice-081-heuristik-diagnose.md),
   [slice-083](done/slice-083-print-mk-digest-selbstbezug.md)): die zugehörige ADR trägt
   `Status: Accepted`, und die Lastenheft-Änderung steht **vor** dem Code.
 - `make ci` grün (Exit 0 in eine Datei, getrennt geprüft) — die repo-eigene Ersetzung des
@@ -54,7 +54,7 @@ Versprechen am **Repo** eingelöst ist — nicht nur im Lastenheft.
 
 | Slice | CR | Titel | Bezug |
 |---|---|---|---|
-| [slice-081](in-progress/slice-081-heuristik-diagnose.md) | `CR-1` | Laufzeit-Diagnose für nicht extrahierte Import-Formen | [AC-QA-02](../../../spec/lastenheft.md#ac-qa-02--hermetik-und-ehrliche-heuristik-grenze) |
+| [slice-081](done/slice-081-heuristik-diagnose.md) | `CR-1` | Laufzeit-Diagnose für nicht extrahierte Import-Formen | [AC-QA-02](../../../spec/lastenheft.md#ac-qa-02--hermetik-und-ehrliche-heuristik-grenze) |
 | [slice-082](done/slice-082-print-mk-docker-indirektion.md) | `CR-6` | `--print-mk`: `$(DOCKER)` statt wörtlichem `docker` | [AC-FA-DIST-001](../../../spec/lastenheft.md#ac-fa-dist-001--distribution-image---print-mk-a-checkmk) |
 | [slice-083](done/slice-083-print-mk-digest-selbstbezug.md) | `CR-5` | `--print-mk` nennt den Digest des Vorgängers | [AC-QA-03](../../../spec/lastenheft.md#ac-qa-03--reproduzierbarkeit) |
 | [slice-084](done/slice-084-handbuch-heuristik-grenzen.md) | `CR-3` | Heuristik-Grenzen dort, wo Konsumenten lesen | [AC-QA-02](../../../spec/lastenheft.md#ac-qa-02--hermetik-und-ehrliche-heuristik-grenze) |
@@ -83,9 +83,17 @@ vor [slice-083](done/slice-083-print-mk-digest-selbstbezug.md) — beide ändern
 
 **Ein Slice trägt eine Verwerfungs-Bedingung:**
 [slice-084](done/slice-084-handbuch-heuristik-grenzen.md) entfällt, wenn
-[slice-081](in-progress/slice-081-heuristik-diagnose.md) zuerst gebaut wird und seine Diagnose die
+[slice-081](done/slice-081-heuristik-diagnose.md) zuerst gebaut wird und seine Diagnose die
 betroffenen Formen vollständig meldet. Eine Welle, die jeden gelisteten Slice *garantiert* liefert,
 wäre hier die falsche Zusage.
+
+> **Entschieden am 2026-08-09: die Bedingung feuerte nicht.**
+> [slice-084](done/slice-084-handbuch-heuristik-grenzen.md) war zuerst fertig, und
+> [slice-081](done/slice-081-heuristik-diagnose.md) meldet **zwei** der vier Formen der
+> Handbuch-Tabelle (relativer Python-Import, Mehrfach-Direktive) — kompaktes TypeScript und
+> import-ähnliche Zeilen in Strings bleiben still. Beide Orte bleiben, jetzt verzahnt: das
+> Handbuch führt die vollständige Liste und verweist für die zwei gemeldeten Formen auf den
+> Laufzeit-Hinweis.
 
 ## 5. Abhängigkeiten
 

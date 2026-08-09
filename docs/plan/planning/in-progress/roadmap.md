@@ -16,9 +16,9 @@ nach `done/`). **Erste Welle-Plan-Datei dieses Repos**; die zwölf davor existie
 Prosa-Überschriften im Closure-Log.
 
 **Slice-IDs — sechs**, je einem Change Request des Konsumenten zugeordnet:
-[slice-081](../in-progress/slice-081-heuristik-diagnose.md) (`CR-1`) ·
+[slice-081](../done/slice-081-heuristik-diagnose.md) (`CR-1`, **done**) ·
 [slice-082](../done/slice-082-print-mk-docker-indirektion.md) (`CR-6`, **done**) ·
-[slice-083](../done/slice-083-print-mk-digest-selbstbezug.md) (`CR-5`) ·
+[slice-083](../done/slice-083-print-mk-digest-selbstbezug.md) (`CR-5`, **done**) ·
 [slice-084](../done/slice-084-handbuch-heuristik-grenzen.md) (`CR-3`, **done**) ·
 [slice-085](../open/slice-085-schicht-ohne-aufloesung.md) (`CR-2`) ·
 [slice-086](../open/slice-086-forbidden-constructs-fail-closed.md) (`CR-4`).
