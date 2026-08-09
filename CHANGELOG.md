@@ -6,6 +6,8 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
+## [0.17.0] - 2026-08-09
+
 ### Changed
 
 - **BREAKING: `--print-mk` gibt einen Platzhalter statt eines Digests aus (`ADR-0030`,
