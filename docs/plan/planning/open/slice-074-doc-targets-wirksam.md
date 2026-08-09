@@ -55,6 +55,14 @@ Harness-Lüge — dieselbe Klasse wie `F-1`, `F-5` und `F-12` aus dem
 [Review-Report](../../../reviews/2026-08-09-welle-12-unabhaengig.md), nur an einer Stelle, die
 kein Review betrachtet hat: der Konfiguration eines Fremdwerkzeugs.
 
+**Und die Ablösung war die erklärte Absicht.** d-checks `slice-063` (Modul `targets`, Release
+**v0.38.0**) führt als DoD-Punkt ausdrücklich einen *„Paritäts-Mutations-Beleg vs.
+`gate-consistency.sh`"* — das Modul wurde gegen genau dieses Skript gebaut und geprüft. a-check
+hat das Target in `AGENTS.md` §4 aufgenommen, die Konfiguration aber nie nachgezogen und fährt
+seither den Eigenbau weiter; der aktuelle Pin steht bei `v0.51.1`, dreizehn Minor-Versionen
+später. Dieser Slice holt keine neue Fähigkeit ins Repo, er nimmt eine seit `v0.38.0`
+bereitstehende endlich in Betrieb.
+
 ## 2. Betroffene Module
 
 Zwei Schichten:
