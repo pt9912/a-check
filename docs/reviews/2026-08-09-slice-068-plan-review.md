@@ -166,5 +166,5 @@ geworden. Neuer Schnitt nach **Fehlermechanismus**, ein Mechanismus je Slice:
 einen Fehler) ·
 [slice-070](../plan/planning/done/slice-070-grundgesamtheit-messen.md) („nichts gefunden" ≠
 „nichts da") ·
-[slice-071](../plan/planning/open/slice-071-sensor-scope-vollstaendig.md) (Sensor misst nur einen
+[slice-071](../plan/planning/in-progress/slice-071-sensor-scope-vollstaendig.md) (Sensor misst nur einen
 Teil des behaupteten Bestands).
