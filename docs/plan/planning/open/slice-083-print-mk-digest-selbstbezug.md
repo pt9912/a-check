@@ -8,13 +8,13 @@
 [AC-FA-DIST-001](../../../../spec/lastenheft.md#ac-fa-dist-001--distribution-image---print-mk-a-checkmk).
 **Bezug:** [ADR-0004](../../adr/0004-distribution-image-mk.md),
 [ADR-0007](../../adr/0007-latest-tag-politik.md); Geschwister
-[slice-082](../open/slice-082-print-mk-docker-indirektion.md).
+[slice-082](../in-progress/slice-082-print-mk-docker-indirektion.md).
 
 ---
 
 ## 0. Trigger
 
-**Beginn:** nachdem [slice-082](../open/slice-082-print-mk-docker-indirektion.md) in `done/` liegt — beide
+**Beginn:** nachdem [slice-082](../in-progress/slice-082-print-mk-docker-indirektion.md) in `done/` liegt — beide
 ändern dieselben zwei Dateien, und die Fragment-Parität erzwingt gemeinsames Wandern.
 
 **Rückführungen:**
@@ -97,7 +97,7 @@ Die ersten beiden berühren
 
 - **Den Fixpunkt „lösen".** Er ist nicht lösbar; jeder Ausgang oben umgeht ihn, keiner hebt ihn auf.
 - **Den Release-Prozess umsortieren.** Schritt 6 ist bereits die einzig mögliche Reihenfolge.
-- **`$(DOCKER)`** — [slice-082](../open/slice-082-print-mk-docker-indirektion.md), läuft vorher.
+- **`$(DOCKER)`** — [slice-082](../in-progress/slice-082-print-mk-docker-indirektion.md), läuft vorher.
 
 ## 5. DoD
 

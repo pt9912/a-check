@@ -16,7 +16,7 @@ nach `done/`). **Erste Welle-Plan-Datei dieses Repos**; die zwölf davor existie
 Prosa-Überschriften im Closure-Log.
 
 **Slice-IDs.** [slice-081](../open/slice-081-heuristik-diagnose.md) (Laufzeit-Diagnose für nicht
-extrahierte Import-Formen) · [slice-082](../open/slice-082-print-mk-docker-indirektion.md)
+extrahierte Import-Formen) · [slice-082](../in-progress/slice-082-print-mk-docker-indirektion.md)
 (`$(DOCKER)` im Fragment) · [slice-083](../open/slice-083-print-mk-digest-selbstbezug.md)
 (Digest-Selbstbezug) · [slice-084](../open/slice-084-handbuch-heuristik-grenzen.md)
 (Heuristik-Grenzen ins Handbuch). Reihenfolge zwingend nur bei 082 vor 083 (Fragment-Parität);
