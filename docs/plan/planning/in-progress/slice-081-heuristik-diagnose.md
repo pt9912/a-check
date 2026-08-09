@@ -121,17 +121,77 @@ konkreteste; er gehört in den Entscheid.
 
 ## 5. DoD
 
-- [ ] Spec-first: die Diagnose steht als Vertrag im Lastenheft, geschärft durch eine ADR, bevor
-      Code entsteht. Beleg: Lastenheft-Versionszeile + ADR mit `Status: Accepted`.
-- [ ] Ein Scan meldet nicht extrahierte Import-Formen auf stderr, ohne den Exit-Code zu ändern;
-      ein sauberer Baum bleibt still. Beleg: die drei Proben aus §3.
-- [ ] `make gates` und `make image-test` grün — **Ausgabe in eine Datei**, Exit-Code getrennt
-      geprüft, nie in eine Pipe.
+- [x] Spec-first: die Diagnose steht als Vertrag, geschärft durch eine ADR, bevor Code entsteht.
+      Beleg: [ADR-0031](../../adr/0031-heuristik-grenzen-diagnose.md) mit `Status: Accepted`,
+      [`spec/spezifikation.md`](../../../../spec/spezifikation.md) 0.28.0
+      ([SPEC-CLI-001](../../../../spec/spezifikation.md#spec-cli-001--aufruf-scan-wurzel-und-exit-codes)).
+      **Bewusste Abweichung vom Wortlaut: kein Lastenheft-Bump.** Die bestehende
+      Abdeckungs-Diagnose steht ebenfalls nicht im Lastenheft — sie kam über
+      [ADR-0029](../../adr/0029-abdeckungs-diagnose-advisory.md) in die Spezifikation, weil eine
+      advisory stderr-Zeile ohne Exit-Code-Wechsel das *Wie* der bestehenden Ausgabe schärft und
+      keinen neuen Vertrag aufmacht. Die Zusage selbst steht längst da:
+      [AC-QA-02](../../../../spec/lastenheft.md#ac-qa-02--hermetik-und-ehrliche-heuristik-grenze)
+      verlangt, die Grenzen offenzulegen. Diesem Präzedenzfall zu folgen war richtiger, als für
+      eine Ausgabe-Schärfung eine `AC-*`-ID zu erfinden.
+- [x] Ein Scan meldet die Formen auf stderr, ohne den Exit-Code zu ändern; ein sauberer Baum
+      bleibt still. Beleg: die Proben aus §3, gefahren gegen `a-check:dev` (Closure-Notiz).
+- [x] `make gates` und `make image-test` grün — Ausgabe in eine Datei, Exit-Code getrennt geprüft.
 
 ## 6. Closure-Notiz
 
-_(beim Abschluss ausfüllen — genau **ein** solcher Abschnitt je Slice,
-[`AGENTS.md`](../../../../AGENTS.md) §5; `make verify` prüft das.)_
+**Der Entscheid aus §3 fiel auf Kandidat 4** — gezielte Gegenmuster je Backend, festgehalten in
+[ADR-0031](../../adr/0031-heuristik-grenzen-diagnose.md). Ausschlaggebend war nicht Eleganz,
+sondern ein gemessenes Rauschprofil: der Restmengen-Ansatz meldet Kommentare und String-Literale,
+und genau diese Klasse hat das Repo dreimal getroffen
+([`SL-004`](../../steering-loop.md)). Eine Diagnose, die bei jedem Lauf spricht, wird
+weggeschaltet — dann ist sie schlechter als keine.
+
+**Beobachtbare Architektur-Aussage: die Config-Kenntnis blieb im Kern.** Beim Bau zerfiel „nicht
+extrahiert" in zwei Klassen, die verschiedene Heimaten haben. Klasse 1 (die Zeile greift kein
+Muster) ist rein syntaktisch — der Extraktions-Adapter sieht sie, während er die Quelle liest.
+Klasse 2 (`../`-Pfad unter einem Modus ≠ `relative`) braucht den `resolution`-Modus, also Config;
+sie wird in `core.HeuristicLimits` aus den bereits extrahierten Symbolen abgeleitet. Der Adapter
+bleibt damit frei von Config-Wissen, und die eine Stelle, die über Auflösung urteilt, bleibt der
+Kern. Die naheliegende Variante — dem Extraktor das Model durchreichen — hätte in einer Stunde
+funktioniert und die Schichtung dauerhaft verwischt.
+
+**Lernsignal mit Ursache: [ADR-0030](../../adr/0030-kein-digest-im-generierten-fragment.md) fehlte
+im ADR-Index.** slice-083 hat die ADR angelegt und die Index-Zeile in
+[`docs/plan/adr/README.md`](../../adr/README.md) nicht nachgezogen; `make gates` blieb grün.
+Ursache: `doc-check` prüft, dass jeder Link **auflöst**, nicht dass jede ADR-Datei **verlinkt ist**
+— die Gegenrichtung Baum → Index fehlt. Das ist exakt die Klasse, die
+[slice-071](../done/slice-071-sensor-scope-vollstaendig.md) für `regelwerk-check` geschlossen hat
+(dort per `comm -13`), hier nur an einem anderen Index. Aufgefallen ist es beim Nachtragen von
+[ADR-0031](../../adr/0031-heuristik-grenzen-diagnose.md), also durch Zufall, nicht durch einen
+Sensor. **Folge-Slice:** ein Vollständigkeits-Sensor für den ADR-Index, in derselben Gestalt wie
+die Regelwerk-Gegenrichtung. Der Nachtrag selbst ist als eigener Commit mit slice-083-Bezug
+abgelegt.
+
+**Die Proben aus §3, gegen `a-check:dev`:**
+
+Konsumenten-Fixture (relativer Python-Import, `import os, sys`, elternrelativer C++-Include) —
+der Fall aus `CR-1`, bei dem der Konsument nur `gesamt: 0 Befund(e)` sah:
+
+```text
+gesamt: 0 Befund(e)
+Hinweis: 3 Import-Zeile(n) unterliegen einer Heuristik-Grenze und bleiben unbeurteilt:
+  app/core/service.py:1: relativer Import — von diesem Backend nicht extrahiert
+  app/ui/widget.py:1: zweite Direktive auf derselben Zeile — nur die erste wird extrahiert
+  src/core/service.h:1: relativer Pfad, den der Auflösungs-Modus "path" nicht auflöst
+  Abhilfe: Schreibweise ändern, resolution-Modus anpassen oder die Grenze bewusst hinnehmen.
+```
+
+Exit blieb **0**. Derselbe Baum mit einzeiligen Importen und einem wurzel-relativen Include:
+`gesamt: 0 Befund(e)`, **keine** Diagnose. Ein echter Verstoß dort: `wrong-direction`, Exit 1,
+ebenfalls **keine** Diagnose — die Zeile löst ja auf. `make arch-check` auf dem Eigen-Baum bleibt
+diagnose-frei.
+
+**Ein zweiter Befund fiel beim Fixture-Bauen ab, und er widerlegt nichts an dieser Diagnose,
+sondern begrenzt sie:** `#include "adapters/ui/panel.h"` aus `src/core/` bleibt still, obwohl es
+ein Verstoß ist — das Symbol trägt das `src/`-Präfix nicht und löst auf keine Schicht auf. Diese
+Klasse meldet die Diagnose bewusst **nicht** (von repo-externem Code nicht unterscheidbar,
+[ADR-0031](../../adr/0031-heuristik-grenzen-diagnose.md) Entscheidung 5). Der Bedarf für die
+Ziel-Seiten-Diagnose aus `CR-2` ist damit an einem laufenden Beispiel belegt, nicht nur behauptet.
 
 ## 7. Sub-Area-Modus
 

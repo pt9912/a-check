@@ -40,6 +40,21 @@ type Adapter struct {
 	// source of the supported-backend set (SPEC-EXTRACT-001). A new backend is
 	// one entry — dispatch and language validation share this one map.
 	backends map[string]extractFn
+	// limits maps a language to the counter-patterns that DIAGNOSE its
+	// unextracted spellings (ADR-0031). Deliberately a separate map from
+	// backends: a language may have a backend and no counter-pattern (C++,
+	// whose limit is resolution-side and derived in core.HeuristicLimits).
+	limits map[string][]limitPattern
+}
+
+// limitPattern is one counter-pattern naming a heuristic limit (ADR-0031). It is
+// broader than the extraction patterns on purpose: it matches exactly the
+// spellings the backend does NOT turn into an import, so the scan can say where
+// it is blind instead of leaving the consumer to find out by planting a
+// violation (AC-QA-02).
+type limitPattern struct {
+	re   *regexp.Regexp
+	form string
 }
 
 // New returns an extraction adapter.
@@ -81,6 +96,7 @@ func newAdapter() Adapter {
 		tsCont:    regexp.MustCompile(`^\s*\}\s*from\s*['"]([^'"]+)['"]`),
 	}
 	a.ktDecls = kotlinDeclPatterns()
+	a.limits = limitPatterns()
 	a.backends = map[string]extractFn{
 		"go":     func(src string) []core.Import { return dedupeSort(a.goImports(src)) },
 		"cpp":    func(src string) []core.Import { return dedupeSort(lineMatches(src, a.cppInclude)) },
@@ -207,6 +223,7 @@ func (a Adapter) fileImports(p, rel string, m core.Model) (core.FileImports, boo
 		Layer:        core.LayerOf(rel, m.Layers),
 		Language:     lang,
 		Imports:      filterIgnored(a.importsFromSource(lang, src), m.IgnoreSymbols),
+		Limits:       a.limitsFromSource(lang, src),
 		Declarations: a.declarationsFor(lang, src),
 	}
 	if pats := m.Forbidden[fi.Layer]; len(pats) > 0 {
@@ -363,6 +380,78 @@ func (a Adapter) goImports(src string) []core.Import {
 		}
 	}
 	return imps
+}
+
+// The two diagnosed forms. They are the CLI's output text (SPEC-CLI-001), so
+// they are constants: a reworded string here silently reworders the contract.
+const (
+	formRelativeImport  = "relativer Import — von diesem Backend nicht extrahiert"
+	formSecondDirective = "zweite Direktive auf derselben Zeile — nur die erste wird extrahiert"
+)
+
+// limitPatterns compiles the counter-patterns per language (ADR-0031).
+//
+// The second-directive patterns are the backend's own pattern RE-ANCHORED at a
+// preceding `;` instead of the line start — the narrowest shape that still finds
+// the case. A loose `;.*import` would fire on any semicolon-plus-word line; this
+// form requires a complete second directive, so a string literal or an unrelated
+// statement never matches. C# `using var x = 1; using var y = 2;` (using
+// STATEMENTS) stays clear for the same reason the extraction pattern does: the
+// mandatory `;` right after a dotted name.
+//
+// Go has no entry: several `import` directives on one line are not legal Go, so
+// there is nothing to miss. C++ has none either — its diagnosed limit is
+// resolution-side (a `../` include under a non-`relative` mode) and is derived in
+// core.HeuristicLimits from the EXTRACTED symbol, not from a source line.
+//
+// This map is the maintenance cost ADR-0031 accepted with open eyes: a limit
+// without an entry here stays invisible. It is measured against the Out-of-Scope
+// paragraph of AC-FA-EXTRACT-001.
+func limitPatterns() map[string][]limitPattern {
+	second := func(re string) limitPattern {
+		return limitPattern{re: regexp.MustCompile(re), form: formSecondDirective}
+	}
+	return map[string][]limitPattern{
+		"python": {
+			// leading dot: `from . import x`, `from ..pkg import y` — never
+			// matched by pyFrom's [A-Za-z_] start (a documented boundary).
+			{re: regexp.MustCompile(`^\s*from\s+\.`), form: formRelativeImport},
+			// `import a, b` — idiomatic Python and the practically relevant case.
+			second(`^\s*import\s+[A-Za-z_][A-Za-z0-9_.]*(?:\s+as\s+[A-Za-z_][A-Za-z0-9_]*)?\s*,`),
+		},
+		"csharp":     {second(`;\s*(?:global\s+)?using\s+(?:static\s+)?(?:[A-Za-z_][A-Za-z0-9_]*\s*=\s*)?[A-Za-z_][A-Za-z0-9_.]*\s*;`)},
+		"java":       {second(`;\s*import\s+(?:static\s+)?[A-Za-z_][A-Za-z0-9_.]*\s*;`)},
+		"kotlin":     {second(`;\s*import\s+[A-Za-z_][A-Za-z0-9_.]*`)},
+		"rust":       {second(`;\s*(?:use\s+|extern\s+crate\s+)[A-Za-z_][A-Za-z0-9_]*`)},
+		"typescript": {second(`;\s*(?:import|export)\s+[\w$*{},\s]*?\bfrom\s*['"]`)},
+	}
+}
+
+// limitsFromSource runs the language's counter-patterns over the PREPARED source
+// — the same comment-stripped text the extraction sees, so a commented-out
+// import never produces a diagnosis. A language without counter-patterns yields
+// nil (no diagnosis, not an error).
+//
+// The counter-patterns inherit the extraction's boundary exactly: Python is not
+// comment-stripped (prepSource), so an import-shaped line inside a triple-quoted
+// string can produce a diagnosis — the same way it already produces a phantom
+// IMPORT today (AC-QA-02). The diagnosis is no more heuristic than what it
+// diagnoses; making it stricter than the extraction would report a limit that is
+// not there.
+func (a Adapter) limitsFromSource(lang, src string) []core.Limit {
+	pats := a.limits[lang]
+	if len(pats) == 0 {
+		return nil
+	}
+	var out []core.Limit
+	for i, ln := range strings.Split(src, "\n") {
+		for _, p := range pats {
+			if p.re.MatchString(ln) {
+				out = append(out, core.Limit{Line: i + 1, Form: p.form})
+			}
+		}
+	}
+	return out
 }
 
 // lineMatches greift je Zeile und Regex den ERSTEN Treffer.

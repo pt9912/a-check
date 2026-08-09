@@ -90,12 +90,15 @@ func Run(args []string, out, errw io.Writer) int {
 	}
 	code := report.New(out, errw).Report(findings)
 	writeCoverageNotice(errw, core.UncoveredFiles(m, files))
+	writeLimitNotice(errw, core.HeuristicLimits(m, files))
 	return code
 }
 
-// coverageNoticeLimit caps the listed paths. The cap is NOT silent: the notice
-// names how many files it left out (ADR-0029).
-const coverageNoticeLimit = 10
+// noticeLimit caps the listed entries of both advisory diagnoses. The cap is NOT
+// silent: each notice names how many entries it left out (ADR-0029, ADR-0031).
+// One constant for both on purpose — two cap semantics side by side would be a
+// trap for whoever reads one notice and infers the other.
+const noticeLimit = 10
 
 // writeCoverageNotice reports scanned files that lie in no layer — advisory, on
 // stderr, AFTER the summary and WITHOUT touching the exit code (ADR-0029,
@@ -108,13 +111,34 @@ func writeCoverageNotice(errw io.Writer, uncovered []string) {
 	}
 	_, _ = fmt.Fprintf(errw, "Hinweis: %d gescannte Datei(en) liegen in keiner Schicht und bleiben ungeprüft:\n", len(uncovered))
 	for i, p := range uncovered {
-		if i == coverageNoticeLimit {
-			_, _ = fmt.Fprintf(errw, "  … und %d weitere\n", len(uncovered)-coverageNoticeLimit)
+		if i == noticeLimit {
+			_, _ = fmt.Fprintf(errw, "  … und %d weitere\n", len(uncovered)-noticeLimit)
 			break
 		}
 		_, _ = fmt.Fprintf(errw, "  %s\n", p)
 	}
 	_, _ = fmt.Fprintln(errw, "  Abhilfe: Schicht in layers deklarieren oder Datei in exclude aufnehmen.")
+}
+
+// writeLimitNotice reports import lines whose SPELLING keeps them from becoming
+// a judged edge — advisory, on stderr, AFTER the coverage notice and WITHOUT
+// touching the exit code (ADR-0031, SPEC-CLI-001). It is most valuable on a run
+// that ends with zero findings: there it is the only thing separating "clean" from
+// "not looked at". A tree without such lines prints nothing, so the notice stays
+// signal rather than noise.
+func writeLimitNotice(errw io.Writer, limits []core.LimitNote) {
+	if len(limits) == 0 {
+		return
+	}
+	_, _ = fmt.Fprintf(errw, "Hinweis: %d Import-Zeile(n) unterliegen einer Heuristik-Grenze und bleiben unbeurteilt:\n", len(limits))
+	for i, l := range limits {
+		if i == noticeLimit {
+			_, _ = fmt.Fprintf(errw, "  … und %d weitere\n", len(limits)-noticeLimit)
+			break
+		}
+		_, _ = fmt.Fprintf(errw, "  %s:%d: %s\n", l.Path, l.Line, l.Form)
+	}
+	_, _ = fmt.Fprintln(errw, "  Abhilfe: Schreibweise ändern, resolution-Modus anpassen oder die Grenze bewusst hinnehmen.")
 }
 
 // mkImagePlaceholder steht im ERZEUGTEN Fragment anstelle eines Digests

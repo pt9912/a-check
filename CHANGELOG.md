@@ -6,6 +6,24 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
+### Added
+
+- **Grenz-Diagnose für nicht beurteilbare Import-Zeilen (`ADR-0031`, `SPEC-CLI-001` 0.28.0,
+  slice-081):** ein Scan weist jetzt auf stderr — nach der Abdeckungs-Diagnose — die Import-Zeilen
+  als `pfad:zeile: form` aus, deren **Schreibweise** per Konstruktion zu keiner prüfbaren Kante
+  führt. Zwei Klassen: (1) **nicht extrahiert** — relativer Python-Import (`from . import x`) und
+  zweite Direktive auf derselben Zeile (`import a, b`, `using A; using B;`); (2) **extrahiert,
+  aber strukturell unauflösbar** — ein `./`/`../`-Pfad unter einem `resolution`-Modus, der nicht
+  `relative` ist (unter `relative` bleibt dieselbe Zeile still). Bisher stand diese bewusste
+  Grenze (`AC-QA-02`) nur in der Doku; am geprüften Baum sagte a-check nichts, und ein Konsument
+  musste je Sprach-Skelett von Hand einen Verstoß einbauen, um seine blinden Stellen zu finden.
+  **Der Exit-Code bleibt unberührt** (advisory), und die Meldung erscheint **gerade auch bei null
+  Befunden** — dort trennt sie „sauber" von „nicht angesehen". Ein Symbol, das nur im konkreten
+  Baum kein Ziel findet, wird **nicht** gemeldet: das ist von repo-externem Code nicht
+  unterscheidbar. Stabil nach (Pfad, Zeile) sortiert, ab zehn Zeilen gekürzt **mit ausgewiesener
+  Restzahl**; ein Baum ohne solche Zeilen erzeugt **keine** Ausgabe. Die Befundmenge selbst bleibt
+  unverändert — die Diagnose fasst die Regel-Auswertung nicht an.
+
 ## [0.16.0] - 2026-07-25
 
 ### Added

@@ -1072,3 +1072,196 @@ func TestCoverageNoticeDeterministic(t *testing.T) { // AC-QA-01
 		t.Fatalf("Pfade muessen stabil sortiert sein: %q", e1.String())
 	}
 }
+
+// --- ADR-0031: Grenz-Diagnose (End-to-End) ----------------------------------
+
+const pyCfg = `version: 1
+languages:
+  python: ["**/*.py"]
+layers:
+  core: ["app/core/**"]
+  ui: ["app/ui/**"]
+edges:
+  - {from: ui, to: core}
+`
+
+// cppCfg laesst die Aufloesung beim Default `path`: ein `../`-Include kann so
+// kein Ziel-Glob treffen — genau die zweite Grenz-Klasse (ADR-0031).
+const cppCfg = `version: 1
+languages:
+  cpp: ["**/*.h", "**/*.cpp"]
+layers:
+  core: ["src/core/**"]
+  ui: ["src/ui/**"]
+edges:
+  - {from: ui, to: core}
+`
+
+func TestLimitNoticePythonRelativeImport(t *testing.T) { // ADR-0031 Klasse 1
+	dir := writeRepo(t, map[string]string{
+		".a-check.yml":      pyCfg,
+		"app/core/svc.py":   "from ..ui import widget\n",
+		"app/ui/widget.py":  "x = 1\n",
+	})
+	var out, errb bytes.Buffer
+	if code := cli.Run([]string{dir}, &out, &errb); code != 0 {
+		t.Fatalf("die Diagnose darf den Exit-Code nicht aendern, got %d", code)
+	}
+	e := errb.String()
+	if !strings.Contains(e, "app/core/svc.py:1: relativer Import") {
+		t.Fatalf("relativer Python-Import nicht gemeldet: %q", e)
+	}
+	if out.Len() != 0 {
+		t.Fatalf("die Diagnose gehoert auf stderr, stdout war %q", out.String())
+	}
+}
+
+func TestLimitNoticePythonSecondDirective(t *testing.T) { // ADR-0031 Klasse 1
+	dir := writeRepo(t, map[string]string{
+		".a-check.yml":     pyCfg,
+		"app/core/svc.py":  "import os, sys\n",
+	})
+	var out, errb bytes.Buffer
+	cli.Run([]string{dir}, &out, &errb)
+	if !strings.Contains(errb.String(), "app/core/svc.py:1: zweite Direktive") {
+		t.Fatalf("Mehrfach-Direktive nicht gemeldet: %q", errb.String())
+	}
+}
+
+func TestLimitNoticeCppParentRelativeInclude(t *testing.T) { // ADR-0031 Klasse 2
+	dir := writeRepo(t, map[string]string{
+		".a-check.yml":    cppCfg,
+		"src/core/svc.h":  "#include \"../ui/widget.h\"\n",
+		"src/ui/widget.h": "\n",
+	})
+	var out, errb bytes.Buffer
+	cli.Run([]string{dir}, &out, &errb)
+	e := errb.String()
+	if !strings.Contains(e, "src/core/svc.h:1: relativer Pfad") || !strings.Contains(e, `"path"`) {
+		t.Fatalf("elternrelativer Include nicht mit Modus-Nennung gemeldet: %q", e)
+	}
+}
+
+// Unter `relative` loest dieselbe Zeile auf — dort ist sie keine Grenze, sondern
+// der regulaere Fall. Waere die Diagnose modus-blind, spraeche sie hier falsch.
+func TestLimitNoticeSilentUnderRelativeMode(t *testing.T) { // ADR-0031 Entscheidung 5
+	dir := writeRepo(t, map[string]string{
+		".a-check.yml":    cppCfg + "resolution:\n  cpp:\n    mode: relative\n",
+		"src/core/svc.h":  "#include \"../ui/widget.h\"\n",
+		"src/ui/widget.h": "\n",
+	})
+	var out, errb bytes.Buffer
+	cli.Run([]string{dir}, &out, &errb)
+	if strings.Contains(errb.String(), "Heuristik-Grenze") {
+		t.Fatalf("unter mode relative darf der Include keine Grenze sein: %q", errb.String())
+	}
+}
+
+func TestLimitNoticeAbsentWhenClean(t *testing.T) { // ADR-0031: kein Rauschen
+	dir := writeRepo(t, map[string]string{
+		".a-check.yml":     pyCfg,
+		"app/core/svc.py":  "import os\nfrom collections import OrderedDict\n",
+	})
+	var out, errb bytes.Buffer
+	cli.Run([]string{dir}, &out, &errb)
+	if strings.Contains(errb.String(), "Heuristik-Grenze") {
+		t.Fatalf("Baum ohne Grenz-Formen darf keine Diagnose erzeugen: %q", errb.String())
+	}
+}
+
+// Zitierte Muster sind keine Muster: ein auskommentierter Import spricht UEBER
+// die Form, er ist sie nicht (SL-004 — dreimal hat ein neuer Sensor im ersten
+// Lauf sein eigenes Umfeld gemeldet).
+func TestLimitNoticeIgnoresComments(t *testing.T) {
+	dir := writeRepo(t, map[string]string{
+		".a-check.yml":    pyCfg,
+		"app/core/svc.py": "# from . import x\n# import a, b\nimport os\n",
+		"src/core/x.h":    "",
+	})
+	var out, errb bytes.Buffer
+	cli.Run([]string{dir}, &out, &errb)
+	if strings.Contains(errb.String(), "Heuristik-Grenze") {
+		t.Fatalf("auskommentierte Formen duerfen nicht melden: %q", errb.String())
+	}
+}
+
+// AK 2 aus CR-1: gerade der befundfreie Lauf braucht den Hinweis — dort ist er
+// das Einzige, was „sauber" von „nicht angesehen" trennt.
+func TestLimitNoticeAtZeroFindings(t *testing.T) {
+	dir := writeRepo(t, map[string]string{
+		".a-check.yml":    pyCfg,
+		"app/ui/w.py":     "from ..core import svc\n",
+		"app/core/svc.py": "x = 1\n",
+	})
+	var out, errb bytes.Buffer
+	code := cli.Run([]string{dir}, &out, &errb)
+	if code != 0 {
+		t.Fatalf("erwartet Exit 0 (kein Befund), got %d — stdout %q", code, out.String())
+	}
+	if !strings.Contains(errb.String(), "Heuristik-Grenze") {
+		t.Fatalf("Hinweis fehlt gerade beim befundfreien Lauf: %q", errb.String())
+	}
+}
+
+// AK 1 aus CR-1: die Diagnose fasst die Regel-Auswertung nicht an. Derselbe Baum
+// einmal MIT und einmal OHNE Grenz-Form muss dieselbe Befundmenge liefern.
+func TestLimitNoticeLeavesFindingsUntouched(t *testing.T) {
+	// fixed-root, damit der gepunktete Modulpfad ueberhaupt auf ein Schicht-Glob
+	// auflöst — sonst gaebe es keinen Befund, gegen den die Diagnose sich messen
+	// liesse.
+	base := map[string]string{
+		".a-check.yml":     pyCfg + "resolution:\n  python:\n    mode: fixed-root\n    package_base: app\n    roots: [app]\n",
+		"app/core/svc.py":  "import app.ui.widget\n", // echter Verstoss: core -> ui
+		"app/ui/widget.py": "x = 1\n",
+	}
+	var o1, e1 bytes.Buffer
+	c1 := cli.Run([]string{writeRepo(t, base)}, &o1, &e1)
+
+	withLimit := map[string]string{}
+	for k, v := range base {
+		withLimit[k] = v
+	}
+	withLimit["app/ui/widget.py"] = "from . import other\nx = 1\n"
+	var o2, e2 bytes.Buffer
+	c2 := cli.Run([]string{writeRepo(t, withLimit)}, &o2, &e2)
+
+	if c1 != c2 || c1 != 1 {
+		t.Fatalf("Exit-Code veraendert: %d vs. %d (want 1)", c1, c2)
+	}
+	if o1.String() != o2.String() {
+		t.Fatalf("Befundmenge veraendert:\n%q\n%q", o1.String(), o2.String())
+	}
+	if !strings.Contains(e2.String(), "Heuristik-Grenze") {
+		t.Fatalf("Diagnose fehlt im zweiten Lauf: %q", e2.String())
+	}
+}
+
+func TestLimitNoticeCapNamesRemainder(t *testing.T) { // ADR-0031: keine stille Kappung
+	files := map[string]string{".a-check.yml": pyCfg}
+	for i := 0; i < 13; i++ {
+		files[fmt.Sprintf("app/core/m%02d.py", i)] = "from . import x\n"
+	}
+	var out, errb bytes.Buffer
+	cli.Run([]string{writeRepo(t, files)}, &out, &errb)
+	e := errb.String()
+	if !strings.Contains(e, "13 Import-Zeile(n)") || !strings.Contains(e, "… und 3 weitere") {
+		t.Fatalf("Kuerzung muss die Restzahl nennen: %q", e)
+	}
+}
+
+func TestLimitNoticeDeterministic(t *testing.T) { // AC-QA-01
+	dir := writeRepo(t, map[string]string{
+		".a-check.yml":    pyCfg,
+		"app/core/b.py":   "from . import x\n",
+		"app/core/a.py":   "import os, sys\n",
+	})
+	var o1, e1, o2, e2 bytes.Buffer
+	cli.Run([]string{dir}, &o1, &e1)
+	cli.Run([]string{dir}, &o2, &e2)
+	if e1.String() != e2.String() {
+		t.Fatalf("stderr nicht byte-identisch:\n%q\n%q", e1.String(), e2.String())
+	}
+	if strings.Index(e1.String(), "app/core/a.py") > strings.Index(e1.String(), "app/core/b.py") {
+		t.Fatalf("Zeilen muessen stabil nach Pfad sortiert sein: %q", e1.String())
+	}
+}

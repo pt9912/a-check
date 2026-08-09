@@ -1,6 +1,6 @@
 # Spezifikation — a-check
 
-**Version:** 0.27.0
+**Version:** 0.28.0
 
 **Status:** Draft
 
@@ -352,6 +352,26 @@ Präzisiert [AC-FA-CLI-001](lastenheft.md#ac-fa-cli-001--aufruf-scan-wurzel-und-
   **stabil sortiert** ([SPEC-DET-001](#spec-det-001--determinismus-vertrag)); ab **zehn** Dateien
   wird die Liste gekürzt und die **Restzahl genannt** (keine stille Kappung). Sind alle gescannten
   Dateien gedeckt, entsteht **keine** Ausgabe.
+- **Grenz-Diagnose** (advisory, auf stderr **nach** der Abdeckungs-Diagnose): Import-Zeilen, deren
+  **Schreibweise** das Werkzeug per Konstruktion nicht zu einer beurteilbaren Kante führt, werden als
+  `pfad:zeile: form` ausgewiesen — die Einlösung von
+  [AC-QA-02](lastenheft.md#ac-qa-02--hermetik-und-ehrliche-heuristik-grenze) am geprüften Baum statt
+  nur in der Doku. Zwei Klassen zählen, beide allein an der Schreibweise erkennbar:
+  1. **Nicht extrahiert** — die Zeile greift kein Backend-Muster: ein **relativer Python-Import**
+     (führender Punkt) und eine **zweite Direktive auf derselben Zeile** (`import a, b`,
+     `using A; using B;`); beides benannte Grenzen aus
+     [SPEC-EXTRACT-001](#spec-extract-001--import-extraktion).
+  2. **Extrahiert, aber strukturell unauflösbar** — ein Symbol mit `./`- oder `../`-Präfix unter
+     einem Auflösungs-Modus, der **nicht** `relative` ist ([SPEC-CONF-001](#spec-conf-001--konfigurationsschema)):
+     ein solcher Pfad kann kein Ziel-Glob treffen, unabhängig vom Baum-Inhalt. Unter `relative`
+     löst dieselbe Zeile auf und wird **nicht** gemeldet.
+
+  **Nicht** gemeldet wird ein Symbol, das syntaktisch auflösbar wäre und im Baum nur kein Ziel
+  findet — das ist von repo-**externem** Code nicht unterscheidbar, dieselbe Grenze, an der die
+  Abdeckungs-Diagnose die Ziel-Seite ausnimmt. **Der Exit-Code bleibt unberührt**; die Meldung
+  erscheint auch bei **null** Befunden. Stabil sortiert nach (Pfad, Zeile)
+  ([SPEC-DET-001](#spec-det-001--determinismus-vertrag)); ab **zehn** Zeilen wird gekürzt und die
+  **Restzahl genannt**. Ein Baum ohne solche Zeilen erzeugt **keine** Ausgabe.
 - **Read-only:** der geprüfte Baum wird nie beschrieben (Mount `:ro`).
 - **No-scan-Modus `--print-graph`** ([AC-FA-CLI-002](lastenheft.md#ac-fa-cli-002--architektur-graph-ausgabe)):
   `a-check --print-graph [pfad]` liest **nur** `pfad/.a-check.yml` und gibt einen Graphen aus
@@ -483,6 +503,7 @@ und [AC-QA-03](lastenheft.md#ac-qa-03--reproduzierbarkeit).
 | 0.17.0 | 2026-07-05 | `SPEC-CONF-001`: **datei-mengen-bewusste Mehr-Wurzel-Auflösung** (Stufe 2) — `fixed-root` mit ≥ 2 `roots` löst den FQN gegen die real gescannten Dateien auf (endungs-agnostisch, package==directory); Schicht am realen Kandidaten-Pfad, Phantom bleibt extern; der Ladezeit-Guard aus 0.16.0 entfällt. Gleicher FQN real in ≥ 2 Roots + **verschiedene** Schichten → Exit 2 **nach dem Scan** (distinct-layer; `expect`/`actual` same-layer löst sauber). Folgt [`AC-FA-CONF-001`](lastenheft.md#ac-fa-conf-001--konfigurationsdatei-a-checkyml) 0.17.0. |
 | 0.18.0 | 2026-07-06 | `SPEC-CONF-001`/`SPEC-EXTRACT-001`: **deklarations-bewusste Mehr-Wurzel-Auflösung** (Stufe 3) — bei `fixed-root` mit ≥ 2 `roots` gewinnt für ein deklarations-bewusstes Backend (Kotlin) die **reale Top-Level-Deklaration** über den bloßen Datei-Namens-Match (Evidenz-Rangfolge deklariert > Paketverzeichnis > keine); genau ein deklarierender Root ⇒ eindeutig, ≥ 2 deklarierende Roots verschiedener Schichten ⇒ Exit 2, kein Treffer ⇒ extern (fail-open). `SPEC-EXTRACT-001`: **Kotlin** liefert zusätzlich Top-Level-Deklarationen (`fun`/Extension/`val`/`class`/`object`/`interface`/`typealias`), übrige Backends no-op (leeres Set). Folgt [`AC-FA-CONF-001`](lastenheft.md#ac-fa-conf-001--konfigurationsdatei-a-checkyml)/[`AC-FA-EXTRACT-001`](lastenheft.md#ac-fa-extract-001--sprach-backends-für-die-import-extraktion) 0.18.0. |
 | 0.19.0 | 2026-07-09 | Neu `SPEC-CLI-002` (Graph-Renderer-Vertrag: Config-Modell→Mermaid **pur**; stabile interne IDs + escaptes Label je nutzergesteuertem Text; Kante je `edges`, abgesetzte `allow`-Kante; Dangling-/Composition-Root-/Adapter-Sink-Sonderknoten; `classDef` je effektiver Rolle via geteiltem Resolver; `direction`-Subgraphs; implizite Regeln als Legende; Escaping-Vertrag; Determinismus-Ordnung; `tech` v1 deferred). `SPEC-CLI-001` um den no-scan-`--print-graph`-Modus präzisiert (load-time/config-validation-Parität inkl. unbekannter Sprache; Restargument nach dem Pfad → Exit 2; **keine** scanzeitige Fehler-Parität). Folgt [`AC-FA-CLI-002`](lastenheft.md#ac-fa-cli-002--architektur-graph-ausgabe) 0.19.0. |
+| 0.28.0 | 2026-08-09 | `SPEC-CLI-001`: **Grenz-Diagnose** (advisory, nach der Abdeckungs-Diagnose) — ein Scan weist als `pfad:zeile: form` die Import-Zeilen aus, deren **Schreibweise** per Konstruktion zu keiner beurteilbaren Kante führt: (1) **nicht extrahiert** (relativer Python-Import, zweite Direktive auf derselben Zeile) und (2) **extrahiert, aber strukturell unauflösbar** (`./`/`../`-Präfix unter einem Modus ≠ `relative`; unter `relative` still). Ein Symbol, das nur im konkreten Baum kein Ziel findet, wird **nicht** gemeldet — von repo-externem Code nicht unterscheidbar. **Exit-Code unberührt**, Meldung auch bei null Befunden, stabil nach (Pfad, Zeile) sortiert, ab zehn Zeilen gekürzt **mit Restzahl**; ein Baum ohne solche Zeilen bleibt still. Löst die Doku-Zusage von [AC-QA-02](lastenheft.md#ac-qa-02--hermetik-und-ehrliche-heuristik-grenze) am geprüften Baum ein, ohne eine Grenze zu verschieben; kein Lastenheft-Bump ([ADR-0031](../docs/plan/adr/0031-heuristik-grenzen-diagnose.md)). slice-081. |
 | 0.27.0 | 2026-08-09 | `SPEC-DIST-001`: `A_CHECK_IMAGE` trägt im **erzeugten** Fragment einen **Platzhalter** statt eines Digests ([ADR-0030](../docs/plan/adr/0030-kein-digest-im-generierten-fragment.md)) — das Binary kann den Digest seines eigenen Image nicht kennen, der eingebackene Wert nannte immer den Vorgänger. Die committete `a-check.mk` trägt weiterhin den echten Digest. Zusätzlich als Fragment-Bestandteil ausgewiesen: `DOCKER ?= docker` + `$(DOCKER)`-Aufruf (slice-082). Folgt [`AC-QA-03`](lastenheft.md#ac-qa-03--reproduzierbarkeit) 0.23.0. slice-083. |
 | 0.20.0 | 2026-07-09 | `SPEC-DIST-001`: das `--print-mk`-Fragment liefert zusätzlich ein `a-check-graph`-Target, das `--print-graph` ([`SPEC-CLI-002`](#spec-cli-002--graph-renderer-vertrag)) über dasselbe digest-gepinnte `A_CHECK_IMAGE` + netzlosen read-only-Mount ausführt (Mermaid→stdout, kein Scan); kein zweiter Digest. Folgt [`AC-FA-DIST-001`](lastenheft.md#ac-fa-dist-001--distribution-image---print-mk-a-checkmk) 0.20.0. |
 | 0.26.0 | 2026-07-25 | `SPEC-CLI-001`: **Abdeckungs-Diagnose** (advisory) — ein Scan nennt auf stderr nach der Zusammenfassung die gescannten Dateien, die in **keinem** `layers`-Glob liegen; der **Exit-Code bleibt unberührt**. `composition_root`-Dateien zählen nicht, `exclude`-Dateien sind nie im Scan; gezählt wird nur die **Quell**-Seite (ein Import-Ziel ohne Schicht ist von repo-externem Code nicht unterscheidbar). Pfade stabil sortiert, ab zehn Dateien gekürzt **mit ausgewiesener Restzahl**; vollständige Abdeckung erzeugt keine Ausgabe. Macht die bewusste fail-open-Grenze aus [AC-QA-02](lastenheft.md#ac-qa-02--hermetik-und-ehrliche-heuristik-grenze) sichtbar, ohne sie zu verschieben; kein Lastenheft-Bump ([ADR-0029](../docs/plan/adr/0029-abdeckungs-diagnose-advisory.md)). |

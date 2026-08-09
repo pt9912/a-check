@@ -80,6 +80,27 @@ Nicht mitgezählt werden `composition_root`-Dateien (die sind bestimmungsgemäß
 `exclude`-Dateien (die werden nie gescannt). Ab zehn Dateien wird die Liste gekürzt und die
 Restzahl genannt.
 
+**Und ein Grenz-Hinweis.** a-check extrahiert Importe text-heuristisch; einige gültige
+Schreibweisen führt es deshalb zu keiner prüfbaren Kante. Trifft es solche Zeilen, nennt es sie
+mit Datei, Zeile und Grund:
+
+```text
+Hinweis: 2 Import-Zeile(n) unterliegen einer Heuristik-Grenze und bleiben unbeurteilt:
+  app/core/service.py:3: relativer Import — von diesem Backend nicht extrahiert
+  src/core/service.h:1: relativer Pfad, den der Auflösungs-Modus "path" nicht auflöst
+  Abhilfe: Schreibweise ändern, resolution-Modus anpassen oder die Grenze bewusst hinnehmen.
+```
+
+Auch das ist **kein Befund** — der Exit-Code bleibt unberührt. Der Hinweis erscheint **gerade
+auch bei null Befunden**, denn dort ist er am wichtigsten: er trennt „sauber" von „nicht
+angesehen". Gemeldet werden nur Zeilen, deren **Schreibweise allein** schon verrät, dass sie zu
+keiner Kante führen — entweder weil das Backend sie nicht extrahiert (relativer Python-Import,
+zweite Direktive auf derselben Zeile) oder weil ein `./`/`../`-Pfad unter Ihrem
+`resolution`-Modus kein Ziel treffen kann. Steht der Modus dieser Sprache auf `relative`, ist ein
+relativer Pfad der Normalfall und wird **nicht** gemeldet. Ein Baum ohne solche Zeilen erzeugt
+**keine** Ausgabe; ab zehn Zeilen wird gekürzt und die Restzahl genannt. Welche Formen dahinter
+stehen, führt Abschnitt 6 („a-check findet nichts, obwohl Verstöße erwartet werden") aus.
+
 ## 3. Aufgaben
 
 ### 3.1 a-check lokal ausführen
@@ -695,6 +716,11 @@ oder ein zu breiter `exclude`-Glob nimmt die betroffenen Dateien vom Scan aus.
    kein Fehler. Die vollständige Liste aller Grenzen führt der Out-of-Scope-Absatz
    von [`AC-FA-EXTRACT-001`](../../spec/lastenheft.md#ac-fa-extract-001--sprach-backends-für-die-import-extraktion)
    im Lastenheft; hier stehen die, die beim Konfigurieren auffallen.
+
+   **Die ersten beiden Formen müssen Sie nicht mehr suchen:** a-check meldet sie beim Scan
+   selbst, mit Datei und Zeile (Grenz-Hinweis, Abschnitt 2). Prüfen Sie zuerst dort — steht Ihre
+   Datei in dem Hinweis, ist die Schreibweise die Ursache. Die übrigen Formen der Tabelle bleiben
+   still; für sie ist diese Liste die Quelle.
 
 ### Fehler: ein `tech-leak`/`core-impurity`-Befund ist falsch-positiv
 

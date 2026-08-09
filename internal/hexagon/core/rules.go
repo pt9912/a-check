@@ -325,6 +325,73 @@ func UncoveredFiles(m Model, files []FileImports) []string {
 	return out
 }
 
+// formUnresolvableRelative names the second limit class in the diagnosis. It is
+// part of the CLI contract (SPEC-CLI-001), so it lives as a constant next to the
+// logic that emits it rather than being spelled out at the call site.
+const formUnresolvableRelative = "relativer Pfad, den der Auflösungs-Modus %q nicht auflöst"
+
+// HeuristicLimits returns every import line whose SPELLING keeps it from
+// becoming a judged edge, stably sorted by (path, line) — the scan-wide view the
+// CLI prints (ADR-0031, SPEC-CLI-001). It joins the two classes:
+//
+//  1. NOT EXTRACTED — the extractor already flagged these per file (Limits): a
+//     relative Python import, a second directive on one line. No config knowledge
+//     is needed to see them, so the adapter finds them while it reads the source.
+//
+//  2. EXTRACTED BUT STRUCTURALLY UNRESOLVABLE — a "./" or "../" symbol under any
+//     mode other than "relative". Such a candidate cannot match a layer glob no
+//     matter what the tree contains: "path" passes it through with its dots,
+//     "fixed-root" prepends a root in front of them. This class needs the
+//     resolution mode, which is config, which is why it is derived HERE and not
+//     in the extractor.
+//
+// What is deliberately NOT reported: a symbol that would resolve syntactically
+// and merely finds no target in this tree. That is indistinguishable from
+// repo-EXTERNAL code — the same boundary at which UncoveredFiles leaves out the
+// target side (AC-QA-02). Mixing a certain statement with an uncertain one would
+// cost the diagnosis its credibility.
+func HeuristicLimits(m Model, files []FileImports) []LimitNote {
+	var out []LimitNote
+	for _, f := range files {
+		for _, l := range f.Limits {
+			out = append(out, LimitNote{Path: f.Path, Line: l.Line, Form: l.Form})
+		}
+		mode := m.Resolution[f.Language].Mode
+		if mode == "relative" {
+			continue // there the relative spelling is the resolving one
+		}
+		for _, imp := range f.Imports {
+			if relativeSpecifier(imp.Symbol) {
+				out = append(out, LimitNote{
+					Path: f.Path,
+					Line: imp.Line,
+					Form: fmt.Sprintf(formUnresolvableRelative, modeName(mode)),
+				})
+			}
+		}
+	}
+	sort.Slice(out, func(i, j int) bool {
+		if out[i].Path != out[j].Path {
+			return out[i].Path < out[j].Path
+		}
+		if out[i].Line != out[j].Line {
+			return out[i].Line < out[j].Line
+		}
+		return out[i].Form < out[j].Form // total order (SPEC-DET-001)
+	})
+	return out
+}
+
+// modeName spells the effective resolution mode for the message. An empty mode
+// IS "path" (the default, SPEC-CONF-001); printing "" would leave the reader
+// guessing at exactly the value that explains the finding.
+func modeName(mode string) string {
+	if mode == "" {
+		return "path"
+	}
+	return mode
+}
+
 // sliceOf returns the vertical-slice identity of a path (AC-FA-RULE-009): the
 // longest app-role layer-glob LITERAL prefix that matches path as a segment run
 // (segIndex, module-prefix tolerant like the target resolution). The returned

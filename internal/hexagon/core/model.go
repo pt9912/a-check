@@ -22,6 +22,23 @@ type ConstructHit struct {
 	Line  int
 }
 
+// Limit is one import line whose SPELLING keeps it from becoming a judged edge,
+// with the human-readable form that names the reason (ADR-0031). Form is a fixed
+// phrase from a small set, not free text — it is the diagnostic output itself,
+// so a drifting wording would drift the CLI contract.
+type Limit struct {
+	Line int
+	Form string
+}
+
+// LimitNote is a diagnosed limit with its file — the flattened, scan-wide view
+// the CLI prints (ADR-0031).
+type LimitNote struct {
+	Path string
+	Line int
+	Form string
+}
+
 // FileImports are the imports (and text-pattern hits) extracted from one source
 // file, plus the architectural layer the file resolves to.
 type FileImports struct {
@@ -37,6 +54,13 @@ type FileImports struct {
 	// ConstructHits are the scan-wide `constructs` matches feeding construct-leak
 	// (AC-FA-RULE-011); empty when no constructs block is configured.
 	ConstructHits []ConstructHit
+	// Limits are import lines the language backend did NOT extract because their
+	// SPELLING falls outside its patterns (ADR-0031) — a relative Python import,
+	// a second directive on one line. They are diagnostic only: they never become
+	// imports and never reach a rule. The second limit class (extracted but
+	// structurally unresolvable) is derived in HeuristicLimits from Imports plus
+	// the resolution mode, so the extractor stays free of config knowledge.
+	Limits []Limit
 	// Declarations are the file's top-level declaration names (Kotlin: fun,
 	// val/var, class/object/interface/typealias, ADR-0023). Only a
 	// declaration-aware backend fills them (0.18.0: Kotlin); every other backend
