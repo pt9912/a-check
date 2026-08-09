@@ -42,7 +42,7 @@ Versprechen am **Repo** eingelöst ist — nicht nur im Lastenheft.
   Befund bleibt unbeantwortet liegen. Das ist die inhaltliche Bedingung; „alle Slices done" allein
   wäre sie nicht, weil ein Slice auch mit dem Ergebnis „bleibt so" schließen kann.
 - Für die spec-first-Slices ([slice-081](open/slice-081-heuristik-diagnose.md),
-  [slice-083](open/slice-083-print-mk-digest-selbstbezug.md)): die zugehörige ADR trägt
+  [slice-083](in-progress/slice-083-print-mk-digest-selbstbezug.md)): die zugehörige ADR trägt
   `Status: Accepted`, und die Lastenheft-Änderung steht **vor** dem Code.
 - `make ci` grün (Exit 0 in eine Datei, getrennt geprüft) — die repo-eigene Ersetzung des
   Baseline-Replay-Laufs nach
@@ -56,7 +56,7 @@ Versprechen am **Repo** eingelöst ist — nicht nur im Lastenheft.
 |---|---|---|---|
 | [slice-081](open/slice-081-heuristik-diagnose.md) | `CR-1` | Laufzeit-Diagnose für nicht extrahierte Import-Formen | [AC-QA-02](../../../spec/lastenheft.md#ac-qa-02--hermetik-und-ehrliche-heuristik-grenze) |
 | [slice-082](done/slice-082-print-mk-docker-indirektion.md) | `CR-6` | `--print-mk`: `$(DOCKER)` statt wörtlichem `docker` | [AC-FA-DIST-001](../../../spec/lastenheft.md#ac-fa-dist-001--distribution-image---print-mk-a-checkmk) |
-| [slice-083](open/slice-083-print-mk-digest-selbstbezug.md) | `CR-5` | `--print-mk` nennt den Digest des Vorgängers | [AC-QA-03](../../../spec/lastenheft.md#ac-qa-03--reproduzierbarkeit) |
+| [slice-083](in-progress/slice-083-print-mk-digest-selbstbezug.md) | `CR-5` | `--print-mk` nennt den Digest des Vorgängers | [AC-QA-03](../../../spec/lastenheft.md#ac-qa-03--reproduzierbarkeit) |
 | [slice-084](done/slice-084-handbuch-heuristik-grenzen.md) | `CR-3` | Heuristik-Grenzen dort, wo Konsumenten lesen | [AC-QA-02](../../../spec/lastenheft.md#ac-qa-02--hermetik-und-ehrliche-heuristik-grenze) |
 | [slice-085](open/slice-085-schicht-ohne-aufloesung.md) | `CR-2` | Diagnose: Schicht ohne auflösende Importe | [SPEC-RULE-001](../../../spec/spezifikation.md#spec-rule-001--regel-auswertung) |
 | [slice-086](open/slice-086-forbidden-constructs-fail-closed.md) | `CR-4` | `forbidden_constructs` ohne `port`-Rolle: fail-closed | [SPEC-CONF-001](../../../spec/spezifikation.md#spec-conf-001--konfigurationsschema) |
@@ -78,7 +78,7 @@ nennt aber die Fix-Variante. **Offen: ob die Doku-Variante als Erfüllung gilt.*
 auf den Fix, ist das ein eigener Slice — nicht eine Wiedereröffnung von 084.
 
 **Reihenfolge, wo sie zwingend ist:** [slice-082](done/slice-082-print-mk-docker-indirektion.md)
-vor [slice-083](open/slice-083-print-mk-digest-selbstbezug.md) — beide ändern `cli.go` **und**
+vor [slice-083](in-progress/slice-083-print-mk-digest-selbstbezug.md) — beide ändern `cli.go` **und**
 `a-check.mk`, und die Fragment-Parität in `tools/image-test.sh` erzwingt gemeinsames Wandern.
 
 **Ein Slice trägt eine Verwerfungs-Bedingung:**
@@ -106,7 +106,7 @@ wäre hier die falsche Zusage.
 - **Ein Release.** `[Unreleased]` ist seit `v0.16.0` leer; ob die Ergebnisse dieser Welle ein
   Release rechtfertigen, entscheidet der Maintainer nach der Closure — nicht die Welle selbst.
 - **`F-9`** (Freigabe-Belege aus dem `welle-12`-Review). Berührt
-  [`releasing.md`](../../user/releasing.md) wie [slice-083](open/slice-083-print-mk-digest-selbstbezug.md),
+  [`releasing.md`](../../user/releasing.md) wie [slice-083](in-progress/slice-083-print-mk-digest-selbstbezug.md),
   ist aber ein Harness-Thema und nicht aus dem Konsumenten-Einsatz gemeldet.
 
 ## 7. Closure-Notiz
