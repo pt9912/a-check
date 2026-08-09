@@ -38,7 +38,17 @@ mk_c=0; docker run --rm --network none "$IMG" --print-mk >"$WORK/mk.c.out" 2>"$W
 [ "$mk_n" -eq 0 ] || fail "--print-mk nativ: Exit $mk_n, want 0"
 [ "$mk_c" -eq 0 ] || fail "--print-mk Container: Exit $mk_c, want 0"
 cmp -s "$WORK/mk.n.out" "$WORK/mk.c.out" || fail "--print-mk stdout nativ vs. Container nicht byte-identisch (AC-QA-02)"
-cmp -s "$WORK/mk.c.out" "$ROOT/a-check.mk" || fail "committete a-check.mk != --print-mk-Output (Fragment-Paritaet slice-034; regeneriere: a-check --print-mk > a-check.mk)"
+# Fragment-Paritaet (slice-034) — seit slice-083 OHNE die A_CHECK_IMAGE-Zeile:
+# das ERZEUGTE Fragment traegt dort einen Platzhalter, die COMMITTETE
+# a-check.mk den echten Release-Digest (ADR-0030). Das Binary kann den Digest
+# seines eigenen Image nicht kennen; ein eingebackener Wert naehme immer den des
+# Vorgaenger-Release. Alles ausserhalb dieser einen Zeile muss byte-identisch
+# bleiben — sonst driftet das gelieferte Fragment vom committeten.
+norm_mk() { grep -v '^A_CHECK_IMAGE ?=' "$1"; }
+cmp -s <(norm_mk "$WORK/mk.c.out") <(norm_mk "$ROOT/a-check.mk") || fail "committete a-check.mk != --print-mk-Output ausserhalb der Pin-Zeile (Fragment-Paritaet slice-034/slice-083)"
+grep -qE '^A_CHECK_IMAGE \?= ghcr\.io/pt9912/a-check@sha256:[0-9a-f]{64}$' "$ROOT/a-check.mk" || fail "committete a-check.mk traegt keinen vollen Release-Digest (AC-QA-03)"
+grep -q 'SETZE-HIER-DEN-RELEASE-DIGEST-EIN' "$WORK/mk.c.out" || fail "--print-mk gibt keinen Platzhalter aus, sondern einen konkreten Wert (ADR-0030)"
+grep -qE '@sha256:[0-9a-f]{64}' "$WORK/mk.c.out" && fail "--print-mk gibt einen konkreten Digest aus — er waere der des Vorgaenger-Release (ADR-0030)"
 grep -q 'A_CHECK_IMAGE' "$WORK/mk.c.out" || fail "--print-mk: A_CHECK_IMAGE fehlt"
 grep -qE '^a-check:' "$WORK/mk.c.out" || fail "--print-mk: a-check-Target fehlt"
 grep -qE '^a-check-graph:' "$WORK/mk.c.out" || fail "--print-mk: a-check-graph-Target fehlt (AC-FA-DIST-001 0.20.0)"

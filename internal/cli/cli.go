@@ -117,16 +117,31 @@ func writeCoverageNotice(errw io.Writer, uncovered []string) {
 	_, _ = fmt.Fprintln(errw, "  Abhilfe: Schicht in layers deklarieren oder Datei in exclude aufnehmen.")
 }
 
-// aCheckImage is the distributed image reference, digest-pinned to the v0.14.0
-// release (AC-QA-03, ADR-0007): consumers pin the immutable digest, not a
-// moving tag. Pin-Hebung is a conscious commit (ADR-0004).
-const aCheckImage = "ghcr.io/pt9912/a-check@sha256:aef28cfe25bb054b1b0eb28420222a45b9f6ce9425b7ffd0f55e6ae56f295b56"
+// mkImagePlaceholder steht im ERZEUGTEN Fragment anstelle eines Digests
+// (ADR-0030): das Binary kann den Digest des Image, in dem es laeuft, nicht
+// kennen — der Digest entsteht erst beim Push, das Binary ist vorher gebaut.
+// Ein eingebackener Wert nennt darum immer den VORGAENGER und sieht dabei
+// autoritativ aus; genau so entstand am 2026-08-09 ein realer Fehlpin beim
+// Konsumenten. Der Platzhalter ist bewusst kein gueltiger Image-Verweis: eine
+// unveraenderte Uebernahme bricht sichtbar ab, statt still ein fremdes Release
+// zu ziehen (AC-QA-03).
+const mkImagePlaceholder = "ghcr.io/pt9912/a-check@sha256:SETZE-HIER-DEN-RELEASE-DIGEST-EIN"
 
 const mkFragment = `# a-check.mk — Architektur-Gate via a-check, zum ` + "`include`" + ` in das
 # Makefile des konsumierenden Repos. Erzeugt von ` + "`a-check --print-mk`" + `.
 #
-# A_CHECK_IMAGE wird beim Release auf ` + "`@sha256:…`" + ` digest-gepinnt.
-A_CHECK_IMAGE ?= ` + aCheckImage + `
+# PFLICHT VOR DEM ERSTEN LAUF: A_CHECK_IMAGE auf den Release-Digest setzen.
+# Der Platzhalter unten ist KEIN gueltiger Verweis — ` + "`make a-check`" + ` bricht
+# damit ab. Das ist Absicht: a-check kann den Digest seines eigenen Image nicht
+# kennen (er entsteht erst beim Push), und ein eingebackener Wert naehme immer
+# den des VORGAENGER-Release — gueltig aussehend und falsch (ADR-0030).
+#
+# Den Digest des Release, aus dem dieses Fragment stammt, liefert:
+#   - die Release-Notes auf GitHub, oder
+#   - ` + "`docker image inspect --format '{{index .RepoDigests 0}}' <image>:<tag>`" + `
+#     auf dem Host, der das Image gezogen hat.
+# Die Pin-Hebung ist ein bewusster Commit (AC-QA-03).
+A_CHECK_IMAGE ?= ` + mkImagePlaceholder + `
 
 # Container-Runtime ueber eine Indirektion, damit ein Repo mit podman/nerdctl
 # oder einem docker-Wrapper nicht die Haelfte seiner Targets anders faehrt als

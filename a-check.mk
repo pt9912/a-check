@@ -1,7 +1,17 @@
 # a-check.mk — Architektur-Gate via a-check, zum `include` in das
 # Makefile des konsumierenden Repos. Erzeugt von `a-check --print-mk`.
 #
-# A_CHECK_IMAGE wird beim Release auf `@sha256:…` digest-gepinnt.
+# PFLICHT VOR DEM ERSTEN LAUF: A_CHECK_IMAGE auf den Release-Digest setzen.
+# Der Platzhalter unten ist KEIN gueltiger Verweis — `make a-check` bricht
+# damit ab. Das ist Absicht: a-check kann den Digest seines eigenen Image nicht
+# kennen (er entsteht erst beim Push), und ein eingebackener Wert naehme immer
+# den des VORGAENGER-Release — gueltig aussehend und falsch (ADR-0030).
+#
+# Den Digest des Release, aus dem dieses Fragment stammt, liefert:
+#   - die Release-Notes auf GitHub, oder
+#   - `docker image inspect --format '{{index .RepoDigests 0}}' <image>:<tag>`
+#     auf dem Host, der das Image gezogen hat.
+# Die Pin-Hebung ist ein bewusster Commit (AC-QA-03).
 A_CHECK_IMAGE ?= ghcr.io/pt9912/a-check@sha256:aef28cfe25bb054b1b0eb28420222a45b9f6ce9425b7ffd0f55e6ae56f295b56
 
 # Container-Runtime ueber eine Indirektion, damit ein Repo mit podman/nerdctl

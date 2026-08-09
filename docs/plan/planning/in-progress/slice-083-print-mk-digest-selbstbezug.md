@@ -118,18 +118,67 @@ Konfigurationsfehler erscheint.
 
 ## 5. DoD
 
-- [ ] Der Entscheid aus §3 ist **getroffen und begründet** in der Closure-Notiz; berührt er
-      [AC-QA-03](../../../../spec/lastenheft.md#ac-qa-03--reproduzierbarkeit), liegt die Lastenheft-Änderung mit ADR vor, **bevor** Code entsteht.
-- [ ] Keine Doku-Stelle behauptet mehr, `--print-mk` nenne den aktuellen Digest. Beleg:
-      [`releasing.md`](../../../user/releasing.md) §5 und Freigabe-Item 6, gegen den gewählten
-      Ausgang gelesen.
-- [ ] `make gates` und `make image-test` grün — **Ausgabe in eine Datei**, Exit-Code getrennt
-      geprüft, nie in eine Pipe.
+- [x] Der Entscheid aus §3 ist **getroffen und begründet** in der Closure-Notiz; berührt er
+      [AC-QA-03](../../../../spec/lastenheft.md#ac-qa-03--reproduzierbarkeit), liegt die
+      Lastenheft-Änderung mit ADR vor, **bevor** Code entsteht. Beleg: Lastenheft 0.23.0,
+      Spezifikation 0.27.0, [ADR-0030](../../adr/0030-kein-digest-im-generierten-fragment.md)
+      `Accepted`.
+- [x] Keine Doku-Stelle behauptet mehr, `--print-mk` nenne den aktuellen Digest. Beleg:
+      [`releasing.md`](../../../user/releasing.md) §5 und Freigabe-Item 6 neu gefasst; Item 6 nennt
+      jetzt `make image-test` als **mechanischen** Beleg statt einer unerfüllbaren Zusage.
+- [x] `make gates` und `make image-test` grün — **Ausgabe in eine Datei**, Exit-Code getrennt
+      geprüft, nie in eine Pipe. Beleg: `make ci` EXIT=0.
 
 ## 6. Closure-Notiz
 
-_(beim Abschluss ausfüllen — genau **ein** solcher Abschnitt je Slice,
-[`AGENTS.md`](../../../../AGENTS.md) §5; `make verify` prüft das.)_
+**Geliefert:** `--print-mk` gibt einen **Platzhalter** aus statt eines Digests
+([ADR-0030](../../adr/0030-kein-digest-im-generierten-fragment.md)); die committete
+[`a-check.mk`](../../../../a-check.mk) trägt weiterhin den echten Release-Digest.
+[`releasing.md`](../../../user/releasing.md) §5 und Freigabe-Item 6 sagen die Wahrheit, und
+`image-test` prüft **beide** Seiten mechanisch.
+
+**Der Entscheid: Platzhalter, nicht Tag.** Der CR nannte beide. Gegen den Tag sprachen zwei Funde
+aus dem Bau, nicht aus der Planung:
+
+1. **Die Version ist im Binary nicht bekannt.** `ARG VERSION` steht in der *runtime*-Stage des
+   [`Dockerfile`](../../../../Dockerfile), der Build-Schritt hat kein `-ldflags -X`. Der Tag-Weg
+   verlangt eine Build-Änderung.
+2. **Er bricht die Fragment-Parität.** Ein lokaler Build trägt `VERSION=0.0.0-dev`; die committete
+   `a-check.mk` müsste dieselbe Zeichenfolge tragen und wäre als Pin unbrauchbar.
+
+Der Platzhalter kommt ohne beides aus — und er erzwingt genau den bewussten Commit, den
+[AC-QA-03](../../../../spec/lastenheft.md#ac-qa-03--reproduzierbarkeit) ohnehin verlangt. Die Regel
+wird durchgesetzt statt behauptet.
+
+**Zwei Nebenwirkungen, beide Gewinn.** Der Linter meldete `const aCheckImage is unused` — die
+Konstante existierte **nur** für das Fragment. Mit ihr fällt eine der fünf harten Pin-Stellen weg:
+`gate-consistency` prüft die Digest-Gleichheit jetzt über **vier** Dateien statt fünf. Eine
+Pin-Stelle weniger zu pflegen ist genau das, was „Pin-Hebung ist ein bewusster Commit" meint.
+
+**Lerneintrag — Form: benannte Spec-Lücke.** Als Prüfsatz: *Eine Ausgabe, die ihren eigenen
+Erzeugungs-Zeitpunkt nicht kennen kann, darf keinen Wert nennen, der so aussieht, als kenne sie
+ihn.*
+
+**Die Ursache** ist ein Fixpunkt, kein Fehler: der Digest ist der Hash des Image-Inhalts, ein Image
+mit dem eigenen Digest wäre ein SHA-256-Fixpunkt. Die Spec hat das nie ausgesprochen — sie verlangte
+schlicht „Image **und** ausgelieferte `a-check.mk` referenzieren einen `@sha256:`-Digest", ohne zu
+unterscheiden, **wer** das Fragment erzeugt. Für die *committete* Datei war die Forderung erfüllbar,
+für die *erzeugte* nie. Zwischen beiden lag der Fehler — und beide hießen `a-check.mk`.
+
+**Der Schaden war real:** ein Konsument pinnte über den dokumentierten Bump-Weg `v0.15.0` statt
+`v0.16.0` und vermisste den `constructs`-Block, den sein Skelett brauchte — die Abweichung erschien
+ihm als Konfigurationsfehler.
+
+**Zwei beobachtbare Closure-Kriterien:**
+
+1. `--print-mk` enthält **keinen** `@sha256:`-Wert mit 64 Hex-Zeichen; `image-test` prüft das
+   mechanisch und würde bei einem konkreten Digest rot.
+2. Ein Konsument, der das Fragment unverändert übernimmt, bekommt `make a-check` **Exit 2** mit
+   `invalid reference` und dem sichtbaren `SETZE-HIER-DEN-RELEASE-DIGEST-EIN` — statt still ein
+   fremdes Release zu ziehen.
+
+**Folge-Slices:** keine. Offen bleibt `F-9` (Freigabe-Belege), das
+[`releasing.md`](../../../user/releasing.md) an anderer Stelle betrifft.
 
 ## 7. Sub-Area-Modus
 

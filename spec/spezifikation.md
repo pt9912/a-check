@@ -1,6 +1,6 @@
 # Spezifikation — a-check
 
-**Version:** 0.26.0
+**Version:** 0.27.0
 
 **Status:** Draft
 
@@ -441,11 +441,21 @@ und [AC-QA-03](lastenheft.md#ac-qa-03--reproduzierbarkeit).
 - `--print-config`: gibt ein **kommentiertes** `.a-check.yml`-Gerüst auf
   stdout aus; schreibt nichts.
 - `--print-mk`: gibt ein include-bares Makefile-Fragment auf stdout aus —
-  mit digest-gepinntem `A_CHECK_IMAGE`, einem `a-check`-Scan-Target **und** einem
+  mit `A_CHECK_IMAGE`, einem `a-check`-Scan-Target **und** einem
   `a-check-graph`-Target; schreibt nichts. Das `a-check-graph`-Target führt
   `--print-graph` aus ([SPEC-CLI-002](#spec-cli-002--graph-renderer-vertrag):
   Mermaid nach stdout, read-only, kein Scan) über **dasselbe** `A_CHECK_IMAGE`
   und denselben netzlosen read-only-Mount — kein zweiter Digest.
+  - `A_CHECK_IMAGE` trägt im **erzeugten** Fragment einen **Platzhalter** statt
+    eines konkreten Digests: das Binary kann den Digest des Image, in dem es läuft, nicht kennen — er
+    entsteht erst beim Push. Der Platzhalter ist so gewählt, dass eine
+    unveränderte Übernahme **sichtbar abbricht** statt ein fremdes Release zu
+    ziehen. Die im Repo **committete** `a-check.mk` trägt dagegen den echten
+    Digest des aktuellen Release; sie ist das gepinnte Artefakt, das erzeugte
+    Fragment die Vorlage dafür.
+  - Die Container-Runtime steht als `DOCKER ?= docker` im Fragment und wird als
+    `$(DOCKER)` aufgerufen, damit ein Konsument mit eigener Runtime nicht die
+    Hälfte seiner Targets anders fährt als die andere.
 - Ein unbekanntes Flag ⇒ Exit-Code 2.
 
 ## Historie
@@ -473,6 +483,7 @@ und [AC-QA-03](lastenheft.md#ac-qa-03--reproduzierbarkeit).
 | 0.17.0 | 2026-07-05 | `SPEC-CONF-001`: **datei-mengen-bewusste Mehr-Wurzel-Auflösung** (Stufe 2) — `fixed-root` mit ≥ 2 `roots` löst den FQN gegen die real gescannten Dateien auf (endungs-agnostisch, package==directory); Schicht am realen Kandidaten-Pfad, Phantom bleibt extern; der Ladezeit-Guard aus 0.16.0 entfällt. Gleicher FQN real in ≥ 2 Roots + **verschiedene** Schichten → Exit 2 **nach dem Scan** (distinct-layer; `expect`/`actual` same-layer löst sauber). Folgt [`AC-FA-CONF-001`](lastenheft.md#ac-fa-conf-001--konfigurationsdatei-a-checkyml) 0.17.0. |
 | 0.18.0 | 2026-07-06 | `SPEC-CONF-001`/`SPEC-EXTRACT-001`: **deklarations-bewusste Mehr-Wurzel-Auflösung** (Stufe 3) — bei `fixed-root` mit ≥ 2 `roots` gewinnt für ein deklarations-bewusstes Backend (Kotlin) die **reale Top-Level-Deklaration** über den bloßen Datei-Namens-Match (Evidenz-Rangfolge deklariert > Paketverzeichnis > keine); genau ein deklarierender Root ⇒ eindeutig, ≥ 2 deklarierende Roots verschiedener Schichten ⇒ Exit 2, kein Treffer ⇒ extern (fail-open). `SPEC-EXTRACT-001`: **Kotlin** liefert zusätzlich Top-Level-Deklarationen (`fun`/Extension/`val`/`class`/`object`/`interface`/`typealias`), übrige Backends no-op (leeres Set). Folgt [`AC-FA-CONF-001`](lastenheft.md#ac-fa-conf-001--konfigurationsdatei-a-checkyml)/[`AC-FA-EXTRACT-001`](lastenheft.md#ac-fa-extract-001--sprach-backends-für-die-import-extraktion) 0.18.0. |
 | 0.19.0 | 2026-07-09 | Neu `SPEC-CLI-002` (Graph-Renderer-Vertrag: Config-Modell→Mermaid **pur**; stabile interne IDs + escaptes Label je nutzergesteuertem Text; Kante je `edges`, abgesetzte `allow`-Kante; Dangling-/Composition-Root-/Adapter-Sink-Sonderknoten; `classDef` je effektiver Rolle via geteiltem Resolver; `direction`-Subgraphs; implizite Regeln als Legende; Escaping-Vertrag; Determinismus-Ordnung; `tech` v1 deferred). `SPEC-CLI-001` um den no-scan-`--print-graph`-Modus präzisiert (load-time/config-validation-Parität inkl. unbekannter Sprache; Restargument nach dem Pfad → Exit 2; **keine** scanzeitige Fehler-Parität). Folgt [`AC-FA-CLI-002`](lastenheft.md#ac-fa-cli-002--architektur-graph-ausgabe) 0.19.0. |
+| 0.27.0 | 2026-08-09 | `SPEC-DIST-001`: `A_CHECK_IMAGE` trägt im **erzeugten** Fragment einen **Platzhalter** statt eines Digests ([ADR-0030](../docs/plan/adr/0030-kein-digest-im-generierten-fragment.md)) — das Binary kann den Digest seines eigenen Image nicht kennen, der eingebackene Wert nannte immer den Vorgänger. Die committete `a-check.mk` trägt weiterhin den echten Digest. Zusätzlich als Fragment-Bestandteil ausgewiesen: `DOCKER ?= docker` + `$(DOCKER)`-Aufruf (slice-082). Folgt [`AC-QA-03`](lastenheft.md#ac-qa-03--reproduzierbarkeit) 0.23.0. slice-083. |
 | 0.20.0 | 2026-07-09 | `SPEC-DIST-001`: das `--print-mk`-Fragment liefert zusätzlich ein `a-check-graph`-Target, das `--print-graph` ([`SPEC-CLI-002`](#spec-cli-002--graph-renderer-vertrag)) über dasselbe digest-gepinnte `A_CHECK_IMAGE` + netzlosen read-only-Mount ausführt (Mermaid→stdout, kein Scan); kein zweiter Digest. Folgt [`AC-FA-DIST-001`](lastenheft.md#ac-fa-dist-001--distribution-image---print-mk-a-checkmk) 0.20.0. |
 | 0.26.0 | 2026-07-25 | `SPEC-CLI-001`: **Abdeckungs-Diagnose** (advisory) — ein Scan nennt auf stderr nach der Zusammenfassung die gescannten Dateien, die in **keinem** `layers`-Glob liegen; der **Exit-Code bleibt unberührt**. `composition_root`-Dateien zählen nicht, `exclude`-Dateien sind nie im Scan; gezählt wird nur die **Quell**-Seite (ein Import-Ziel ohne Schicht ist von repo-externem Code nicht unterscheidbar). Pfade stabil sortiert, ab zehn Dateien gekürzt **mit ausgewiesener Restzahl**; vollständige Abdeckung erzeugt keine Ausgabe. Macht die bewusste fail-open-Grenze aus [AC-QA-02](lastenheft.md#ac-qa-02--hermetik-und-ehrliche-heuristik-grenze) sichtbar, ohne sie zu verschieben; kein Lastenheft-Bump ([ADR-0029](../docs/plan/adr/0029-abdeckungs-diagnose-advisory.md)). |
 | 0.25.0 | 2026-07-25 | `SPEC-RULE-001`: **Rückzug bei unauflösbarem Ziel-Glob** — ein Glob mit Wildcard in der Mitte (`…/application/**/ports/**`) kann als Import-**Ziel** nie matchen; der Kandidat fällt jetzt **nicht mehr** auf das umschließende Glob zurück, sondern gilt als **extern** (fail-open). Der Rückfall erzeugte einen **Fehlbefund** (`wrong-direction` auf eine deklarierte `adapter → ports`-Kante), dessen naheliegende Reparatur ein dauerhaftes Falsch-Negativ nach sich zieht. Rückzug eng gefasst: literaler **Kopf** *und* **Tail-Marker** des anderen Globs müssen im Kandidaten vorkommen, und der Kopf muss mindestens so spezifisch sein wie der gewählte Präfix; ohne Tail-Marker kein Rückzug. Quell-Seite (Datei→Schicht) unberührt; reihenfolge-unabhängig ([AC-QA-01](lastenheft.md#ac-qa-01--determinismus)), kein Lastenheft-Bump ([ADR-0028](../docs/plan/adr/0028-ziel-glob-schattenwurf.md)). |

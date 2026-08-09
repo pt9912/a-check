@@ -1,6 +1,6 @@
 # Lastenheft — a-check
 
-**Version:** 0.22.0
+**Version:** 0.23.0
 
 **Status:** Draft
 
@@ -584,9 +584,23 @@ Allowlist/Marker-Ausnahme ist konfigurierbar.
 
 ### AC-QA-03 — Reproduzierbarkeit
 
-Image und ausgelieferte `a-check.mk` referenzieren einen `@sha256:`-Digest;
-Pin-Hebung ist ein bewusster Commit (analog der Pin-Politik der
-Konsumenten-Repos).
+Das **Image** wird per `@sha256:`-Digest referenziert; die Pin-Hebung ist ein
+bewusster Commit (analog der Pin-Politik der Konsumenten-Repos). Die im Repo
+**committete** `a-check.mk` trägt den Digest des aktuellen Release
+([`version.md#aktuell`](../version.md#aktuell)).
+
+Das von `--print-mk` **erzeugte** Fragment trägt dagegen **keinen konkreten
+Digest**, sondern einen **Platzhalter** mit Bezugsquelle. Grund: ein Binary kann
+den Digest des Image, in dem es läuft, strukturell nicht kennen — der Digest
+entsteht erst beim Push, das Binary ist vorher gebaut. Ein
+eingebackener Digest nennt darum **immer den Vorgänger** und sieht dabei
+autoritativ aus. Der Platzhalter erzwingt stattdessen genau den bewussten
+Commit, den dieser Abschnitt ohnehin verlangt.
+
+- **Happy:** Given ein Release-Image, when `--print-mk` läuft, then enthält die Ausgabe keinen `@sha256:`-Wert eines anderen Release, sondern einen als solchen erkennbaren Platzhalter samt Bezugsquelle.
+- **Boundary:** Given die committete `a-check.mk`, when sie gelesen wird, then trägt sie den vollen Digest des aktuellen Release — sie ist das gepinnte Artefakt, das erzeugte Fragment die Vorlage dafür.
+- **Negative:** Given ein Konsument übernimmt das Fragment unverändert, when `make a-check` läuft, then bricht der Aufruf sichtbar am Platzhalter ab, statt still ein fremdes Release zu ziehen.
+- **Out-of-Scope:** einen korrekten Eigen-Digest zur Laufzeit ermitteln (netzlos nicht möglich; der Host kennt ihn über `docker inspect`, das Binary nicht); die Pin-Hebung beim Konsumenten automatisieren.
 
 ## 7. Historie
 
@@ -616,4 +630,5 @@ Konsumenten-Repos).
 | 0.19.0 | 2026-07-09 | Neu `AC-FA-CLI-002` (Architektur-Graph-Ausgabe): `a-check --print-graph [pfad]` gibt die deklarierte Architektur aus `.a-check.yml` als **Mermaid-Flowchart** auf stdout aus — ein Knoten je Schicht, eine Kante je `edge`, abgesetzte `allow`-Kante, Farbe nach effektiver Rolle; read-only, deterministisch, **kein Scan**. Ladezeitiger Config-Fehler (inkl. unbekannter Sprache), unbekanntes Flag oder Restargument nach dem Pfad → Exit 2; scanzeitige Resolution-Fehler out-of-scope. Eigenständige Inspektions-CLI, **kein** `--print-*`-Ausbau von `AC-FA-DIST-001`. slice-032. |
 | 0.20.0 | 2026-07-09 | `AC-FA-DIST-001` erweitert: das `--print-mk`-Fragment `a-check.mk` liefert zusätzlich ein **`a-check-graph`**-Target, das `--print-graph` (`AC-FA-CLI-002`) mit demselben digest-gepinnten `A_CHECK_IMAGE` und netzlosem read-only-Mount aufruft — Mermaid nach stdout, kein Scan, Exit 0; neue AK „Happy (Graph-Target)". Convenience für Konsumenten, die bereits `include a-check.mk` fahren. slice-033. |
 | 0.21.0 | 2026-07-24 | Neu **`AC-FA-RULE-009`** (`lateral-slice`: eine `app`-Datei importiert eine fremde Use-Case-Slice — verschiedene `app`-Globs — → kategorischer Befund; opt-in über per-Slice-Globs, ein einziges `app`-Glob inert) und **`AC-FA-RULE-010`** (`port-locality`: eine `app`-Datei importiert einen Port außerhalb dessen pfad-abgeleiteten Scope-Verzeichnisses — use-case-lokal ⊂ business-area ⊂ app-weit — → kategorischer Befund; nur `app`-Importeure, Adapter-Implementierung nicht erfasst). Beide gaten die **Vertical-Slice-Achse** von HexSlice (Doc `hexslice-architecture`); Voraussetzung ist ein als Import-Ziel auflösbarer `app`-/`port`-Glob (literales Präfix, `AC-QA-02`-Grenze). Evidenz: realer HexSlice-Go-Konsument. slice-039. |
+| 0.23.0 | 2026-08-09 | **`AC-QA-03` neu gefasst:** das von `--print-mk` **erzeugte** Fragment trägt **keinen konkreten Digest** mehr, sondern einen Platzhalter mit Bezugsquelle ([ADR-0030](../docs/plan/adr/0030-kein-digest-im-generierten-fragment.md)); die im Repo **committete** `a-check.mk` trägt weiterhin den echten Digest. Grund: ein Binary kann den Digest des Image, in dem es läuft, strukturell nicht kennen — er entsteht erst beim Push, das Binary ist vorher gebaut. Der eingebackene Wert nannte darum **immer den Vorgänger** und sah dabei autoritativ aus. Gemessen: `v0.16.0` gab `v0.15.0` aus. **Realer Schaden:** ein Konsument pinnte über den dokumentierten Bump-Weg `v0.15.0` statt `v0.16.0` und vermisste den `constructs`-Block, ohne die Ursache zu sehen. Drei AK ergänzt (Happy/Boundary/Negative). slice-083 (`CR-5`). |
 | 0.22.0 | 2026-07-25 | Neu **`AC-FA-RULE-011`** (`construct-leak`: ein optionaler `constructs`-Block hebt die `tech`-Scoping-Mechanik — Zone als Pfad/Pfad-Liste, `match: substring\|regex`, `composition_root: allow\|forbid` — von extrahierten Import-Symbolen auf **Roh-Quelltext**; jedes Vorkommen außerhalb der Zone ist ein Befund, Exit 1). Prüfung **scan-weit** (auch Dateien in keinem `layers`-Glob; `exclude` greift davor), auf derselben Quell-Vorbereitung wie `forbidden_constructs` — in den C-Syntax-Sprachen kommentar-bereinigt (Treffer nur im Kommentar meldet nicht, ausgewiesene Divergenz zur `grep`-Referenz), in Python nicht (`#`-Kommentare bleiben stehen, ausgewiesene Grenze). `AC-FA-CONF-001` um den Block + fail-closed-Decoding erweitert. Damit werden Konstrukte prüfbar, die keine Import-Zeile sind (Aufruf-Monopol `dlopen`); die schichtgebundenen `forbidden_constructs`/`AC-FA-RULE-004` bleiben unberührt. Evidenz: b-cad-P-Rest (Regel P1), Fixture-vermessen. slice-042 (Kandidat 1 aus slice-025). |

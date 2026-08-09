@@ -133,7 +133,7 @@ phony_self_test() {
 # Fängt zwei Drift-Klassen, die d-checks tag-basierte Module `versions`/`pins`
 # NICHT fangen (a-check pinnt per Digest, nicht per Tag):
 #   (A) Versions-Nummer: version.md#aktuell == aktuellstes CHANGELOG-Release.
-#   (B) Digest: der volle @sha256-Digest ist in a-check.mk, internal/cli/cli.go,
+#   (B) Digest: der volle @sha256-Digest ist in a-check.mk,
 #       den `docker run`-Beispielen BEIDER READMEs (README.md + README.de.md) UND
 #       version.md#aktuell identisch (die zwei harten, nicht verlinkbaren Pins + die
 #       zwei Kommando-Beispiele + die eine Prosa-Wahrheit).
@@ -158,7 +158,7 @@ _nlines() { printf '%s' "$1" | grep -c . || true; }
 
 pin_consistency() {
   local root="$1" fail=0
-  local mk="$root/a-check.mk" cli="$root/internal/cli/cli.go"
+  local mk="$root/a-check.mk"
   local readme="$root/README.md" dereadme="$root/README.de.md" ver="$root/version.md"
   local chg="$root/CHANGELOG.md" dmk="$root/d-check.mk"
 
@@ -173,7 +173,7 @@ pin_consistency() {
   fi
 
   local name path digs n
-  for pair in "a-check.mk:$mk" "internal/cli/cli.go:$cli" "README.md:$readme" "README.de.md:$dereadme"; do
+  for pair in "a-check.mk:$mk" "README.md:$readme" "README.de.md:$dereadme"; do
     name="${pair%%:*}"; path="${pair#*:}"
     digs="$(a_check_digests "$path")"
     n="$(_nlines "$digs")"
@@ -226,10 +226,8 @@ pin_self_test() {
   A="sha256:$(printf '0%.0s' $(seq 1 64))"   # konsistenter Digest
   B="sha256:$(printf '1%.0s' $(seq 1 64))"   # abweichender Digest
   F="sha256:$(printf 'f%.0s' $(seq 1 64))"   # d-check DCHECK_DIGEST
-  mkdir -p "$tmp/internal/cli"
   _pin_fixture() {  # $1 README-Digest · $2 version.md-Version · $3 d-check-Digest
     printf 'A_CHECK_IMAGE ?= ghcr.io/pt9912/a-check@%s\n' "$A" > "$tmp/a-check.mk"
-    printf 'const aCheckImage = "ghcr.io/pt9912/a-check@%s"\n' "$A" > "$tmp/internal/cli/cli.go"
     printf 'run ghcr.io/pt9912/a-check@%s /src\n' "$1" > "$tmp/README.md"
     printf 'run ghcr.io/pt9912/a-check@%s /src\n' "$A" > "$tmp/README.de.md"
     printf '## Aktuell\nAktuelle Version: %s\nDigest ghcr.io/pt9912/a-check@%s\n## Verlauf\n' "$2" "$A" > "$tmp/version.md"

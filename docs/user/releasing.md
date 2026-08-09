@@ -59,10 +59,14 @@ jedem `v*`-Tag-Push:
    **ausschließlich** für stabile Releases (kein Prerelease-Suffix) —
    [ADR-0007](../plan/adr/0007-latest-tag-politik.md). Konsumenten pinnen
    Digests, nicht `:latest`.
-5. **Digest-Pin** im Job-Summary und in den Notes des angelegten GitHub-Releases;
-   danach gibt `a-check --print-mk` ein `a-check.mk` mit dem **aktuell
-   digest-gepinnten** `A_CHECK_IMAGE` aus
-   ([AC-QA-03](../../spec/lastenheft.md#ac-qa-03--reproduzierbarkeit)).
+5. **Digest-Pin** im Job-Summary und in den Notes des angelegten GitHub-Releases.
+   Das ist **die** Bezugsquelle für Konsumenten: `a-check --print-mk` gibt einen
+   **Platzhalter** aus, keinen Digest
+   ([ADR-0030](../plan/adr/0030-kein-digest-im-generierten-fragment.md),
+   [AC-QA-03](../../spec/lastenheft.md#ac-qa-03--reproduzierbarkeit)) — ein Binary kann den
+   Digest des Image, in dem es läuft, nicht kennen. Bis slice-083 stand hier, `--print-mk`
+   gebe „den **aktuell** digest-gepinnten `A_CHECK_IMAGE`" aus; das war strukturell unmöglich
+   und hat einen realen Fehlpin verursacht.
 6. **Register-Re-Pin + CHANGELOG-Schnitt** (slice-018): den CHANGELOG `[Unreleased]` →
    `[X.Y.Z] - <Datum>` schneiden **und** — im **selben** Commit, sonst Versions-Drift —
    den neuen Digest + die neue Version an [`version.md#aktuell`](../../version.md#aktuell)
@@ -91,7 +95,7 @@ Bürokratie verkommt. Ein Punkt je Phase (slice-051):
 | 3 | **Planung** — die gelieferten Slices liegen in `done/` und tragen eine ausgefüllte Closure-Notiz | `make verify`, Exit 0 |
 | 4 | **Agenten** — `AGENTS.md` §4 beschreibt nur real existierende Targets | `make gate-consistency` (in `gates`), Exit 0 |
 | 5 | **Qualität** — Gates grün auf **frischem Klon** *und* in der CI mit demselben Image | CI-Run-Link + `make ci`-Ausgabe |
-| 6 | **Distribution** — OCI-Label `…image.version` == Tag; `--print-mk` gibt den neuen Digest | Job-Summary der Release-Pipeline + `docker inspect`-Zeile |
+| 6 | **Distribution** — OCI-Label `…image.version` == Tag; `--print-mk` gibt einen **Platzhalter**, keinen konkreten Digest ([ADR-0030](../plan/adr/0030-kein-digest-im-generierten-fragment.md)) | Job-Summary der Release-Pipeline + `docker inspect`-Zeile + `make image-test` Exit 0 (prüft beides mechanisch) |
 | 7 | **Register** — Digest und Version in `version.md#aktuell`, CHANGELOG, beiden READMEs, `a-check.mk`, `cli.go` identisch | `make gates` **nach** dem Re-Pin, Exit 0 |
 | 8 | **Betrieb** — die Incident-Klausel unten ist gelesen und gilt unverändert | Verweis auf diesen Abschnitt im Release-Eintrag |
 
