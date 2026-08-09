@@ -105,7 +105,7 @@ Slice hat **nicht** darauf gewartet, weil der Bestand bis dahin falsch misst.
 2. Der Bestand bleibt unberührt: 72 Closure-Notizen in `done/` bestehen die **schärfere**
    Satzzählung, 6 wandernde Slices die erweiterte Link-Erkennung.
 
-**Folge-Slices:** keine. [slice-076](../in-progress/slice-076-vertrag-und-sensor.md) behandelt die
+**Folge-Slices:** keine. [slice-076](../done/slice-076-vertrag-und-sensor.md) behandelt die
 verbleibenden zwei Findings der Gruppe B — dort klaffen Vertrag und Sensor, was je eine
 Entscheidung braucht.
 
