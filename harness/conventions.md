@@ -86,7 +86,7 @@ analog zur ADR-Immutabilität ([`AGENTS.md`](../AGENTS.md) §3.5).
 > Vergabe kann nicht zugleich pro Titel vorgegeben sein. Die abgedruckten
 > Nummern sind Beispiel-Instanzen neben dem generischen `MR-NNN`-Muster;
 > normativ sind die Pflichtfelder und diese Disziplin. Der in
-> [slice-046 §4.2](../docs/plan/planning/open/slice-046-regelwerk-v352-migration-analyse.md)
+> [slice-046 §4.2](../docs/plan/planning/done/slice-046-regelwerk-v352-migration-analyse.md)
 > als Migrations-Brocken geführte Punkt entfällt damit ersatzlos.
 
 ### MR-000 — Baseline-Aussage (inkl. ID-Schema-Deklaration)
