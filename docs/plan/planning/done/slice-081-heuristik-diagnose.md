@@ -191,7 +191,7 @@ sondern begrenzt sie:** `#include "adapters/ui/panel.h"` aus `src/core/` bleibt 
 ein Verstoß ist — das Symbol trägt das `src/`-Präfix nicht und löst auf keine Schicht auf. Diese
 Klasse meldet die Diagnose bewusst **nicht** (von repo-externem Code nicht unterscheidbar,
 [ADR-0031](../../adr/0031-heuristik-grenzen-diagnose.md) Entscheidung 5). Der Bedarf für die
-Ziel-Seiten-Diagnose aus [slice-085](../in-progress/slice-085-schicht-ohne-aufloesung.md) (`CR-2`) ist
+Ziel-Seiten-Diagnose aus [slice-085](../done/slice-085-schicht-ohne-aufloesung.md) (`CR-2`) ist
 damit an einem laufenden Beispiel belegt, nicht nur behauptet.
 
 **Lerneintrag — Form: neuer Sensor.** Als Prüfsatz: *Ein Index, der von Hand gepflegt wird, braucht
