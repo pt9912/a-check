@@ -104,17 +104,48 @@ Normalfall auslöst, wäre kein Fortschritt, sondern ein neuer Defekt.
 
 ## 5. DoD
 
-- [ ] Ein unauflösbarer Range lässt `commit-scope-check` mit Exit ≠ 0 und Range-Fehler enden.
-      Beleg: die Probe aus §3, vorher grün, nachher rot.
-- [ ] Ein Traversierungsfehler in `scan()` lässt `suppression-check` mit Exit ≠ 0 enden, während
-      der reguläre Lauf grün bleibt. Beleg: beide Proben aus §3 plus der unveränderte
-      `gates`-Lauf.
-- [ ] `make gates` grün — **Ausgabe in eine Datei**, Exit-Code getrennt geprüft, nie in eine Pipe.
+- [x] Ein unauflösbarer Range lässt `commit-scope-check` mit Exit ≠ 0 und Range-Fehler enden.
+      Beleg: `RANGE=definitely-not-a-revision` → Exit 2 mit
+      `FAIL — Range … ist nicht aufloesbar`; `RANGE=HEAD..HEAD` (leer, aber gültig) → Exit 0.
+- [x] Ein Traversierungsfehler in `scan()` lässt `suppression-check` mit Exit ≠ 0 enden, während
+      der reguläre Lauf grün bleibt. Beleg: `scan` gegen eine fehlende Wurzel — vorher `rc=0`,
+      nachher `rc=1`; `make suppression-check` unverändert Exit 0.
+- [x] `make gates` grün — **Ausgabe in eine Datei**, Exit-Code getrennt geprüft, nie in eine Pipe.
 
 ## 6. Closure-Notiz
 
-_(beim Abschluss ausfüllen — genau **ein** solcher Abschnitt je Slice,
-[`AGENTS.md`](../../../../AGENTS.md) §5; `make verify` prüft das.)_
+**Geliefert:** [`commit-scope-check.sh`](../../../../tools/commit-scope-check.sh) löst die Range
+über `resolve_range()` auf und bricht fail-closed ab, wenn `git rev-list` scheitert;
+[`suppression-check.sh`](../../../../tools/suppression-check.sh) prüft jede Scan-Wurzel einzeln
+und hat `2>/dev/null || true` verloren. Beide Selbsttests prüfen **beide** Richtungen.
+
+**Lerneintrag — Form: geschärfte Regel.** Als Prüfsatz: *Ein Sensor muss „nichts gefunden" von
+„nicht nachgesehen" unterscheiden — und die Stelle, an der beides zusammenfällt, ist fast immer
+eine Fehler-Unterdrückung, die dort steht, wo sie nicht hingehört.*
+
+**Die Ursache** ist in beiden Fällen dieselbe Konstruktion, nicht Nachlässigkeit: eine
+Command-Substitution trägt nur den Exit-Code ihres **letzten** Befehls. `$(scan ./internal; scan
+./cmd)` konnte einen Fehler der ersten Wurzel strukturell nicht melden, und
+`for sha in $(git rev-list …)` iteriert bei einem Fehler schlicht null mal. Beide Male sah der
+Fehlerfall exakt aus wie der Erfolgsfall — kein `|| true` musste dafür falsch gesetzt sein, die
+Struktur allein genügte. Deshalb ist die Korrektur nicht „das `|| true` entfernen", sondern die
+Rückgabe an einer Stelle abzufragen, wo sie überhaupt ankommt.
+
+**Gegenprobe gegen Über-Verschärfung** ist Teil beider Selbsttests: leerer Range und
+treffer-freie Wurzel müssen grün bleiben. Ohne sie wäre ein Sensor, der immer rot meldet, von
+einem korrekten nicht zu unterscheiden.
+
+**Zwei beobachtbare Closure-Kriterien:**
+
+1. `make commit-scope-check RANGE=definitely-not-a-revision` exitet ≠ 0 und nennt den Range;
+   `RANGE=HEAD..HEAD` exitet 0 mit „0 Commit(s) geprueft".
+2. `scan` gegen eine nicht existierende Wurzel exitet ≠ 0 (vorher `rc=0, hits=''`), während
+   `make suppression-check` über den realen Baum unverändert Exit 0 meldet.
+
+**Folge-Slices:** [slice-070](../open/slice-070-grundgesamtheit-messen.md),
+[slice-071](../open/slice-071-sensor-scope-vollstaendig.md) aus Gruppe A. Dazu **neu**: *wann*
+`commit-scope-check` läuft (§4) — er hängt nur in der CI, greift also erst nach dem Push. Am
+2026-08-09 real aufgetreten (CI-Run `31301467076`); noch nicht geschnitten.
 
 ## 7. Sub-Area-Modus
 

@@ -30,12 +30,22 @@ cd "$(dirname "$0")/.."
 # EHRLICHE GRENZE (AC-QA-02): die Zeichenfolge in einem String-Literal
 # (`s := "//nolint"`) wird weiterhin gemeldet. Fail-closed und selten; ein
 # Go-Parser wäre die einzige saubere Antwort und steht in keinem Verhältnis.
-scan() {  # $1 = Wurzelverzeichnis
+# FAIL-CLOSED (slice-069, Fund R-068-F3): frueher endete diese Funktion auf
+# `2>/dev/null || true`. Damit wurde auch ein Traversierungsfehler verschluckt —
+# eine fehlende oder nicht lesbare Wurzel lieferte null Treffer und Exit 0, also
+# dasselbe Ergebnis wie ein sauberer Lauf ohne Fund. `set -o pipefail` (Kopf)
+# sorgt dafuer, dass der find-Fehler die Pipe rot macht.
+# Keine Treffer bleiben Exit 0: `xargs -r` startet awk gar nicht erst.
+scan() {  # $1 = Wurzelverzeichnis; Treffer auf stdout, !=0 bei Traversierungsfehler
+  if [ ! -d "$1" ]; then
+    echo "suppression-check: Scan-Wurzel '$1' existiert nicht oder ist kein Verzeichnis" >&2
+    return 1
+  fi
   find "$1" -name '*.go' -type f -print0 \
     | xargs -0 -r awk -F'//' \
         'NF > 1 && $2 ~ /^[[:space:]]*(nolint|lint:ignore)/ {
            print FILENAME ":" FNR ":" $0
-         }' 2>/dev/null || true
+         }'
 }
 
 # Selbsttest (Fitness Function der Fitness Function): eine Fixture mit Direktive
@@ -63,12 +73,35 @@ self_test() {
     echo "suppression-check: Selbsttest FEHLGESCHLAGEN — Fehlalarm auf gewoehnlichem Kommentar" >&2
     rm -rf "$tmp"; exit 2
   fi
+  # Traversierungsfehler, beide Richtungen (slice-069): eine fehlende Wurzel muss
+  # scheitern, eine vorhandene ohne Treffer muss still Exit 0 liefern. Ohne die
+  # zweite Haelfte waere ein scan, das immer scheitert, ununterscheidbar.
+  if scan "$tmp/gibt-es-nicht" >/dev/null 2>&1; then
+    echo "suppression-check: Selbsttest FEHLGESCHLAGEN — fehlende Scan-Wurzel nicht erkannt;" >&2
+    echo "  der Sensor wuerde null Treffer und Exit 0 melden (R-068-F3)." >&2
+    rm -rf "$tmp"; exit 2
+  fi
+  if ! scan "$tmp/neg" >/dev/null 2>&1; then
+    echo "suppression-check: Selbsttest FEHLGESCHLAGEN — vorhandene Wurzel ohne Treffer faelschlich rot" >&2
+    rm -rf "$tmp"; exit 2
+  fi
   rm -rf "$tmp"
 }
 
 self_test
 
-hits="$(scan ./internal; scan ./cmd 2>/dev/null || true)"
+# Jede Wurzel einzeln pruefen. Frueher stand hier
+# `scan ./internal; scan ./cmd 2>/dev/null || true` — eine Substitution, deren
+# Exit-Code nur vom LETZTEN Befehl stammt: ein Fehler beim Scan von `internal`
+# war strukturell unsichtbar (slice-069).
+hits=""
+for root in ./internal ./cmd; do
+  if ! out="$(scan "$root")"; then
+    echo "suppression-check: FAIL — Scan der Wurzel '$root' fehlgeschlagen; das Ergebnis waere unvollstaendig." >&2
+    exit 1
+  fi
+  hits="${hits}${out}"
+done
 if [ -n "$hits" ]; then
   echo "suppression-check: FAIL — Inline-Suppression verboten (AGENTS.md §3.2, ADR-0005)." >&2
   echo "Ausnahmen gehoeren zentral in .golangci.yml unter 'exclusions' mit Why:-Kommentar." >&2

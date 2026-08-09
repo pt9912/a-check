@@ -34,6 +34,17 @@ regel_galt() {  # $1 = sha
   git show "$1:AGENTS.md" 2>/dev/null | grep -qF "$MARKER"
 }
 
+# Range aufloesen — FAIL-CLOSED (slice-069, Fund F-5). Frueher stand das
+# `git rev-list` direkt in der `for`-Kopf-Substitution: deren Exit-Code ist fuer
+# die Schleife bedeutungslos, ein unaufloesbarer Range lieferte einfach null
+# Iterationen und der Lauf meldete "0 Commit(s) geprueft", Exit 0.
+# LEERER Range bleibt gueltig: `git rev-list` exitet dann 0 ohne Ausgabe, und
+# genau das ist der Unterschied zwischen "nichts zu pruefen" und "nicht
+# aufloesbar".
+resolve_range() {  # $1 = Range -> SHAs auf stdout; !=0 wenn nicht aufloesbar
+  git rev-list "$1" 2>/dev/null
+}
+
 # Befunde eines Commits auf stdout; Rueckgabe 1 bei Befund.
 check_commit() {  # $1 = sha
   local sha="$1" subj fremd
@@ -69,12 +80,29 @@ self_test() {
     echo "commit-scope-check: Selbsttest FEHLGESCHLAGEN — Regel-Anker '$MARKER' fehlt in AGENTS.md;" >&2
     echo "  der Sensor wuerde jeden Commit als grandfathered ueberspringen (stilles False-Green)." >&2
     exit 2; }
+  # Range-Aufloesung, beide Richtungen: Muell muss scheitern, Gueltiges muss
+  # durchgehen. Ohne die zweite Haelfte waere ein resolve_range, das IMMER
+  # scheitert, von einem korrekten nicht zu unterscheiden.
+  if resolve_range 'definitely-not-a-revision' >/dev/null 2>&1; then
+    echo "commit-scope-check: Selbsttest FEHLGESCHLAGEN — unaufloesbarer Range nicht erkannt;" >&2
+    echo "  der Sensor wuerde '0 Commit(s) geprueft' mit Exit 0 melden (F-5)." >&2
+    exit 2
+  fi
+  resolve_range 'HEAD' >/dev/null 2>&1 || {
+    echo "commit-scope-check: Selbsttest FEHLGESCHLAGEN — gueltiger Range faelschlich abgelehnt" >&2
+    exit 2; }
 }
 
 self_test
 
+if ! shas="$(resolve_range "$RANGE")"; then
+  echo "commit-scope-check: FAIL — Range '$RANGE' ist nicht aufloesbar (git rev-list)." >&2
+  echo "  Ein nicht aufloesbarer Range ist kein leerer Range: hier wurde nichts geprueft." >&2
+  exit 1
+fi
+
 fail=0; geprueft=0; alt=0
-for sha in $(git rev-list "$RANGE" 2>/dev/null); do
+for sha in $shas; do
   if printf '%s' "$(git log -1 --format=%s "$sha")" | grep -qE "$SCOPE_RE"; then
     if regel_galt "$sha"; then geprueft=$((geprueft + 1)); else alt=$((alt + 1)); continue; fi
   fi
