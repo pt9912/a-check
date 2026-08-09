@@ -75,16 +75,47 @@ Sensor.
 
 ## 5. DoD
 
-- [ ] `.PHONY` enthält jedes im [`Makefile`](../../../../Makefile) definierte Rezept-Target.
-      Beleg: die Differenzmenge aus §3 ist leer, ausgegeben vom Sensor.
-- [ ] `gate-consistency` prüft die Vollständigkeit dauerhaft und hat einen Selbsttest, der ihn
-      nachweislich rot macht. Beleg: Selbsttest-Ausgabe im Lauf („Selbsttests gefeuert").
-- [ ] `make gates` grün — **Ausgabe in eine Datei**, Exit-Code getrennt geprüft, nie in eine Pipe.
+- [x] `.PHONY` enthält jedes im [`Makefile`](../../../../Makefile) definierte Rezept-Target.
+      Beleg: `make gate-consistency` meldet „`.PHONY` vollstaendig", Exit 0 — die Differenzmenge
+      ist leer. Neun Targets nachgetragen.
+- [x] `gate-consistency` prüft die Vollständigkeit dauerhaft und hat einen Selbsttest, der ihn
+      nachweislich rot macht. Beleg: `phony_self_test` prüft **beide** Richtungen; die Probe mit
+      künstlich aus `.PHONY` entferntem `verify` meldet
+      `FAIL — Target 'verify' fehlt in .PHONY (Makefile)`, Exit ≠ 0, nach Wiederherstellung Exit 0.
+- [x] `make gates` grün — **Ausgabe in eine Datei**, Exit-Code getrennt geprüft, nie in eine Pipe.
 
 ## 6. Closure-Notiz
 
-_(beim Abschluss ausfüllen — genau **ein** solcher Abschnitt je Slice,
-[`AGENTS.md`](../../../../AGENTS.md) §5; `make verify` prüft das.)_
+**Geliefert:** `.PHONY` im [`Makefile`](../../../../Makefile) trägt alle Rezept-Targets (neun
+nachgetragen), und [`tools/gate-consistency.sh`](../../../../tools/gate-consistency.sh) prüft die
+Vollständigkeit als fünfte Invariante — mit einer `NON_PHONY_TARGETS`-Liste als deklariertem Ort
+für künftige Datei-Targets, heute leer.
+
+**Lerneintrag — Form: neuer Sensor.** Die `.PHONY`-Vollständigkeit war vorher nicht beobachtbar:
+kein Gate las die Target-Menge gegen die Deklaration. **Die Ursache** ist, dass ein fehlendes
+`.PHONY` sich nicht als Fehler zeigt, sondern als *Erfolg* — die direkte Messung belegt es:
+
+```
+(a) ohne .PHONY, Datei „verify" existiert:  make: „verify" ist bereits aktuell.   EXIT=0
+(b) mit .PHONY, dieselbe Datei:             vier Sensoren, Schicht gruen          EXIT=0
+```
+
+**Beide Läufe exiten mit 0.** Der Exit-Code allein unterscheidet „geprüft" nicht von
+„übersprungen" — nur die Ausgabe tut das. Ein Harness, der Gates über Exit-Codes verkettet, ist
+gegen diese Klasse blind, und genau deshalb muss die Deklaration selbst gemessen werden statt
+ihrer Wirkung.
+
+**Zwei beobachtbare Closure-Kriterien:**
+
+1. `make gate-consistency` meldet „`.PHONY` vollstaendig" und exitet 0; wird ein Target aus
+   `.PHONY` entfernt, exitet derselbe Lauf ≠ 0 und nennt genau dieses Target.
+2. Eine Datei namens `verify` im Wurzelverzeichnis lässt `make verify` weiterhin alle vier
+   Sensoren ausführen — nachgestellt und beobachtet, nicht behauptet.
+
+**Folge-Slices:** [slice-069](../open/slice-069-sensor-fehler-propagierung.md),
+[slice-070](../open/slice-070-grundgesamtheit-messen.md),
+[slice-071](../open/slice-071-sensor-scope-vollstaendig.md) — die übrigen drei Fehlermechanismen
+der Gruppe A. Kein Folge-Slice aus diesem Slice selbst.
 
 ## 7. Sub-Area-Modus
 

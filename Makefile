@@ -32,7 +32,15 @@ NO_CACHE_FILTER_COV  := --no-cache-filter coverage
 
 .DEFAULT_GOAL := help
 
-.PHONY: help compile lint test coverage-gate build arch-check gate-consistency guard-selftest record-gates gates image-test ci trace-check hooks
+# Jedes Rezept-Target gehoert hierher: fehlt es, ueberspringt make das Rezept,
+# sobald eine gleichnamige Datei existiert — und meldet Exit 0, ohne etwas
+# getan zu haben. `gate-consistency` prueft die Vollstaendigkeit (slice-068,
+# Fund F-1 des unabhaengigen Reviews).
+.PHONY: help compile lint test coverage-gate build arch-check arch-graph \
+        gate-consistency guard-selftest record-gates gates image-test ci \
+        trace-check hooks suppression-check regelwerk-check commit-scope-check \
+        verify verify-closure-notes verify-slice-form verify-ac-form \
+        verify-slice-links
 
 # Gates seriell: unter `make -j` liefen die Sub-Gates sonst parallel und die
 # Reihenfolge/der Abbruch bei rotem Gate wären nicht garantiert.

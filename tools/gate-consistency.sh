@@ -21,6 +21,12 @@ cd "$(dirname "$0")/.."
 # arch-graph druckt nur den Architektur-Graphen (kein Pass/Fail), daher Utility.
 UTILITY_TARGETS='help build compile hooks arch-graph'
 
+# Bewusst NICHT `.PHONY`: Targets, die tatsächlich eine gleichnamige Datei
+# erzeugen. Heute keines — jedes Target dieses Makefiles ist ein Kommando.
+# Die Liste ist der deklarierte Ort für eine künftige Ausnahme; sie leer zu
+# lassen ist eine Aussage, keine Auslassung.
+NON_PHONY_TARGETS=''
+
 # Dokumentierte Targets: alle `make <name>`-Tokens in Tabellenzeilen.
 doc_targets() {
   grep -E '^\|' "$1" | grep -oE '`make [a-z][a-z0-9_-]*`' \
@@ -34,6 +40,36 @@ doc_targets() {
 makefile_targets() {
   cat "$@" | grep -oE '^[a-zA-Z][a-zA-Z0-9 _-]*:([^=]|$)' \
     | sed 's/:.*//' | tr ' ' '\n' | sed '/^$/d' | sort -u
+}
+
+# Die `.PHONY`-Menge eines Makefiles: alle `.PHONY:`-Zeilen vereinigt,
+# Zeilenfortsetzungen (`\` am Ende) eingeschlossen.
+phony_targets() {  # $1 = Makefile
+  sed -E ':a; /\\$/ { N; s/\\\n//; ba }' "$1" \
+    | grep -E '^\.PHONY:' | sed -E 's/^\.PHONY:[[:space:]]*//' \
+    | tr ' \t' '\n\n' | sed '/^$/d' | sort -u
+}
+
+# Jedes eigene Rezept-Target ist `.PHONY`. Fehlt die Deklaration, überspringt
+# make das Rezept, sobald eine gleichnamige Datei existiert — und meldet
+# Exit 0, ohne es ausgeführt zu haben (slice-068, Fund F-1).
+# Geprüft wird die **Differenzmenge**, nicht ein Beispiel: eine Ein-Target-Probe
+# würde einen Teil-Fix als vollständig ausweisen (Plan-Review R-068-F2).
+# Grenze, ausdrücklich: nur die Targets, die dieses Repo selbst definiert.
+# `d-check.mk` ist Fremdlieferung — ein Befund dort gehört gemeldet, nicht
+# lokal gepatcht.
+check_phony_complete() {  # $1 = Makefile
+  local fail=0 t phony
+  phony="$(phony_targets "$1")"
+  while IFS= read -r t; do
+    [ -z "$t" ] && continue
+    grep -qw "$t" <<<"$NON_PHONY_TARGETS" && continue
+    if ! grep -qx "$t" <<<"$phony"; then
+      echo "gate-consistency: FAIL — Target '$t' fehlt in .PHONY ($1); eine gleichnamige Datei laesst make das Rezept ueberspringen und Exit 0 melden" >&2
+      fail=1
+    fi
+  done <<<"$(makefile_targets "$1")"
+  return "$fail"
 }
 
 # nutzt globales MK_TARGETS
@@ -64,6 +100,29 @@ self_test() {
   fi
   if [ "$(makefile_targets "$tmp/Makefile" | wc -l)" -ne 2 ]; then
     echo "gate-consistency: Selbsttest FEHLGESCHLAGEN — Makefile-Parser (Mehrfach-Targets/Zuweisungen)" >&2
+    rm -rf "$tmp"
+    exit 2
+  fi
+  rm -rf "$tmp"
+}
+
+# Fitness-Function für den .PHONY-Check: er muss bei einer Lücke feuern **und**
+# bei Vollständigkeit schweigen. Ohne die zweite Hälfte wäre ein Sensor, der
+# immer rot meldet, von einem korrekten nicht zu unterscheiden.
+phony_self_test() {
+  local tmp
+  tmp="$(mktemp -d)"
+  # (a) Lücke: zwei Targets, nur eines deklariert — muss feuern.
+  printf '.PHONY: erstes\nerstes:\n\ttrue\nzweites:\n\ttrue\n' > "$tmp/Makefile"
+  if check_phony_complete "$tmp/Makefile" 2>/dev/null; then
+    echo "gate-consistency: Selbsttest FEHLGESCHLAGEN — fehlendes .PHONY nicht erkannt" >&2
+    rm -rf "$tmp"
+    exit 2
+  fi
+  # (b) Vollständig, über eine Zeilenfortsetzung — muss schweigen.
+  printf '.PHONY: erstes \\\n        zweites\nerstes:\n\ttrue\nzweites:\n\ttrue\n' > "$tmp/Makefile"
+  if ! check_phony_complete "$tmp/Makefile" 2>/dev/null; then
+    echo "gate-consistency: Selbsttest FEHLGESCHLAGEN — vollstaendiges .PHONY faelschlich als Luecke gemeldet" >&2
     rm -rf "$tmp"
     exit 2
   fi
@@ -201,6 +260,7 @@ pin_self_test() {
 }
 
 self_test
+phony_self_test
 pin_self_test
 fail=0
 MK_TARGETS="$(makefile_targets Makefile d-check.mk)"
@@ -238,7 +298,11 @@ fi
 #     version.md#aktuell, Versions-Nummer == CHANGELOG, d-check.mk-Deklaration.
 pin_consistency . || fail=1
 
+# (5) .PHONY-Vollständigkeit (slice-068, Fund F-1): jedes eigene Rezept-Target
+#     ist deklariert, sonst meldet make Exit 0 ohne das Rezept auszuführen.
+check_phony_complete Makefile || fail=1
+
 if [ "$fail" -ne 0 ]; then
   exit 1
 fi
-echo "gate-consistency ok: Doku ↔ Makefile konsistent, .d-check.yml-Module intakt, Pins konsistent (Selbsttests gefeuert)."
+echo "gate-consistency ok: Doku ↔ Makefile konsistent, .d-check.yml-Module intakt, Pins konsistent, .PHONY vollstaendig (Selbsttests gefeuert)."
