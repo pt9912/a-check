@@ -6,6 +6,23 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
+### Changed
+
+- **BREAKING: `forbidden_constructs` bricht fail-closed statt still zu wirken (`ADR-0033`,
+  `SPEC-CONF-001` 0.30.0, slice-086).** Der Block wurde bisher **ungeprüft** durchgereicht und hatte
+  **vier** stille Ausgänge, die alle mit Exit 0 endeten: (a) die genannte Schicht existiert **nicht**
+  in `layers` (Tippfehler), (b) ihre effektive Rolle ist **nicht `port`**, (c) ein **leeres Muster**,
+  (d) eine **leere Musterliste**. Alle vier sind jetzt **Exit 2** mit einer Meldung, die den Grund
+  nennt; Schicht-Schlüssel werden sortiert geprüft, damit bei mehreren Fehlern stets derselbe zuerst
+  erscheint. Das schließt dieselbe falsch-grüne Klasse, die `languages`, `tech.adapter` und
+  `constructs` längst laut abweisen. **Auslöser:** ein realer Einsatz mit sechs Schichten und einem
+  Include-Muster → **0 Befunde** bei vorhandenem Verstoß. **Migration:** Einträge auf
+  Nicht-`port`-Schichten wirkten nie — sie sind zu entfernen; `constructs` ist das **Gegenstück**
+  (zonen-gebunden, scan-weit), **kein** Ersatz für eine Schicht-Blacklist. Gemessen: von sieben
+  lokalen Konsumenten-Konfigurationen nutzt **keine** den Block. Die Bindung an `role: port` bleibt —
+  sie löst `AC-FA-RULE-004` („Port-Disziplin") ein; eine Ausweitung wäre eine Lastenheft-Änderung
+  und bleibt einem eigenen Slice vorbehalten.
+
 ### Added
 
 - **Auflösungs-Diagnose für die blinde Konfiguration (`ADR-0032`, `SPEC-CLI-001` 0.29.0,

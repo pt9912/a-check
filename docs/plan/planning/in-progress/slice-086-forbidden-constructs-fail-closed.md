@@ -160,17 +160,69 @@ Punkt 3 benennen, statt sie zu überspielen.
 
 ## 5. DoD
 
-- [ ] Der Entscheid aus §3 ist **getroffen und begründet** in der Closure-Notiz — inklusive des
-      Fehlertexts, der `constructs` als Gegenstück und nicht als Ersatz benennt.
-- [ ] **Keiner** der drei stillen Fälle (B falsche Rolle, C unbekannte Schicht, D leeres Muster)
-      endet mehr in grünem Exit 0. Beleg: die Proben aus §3, die vor dem Bau grün waren.
-- [ ] `make gates` und `make image-test` grün — **Ausgabe in eine Datei**, Exit-Code getrennt
-      geprüft, nie in eine Pipe.
+- [x] Der Entscheid aus §3 ist **getroffen und begründet**:
+      [ADR-0033](../../adr/0033-forbidden-constructs-fail-closed.md) `Accepted`,
+      [`spec/spezifikation.md`](../../../../spec/spezifikation.md) 0.30.0 — Weg 1 (fail-closed),
+      inklusive des Fehlertexts, der `constructs` als Gegenstück und **nicht** als Ersatz benennt.
+- [x] **Keiner** der stillen Fälle endet mehr in grünem Exit 0 — es wurden **vier** statt drei
+      (E: leere Musterliste kam beim Bau dazu). Beleg: die Proben in der Closure-Notiz, alle vorher
+      Exit 0.
+- [x] `make gates` und `make image-test` grün — Ausgabe in eine Datei, Exit-Code getrennt geprüft.
 
 ## 6. Closure-Notiz
 
-_(beim Abschluss ausfüllen — genau **ein** solcher Abschnitt je Slice,
-[`AGENTS.md`](../../../../AGENTS.md) §5; `make verify` prüft das.)_
+**Entschieden: Weg 1 (fail-closed), auf Quellenlage statt auf Geschmack.** Die Aufbereitung hatte
+drei Fragen beantwortet — Bestand leer, Vertrag eindeutig, `constructs` kein Ersatz. Der Bau
+brachte einen **vierten** stillen Fall hinzu: `ports: []` (leere Musterliste) war ebenfalls Exit 0.
+Er ist mit aufgenommen, weil es dieselbe Validierungsfunktion und dieselbe Klasse ist — drei von
+vier Ausgängen zu schließen hätte den vierten zum Stolperstein gemacht.
+
+**Die Proben, alle gegen `a-check:dev`, alle vorher Exit 0:**
+
+```text
+A  ports: ["impl "] auf role=port  -> port-impurity, Exit 1   (unveraendert)
+B  core:  ["impl "]                -> Exit 2: Rolle "domain", ausgewertet wird nur "port"
+C  portz: ["impl "]                -> Exit 2: unbekannte Schicht — kein Eintrag in layers
+D  ports: [""]                     -> Exit 2: leeres Muster unzulaessig
+E  ports: []                       -> Exit 2: leere Musterliste unzulaessig
+```
+
+**Bestands-Probe:** alle **sieben** lokalen Konsumenten-Konfigurationen (`a-check`, `d-check`,
+`d-migrate`, `b-cad`, `m-trace`, `belief-agent`, `grid-gym`) laden unverändert mit Exit 0, geprüft
+über `--print-graph` (Config-Validierung ohne Datei-Walk). Der Breaking Change bricht im messbaren
+Bestand niemanden.
+
+**Beobachtbare Architektur-Aussage: der Lint hat die Funktion geschnitten, nicht ich.** Die eine
+zusätzliche Fehlerprüfung hob `Load` auf zyklomatische Komplexität 16 und damit über die Schwelle
+des Lint-Profils ([ADR-0005](../../adr/0005-lint-profil.md)). Da Inline-Suppression eine Hard Rule
+verletzt ([`AGENTS.md`](../../../../AGENTS.md) §3.2), blieb nur der Schnitt — und die naheliegende
+Naht war schon da: **Pflichtblöcke** (`version`, `languages`, `layers`, `edges`) gegen
+**Optionalblöcke**. `decodeOptionalBlocks` trägt jetzt alle fail-closed-Validierungen, und die
+nächste erzwingt keine Suppression mehr. Ein Gate, das eine Grenze ohne Ausweg zieht, produziert
+den Refactor, den man sonst vertagt.
+
+**Lerneintrag — Form: benannte Spec-Lücke.** Als Prüfsatz: *Ein Konfigurationsblock, dessen
+Auswertung an eine Bedingung gebunden ist, braucht eine Validierung **derselben** Bedingung beim
+Laden — sonst ist die Bindung ein stiller Filter statt eines Vertrags.* `forbidden_constructs` war
+seit der Rollen-Generalisierung an `role: port` gebunden; die Bindung stand in
+[SPEC-RULE-001](../../../../spec/spezifikation.md#spec-rule-001--regel-auswertung) (Auswertung),
+aber **nirgends** in
+[SPEC-CONF-001](../../../../spec/spezifikation.md#spec-conf-001--konfigurationsschema) (Schema).
+In dieser Lücke lebten seit der Rollen-Generalisierung
+([ADR-0009](../../adr/0009-rollen-basierter-regel-dispatch.md), 2026-06-22) vier stille Ausgänge —
+gut sieben Wochen, in denen jede Konfiguration mit einem solchen Eintrag falsch-grün war. Das
+Schwester-Feature
+`constructs` hatte die Prüfung von Anfang an — es entstand nach der Generalisierung, mit dem
+fail-closed-Denken schon im Rücken. **Zu prüfen wäre**, ob weitere Blöcke eine Auswertungs-Bedingung
+tragen, die das Schema nicht kennt; `adapter_sink` und `markers.ignore_symbols` sind die
+naheliegenden Kandidaten für eine eigene Messung.
+
+**Die Angebots-Lücke bleibt offen und ist jetzt dreifach benannt** — im Fehlertext, in
+[ADR-0033](../../adr/0033-forbidden-constructs-fail-closed.md) und im Benutzerhandbuch: für eine
+Schicht-Blacklist außerhalb der Rolle `port` gibt es kein Werkzeug. Sie zu schließen hieße,
+[AC-FA-RULE-004](../../../../spec/lastenheft.md#ac-fa-rule-004--port-disziplin-regel-port-impurity)
+aufzubohren — ein Lastenheft-CR, sobald ein Konsument den Bedarf belegt. Bis dahin ist es besser,
+dass der Nutzer die Lücke **sieht**, als dass er eine wirkungslose Konfiguration für Schutz hält.
 
 ## 7. Sub-Area-Modus
 

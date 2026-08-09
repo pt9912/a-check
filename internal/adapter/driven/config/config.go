@@ -116,18 +116,33 @@ func (Adapter) Load(path string) (core.Model, error) {
 	for _, e := range yc.Allow {
 		m.Allow = append(m.Allow, core.Edge{From: e.From, To: e.To})
 	}
+	if berr := decodeOptionalBlocks(&m, yc, path); berr != nil {
+		return core.Model{}, berr
+	}
+	return m, nil
+}
+
+// decodeOptionalBlocks decodes and validates everything past the mandatory
+// blocks. It lives apart from Load for one reason: Load's branch count sits at
+// the lint profile's ceiling (ADR-0005), and each new fail-closed validation adds
+// one. Splitting on the mandatory/optional seam keeps the next one from forcing a
+// suppression — which the Hard Rules forbid anyway (AGENTS §3.2).
+func decodeOptionalBlocks(m *core.Model, yc yamlConfig, path string) error {
+	if ferr := validateForbidden(yc.Forbidden, m.Layers, path); ferr != nil {
+		return ferr
+	}
 	techs, terr := decodeTechs(yc.Tech, path)
 	if terr != nil {
-		return core.Model{}, terr
+		return terr
 	}
 	m.Techs = techs
 	constructs, cerr := decodeConstructs(yc.Constructs, path)
 	if cerr != nil {
-		return core.Model{}, cerr
+		return cerr
 	}
 	m.Constructs = constructs
 	if eerr := validateExclude(yc.Exclude, path); eerr != nil {
-		return core.Model{}, eerr
+		return eerr
 	}
 	m.Exclude = yc.Exclude
 	if yc.Markers != nil {
@@ -135,10 +150,78 @@ func (Adapter) Load(path string) (core.Model, error) {
 	}
 	res, rerr := decodeResolution(yc.Resolution, yc.Languages, path)
 	if rerr != nil {
-		return core.Model{}, rerr
+		return rerr
 	}
 	m.Resolution = res
-	return m, nil
+	return nil
+}
+
+// forbiddenHint names the sibling block in every message. constructs is the
+// COUNTERPART, not a replacement (ADR-0033): it scopes by zone and scan-wide,
+// forbidden_constructs by layer. Saying "use constructs instead" would send a
+// consumer who wants a per-layer blacklist down a dead end, because expressing
+// that with constructs means enumerating every OTHER zone and maintaining that
+// list forever.
+const forbiddenHint = "; das zonen-gebundene Gegenstueck ist constructs (nicht deckungsgleich: es " +
+	"erlaubt ein Muster NUR in seinen Zonen, scan-weit)"
+
+// validateForbidden fails closed on every forbidden_constructs entry that can
+// never report (ADR-0033, SPEC-CONF-001). Until now the block was passed through
+// unchecked and had four silent exits, all ending in exit 0 — the same
+// false-green class that languages, tech.adapter and constructs have long
+// rejected loudly.
+//
+// The role binding is NOT an oversight to be widened here: AC-FA-RULE-004 is
+// literally "Port-Disziplin" and names construct-freedom as a PORT property, so
+// evaluating only role port FULFILLS the contract. Widening it would be a
+// Lastenheft change (MR-001), not a validation.
+//
+// Layer keys are checked in sorted order so a config with two errors always
+// reports the same one first (SPEC-DET-001).
+func validateForbidden(fc map[string][]string, layers []core.Layer, path string) error {
+	names := make([]string, 0, len(fc))
+	for n := range fc {
+		names = append(names, n)
+	}
+	sort.Strings(names)
+	for _, name := range names {
+		l, ok := layerNamed(name, layers)
+		if !ok {
+			return fmt.Errorf("%s: forbidden_constructs[%q]: unbekannte Schicht — kein Eintrag in layers%s", path, name, forbiddenHint)
+		}
+		if role := core.EffectiveRole(l); role != "port" {
+			return fmt.Errorf("%s: forbidden_constructs[%q]: Schicht hat die Rolle %q, ausgewertet wird nur %q (Port-Disziplin) — der Eintrag wuerde nie melden%s", path, name, roleLabel(role), "port", forbiddenHint)
+		}
+		if len(fc[name]) == 0 {
+			return fmt.Errorf("%s: forbidden_constructs[%q]: leere Musterliste unzulaessig (sie wuerde nie melden)", path, name)
+		}
+		for _, p := range fc[name] {
+			if p == "" {
+				return fmt.Errorf("%s: forbidden_constructs[%q]: leeres Muster unzulaessig (es wuerde nie melden)", path, name)
+			}
+		}
+	}
+	return nil
+}
+
+// layerNamed finds a decoded layer by name.
+func layerNamed(name string, layers []core.Layer) (core.Layer, bool) {
+	for _, l := range layers {
+		if l.Name == name {
+			return l, true
+		}
+	}
+	return core.Layer{}, false
+}
+
+// roleLabel spells a layer role for a message. A layer that resolves to NO role
+// (neither explicit nor inferable from its name) would render as an empty pair of
+// quotes, which reads like a bug rather than the actual situation.
+func roleLabel(role string) string {
+	if role == "" {
+		return "keine (weder role: gesetzt noch aus dem Namen ableitbar)"
+	}
+	return role
 }
 
 // decodeTechs builds the tech list: adapter scalar/list decode plus NewTech

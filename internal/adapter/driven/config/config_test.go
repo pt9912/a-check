@@ -572,3 +572,114 @@ func TestConstructsFailClosed(t *testing.T) { // AC-FA-CONF-001 negative: Exit 2
 		})
 	}
 }
+
+// --- ADR-0033: forbidden_constructs fail-closed ------------------------------
+
+// fcBase traegt eine Schicht MIT Rolle port (Namens-Inferenz `ports`) und eine
+// mit Rolle domain (`core`) — beide Seiten des Entscheids in einer Fixture.
+const fcBase = `version: 1
+languages:
+  go: ["**/*.go"]
+layers:
+  core: ["internal/core/**"]
+  ports: ["internal/ports/**"]
+  helpers: ["internal/helpers/**"]
+edges:
+  - {from: ports, to: core}
+`
+
+func TestForbiddenOnPortLayerLoads(t *testing.T) { // ADR-0033 Fall A: unveraendert
+	m, err := New().Load(write(t, fcBase+"forbidden_constructs:\n  ports: [\"impl \"]\n"))
+	if err != nil {
+		t.Fatalf("Eintrag auf role=port muss laden: %v", err)
+	}
+	if len(m.Forbidden["ports"]) != 1 {
+		t.Fatalf("Muster nicht dekodiert: %+v", m.Forbidden)
+	}
+}
+
+func TestForbiddenRejectsNonPortRole(t *testing.T) { // ADR-0033 Fall B (CR-4)
+	_, err := New().Load(write(t, fcBase+"forbidden_constructs:\n  core: [\"impl \"]\n"))
+	if err == nil {
+		t.Fatal("Eintrag auf role=domain muss fail-closed brechen, war still")
+	}
+	for _, want := range []string{`"core"`, `"domain"`, "nie melden", "constructs"} {
+		if !strings.Contains(err.Error(), want) {
+			t.Fatalf("Meldung nennt %q nicht: %v", want, err)
+		}
+	}
+}
+
+// Eine Schicht ohne ableitbare Rolle darf nicht als leeres Anfuehrungspaar
+// erscheinen — das laese sich wie ein Fehler des Werkzeugs, nicht der Config.
+func TestForbiddenRejectsRolelessLayerReadably(t *testing.T) { // ADR-0033
+	_, err := New().Load(write(t, fcBase+"forbidden_constructs:\n  helpers: [\"impl \"]\n"))
+	if err == nil {
+		t.Fatal("Schicht ohne Rolle muss brechen")
+	}
+	if !strings.Contains(err.Error(), "weder role:") {
+		t.Fatalf("fehlende Rolle muss lesbar benannt werden: %v", err)
+	}
+}
+
+func TestForbiddenRejectsUnknownLayer(t *testing.T) { // ADR-0033 Fall C: Tippfehler
+	_, err := New().Load(write(t, fcBase+"forbidden_constructs:\n  portz: [\"impl \"]\n"))
+	if err == nil {
+		t.Fatal("unbekannte Schicht muss brechen, war still")
+	}
+	if !strings.Contains(err.Error(), "unbekannte Schicht") || !strings.Contains(err.Error(), `"portz"`) {
+		t.Fatalf("Meldung nennt den Tippfehler nicht: %v", err)
+	}
+}
+
+func TestForbiddenRejectsEmptyPattern(t *testing.T) { // ADR-0033 Fall D
+	_, err := New().Load(write(t, fcBase+"forbidden_constructs:\n  ports: [\"\"]\n"))
+	if err == nil {
+		t.Fatal("leeres Muster muss brechen, war still")
+	}
+	if !strings.Contains(err.Error(), "leeres Muster") {
+		t.Fatalf("Meldung unerwartet: %v", err)
+	}
+}
+
+func TestForbiddenRejectsEmptyList(t *testing.T) { // ADR-0033 Fall E
+	_, err := New().Load(write(t, fcBase+"forbidden_constructs:\n  ports: []\n"))
+	if err == nil {
+		t.Fatal("leere Musterliste muss brechen, war still")
+	}
+	if !strings.Contains(err.Error(), "leere Musterliste") {
+		t.Fatalf("Meldung unerwartet: %v", err)
+	}
+}
+
+// Bei zwei Fehlern muss immer derselbe zuerst gemeldet werden, sonst haengt die
+// Meldung an der Map-Iterationsreihenfolge (SPEC-DET-001).
+func TestForbiddenErrorIsDeterministic(t *testing.T) { // AC-QA-01
+	// EINE Datei, mehrfach geladen: ein zweites write() haette ein anderes
+	// TempDir und damit einen anderen Pfad im Fehlertext — der Test haette die
+	// Map-Reihenfolge nie geprueft, sondern seine eigene Fixture.
+	p := write(t, fcBase+"forbidden_constructs:\n  core: [\"a\"]\n  zzz: [\"b\"]\n")
+	first := ""
+	for i := 0; i < 8; i++ {
+		_, err := New().Load(p)
+		if err == nil {
+			t.Fatal("erwartet Fehler")
+		}
+		if first == "" {
+			first = err.Error()
+		} else if err.Error() != first {
+			t.Fatalf("Meldung nicht stabil:\n%s\n%s", first, err.Error())
+		}
+	}
+	if !strings.Contains(first, `"core"`) {
+		t.Fatalf("sortiert muss core vor zzz kommen: %s", first)
+	}
+}
+
+// Ohne den Block bleibt alles wie zuvor — die Validierung darf keine
+// Konfiguration brechen, die den Block gar nicht nutzt (der gemessene Bestand).
+func TestForbiddenAbsentBlockUnchanged(t *testing.T) {
+	if _, err := New().Load(write(t, fcBase)); err != nil {
+		t.Fatalf("Config ohne den Block muss laden: %v", err)
+	}
+}

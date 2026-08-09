@@ -407,7 +407,7 @@ composition_root: ["cmd/**"]      # verdrahtet alles, von den Schicht-Regeln aus
 allow:                            # explizit erlaubte Sonderkanten/Re-Exports (optional)
   - {from: ports, to: ports}
 forbidden_constructs:             # Schicht -> verbotene Text-Muster (Port-Disziplin, optional)
-  ports: ["impl "]
+  ports: ["impl "]                # NUR Schichten mit Rolle `port`; sonst Exit 2 (siehe unten)
 constructs:                       # Roh-Text-Monopol: Muster nur in dieser Zone (optional)
   - {pattern: 'dlopen\s*\(', match: regex, adapter: adapters/plugin}
 markers:
@@ -479,6 +479,13 @@ Eigenschaften sind wichtig:
 - **Unabhängig von `forbidden_constructs`.** Der ältere Block bindet Muster an eine **Schicht**
   und meldet als `port-impurity`; `constructs` bindet an eine **Zone**, gilt scan-weit und meldet
   als `construct-leak`. Beide Blöcke existieren nebeneinander.
+
+  **Sie sind komplementär, nicht austauschbar.** `forbidden_constructs` ist eine **Blacklist**
+  („dieses Muster ist in Schicht X verboten"), `constructs` ein **Monopol** („dieses Muster ist
+  **nur** in Zone Y erlaubt, überall sonst ein Befund"). Wer eine Blacklist braucht, kann sie mit
+  `constructs` nur nachbauen, indem er **alle übrigen Zonen** aufzählt — und die Liste bei jeder
+  neuen Schicht nachzieht. Für eine Schicht-Blacklist außerhalb der Rolle `port` gibt es derzeit
+  kein Werkzeug; das ist eine bekannte Lücke, keine Umgehung, die Sie übersehen haben.
 
 Ein leeres/fehlendes `pattern`, ein leerer/fehlender `adapter` (auch als leere Liste oder leerer
 Listen-Eintrag), ein unbekannter `match`-/`composition_root`-Wert oder eine ungültige Regex
@@ -782,7 +789,7 @@ siehe „Dateien vom Scan ausnehmen" in Abschnitt 4.
 - **Kante (`edges`):** eine erlaubte gerichtete Abhängigkeit zwischen zwei Schichten (`from` → `to`).
 - **`adapter_sink`:** eine gemeinsame Senke, die alle Adapter importieren dürfen (Ausnahme von `lateral-adapter`).
 - **Sub-Einheit:** ein Unterverzeichnis innerhalb einer Adapter-Schicht — `lateral-adapter` trennt Sub-Einheiten, nie Dateinamen; Dateien direkt im Schicht-Root bilden eine gemeinsame Root-Einheit (eigene `.cpp`/`.h`-Paare melden nicht). Endungslose Importe (z. B. TypeScript `./b` oder Go-Paket-Pfade) gelten als eigene Einheit.
-- **`forbidden_constructs`:** je Schicht konfigurierte verbotene Text-Muster (für `port-impurity`).
+- **`forbidden_constructs`:** je Schicht konfigurierte verbotene Text-Muster (für `port-impurity`). Nur für Schichten mit der Rolle `port`; ein Eintrag, der nie melden könnte (unbekannte Schicht, andere Rolle, leeres Muster, leere Liste), bricht mit Exit-Code 2 statt still zu wirken.
 - **Befund:** eine gemeldete Regelverletzung (Datei, Zeile, Regel, Meldung).
 - **`core-impurity` / `app-impurity` / `lateral-adapter` / `lateral-slice` / `tech-leak` / `port-impurity` / `port-direction-mismatch` / `port-locality` / `construct-leak` / `wrong-direction`:** die zehn geprüften Regeln (Abschnitt 3.4).
 - **Zone (`constructs`):** das Pfad-Fragment (oder die Liste), in dem ein Roh-Text-Muster allein vorkommen darf; alles außerhalb ist `construct-leak`. Anders als eine **Schicht** ist eine Zone nicht an `layers` gebunden — sie gilt scan-weit.
