@@ -7,7 +7,7 @@
 und `R-068-F4` aus dem [Plan-Review](../../../reviews/2026-08-09-slice-068-plan-review.md);
 trägt den in `R-068-F1` **zurückgewiesenen** Entscheid als offene Designfrage.
 **Bezug:** Neuschnitt des zurückgezogenen Sammel-Entwurfs `4b029e4` nach Fehlermechanismus;
-Geschwister [slice-068](../in-progress/slice-068-phony-vollstaendig.md),
+Geschwister [slice-068](../done/slice-068-phony-vollstaendig.md),
 [slice-069](../open/slice-069-sensor-fehler-propagierung.md),
 [slice-071](../open/slice-071-sensor-scope-vollstaendig.md). Roadmap-Zeile *Aktuelle Welle* in der
 [Roadmap](../in-progress/roadmap.md).
@@ -83,7 +83,7 @@ Slice schreibt sie bewusst **nicht** vor, weil genau diese Vorwegnahme im ersten
 
 - **Pauschales „0 geprüft ⇒ Fehler".** Ausdrücklich verworfen: `verify-ac-form` meldet heute
   korrekt null neue ACs.
-- **Die übrigen Mechanismen** — [slice-068](../in-progress/slice-068-phony-vollstaendig.md),
+- **Die übrigen Mechanismen** — [slice-068](../done/slice-068-phony-vollstaendig.md),
   [slice-069](../open/slice-069-sensor-fehler-propagierung.md),
   [slice-071](../open/slice-071-sensor-scope-vollstaendig.md).
 - **Änderung der Grandfathering-*Schwellen*** (`SLICE_FORM_FROM`, AC-Stichtag). Dieser Slice
