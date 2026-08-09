@@ -365,6 +365,21 @@ func (a Adapter) goImports(src string) []core.Import {
 	return imps
 }
 
+// lineMatches greift je Zeile und Regex den ERSTEN Treffer.
+//
+// HEURISTIK-GRENZE (AC-QA-02, dokumentiert in AC-FA-EXTRACT-001 §Out-of-Scope):
+// stehen MEHRERE Direktiven auf einer Zeile, wird nur die erste extrahiert —
+// `import a, b` liefert `a`, `using A; using B;` liefert `A`. Die Regexe sind
+// `^\s*…`-verankert, FindStringSubmatch nimmt den ersten Treffer; ein
+// FindAllStringSubmatch würde daran nichts ändern, solange die Verankerung
+// steht. Betroffen sind alle Backends ausser C++ (Präprozessor-Direktiven sind
+// ohnehin zeilenweise); praktisch relevant vor allem Python, wo `import a, b`
+// idiomatisch ist.
+//
+// Warum hier nur ein Kommentar und kein Fix: die Grenze zu SCHLIESSEN ist eine
+// Verhaltensänderung mit Vertragsbezug. slice-084 hat sie sichtbar gemacht —
+// im Benutzerhandbuch §6 neben den übrigen Formen, die beim Konfigurieren
+// auffallen — statt sie stillschweigend zu verschieben.
 func lineMatches(src string, res ...*regexp.Regexp) []core.Import {
 	var imps []core.Import
 	for i, ln := range strings.Split(src, "\n") {

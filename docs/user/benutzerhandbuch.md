@@ -675,6 +675,26 @@ oder ein zu breiter `exclude`-Glob nimmt die betroffenen Dateien vom Scan aus.
 3. Prüfen Sie Ihre `exclude`-Globs: ein zu breites Muster (z. B. `src/**` statt
    `**/*_test.go`) schließt still auch produktiven Code aus — wer zu breit
    ausschließt, schwächt sein eigenes Gate (Abschnitt 4).
+4. Prüfen Sie die **Schreibweise der Import-Zeile**. a-check extrahiert
+   text-heuristisch und zeilenverankert; einige gültige Formen greift es
+   deshalb nicht:
+
+   | Form | Beispiel | Verhalten |
+   |---|---|---|
+   | **Mehrere Direktiven auf einer Zeile** | `import a, b` · `using A; using B;` | nur die **erste** wird gegriffen (`a` bzw. `A`) |
+   | **Relative Python-Importe** | `from . import x` · `from ..pkg import y` | nicht extrahiert |
+   | Kompaktes TypeScript ohne Whitespace | `import{A}from'./b'` | nicht gegriffen |
+   | Import-ähnliche Zeilen in Strings/Docstrings | `s = "import x"` | nicht gegriffen |
+
+   Die Mehrfach-Form betrifft **alle Backends außer C++** — dort ist eine
+   Präprozessor-Direktive ohnehin auf ihre Zeile beschränkt. In Python ist
+   `import a, b` idiomatisch und damit der praktisch häufigste Fall: schreiben
+   Sie die Importe einzeilig, wenn eine Architektur-Kante daran hängt.
+
+   Das ist eine **ausgewiesene Heuristik-Grenze** ([`AC-QA-02`](../../spec/lastenheft.md#ac-qa-02--hermetik-und-ehrliche-heuristik-grenze)),
+   kein Fehler. Die vollständige Liste aller Grenzen führt der Out-of-Scope-Absatz
+   von [`AC-FA-EXTRACT-001`](../../spec/lastenheft.md#ac-fa-extract-001--sprach-backends-für-die-import-extraktion)
+   im Lastenheft; hier stehen die, die beim Konfigurieren auffallen.
 
 ### Fehler: ein `tech-leak`/`core-impurity`-Befund ist falsch-positiv
 

@@ -57,14 +57,14 @@ Versprechen am **Repo** eingelöst ist — nicht nur im Lastenheft.
 | [slice-081](open/slice-081-heuristik-diagnose.md) | Laufzeit-Diagnose für nicht extrahierte Import-Formen | [AC-QA-02](../../../spec/lastenheft.md#ac-qa-02--hermetik-und-ehrliche-heuristik-grenze) |
 | [slice-082](done/slice-082-print-mk-docker-indirektion.md) | `--print-mk`: `$(DOCKER)` statt wörtlichem `docker` | [AC-FA-DIST-001](../../../spec/lastenheft.md#ac-fa-dist-001--distribution-image---print-mk-a-checkmk) |
 | [slice-083](open/slice-083-print-mk-digest-selbstbezug.md) | `--print-mk` nennt den Digest des Vorgängers | [AC-QA-03](../../../spec/lastenheft.md#ac-qa-03--reproduzierbarkeit) |
-| [slice-084](open/slice-084-handbuch-heuristik-grenzen.md) | Heuristik-Grenzen dort, wo Konsumenten lesen | [AC-QA-02](../../../spec/lastenheft.md#ac-qa-02--hermetik-und-ehrliche-heuristik-grenze) |
+| [slice-084](in-progress/slice-084-handbuch-heuristik-grenzen.md) | Heuristik-Grenzen dort, wo Konsumenten lesen | [AC-QA-02](../../../spec/lastenheft.md#ac-qa-02--hermetik-und-ehrliche-heuristik-grenze) |
 
 **Reihenfolge, wo sie zwingend ist:** [slice-082](done/slice-082-print-mk-docker-indirektion.md)
 vor [slice-083](open/slice-083-print-mk-digest-selbstbezug.md) — beide ändern `cli.go` **und**
 `a-check.mk`, und die Fragment-Parität in `tools/image-test.sh` erzwingt gemeinsames Wandern.
 
 **Ein Slice trägt eine Verwerfungs-Bedingung:**
-[slice-084](open/slice-084-handbuch-heuristik-grenzen.md) entfällt, wenn
+[slice-084](in-progress/slice-084-handbuch-heuristik-grenzen.md) entfällt, wenn
 [slice-081](open/slice-081-heuristik-diagnose.md) zuerst gebaut wird und seine Diagnose die
 betroffenen Formen vollständig meldet. Eine Welle, die vier Slices *garantiert* liefert, wäre hier
 die falsche Zusage.

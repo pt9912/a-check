@@ -80,16 +80,56 @@ Eine Fixture gibt es nicht und wäre gelogen: der Fehler ist ein fehlender Ort, 
 
 ## 5. DoD
 
-- [ ] Das Benutzerhandbuch führt die Mehrfach-Direktiven-Grenze dort, wo es die übrigen
-      Heuristik-Grenzen führt. Beleg: der Abgleich aus §3.
-- [ ] `extract.go` trägt an der Erst-Treffer-Stelle einen Kommentar, der die Grenze benennt —
-      wie es für den relativen Python-Import bereits der Fall ist.
-- [ ] `make gates` grün — **Ausgabe in eine Datei**, Exit-Code getrennt geprüft, nie in eine Pipe.
+- [x] Das Benutzerhandbuch führt die Mehrfach-Direktiven-Grenze dort, wo es die übrigen
+      Heuristik-Grenzen führt. Beleg: neuer Punkt 4 unter *„a-check findet nichts, obwohl Verstöße
+      erwartet werden"* (§6 Fehlerbehebung) — mit einer Tabelle der vier Formen, die beim
+      Konfigurieren auffallen.
+- [x] `extract.go` trägt an der Erst-Treffer-Stelle einen Kommentar, der die Grenze benennt —
+      wie es für den relativen Python-Import bereits der Fall ist. Beleg: Kommentarblock über
+      `lineMatches`.
+- [x] `make gates` grün — **Ausgabe in eine Datei**, Exit-Code getrennt geprüft, nie in eine Pipe.
 
 ## 6. Closure-Notiz
 
-_(beim Abschluss ausfüllen — genau **ein** solcher Abschnitt je Slice,
-[`AGENTS.md`](../../../../AGENTS.md) §5; `make verify` prüft das.)_
+**Geliefert:** Die Mehrfach-Direktiven-Grenze steht jetzt an **drei** Orten statt an einem —
+[Lastenheft](../../../../spec/lastenheft.md) (unverändert),
+[Benutzerhandbuch](../../../user/benutzerhandbuch.md) §6 und als Kommentar über `lineMatches` in
+[`extract.go`](../../../../internal/adapter/driven/extract/extract.go). Damit trägt sie dieselbe
+Abdeckung wie die relative-Python-Import-Grenze, an der sich der Konsumenten-Befund maß.
+
+**Der Ort war die eigentliche Arbeit.** Naheliegend wäre ein Absatz bei der Python-Konfiguration
+gewesen — dort steht die verwandte Grenze. Gewählt ist stattdessen der Fehlerbehebungs-Abschnitt
+*„a-check findet nichts, obwohl Verstöße erwartet werden"*: er listete drei Ursachen (Globs,
+Datei-Endung, `exclude`), und **keine davon war die Extraktion**. Genau dort sucht jemand, dem eine
+erwartete Kante fehlt — und genau dort fand er bisher nichts.
+
+**Lerneintrag — Form: geschärfte Regel.** Als Prüfsatz: *Eine Grenze ist dort zu dokumentieren, wo
+jemand nach ihrem Symptom sucht — nicht dort, wo sie technisch entsteht.*
+
+**Die Ursache** der Lücke ist die Trennung der Doku-Straten, die das Repo bewusst führt: das
+Lastenheft ist **vertraglich abnahmebindend** und listet Out-of-Scope vollständig — über zwanzig
+Grenzen in einem Absatz. Das Handbuch ist **Bedienungsanleitung** und wählt aus. Die Auswahl folgte
+bisher der Sprache (was betrifft Python? was C#?), nicht dem **Symptom** (was tue ich, wenn ein
+Befund fehlt?). Für den relativen Import fielen beide Achsen zusammen — er ist sprachspezifisch
+*und* symptomatisch. Die Mehrfach-Direktive ist sprachübergreifend und fiel deshalb durch das
+Raster.
+
+**Bewusst nicht getan:** die übrigen ~20 Out-of-Scope-Punkte nachziehen. Aufgenommen sind vier
+Formen, die beim **Konfigurieren** auffallen; ein vollständiges Duplikat würde gegen das Lastenheft
+driften. Der Absatz verweist stattdessen auf die vollständige Liste.
+
+**Zwei beobachtbare Closure-Kriterien:**
+
+1. Die Grenze ist in `spec/lastenheft.md`, `docs/user/benutzerhandbuch.md` **und** `extract.go`
+   auffindbar — vor diesem Slice nur im Lastenheft.
+2. Der Handbuch-Eintrag steht unter dem Symptom („findet nichts, obwohl Verstöße erwartet werden"),
+   nicht unter der Sprache — nachprüfbar an der Abschnitts-Überschrift.
+
+**Folge-Slices:** keine. **Verwerfungs-Bedingung nicht eingetreten:**
+[slice-081](../open/slice-081-heuristik-diagnose.md) ist noch nicht gebaut, der Handbuch-Eintrag
+also weiterhin die einzige Stelle, an der ein Konsument die Grenze findet. Liefert 081 später eine
+Laufzeit-Diagnose, bleibt dieser Eintrag trotzdem sinnvoll — er erklärt *warum*, die Diagnose sagt
+nur *dass*.
 
 ## 7. Sub-Area-Modus
 
