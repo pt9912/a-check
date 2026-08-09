@@ -59,7 +59,7 @@ Versprechen am **Repo** eingelöst ist — nicht nur im Lastenheft.
 | [slice-083](done/slice-083-print-mk-digest-selbstbezug.md) | `CR-5` | `--print-mk` nennt den Digest des Vorgängers | [AC-QA-03](../../../spec/lastenheft.md#ac-qa-03--reproduzierbarkeit) |
 | [slice-084](done/slice-084-handbuch-heuristik-grenzen.md) | `CR-3` | Heuristik-Grenzen dort, wo Konsumenten lesen | [AC-QA-02](../../../spec/lastenheft.md#ac-qa-02--hermetik-und-ehrliche-heuristik-grenze) |
 | [slice-085](done/slice-085-schicht-ohne-aufloesung.md) | `CR-2` | Diagnose: Schicht ohne auflösende Importe | [SPEC-RULE-001](../../../spec/spezifikation.md#spec-rule-001--regel-auswertung) |
-| [slice-086](open/slice-086-forbidden-constructs-fail-closed.md) | `CR-4` | `forbidden_constructs` ohne `port`-Rolle: fail-closed | [SPEC-CONF-001](../../../spec/spezifikation.md#spec-conf-001--konfigurationsschema) |
+| [slice-086](in-progress/slice-086-forbidden-constructs-fail-closed.md) | `CR-4` | `forbidden_constructs` ohne `port`-Rolle: fail-closed | [SPEC-CONF-001](../../../spec/spezifikation.md#spec-conf-001--konfigurationsschema) |
 
 **Die Welle ist am 2026-08-09 von vier auf sechs Slices gewachsen.** Der Konsument reichte die
 Befunde als sechs formale Change Requests nach; zwei davon (`CR-2`, `CR-4`) waren in der ersten
