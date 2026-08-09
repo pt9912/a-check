@@ -8,7 +8,7 @@ und den zweiten Teil von `R-068-F3` aus dem
 [Plan-Review](../../../reviews/2026-08-09-slice-068-plan-review.md).
 **Bezug:** Neuschnitt des zurückgezogenen Sammel-Entwurfs `4b029e4` nach Fehlermechanismus;
 Geschwister [slice-068](../done/slice-068-phony-vollstaendig.md),
-[slice-070](../open/slice-070-grundgesamtheit-messen.md),
+[slice-070](../in-progress/slice-070-grundgesamtheit-messen.md),
 [slice-071](../open/slice-071-sensor-scope-vollstaendig.md). Roadmap-Zeile *Aktuelle Welle* in der
 [Roadmap](../in-progress/roadmap.md).
 
@@ -86,7 +86,7 @@ Normalfall auslöst, wäre kein Fortschritt, sondern ein neuer Defekt.
 
 - **Die übrigen False-Green-Funde** — Mechanismen „Target läuft nicht"
   ([slice-068](../done/slice-068-phony-vollstaendig.md)), „leere Menge = ok"
-  ([slice-070](../open/slice-070-grundgesamtheit-messen.md)) und „nur ein Teil des Bestands gemessen"
+  ([slice-070](../in-progress/slice-070-grundgesamtheit-messen.md)) und „nur ein Teil des Bestands gemessen"
   ([slice-071](../open/slice-071-sensor-scope-vollstaendig.md)).
 - **Der Scope von `suppression-check`** — dass er nur `internal/` und `cmd/` sieht, ist `F-2` und
   gehört zu [slice-071](../open/slice-071-sensor-scope-vollstaendig.md). Dieser Slice fasst
@@ -142,7 +142,7 @@ einem korrekten nicht zu unterscheiden.
 2. `scan` gegen eine nicht existierende Wurzel exitet ≠ 0 (vorher `rc=0, hits=''`), während
    `make suppression-check` über den realen Baum unverändert Exit 0 meldet.
 
-**Folge-Slices:** [slice-070](../open/slice-070-grundgesamtheit-messen.md),
+**Folge-Slices:** [slice-070](../in-progress/slice-070-grundgesamtheit-messen.md),
 [slice-071](../open/slice-071-sensor-scope-vollstaendig.md) aus Gruppe A. Dazu **neu**: *wann*
 `commit-scope-check` läuft (§4) — er hängt nur in der CI, greift also erst nach dem Push. Am
 2026-08-09 real aufgetreten (CI-Run `31301467076`); noch nicht geschnitten.

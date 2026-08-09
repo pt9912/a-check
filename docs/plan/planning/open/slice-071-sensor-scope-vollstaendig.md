@@ -12,7 +12,7 @@ den ersten Teil von `R-068-F3` aus dem
 **Bezug:** Neuschnitt des zurückgezogenen Sammel-Entwurfs `4b029e4` nach Fehlermechanismus;
 Geschwister [slice-068](../done/slice-068-phony-vollstaendig.md),
 [slice-069](../done/slice-069-sensor-fehler-propagierung.md),
-[slice-070](../open/slice-070-grundgesamtheit-messen.md). Roadmap-Zeile *Aktuelle Welle* in der
+[slice-070](../in-progress/slice-070-grundgesamtheit-messen.md). Roadmap-Zeile *Aktuelle Welle* in der
 [Roadmap](../in-progress/roadmap.md).
 
 ---
@@ -71,7 +71,7 @@ Teil-Fix als vollständig ausweisen.
   Integritäts-Hälfte an.
 - **Die übrigen Mechanismen** — [slice-068](../done/slice-068-phony-vollstaendig.md),
   [slice-069](../done/slice-069-sensor-fehler-propagierung.md),
-  [slice-070](../open/slice-070-grundgesamtheit-messen.md).
+  [slice-070](../in-progress/slice-070-grundgesamtheit-messen.md).
 - **Reihenfolge-Hinweis:** [slice-069](../done/slice-069-sensor-fehler-propagierung.md) berührt dieselbe
   Datei `suppression-check.sh` (Fehler-Propagierung). Beide Slices sind **nacheinander** zu
   fahren, nicht parallel.
