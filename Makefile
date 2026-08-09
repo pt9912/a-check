@@ -21,7 +21,13 @@ VERSION               ?= 0.0.0-dev
 THRESHOLD ?= 90
 
 PROGRESS_FLAG ?=
-DOCKER_BUILD := docker build $(PROGRESS_FLAG) \
+# Container-Runtime ueber eine Indirektion — dieselbe, die das gelieferte
+# a-check.mk seit slice-082 fuehrt. Vorher lief `docker build` ueber
+# DOCKER_BUILD, `docker run` aber woertlich daneben: die Idee war da, sie war
+# nur nie auf `run` ausgedehnt. Dogfooding: was a-check seinen Konsumenten
+# liefert, gilt hier auch.
+DOCKER ?= docker
+DOCKER_BUILD := $(DOCKER) build $(PROGRESS_FLAG) \
     --build-arg GO_VERSION=$(GO_VERSION) \
     --build-arg GOLANGCI_LINT_VERSION=$(GOLANGCI_LINT_VERSION)
 
@@ -67,10 +73,10 @@ build: ## a-check-Image bauen (static/distroless, digest-gepinnte Bases).
 	$(DOCKER_BUILD) --build-arg VERSION=$(VERSION) -t $(IMAGE):dev .
 
 arch-check: build ## Eigen-Architektur via a-check selbst (Dogfooding, AC-QA-02).
-	docker run --rm --network none -v "$(CURDIR)":/src:ro $(IMAGE):dev /src
+	$(DOCKER) run --rm --network none -v "$(CURDIR)":/src:ro $(IMAGE):dev /src
 
 arch-graph: build ## Architektur-Graph (Mermaid) der eigenen .a-check.yml auf stdout (Dogfooding, netzlos, read-only).
-	docker run --rm --network none -v "$(CURDIR)":/src:ro $(IMAGE):dev --print-graph /src
+	$(DOCKER) run --rm --network none -v "$(CURDIR)":/src:ro $(IMAGE):dev --print-graph /src
 
 gate-consistency: ## Meta-Gate: dokumentierte Targets ↔ Makefile, .d-check.yml-Module (Harness-Lügen-Schutz).
 	@bash tools/gate-consistency.sh
@@ -137,11 +143,11 @@ ci: gates image-test ## CI-äquivalenter Lauf: gates + image-test (AC-FA-DIST-00
 
 # FOCUS_COMMITS wählt alle übrigen .d-check.yml-Module ab, sodass nur `commits`
 # läuft (sonst feuern die Datei-Module auf den Arbeitsbaum). ADR-0021.
-DCHECK_RUN_I := docker run --rm -i --network none -v "$(CURDIR):/repo:ro" $(DCHECK_REF)
+DCHECK_RUN_I := $(DOCKER) run --rm -i --network none -v "$(CURDIR):/repo:ro" $(DCHECK_REF)
 FOCUS_COMMITS := --enable commits --disable links --disable anchors --disable ids --disable matrix --disable external --disable codepaths --disable spans --disable hostpaths --disable diagrams --disable versions --disable pins --disable immutable --disable vcs --disable planning --disable tracked
 
 trace-check: ## Traceability via Modul commits (ADR-0021): AC-/ADR-/MR-/slice-ID je Commit. MSGFILE=<datei> (Hook), RANGE=a..b (CI), sonst HEAD~1..HEAD. AGENTS §5.
-	@$(if $(MSGFILE),$(DCHECK_RUN_I) --commit-msg - < $(MSGFILE),docker run --rm --network none -v "$(CURDIR):/repo:ro" $(DCHECK_REF) $(FOCUS_COMMITS) --range $(if $(RANGE),$(RANGE),HEAD~1..HEAD))
+	@$(if $(MSGFILE),$(DCHECK_RUN_I) --commit-msg - < $(MSGFILE),$(DOCKER) run --rm --network none -v "$(CURDIR):/repo:ro" $(DCHECK_REF) $(FOCUS_COMMITS) --range $(if $(RANGE),$(RANGE),HEAD~1..HEAD))
 
 hooks: ## git-Hooks installieren (core.hooksPath -> .githooks; commit-msg Traceability). AGENTS §5.
 	@git config core.hooksPath .githooks

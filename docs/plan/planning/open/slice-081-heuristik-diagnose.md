@@ -92,7 +92,7 @@ Eine Diagnose, die bei jedem Lauf spricht, wird weggeschaltet.
 - **Gatend machen.** Ein `strict_extraction` analog `strict_coverage` ist wie dort vertagt — die
   advisory Form reicht für den belegten Bedarf.
 - **Die zwei `--print-mk`-Defekte.** Eigene Slices
-  ([slice-082](../open/slice-082-print-mk-docker-indirektion.md),
+  ([slice-082](../in-progress/slice-082-print-mk-docker-indirektion.md),
   [slice-083](../open/slice-083-print-mk-digest-selbstbezug.md)).
 
 ## 5. DoD
