@@ -10,43 +10,19 @@
 
 ## Aktuelle Welle
 
-**`welle-12-regelwerk-migration` — wieder offen.** Sie stand vom 2026-07-26 bis zum 2026-08-09 im
-Closure-Log. Der erste unabhängige Review
-([Report](../../../reviews/2026-08-09-welle-12-unabhaengig.md)) hat ihr Closure-Kriterium
-widerlegt; die Closure ist zurückgezogen. Das ist Modul-6-Ausgang **(b)** — Welle offen lassen,
-Verschiebung im Drift-Log ausweisen — und nicht Ausgang (a), unter dem sie bis heute stand: „Welle
-trotzdem schließen → der Audit fällt durch, weil Slices unbelegt sind."
+**Keine laufende Welle.** `welle-12-regelwerk-migration` ist am 2026-08-09 geschlossen — nach der
+**Fünf-Schritt-Prozedur** aus [`planning/README.md`](../README.md), deren **erster realer
+Durchlauf** dies war. Ergebnis-Notiz:
+[`done/welle-12-results.md`](../done/welle-12-results.md).
 
-**Slice-IDs.** Der Bestand der Etappen A–F ist die Spanne
-[slice-046](../done/slice-046-regelwerk-v352-migration-analyse.md) …
-[slice-067](../done/slice-067-roadmap-form.md); was jeder einzelne geliefert und gelernt hat, steht
-in seiner Closure-Notiz unter `done/`. Alle liegen dort — mit einer Ausnahme:
-[slice-046](../done/slice-046-regelwerk-v352-migration-analyse.md) liegt weiterhin in `open/` und
-trägt eine offene Abnahme, während das bisherige Closure-Log „alle Slices in `done/`" behauptete.
-Für die 15 Review-Findings ist **Gruppe A** geschnitten — nach Fehlermechanismus, ein Mechanismus
-je Slice: [slice-068](../done/slice-068-phony-vollstaendig.md) (Target läuft gar nicht) ·
-[slice-069](../done/slice-069-sensor-fehler-propagierung.md) (Sensor verschluckt einen Fehler) ·
-[slice-070](../done/slice-070-grundgesamtheit-messen.md) („nichts gefunden" ≠ „nichts da") ·
-[slice-071](../done/slice-071-sensor-scope-vollstaendig.md) (nur ein Teil des Bestands gemessen).
-Ein erster Sammel-Entwurf über alle fünf Funde wurde nach einem unabhängigen **Plan**-Review
-([Report](../../../reviews/2026-08-09-slice-068-plan-review.md), 4 HIGH) zurückgezogen und zerlegt;
-dabei kamen zwei weitere False-Greens hinzu. `slice-068` und `slice-069` liegen in `done/`.
-Aus der Arbeit an ihnen kam [slice-072](../done/slice-072-scope-sensor-praeventiv.md) hinzu — kein
-False-Green, sondern ein Sensor, der erst nach dem Push greift; der Auslöser war ein realer roter
-CI-Lauf. Die Gruppen **B**, **C** und **D** sind **noch nicht geschnitten** — solange sie fehlen,
-ist die Slice-Liste dieser Welle unvollständig.
+Das ist ein Zustand, kein Versäumnis: der nächste Zug gehört dem Maintainer. Die Kandidaten stehen
+unter *Nächste Wellen* — jeder mit beobachtbarem Trigger, keiner mit Datum. Zwei Slices liegen
+außerdem in `open/` und tragen ihren Trigger selbst:
+[slice-079](../open/slice-079-gate-consistency-abloesen.md) (wartet auf nichts) und
+[slice-080](../open/slice-080-verify-abloesung-dcheck.md) (wartet auf ein d-check-Release).
 
-**Trigger (beobachtbar).** Die Welle schließt, wenn alle ihre Slices in `done/` liegen —
-[slice-046](../done/slice-046-regelwerk-v352-migration-analyse.md) eingeschlossen —, jedes im
-Report belegte False-Green behoben ist **und je Behebung eine Gegenprobe existiert, die vorher rot
-war**, und `make ci` grün läuft. Ein Sensor, der nach der Korrektur grün meldet, ohne dass jemand
-ihn rot gesehen hat, belegt nichts — das ist die Lehre des Reports.
-
-**Closure-Kriterien.** Die Fünf-Schritt-Prozedur aus [`planning/README.md`](../README.md) mit allen
-fünf Belegen, einschließlich `done/welle-12-results.md`. Die Grandfather-Klausel dort nennt
-namentlich `welle-00` … `welle-11`; `welle-12` ist nicht darunter und damit die erste Welle, für
-die die Prozedur gilt. Ihr Abschluss ist zugleich deren Probe — die bis hierher zweimal
-verschoben wurde.
+**Sobald eine Welle gezogen wird**, trägt dieser Abschnitt ihre drei Pflicht-Bestandteile:
+Slice-IDs · Trigger als beobachtbare Bedingung · Closure-Kriterien.
 
 ## Nächste Wellen
 
@@ -97,6 +73,7 @@ flowchart LR
 | welle-10-regel-engine-generalisierung | 2026-06-23 | [slice-012 §7](../done/slice-012-driving-driven-layerof.md) — Rollen-Dispatch + 4-Schichten-Modell + `driving`/`driven`-Richtung + `LayerOf` längster-literaler-Präfix; [ADR-0009](../../adr/0009-rollen-basierter-regel-dispatch.md)…[ADR-0013](../../adr/0013-layerof-laengster-praefix.md) `Accepted`. Carry-forward: [slice-013](../open/slice-013-driving-driven-vertiefung.md) |
 | welle-06-sprach-backends | 2026-07-03 | [slice-022 §8](../done/slice-022-typescript-backend.md#8-closure-notiz) — vier Backends geliefert: Java ([slice-014](../done/slice-014-java-backend.md)), Python ([slice-020](../done/slice-020-python-backend.md)), C# ([slice-021](../done/slice-021-csharp-backend.md)), TypeScript ([slice-022](../done/slice-022-typescript-backend.md)); Auflösung `fixed-root` ([ADR-0016](../../adr/0016-resolution-sprach-parametrisch.md)) + `relative` ([ADR-0017](../../adr/0017-relative-resolution-modus.md)); `namespace` bleibt reserviert (Folge-Slice bei realem Pilot) |
 | welle-11-dcheck-pilot-deltas | 2026-07-03 | [slice-023 §4](../done/slice-023-dcheck-pilot-deltas.md#4-closure-notiz) — `tech.adapter`-Liste + `composition_root: allow\|forbid` + `exclude` ([ADR-0018](../../adr/0018-exclude-scan-scope.md) `Accepted`, Lastenheft/Spez 0.14.0), veröffentlicht in `v0.8.0` — d-check-Umstellung entsperrt |
+| welle-12-regelwerk-migration | 2026-08-09 | [`done/welle-12-results.md`](../done/welle-12-results.md) — **erster realer Durchlauf der Fünf-Schritt-Prozedur**. Migration `v1.3.0` → `v3.5.2` in sechs Etappen ([slice-046](../done/slice-046-regelwerk-v352-migration-analyse.md)…[slice-067](../done/slice-067-roadmap-form.md)) plus der Nachlauf des ersten unabhängigen Reviews ([slice-068](../done/slice-068-phony-vollstaendig.md)…[slice-078](../done/slice-078-rollen-uebergaben.md)). Verifikation: `make ci` Exit 0, alle 33 Slices in `done/`, jedes belegte False-Green mit Gegenprobe. Carveout-Bestand null |
 
 ## Historische Trigger-Verschiebungen
 
@@ -118,6 +95,7 @@ wäre schlimmer als keines.
 | 2026-07-25 | [slice-045](../open/slice-045-intern-extern-dateimenge.md) **entschieden: jetzt nicht bauen** | null reale Fundstellen, erodierte Nachfrage, und a-check könnte den `fixed-root`-only-Mechanismus im eigenen `path`-Modus nicht dogfooden | [slice-045 §0](../open/slice-045-intern-extern-dateimenge.md) |
 | 2026-07-25 | Regelwerk-Migration: Etappen wachsen von **vier** auf **sechs** (A · B · C · D · **E** · **F**), Reihenfolge **E vor D** | die vollständige Baseline-Lektüre brachte elf zusätzliche Funde; die Mechanik-Funde schaffen die Sensoren, an denen die Form-Funde hängen | [slice-048 §5](../done/slice-048-modul-delta-lesen.md) |
 | 2026-07-25 | `nolintlint` als geplante Umsetzung von B-11 **verworfen**, Ersatz `make suppression-check` | Negativ-Probe: der Linter prüft Wohlgeformtheit, nicht Existenz — ein wohlgeformtes `//nolint` ließ `make lint` grün | [slice-049 §1.1](../done/slice-049-mechanik-sensoren.md) |
+| 2026-08-09 | `welle-12-regelwerk-migration` **erneut geschlossen** — diesmal nach der Fünf-Schritt-Prozedur, mit [`done/welle-12-results.md`](../done/welle-12-results.md) | der zurückgezogene Abschluss (Zeile darunter) war nach Modul-6-Ausgang **(a)** erfolgt; nach Abarbeitung aller Review-Findings ist das Closure-Kriterium erstmals **erfüllt statt behauptet**. `F-7` — der übersprungene erste Prozedur-Lauf — löst sich damit durch den Durchlauf selbst | [`welle-12-results.md`](../done/welle-12-results.md), `make ci` Exit 0 |
 | 2026-08-09 | `welle-12-regelwerk-migration`: **Closure zurückgezogen**, Welle zurück nach *Aktuelle Welle*. Zugleich verlässt die Zeile „unabhängiges Review der Migration" *Nächste Wellen* — ihr Trigger ist gefeuert | Der erste Review außerhalb der Claude-Modellfamilie widerlegte das Closure-Kriterium „alle Slices in `done/`": [slice-046](../done/slice-046-regelwerk-v352-migration-analyse.md) liegt weiterhin in `open/`. Dazu 11 HIGH — darunter fünf Sensoren, die falsch-grün melden, und die Selbst-Ausnahme von der eigenen Closure-Prozedur. Damit gilt Modul-6-Ausgang **(b)** statt des bisherigen **(a)** („der Audit fällt durch") | [Review-Report 2026-08-09](../../../reviews/2026-08-09-welle-12-unabhaengig.md) |
 
 **Format-Regel:** Die Roadmap ist eine Reihenfolge von **Wellen**, keine
