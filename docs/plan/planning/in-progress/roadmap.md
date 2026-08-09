@@ -27,7 +27,7 @@ Für die 15 Review-Findings ist **Gruppe A** geschnitten — nach Fehlermechanis
 je Slice: [slice-068](../done/slice-068-phony-vollstaendig.md) (Target läuft gar nicht) ·
 [slice-069](../done/slice-069-sensor-fehler-propagierung.md) (Sensor verschluckt einen Fehler) ·
 [slice-070](../done/slice-070-grundgesamtheit-messen.md) („nichts gefunden" ≠ „nichts da") ·
-[slice-071](../in-progress/slice-071-sensor-scope-vollstaendig.md) (nur ein Teil des Bestands gemessen).
+[slice-071](../done/slice-071-sensor-scope-vollstaendig.md) (nur ein Teil des Bestands gemessen).
 Ein erster Sammel-Entwurf über alle fünf Funde wurde nach einem unabhängigen **Plan**-Review
 ([Report](../../../reviews/2026-08-09-slice-068-plan-review.md), 4 HIGH) zurückgezogen und zerlegt;
 dabei kamen zwei weitere False-Greens hinzu. `slice-068` und `slice-069` liegen in `done/`.

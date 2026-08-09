@@ -9,7 +9,7 @@ verschärft durch `R-068-F2` aus dem
 **Bezug:** Neuschnitt des zurückgezogenen Sammel-Entwurfs `4b029e4` nach Fehlermechanismus;
 Geschwister [slice-069](../done/slice-069-sensor-fehler-propagierung.md),
 [slice-070](../done/slice-070-grundgesamtheit-messen.md),
-[slice-071](../in-progress/slice-071-sensor-scope-vollstaendig.md). Roadmap-Zeile *Aktuelle Welle* in der
+[slice-071](../done/slice-071-sensor-scope-vollstaendig.md). Roadmap-Zeile *Aktuelle Welle* in der
 [Roadmap](../in-progress/roadmap.md).
 
 ---
@@ -67,7 +67,7 @@ Sensor.
 - **Die anderen sechs False-Green-Funde** — sie liegen in
   [slice-069](../done/slice-069-sensor-fehler-propagierung.md),
   [slice-070](../done/slice-070-grundgesamtheit-messen.md) und
-  [slice-071](../in-progress/slice-071-sensor-scope-vollstaendig.md), je nach Fehlermechanismus.
+  [slice-071](../done/slice-071-sensor-scope-vollstaendig.md), je nach Fehlermechanismus.
 - **`.PHONY` für aus [`d-check.mk`](../../../../d-check.mk) eingebundene Targets** — das Fragment
   ist Fremdlieferung; ein Befund dort gehört gemeldet, nicht lokal gepatcht.
 - **Ein generisches „alle Targets aller `include`-Dateien"** — der Sensor prüft die Targets, die
@@ -114,7 +114,7 @@ ihrer Wirkung.
 
 **Folge-Slices:** [slice-069](../done/slice-069-sensor-fehler-propagierung.md),
 [slice-070](../done/slice-070-grundgesamtheit-messen.md),
-[slice-071](../in-progress/slice-071-sensor-scope-vollstaendig.md) — die übrigen drei Fehlermechanismen
+[slice-071](../done/slice-071-sensor-scope-vollstaendig.md) — die übrigen drei Fehlermechanismen
 der Gruppe A. Kein Folge-Slice aus diesem Slice selbst.
 
 ## 7. Sub-Area-Modus
