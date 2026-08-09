@@ -164,7 +164,7 @@ geworden. Neuer Schnitt nach **Fehlermechanismus**, ein Mechanismus je Slice:
 [slice-068](../plan/planning/done/slice-068-phony-vollstaendig.md) (Target läuft gar nicht) ·
 [slice-069](../plan/planning/done/slice-069-sensor-fehler-propagierung.md) (Sensor verschluckt
 einen Fehler) ·
-[slice-070](../plan/planning/in-progress/slice-070-grundgesamtheit-messen.md) („nichts gefunden" ≠
+[slice-070](../plan/planning/done/slice-070-grundgesamtheit-messen.md) („nichts gefunden" ≠
 „nichts da") ·
 [slice-071](../plan/planning/open/slice-071-sensor-scope-vollstaendig.md) (Sensor misst nur einen
 Teil des behaupteten Bestands).
