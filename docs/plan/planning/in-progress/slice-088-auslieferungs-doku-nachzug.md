@@ -154,6 +154,19 @@ formal gleich bleibt. Bei [slice-082](../done/slice-082-print-mk-docker-indirekt
 Vertrag sogar unverändert, und trotzdem fehlte dem Handbuch danach ein ganzes Konzept
 (`$(DOCKER)`).
 
+**Korrektur des Maintainers während des Baus — und eine Regel, die daraus folgt.** Der erste
+Entwurf schrieb in den §4-Fließtext *„Bis `v0.16.0` waren alle vier still"* und in §3.3, dass die
+alte Digest-Ausgabe *„bei einem Konsumenten einen realen Fehlpin"* verursacht habe. Beides wurde
+zurückgewiesen: **Das Handbuch zeigt den Ist-Zustand der aktuellen Version — keine Anekdoten, keine
+Forensik.** Versionsangaben gehören in die Änderungshistorie (§10), Vorfall-Begründungen in den
+`CHANGELOG` oder die ADR. Drei Stellen waren betroffen, eine davon ein beiläufiges „nicht mehr",
+das dieselbe Vergangenheits-Perspektive einschleppt.
+
+Der Reiz, es doch zu schreiben, ist verständlich und trotzdem falsch: Wer eine Änderung gerade
+begründet hat, will die Begründung mitliefern. Für den Leser des Handbuchs ist sie Ballast — er
+will wissen, **wie es geht**, nicht wie es einmal war. Die Trennung ist scharf: Handbuch = Gegenwart,
+Änderungshistorie = Verlauf, `CHANGELOG` = Migration, ADR = Begründung.
+
 **Bewusst ohne Sensor** (§3): Ein Vollständigkeits-Wächter über CHANGELOG und Handbuch-Historie
 wäre die naheliegende Antwort auf fünf übersprungene Nachzüge. Er gehört aber erst geschnitten,
 wenn die Regel steht, *wann* ein Eintrag Pflicht ist — sonst erfindet der Sensor sie. Dieselbe
