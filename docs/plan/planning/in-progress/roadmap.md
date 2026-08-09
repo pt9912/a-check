@@ -25,7 +25,7 @@ in seiner Closure-Notiz unter `done/`. Alle liegen dort — mit einer Ausnahme:
 trägt eine offene Abnahme, während das bisherige Closure-Log „alle Slices in `done/`" behauptete.
 Für die 15 Review-Findings ist **Gruppe A** geschnitten — nach Fehlermechanismus, ein Mechanismus
 je Slice: [slice-068](../done/slice-068-phony-vollstaendig.md) (Target läuft gar nicht) ·
-[slice-069](../in-progress/slice-069-sensor-fehler-propagierung.md) (Sensor verschluckt einen Fehler) ·
+[slice-069](../done/slice-069-sensor-fehler-propagierung.md) (Sensor verschluckt einen Fehler) ·
 [slice-070](../open/slice-070-grundgesamtheit-messen.md) („nichts gefunden" ≠ „nichts da") ·
 [slice-071](../open/slice-071-sensor-scope-vollstaendig.md) (nur ein Teil des Bestands gemessen).
 Ein erster Sammel-Entwurf über alle fünf Funde wurde nach einem unabhängigen **Plan**-Review
