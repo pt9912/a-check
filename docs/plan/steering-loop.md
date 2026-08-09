@@ -217,7 +217,7 @@ ohne Ort nicht überlebt.
   war ein `comm -13` über beide Mengen. Zwei Vorkommen in **verschiedenen** Sensoren machen die
   fehlende Gegenrichtung zur Klasse, nicht zum Einzelfall.
 - **Antwort:** **geschnitten, nicht gebaut** —
-  [slice-087](planning/in-progress/slice-087-index-vollstaendigkeit.md), Trigger „sofort". Der Slice trägt
+  [slice-087](planning/done/slice-087-index-vollstaendigkeit.md), Trigger „sofort". Der Slice trägt
   die Vorarbeit: Bestandsmessung (genau **ein** handgepflegter Datei-Index im Repo) und die
   d-check-Abdeckung (kein Modul deckt die Richtung Ziel → Verweis; `--trace --require-complete`
   findet **Anforderungs**-Waisen, nicht Datei-Waisen — die RTM listete
