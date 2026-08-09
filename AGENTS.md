@@ -132,7 +132,7 @@ Aggregat). Ob ein Gate gerade grün ist, sagt die CI (Badge im
 | `make test` | Akzeptanzkriterien der `AC-FA-*` als Go-Tests |
 | `make coverage-gate` | Gesamt-Coverage ≥ 90 % über `./internal/...` ([ADR-0006](docs/plan/adr/0006-coverage-gate.md)) |
 | `make arch-check` | Eigen-Architektur via `a-check` selbst (Dogfooding) |
-| `make gate-consistency` | Meta-Gate: dokumentierte Targets ↔ Makefile, `.d-check.yml`-Module (Harness-Lügen-Schutz) + Pin-Konsistenz (Digest-Gleichheit harte Pins == `version.md#aktuell`, Version == CHANGELOG, `d-check.mk`-Deklaration; slice-018) |
+| `make gate-consistency` | Meta-Gate: dokumentierte Targets ↔ Makefile, `.d-check.yml`-Module (Harness-Lügen-Schutz) + Pin-Konsistenz (Digest-Gleichheit harte Pins == `version.md#aktuell`, Version == CHANGELOG, `d-check.mk`-Deklaration; slice-018) + ADR-Index-Vollständigkeit (jede ADR-Datei ist im Index verlinkt; slice-087) |
 | `make record-gates` | Gate-Nachweis (Working-Tree-Hash) für den Stop-Hook |
 | `make suppression-check` | Fitness Function zum Suppression-Verbot (§3.2, [ADR-0005](docs/plan/adr/0005-lint-profil.md)): keine `//nolint`-Direktive in den Go-Quellen — `nolintlint` prüft nur Wohlgeformtheit, nicht Existenz (slice-049) |
 | `make guard-selftest` | Selbsttest des PreToolUse-Command-Guard (Tool-Call-Gate §3.1) |

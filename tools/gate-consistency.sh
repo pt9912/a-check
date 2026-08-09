@@ -11,6 +11,7 @@
 #   (3) Die modules-Liste der .a-check-Doku-Konfig (.d-check.yml) trägt die
 #       aktiven Module (links/anchors/ids/matrix) und NICHT external — sonst
 #       verliert der netzlose doc-check still seine Beweis-Aussage (AC-QA-02).
+#   (6) Jede ADR-Datei ist im ADR-Index verlinkt (slice-087, SL-005).
 #
 # Vor der echten Prüfung läuft ein Selbsttest: ein Phantom-Target muss das
 # Gate nachweislich feuern lassen.
@@ -123,6 +124,69 @@ phony_self_test() {
   printf '.PHONY: erstes \\\n        zweites\nerstes:\n\ttrue\nzweites:\n\ttrue\n' > "$tmp/Makefile"
   if ! check_phony_complete "$tmp/Makefile" 2>/dev/null; then
     echo "gate-consistency: Selbsttest FEHLGESCHLAGEN — vollstaendiges .PHONY faelschlich als Luecke gemeldet" >&2
+    rm -rf "$tmp"
+    exit 2
+  fi
+  rm -rf "$tmp"
+}
+
+# --- (6) ADR-Index-Vollständigkeit (slice-087, SL-005) ---------------------
+# Die GEGENRICHTUNG zu doc-check: das prüft, dass jeder Link AUFLÖST, nicht dass
+# jede Datei VERLINKT IST. Was nicht verlinkt ist, kann nicht ins Leere zeigen —
+# ein handgepflegter Index sieht darum immer vollständig aus, egal wie viele
+# Einträge fehlen. Genau so fehlten ADR-0030 und ADR-0031 im Index, beide bei
+# grünem `make gates`, beide nur zufällig bemerkt.
+#
+# Dieselbe Asymmetrie hatte slice-071 bei regelwerk-check gefunden (Manifest →
+# Baum, nicht Baum → Manifest); die Antwort ist dieselbe: `comm -13` über beide
+# Mengen. Zwei Vorkommen in verschiedenen Sensoren machen sie zur Klasse.
+#
+# Geprüft wird NUR die fehlende Richtung. Ein Index-Eintrag ohne Datei ist ein
+# toter Link und gehört doc-check — hier ihn mitzuprüfen wäre die Doppelung, die
+# slice-079 an anderer Stelle gerade abträgt.
+adr_files() {   # $1 = ADR-Verzeichnis -> Dateinamen, sortiert
+  find "$1" -maxdepth 1 -name '[0-9]*.md' -printf '%f\n' | sort
+}
+
+# Verlinkte Ziele des Index: die Dateinamen aus Markdown-Links. Ein Anker-Suffix
+# (`0031-x.md#abschnitt`) zählt als Verlinkung derselben Datei.
+adr_linked() { # $1 = Index-Datei -> verlinkte Dateinamen, sortiert
+  grep -oE '\]\([0-9][0-9a-z.-]*\.md(#[^)]*)?\)' "$1" \
+    | sed -E 's/^\]\(//; s/#.*$//; s/\)$//' | sort -u
+}
+
+check_adr_index() { # $1 = ADR-Verzeichnis, $2 = Index-Datei
+  local missing fail=0
+  missing="$(comm -23 <(adr_files "$1") <(adr_linked "$2"))"
+  if [ -n "$missing" ]; then
+    while read -r f; do
+      [ -n "$f" ] || continue
+      echo "gate-consistency: FAIL — ADR '$f' fehlt im Index $2 (SL-005)" >&2
+      fail=1
+    done <<<"$missing"
+  fi
+  return "$fail"
+}
+
+# Selbsttest beider Richtungen: die Lücke muss feuern, der vollständige Index
+# muss schweigen. Ohne die zweite Probe wäre ein immer-rotes Gate unentdeckt.
+adr_index_self_test() {
+  local tmp
+  tmp="$(mktemp -d)"
+  mkdir -p "$tmp/adr"
+  : > "$tmp/adr/0001-erste.md"
+  : > "$tmp/adr/0002-zweite.md"
+  # (a) Lücke: nur eine von zwei ADRs verlinkt — muss feuern.
+  printf '| [ADR-0001](0001-erste.md) | Titel |\n' > "$tmp/index.md"
+  if check_adr_index "$tmp/adr" "$tmp/index.md" 2>/dev/null; then
+    echo "gate-consistency: Selbsttest FEHLGESCHLAGEN — fehlender ADR-Index-Eintrag nicht erkannt" >&2
+    rm -rf "$tmp"
+    exit 2
+  fi
+  # (b) Vollständig, die zweite Zeile mit Anker — muss schweigen.
+  printf '| [ADR-0001](0001-erste.md) |\n| [ADR-0002](0002-zweite.md#geschichte) |\n' > "$tmp/index.md"
+  if ! check_adr_index "$tmp/adr" "$tmp/index.md" 2>/dev/null; then
+    echo "gate-consistency: Selbsttest FEHLGESCHLAGEN — vollstaendiger ADR-Index faelschlich als Luecke gemeldet" >&2
     rm -rf "$tmp"
     exit 2
   fi
@@ -260,6 +324,7 @@ pin_self_test() {
 self_test
 phony_self_test
 pin_self_test
+adr_index_self_test
 fail=0
 MK_TARGETS="$(makefile_targets Makefile d-check.mk)"
 
@@ -300,7 +365,11 @@ pin_consistency . || fail=1
 #     ist deklariert, sonst meldet make Exit 0 ohne das Rezept auszuführen.
 check_phony_complete Makefile || fail=1
 
+# (6) ADR-Index-Vollstaendigkeit (slice-087): jede ADR-Datei ist im Index
+#     verlinkt — die Gegenrichtung, die doc-check per Konstruktion nicht sieht.
+check_adr_index docs/plan/adr docs/plan/adr/README.md || fail=1
+
 if [ "$fail" -ne 0 ]; then
   exit 1
 fi
-echo "gate-consistency ok: Doku ↔ Makefile konsistent, .d-check.yml-Module intakt, Pins konsistent, .PHONY vollstaendig (Selbsttests gefeuert)."
+echo "gate-consistency ok: Doku ↔ Makefile konsistent, .d-check.yml-Module intakt, Pins konsistent, .PHONY vollstaendig, ADR-Index vollstaendig (Selbsttests gefeuert)."
