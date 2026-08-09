@@ -52,6 +52,7 @@ verschoben wurde.
 
 | Welle | Trigger (beobachtbar) | Wichtigste Slices | Aufwand |
 |---|---|---|---|
+| Eigenbau-Ablösung durch d-check-Module | ein d-check-Release trägt Modul `structure` **und** die Option `links.resolve-from` (prüfbar an der Modulliste, Handbuch §6), **und** der Pin in [`d-check.mk`](../../../../d-check.mk) ist darauf gehoben | CR 1/CR 2 aus [slice-073 §8](../done/slice-073-dcheck-statt-eigenbau.md) einreichen, danach Ablöse-Slices für die vier `verify-*` | M |
 | driving/driven-Vertiefung (Teil A) | ein Konsument mit Richtungs-**Namen**, die die Grammatik treffen, **plus** geklärte Verhaltens-Neutralität | [slice-013](../open/slice-013-driving-driven-vertiefung.md) | M |
 | Namespace-Auflösung (C#) | ein C#-Konsument, dessen Namespace ≠ Verzeichnis ist | Folge-ADR + Backend-Slice | M |
 | Ziel-seitige Abdeckung | eine der drei Bedingungen aus [slice-045 §0](../open/slice-045-intern-extern-dateimenge.md) tritt ein | [slice-045](../open/slice-045-intern-extern-dateimenge.md) | M |
