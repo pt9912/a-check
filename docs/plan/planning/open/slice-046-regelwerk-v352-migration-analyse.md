@@ -131,8 +131,55 @@ vendored Quelle arbeitet statt gegen eine URL — genau die Eigenschaft, die das
 - [x] Modul 10 gegengelesen — die frischen Review-Artefakte sind nicht überholt (§3).
 - [x] Die drei Migrations-Brocken benannt und belegt (§4), Template-Abgleich tabellarisch.
 - [x] Offene Lücken der Analyse ausgewiesen (§5) statt als Vollständigkeit ausgegeben.
-- [ ] **Abnahme:** Etappen-Schnitt A–D (§6) durch den Maintainer.
+- [x] **Abnahme:** Etappen-Schnitt A–D (§6) durch den Maintainer — erteilt am 2026-07-25, belegt
+      durch die ausgeführten Etappen (siehe §8). **Retroaktiv festgehalten am 2026-08-09**: der
+      Haken blieb offen, während die Arbeit lief, und hielt diesen Slice zwei Wochen in `open/`.
 
 ## 8. Closure-Notiz
 
-_(beim Abschluss: gewählter Schnitt + Verweis auf die Umsetzungs-Slices.)_
+**Geliefert:** die Delta-Analyse, die die Regelwerk-Migration ausgelöst und geschnitten hat. Der
+vorgeschlagene Schnitt wurde angenommen — aber **nicht unverändert**.
+
+**Der abgenommene Schnitt weicht vom vorgeschlagenen ab.** §6 schlug **vier** Etappen vor (A–D);
+umgesetzt wurden **sechs**, mit **E vor D**:
+
+| Etappe | Umsetzungs-Slice |
+|---|---|
+| A — Vendoring | [slice-047](../done/slice-047-baseline-vendoring.md) |
+| B — Modul-Delta lesen | [slice-048](../done/slice-048-modul-delta-lesen.md) |
+| E — Mechanik/Sensoren *(neu, vorgezogen)* | [slice-049](../done/slice-049-mechanik-sensoren.md) … [slice-051](../done/slice-051-workflow-und-freigabe.md) |
+| D — Form/Templates | [slice-052](../done/slice-052-slice-form.md) … [slice-054](../done/slice-054-ac-form.md) |
+| C — `MR-*`-Bereinigung | [slice-055](../done/slice-055-mr-bestand.md), [slice-056](../done/slice-056-sub-area-modus.md) |
+| F — Steering/Closure *(neu)* | [slice-057](../done/slice-057-steering-loop.md), [slice-065](../done/slice-065-carveout-ort-und-trichter.md), [slice-066](../done/slice-066-wellen-closure-und-rollen.md) |
+
+Der Grund für die Erweiterung steht im Drift-Log der [Roadmap](../in-progress/roadmap.md): die
+vollständige Baseline-Lektüre in Etappe B brachte elf zusätzliche Funde, und die Mechanik-Funde
+schufen erst die Sensoren, an denen die Form-Funde hingen — deshalb E vor D.
+
+**Die in §5 ausgewiesenen Lücken sind geschlossen**, teils anders als erwartet: das
+Modul-für-Modul-Delta lieferte [slice-048](../done/slice-048-modul-delta-lesen.md) mit 21 Funden
+statt der erwarteten fünf Module; die `MR-*`-Frage entschied
+[slice-055](../done/slice-055-mr-bestand.md) (die vermutete Kollision wurde **widerlegt**); und
+Gate-Änderungen erzwang die Migration sehr wohl — `suppression-check`, `verify`,
+`commit-scope-check` und der Drift-Wächter entstanden erst dadurch.
+
+**Lerneintrag — Form: geschärfte Regel.** Als Prüfsatz: *Ein DoD-Punkt, der auf eine fremde
+Handlung wartet, wird nicht durch das Eintreten der Handlung erfüllt, sondern durch ihr
+Festhalten.*
+
+**Die Ursache** ist beobachtbar und war zwei Wochen sichtbar, ohne aufzufallen: die Abnahme
+erfolgte mündlich und wurde sofort in Arbeit umgesetzt — die Etappen liefen, der Haken blieb. Kein
+Sensor konnte es melden, weil ein offener DoD-Punkt in `open/` der **Normalzustand** ist; erst der
+Widerspruch zum Closure-Log der Welle („alle Slices in `done/`") machte ihn sichtbar, und den fand
+der unabhängige Review als `F-8`, nicht ein Gate.
+
+**Zwei beobachtbare Closure-Kriterien:**
+
+1. Jede Etappe aus der Tabelle oben zeigt auf mindestens einen Slice in `done/`; keine Zeile ist
+   ohne Umsetzung.
+2. `docs/plan/planning/open/` enthält nach diesem Slice keinen Slice der Welle `welle-12` mehr —
+   damit ist das Closure-Kriterium „alle Slices in `done/`" erstmals tatsächlich erfüllt statt
+   behauptet.
+
+**Folge-Slices:** keine. Der Abschluss von `welle-12` nach der Fünf-Schritt-Prozedur ist der
+nächste Zug — und deren erste reale Probe.
