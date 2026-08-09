@@ -31,7 +31,7 @@ je Slice: [slice-068](../done/slice-068-phony-vollstaendig.md) (Target läuft ga
 Ein erster Sammel-Entwurf über alle fünf Funde wurde nach einem unabhängigen **Plan**-Review
 ([Report](../../../reviews/2026-08-09-slice-068-plan-review.md), 4 HIGH) zurückgezogen und zerlegt;
 dabei kamen zwei weitere False-Greens hinzu. `slice-068` und `slice-069` liegen in `done/`.
-Aus der Arbeit an ihnen kam [slice-072](../in-progress/slice-072-scope-sensor-praeventiv.md) hinzu — kein
+Aus der Arbeit an ihnen kam [slice-072](../done/slice-072-scope-sensor-praeventiv.md) hinzu — kein
 False-Green, sondern ein Sensor, der erst nach dem Push greift; der Auslöser war ein realer roter
 CI-Lauf. Die Gruppen **B**, **C** und **D** sind **noch nicht geschnitten** — solange sie fehlen,
 ist die Slice-Liste dieser Welle unvollständig.

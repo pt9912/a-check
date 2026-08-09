@@ -134,7 +134,7 @@ die Leermenge legitim).
    sondern eine, die zum Befund passt.
 
 **Folge-Slices:** [slice-071](../done/slice-071-sensor-scope-vollstaendig.md),
-[slice-072](../in-progress/slice-072-scope-sensor-praeventiv.md).
+[slice-072](../done/slice-072-scope-sensor-praeventiv.md).
 
 ## 7. Sub-Area-Modus
 
