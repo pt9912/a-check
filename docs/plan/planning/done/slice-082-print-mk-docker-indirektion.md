@@ -6,7 +6,7 @@
 **Deckt:** Konsumenten-Befund vom 2026-08-09;
 [AC-FA-DIST-001](../../../../spec/lastenheft.md#ac-fa-dist-001--distribution-image---print-mk-a-checkmk).
 **Bezug:** [ADR-0004](../../adr/0004-distribution-image-mk.md); Geschwister
-[slice-083](../in-progress/slice-083-print-mk-digest-selbstbezug.md).
+[slice-083](../done/slice-083-print-mk-digest-selbstbezug.md).
 
 ---
 
@@ -14,7 +14,7 @@
 
 **Beginn:** sofort. Kein Vertrag ist berührt, kein Entscheid offen.
 
-**Reihenfolge:** **vor** [slice-083](../in-progress/slice-083-print-mk-digest-selbstbezug.md). Beide ändern
+**Reihenfolge:** **vor** [slice-083](../done/slice-083-print-mk-digest-selbstbezug.md). Beide ändern
 [`internal/cli/cli.go`](../../../../internal/cli/cli.go) **und**
 [`a-check.mk`](../../../../a-check.mk); die Fragment-Parität in
 [`tools/image-test.sh`](../../../../tools/image-test.sh) erzwingt, dass beide Dateien im selben
@@ -84,7 +84,7 @@ Ohne diesen Hinweis tauscht der Slice ein stilles Problem gegen ein leiseres.
 ## 4. Was bewusst nicht getan wird
 
 - **Der Digest-Selbstbezug.** Eigener Slice
-  ([slice-083](../in-progress/slice-083-print-mk-digest-selbstbezug.md)), weil er [AC-QA-03](../../../../spec/lastenheft.md#ac-qa-03--reproduzierbarkeit) berührt und
+  ([slice-083](../done/slice-083-print-mk-digest-selbstbezug.md)), weil er [AC-QA-03](../../../../spec/lastenheft.md#ac-qa-03--reproduzierbarkeit) berührt und
   spec-first ist.
 - **`d-check.mk` patchen.** Fremdlieferung; ein Befund dort gehört gemeldet, nicht lokal
   korrigiert.
@@ -136,7 +136,7 @@ ein stilles Problem gegen ein leiseres getauscht.
 2. `grep 'docker \(build\|run\)' Makefile` liefert nur noch Kommentarzeilen — kein wörtlicher
    Aufruf mehr im Rezept-Teil.
 
-**Folge-Slices:** [slice-083](../in-progress/slice-083-print-mk-digest-selbstbezug.md) — derselbe
+**Folge-Slices:** [slice-083](../done/slice-083-print-mk-digest-selbstbezug.md) — derselbe
 Artefakt-Pfad, muss **nach** diesem laufen (Fragment-Parität). Der Befund an
 [`d-check.mk`](../../../../d-check.mk) (elf wörtliche `docker run`) bleibt ausdrücklich offen: es
 ist Fremdlieferung und gehört gemeldet, nicht lokal gepatcht.

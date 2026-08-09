@@ -117,7 +117,7 @@ konkreteste; er gehört in den Entscheid.
   advisory Form reicht für den belegten Bedarf.
 - **Die zwei `--print-mk`-Defekte.** Eigene Slices
   ([slice-082](../done/slice-082-print-mk-docker-indirektion.md),
-  [slice-083](../in-progress/slice-083-print-mk-digest-selbstbezug.md)).
+  [slice-083](../done/slice-083-print-mk-digest-selbstbezug.md)).
 
 ## 5. DoD
 
