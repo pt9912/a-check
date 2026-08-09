@@ -101,6 +101,31 @@ relativer Pfad der Normalfall und wird **nicht** gemeldet. Ein Baum ohne solche 
 **keine** Ausgabe; ab zehn Zeilen wird gekürzt und die Restzahl genannt. Welche Formen dahinter
 stehen, führt Abschnitt 6 („a-check findet nichts, obwohl Verstöße erwartet werden") aus.
 
+**Und, im Ernstfall, ein Auflösungs-Hinweis.** Löst in Ihrem **ganzen** Scan kein einziges
+Import-Symbol auf eine Schicht auf, obwohl Symbole extrahiert wurden, sagt a-check das deutlich:
+
+```text
+Hinweis: Schicht service: 12 Datei(en), 0 von 47 Import-Symbolen lösen auf eine Schicht auf
+Hinweis: Schicht ui: 8 Datei(en), 0 von 31 Import-Symbolen lösen auf eine Schicht auf
+  Abhilfe: layers-Globs gegen die echten Import-Pfade prüfen oder resolution konfigurieren.
+```
+
+**Wenn Sie diesen Hinweis sehen, prüft a-check bei Ihnen praktisch nichts.** Alle Dateien liegen in
+Schichten, alle Importe werden gelesen — und trotzdem entsteht keine einzige Kante, weil jedes Ziel
+als repo-extern gilt. Ein grünes Gate bedeutet dann nicht „sauber", sondern „nichts angesehen".
+
+Der häufigste Grund: Ihre `layers`-Globs tragen ein Präfix, das in den echten Import-Pfaden nicht
+vorkommt. Ein Mono-Repo mit `go/internal/ui/**` als Glob und `example.com/mod/internal/ui` als
+Go-Import ist genau dieser Fall — das Segment `go/` steht im Pfad, aber nicht im Modulnamen.
+Abhilfe: die Globs an die echten Importpfade angleichen oder die Zuordnung über `resolution`
+konfigurieren (Abschnitt 4).
+
+Der Hinweis erscheint **nur** bei diesem Totalausfall. Löst auch nur **eine** Schicht auf, bleibt
+er aus — denn eine einzelne Schicht ohne auflösende Importe ist völlig normal: ein
+abhängigkeitsfreier Domänenkern importiert nur die Standardbibliothek. Das bedeutet umgekehrt: ist
+nur **ein Teil** Ihrer Schichten falsch konfiguriert, sagt a-check nichts. Prüfen Sie Ihre Globs
+nach jeder Umstrukturierung, statt sich auf diesen Hinweis zu verlassen.
+
 ## 3. Aufgaben
 
 ### 3.1 a-check lokal ausführen

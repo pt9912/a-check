@@ -91,7 +91,40 @@ func Run(args []string, out, errw io.Writer) int {
 	code := report.New(out, errw).Report(findings)
 	writeCoverageNotice(errw, core.UncoveredFiles(m, files))
 	writeLimitNotice(errw, core.HeuristicLimits(m, files))
+	writeResolutionNotice(errw, core.LayerResolutions(m, files))
 	return code
+}
+
+// writeResolutionNotice reports the fully-green-fully-blind configuration:
+// every file in a layer, every symbol extracted, and still not one edge judged
+// because every target falls through the fail-open path as repo-external
+// (ADR-0032, SPEC-CLI-001). Advisory on stderr, after the limit notice, exit
+// code untouched.
+//
+// The trigger is REPO-WIDE, not per layer, and that is the whole decision. The
+// per-layer rule was built first and measured against this repo: it fired on
+// internal/hexagon/core — the layer that ARC-001 requires to be dependency-free
+// and that therefore imports nothing but the standard library. A single layer
+// resolving to nothing is legitimate and indistinguishable from broken
+// resolution; a whole SCAN in which no edge ever forms is not. The price, named
+// in ADR-0032: a PARTIAL failure (one of several layers misresolved) stays
+// silent.
+func writeResolutionNotice(errw io.Writer, stats []core.LayerResolution) {
+	symbols, resolved := 0, 0
+	for _, s := range stats {
+		symbols += s.Symbols
+		resolved += s.Resolved
+	}
+	if symbols == 0 || resolved > 0 {
+		return
+	}
+	for _, s := range stats {
+		if s.Symbols == 0 {
+			continue // a package without imports is normal, not a finding
+		}
+		_, _ = fmt.Fprintf(errw, "Hinweis: Schicht %s: %d Datei(en), 0 von %d Import-Symbolen lösen auf eine Schicht auf\n", s.Layer, s.Files, s.Symbols)
+	}
+	_, _ = fmt.Fprintln(errw, "  Abhilfe: layers-Globs gegen die echten Import-Pfade prüfen oder resolution konfigurieren.")
 }
 
 // noticeLimit caps the listed entries of both advisory diagnoses. The cap is NOT

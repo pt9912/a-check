@@ -325,6 +325,53 @@ func UncoveredFiles(m Model, files []FileImports) []string {
 	return out
 }
 
+// LayerResolution is how much of ONE layer's extracted import symbols actually
+// resolve to a layer — the raw counts behind the resolution diagnosis (slice-085).
+type LayerResolution struct {
+	Layer    string
+	Files    int
+	Symbols  int
+	Resolved int
+}
+
+// LayerResolutions counts, per layer, how many extracted symbols resolve to any
+// layer, stably sorted by layer name. A layer whose symbols resolve to NOTHING
+// while symbols were extracted is the dangerous shape: every file sits in a
+// layer, every import is extracted, and still no edge is ever judged — fully
+// green, fully blind.
+//
+// composition_root files are excluded (they are exempt from the layer rules,
+// like in UncoveredFiles); files in no layer belong to the coverage diagnosis.
+// A resolution error cannot occur here — the CLI only reaches the diagnosis
+// after Evaluate succeeded — and is counted as unresolved if it ever did.
+func LayerResolutions(m Model, files []FileImports) []LayerResolution {
+	idx := newFileIndex(files)
+	byLayer := map[string]*LayerResolution{}
+	for _, f := range files {
+		if f.Layer == "" || matchesAny(f.Path, m.CompositionRoot) {
+			continue
+		}
+		st, ok := byLayer[f.Layer]
+		if !ok {
+			st = &LayerResolution{Layer: f.Layer}
+			byLayer[f.Layer] = st
+		}
+		st.Files++
+		for _, imp := range f.Imports {
+			st.Symbols++
+			if l, _, err := targetLayer(imp.Symbol, f.Path, m.Layers, m.Resolution[f.Language], idx); err == nil && l != "" {
+				st.Resolved++
+			}
+		}
+	}
+	out := make([]LayerResolution, 0, len(byLayer))
+	for _, st := range byLayer {
+		out = append(out, *st)
+	}
+	sort.Slice(out, func(i, j int) bool { return out[i].Layer < out[j].Layer })
+	return out
+}
+
 // formUnresolvableRelative names the second limit class in the diagnosis. It is
 // part of the CLI contract (SPEC-CLI-001), so it lives as a constant next to the
 // logic that emits it rather than being spelled out at the call site.

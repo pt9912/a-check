@@ -1265,3 +1265,117 @@ func TestLimitNoticeDeterministic(t *testing.T) { // AC-QA-01
 		t.Fatalf("Zeilen muessen stabil nach Pfad sortiert sein: %q", e1.String())
 	}
 }
+
+// --- ADR-0032: Aufloesungs-Diagnose (End-to-End) ----------------------------
+
+// resCfg bildet das Konsumenten-Muster nach: sprach-praefixierte Schicht-Globs
+// (`go/internal/…`), waehrend Go-Importe den Modulpfad tragen. Das
+// Glob-Literalpraefix kommt darin nicht als Segment-Run vor — jedes Ziel gilt
+// als repo-extern, und kein Verstoss wird je beurteilt.
+const resCfg = `version: 1
+languages:
+  go: ["**/*.go"]
+layers:
+  service: ["go/internal/service/**"]
+  ui: ["go/internal/ui/**"]
+edges:
+  - {from: ui, to: service}
+`
+
+// Dieselben Schichten OHNE Sprach-Praefix: hier loest der Modulpfad auf.
+const resCfgOK = `version: 1
+languages:
+  go: ["**/*.go"]
+layers:
+  service: ["internal/service/**"]
+  ui: ["internal/ui/**"]
+edges:
+  - {from: ui, to: service}
+`
+
+func TestResolutionNoticeWhenNothingResolves(t *testing.T) { // ADR-0032
+	dir := writeRepo(t, map[string]string{
+		".a-check.yml":              resCfg,
+		"go/internal/service/s.go":  "package service\n\nimport \"example.com/d/internal/ui\"\n",
+		"go/internal/ui/w.go":       "package ui\n\nimport \"fmt\"\n",
+	})
+	var out, errb bytes.Buffer
+	if code := cli.Run([]string{dir}, &out, &errb); code != 0 {
+		t.Fatalf("die Diagnose darf den Exit-Code nicht aendern, got %d", code)
+	}
+	e := errb.String()
+	if !strings.Contains(e, "Schicht service: 1 Datei(en), 0 von 1 Import-Symbolen") {
+		t.Fatalf("service nicht gemeldet: %q", e)
+	}
+	if !strings.Contains(e, "Schicht ui: 1 Datei(en), 0 von 1 Import-Symbolen") {
+		t.Fatalf("ui nicht gemeldet: %q", e)
+	}
+	if out.Len() != 0 {
+		t.Fatalf("die Diagnose gehoert auf stderr, stdout war %q", out.String())
+	}
+}
+
+// Die Kern-Entscheidung von ADR-0032: EINE aufloesende Schicht genuegt, um zu
+// schweigen. Die per-Schicht-Regel des CR haette hier `service` gemeldet —
+// obwohl ein abhaengigkeitsfreier Kern genau so aussieht.
+func TestResolutionNoticeSilentWhenOneLayerResolves(t *testing.T) {
+	dir := writeRepo(t, map[string]string{
+		".a-check.yml":           resCfgOK,
+		"internal/service/s.go":  "package service\n\nimport \"fmt\"\n",
+		"internal/ui/w.go":       "package ui\n\nimport \"example.com/d/internal/service\"\n",
+	})
+	var out, errb bytes.Buffer
+	cli.Run([]string{dir}, &out, &errb)
+	if strings.Contains(errb.String(), "lösen auf eine Schicht auf") {
+		t.Fatalf("eine aufloesende Schicht muss die Diagnose verstummen lassen: %q", errb.String())
+	}
+}
+
+func TestResolutionNoticeSilentWithoutSymbols(t *testing.T) { // ADR-0032 Entscheidung 3
+	dir := writeRepo(t, map[string]string{
+		".a-check.yml":             resCfg,
+		"go/internal/service/s.go": "package service\n\ntype T struct{}\n",
+		"go/internal/ui/w.go":      "package ui\n\ntype U struct{}\n",
+	})
+	var out, errb bytes.Buffer
+	cli.Run([]string{dir}, &out, &errb)
+	if strings.Contains(errb.String(), "lösen auf eine Schicht auf") {
+		t.Fatalf("Schichten ohne Importe sind normal, kein Befund: %q", errb.String())
+	}
+}
+
+// Eine Schicht ohne Symbole wird nicht MITGELISTET, auch wenn die Diagnose
+// wegen der anderen Schicht feuert — sonst laese sich Stille als Auffaelligkeit.
+func TestResolutionNoticeOmitsSymbolLessLayer(t *testing.T) {
+	dir := writeRepo(t, map[string]string{
+		".a-check.yml":             resCfg,
+		"go/internal/service/s.go": "package service\n\nimport \"example.com/d/internal/ui\"\n",
+		"go/internal/ui/w.go":      "package ui\n\ntype U struct{}\n",
+	})
+	var out, errb bytes.Buffer
+	cli.Run([]string{dir}, &out, &errb)
+	e := errb.String()
+	if !strings.Contains(e, "Schicht service:") {
+		t.Fatalf("service muss gemeldet werden: %q", e)
+	}
+	if strings.Contains(e, "Schicht ui:") {
+		t.Fatalf("Schicht ohne Symbole darf nicht mitgelistet werden: %q", e)
+	}
+}
+
+func TestResolutionNoticeDeterministic(t *testing.T) { // AC-QA-01
+	dir := writeRepo(t, map[string]string{
+		".a-check.yml":             resCfg,
+		"go/internal/service/s.go": "package service\n\nimport \"example.com/d/internal/ui\"\n",
+		"go/internal/ui/w.go":      "package ui\n\nimport \"example.com/d/internal/service\"\n",
+	})
+	var o1, e1, o2, e2 bytes.Buffer
+	cli.Run([]string{dir}, &o1, &e1)
+	cli.Run([]string{dir}, &o2, &e2)
+	if e1.String() != e2.String() {
+		t.Fatalf("stderr nicht byte-identisch:\n%q\n%q", e1.String(), e2.String())
+	}
+	if strings.Index(e1.String(), "Schicht service") > strings.Index(e1.String(), "Schicht ui") {
+		t.Fatalf("Schichten muessen stabil nach Namen sortiert sein: %q", e1.String())
+	}
+}

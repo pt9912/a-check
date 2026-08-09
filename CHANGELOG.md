@@ -8,6 +8,22 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
 ### Added
 
+- **Auflösungs-Diagnose für die blinde Konfiguration (`ADR-0032`, `SPEC-CLI-001` 0.29.0,
+  slice-085):** löst im **gesamten Scan** kein einziges extrahiertes Symbol auf eine Schicht auf,
+  obwohl Symbole extrahiert wurden, nennt a-check je Schicht mit Symbolen eine Zeile —
+  `Schicht <name>: N Datei(en), 0 von M Import-Symbolen lösen auf eine Schicht auf`. Das deckt die
+  gefährlichste Konfiguration ab, die das Werkzeug zulässt: **alle Dateien in Schichten, alle
+  Symbole extrahiert, und trotzdem wird keine Kante beurteilt**, weil jedes Ziel über den
+  fail-open-Pfad als repo-extern gilt. Gemessener Auslöser: ein Mono-Scan mit sprach-präfixierten
+  Globs (`go/internal/ui/**`) meldete 0 Befunde, obwohl ein Verstoß eingebaut war — Go-Importe
+  tragen den Modulpfad, in dem das Präfix nicht vorkommt. **Die Auslösung ist repo-weit, nicht je
+  Schicht:** eine einzelne Schicht ohne auflösende Symbole ist legitim (ein abhängigkeitsfreier
+  Kern importiert nur die Standardbibliothek) und von kaputter Auflösung nicht zu unterscheiden.
+  Daraus folgt ausdrücklich, dass der **Teil**ausfall — eine von mehreren Schichten falsch
+  aufgelöst — **still bleibt**. Schichten ohne Symbole werden nicht genannt, `composition_root`
+  zählt nicht; **Exit-Code unberührt**, Meldung auch bei null Befunden, stabil nach Schichtnamen
+  sortiert.
+
 - **Grenz-Diagnose für nicht beurteilbare Import-Zeilen (`ADR-0031`, `SPEC-CLI-001` 0.28.0,
   slice-081):** ein Scan weist jetzt auf stderr — nach der Abdeckungs-Diagnose — die Import-Zeilen
   als `pfad:zeile: form` aus, deren **Schreibweise** per Konstruktion zu keiner prüfbaren Kante
