@@ -60,8 +60,23 @@ if ! (cd "$BASE_DIR/$tag" && sha256sum -c --quiet SHA256SUMS); then
   exit 1
 fi
 
+# (1b) Vollstaendigkeit — die GEGENRICHTUNG Baum -> Manifest (slice-071, Fund F-14).
+# `sha256sum -c` bestaetigt ausschliesslich GELISTETE Eintraege. Eine zusaetzliche
+# Datei im vendored Baum blieb dadurch ungemessen, und der Lauf meldete weiter
+# "Integritaet ok" — die Pruefrichtung war einseitig.
+gelistet="$(sed -E 's/^[0-9a-f]+[[:space:]]+//' "$sums" | sort)"
+vorhanden="$(cd "$BASE_DIR/$tag" && find . -type f ! -name SHA256SUMS | sed 's|^\./||' | sort)"
+unlisted="$(comm -13 <(printf '%s\n' "$gelistet") <(printf '%s\n' "$vorhanden"))"
+if [ -n "$unlisted" ]; then
+  echo "regelwerk-check: FAIL — Datei(en) im Baseline-Baum ohne Eintrag in SHA256SUMS:" >&2
+  printf '%s\n' "$unlisted" | sed 's|^|    |' >&2
+  echo "  Fremdtext ist unveraendert zu vendoren (MR-006); eine nicht manifestierte Datei" >&2
+  echo "  ist entweder lokal hinzugefuegt oder die Liste ist unvollstaendig." >&2
+  exit 1
+fi
+
 n="$(grep -c . "$sums")"
-echo "regelwerk-check: Integritaet ok — $n Datei(en) der Baseline $tag stimmen mit SHA256SUMS."
+echo "regelwerk-check: Integritaet ok — $n Datei(en) der Baseline $tag stimmen mit SHA256SUMS, keine unmanifestierte Datei im Baum."
 
 # (2) Freshness — ausdruecklich NICHT geprueft.
 cat <<EOF

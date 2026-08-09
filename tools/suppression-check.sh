@@ -36,12 +36,18 @@ cd "$(dirname "$0")/.."
 # dasselbe Ergebnis wie ein sauberer Lauf ohne Fund. `set -o pipefail` (Kopf)
 # sorgt dafuer, dass der find-Fehler die Pipe rot macht.
 # Keine Treffer bleiben Exit 0: `xargs -r` startet awk gar nicht erst.
+# Orte ohne eigene Go-Quellen, deklariert statt stillschweigend: `.git` ist
+# Metadaten, `.harness/baseline/` ist committet vendorter Fremdtext (MR-006).
+# Die Liste ist der Ort fuer eine kuenftige Ausnahme — leer zu lassen waere
+# ebenso eine Aussage.
+SCAN_EXCLUDES=( -not -path './.git/*' -not -path './.harness/baseline/*' )
+
 scan() {  # $1 = Wurzelverzeichnis; Treffer auf stdout, !=0 bei Traversierungsfehler
   if [ ! -d "$1" ]; then
     echo "suppression-check: Scan-Wurzel '$1' existiert nicht oder ist kein Verzeichnis" >&2
     return 1
   fi
-  find "$1" -name '*.go' -type f -print0 \
+  find "$1" "${SCAN_EXCLUDES[@]}" -name '*.go' -type f -print0 \
     | xargs -0 -r awk -F'//' \
         'NF > 1 && $2 ~ /^[[:space:]]*(nolint|lint:ignore)/ {
            print FILENAME ":" FNR ":" $0
@@ -94,8 +100,13 @@ self_test
 # `scan ./internal; scan ./cmd 2>/dev/null || true` — eine Substitution, deren
 # Exit-Code nur vom LETZTEN Befehl stammt: ein Fehler beim Scan von `internal`
 # war strukturell unsichtbar (slice-069).
+# Wurzelmenge ABGELEITET statt aufgezaehlt (slice-071, Fund F-2; verschaerft
+# durch R-068-F3). Frueher stand hier `./internal ./cmd` — eine fest verdrahtete
+# Liste, waehrend Target und Hard Rule AGENTS.md §3.2 von den "Go-Quellen des
+# Repos" sprechen. Jede `.go`-Datei ausserhalb der beiden Baeume lief durch, und
+# eine zusaetzliche Wurzel einzutragen haette die Luecke nur verschoben.
 hits=""
-for root in ./internal ./cmd; do
+for root in .; do
   if ! out="$(scan "$root")"; then
     echo "suppression-check: FAIL — Scan der Wurzel '$root' fehlgeschlagen; das Ergebnis waere unvollstaendig." >&2
     exit 1

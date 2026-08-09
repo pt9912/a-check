@@ -78,17 +78,46 @@ Teil-Fix als vollständig ausweisen.
 
 ## 5. DoD
 
-- [ ] `suppression-check` misst die Go-Quellen des Repos, und die Wurzelmenge ist **abgeleitet,
-      nicht aufgezählt**. Beleg: die Zwei-Orte-Probe aus §3, vorher grün, nachher rot.
-- [ ] `regelwerk-check` meldet eine Datei im Baseline-Baum, die in `SHA256SUMS` fehlt. Beleg: die
-      Probe aus §3, vorher grün, nachher rot.
-- [ ] `make gates` und `make regelwerk-check` grün — **Ausgabe in eine Datei**, Exit-Code getrennt
+- [x] `suppression-check` misst die Go-Quellen des Repos, und die Wurzelmenge ist **abgeleitet,
+      nicht aufgezählt**. Beleg: `.go` mit `//nolint` im Wurzelverzeichnis **und** in einem
+      dritten Verzeichnis → Exit 2, beide gemeldet (`./outside.go:3`, `./dritter/tief.go:3`);
+      nach Entfernen Exit 0.
+- [x] `regelwerk-check` meldet eine Datei im Baseline-Baum, die in `SHA256SUMS` fehlt. Beleg:
+      `UNLISTED.md` → Exit 2 mit Nennung der Datei; nach Entfernen Exit 0.
+- [x] `make gates` und `make regelwerk-check` grün — **Ausgabe in eine Datei**, Exit-Code getrennt
       geprüft, nie in eine Pipe.
 
 ## 6. Closure-Notiz
 
-_(beim Abschluss ausfüllen — genau **ein** solcher Abschnitt je Slice,
-[`AGENTS.md`](../../../../AGENTS.md) §5; `make verify` prüft das.)_
+**Geliefert:** [`suppression-check.sh`](../../../../tools/suppression-check.sh) leitet die
+Wurzelmenge aus dem Repo-Baum ab (`SCAN_EXCLUDES` deklariert `.git` und die vendored Baseline);
+[`regelwerk-check.sh`](../../../../tools/regelwerk-check.sh) prüft die Baseline-Integrität in
+**beide** Richtungen — Manifest → Baum wie bisher, und neu Baum → Manifest.
+
+**Lerneintrag — Form: geschärfte Regel.** Als Prüfsatz: *Wer eine Menge prüft, muss auch prüfen,
+dass die Menge vollständig ist — sonst misst der Sensor korrekt und sagt trotzdem die Unwahrheit.*
+
+**Die Ursache** war in beiden Fällen nicht Nachlässigkeit, sondern eine Grenze, die zum Zeitpunkt
+ihrer Entstehung **stimmte**: `./internal ./cmd` war die vollständige Liste der Go-Bäume, als sie
+geschrieben wurde, und `sha256sum -c` prüft prinzipbedingt nur, was im Manifest steht. Beide
+Grenzen verfallen still — die erste, sobald ein Verzeichnis dazukommt, die zweite, sobald eine
+Datei dazukommt. Kein Lauf hätte das gemeldet, weil beide Sensoren *innerhalb ihrer Menge* korrekt
+arbeiten. Genau deshalb ist eine aufgezählte Wurzelmenge eine Lücke mit Verfallsdatum, und eine
+einseitige Prüfrichtung ebenso.
+
+**Zwei beobachtbare Closure-Kriterien:**
+
+1. Eine `.go`-Datei mit `//nolint` an **zwei** Orten außerhalb `internal/`/`cmd/` macht
+   `make suppression-check` rot und nennt beide — eine Ein-Ort-Probe hätte eine bloß erweiterte
+   Aufzählung als Ableitung ausgewiesen (`R-068-F2`).
+2. Eine nicht manifestierte Datei im Baseline-Baum macht `make regelwerk-check` rot und nennt sie;
+   der unveränderte Bestand bleibt grün (42 Dateien).
+
+**Folge-Slices:** keine aus diesem Slice. Offen bleiben
+[slice-072](../open/slice-072-scope-sensor-praeventiv.md),
+[slice-073](../open/slice-073-dcheck-statt-eigenbau.md) und
+[slice-074](../open/slice-074-doc-targets-wirksam.md); **Gruppe A des Reviews ist mit diesem Slice
+vollständig** (`F-1`, `F-2`, `F-5`, `F-12`, `F-14` plus `R-068-F3`/`R-068-F4`).
 
 ## 7. Sub-Area-Modus
 
