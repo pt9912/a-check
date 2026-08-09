@@ -161,7 +161,7 @@ vier bestätigt:
 **Folge:** Der Entwurf `4b029e4` wird nicht überarbeitet, sondern **zerlegt** — die Größen-Regel
 verlangt bei Nichtpassung ausdrücklich Zerlegen statt Dehnen, und aus fünf Funden sind sieben
 geworden. Neuer Schnitt nach **Fehlermechanismus**, ein Mechanismus je Slice:
-[slice-068](../plan/planning/open/slice-068-phony-vollstaendig.md) (Target läuft gar nicht) ·
+[slice-068](../plan/planning/in-progress/slice-068-phony-vollstaendig.md) (Target läuft gar nicht) ·
 [slice-069](../plan/planning/open/slice-069-sensor-fehler-propagierung.md) (Sensor verschluckt
 einen Fehler) ·
 [slice-070](../plan/planning/open/slice-070-grundgesamtheit-messen.md) („nichts gefunden" ≠

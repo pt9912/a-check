@@ -10,7 +10,7 @@ den ersten Teil von `R-068-F3` aus dem
 [ADR-0005](../../adr/0005-lint-profil.md),
 [MR-006](../../../../harness/conventions.md#mr-006--baseline-committet-vendored-statt-per-url-referenziert).
 **Bezug:** Neuschnitt des zurückgezogenen Sammel-Entwurfs `4b029e4` nach Fehlermechanismus;
-Geschwister [slice-068](../open/slice-068-phony-vollstaendig.md),
+Geschwister [slice-068](../in-progress/slice-068-phony-vollstaendig.md),
 [slice-069](../open/slice-069-sensor-fehler-propagierung.md),
 [slice-070](../open/slice-070-grundgesamtheit-messen.md). Roadmap-Zeile *Aktuelle Welle* in der
 [Roadmap](../in-progress/roadmap.md).
@@ -69,7 +69,7 @@ Teil-Fix als vollständig ausweisen.
 - **Die Freshness-Hälfte von `regelwerk-check`.** Ob die vendored Baseline dem Upstream-Stand
   entspricht, ist eine Netzoperation und ausdrücklich kein Gate. Dieser Slice fasst nur die
   Integritäts-Hälfte an.
-- **Die übrigen Mechanismen** — [slice-068](../open/slice-068-phony-vollstaendig.md),
+- **Die übrigen Mechanismen** — [slice-068](../in-progress/slice-068-phony-vollstaendig.md),
   [slice-069](../open/slice-069-sensor-fehler-propagierung.md),
   [slice-070](../open/slice-070-grundgesamtheit-messen.md).
 - **Reihenfolge-Hinweis:** [slice-069](../open/slice-069-sensor-fehler-propagierung.md) berührt dieselbe

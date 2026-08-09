@@ -7,7 +7,7 @@
 und den zweiten Teil von `R-068-F3` aus dem
 [Plan-Review](../../../reviews/2026-08-09-slice-068-plan-review.md).
 **Bezug:** Neuschnitt des zurückgezogenen Sammel-Entwurfs `4b029e4` nach Fehlermechanismus;
-Geschwister [slice-068](../open/slice-068-phony-vollstaendig.md),
+Geschwister [slice-068](../in-progress/slice-068-phony-vollstaendig.md),
 [slice-070](../open/slice-070-grundgesamtheit-messen.md),
 [slice-071](../open/slice-071-sensor-scope-vollstaendig.md). Roadmap-Zeile *Aktuelle Welle* in der
 [Roadmap](../in-progress/roadmap.md).
@@ -75,7 +75,7 @@ Normalfall auslöst, wäre kein Fortschritt, sondern ein neuer Defekt.
 ## 4. Was bewusst nicht getan wird
 
 - **Die übrigen False-Green-Funde** — Mechanismen „Target läuft nicht"
-  ([slice-068](../open/slice-068-phony-vollstaendig.md)), „leere Menge = ok"
+  ([slice-068](../in-progress/slice-068-phony-vollstaendig.md)), „leere Menge = ok"
   ([slice-070](../open/slice-070-grundgesamtheit-messen.md)) und „nur ein Teil des Bestands gemessen"
   ([slice-071](../open/slice-071-sensor-scope-vollstaendig.md)).
 - **Der Scope von `suppression-check`** — dass er nur `internal/` und `cmd/` sieht, ist `F-2` und
