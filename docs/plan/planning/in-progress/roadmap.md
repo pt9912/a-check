@@ -15,18 +15,21 @@
 nach `done/`). **Erste Welle-Plan-Datei dieses Repos**; die zwölf davor existieren nur als
 Prosa-Überschriften im Closure-Log.
 
-**Slice-IDs.** [slice-081](../open/slice-081-heuristik-diagnose.md) (Laufzeit-Diagnose für nicht
-extrahierte Import-Formen) · [slice-082](../done/slice-082-print-mk-docker-indirektion.md)
-(`$(DOCKER)` im Fragment) · [slice-083](../open/slice-083-print-mk-digest-selbstbezug.md)
-(Digest-Selbstbezug) · [slice-084](../done/slice-084-handbuch-heuristik-grenzen.md)
-(Heuristik-Grenzen ins Handbuch). Reihenfolge zwingend nur bei 082 vor 083 (Fragment-Parität);
-084 trägt eine Verwerfungs-Bedingung.
+**Slice-IDs — sechs**, je einem Change Request des Konsumenten zugeordnet:
+[slice-081](../open/slice-081-heuristik-diagnose.md) (`CR-1`) ·
+[slice-082](../done/slice-082-print-mk-docker-indirektion.md) (`CR-6`, **done**) ·
+[slice-083](../open/slice-083-print-mk-digest-selbstbezug.md) (`CR-5`) ·
+[slice-084](../done/slice-084-handbuch-heuristik-grenzen.md) (`CR-3`, **done**) ·
+[slice-085](../open/slice-085-schicht-ohne-aufloesung.md) (`CR-2`) ·
+[slice-086](../open/slice-086-forbidden-constructs-fail-closed.md) (`CR-4`).
+Reihenfolge zwingend nur bei 082 vor 083 (Fragment-Parität); aus Konsumentensicht zuerst
+`CR-1`/`CR-2`, weil sie einen sechsfach wiederholten Handgriff zur Werkzeug-Eigenschaft machen.
 
-**Trigger — gefeuert am 2026-08-09.** Ein realer a-check-Einsatz in einem Fremd-Repo meldete vier
-Befunde, einen davon mit belegtem Schaden: der in `d-check.mk` dokumentierte Bump-Weg über
+**Trigger — gefeuert am 2026-08-09.** Ein realer a-check-Einsatz in einem Fremd-Repo meldete zuerst
+vier, dann als formale Change Requests sechs Befunde — einen davon mit belegtem Schaden: der in `d-check.mk` dokumentierte Bump-Weg über
 `--print-mk` erzeugte einen **Fehlpin**, weil das Fragment den Digest des Vorgänger-Release nennt.
 
-**Closure-Kriterien.** Alle vier Slices in `done/`; **jeder Befund entweder behoben oder als
+**Closure-Kriterien.** Alle Slices der Welle in `done/`; **jeder Befund entweder behoben oder als
 deklarierte Grenze ausgewiesen** — „alle Slices done" allein genügt nicht, weil ein Slice auch mit
 „bleibt so" schließen kann; für die spec-first-Slices (081, 083) eine ADR mit `Status: Accepted`
 **vor** dem Code; `make ci` grün; Ergebnis-Notiz `done/welle-13-results.md` nach der
@@ -109,6 +112,7 @@ wäre schlimmer als keines.
 | 2026-07-25 | [slice-045](../open/slice-045-intern-extern-dateimenge.md) **entschieden: jetzt nicht bauen** | null reale Fundstellen, erodierte Nachfrage, und a-check könnte den `fixed-root`-only-Mechanismus im eigenen `path`-Modus nicht dogfooden | [slice-045 §0](../open/slice-045-intern-extern-dateimenge.md) |
 | 2026-07-25 | Regelwerk-Migration: Etappen wachsen von **vier** auf **sechs** (A · B · C · D · **E** · **F**), Reihenfolge **E vor D** | die vollständige Baseline-Lektüre brachte elf zusätzliche Funde; die Mechanik-Funde schaffen die Sensoren, an denen die Form-Funde hängen | [slice-048 §5](../done/slice-048-modul-delta-lesen.md) |
 | 2026-07-25 | `nolintlint` als geplante Umsetzung von B-11 **verworfen**, Ersatz `make suppression-check` | Negativ-Probe: der Linter prüft Wohlgeformtheit, nicht Existenz — ein wohlgeformtes `//nolint` ließ `make lint` grün | [slice-049 §1.1](../done/slice-049-mechanik-sensoren.md) |
+| 2026-08-09 | `welle-13-konsumenten-befunde` wächst von **vier** auf **sechs** Slices | der Konsument reichte die Befunde als sechs formale Change Requests nach; `CR-2` (Schicht ohne auflösende Importe) und `CR-4` (`forbidden_constructs` still wirkungslos) waren in der ersten Meldung nicht enthalten. `CR-2` ist der schwerste: eine Konfiguration, die **vollständig grün und vollständig blind** ist | [`welle-13-konsumenten-befunde.md`](../welle-13-konsumenten-befunde.md) §4, [slice-085](../open/slice-085-schicht-ohne-aufloesung.md), [slice-086](../open/slice-086-forbidden-constructs-fail-closed.md) |
 | 2026-08-09 | `welle-12-regelwerk-migration` **erneut geschlossen** — diesmal nach der Fünf-Schritt-Prozedur, mit [`done/welle-12-results.md`](../done/welle-12-results.md) | der zurückgezogene Abschluss (Zeile darunter) war nach Modul-6-Ausgang **(a)** erfolgt; nach Abarbeitung aller Review-Findings ist das Closure-Kriterium erstmals **erfüllt statt behauptet**. `F-7` — der übersprungene erste Prozedur-Lauf — löst sich damit durch den Durchlauf selbst | [`welle-12-results.md`](../done/welle-12-results.md), `make ci` Exit 0 |
 | 2026-08-09 | `welle-12-regelwerk-migration`: **Closure zurückgezogen**, Welle zurück nach *Aktuelle Welle*. Zugleich verlässt die Zeile „unabhängiges Review der Migration" *Nächste Wellen* — ihr Trigger ist gefeuert | Der erste Review außerhalb der Claude-Modellfamilie widerlegte das Closure-Kriterium „alle Slices in `done/`": [slice-046](../done/slice-046-regelwerk-v352-migration-analyse.md) liegt weiterhin in `open/`. Dazu 11 HIGH — darunter fünf Sensoren, die falsch-grün melden, und die Selbst-Ausnahme von der eigenen Closure-Prozedur. Damit gilt Modul-6-Ausgang **(b)** statt des bisherigen **(a)** („der Audit fällt durch") | [Review-Report 2026-08-09](../../../reviews/2026-08-09-welle-12-unabhaengig.md) |
 

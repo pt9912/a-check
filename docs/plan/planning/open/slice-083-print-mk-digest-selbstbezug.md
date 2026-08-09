@@ -86,10 +86,27 @@ Die ersten beiden berühren
 [AC-QA-03](../../../../spec/lastenheft.md#ac-qa-03--reproduzierbarkeit) im Wortlaut und sind damit
 **spec-first**: Lastenheft-CR → ADR → Spezifikation → Code.
 
-**Negativ-Proben** — je nach Ausgang, aber diese gilt immer:
+**Nachtrag 2026-08-09 — `CR-5` schärft das Akzeptanzkriterium.** Der Konsument hat den Befund als
+formalen Change Request nachgereicht und formuliert die Bedingung schärfer, als der Slice sie
+hatte:
+
+> Die Ausgabe enthält **keinen Digest, der auf ein anderes Release zeigt** als das laufende Binary.
+
+Das schließt Ausgang 3 („nur die Doku korrigieren") **aus**: ein korrekt kommentierter, aber
+falscher Digest erfüllt es nicht. Übrig bleiben der bewegliche Tag und die Laufzeit-Auflösung — der
+CR nennt als dritte Variante einen **Platzhalter** (`@sha256:<release-digest>`), der beim Einsetzen
+auffällt.
+
+Dazu die Schadenshöhe, die der CR beziffert: der Fehlpin führte zu `v0.15.0` statt `v0.16.0` — und
+damit fehlte dem Konsumenten der `constructs`-Block, den sein Skelett brauchte. Der Defekt kostet
+also nicht nur einen falschen Pin, sondern eine **fehlende Fähigkeit**, deren Abwesenheit als
+Konfigurationsfehler erscheint.
+
+**Negativ-Proben** — je nach Ausgang, aber diese gelten immer:
 
 | Probe | Erwartung |
 |---|---|
+| Fragment-Ausgabe des laufenden Binaries | enthält **keinen** Digest eines anderen Release (`CR-5`-AK) |
 | `releasing.md` Freigabe-Item 6 | nennt einen **erfüllbaren** Beleg — oder das Item entfällt |
 | Fragment-Ausgabe | behauptet keine Aktualität, die sie nicht prüfen kann |
 

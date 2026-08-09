@@ -76,13 +76,37 @@ nicht vorweg. Drei Kandidaten, die sich in Präzision und Rauschen unterscheiden
 entschieden hat: der Exit-Code bleibt unberührt, vollständige Extraktion erzeugt **keine** Ausgabe.
 Eine Diagnose, die bei jedem Lauf spricht, wird weggeschaltet.
 
+**Nachtrag 2026-08-09 — `CR-1` präzisiert den Vertrag.** Der Konsument hat den Befund als formalen
+Change Request nachgereicht, mit drei gemessenen Fällen (je **0 Befunde** bei vorhandenem Verstoß)
+und einem Umsetzungs-Vorschlag:
+
+| Sprache | Schreibweise | Ergebnis |
+|---|---|---|
+| C++ | `#include "../../adapters/ui/x.h"` | löst gegen `resolution: fixed-root` auf nichts auf |
+| Python | `from ..ui import x` | dokumentierte Grenze, aber ohne Signal |
+| Python | `from docsearch import ui` | Subpaket-Form |
+
+Erkennung je Backend über ein **zweites, bewusst breiteres Muster** — Python `^\s*from\s+\.`,
+C++ `#include\s*"\.\.`; für TypeScript nicht nötig, weil `relative` dort ein regulärer
+Auflösungs-Modus ist. Das ist der vierte Kandidat neben den drei in der Tabelle oben und der
+konkreteste; er gehört in den Entscheid.
+
+**Zwei Akzeptanzkriterien aus dem CR, die der Slice übernimmt:**
+
+1. **Ohne die neuen Muster byte-identische Befundmenge** — die Diagnose darf die Regel-Auswertung
+   nicht anfassen.
+2. **Der Hinweis erscheint auch bei `gesamt: 0 Befund(e)`** — *dort ist er am wichtigsten*. Ein
+   Hinweis, der nur bei ohnehin roten Läufen erscheint, verfehlt den Zweck.
+
 **Negativ-Proben:**
 
 | Probe | Erwartung |
 |---|---|
 | Python-Datei mit `from . import x` | gemeldet |
 | Python-Datei mit `import a, b` | gemeldet |
+| C++-Datei mit `#include "../../x.h"` | gemeldet |
 | Baum ohne solche Formen | **keine Ausgabe**, Exit unverändert |
+| Baum **mit** solchen Formen und sonst 0 Befunden | Hinweis erscheint, Exit bleibt **0** |
 
 ## 4. Was bewusst nicht getan wird
 
