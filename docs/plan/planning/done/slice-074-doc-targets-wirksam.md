@@ -4,7 +4,7 @@
 (`open/ → next/ → in-progress/ → done/`, Wechsel nur per `git mv` als eigener Commit,
 [`AGENTS.md`](../../../../AGENTS.md) §3.3/§5).
 **Deckt:** Befund vom 2026-08-09 bei der Messung zu
-[slice-073](../open/slice-073-dcheck-statt-eigenbau.md); Bezug zu
+[slice-073](../in-progress/slice-073-dcheck-statt-eigenbau.md); Bezug zu
 [MR-006](../../../../harness/conventions.md#mr-006--baseline-committet-vendored-statt-per-url-referenziert).
 **Bezug:** Roadmap-Zeile *Aktuelle Welle* in der [Roadmap](../in-progress/roadmap.md).
 
@@ -89,7 +89,7 @@ Die dritte Zeile ist nicht Beiwerk: mit `makefiles: [Makefile]` allein wären es
 ## 4. Was bewusst nicht getan wird
 
 - **Die Ablösung von `gate-consistency` (1)+(2).** Dass beide Prüfer dasselbe melden, ist in
-  [slice-073](../open/slice-073-dcheck-statt-eigenbau.md) gemessen; die Entscheidung, den Eigenbau
+  [slice-073](../in-progress/slice-073-dcheck-statt-eigenbau.md) gemessen; die Entscheidung, den Eigenbau
   zu entfernen, gehört dorthin und in dessen Folge-Slice. Bis dahin läuft die Prüfung **doppelt** —
   bewusst, und hier benannt statt stillschweigend.
 - **`doc-targets` in `gates` hängen.** Solange der Eigenbau dieselbe Invariante im Aggregat prüft,
@@ -97,7 +97,7 @@ Die dritte Zeile ist nicht Beiwerk: mit `makefiles: [Makefile]` allein wären es
   dieses Slice.
 - **Der CR an d-check**, dass ein aktiviertes, aber unkonfiguriertes Modul still `0 Befund(e)`
   meldet statt fail-closed abzubrechen. Das ist ein Fremdrepo-Befund; er gehört in den CR-Text von
-  [slice-073](../open/slice-073-dcheck-statt-eigenbau.md), nicht in eine lokale Korrektur.
+  [slice-073](../in-progress/slice-073-dcheck-statt-eigenbau.md), nicht in eine lokale Korrektur.
 - **Die übrigen d-check-Module auf Konfigurations-Lücken prüfen.** Naheliegend, aber ohne Messung
   spekulativ — und wenn, dann als eigener Schnitt mit eigener Zählung.
 
@@ -142,7 +142,7 @@ Skript**. Es stand dreizehn Minor-Versionen bereit und lief die ganze Zeit ins L
    `gate-consistency`, `doc-check`) — die Konfiguration tauscht keine Falsch-Negative gegen
    Falsch-Positive.
 
-**Folge-Slices:** [slice-073](../open/slice-073-dcheck-statt-eigenbau.md) entscheidet, ob
+**Folge-Slices:** [slice-073](../in-progress/slice-073-dcheck-statt-eigenbau.md) entscheidet, ob
 `gate-consistency` (1)+(2) entfällt und `doc-targets` ins Aggregat wandert. Bis dahin läuft die
 Prüfung **doppelt** — bewusst und in `AGENTS.md` benannt.
 
