@@ -1,7 +1,7 @@
 # slice-048 — Etappe B: Modul-Delta gegen `v3.5.2` lesen
 
 **Status:** *(der Zustand ist das Verzeichnis dieser Datei, nicht dieses Feld — korrigiert in slice-063)* — Etappe **B** aus
-[slice-046 §6](../open/slice-046-regelwerk-v352-migration-analyse.md), am 2026-07-25 per
+[slice-046 §6](../done/slice-046-regelwerk-v352-migration-analyse.md), am 2026-07-25 per
 Maintainer-Wort gezogen. Ergebnis §2–§5.
 **Auslöser:** Etappe A ([slice-047](../done/slice-047-baseline-vendoring.md)) hat die Baseline
 vendored; jetzt wird sie **gelesen** — netzlos aus `.harness/baseline/v3.5.2/regelwerk/`.
@@ -150,7 +150,7 @@ am 2026-07-25.
 
 **Lerneintrag — Form: geschärfte Regel.**
 > **Ein geerbter Arbeits-Zuschnitt verliert seine Geltung, sobald das Ziel darüber neu gesetzt
-> wird.** Der Sechs-Modul-Zuschnitt stammte aus [slice-046 §5](../open/slice-046-regelwerk-v352-migration-analyse.md)
+> wird.** Der Sechs-Modul-Zuschnitt stammte aus [slice-046 §5](../done/slice-046-regelwerk-v352-migration-analyse.md)
 > und war dort richtig — er entstand *vor* der Maintainer-Vorgabe „komplett nach v3.5.2
 > migrieren". Ich habe ihn danach weitergetragen, statt ihn gegen das neue Ziel zu prüfen, und
 > zusätzlich zwei Funde (B-9/B-10) als „gehört in keine Etappe" zur Disposition gestellt — eine

@@ -18,10 +18,10 @@ Verschiebung im Drift-Log ausweisen — und nicht Ausgang (a), unter dem sie bis
 trotzdem schließen → der Audit fällt durch, weil Slices unbelegt sind."
 
 **Slice-IDs.** Der Bestand der Etappen A–F ist die Spanne
-[slice-046](../open/slice-046-regelwerk-v352-migration-analyse.md) …
+[slice-046](../done/slice-046-regelwerk-v352-migration-analyse.md) …
 [slice-067](../done/slice-067-roadmap-form.md); was jeder einzelne geliefert und gelernt hat, steht
 in seiner Closure-Notiz unter `done/`. Alle liegen dort — mit einer Ausnahme:
-[slice-046](../open/slice-046-regelwerk-v352-migration-analyse.md) liegt weiterhin in `open/` und
+[slice-046](../done/slice-046-regelwerk-v352-migration-analyse.md) liegt weiterhin in `open/` und
 trägt eine offene Abnahme, während das bisherige Closure-Log „alle Slices in `done/`" behauptete.
 Für die 15 Review-Findings ist **Gruppe A** geschnitten — nach Fehlermechanismus, ein Mechanismus
 je Slice: [slice-068](../done/slice-068-phony-vollstaendig.md) (Target läuft gar nicht) ·
@@ -37,7 +37,7 @@ CI-Lauf. Die Gruppen **B**, **C** und **D** sind **noch nicht geschnitten** — 
 ist die Slice-Liste dieser Welle unvollständig.
 
 **Trigger (beobachtbar).** Die Welle schließt, wenn alle ihre Slices in `done/` liegen —
-[slice-046](../open/slice-046-regelwerk-v352-migration-analyse.md) eingeschlossen —, jedes im
+[slice-046](../done/slice-046-regelwerk-v352-migration-analyse.md) eingeschlossen —, jedes im
 Report belegte False-Green behoben ist **und je Behebung eine Gegenprobe existiert, die vorher rot
 war**, und `make ci` grün läuft. Ein Sensor, der nach der Korrektur grün meldet, ohne dass jemand
 ihn rot gesehen hat, belegt nichts — das ist die Lehre des Reports.
@@ -118,7 +118,7 @@ wäre schlimmer als keines.
 | 2026-07-25 | [slice-045](../open/slice-045-intern-extern-dateimenge.md) **entschieden: jetzt nicht bauen** | null reale Fundstellen, erodierte Nachfrage, und a-check könnte den `fixed-root`-only-Mechanismus im eigenen `path`-Modus nicht dogfooden | [slice-045 §0](../open/slice-045-intern-extern-dateimenge.md) |
 | 2026-07-25 | Regelwerk-Migration: Etappen wachsen von **vier** auf **sechs** (A · B · C · D · **E** · **F**), Reihenfolge **E vor D** | die vollständige Baseline-Lektüre brachte elf zusätzliche Funde; die Mechanik-Funde schaffen die Sensoren, an denen die Form-Funde hängen | [slice-048 §5](../done/slice-048-modul-delta-lesen.md) |
 | 2026-07-25 | `nolintlint` als geplante Umsetzung von B-11 **verworfen**, Ersatz `make suppression-check` | Negativ-Probe: der Linter prüft Wohlgeformtheit, nicht Existenz — ein wohlgeformtes `//nolint` ließ `make lint` grün | [slice-049 §1.1](../done/slice-049-mechanik-sensoren.md) |
-| 2026-08-09 | `welle-12-regelwerk-migration`: **Closure zurückgezogen**, Welle zurück nach *Aktuelle Welle*. Zugleich verlässt die Zeile „unabhängiges Review der Migration" *Nächste Wellen* — ihr Trigger ist gefeuert | Der erste Review außerhalb der Claude-Modellfamilie widerlegte das Closure-Kriterium „alle Slices in `done/`": [slice-046](../open/slice-046-regelwerk-v352-migration-analyse.md) liegt weiterhin in `open/`. Dazu 11 HIGH — darunter fünf Sensoren, die falsch-grün melden, und die Selbst-Ausnahme von der eigenen Closure-Prozedur. Damit gilt Modul-6-Ausgang **(b)** statt des bisherigen **(a)** („der Audit fällt durch") | [Review-Report 2026-08-09](../../../reviews/2026-08-09-welle-12-unabhaengig.md) |
+| 2026-08-09 | `welle-12-regelwerk-migration`: **Closure zurückgezogen**, Welle zurück nach *Aktuelle Welle*. Zugleich verlässt die Zeile „unabhängiges Review der Migration" *Nächste Wellen* — ihr Trigger ist gefeuert | Der erste Review außerhalb der Claude-Modellfamilie widerlegte das Closure-Kriterium „alle Slices in `done/`": [slice-046](../done/slice-046-regelwerk-v352-migration-analyse.md) liegt weiterhin in `open/`. Dazu 11 HIGH — darunter fünf Sensoren, die falsch-grün melden, und die Selbst-Ausnahme von der eigenen Closure-Prozedur. Damit gilt Modul-6-Ausgang **(b)** statt des bisherigen **(a)** („der Audit fällt durch") | [Review-Report 2026-08-09](../../../reviews/2026-08-09-welle-12-unabhaengig.md) |
 
 **Format-Regel:** Die Roadmap ist eine Reihenfolge von **Wellen**, keine
 Reihenfolge von Terminen. Termine erscheinen — falls überhaupt — als

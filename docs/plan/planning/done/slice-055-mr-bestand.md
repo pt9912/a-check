@@ -1,7 +1,7 @@
 # slice-055 — Etappe C (1/2): `MR`-Bestand gegen `v3.5.2` klären
 
 **Status:** *(der Zustand ist das Verzeichnis dieser Datei, nicht dieses Feld — korrigiert in slice-063)* — erster Schnitt der **Etappe C** aus
-[slice-046 §6](../open/slice-046-regelwerk-v352-migration-analyse.md) und
+[slice-046 §6](../done/slice-046-regelwerk-v352-migration-analyse.md) und
 [slice-048 §5](../done/slice-048-modul-delta-lesen.md).
 **Deckt:** die **Nummern-Kollision** aus slice-046 §4.2, Fund **B-7** (veraltete
 ADR-Vorlagen-Version) und Fund **B-19** (Replay/Telemetrie ohne deklarierte Abweichung).
