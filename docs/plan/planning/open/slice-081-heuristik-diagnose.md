@@ -44,7 +44,7 @@ sieht aus wie ein grünes Gate über geprüftem Code — dieselbe Klasse, die
 [slice-043](../done/slice-043-schicht-abdeckung-sichtbar.md) für die Schicht-Seite geschlossen hat.
 
 **Diese Diagnose subsumiert den zweiten Konsumenten-Befund** (Mehrfach-Direktiven, siehe
-[slice-084](../open/slice-084-handbuch-heuristik-grenzen.md)): statt jede Grenze einzeln im Handbuch zu
+[slice-084](../in-progress/slice-084-handbuch-heuristik-grenzen.md)): statt jede Grenze einzeln im Handbuch zu
 suchen, meldet das Werkzeug, was es in **diesem** Baum nicht gegriffen hat.
 
 ## 2. Betroffene Module
