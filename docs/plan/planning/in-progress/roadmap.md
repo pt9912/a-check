@@ -26,7 +26,7 @@ trägt eine offene Abnahme, während das bisherige Closure-Log „alle Slices in
 Für die 15 Review-Findings ist **Gruppe A** geschnitten — nach Fehlermechanismus, ein Mechanismus
 je Slice: [slice-068](../done/slice-068-phony-vollstaendig.md) (Target läuft gar nicht) ·
 [slice-069](../done/slice-069-sensor-fehler-propagierung.md) (Sensor verschluckt einen Fehler) ·
-[slice-070](../in-progress/slice-070-grundgesamtheit-messen.md) („nichts gefunden" ≠ „nichts da") ·
+[slice-070](../done/slice-070-grundgesamtheit-messen.md) („nichts gefunden" ≠ „nichts da") ·
 [slice-071](../open/slice-071-sensor-scope-vollstaendig.md) (nur ein Teil des Bestands gemessen).
 Ein erster Sammel-Entwurf über alle fünf Funde wurde nach einem unabhängigen **Plan**-Review
 ([Report](../../../reviews/2026-08-09-slice-068-plan-review.md), 4 HIGH) zurückgezogen und zerlegt;
