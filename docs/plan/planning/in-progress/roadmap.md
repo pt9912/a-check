@@ -10,19 +10,33 @@
 
 ## Aktuelle Welle
 
-**Keine laufende Welle.** `welle-12-regelwerk-migration` ist am 2026-08-09 geschlossen — nach der
-**Fünf-Schritt-Prozedur** aus [`planning/README.md`](../README.md), deren **erster realer
-Durchlauf** dies war. Ergebnis-Notiz:
-[`done/welle-12-results.md`](../done/welle-12-results.md).
+**`welle-13-konsumenten-befunde`** — Plan-Datei:
+[`welle-13-konsumenten-befunde.md`](../welle-13-konsumenten-befunde.md) (flach, wandert bei Closure
+nach `done/`). **Erste Welle-Plan-Datei dieses Repos**; die zwölf davor existieren nur als
+Prosa-Überschriften im Closure-Log.
 
-Das ist ein Zustand, kein Versäumnis: der nächste Zug gehört dem Maintainer. Die Kandidaten stehen
-unter *Nächste Wellen* — jeder mit beobachtbarem Trigger, keiner mit Datum. Zwei Slices liegen
-außerdem in `open/` und tragen ihren Trigger selbst:
-[slice-079](../open/slice-079-gate-consistency-abloesen.md) (wartet auf nichts) und
-[slice-080](../open/slice-080-verify-abloesung-dcheck.md) (wartet auf ein d-check-Release).
+**Slice-IDs.** [slice-081](../open/slice-081-heuristik-diagnose.md) (Laufzeit-Diagnose für nicht
+extrahierte Import-Formen) · [slice-082](../open/slice-082-print-mk-docker-indirektion.md)
+(`$(DOCKER)` im Fragment) · [slice-083](../open/slice-083-print-mk-digest-selbstbezug.md)
+(Digest-Selbstbezug) · [slice-084](../open/slice-084-handbuch-heuristik-grenzen.md)
+(Heuristik-Grenzen ins Handbuch). Reihenfolge zwingend nur bei 082 vor 083 (Fragment-Parität);
+084 trägt eine Verwerfungs-Bedingung.
 
-**Sobald eine Welle gezogen wird**, trägt dieser Abschnitt ihre drei Pflicht-Bestandteile:
-Slice-IDs · Trigger als beobachtbare Bedingung · Closure-Kriterien.
+**Trigger — gefeuert am 2026-08-09.** Ein realer a-check-Einsatz in einem Fremd-Repo meldete vier
+Befunde, einen davon mit belegtem Schaden: der in `d-check.mk` dokumentierte Bump-Weg über
+`--print-mk` erzeugte einen **Fehlpin**, weil das Fragment den Digest des Vorgänger-Release nennt.
+
+**Closure-Kriterien.** Alle vier Slices in `done/`; **jeder Befund entweder behoben oder als
+deklarierte Grenze ausgewiesen** — „alle Slices done" allein genügt nicht, weil ein Slice auch mit
+„bleibt so" schließen kann; für die spec-first-Slices (081, 083) eine ADR mit `Status: Accepted`
+**vor** dem Code; `make ci` grün; Ergebnis-Notiz `done/welle-13-results.md` nach der
+Fünf-Schritt-Prozedur.
+
+**Nicht in dieser Welle, obwohl offen:**
+[slice-079](../open/slice-079-gate-consistency-abloesen.md) (Harness-Nachlauf, ohne Welle) und
+[slice-080](../open/slice-080-verify-abloesung-dcheck.md) (wartet auf ein d-check-Release). Ein
+Slice, der auf ein Fremdrepo wartet, gehört in keine Welle — er würde ihren Closure-Trigger auf
+unbestimmte Zeit blockieren.
 
 ## Nächste Wellen
 
