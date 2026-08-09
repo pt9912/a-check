@@ -20,7 +20,7 @@ nicht.
 **Eingangs-Kontext** (die Verträge, gegen die geprüft wurde):
 
 - [slice-048](../plan/planning/done/slice-048-modul-delta-lesen.md) (Gegenstand) und
-  [slice-046 §6](../plan/planning/open/slice-046-regelwerk-v352-migration-analyse.md) (Etappen-Schnitt)
+  [slice-046 §6](../plan/planning/done/slice-046-regelwerk-v352-migration-analyse.md) (Etappen-Schnitt)
 - [`AGENTS.md`](../../AGENTS.md) §3 Hard Rules, §4 Quality Gates, §5 Dokumentations-Regeln
 - [`harness/conventions.md`](../../harness/conventions.md) — `MR-000` … `MR-006` (Stand `main`)
 - vendored Baseline `v3.5.2`: `modul-05`, `modul-07`, `modul-10`, `modul-13`

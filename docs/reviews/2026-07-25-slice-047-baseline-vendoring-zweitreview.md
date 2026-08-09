@@ -2,7 +2,7 @@
 
 **Review-Art:** Code — geprüft gegen Plan
 ([slice-047](../plan/planning/done/slice-047-baseline-vendoring.md)), den Etappen-Schnitt
-([slice-046 §6](../plan/planning/open/slice-046-regelwerk-v352-migration-analyse.md)), die
+([slice-046 §6](../plan/planning/done/slice-046-regelwerk-v352-migration-analyse.md)), die
 Konventionen ([`AGENTS.md`](../../AGENTS.md), [`harness/conventions.md`](../../harness/conventions.md),
 [`CLAUDE.md`](../../CLAUDE.md)) und die **vendored Baseline-Erwartung**
 (`modul-02-harness-bootstrap.md`, `conventions.template.md`, `modul-10-review-harness.md`).

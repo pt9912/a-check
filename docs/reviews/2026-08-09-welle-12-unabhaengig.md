@@ -118,8 +118,8 @@ Anhang ist **nicht** Teil des unabhängigen Laufs.
 
 - `kategorie`: **HIGH**
 - `quelle`: Status-/Currency-Disziplin; Roadmap-Closure
-- `pfad`: [`slice-046:3`](../plan/planning/open/slice-046-regelwerk-v352-migration-analyse.md),
-  [`slice-046:134`](../plan/planning/open/slice-046-regelwerk-v352-migration-analyse.md),
+- `pfad`: [`slice-046:3`](../plan/planning/done/slice-046-regelwerk-v352-migration-analyse.md),
+  [`slice-046:134`](../plan/planning/done/slice-046-regelwerk-v352-migration-analyse.md),
   [`docs/plan/planning/in-progress/roadmap.md:75`](../plan/planning/in-progress/roadmap.md)
 - `befund`: Der auslösende Slice der vollständigen Migration liegt weiterhin in `open/`, nennt sich
   „Analyse zur Abnahme" und trägt eine offene Abnahme sowie Closure-Platzhalter. Das Closure-Log

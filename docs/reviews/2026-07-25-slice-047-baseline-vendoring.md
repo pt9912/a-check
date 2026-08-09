@@ -2,21 +2,21 @@
 
 **Review-Art:** Code — geprüft gegen Plan
 ([slice-047](../plan/planning/done/slice-047-baseline-vendoring.md)),
-den Etappen-Schnitt aus [slice-046 §6](../plan/planning/open/slice-046-regelwerk-v352-migration-analyse.md)
+den Etappen-Schnitt aus [slice-046 §6](../plan/planning/done/slice-046-regelwerk-v352-migration-analyse.md)
 und die Konventionen ([`AGENTS.md`](../../AGENTS.md) Hard Rules,
 [`harness/conventions.md`](../../harness/conventions.md)).
 
 **Gegenstand:** slice-047 · Commit `cc3c225` (die Harness-Änderung; die Range `origin/main...HEAD` umfasst zusätzlich `05ed884` = slice-046-Analyse, **nicht** Gegenstand dieses Reports) · 48 Dateien.
 
 **Skill:** `.harness/skills/reviewer.md` — Bestand **vor** der Baseline-Hebung (noch nicht gegen
-`v3.5.2` Modul 10 geprüft, siehe [slice-046 §3](../plan/planning/open/slice-046-regelwerk-v352-migration-analyse.md)); dieser Report folgt der **vendored Vorlage**
+`v3.5.2` Modul 10 geprüft, siehe [slice-046 §3](../plan/planning/done/slice-046-regelwerk-v352-migration-analyse.md)); dieser Report folgt der **vendored Vorlage**
 `.harness/baseline/v3.5.2/templates/docs/reviews/review-report.template.md` — der erste in diesem
 Repo, der das tut.
 **Modell:** `claude-opus-5[1m]` · **Datum:** 2026-07-25
 
 **Eingangs-Kontext** (die Verträge, gegen die geprüft wurde):
 
-- Plan: [slice-047](../plan/planning/done/slice-047-baseline-vendoring.md), Etappe A aus [slice-046](../plan/planning/open/slice-046-regelwerk-v352-migration-analyse.md)
+- Plan: [slice-047](../plan/planning/done/slice-047-baseline-vendoring.md), Etappe A aus [slice-046](../plan/planning/done/slice-046-regelwerk-v352-migration-analyse.md)
 - [`harness/conventions.md`](../../harness/conventions.md) §Baseline + Adaptions-Block (`MR-000`…`MR-006`)
 - [`AGENTS.md`](../../AGENTS.md) §1 (Regelwerks-Pflicht), §3 Hard Rules, §4 Gates
 - [`.d-check.yml`](../../.d-check.yml) (Doku-Gate-Konfiguration)
