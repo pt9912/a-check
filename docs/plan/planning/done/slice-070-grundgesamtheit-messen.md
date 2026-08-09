@@ -9,7 +9,7 @@ trägt den in `R-068-F1` **zurückgewiesenen** Entscheid als offene Designfrage.
 **Bezug:** Neuschnitt des zurückgezogenen Sammel-Entwurfs `4b029e4` nach Fehlermechanismus;
 Geschwister [slice-068](../done/slice-068-phony-vollstaendig.md),
 [slice-069](../done/slice-069-sensor-fehler-propagierung.md),
-[slice-071](../open/slice-071-sensor-scope-vollstaendig.md). Roadmap-Zeile *Aktuelle Welle* in der
+[slice-071](../in-progress/slice-071-sensor-scope-vollstaendig.md). Roadmap-Zeile *Aktuelle Welle* in der
 [Roadmap](../in-progress/roadmap.md).
 
 ---
@@ -85,7 +85,7 @@ Slice schreibt sie bewusst **nicht** vor, weil genau diese Vorwegnahme im ersten
   korrekt null neue ACs.
 - **Die übrigen Mechanismen** — [slice-068](../done/slice-068-phony-vollstaendig.md),
   [slice-069](../done/slice-069-sensor-fehler-propagierung.md),
-  [slice-071](../open/slice-071-sensor-scope-vollstaendig.md).
+  [slice-071](../in-progress/slice-071-sensor-scope-vollstaendig.md).
 - **Änderung der Grandfathering-*Schwellen*** (`SLICE_FORM_FROM`, AC-Stichtag). Dieser Slice
   ändert, was bei *nicht erkannter* Eingabe passiert — nicht, ab wann geprüft wird.
 
@@ -133,7 +133,7 @@ die Leermenge legitim).
 2. `verify-slice-links` gibt bei fehlendem Verzeichnis **nicht** mehr die `SL-002`-Meldung aus,
    sondern eine, die zum Befund passt.
 
-**Folge-Slices:** [slice-071](../open/slice-071-sensor-scope-vollstaendig.md),
+**Folge-Slices:** [slice-071](../in-progress/slice-071-sensor-scope-vollstaendig.md),
 [slice-072](../open/slice-072-scope-sensor-praeventiv.md).
 
 ## 7. Sub-Area-Modus
