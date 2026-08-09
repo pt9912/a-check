@@ -10,6 +10,20 @@ in Kauf genommene Doppelprüfung auf.
 
 ---
 
+## 0. Trigger
+
+**Beginn:** sofort — dieser Slice wartet auf nichts. Das `targets`-Modul ist seit d-check
+`v0.38.0` released, seit [slice-074](../done/slice-074-doc-targets-wirksam.md) konfiguriert, und
+die Parität ist in [slice-073](../done/slice-073-dcheck-statt-eigenbau.md) mit zwei Fixtures
+gemessen. Er lag bisher nur still, weil ihn niemand geschnitten hatte.
+
+**Rückführungen** (Baseline-Vorlage §4, in a-checks Vorlage nicht abgebildet — hier bewusst
+mitgeführt, weil die Startbedingung in den Slice gehört und nicht in die Roadmap):
+
+- `in-progress` → `next`: falls sich beim Bau zeigt, dass mehr als (1)+(2) betroffen ist.
+- `in-progress` → `open`: falls eine der Negativ-Proben aus §3 die gemessene Parität **widerlegt**
+  — dann ist die Ablösung nicht belegt und der Slice braucht eine neue Messung, keinen Umbau.
+
 ## 1. Auslöser
 
 **Mechanismus: zwei Prüfer für dieselbe Invariante.** Seit
