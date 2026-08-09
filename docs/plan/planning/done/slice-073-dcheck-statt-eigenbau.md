@@ -157,8 +157,32 @@ formuliert als Modul-Vertrag mit Grund-Codes, Konfigurations-Schema und Parität
 | `verify-slice-form` | 166 | **CR-fähig** | dito; `max-tasks` abschnitts-treu statt dateiweit |
 | `verify-ac-form` | 131 | **CR-fähig** | dito; `section-pattern` + `require-strong` |
 | `verify-slice-links` | 146 | **CR-fähig** | `links` prüft nur den Ist-Ort; Erweiterung in §8 CR 2 |
-| `gate-consistency` (3)(4)(5) | ~263 | **bleibt lokal** | `.d-check.yml`-Modulliste, Digest-Pins, `.PHONY` — keine Doku-Referenz-Invarianten |
+| `gate-consistency` (3) `.d-check.yml`-Module | ~20 | **bleibt lokal** | YAML, und **zirkulär**: d-check würde prüfen, ob d-check richtig konfiguriert ist |
+| `gate-consistency` (4) Pin-Konsistenz | ~215 | **bleibt lokal** | **zwei der fünf Pin-Stellen sind kein Markdown** — siehe Nachtrag unten |
+| `gate-consistency` (5) `.PHONY` | ~28 | **bleibt lokal** | Makefile ↔ Makefile, **keine Doku-Beziehung**; jeder `targets`-Befund hängt dagegen an einer Doku-Zeile |
 | `suppression-check`, `regelwerk-check` | 153 | **bleibt lokal** | Go-Quellen bzw. Datei-Hashes; nicht d-checks Gegenstand |
+
+**Nachtrag 2026-08-09 — Korrektur einer unbelegten Zeile.** Die ursprüngliche Fassung fasste
+(3)(4)(5) in **einer** Zeile zusammen mit der Begründung *„keine Doku-Referenz-Invarianten"*. Das
+war ein Lektüre-Urteil, kein Beleg — genau die Sorte, die dieselbe Tabelle für alle anderen Zeilen
+ausschließt. Auf Nachfrage des Maintainers nachgemessen:
+
+`versions` ist **nicht** auf Tags festgelegt, wie der Kommentar in
+[`gate-consistency.sh`](../../../../tools/gate-consistency.sh) seit slice-018 behauptet
+(*„d-checks tag-basierte Module"*) — `pin-pattern` ist ein konfigurierbarer Regex. Mit
+`'a-check@(sha256:[0-9a-f]{64})'` greift das Modul den Digest tatsächlich und meldet ihn.
+
+Der Grund ist ein anderer und härter: von den fünf harten Pin-Stellen liegen **zwei außerhalb von
+Markdown** — [`a-check.mk`](../../../../a-check.mk) und
+[`internal/cli/cli.go`](../../../../internal/cli/cli.go). Der Testlauf fand die Pins in
+`README.md:86` und `README.de.md:91`, die beiden anderen sieht d-check nicht; sein Lastenheft führt
+*„Prüfung von Nicht-Markdown-Formaten … als eigenständige Dateien"* ausdrücklich unter Out of
+Scope. Ein Gleichheits-Gate, das zwei von fünf Stellen nicht sieht, kann Gleichheit nicht
+behaupten.
+
+Die Ausnahme bestätigt es: `targets` liest mit `makefiles:` sehr wohl Nicht-Markdown — aber nur
+als *Vergleichsquelle*; jeder seiner Befunde (`gate-phantom`, `gate-undocumented`) hängt an einer
+Doku-Zeile. Genau das fehlt der `.PHONY`-Prüfung, die Makefile gegen Makefile hält.
 
 **634 von 897 Zeilen sind ablösbar**, davon 45 sofort. Keine Prüfung fiel in die vierte Kategorie
 (*bleibt lokal, zeilenbasiert*) — was zeilenbasiert bleibt, bleibt es nicht mangels Abstraktion,
