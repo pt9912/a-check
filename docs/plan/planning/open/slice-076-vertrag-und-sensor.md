@@ -75,7 +75,7 @@ Given/When/Then gilt, ist die zu treffende Entscheidung — sie gehört in die C
 - **Den Schichten-Zähler doch bauen.** Die Begründung im Sensor steht seit slice-052 und ist nicht
   widerlegt; dieser Slice korrigiert die Doku, nicht die Entscheidung.
 - **`F-4`/`F-13`** — dort misst der Sensor eine Ersatzgröße; das ist
-  [slice-075](../open/slice-075-sensor-messgroesse.md).
+  [slice-075](../in-progress/slice-075-sensor-messgroesse.md).
 - **Die Grandfathering-Schwelle für ACs verschieben.** Bestand bleibt Bestand.
 
 ## 5. DoD
