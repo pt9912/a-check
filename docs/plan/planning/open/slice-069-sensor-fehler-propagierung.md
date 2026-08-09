@@ -47,6 +47,16 @@ rc=0  hits=''
 Die Fehlermeldung erscheint auf stderr, der Exit-Code bleibt 0 — in `make gates` rutscht das
 durch.
 
+**Realer Vorfall am 2026-08-09, nicht nur Fixture.** Der Push von `6d8bbe7..2e12c58` machte die
+CI rot: `commit-scope-check` meldete drei `docs(planning)`-Commits, die zusätzlich
+`docs/reviews/` anfassen (CI-Run `31301467076`). Der Sensor hat **korrekt** gemeldet — das ist
+der Beleg, dass er bei gültiger Range funktioniert und `F-5` wirklich nur den Fehlerpfad betrifft.
+
+Gleichzeitig zeigt der Vorfall etwas, das keiner der beiden Reviews hatte: **der Sensor läuft zu
+spät.** Er hängt weder in `make gates` noch im `commit-msg`-Hook, sondern nur in
+[`ci.yml:70`](../../../../.github/workflows/ci.yml). Wer vor jedem Commit alle Gates fährt, die
+`gates` kennt, erzeugt trotzdem CI-Rot. Das ist ein eigener Mangel — siehe §4.
+
 ## 2. Betroffene Module
 
 Eine Schicht: **`tools/`** —
@@ -85,6 +95,12 @@ Normalfall auslöst, wäre kein Fortschritt, sondern ein neuer Defekt.
 - **Ein repo-weiter Audit aller `|| true` und `2>/dev/null`** — verlockend, aber ohne Messung
   spekulativ. Wenn dieser Slice zeigt, dass das Muster häufig ist, ist das ein Folge-Slice mit
   eigener Zählung.
+- ***Wann* `commit-scope-check` läuft** (§1, realer Vorfall) — er hängt nur in der CI, nicht in
+  `make gates` und nicht im `commit-msg`-Hook. Das ist ein **anderer** Mechanismus als der hier
+  behandelte: nicht „der Sensor verschluckt einen Fehler", sondern „der Sensor greift erst,
+  wenn der Fehler schon veröffentlicht ist". Er gehört in einen **eigenen Folge-Slice**; ihn hier
+  anzuhängen hieße den Slice zu dehnen — genau das, was der Plan-Review (`R-068-F5`) am
+  Vorgänger-Entwurf bemängelt hat.
 
 ## 5. DoD
 
