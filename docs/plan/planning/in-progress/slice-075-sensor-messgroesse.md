@@ -64,16 +64,50 @@ Link-Extraktion, die auch korrekte Verweise meldet, wären kein Fortschritt.
 
 ## 5. DoD
 
-- [ ] `verify-closure-notes` zählt Sätze, nicht Satzzeichen. Beleg: die ersten beiden Proben aus
-      §3, vorher grün, nachher rot bzw. unverändert grün.
-- [ ] `verify-slice-links` sieht Referenz-Links. Beleg: die letzten beiden Proben aus §3.
-- [ ] `make gates` und `make verify` grün — **Ausgabe in eine Datei**, Exit-Code getrennt geprüft,
+- [x] `verify-closure-notes` zählt Sätze, nicht Satzzeichen. Beleg: „Geprueft via foo.go." als
+      einzige Zeile → Exit 1, *„trägt weniger als zwei Sätze"*; „Erster Satz via foo.go. Zweiter
+      Satz hier." → Exit 0. Beide Richtungen zusätzlich im Selbsttest verankert.
+- [x] `verify-slice-links` sieht Referenz-Links. Beleg: `[rm]: roadmap.md` → Exit 1 mit demselben
+      `SL-002`-Befund wie ein Inline-Link; `[rm]: ../in-progress/roadmap.md` → Exit 0. Ebenfalls
+      im Selbsttest.
+- [x] `make gates` und `make verify` grün — **Ausgabe in eine Datei**, Exit-Code getrennt geprüft,
       nie in eine Pipe.
 
 ## 6. Closure-Notiz
 
-_(beim Abschluss ausfüllen — genau **ein** solcher Abschnitt je Slice,
-[`AGENTS.md`](../../../../AGENTS.md) §5; `make verify` prüft das.)_
+**Geliefert:** [`verify-closure-notes.sh`](../../../../tools/verify-closure-notes.sh) zählt
+Satzzeichen nur noch, wenn Whitespace oder Zeilenende folgt;
+[`verify-slice-links.sh`](../../../../tools/verify-slice-links.sh) erfasst zusätzlich
+Referenz-**Definitionen**. Beide Korrekturen sind mit je zwei Selbsttest-Fixturen gegen Rückfall
+gesichert.
+
+**Dritter Fund beim Bauen, nicht im Report:** die Satzzählung filterte Code-Blöcke über
+`grep -v '^\s*```'` — das entfernt nur die **Fence-Zeilen**, nicht den Inhalt, obwohl der Kommentar
+daneben „ausserhalb von Code-Zeilen" behauptete. Ein Code-Block in einer Closure-Notiz zählte also
+mit. Behoben mit demselben `sed`-Range, den `verify-slice-links` längst nutzte.
+
+**Lerneintrag — Form: geschärfte Regel.** Als Prüfsatz: *Wenn eine Prüfung leichter zu schreiben
+ist als die Frage, die sie beantworten soll, misst sie fast sicher die leichtere Frage.*
+
+**Die Ursache** ist in allen drei Fällen dieselbe: Markdown-**Struktur** wurde mit
+**zeilenbasierten** Mitteln nachgebaut. `grep -oE '[.!?]'` ist Satzzeichen-Zählung statt
+Satz-Zählung; `grep -oE '\]\([^)]*\)'` ist Inline-Link-Erkennung statt Link-Erkennung;
+`grep -v '^\s*```'` ist Fence-Zeilen-Filterung statt Code-Block-Filterung. Jede dieser Näherungen
+war beim Schreiben plausibel und ist im Normalfall richtig — sie bricht erst am Sonderfall, und
+der taucht in einem gewachsenen Bestand irgendwann auf. Genau diese Klasse hat
+[slice-073](../done/slice-073-dcheck-statt-eigenbau.md) als CR 1/CR 2 an d-check formuliert; dieser
+Slice hat **nicht** darauf gewartet, weil der Bestand bis dahin falsch misst.
+
+**Zwei beobachtbare Closure-Kriterien:**
+
+1. Die vier Fixturen aus §3 verhalten sich wie erwartet — je eine rot, je eine grün — und alle vier
+   liegen als Selbsttest im jeweiligen Sensor, nicht nur in dieser Notiz.
+2. Der Bestand bleibt unberührt: 72 Closure-Notizen in `done/` bestehen die **schärfere**
+   Satzzählung, 6 wandernde Slices die erweiterte Link-Erkennung.
+
+**Folge-Slices:** keine. [slice-076](../open/slice-076-vertrag-und-sensor.md) behandelt die
+verbleibenden zwei Findings der Gruppe B — dort klaffen Vertrag und Sensor, was je eine
+Entscheidung braucht.
 
 ## 7. Sub-Area-Modus
 

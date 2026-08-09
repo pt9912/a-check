@@ -77,8 +77,18 @@ check_file() {  # $1 = Datei; gibt Befunde auf stdout, Rückgabe 1 bei Befund
     echo "$f: Closure-Abschnitt besteht aus einer Floskel ohne Substanz"
     fail=1
   fi
-  # Satzzahl: Punkte/Ausrufe/Fragezeichen ausserhalb von Code-Zeilen.
-  sentences="$(printf '%s\n' "$body" | grep -v '^\s*```' | grep -oE '[.!?]' | wc -l)"
+  # Satzzahl (slice-075, Fund F-13): gezaehlt werden Satzzeichen, die tatsaechlich
+  # ein Satzende markieren — also von Whitespace oder Zeilenende gefolgt. Die
+  # alte Zaehlung nahm JEDES `.`/`!`/`?`; die einzeilige Notiz
+  # "Geprueft via foo.go." ergab dadurch zwei Saetze statt einem und bestand die
+  # Mindestzahl.
+  # Code-Bloecke fallen jetzt VOLLSTAENDIG weg statt nur ihrer Fence-Zeilen: das
+  # alte `grep -v '^\s*```'` liess den Inhalt stehen, obwohl der Kommentar
+  # "ausserhalb von Code-Zeilen" behauptete. Inline-Code ebenso — beides derselbe
+  # Vorfilter wie in verify-slice-links.
+  sentences="$(printf '%s\n' "$body" \
+    | sed -e '/^[[:space:]]*```/,/^[[:space:]]*```/d' -e 's/`[^`]*`//g' \
+    | grep -oE '[.!?]([[:space:]]|$)' | wc -l)"
   if [ "$sentences" -lt 2 ]; then
     echo "$f: Closure-Abschnitt trägt weniger als zwei Sätze"
     fail=1
@@ -108,6 +118,20 @@ self_test() {
       rm -rf "$tmp"; exit 2
     fi
   done
+  # Satzzaehlung, beide Richtungen (slice-075, Fund F-13). Die erste Fixture ist
+  # die eigentliche Probe: ein Punkt im Dateinamen darf kein Satzende sein.
+  { echo '## 6. Closure-Notiz'; echo 'Geprueft via foo.go.'; } > "$tmp/ein-satz.md"
+  if check_file "$tmp/ein-satz.md" >/dev/null; then
+    echo "verify-closure-notes: Selbsttest FEHLGESCHLAGEN — Punkt im Dateinamen als Satzende gezaehlt (F-13)" >&2
+    rm -rf "$tmp"; exit 2
+  fi
+  # Gegenprobe: zwei echte Saetze, einer davon MIT Dateiname — sonst waere eine
+  # Zaehlung, die nur nie zaehlt, von einer korrekten nicht zu unterscheiden.
+  { echo '## 6. Closure-Notiz'; echo 'Erster Satz via foo.go. Zweiter Satz hier.'; } > "$tmp/zwei-saetze.md"
+  if ! check_file "$tmp/zwei-saetze.md" >/dev/null; then
+    echo "verify-closure-notes: Selbsttest FEHLGESCHLAGEN — zwei echte Saetze faelschlich beanstandet" >&2
+    rm -rf "$tmp"; exit 2
+  fi
   rm -rf "$tmp"
 }
 

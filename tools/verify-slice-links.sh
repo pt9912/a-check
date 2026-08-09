@@ -38,10 +38,20 @@ LIFECYCLE="open next in-progress done"   # done als ZIEL pruefen, nicht als Quel
 # slice-057 (Muster im Argument-String) bei ihren Sensoren gefunden haben. Ein
 # Sensor, der rauscht, wird abgeschaltet statt repariert.
 links_of() {  # $1 = Datei
-  sed -e '/^[[:space:]]*```/,/^[[:space:]]*```/d' "$1" 2>/dev/null \
-    | sed 's/`[^`]*`//g' \
-    | grep -oE '\]\([^)]*\)' \
-    | sed 's/^](//; s/)$//; s/#.*//' \
+  local clean
+  clean="$(sed -e '/^[[:space:]]*```/,/^[[:space:]]*```/d' "$1" 2>/dev/null | sed 's/`[^`]*`//g')"
+  {
+    # (a) Inline-Links `](ziel)`.
+    printf '%s\n' "$clean" | grep -oE '\]\([^)]*\)' | sed 's/^](//; s/)$//; s/#.*//'
+    # (b) Referenz-DEFINITIONEN `[label]: ziel` (slice-075, Fund F-4). Der
+    #     Verweis selbst (`[Text][label]`) traegt keinen Pfad — der steht in der
+    #     Definition, und genau die muss den Lifecycle-Wechsel ueberleben. Die
+    #     Definition zu pruefen genuegt darum; eine Label-Aufloesung waere
+    #     Mehraufwand ohne zusaetzliche Aussage.
+    printf '%s\n' "$clean" \
+      | grep -oE '^\[[^]]+\]:[[:space:]]*[^[:space:]]+' \
+      | sed -E 's/^\[[^]]+\]:[[:space:]]*//; s/#.*//'
+  } \
     | grep -vE '^https?:|^mailto:|^/|^$' \
     | sort -u || true
 }
@@ -97,6 +107,19 @@ self_test() {
       PLANNING=$real_planning; rm -rf "$tmp"; exit 2
     fi
   done
+  # Referenz-Links, beide Richtungen (slice-075, Fund F-4). Bis hierher sah
+  # links_of nur Inline-Links; ein praefixloser Referenz-Verweis bricht beim
+  # Lifecycle-Wechsel genauso, wurde aber nie geprueft.
+  printf '# probe\n\nEin [Verweis][rm].\n\n[rm]: roadmap.md\n' > "$tmp/in-progress/slice-904-refbad.md"
+  if check_file "$tmp/in-progress/slice-904-refbad.md" >/dev/null; then
+    echo "verify-slice-links: Selbsttest FEHLGESCHLAGEN — praefixloser Referenz-Link nicht erkannt (F-4)" >&2
+    PLANNING=$real_planning; rm -rf "$tmp"; exit 2
+  fi
+  printf '# probe\n\nEin [Verweis][rm].\n\n[rm]: ../in-progress/roadmap.md\n' > "$tmp/in-progress/slice-905-refgut.md"
+  if ! check_file "$tmp/in-progress/slice-905-refgut.md" >/dev/null; then
+    echo "verify-slice-links: Selbsttest FEHLGESCHLAGEN — zustandsunabhaengiger Referenz-Link beanstandet" >&2
+    PLANNING=$real_planning; rm -rf "$tmp"; exit 2
+  fi
   PLANNING=$real_planning
   rm -rf "$tmp"
 }
