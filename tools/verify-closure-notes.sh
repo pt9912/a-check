@@ -131,4 +131,16 @@ if [ "$fail" -ne 0 ]; then
   echo "verify-closure-notes: FAIL — Closure-Pflicht verletzt (AGENTS.md §5)." >&2
   exit 1
 fi
+
+# ERWARTETE GRUNDGESAMTHEIT (slice-070, Fund F-12): > 0.
+# `done/` ist der Endzustand jedes je abgeschlossenen Slice — dort null Dateien
+# zu finden heisst nicht "nichts zu pruefen", sondern "der Pruefbestand ist
+# verschwunden". Ohne diese Grenze meldete der Sensor "ok: 0 Slice(s)" mit
+# Exit 0 und war damit von einem bestandenen Lauf nicht zu unterscheiden.
+if [ "$count" -eq 0 ]; then
+  echo "verify-closure-notes: FAIL — keine Slice-Datei in $DONE_DIR gefunden." >&2
+  echo "  Erwartet wird ein nicht leerer done/-Bestand; null Dateien sind Bestandsverlust," >&2
+  echo "  nicht 'nichts zu pruefen'." >&2
+  exit 1
+fi
 echo "verify-closure-notes ok: $count Slice(s) in done/ mit ausgefuellter Closure-Notiz (Selbsttest gefeuert)."

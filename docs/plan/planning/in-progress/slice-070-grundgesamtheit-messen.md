@@ -91,17 +91,50 @@ Slice schreibt sie bewusst **nicht** vor, weil genau diese Vorwegnahme im ersten
 
 ## 5. DoD
 
-- [ ] Jeder der vier Sensoren deklariert seine erwartete Grundgesamtheit im Skript und meldet rot,
-      wenn sie unterschritten wird. Beleg: je Sensor die Probe aus §3, vorher grün, nachher rot.
-- [ ] Eine nicht parsebare Eingabe ist ein Befund, keine Grandfathering-Kategorie. Beleg: die
-      `slice-NNN.md`-Probe, plus ein grüner Lauf mit legitimer Leermenge.
-- [ ] `make verify` und `make gates` grün — **Ausgabe in eine Datei**, Exit-Code getrennt geprüft,
+- [x] Jeder der vier Sensoren deklariert seine erwartete Grundgesamtheit im Skript und meldet rot,
+      wenn sie unterschritten wird. Beleg: vier isolierte Proben — leeres `done/` → Exit 1,
+      Lastenheft ohne `### AC-`-Überschrift → Exit 1, fehlendes Lifecycle-Verzeichnis → Exit 1,
+      nicht parsebarer Slice-Name → Exit 2.
+- [x] Eine nicht parsebare Eingabe ist ein Befund, keine Grandfathering-Kategorie. Beleg:
+      `slice-999.md` im echten Baum → `Dateiname gibt keine Slice-Nummer her`, Exit 2; nach
+      Entfernen wieder Exit 0. Legitime Leermenge bleibt grün: `0 neue AC(s) geprueft`.
+- [x] `make verify` und `make gates` grün — **Ausgabe in eine Datei**, Exit-Code getrennt geprüft,
       nie in eine Pipe.
 
 ## 6. Closure-Notiz
 
-_(beim Abschluss ausfüllen — genau **ein** solcher Abschnitt je Slice,
-[`AGENTS.md`](../../../../AGENTS.md) §5; `make verify` prüft das.)_
+**Geliefert:** Die vier `verify-*`-Sensoren deklarieren ihre erwartete Grundgesamtheit im Skript
+und melden rot, wenn sie unterschritten wird — **je Sensor eine eigene Grenze**, keine gemeinsame
+Bedingung. `verify-slice-form` unterscheidet zusätzlich „nicht erkannt" von „zu alt": `applies()`
+hat einen dritten Ausgang, ein nicht parsebarer Dateiname ist ein Befund.
+
+**Lerneintrag — Form: geschärfte Regel.** Als Prüfsatz: *Die Untergrenze eines Sensors gehört auf
+die Größe, die nicht null sein darf — und welche das ist, entscheidet der Sensor, nicht der
+Harness.*
+
+**Die Ursache**, warum der erste Anlauf (`4b029e4`) daran scheiterte: Ich habe eine *gemeinsame*
+Bedingung gesucht („Quelle gelesen und nicht leer"), weil vier gleich aussehende Sensoren eine
+gleich aussehende Regel nahelegen. Sie sind aber nicht gleich — bei `verify-ac-form` ist null
+geprüfte Einheiten der **reguläre** Zustand dieses Repos, bei `verify-closure-notes` wäre er
+Bestandsverlust. Eine Bedingung über alle vier hätte entweder den Normalfall rot gemacht oder das
+Loch offen gelassen. Der Plan-Review hat genau das benannt (`R-068-F1`), bevor eine Zeile Code
+entstand.
+
+Konkret liegen die Grenzen deshalb auf drei verschiedenen Größen: auf der **Dateizahl**
+(`done/` > 0), auf der **Summe aus geprüft und grandfathered** (Slice-Form, AC-Form — nicht auf
+der gefilterten Menge), und auf der **Existenz der Quelle** (Lifecycle-Verzeichnisse — dort ist
+die Leermenge legitim).
+
+**Zwei beobachtbare Closure-Kriterien:**
+
+1. Vier isolierte Fixtures machen je einen Sensor rot (leeres `done/`, Lastenheft ohne ACs,
+   fehlendes `next/`, `slice-999.md`), während `make verify` über den realen Baum Exit 0 meldet —
+   einschließlich `verify-ac-form ok: 0 neue AC(s) geprueft` als belegter legitimer Leerfall.
+2. `verify-slice-links` gibt bei fehlendem Verzeichnis **nicht** mehr die `SL-002`-Meldung aus,
+   sondern eine, die zum Befund passt.
+
+**Folge-Slices:** [slice-071](../open/slice-071-sensor-scope-vollstaendig.md),
+[slice-072](../open/slice-072-scope-sensor-praeventiv.md).
 
 ## 7. Sub-Area-Modus
 

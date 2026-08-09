@@ -116,4 +116,16 @@ if [ "$fail" -ne 0 ]; then
   echo "verify-ac-form: FAIL — neue Akzeptanzkriterien ohne die drei Pfade (AGENTS.md §5)." >&2
   exit 1
 fi
+
+# ERWARTETE GRUNDGESAMTHEIT (slice-070, Fund F-12): geprueft + alt > 0.
+# Null NEUE ACs ist der REGULAERE Zustand dieses Repos — die Untergrenze auf
+# `$geprueft` zu legen waere die naheliegende und falsche Verschaerfung: sie
+# haette den gruenen Normalfall rot gemacht. Null INSGESAMT dagegen heisst, dass
+# im Lastenheft keine einzige `### AC-`-Ueberschrift gefunden wurde; dann ist
+# die Quelle kaputt oder das Muster tot, und "0 geprueft, ok" verschweigt es.
+if [ "$((geprueft + alt))" -eq 0 ]; then
+  echo "verify-ac-form: FAIL — keine AC-Ueberschrift in $SPEC gefunden." >&2
+  echo "  Null NEUE ACs sind regulaer; null insgesamt heisst kaputte Quelle oder totes Muster." >&2
+  exit 1
+fi
 echo "verify-ac-form ok: $geprueft neue AC(s) geprueft, $alt bei Einfuehrung bestehende (grandfathered)."

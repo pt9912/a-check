@@ -35,9 +35,15 @@ slice_num() {  # $1 = Pfad -> Nummer ohne fuehrende Nullen, leer wenn keine
 
 # Gilt die Form-Regel fuer diese Datei? Eigene Funktion, damit der Selbsttest
 # die Grandfathering-Entscheidung wirklich pruefen kann statt nur die Nummer.
-applies() {  # $1 = Pfad -> 0 = geprueft, 1 = grandfathered
+# DREI Ausgaenge statt zwei (slice-070, Fund R-068-F4): eine Datei, deren Name
+# die Nummer nicht hergibt (`slice-068.md` statt `slice-068-kurztitel.md`), war
+# frueher von "zu alt" nicht zu unterscheiden — sie wurde als grandfathered
+# MITGEZAEHLT und erschien in der gruenen Meldung als Teil des geprueften
+# Bestands. "Nicht erkannt" ist ein Befund, keine Grandfathering-Kategorie.
+applies() {  # $1 = Pfad -> 0 = geprueft, 1 = grandfathered, 2 = Name nicht parsebar
   local num; num="$(slice_num "$1")"
-  [ -n "$num" ] && [ "$num" -ge "$SLICE_FORM_FROM" ]
+  [ -n "$num" ] || return 2
+  [ "$num" -ge "$SLICE_FORM_FROM" ]
 }
 
 check_file() {  # $1 = Datei, $2 = "done" oder "offen"; Befunde auf stdout
@@ -106,6 +112,16 @@ self_test() {
     echo "verify-slice-form: Selbsttest FEHLGESCHLAGEN — Nicht-Slice-Datei wuerde geprueft" >&2
     rm -rf "$tmp"; exit 2
   fi
+  # Nicht parsebarer Slice-Name muss den DRITTEN Ausgang nehmen (R-068-F4).
+  # `roadmap.md` oben liefert ebenfalls 2, trifft aber den Datei-Glob nie —
+  # diese Fixture trifft ihn und ist damit die eigentliche Probe.
+  local rc_probe=0
+  applies "$tmp/slice-068.md" || rc_probe=$?
+  if [ "$rc_probe" -ne 2 ]; then
+    echo "verify-slice-form: Selbsttest FEHLGESCHLAGEN — 'slice-068.md' liefert rc=$rc_probe statt 2;" >&2
+    echo "  eine nicht parsebare Slice-Datei wuerde still als grandfathered mitgezaehlt (R-068-F4)." >&2
+    rm -rf "$tmp"; exit 2
+  fi
   rm -rf "$tmp"
 }
 
@@ -117,7 +133,13 @@ for dir in open next in-progress done; do
   phase="offen"; [ "$dir" = "done" ] && phase="done"
   for f in docs/plan/planning/$dir/slice-*.md; do
     [ -e "$f" ] || continue
-    if ! applies "$f"; then
+    rc=0; applies "$f" || rc=$?
+    if [ "$rc" -eq 2 ]; then
+      echo "$f: Dateiname gibt keine Slice-Nummer her (erwartet slice-<NNN>-<kurztitel>.md);" >&2
+      echo "    die Form-Regel ist darauf nicht anwendbar — das ist ein Befund, kein Grandfathering." >&2
+      fail=1; continue
+    fi
+    if [ "$rc" -ne 0 ]; then
       uebersprungen=$((uebersprungen + 1)); continue
     fi
     geprueft=$((geprueft + 1))
@@ -129,6 +151,16 @@ done
 
 if [ "$fail" -ne 0 ]; then
   echo "verify-slice-form: FAIL — Slice-Form verletzt (docs/plan/planning/slice.template.md)." >&2
+  exit 1
+fi
+
+# ERWARTETE GRUNDGESAMTHEIT (slice-070, Fund F-12): geprueft + grandfathered > 0.
+# Null GEPRUEFTE waeren legitim (wenn alle Slices aelter als der Stichtag sind),
+# null INSGESAMT nicht: ein Repo mit Planning-Harness hat Slice-Dateien. Die
+# Untergrenze liegt darum auf der Summe, nicht auf der gefilterten Menge.
+if [ "$((geprueft + uebersprungen))" -eq 0 ]; then
+  echo "verify-slice-form: FAIL — keine Slice-Datei in docs/plan/planning/ gefunden." >&2
+  echo "  Null geprueft waere zulaessig, null insgesamt ist Bestandsverlust." >&2
   exit 1
 fi
 echo "verify-slice-form ok: $geprueft Slice(s) ab slice-$SLICE_FORM_FROM geprueft, $uebersprungen aelter (grandfathered)."

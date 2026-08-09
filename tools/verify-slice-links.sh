@@ -105,6 +105,20 @@ self_test
 
 fail=0
 count=0
+# ERWARTETE GRUNDGESAMTHEIT (slice-070, Fund F-12): die Lifecycle-Verzeichnisse
+# EXISTIEREN — nicht "es liegen Slices darin".
+# Null wandernde Slices ist ein legitimer Zustand: liegen alle in done/, gibt es
+# nichts zu pruefen, und das ist kein Fehler. Ein fehlendes Verzeichnis dagegen
+# heisst, dass der Sensor am falschen Ort sucht; dann ist "0 geprueft" eine
+# Aussage ueber ihn, nicht ueber das Repo. Die Untergrenze liegt darum auf der
+# Quelle, nicht auf der Zaehlung.
+for d in open next in-progress; do
+  if [ ! -d "$PLANNING/$d" ]; then
+    echo "verify-slice-links: FAIL — Lifecycle-Verzeichnis '$PLANNING/$d' fehlt;" >&2
+    echo "  ohne es waere '0 wandernde Slice(s)' eine Aussage ueber den Sensor, nicht ueber das Repo." >&2
+    fail=1
+  fi
+done
 for d in open next in-progress; do
   for f in "$PLANNING/$d"/slice-*.md; do
     [ -e "$f" ] || continue
@@ -117,8 +131,16 @@ for d in open next in-progress; do
 done
 
 if [ "$fail" -ne 0 ]; then
-  echo "verify-slice-links: FAIL — Verweise ueberleben den Lifecycle-Wechsel nicht (SL-002)." >&2
-  echo "Richtig ist die zustandsunabhaengige Form, z. B. '../in-progress/roadmap.md' statt 'roadmap.md'." >&2
+  # Zwei verschiedene Befunde, zwei verschiedene Meldungen: ein fehlendes
+  # Lifecycle-Verzeichnis ist kein Verweis-Problem. Eine Sammelmeldung, die
+  # beides als SL-002 ausgibt, waere selbst eine Aussage, die sich mit dem
+  # Befund nicht deckt (slice-070).
+  if [ "$count" -gt 0 ]; then
+    echo "verify-slice-links: FAIL — Verweise ueberleben den Lifecycle-Wechsel nicht (SL-002)." >&2
+    echo "Richtig ist die zustandsunabhaengige Form, z. B. '../in-progress/roadmap.md' statt 'roadmap.md'." >&2
+  else
+    echo "verify-slice-links: FAIL — siehe Befund oben; es wurden keine Slices geprueft." >&2
+  fi
   exit 1
 fi
 echo "verify-slice-links ok: $count wandernde(r) Slice(s) mit lifecycle-festen Verweisen (Selbsttest gefeuert; done/ ist Endzustand und ausgenommen)."
