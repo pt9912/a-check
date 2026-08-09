@@ -114,7 +114,7 @@ einseitige Prüfrichtung ebenso.
    der unveränderte Bestand bleibt grün (42 Dateien).
 
 **Folge-Slices:** keine aus diesem Slice. Offen bleiben
-[slice-072](../open/slice-072-scope-sensor-praeventiv.md),
+[slice-072](../in-progress/slice-072-scope-sensor-praeventiv.md),
 [slice-073](../done/slice-073-dcheck-statt-eigenbau.md) und
 [slice-074](../done/slice-074-doc-targets-wirksam.md); **Gruppe A des Reviews ist mit diesem Slice
 vollständig** (`F-1`, `F-2`, `F-5`, `F-12`, `F-14` plus `R-068-F3`/`R-068-F4`).
