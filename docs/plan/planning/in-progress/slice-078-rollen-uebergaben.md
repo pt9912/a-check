@@ -79,17 +79,58 @@ und wäre für zwei Zeilen Schein-Genauigkeit.
 
 ## 5. DoD
 
-- [ ] Der Entscheid aus §3 ist **getroffen und begründet** in der Closure-Notiz.
-- [ ] Keine Übergabe ist mehr als „fehlt" geführt, ohne auf eine Deklaration zu zeigen. Beleg: die
-      Tabelle in [`harness/README.md`](../../../../harness/README.md) und, bei Deklaration, der
-      neue `MR-*`-Eintrag.
-- [ ] `make gates` und `make verify` grün — **Ausgabe in eine Datei**, Exit-Code getrennt geprüft,
+- [x] Der Entscheid aus §3 ist **getroffen und begründet** in der Closure-Notiz: mittlerer Weg,
+      [`MR-009`](../../../../harness/conventions.md#mr-009--validator-rolle-unbesetzt-zwei-übergaben-ohne-artefakt).
+- [x] Keine Übergabe ist mehr als „fehlt" geführt, ohne auf eine Deklaration zu zeigen. Beleg:
+      `grep '\*\*fehlt\*\*' harness/README.md` liefert nichts; beide Zeilen tragen jetzt
+      **unverkörpert** mit Link auf
+      [`MR-009`](../../../../harness/conventions.md#mr-009--validator-rolle-unbesetzt-zwei-übergaben-ohne-artefakt).
+- [x] `make gates` und `make verify` grün — **Ausgabe in eine Datei**, Exit-Code getrennt geprüft,
       nie in eine Pipe.
 
 ## 6. Closure-Notiz
 
-_(beim Abschluss ausfüllen — genau **ein** solcher Abschnitt je Slice,
-[`AGENTS.md`](../../../../AGENTS.md) §5; `make verify` prüft das.)_
+**Geliefert:** [`MR-009`](../../../../harness/conventions.md#mr-009--validator-rolle-unbesetzt-zwei-übergaben-ohne-artefakt)
+in [`harness/conventions.md`](../../../../harness/conventions.md); die Übergaben-Tabelle in
+[`harness/README.md`](../../../../harness/README.md) führt beide Kanten als **unverkörpert** mit
+Verweis auf die Deklaration statt als „fehlt — siehe unten".
+
+**Der Entscheid: der mittlere Weg.** Nicht „Übergaben definieren" — zwei Artefakt-Beschreibungen
+ohne Erzeuger wären eine Zusage ohne Deckung, also genau die Harness-Lüge, gegen die dieser Slice
+antritt. Nicht „Rolle besetzen" — das ist eine Entscheidung über das Arbeitsmodell, nicht über eine
+Doku-Zeile. Bleibt die Deklaration, und dafür stand die Präzedenz im selben Block:
+[`MR-008`](../../../../harness/conventions.md#mr-008--kein-replay-keine-agenten-telemetrie)
+behandelt den strukturgleichen Fall — eine Baseline-Erwartung, die dieses Repo nicht erfüllt,
+ausgewiesen statt stillschweigend übergangen, samt „Folgewirkung, ausdrücklich".
+
+**Lerneintrag — Form: geschärfte Regel.** Als Prüfsatz: *Eine begründete Lücke ist erst dann
+deklariert, wenn sie an dem Ort steht, den das Repo für Abweichungen führt — eine Begründung am
+Fundort ist eine Fußnote, keine Adaption.*
+
+**Die Ursache** ist die feinste des ganzen Reviews: hier fehlte **nichts Inhaltliches**. Die
+Herleitung stand seit slice-066 ausführlich in
+[`harness/README.md`](../../../../harness/README.md) — Validation vs. Verifikation, warum die
+Kante offen ist, was sie zu schließen bräuchte, sogar der gefährlichste Fall („Verifikation grün,
+Validation rot"). Was fehlte, war ausschließlich der **Ort**: der `MR-*`-Block ist die Instanz, an
+der dieses Repo Abweichungen führt, und eine Lücke, die dort nicht steht, existiert für jede
+Prüfung gegen `modul-08` nicht. Deshalb konnte slice-066 unmittelbar nach der Tabelle „alle 21
+Funde geschlossen" schreiben, ohne zu lügen — und trotzdem eine Lücke hinterlassen.
+
+**Ausdrücklich nicht behauptet:** Das Risiko wird durch die Deklaration **nicht kleiner**. Es wird
+sichtbar getragen statt unsichtbar. [`MR-009`](../../../../harness/conventions.md#mr-009--validator-rolle-unbesetzt-zwei-übergaben-ohne-artefakt) nennt das in einem eigenen Feld.
+
+**Zwei beobachtbare Closure-Kriterien:**
+
+1. `grep '\*\*fehlt\*\*' harness/README.md` liefert nichts — jede unverkörperte Übergabe zeigt auf
+   eine Deklaration.
+2. Der `MR-*`-Block trägt zehn Einträge, und [`MR-009`](../../../../harness/conventions.md#mr-009--validator-rolle-unbesetzt-zwei-übergaben-ohne-artefakt) nennt Datum, Geltungsbereich, Adaption,
+   Begründung, Folgewirkung und Auflösungs-Trigger — dieselben Pflichtfelder wie die neun
+   bestehenden.
+
+**Folge-Slices:** keine. Damit ist Gruppe C abgearbeitet, soweit sie Slices braucht: `F-8` löste
+[slice-046](../done/slice-046-regelwerk-v352-migration-analyse.md), `F-10`/`F-15`
+[slice-077](../done/slice-077-status-aussagen.md), `F-11` dieser Slice. `F-7` löst der
+`welle-12`-Abschluss selbst.
 
 ## 7. Sub-Area-Modus
 

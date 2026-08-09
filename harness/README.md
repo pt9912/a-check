@@ -138,8 +138,8 @@ Sieben der neun Artefakte existieren in a-check bereits — unter eigenen Namen.
 | Reviewer → Implementation | Review-Report unter [`docs/reviews/`](../docs/reviews/README.md), Findings HIGH/MEDIUM/LOW/INFO mit Kopf-Metadaten |
 | Implementation → Verifier | abgehakte DoD-Punkte plus Sensor-Belege (Gate-Ausgabe mit Exit-Code) |
 | Verifier → Planner | `make verify` (Exit-Code) plus Closure-Notiz mit zwei beobachtbaren Kriterien |
-| Verifier → Validator | **fehlt** — siehe unten |
-| Validator → Planner | **fehlt** — siehe unten |
+| Verifier → Validator | **unverkörpert**, deklariert als [MR-009](conventions.md#mr-009--validator-rolle-unbesetzt-zwei-übergaben-ohne-artefakt) |
+| Validator → Planner | **unverkörpert**, deklariert als [MR-009](conventions.md#mr-009--validator-rolle-unbesetzt-zwei-übergaben-ohne-artefakt) |
 
 **Die Validator-Kante fehlt, und das ist benannt statt erfunden.** Validation fragt „bauen wir das
 Richtige?" (gegen realen Bedarf), Verifikation „bauen wir es richtig?" (gegen Plan/DoD). a-check
