@@ -75,6 +75,20 @@ targets:
 und ist in [`AGENTS.md`](../../../../AGENTS.md) §4 dokumentiert**, läuft aber in keinem Aggregat;
 `gates` fährt stattdessen den Eigenbau.
 
+**Der CR-Weg ist zweifach eingefahren — und trägt einen Namen.** In d-check existiert **kein**
+offener CR für ein Struktur-Modul (`open/` und `next/` sind leer, kein Eintrag in Lastenheft oder
+Spezifikation). Aber genau dieses Muster ist dort zweimal gelaufen:
+
+| d-check-Modul | abgelöstes Skript | Anlass laut Lastenheft |
+|---|---|---|
+| `vcs` (`DC-FA-VCS-001`) | `adr-immutable-check.sh` | *„vollständig mechanisieren (Copy-Drift über die Repo-Familie) … die verteilte git-Garantie für Konsumenten ohne Skript-Kopie (**„verteilen statt kopieren"**)"* |
+| `targets` (`DC-FA-TGT-001`) | `gate-consistency.sh` | DoD-Punkt *„Paritäts-Mutations-Beleg vs. `gate-consistency.sh`"* |
+
+Beide Male: ein Shell-Skript aus der Repo-Familie wird zum Modul, mit **Paritätsbeleg gegen das
+abgelöste Skript**. Der CR-Text dieses Slice hat damit zwei Präzedenzfälle, an deren Form er sich
+zu halten hat — einschließlich der Erwartung, dass ein Paritäts-Mutations-Beleg dazugehört und
+nicht nachgereicht wird.
+
 ## 2. Betroffene Module
 
 Dieser Slice ändert **keinen** Sensor. Er liefert zwei Dokumente:
@@ -122,7 +136,9 @@ Vorgänger-Entwurf `4b029e4` gescheitert ist.
       „abgelöst"-Zeile.
 - [ ] CR-Text für d-check liegt vor, mit einer Abstraktion, die **nicht** a-check-spezifisch ist —
       formuliert als Modul-Vertrag (was es prüft, welche Grund-Codes, welche Konfiguration), nicht
-      als Wunschliste. Beleg: der Text, gegen die Form der 19 bestehenden Module gehalten.
+      als Wunschliste, **und mit dem Paritäts-Mutations-Beleg als benanntem DoD-Punkt**, wie ihn
+      `vcs` und `targets` beide tragen. Beleg: der Text, gegen die Form der 19 bestehenden Module
+      und gegen die zwei Präzedenz-CRs aus §1 gehalten.
 - [ ] `make doc-check` und `make verify` grün — **Ausgabe in eine Datei**, Exit-Code getrennt
       geprüft, nie in eine Pipe.
 
