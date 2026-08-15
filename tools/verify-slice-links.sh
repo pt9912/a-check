@@ -22,6 +22,26 @@
 # NICHT GEPRUEFT (ehrliche Grenze, AC-QA-02): ob ein Verweisziel inhaltlich das
 # richtige ist. Der Sensor prueft Aufloesbarkeit ueber Verzeichniswechsel, nicht
 # Bedeutung — das bleibt Review-Sache.
+#
+# EBENFALLS NICHT GEPRUEFT: Welle-Plan-Dateien (slice-089). Sie liegen FLACH unter
+# $PLANNING und wandern bei der Closure nach done/ — also eine Ebene TIEFER. Damit
+# faellt die Voraussetzung oben weg ("alle vier Verzeichnisse auf derselben Ebene"),
+# und die Invariante ist fuer sie nicht nur unerfuellt, sondern UNERFUELLBAR:
+# gemessen loest jede Verweis-Form aus genau EINER der beiden Positionen auf, nie
+# aus beiden (ein Pfad aus Tiefe n braucht aus Tiefe n+1 ein zusaetzliches "../").
+# Ein blosses Erweitern des Globs haette einen Sensor erzeugt, der jede Welle-Datei
+# zu Recht rot meldet, ohne dass man ihn gruen bekommt.
+#
+# Verworfen wurde auch die repo-relative Schreibweise ("/docs/..."), die
+# tiefenunabhaengig waere und die d-check aufloest (gemessen: fehlende Ziele melden
+# target-missing): GitHub loest einen fuehrenden "/" gegen die SITE-Wurzel auf, nicht
+# gegen das Repo — die Links waeren im Browser kaputt. Im Repo kommt die Notation
+# darum an null Stellen vor, auch nicht in der vendored Baseline.
+#
+# Der Sensor SAGT die Luecke darum, statt sie zu verschweigen. Das ist der Punkt:
+# eine Ausgabe "N wandernde(r) Slice(s)" klingt vollstaendig, und ein Sensor, der
+# eine ganze Gattung nicht sieht und das nicht nennt, ist dieselbe False-Green-Klasse
+# wie die Funde aus slice-070/071.
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
@@ -167,3 +187,15 @@ if [ "$fail" -ne 0 ]; then
   exit 1
 fi
 echo "verify-slice-links ok: $count wandernde(r) Slice(s) mit lifecycle-festen Verweisen (Selbsttest gefeuert; done/ ist Endzustand und ausgenommen)."
+
+# Die ausgewiesene Luecke (slice-089). Sie wird IMMER genannt, auch bei null
+# aktiven Welle-Dateien: wer wissen will, was der Sensor abdeckt, liest seine
+# Ausgabe — eine Grenze, die nur bei Gelegenheit sichtbar wird, ist keine.
+welle_flach=0
+for f in "$PLANNING"/welle-*.md; do
+  [ -e "$f" ] || continue
+  welle_flach=$((welle_flach + 1))
+done
+echo "verify-slice-links: Welle-Plan-Dateien AUSGENOMMEN (aktuell $welle_flach flach) — ihr Closure-mv"
+echo "  wechselt die Verzeichnistiefe, darum loest kein Verweis aus beiden Positionen auf (slice-089)."
+echo "  Beim mv sind die Verweise nachzuziehen; ob sie danach aufloesen, beantwortet doc-check."

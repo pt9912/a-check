@@ -44,6 +44,14 @@ Schritt 1*. Ohne Lerneintrag ist die Welle nicht „fertig", nur „weg". Zuglei
 Welle-Plan-Datei per `git mv` von flach nach `done/`, neben ihre Ergebnis-Notiz — der Zustand ist
 die Verzeichnis-Position, kein `Status`-Feld, wie beim Slice.
 *Beleg:* die Notiz existiert und nennt je Punkt etwas Prüfbares.
+**Dieser `git mv` bricht *jeden* relativen Verweis der Plan-Datei** — anders als beim Slice wechselt
+er die **Verzeichnistiefe** (flach → `done/`), und ein Pfad aus Tiefe *n* braucht aus *n+1* ein
+zusätzliches `../`. Bei `welle-13` waren es **21** Verweise auf einen Schlag. `verify-slice-links`
+kann das **nicht** abfangen: seine Invariante („ein Verweis löst aus jedem Lifecycle-Verzeichnis
+auf") setzt gleiche Ebenen voraus und ist hier nachweislich unerfüllbar — der Sensor weist die
+Lücke deshalb ausdrücklich aus ([slice-089](in-progress/slice-089-welle-datei-verweis-invariante.md)).
+**Also: die Verweise im selben Commit nachziehen und `make gates` laufen lassen**; `doc-check` ist
+das Netz, aber erst *nach* dem `mv`.
 **Zum Steering-Loop:** die Einträge werden aus [`docs/plan/steering-loop.md`](../steering-loop.md)
 **gezogen**, nicht dorthin verschoben. Das Register bleibt der laufende Zähl-Ort; ein Kanal, der
 erst bei der nächsten Closure entsteht, würde zwischen zwei Wellen nichts zählen — genau der
@@ -68,5 +76,7 @@ Beleg — dieselbe Entscheidung wie bei der Review-Lücke slice-027…041
 ([`docs/reviews/README.md`](../../reviews/README.md)). Auch Welle-Plan-Dateien entstehen erst
 künftig: wo es nie eine gab, gibt es nichts nach `done/` zu verschieben.
 
-Damit ist die Prozedur **deklariert, aber noch nicht belegt**. Der erste Durchlauf ist ihre
-Probe — und bis dahin steht hier keine Behauptung, sondern eine Absicht.
+Die Prozedur ist **belegt**: `welle-12` ist ihr erster Durchlauf
+([`done/welle-12-results.md`](done/welle-12-results.md)), `welle-13` der zweite und erste **mit**
+einer Plan-Datei ([`done/welle-13-results.md`](done/welle-13-results.md)) — womit Schritt 3
+vollständig gefahren ist statt nur zur Hälfte.

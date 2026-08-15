@@ -101,16 +101,74 @@ echte Lösung, falls `doc-check` repo-relative Ziele auflöst.
 
 ## 5. DoD
 
-- [ ] Der Entscheid aus §3 ist getroffen und begründet — inklusive der Messung zu (c), ob
-      `doc-check` repo-relative Ziele auflöst.
-- [ ] Die Ausgabe von `make verify` behauptet keine Vollständigkeit mehr, die sie nicht hat.
-      Beleg: die drei Proben aus §3.
-- [ ] `make gates` und `make verify` grün — Ausgabe in eine Datei, Exit-Code getrennt geprüft.
+- [x] Der Entscheid aus §3 ist getroffen und begründet: **(a) Grenze ausweisen**, inklusive der
+      Messung zu (c) — `doc-check` löst repo-relative Ziele **auf** (fehlende melden
+      `target-missing`), die Notation scheitert aber an GitHub und an null Präzedenz.
+- [x] Die Ausgabe von `make verify` behauptet keine Vollständigkeit mehr, die sie nicht hat —
+      sie nennt die ausgenommene Gattung **mit Zahl**, auch bei null. Beleg: die drei Proben unten.
+- [x] `make gates` und `make verify` grün — Ausgabe in eine Datei, Exit-Code getrennt geprüft.
 
 ## 6. Closure-Notiz
 
-_(beim Abschluss ausfüllen — genau **ein** solcher Abschnitt je Slice,
-[`AGENTS.md`](../../../../AGENTS.md) §5; `make verify` prüft das.)_
+**Der Slice begann mit der Korrektur einer eigenen Einschätzung.**
+[`welle-13-results.md`](../done/welle-13-results.md) hatte den Befund als „Ein-Zeilen-Fix am Glob"
+benannt. Die erste Messung widerlegte das: Weil die Welle-Datei beim `mv` die **Verzeichnistiefe**
+wechselt, löst **jede** Verweis-Form aus genau einer der beiden Positionen auf — nie aus beiden.
+Ein erweiterter Glob hätte einen Sensor erzeugt, der jede Welle-Datei zu Recht rot meldet, **ohne
+dass man ihn grün bekommt**. Die Invariante ist nicht unerfüllt, sie ist unerfüllbar.
+
+**Weg (c) wurde gemessen und trotzdem verworfen — die Messung allein hätte in die Irre geführt.**
+`doc-check` löst repo-relative Ziele (`/spec/…`) **vollwertig** auf; die erste Probe (existierende
+Ziele, keine Beanstandung) hätte man als „funktioniert" lesen können. Erst die **Gegenprobe** mit
+fehlenden Zielen zeigte, dass wirklich geprüft und nicht bloß übersprungen wird:
+
+```text
+docs/plan/planning/welle-99.md:4  /spec/gibtsnicht.md                     target-missing
+docs/plan/planning/welle-99.md:5  /docs/plan/planning/done/fehlt.md       target-missing
+```
+
+Verworfen wurde die Notation dennoch, aus zwei Gründen außerhalb von d-check: GitHub löst einen
+führenden `/` gegen die **Site**-Wurzel auf, nicht gegen das Repo (die Links wären im Browser
+kaputt), und im ganzen Repo **inklusive** der vendored Baseline kommt sie an **null** Stellen vor.
+Eine Insel-Notation für eine Datei-Gattung wäre teurer als die Lücke, die sie schließt.
+
+**Weg (b) fiel an einer begründeten Anordnung.** „Gleiche Ebene herstellen" klingt sauber, hätte
+aber die Plan-Datei aus `done/` herausgenommen — wo sie laut Prozedur **neben ihrer
+Ergebnis-Notiz** liegt. Entweder wandert die Notiz mit (dann sind Wellen von Slices getrennt) oder
+sie bleibt (dann sind Plan und Ergebnis getrennt). Beides ist schlechter als die benannte Lücke,
+und die Evidenz ist **ein** Vorfall.
+
+**Die drei Proben:**
+
+```text
+(1) make verify, Ist-Zustand          -> ok, "Welle-Plan-Dateien AUSGENOMMEN (aktuell 0 flach)"
+(2) flache welle-99-probe.md mit kaputtem Verweis:
+      verify-slice-links               -> EXIT=0, zaehlt sie sichtbar: "aktuell 1 flach"
+      make doc-check                   -> EXIT=2, "welle-99-probe.md:3 done/gibtsnicht.md target-missing"
+(3) Selbsttest                         -> feuert weiterhin in beiden Richtungen fuer Slices
+```
+
+Probe (2) ist die eigentliche Aussage des Slice: Der Sensor bleibt grün — **aber nicht still**. Die
+Datei erscheint in seiner Zählung, und das Netz darunter greift.
+
+**Beobachtbare Architektur-Aussage: ein Sensor darf eine Lücke haben, aber nicht verschweigen.**
+Die Ausgabe nennt die ausgenommene Gattung **immer**, auch bei null aktiven Welle-Dateien. Eine
+Grenze, die nur bei Gelegenheit sichtbar wird, ist keine — wer wissen will, was der Sensor abdeckt,
+liest seine Ausgabe, nicht seinen Quelltext. Damit steht neben der bestehenden Ausnahme (`done/`
+ist Endzustand) jetzt die zweite, gleichrangig formuliert.
+
+**Lerneintrag — Form: benannte Spec-Lücke.** Als Prüfsatz: *Bevor ein Sensor auf eine neue
+Datei-Gattung erweitert wird, ist zu prüfen, ob seine Invariante für sie überhaupt **erfüllbar**
+ist — sonst entsteht ein Gate, das niemand grün bekommt.* Die Invariante von
+[slice-060](../done/slice-060-slice-link-invariante.md) trägt ihre Voraussetzung im Kommentar
+(„alle vier Lifecycle-Verzeichnisse liegen auf derselben Ebene"); dass sie eine **Voraussetzung**
+ist und keine Beschreibung, fiel erst auf, als eine Gattung ohne sie auftauchte. **Zu prüfen wäre**,
+ob die übrigen `verify-*`-Sensoren ähnliche stillschweigende Voraussetzungen tragen —
+`verify-closure-notes` und `verify-ac-form` sind die Kandidaten.
+
+**Mitgenommen:** [`planning/README.md`](../README.md) behauptete noch, die Closure-Prozedur sei
+„deklariert, aber noch nicht belegt". Zwei Durchläufe später ist das falsch; korrigiert, mit
+Zeigern auf beide Ergebnis-Notizen.
 
 ## 7. Sub-Area-Modus
 
