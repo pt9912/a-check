@@ -26,14 +26,13 @@ Aussage, keine Auslassung.**
 
 | Slice | Trigger | Zustand |
 |---|---|---|
-| [slice-079](../in-progress/slice-079-gate-consistency-abloesen.md) | **sofort** | Harness-Nachlauf aus `welle-12` |
 | [slice-080](../open/slice-080-verify-abloesung-dcheck.md) | d-check-Release mit `structure` + `links.resolve-from`, **und** der Pin ist gehoben | blockiert; die CR-Einreichung ist noch nicht erfolgt |
 | [slice-013](../open/slice-013-driving-driven-vertiefung.md), [slice-045](../open/slice-045-intern-extern-dateimenge.md) | siehe *Nächste Wellen* | vertagt, Evidenz gemessen und zu klein |
 
 Ein Slice, der auf ein Fremdrepo wartet, gehört in **keine** Welle — er würde ihren
 Closure-Trigger auf unbestimmte Zeit blockieren.
 
-**Erledigt ohne Welle:** [slice-087](../done/slice-087-index-vollstaendigkeit.md) (2026-08-09) —
+**Erledigt ohne Welle:** [slice-079](../done/slice-079-gate-consistency-abloesen.md) (2026-08-15) — `gate-consistency` (1)+(2) durch d-checks `targets`-Modul abgelöst, `doc-targets` ins `gates`-Aggregat; die Scope-Regression (`harness/README.md` fehlte in `doc-tables`) vor dem Abbau gemessen. · [slice-089](../done/slice-089-welle-datei-verweis-invariante.md) (2026-08-15) — `verify-slice-links` weist die Welle-Datei-Lücke aus, statt eine unerfüllbare Invariante zu prüfen. · [slice-087](../done/slice-087-index-vollstaendigkeit.md) (2026-08-09) —
 ADR-Index-Vollständigkeit als `gate-consistency` Check (6), plus CR-Text für die d-check-Ablösung
 in dessen §8. Antwort auf
 [`SL-005`](../../steering-loop.md#sl-005--eine-neue-datei-wird-nicht-in-ihren-handgepflegten-index-eingetragen).

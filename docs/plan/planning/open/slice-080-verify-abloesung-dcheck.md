@@ -89,7 +89,7 @@ macht als der Sensor, ist genauso ein Bruch wie eines, das weniger fängt.
 ## 4. Was bewusst nicht getan wird
 
 - **Die CRs einreichen.** Fremdrepo, Maintainer-Sache — siehe §0.
-- **`gate-consistency` (1)+(2).** Das ist [slice-079](../in-progress/slice-079-gate-consistency-abloesen.md) und
+- **`gate-consistency` (1)+(2).** Das ist [slice-079](../done/slice-079-gate-consistency-abloesen.md) und
   hängt an keinem CR.
 - **Die lokal verbleibenden Prüfungen.** `.d-check.yml`-Modulliste, Pin-Konsistenz, `.PHONY`,
   `suppression-check`, `regelwerk-check` — in
