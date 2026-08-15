@@ -49,7 +49,8 @@ Rang ist mit [`MR-003`](conventions.md#mr-003--source-precedence-ohne-docsuser-r
 
 Nur Targets, die im Makefile **existieren**, dürfen hier stehen — halluzinierte
 Gates sind die häufigste Form von Harness-Lüge; die Übereinstimmung Doku ↔
-Makefile erzwingt `make gate-consistency` mechanisch. Die Code-Gates sind
+Makefile erzwingt `make doc-targets` mechanisch — über **diese** Tabelle **und**
+`AGENTS.md` §4 (bis slice-079 tat das `gate-consistency`). Die Code-Gates sind
 Dockerfile-Stages (Muster d-check/u-boot, digest-gepinnte Bases); die Meta-/
 Harness-Gates laufen als Host-Bash. Die Durchsetzungsschicht deckt Tool-Call-,
 Handoff- und Meta-Gate ab; die PR-/Push-CI
@@ -73,10 +74,11 @@ Lauf-Wahrheit pro Commit liegt in der CI, nicht in diesem Rang-9-Dokument.
 | `make test` | Akzeptanzkriterien der bezogenen `AC-FA-*` als Tests; Determinismus-Test | [`AC-QA-01`](../spec/lastenheft.md#ac-qa-01--determinismus) (AC-Bindung); slice-003 |
 | `make coverage-gate` | Gesamt-Coverage ≥ Schwelle über `./internal/...` (`-coverpkg`, `tools/coverage-gate.sh`) | Kalibrierungs-Bindung **90 %** seit 2026-06-21 ([`ADR-0006`](../docs/plan/adr/0006-coverage-gate.md); Senkung nur per ADR, [`AGENTS.md` §3.6](../AGENTS.md#36-gates-dürfen-nicht-ohne-adr-gelockert-werden)); slice-003 |
 | `make arch-check` | Eigen-Architektur via `a-check` selbst (Dogfooding) | [`AC-QA-02`](../spec/lastenheft.md#ac-qa-02--hermetik-und-ehrliche-heuristik-grenze) (AC-Bindung); slice-003 |
-| `make gate-consistency` | Meta-Gate: dokumentierte Targets ↔ Makefile + `.d-check.yml`-Module (Schutz gegen Doku-/Gate-Drift) + Pin-Konsistenz (Digest-Gleichheit `a-check.mk`/`README.md`+`README.de.md` == `version.md#aktuell`, Version ↔ CHANGELOG, `d-check.mk`-Tag/Digest-Deklaration) + **ADR-Index-Vollständigkeit** (jede ADR-Datei ist im Index verlinkt — die Gegenrichtung, die `doc-check` per Konstruktion nicht sieht) | Harness-Prozess ([`AC-QA-02`](../spec/lastenheft.md#ac-qa-02--hermetik-und-ehrliche-heuristik-grenze) für die Modul-Integrität); slice-004, Pin-Konsistenz slice-018, ADR-Index slice-087 |
+| `make gate-consistency` | Meta-Gate: `.d-check.yml`-Module (Schutz gegen Gate-Drift) + Pin-Konsistenz (Digest-Gleichheit `a-check.mk`/`README.md`+`README.de.md` == `version.md#aktuell`, Version ↔ CHANGELOG, `d-check.mk`-Tag/Digest-Deklaration) + **ADR-Index-Vollständigkeit** (jede ADR-Datei ist im Index verlinkt — die Gegenrichtung, die `doc-check` per Konstruktion nicht sieht) | Harness-Prozess ([`AC-QA-02`](../spec/lastenheft.md#ac-qa-02--hermetik-und-ehrliche-heuristik-grenze) für die Modul-Integrität); slice-004, Pin-Konsistenz slice-018, ADR-Index slice-087 |
+| `make doc-targets` | Deklarations-Konsistenz Doku ↔ Build-Targets (`d-check`-Modul `targets`): jedes hier oder in `AGENTS.md` §4 dokumentierte Target existiert real, und jedes reale Gate-Target ist in `AGENTS.md` §4 gelistet | [`DC-FA-TGT-001`](../.d-check.yml); slice-074 (konfiguriert), slice-079 (im `gates`-Aggregat, löst `gate-consistency` (1)+(2) ab) |
 | `make record-gates` | inhaltsbasierter Working-Tree-Hash-Nachweis für den `.claude`-Stop-Hook (Handoff-Gate) | Harness-Prozess (Durchsetzungsschicht); slice-004 |
 | `make guard-selftest` | Selbsttest des PreToolUse-Command-Guard (`.claude/hooks/`): Host-Toolchain fail-closed geblockt, `make`/`git`/`docker` durchgelassen | Harness-Prozess (Tool-Call-Gate; [`AGENTS.md` §3.1](../AGENTS.md#31-dockermake-only)); slice-005 |
-| `make gates` | aggregiert die inneren Gates (lint/test/coverage-gate/arch-check/doc-check/gate-consistency/guard-selftest) + `record-gates` als letzter Schritt | — (Aggregat) |
+| `make gates` | aggregiert die inneren Gates (lint/test/coverage-gate/arch-check/doc-check/doc-targets/gate-consistency/suppression-check/guard-selftest) + `record-gates` als letzter Schritt | — (Aggregat) |
 | `make image-test` | Distributions-Akzeptanz (`--print-mk`/`--print-config`/`--print-graph`/unbekanntes Flag) + Fragment-Parität (committete [`a-check.mk`](../a-check.mk) == `--print-mk`-Output) + nativ==Container-Determinismus eines Scans gegen das gebaute Image | [`AC-FA-DIST-001`](../spec/lastenheft.md#ac-fa-dist-001--distribution-image---print-mk-a-checkmk)/[`AC-QA-02`](../spec/lastenheft.md#ac-qa-02--hermetik-und-ehrliche-heuristik-grenze); slice-006, Fragment-Parität slice-034 |
 | `make ci` | CI-äquivalent: `gates` + `image-test` (Engine des Workflows `.github/workflows/ci.yml`) | — (Aggregat) |
 | `make trace-check` | Traceability via Modul `commits`: jede Commit-Message nennt `AC-*`/`ADR-*`/`MR-*`/`slice-NNN` (`MSGFILE=` Hook, `RANGE=` CI) | [`ADR-0021`](../docs/plan/adr/0021-commits-modul-trace-check.md); Harness-Prozess ([`AGENTS.md` §5](../AGENTS.md#5-dokumentations-regeln)); slice-006, Modul seit slice-030 |

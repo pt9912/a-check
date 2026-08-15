@@ -2,12 +2,10 @@
 # gate-consistency.sh — Meta-Gate gegen Harness-Lügen (Regelwerk Modul 13 /
 # §Durchsetzungsschicht; Stack-Vorbild d-check tools/gate-consistency.sh):
 #
-#   (1) Jedes in AGENTS.md §4 bzw. harness/README.md §Sensors als
-#       Tabellenzeile dokumentierte `make`-Target existiert real (Makefile
-#       oder das includebare d-check.mk) — kein halluziniertes Gate.
-#   (2) Jedes reale Gate-Target (Makefile + d-check.mk, ohne die Utility-
-#       Targets help/build) ist in AGENTS.md §4 gelistet — AGENTS' eigene
-#       Zusage „Nur hier gelistete Targets existieren im Makefile".
+#   (1)+(2) ABGELOEST (slice-079) — die Deklarations-Konsistenz Doku <->
+#       Build-Targets prueft d-checks Modul `targets` ueber `make doc-targets`,
+#       das im `gates`-Aggregat laeuft. Die Nummern bleiben frei: sie stehen in
+#       den Closure-Notizen von slice-073/074/079 und in AGENTS §4.
 #   (3) Die modules-Liste der .a-check-Doku-Konfig (.d-check.yml) trägt die
 #       aktiven Module (links/anchors/ids/matrix) und NICHT external — sonst
 #       verliert der netzlose doc-check still seine Beweis-Aussage (AC-QA-02).
@@ -18,21 +16,11 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
-# Utility-Targets: keine Gates, müssen nicht in AGENTS §4 stehen.
-# arch-graph druckt nur den Architektur-Graphen (kein Pass/Fail), daher Utility.
-UTILITY_TARGETS='help build compile hooks arch-graph'
-
 # Bewusst NICHT `.PHONY`: Targets, die tatsächlich eine gleichnamige Datei
 # erzeugen. Heute keines — jedes Target dieses Makefiles ist ein Kommando.
 # Die Liste ist der deklarierte Ort für eine künftige Ausnahme; sie leer zu
 # lassen ist eine Aussage, keine Auslassung.
 NON_PHONY_TARGETS=''
-
-# Dokumentierte Targets: alle `make <name>`-Tokens in Tabellenzeilen.
-doc_targets() {
-  grep -E '^\|' "$1" | grep -oE '`make [a-z][a-z0-9_-]*`' \
-    | sed -E 's/`make ([a-z0-9_-]+)`/\1/' | sort -u
-}
 
 # Reale Targets aus allen Makefile-Fragmenten (Makefile + includebare *.mk):
 # Regelzeilen am Zeilenanfang, auch Mehrfach-Targets (`a b: dep`).
@@ -73,32 +61,13 @@ check_phony_complete() {  # $1 = Makefile
   return "$fail"
 }
 
-# nutzt globales MK_TARGETS
-check_documented_exist() {
-  local fail=0 doc t
-  for doc in "$@"; do
-    while IFS= read -r t; do
-      [ -z "$t" ] && continue
-      if ! grep -qx "$t" <<<"$MK_TARGETS"; then
-        echo "gate-consistency: FAIL — $doc dokumentiert 'make $t', das aber kein reales Target ist" >&2
-        fail=1
-      fi
-    done <<<"$(doc_targets "$doc")"
-  done
-  return "$fail"
-}
-
-self_test() {
+# Der Makefile-Parser bleibt geprueft, auch ohne (1)+(2): `makefile_targets`
+# traegt weiterhin `check_phony_complete`. Ein stiller Parser-Fehler dort waere
+# ein False-Green derselben Klasse wie slice-068 (Fund F-1).
+parser_self_test() {
   local tmp
   tmp="$(mktemp -d)"
-  printf '| `make phantom-target` | x |\n' > "$tmp/doc.md"
   printf 'echtes-target zweites-target: dep\n\ttrue\nVAR := x\n' > "$tmp/Makefile"
-  MK_TARGETS="$(makefile_targets "$tmp/Makefile")"
-  if check_documented_exist "$tmp/doc.md" 2>/dev/null; then
-    echo "gate-consistency: Selbsttest FEHLGESCHLAGEN — Phantom-Target nicht erkannt" >&2
-    rm -rf "$tmp"
-    exit 2
-  fi
   if [ "$(makefile_targets "$tmp/Makefile" | wc -l)" -ne 2 ]; then
     echo "gate-consistency: Selbsttest FEHLGESCHLAGEN — Makefile-Parser (Mehrfach-Targets/Zuweisungen)" >&2
     rm -rf "$tmp"
@@ -321,28 +290,17 @@ pin_self_test() {
   rm -rf "$tmp"
 }
 
-self_test
+parser_self_test
 phony_self_test
 pin_self_test
 adr_index_self_test
 fail=0
-MK_TARGETS="$(makefile_targets Makefile d-check.mk)"
 
-# (1) Doku → real
-check_documented_exist AGENTS.md harness/README.md || fail=1
-
-# (2) real → AGENTS §4 (ohne Utility-Targets)
-agents_targets="$(doc_targets AGENTS.md)"
-while IFS= read -r t; do
-  [ -z "$t" ] && continue
-  if grep -qw "$t" <<<"$UTILITY_TARGETS"; then
-    continue
-  fi
-  if ! grep -qx "$t" <<<"$agents_targets"; then
-    echo "gate-consistency: FAIL — reales Target '$t' fehlt in AGENTS.md §4" >&2
-    fail=1
-  fi
-done <<<"$MK_TARGETS"
+# (1)+(2) sind ABGELOEST (slice-079): die Deklarations-Konsistenz Doku <-> Build-
+# Targets prueft jetzt d-checks Modul `targets` ueber `make doc-targets`, das seit
+# slice-079 im `gates`-Aggregat laeuft. Die Paritaet ist in beiden Richtungen
+# gemessen (slice-073, erneut in slice-079): dieselben zwei Fixtures, dieselbe
+# Befundmenge — `targets` nennt zusaetzlich Datei und Zeile.
 
 # (3) .d-check.yml-Modulliste des netzlosen doc-check (AC-QA-02)
 modules_line="$(grep -E '^modules:' .d-check.yml || true)"
@@ -372,4 +330,4 @@ check_adr_index docs/plan/adr docs/plan/adr/README.md || fail=1
 if [ "$fail" -ne 0 ]; then
   exit 1
 fi
-echo "gate-consistency ok: Doku ↔ Makefile konsistent, .d-check.yml-Module intakt, Pins konsistent, .PHONY vollstaendig, ADR-Index vollstaendig (Selbsttests gefeuert)."
+echo "gate-consistency ok: .d-check.yml-Module intakt, Pins konsistent, .PHONY vollstaendig, ADR-Index vollstaendig (Selbsttests gefeuert; Doku ↔ Targets prueft doc-targets)."

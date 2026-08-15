@@ -106,6 +106,10 @@ commits:
 # nicht widersprechen (die Abloesung entscheidet slice-073).
 targets:
   makefiles: [Makefile, d-check.mk]
-  doc-tables: [AGENTS.md]
+  # BEIDE Doku-Tabellen: der abgeloeste gate-consistency-Check (1) las AGENTS.md
+  # UND harness/README.md. Ohne die zweite waere die Abloesung (slice-079) eine
+  # Scope-Verkleinerung — gemessen: ein Phantom nur in harness/README.md blieb
+  # unentdeckt.
+  doc-tables: [AGENTS.md, harness/README.md]
   authority: AGENTS.md
   exempt-targets: [help, build, compile, hooks, arch-graph]
