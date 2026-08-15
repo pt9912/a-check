@@ -49,7 +49,7 @@ er die **Verzeichnistiefe** (flach → `done/`), und ein Pfad aus Tiefe *n* brau
 zusätzliches `../`. Bei `welle-13` waren es **21** Verweise auf einen Schlag. `verify-slice-links`
 kann das **nicht** abfangen: seine Invariante („ein Verweis löst aus jedem Lifecycle-Verzeichnis
 auf") setzt gleiche Ebenen voraus und ist hier nachweislich unerfüllbar — der Sensor weist die
-Lücke deshalb ausdrücklich aus ([slice-089](in-progress/slice-089-welle-datei-verweis-invariante.md)).
+Lücke deshalb ausdrücklich aus ([slice-089](done/slice-089-welle-datei-verweis-invariante.md)).
 **Also: die Verweise im selben Commit nachziehen und `make gates` laufen lassen**; `doc-check` ist
 das Netz, aber erst *nach* dem `mv`.
 **Zum Steering-Loop:** die Einträge werden aus [`docs/plan/steering-loop.md`](../steering-loop.md)
