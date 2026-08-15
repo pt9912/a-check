@@ -26,7 +26,7 @@ Aussage, keine Auslassung.**
 
 | Slice | Trigger | Zustand |
 |---|---|---|
-| [slice-079](../open/slice-079-gate-consistency-abloesen.md) | **sofort** | Harness-Nachlauf aus `welle-12` |
+| [slice-079](../in-progress/slice-079-gate-consistency-abloesen.md) | **sofort** | Harness-Nachlauf aus `welle-12` |
 | [slice-080](../open/slice-080-verify-abloesung-dcheck.md) | d-check-Release mit `structure` + `links.resolve-from`, **und** der Pin ist gehoben | blockiert; die CR-Einreichung ist noch nicht erfolgt |
 | [slice-013](../open/slice-013-driving-driven-vertiefung.md), [slice-045](../open/slice-045-intern-extern-dateimenge.md) | siehe *Nächste Wellen* | vertagt, Evidenz gemessen und zu klein |
 

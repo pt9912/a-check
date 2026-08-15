@@ -27,7 +27,7 @@ unabhängigen Reviews.
 | **Review-Nachlauf** | [slice-068](slice-068-phony-vollstaendig.md) … [slice-078](slice-078-rollen-uebergaben.md) |
 
 **Der Review-Nachlauf gehört zur Welle**, nicht daneben: ohne ihn wäre die Migration *behauptet*,
-nicht belegt. [slice-079](../open/slice-079-gate-consistency-abloesen.md) und
+nicht belegt. [slice-079](../in-progress/slice-079-gate-consistency-abloesen.md) und
 [slice-080](../open/slice-080-verify-abloesung-dcheck.md) gehören **nicht** dazu — sie sind aus der
 Arbeit entstanden, haben aber einen anderen Gegenstand (d-check-Ablösung) und eigene Trigger.
 
@@ -86,7 +86,7 @@ der CI.
 
 ## Folge-Slices
 
-- [slice-079](../open/slice-079-gate-consistency-abloesen.md) — Ablösung von `gate-consistency`
+- [slice-079](../in-progress/slice-079-gate-consistency-abloesen.md) — Ablösung von `gate-consistency`
   (1)+(2) durch d-checks `targets`-Modul. Trigger: sofort, wartet auf nichts.
 - [slice-080](../open/slice-080-verify-abloesung-dcheck.md) — Ablösung der vier `verify-*`.
   Trigger: ein d-check-Release trägt `structure` + `links.resolve-from` **und** der Pin ist

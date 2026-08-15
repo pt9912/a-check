@@ -83,7 +83,7 @@ Slices und Roadmap festgelegt. `--trace --require-complete` findet **Anforderung
 
 | Weg | Dafür | Dagegen |
 |---|---|---|
-| **Lokaler Sensor** (~15 Zeilen `comm -13`, Muster [slice-071](../done/slice-071-sensor-scope-vollstaendig.md)) | schützt **heute**; die Fehlerrate ist belegt | ein weiterer P-Rest, den [slice-079](../open/slice-079-gate-consistency-abloesen.md)/[slice-080](../open/slice-080-verify-abloesung-dcheck.md) später wieder abtragen |
+| **Lokaler Sensor** (~15 Zeilen `comm -13`, Muster [slice-071](../done/slice-071-sensor-scope-vollstaendig.md)) | schützt **heute**; die Fehlerrate ist belegt | ein weiterer P-Rest, den [slice-079](../in-progress/slice-079-gate-consistency-abloesen.md)/[slice-080](../open/slice-080-verify-abloesung-dcheck.md) später wieder abtragen |
 | **Nur d-check-CR** | die richtige Heimat; d-check hat die Datei-Menge bereits | Einreichung ist Maintainer-Sache; bis dahin schützt **nichts**, und der Fehler wiederholt sich messbar |
 | **Beides** | Schutz jetzt, Ablösung später mit Trigger wie [slice-080](../open/slice-080-verify-abloesung-dcheck.md) | doppelte Buchführung für 15 Zeilen |
 
@@ -93,7 +93,7 @@ stehen ~15 Zeilen gegen einen zweimal belegten Fehler. Ein Slice, der auf ein Fr
 hätte den zweiten Vorfall nicht verhindert. Der Entscheid gehört trotzdem beim Bau begründet und
 nicht hier vorweggenommen — insbesondere die Frage, **wo** der Sensor hängt: `gate-consistency`
 trägt bereits Vollständigkeits-Prüfungen (`.PHONY`, Pins), ist aber selbst Ablöse-Kandidat in
-[slice-079](../open/slice-079-gate-consistency-abloesen.md).
+[slice-079](../in-progress/slice-079-gate-consistency-abloesen.md).
 
 **Negativ-Proben:**
 
@@ -134,7 +134,7 @@ Selbsttest gegen die 589 Zeilen, um die es in
 
 **Der Ort war die eigentliche Frage, und sie hat sich beim Nachsehen aufgelöst.** §3 hielt fest,
 `gate-consistency` sei selbst Ablöse-Kandidat. Die Lektüre von
-[slice-079](../open/slice-079-gate-consistency-abloesen.md) zeigt: abgelöst werden **nur (1)+(2)**,
+[slice-079](../in-progress/slice-079-gate-consistency-abloesen.md) zeigt: abgelöst werden **nur (1)+(2)**,
 die Checks (3)(4)(5) bleiben ausdrücklich stehen. Damit ist der Sensor dort kein Anbau an ein
 sterbendes Gate, sondern Check **(6)** in einem, das bleibt. Ohne diese Prüfung wäre der Sensor aus
 einer falschen Annahme heraus an einen schlechteren Ort gewandert.
@@ -155,7 +155,7 @@ zu unterscheiden.
 
 **Bewusst eng: nur die fehlende Richtung.** Ein Index-Eintrag **ohne** Datei ist ein toter Link und
 gehört `doc-check`. Ihn hier mitzuprüfen wäre genau die Doppelung, die
-[slice-079](../open/slice-079-gate-consistency-abloesen.md) an anderer Stelle gerade abträgt.
+[slice-079](../in-progress/slice-079-gate-consistency-abloesen.md) an anderer Stelle gerade abträgt.
 
 **Mitgenommener Doku-Drift:** [`harness/README.md`](../../../../harness/README.md) führte `cli.go`
 noch als Pin-Stelle. Die Konstante ist seit

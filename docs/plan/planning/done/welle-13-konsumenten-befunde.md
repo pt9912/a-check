@@ -100,7 +100,7 @@ wäre hier die falsche Zusage.
 - **Wird blockiert von:** nichts. Jeder Slice der Welle trägt den Trigger „sofort" in seinem `§0`.
 - **Blockiert:** nichts.
 - **Ausdrücklich nicht in dieser Welle, obwohl offen:**
-  [slice-079](../open/slice-079-gate-consistency-abloesen.md) (Harness-Nachlauf aus `welle-12`,
+  [slice-079](../in-progress/slice-079-gate-consistency-abloesen.md) (Harness-Nachlauf aus `welle-12`,
   ohne Welle) und [slice-080](../open/slice-080-verify-abloesung-dcheck.md) (wartet auf ein
   d-check-Release). **Ein Slice, der auf ein Fremdrepo wartet, gehört in keine Welle** — er würde
   ihren Closure-Trigger auf unbestimmte Zeit blockieren. Genau dieser Fehler hielt `slice-046`
