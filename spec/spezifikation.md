@@ -1,6 +1,6 @@
 # Spezifikation — a-check
 
-**Version:** 0.30.0
+**Version:** 0.31.0
 
 **Status:** Draft
 
@@ -166,9 +166,26 @@ gewählte Backend die Menge der importierten Symbole/Module:
    gilt **nur für die C-Syntax-Sprachen**; **Python** wird nicht C-gestrippt —
    seine `#`-Kommentarzeilen werden von den zeilen-verankerten Mustern nie
    gewertet, und eine `/*`-artige Bytefolge in einem Python-String-Literal
-   (z. B. das Glob `"**/*.py"`) darf keine echten Imports verschlucken. Import-ähnliche Zeilen in
-   **String-Literalen** sind eine **ausgewiesene Heuristik-Grenze** (0.1.0:
-   reines Kommentar-Stripping, keine String-Awareness). Wo die Heuristik an
+   (z. B. das Glob `"**/*.py"`) darf keine echten Imports verschlucken.
+
+   **Zeichenketten-Literale werden dabei übersprungen**, damit ein `/*` oder `//`
+   **darin** keinen Kommentar öffnet: der Scanner kennt die Begrenzer `"`, `'` und
+   `` ` `` und übernimmt ihren Inhalt verbatim. Ein Backslash escapt das nächste
+   Byte (nicht in Backtick-Literalen); `"`- und `'`-Literale enden **auch am
+   Zeilenumbruch** (keines ist mehrzeilig, ein unbalancierter Begrenzer kostet damit
+   höchstens seine Zeile), Backtick-Literale laufen bis zum schließenden Begrenzer.
+   **Leitplanke:** der Scanner verschluckt im Zweifel **weniger** — ein
+   stehengebliebener Kommentar ist ein sichtbares Falsch-Positiv, eine verschluckte
+   Zeile ein stilles Falsch-Negativ. **Ausgewiesene Grenzen** hierzu: ein
+   unbalanciertes Apostroph (Rust-Lifetime `&'a str`) lässt die Kommentare **seiner
+   Zeile** stehen — für die zeilen-verankerten Import-Muster folgenlos, wirksam nur
+   für `constructs`/`forbidden_constructs` in derselben Zeile; und Raw-String-Formen
+   mit eigener Syntax (C++ `R"(…)"`, Rust `r#"…"#`, Text-Blöcke in Java/Kotlin/C#)
+   werden **nicht** erkannt.
+
+   Import-ähnliche Zeilen in **String-Literalen** bleiben eine **ausgewiesene
+   Heuristik-Grenze**: sie werden nicht gewertet, weil das Literal übersprungen wird —
+   ein Muster darin greift nicht. Wo die Heuristik an
    ihre Grenze stößt (z. B. ein framework-fremdes `Queue.h` unter einem
    `Q[A-Za-z]`-Muster oder ein Treffer in einem String), wird die Grenze
    ausgewiesen, nicht verschwiegen; `markers.ignore_symbols` erlaubt eine
@@ -520,6 +537,7 @@ und [AC-QA-03](lastenheft.md#ac-qa-03--reproduzierbarkeit).
 | 0.17.0 | 2026-07-05 | `SPEC-CONF-001`: **datei-mengen-bewusste Mehr-Wurzel-Auflösung** (Stufe 2) — `fixed-root` mit ≥ 2 `roots` löst den FQN gegen die real gescannten Dateien auf (endungs-agnostisch, package==directory); Schicht am realen Kandidaten-Pfad, Phantom bleibt extern; der Ladezeit-Guard aus 0.16.0 entfällt. Gleicher FQN real in ≥ 2 Roots + **verschiedene** Schichten → Exit 2 **nach dem Scan** (distinct-layer; `expect`/`actual` same-layer löst sauber). Folgt [`AC-FA-CONF-001`](lastenheft.md#ac-fa-conf-001--konfigurationsdatei-a-checkyml) 0.17.0. |
 | 0.18.0 | 2026-07-06 | `SPEC-CONF-001`/`SPEC-EXTRACT-001`: **deklarations-bewusste Mehr-Wurzel-Auflösung** (Stufe 3) — bei `fixed-root` mit ≥ 2 `roots` gewinnt für ein deklarations-bewusstes Backend (Kotlin) die **reale Top-Level-Deklaration** über den bloßen Datei-Namens-Match (Evidenz-Rangfolge deklariert > Paketverzeichnis > keine); genau ein deklarierender Root ⇒ eindeutig, ≥ 2 deklarierende Roots verschiedener Schichten ⇒ Exit 2, kein Treffer ⇒ extern (fail-open). `SPEC-EXTRACT-001`: **Kotlin** liefert zusätzlich Top-Level-Deklarationen (`fun`/Extension/`val`/`class`/`object`/`interface`/`typealias`), übrige Backends no-op (leeres Set). Folgt [`AC-FA-CONF-001`](lastenheft.md#ac-fa-conf-001--konfigurationsdatei-a-checkyml)/[`AC-FA-EXTRACT-001`](lastenheft.md#ac-fa-extract-001--sprach-backends-für-die-import-extraktion) 0.18.0. |
 | 0.19.0 | 2026-07-09 | Neu `SPEC-CLI-002` (Graph-Renderer-Vertrag: Config-Modell→Mermaid **pur**; stabile interne IDs + escaptes Label je nutzergesteuertem Text; Kante je `edges`, abgesetzte `allow`-Kante; Dangling-/Composition-Root-/Adapter-Sink-Sonderknoten; `classDef` je effektiver Rolle via geteiltem Resolver; `direction`-Subgraphs; implizite Regeln als Legende; Escaping-Vertrag; Determinismus-Ordnung; `tech` v1 deferred). `SPEC-CLI-001` um den no-scan-`--print-graph`-Modus präzisiert (load-time/config-validation-Parität inkl. unbekannter Sprache; Restargument nach dem Pfad → Exit 2; **keine** scanzeitige Fehler-Parität). Folgt [`AC-FA-CLI-002`](lastenheft.md#ac-fa-cli-002--architektur-graph-ausgabe) 0.19.0. |
+| 0.31.0 | 2026-08-15 | `SPEC-EXTRACT-001`: **der Kommentar-Strip überspringt Zeichenketten-Literale** — ein `/*` oder `//` in einem String öffnete bisher einen Phantom-Kommentar bis zum nächsten `*/`, wodurch Importe, `forbidden_constructs`, `constructs` und Deklarationen dahinter **still** verschwanden (sieben C-Syntax-Backends; Python war gegen genau das ausgenommen). Der Scanner kennt jetzt die Begrenzer `"`, `'` und Backtick, mit Backslash-Escape (nicht bei Backtick) und Zeilen-Ende für `"`/`'`. **Leitplanke:** im Zweifel weniger verschlucken — ein stehengebliebener Kommentar ist ein sichtbares Falsch-Positiv, eine verschluckte Zeile ein stilles Falsch-Negativ. Ausgewiesene Grenzen: unbalanciertes Apostroph (Rust-Lifetime) wirkt auf die **nicht** zeilen-verankerten Muster seiner Zeile; Raw-String-Formen (`R"(…)"`, `r#"…"#`, Text-Blöcke) bleiben unerkannt. **Verhaltensänderung:** bei Konsumenten können zuvor verschluckte Verstöße sichtbar werden ([ADR-0034](../docs/plan/adr/0034-stripcomments-string-literale.md)). slice-090. |
 | 0.30.0 | 2026-08-09 | `SPEC-CONF-001`: **`forbidden_constructs` fail-closed beim Laden** — der Block wurde bisher ungeprüft durchgereicht und hatte **vier** stille Ausgänge, die alle mit Exit 0 endeten: unbekannte Schicht (Tippfehler), Schicht ohne Rolle `port`, leeres Muster, leere Musterliste. Alle vier sind jetzt **Exit 2**; Schicht-Schlüssel sortiert geprüft ([SPEC-DET-001](#spec-det-001--determinismus-vertrag)). Schließt dieselbe falsch-grüne Klasse, die `constructs`/`tech`/`languages` längst fail-closed behandeln ([AC-QA-02](lastenheft.md#ac-qa-02--hermetik-und-ehrliche-heuristik-grenze)); die Bindung an `role: port` bleibt, weil sie [AC-FA-RULE-004](lastenheft.md#ac-fa-rule-004--port-disziplin-regel-port-impurity) („Port-Disziplin") **einlöst** — eine Ausweitung wäre eine Lastenheft-Änderung. Der Fehlertext nennt `constructs` als Gegenstück, nicht als Ersatz; die Schicht-Blacklist außerhalb `port` bleibt eine ausgewiesene Angebots-Lücke. Kein Lastenheft-Bump ([ADR-0033](../docs/plan/adr/0033-forbidden-constructs-fail-closed.md)). slice-086. |
 | 0.29.0 | 2026-08-09 | `SPEC-CLI-001`: **Auflösungs-Diagnose** (advisory, nach der Grenz-Diagnose) — löst im **gesamten Scan** kein extrahiertes Symbol auf eine Schicht auf, obwohl Symbole extrahiert wurden, nennt der Scan je Schicht mit Symbolen `Schicht <name>: N Datei(en), 0 von M Import-Symbolen lösen auf eine Schicht auf`. Deckt die gefährlichste Konfiguration ab: alle Dateien in Schichten, alle Symbole extrahiert, jedes Ziel per fail-open extern — **vollständig grün, vollständig blind**. Auslösung **repo-weit, nicht je Schicht**: eine einzelne Schicht ohne auflösende Symbole ist legitim (abhängigkeitsfreier Kern) und von kaputter Auflösung nicht unterscheidbar; daraus folgt ausdrücklich, dass der **Teil**ausfall still bleibt. Schichten ohne Symbole werden nicht genannt, `composition_root` zählt nicht, stabil nach Schichtnamen sortiert, **Exit-Code unberührt**, Meldung auch bei null Befunden. Kein Lastenheft-Bump ([ADR-0032](../docs/plan/adr/0032-aufloesungs-diagnose-repoweit.md)). slice-085. |
 | 0.28.0 | 2026-08-09 | `SPEC-CLI-001`: **Grenz-Diagnose** (advisory, nach der Abdeckungs-Diagnose) — ein Scan weist als `pfad:zeile: form` die Import-Zeilen aus, deren **Schreibweise** per Konstruktion zu keiner beurteilbaren Kante führt: (1) **nicht extrahiert** (relativer Python-Import, zweite Direktive auf derselben Zeile) und (2) **extrahiert, aber strukturell unauflösbar** (`./`/`../`-Präfix unter einem Modus ≠ `relative`; unter `relative` still). Ein Symbol, das nur im konkreten Baum kein Ziel findet, wird **nicht** gemeldet — von repo-externem Code nicht unterscheidbar. **Exit-Code unberührt**, Meldung auch bei null Befunden, stabil nach (Pfad, Zeile) sortiert, ab zehn Zeilen gekürzt **mit Restzahl**; ein Baum ohne solche Zeilen bleibt still. Löst die Doku-Zusage von [AC-QA-02](lastenheft.md#ac-qa-02--hermetik-und-ehrliche-heuristik-grenze) am geprüften Baum ein, ohne eine Grenze zu verschieben; kein Lastenheft-Bump ([ADR-0031](../docs/plan/adr/0031-heuristik-grenzen-diagnose.md)). slice-081. |
