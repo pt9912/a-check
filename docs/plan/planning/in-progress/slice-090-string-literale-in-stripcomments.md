@@ -116,18 +116,69 @@ braucht das eine ADR — auch wenn es sachlich eine Fehlerbehebung ist.
 
 ## 5. DoD
 
-- [ ] Spec-first: die Verhaltensänderung steht in einer ADR mit `Status: Accepted` und in
-      [SPEC-EXTRACT-001](../../../../spec/spezifikation.md#spec-extract-001--import-extraktion),
-      bevor der Code committet wird.
-- [ ] Ein `/*` oder `//` **in einem Zeichenketten-Literal** verschluckt nichts mehr; echte
-      Kommentare werden weiterhin entfernt. Beleg: die sechs Proben aus §3, davon vier vor dem Bau
-      rot bzw. falsch-grün.
-- [ ] `make gates` und `make image-test` grün — Ausgabe in eine Datei, Exit-Code getrennt geprüft.
+- [x] Spec-first: [ADR-0034](../../adr/0034-stripcomments-string-literale.md) `Accepted` und
+      [SPEC-EXTRACT-001](../../../../spec/spezifikation.md#spec-extract-001--import-extraktion)
+      0.31.0 — beide in `923dfac`, **vor** dem Code-Commit.
+- [x] Ein `/*` oder `//` in einem Zeichenketten-Literal verschluckt nichts mehr; echte Kommentare
+      werden weiterhin entfernt. Beleg: die sechs Proben unten, davon zwei vor dem Bau falsch-grün.
+- [x] `make gates` und `make image-test` grün — Ausgabe in eine Datei, Exit-Code getrennt geprüft.
 
 ## 6. Closure-Notiz
 
-_(beim Abschluss ausfüllen — genau **ein** solcher Abschnitt je Slice,
-[`AGENTS.md`](../../../../AGENTS.md) §5; `make verify` prüft das.)_
+**Entschieden: Umfang (b)** — drei Begrenzer (`"`, `'`, `` ` ``), festgehalten in
+[ADR-0034](../../adr/0034-stripcomments-string-literale.md). Backtick kostet denselben
+Zustandsautomaten und deckt genau die Stellen, an denen Go-Code seine Globs und Regexe hält und
+TypeScript interpoliert.
+
+**Die sechs Proben aus §3:**
+
+```text
+(1) Go, Glob-String + Verstoss danach   -> core-impurity, Exit 1   (war: 0 Befunde)
+(2) TS, URL-Import + tech-Regel         -> core-impurity, Exit 1   (war: 0 Befunde)
+(3) ECHTER Blockkommentar mit Import    -> 0 Befunde                (unveraendert)
+(4) ECHTER Zeilenkommentar mit Import   -> 0 Befunde                (unveraendert)
+(5) Python-Fixture aus slice-020        -> gruen                    (unveraendert)
+(6) make arch-check (Dogfooding)        -> 0 Befunde                (unveraendert)
+```
+
+Die Proben (3)–(6) sind die eigentliche Arbeit: ein Strip, der **gar nichts** mehr entfernt, hätte
+(1) und (2) ebenfalls bestanden. Sechs neue Unit-Tests decken beide Richtungen ab, darunter die
+Zeilenzahl-Erhaltung — Befunde tragen Zeilennummern, und ein Literal wird mitsamt seinen Umbrüchen
+kopiert.
+
+**Beobachtbare Architektur-Aussage: die Reihenfolge im `switch` ist die ganze Entscheidung.** Der
+Literal-Fall steht **vor** den Kommentar-Fällen. Stünde er dahinter, wäre nichts gewonnen: ein
+`/*` im String würde weiter zuerst greifen. Drei Zeilen Code, deren Wirkung vollständig in ihrer
+Position liegt — und deren Fehlen sieben Backends still falsch-grün machte.
+
+**Die Grenze wurde gemessen, nicht behauptet — und war enger als vermutet.** Die Vermutung: ein
+Rust-Lifetime (`&'a str`) ist ein unbalanciertes Apostroph und lässt die Kommentare seiner Zeile
+stehen. Die erste Probe zeigte **kein** Falsch-Positiv, und der Grund ist lehrreich: **alle
+Import-Muster sind zeilenverankert** (`^\s*use …`) und können von einem Kommentar hinter Code
+ohnehin nicht ausgelöst werden. Erst mit einem `constructs`-Muster — nicht verankert — ließ sich
+der Fall konstruieren:
+
+```text
+fn f(x: &'a str) {} // dlopen ist hier nur erwaehnt
+  mit Apostroph  -> construct-leak: Konstrukt dlopen ausserhalb src/plugin   (Falsch-Positiv)
+  ohne Apostroph -> gesamt: 0 Befund(e)                                       (korrekt)
+```
+
+Hätte ich die Grenze aus der Konstruktion abgeleitet statt sie zu messen, stünde in der ADR eine zu
+breite Warnung — und in einer immutablen dazu.
+
+**Lerneintrag — Form: benannte Spec-Lücke.** Als Prüfsatz: *Wird eine Ausnahme für **eine** Sprache
+mit einer Begründung eingeführt, die für alle gilt, ist die Ausnahme der Fehler — nicht die Regel.*
+Die Python-Ausnahme in `prepSource` trägt seit
+[slice-020](../done/slice-020-python-backend.md) wörtlich die Begründung *„a `/*`-like byte
+sequence inside a string literal … would swallow every real import — a silent false-green"*. Nichts
+daran ist python-spezifisch. Der Schluss auf die übrigen sieben Backends wurde nie gezogen, und
+kein Gate konnte ihn ziehen: Es gab keine Fixture, die den Fall außerhalb von Python stellte.
+**Gefunden hat es ein Code-Review**, sieben Gate-Läufe und ein Release später.
+
+**Zu prüfen wäre**, ob weitere sprach-spezifische Sonderbehandlungen dieselbe Form haben —
+`prepSource` und `declarationsFor` sind die beiden Stellen, an denen der Extraktor nach Sprache
+verzweigt.
 
 ## 7. Sub-Area-Modus
 

@@ -639,3 +639,65 @@ func TestNonKotlinNoDeclarations(t *testing.T) { // slice-031/ADR-0023: nicht de
 		t.Fatalf("Go-Backend darf keine Deklarationen liefern (No-op), got %v", got)
 	}
 }
+
+// --- ADR-0034: Zeichenketten-Literale im Kommentar-Strip --------------------
+
+// Der Fall, der v0.17.0 ausgeliefert wurde: ein Glob-String oeffnete einen
+// Phantom-Blockkommentar, der alles danach verschluckte.
+func TestGlobStringDoesNotSwallowImports(t *testing.T) {
+	src := "package core\n\nvar globs = []string{\"/**\"}\n\nimport _ \"fix/internal/adapters\"\n"
+	if got := stripComments(src); !strings.Contains(got, "fix/internal/adapters") {
+		t.Fatalf("Import nach einem /**-String verschluckt:\n%q", got)
+	}
+}
+
+// Die //-Variante: eine URL im Import-Specifier.
+func TestURLInStringDoesNotStartLineComment(t *testing.T) {
+	src := "import { serve } from \"https://deno.land/std/http/server.ts\";\n"
+	if got := stripComments(src); !strings.Contains(got, "deno.land/std/http/server.ts") {
+		t.Fatalf("URL-Import an // abgeschnitten:\n%q", got)
+	}
+}
+
+// Backtick-Literale sind mehrzeilig und escapefrei (Go-Raw-Strings, TS-Templates).
+func TestBacktickLiteralIsOpaqueAndMultiline(t *testing.T) {
+	src := "var p = `a /* b\nc */ d`\nimport _ \"pkg/x\"\n"
+	got := stripComments(src)
+	for _, want := range []string{"a /* b", "c */ d", "pkg/x"} {
+		if !strings.Contains(got, want) {
+			t.Fatalf("Backtick-Literal nicht verbatim uebernommen (%q fehlt):\n%q", want, got)
+		}
+	}
+}
+
+// Die Gegenrichtung — ohne sie waere ein Strip, der GAR NICHTS entfernt,
+// von einem korrekten nicht zu unterscheiden.
+func TestRealCommentsAreStillStripped(t *testing.T) {
+	src := "package core\n/*\nimport _ \"blockkommentar/x\"\n*/\n// import _ \"zeilenkommentar/y\"\nimport _ \"echt/z\"\n"
+	got := stripComments(src)
+	for _, gone := range []string{"blockkommentar/x", "zeilenkommentar/y"} {
+		if strings.Contains(got, gone) {
+			t.Fatalf("echter Kommentar nicht entfernt (%q noch da):\n%q", gone, got)
+		}
+	}
+	if !strings.Contains(got, "echt/z") {
+		t.Fatalf("echter Import mitentfernt:\n%q", got)
+	}
+}
+
+// Zeilennummern muessen stabil bleiben — Befunde tragen sie.
+func TestStripPreservesLineCount(t *testing.T) {
+	src := "a\nvar s = \"/*\"\n/* weg\nauch weg */\nb\n"
+	if got, want := strings.Count(stripComments(src), "\n"), strings.Count(src, "\n"); got != want {
+		t.Fatalf("Zeilenzahl veraendert: %d statt %d", got, want)
+	}
+}
+
+// Ein unbalanciertes Anfuehrungszeichen darf hoechstens SEINE Zeile kosten,
+// nicht den Rest der Datei (ADR-0034, Regel 2).
+func TestUnbalancedQuoteEndsAtNewline(t *testing.T) {
+	src := "var s = \"offen\nimport _ \"pkg/danach\"\n"
+	if got := stripComments(src); !strings.Contains(got, "pkg/danach") {
+		t.Fatalf("unbalanciertes Anfuehrungszeichen frass ueber die Zeile hinaus:\n%q", got)
+	}
+}

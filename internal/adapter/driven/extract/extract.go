@@ -555,6 +555,10 @@ func stripComments(src string) string {
 	var b strings.Builder
 	for i := 0; i < len(src); {
 		switch {
+		case src[i] == '"' || src[i] == '\'' || src[i] == '`':
+			// ZUERST: ein Literal wird VERBATIM uebernommen, damit ein `/*` oder
+			// `//` darin keinen Phantom-Kommentar oeffnet (slice-090, ADR-0034).
+			i = copyLiteral(src, i, &b)
 		case peek2(src, i, "/*"):
 			i = skipBlock(src, i, &b)
 		case peek2(src, i, "//"):
@@ -565,6 +569,49 @@ func stripComments(src string) string {
 		}
 	}
 	return b.String()
+}
+
+// copyLiteral copies a string/char literal verbatim, including its delimiters,
+// and returns the index just past it. Everything inside is opaque: a `/*` there
+// is text, not a comment opener (ADR-0034).
+//
+// Quote-relative rules, deliberately coarse — this is a comment stripper, not a
+// lexer (ADR-0002):
+//
+//   - Backslash escapes the next byte, EXCEPT in backtick literals (Go raw
+//     strings and TS templates have no escapes).
+//   - A `"` or `'` literal also ends at a NEWLINE. Neither is multi-line in any
+//     supported language, so an unbalanced quote costs at most its own line —
+//     without this, a stray apostrophe would make the rest of the file opaque
+//     and stop comment stripping entirely. Backtick literals ARE multi-line and
+//     run to their closing delimiter.
+//   - Unterminated at EOF: the rest is copied verbatim. That errs toward
+//     KEEPING text, never toward swallowing it — the direction this slice exists
+//     to enforce.
+//
+// Known boundary (AC-QA-02): a Rust lifetime (`&'a str`) is an unbalanced
+// apostrophe, so the remainder of THAT line is treated as a literal and its
+// comments stay in. The failure direction is a visible false positive, not a
+// silent false negative.
+func copyLiteral(s string, i int, b *strings.Builder) int {
+	q := s[i]
+	b.WriteByte(q)
+	for i++; i < len(s); i++ {
+		if s[i] == '\\' && q != '`' && i+1 < len(s) {
+			b.WriteByte(s[i])
+			b.WriteByte(s[i+1])
+			i++
+			continue
+		}
+		b.WriteByte(s[i])
+		if s[i] == q {
+			return i + 1
+		}
+		if s[i] == '\n' && q != '`' {
+			return i + 1 // unterminiert: endet an der Zeile
+		}
+	}
+	return i
 }
 
 func peek2(s string, i int, tok string) bool {
