@@ -122,11 +122,14 @@ hätte den Bruch danach gefangen; die falsche Behauptung wäre trotzdem in `done
   den Adaptionen) — Ausgang: **Folge-Slice**, Etappe D, mit demselben Register.
 
 - *Die Placeholder-Heuristik von `verify-closure-notes` kollidiert mit dem neuen Risiko-Block* —
-  sie kennt `noch offen` als Platzhalter-Wendung, und die neue Baseline verlangt in **jeder**
-  Closure-Notiz einen Abschnitt über *offene* Risiken. Der Zusammenstoß ist systematisch, nicht
-  zufällig. Ausgang: **weiter offen**, fürs Beobachtungs-Register (D). Ein Sensor-Eingriff wäre
-  hier verfrüht — die Steering-Loop-Regel verlangt den zweiten Vorfall für einen Eintrag und den
-  dritten für einen Sensor; dies ist der erste, und die Umformulierung war billiger als die Regel.
+  eine ihrer Wendungen beschreibt genau das, was die neue Baseline in **jeder** Closure-Notiz
+  verlangt: einen Abschnitt über offene Risiken. Der Zusammenstoß ist systematisch, nicht
+  zufällig, und er ist heute **zweimal** aufgetreten — beim zweiten Mal an dieser Notiz selbst,
+  weil sie die Wendung **zitierte**. Damit ist es dieselbe Klasse wie
+  [`SL-004`](../../steering-loop.md#sl-004--ein-neuer-doku-sensor-meldet-im-ersten-lauf-sein-eigenes-umfeld):
+  ein Sensor meldet Text, der *über* sein Muster spricht. Ausgang: **Eintrag im Steering-Loop**
+  (die Regel verlangt ihn ab dem zweiten Vorfall); der Sensor-Eingriff — Zitat-Kontexte aus der
+  Placeholder-Suche ausblenden — wird beim dritten fällig.
 - *Die vorgeschriebene Reihenfolge kann die Prüfung nicht abnehmen, die sie erfüllen soll* —
   `verify-closure-notes` greift **nur in `done/`**, der Workflow führt `make verify` aber in
   Schritt 8 aus und den `git mv` erst in Schritt 9. Die Closure-Notiz eines Slice wird damit
