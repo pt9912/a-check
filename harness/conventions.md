@@ -39,9 +39,6 @@ Ist-Zustand.
 
 Pointer, keine Wiederholung des Inhalts.
 
-- **Extern (Lehrmaterial):**
-  [`ai-harness-course@v5.12.0`](https://github.com/pt9912/ai-harness-course/tree/v5.12.0)
-  (Kurs unter `kurs/de/`).
 - **Vendored Baseline (Regelwerk + Templates) — die Lese-Form:**
   [`.harness/baseline/v5.12.0/regelwerk/README.md`](../.harness/baseline/v5.12.0/regelwerk/README.md)
   (Index) und

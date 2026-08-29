@@ -47,9 +47,9 @@ Tag und URL im Dokument steht — nachzählbar.
 
 ## 5. DoD
 
-- [ ] Das Bullet *Extern (Lehrmaterial)* ist entfernt; §Adoptierte Konventions-Quellen trägt die
+- [x] Das Bullet *Extern (Lehrmaterial)* ist entfernt; §Adoptierte Konventions-Quellen trägt die
       vendored Lese-Form und die In-Repo-Form — Beleg: Diff.
-- [ ] Der externe Stand steht weiterhin **genau einmal** im Dokument, mit Tag und URL, in
+- [x] Der externe Stand steht weiterhin **genau einmal** im Dokument, mit Tag und URL, in
       §Baseline — Beleg: `grep` über die Datei.
 
 Pflicht, aber **kein** Liefer-Punkt: `make gates` und zum Abschluss `make verify` grün — Ausgabe
@@ -57,8 +57,28 @@ in eine Datei, Exit-Code getrennt geprüft, nie in eine Pipe.
 
 ## 6. Closure-Notiz
 
-_(beim Abschluss ausfüllen — genau **ein** solcher Abschnitt je Slice,
-[`AGENTS.md`](../../../../AGENTS.md) §5; `make verify` prüft das.)_
+**Geliefert:** §Adoptierte Konventions-Quellen trägt zwei Bullets statt drei; der externe Stand
+steht im Dokument noch **genau einmal** — als Release-Tag mit URL in §Baseline.
+
+**Lerneintrag — Form: geschärfte Regel.** *Eine Pflicht-Angabe ist erfüllt, wenn sie **einmal**
+im Dokument steht — nicht, wenn sie in jedem Abschnitt steht, der sie erwähnen könnte.* Die
+Pflichtgliederung nennt für diesen Abschnitt „Pointer extern"; das las sich wie eine Vorgabe für
+**diese** Sektion und war der Grund, warum die Angabe zweimal dastand. Sie steht aber ohnehin in
+§Baseline, wo die Gliederung „Stand/Version" verlangt. *Weil* eine Gliederung sagt, was ein
+Dokument tragen muss, und nicht, wie oft.
+
+**Zwei beobachtbare Closure-Kriterien:**
+
+1. `grep` über die Datei findet den Kurs-Stand **einmal**, nicht zweimal.
+2. `doc-check` bleibt bei 0 Befunden — der entfernte Verweis war kein Ziel.
+
+**Offene Risiken und ihr Ausgang:**
+
+- *Die Pflichtgliederung nennt „Pointer extern" für diese Sektion, und dort steht er nun nicht
+  mehr* — Ausgang: **gestrichen mit Begründung**. Die Angabe ist nicht verloren, sie steht eine
+  Sektion höher an ihrem vorgesehenen Ort; eine Abweichung entsteht dadurch nicht.
+
+**Folge-Slices:** keine.
 
 ## 7. Sub-Area-Modus
 
