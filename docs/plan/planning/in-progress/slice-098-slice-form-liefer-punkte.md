@@ -81,19 +81,53 @@ reihen sich ein.
 
 ## 6. DoD
 
-- [ ] Vorlage trägt die drei Kopffelder und die Größen-Regel in Liefer-Punkten; der Gate-Lauf
+- [x] Vorlage trägt die drei Kopffelder und die Größen-Regel in Liefer-Punkten; der Gate-Lauf
       steht als feste Zeile statt als Checkbox — Beleg: Diff.
-- [ ] `verify-slice-form` prüft beides ab slice-098, der Selbsttest feuert für **beide** neuen
+- [x] `verify-slice-form` prüft beides ab slice-098, der Selbsttest feuert für **beide** neuen
       Befundklassen und schweigt für die konforme Fixture — Beleg: Target-Ausgabe.
-- [ ] [`AGENTS.md`](../../../../AGENTS.md) §4 und §5 nennen die neue Metrik — Beleg: Diff.
+- [x] [`AGENTS.md`](../../../../AGENTS.md) §4 und §5 nennen die neue Metrik — Beleg: Diff.
 
 Pflicht, aber kein Liefer-Punkt: `make gates` und zum Abschluss `make verify` grün, **Ausgabe in
 eine Datei**, Exit-Code getrennt geprüft, nie in eine Pipe.
 
 ## 7. Closure-Notiz
 
-_(beim Abschluss ausfüllen — genau **ein** solcher Abschnitt je Slice,
-[`AGENTS.md`](../../../../AGENTS.md) §5; `make verify` prüft das.)_
+**Geliefert:** die Größen-Metrik misst ab sofort Liefer-Punkte statt DoD-Punkte, der Gate-Lauf ist
+aus dem DoD heraus, und der Sensor hält beides offen — mit zwei neuen Prüfungen ab einem zweiten
+Stichtag.
+
+**Lerneintrag — Form: neuer Sensor.** Neu beobachtbar ist *„ein Slice führt einen konstanten Punkt
+als Liefer-Punkt"*. Das war vorher unsichtbar, **weil** der alte Sensor die richtige *Gestalt*
+zählte (Checkboxen im DoD-Abschnitt), aber die falsche *Sache*: seit slice-052 hat **jeder** Slice
+einen von drei Slots auf `make gates` grün verbrannt — auf einen Punkt, der über die Größe des
+Slice nichts aussagt. Der Sensor war damit systematisch ein Drittel zu streng, und niemand konnte
+es sehen, weil er formal korrekt lief. *Die eigentliche Lehre:* ein Zähler ist erst dann ein Maß,
+wenn die Vorlage dafür sorgt, dass er nur Zählbares vorfindet — die Nicht-Zähl-Liste der Baseline
+ist keine Ermessensfrage, sobald die konstanten Punkte gar nicht erst als Checkbox erscheinen.
+
+**Zwei beobachtbare Closure-Kriterien:**
+
+1. `make verify-slice-form` meldet **zwei** Stichtage (52 und 98) und läuft mit Exit 0 über 47
+   geprüfte und 51 grandfatherte Slices. Die **Negativ-Probe an der echten Datei** — eine
+   Gate-Checkbox testweise ins DoD dieses Slice eingefügt — ergibt Exit 2 mit beiden erwarteten
+   Meldungen (4 Liefer-Punkte **und** Gate-Lauf als DoD-Punkt). Der Selbsttest allein hätte nur
+   die Funktion belegt, nicht die Verdrahtung.
+2. Dieser Slice ist der erste unter der neuen Form und trägt sie selbst: drei Kopffelder, drei
+   Liefer-Punkte, Gate-Lauf als feste Zeile darunter.
+
+**Offene Risiken und ihr Ausgang:**
+
+- *46 Slices zwischen den beiden Stichtagen tragen die alte Form* — Ausgang: **gestrichen mit
+  Begründung**. Grandfathering ist die Antwort; ein rückwirkender Umbau wäre Geschichts-Politur
+  ohne Erkenntnisgewinn, und der Sensor prüft die Stufung in beide Richtungen.
+- *Der Rest der Form ist noch offen* (`## Leseordnung`, fünf Provenienz-Zeiger, Fall des alten
+  vendored Baums) — Ausgang: **Folge-Slice C4**. Diese Menge war nach C1 aus meiner
+  Etappen-Aufzählung gefallen und ist in §5 ausdrücklich wieder aufgenommen.
+- *„Höchstens zwei Schichten" bleibt ungeprüft* — Ausgang: **weiter offen**, gehört ins
+  Beobachtungs-Register (Etappe D). Ein Zähler über Schicht-Grenzen wäre Schein-Genauigkeit; das
+  stand schon vor diesem Slice so im Sensor.
+
+**Folge-Slices:** C4 (Rest der Form), danach D.
 
 ## 8. Sub-Area-Modus
 

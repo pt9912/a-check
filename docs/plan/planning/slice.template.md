@@ -2,7 +2,7 @@
 
 > **Vorlagen-Hinweis.** Kopieren nach `docs/plan/planning/open/slice-<NNN>-<kurztitel>.md`,
 > Platzhalter ersetzen, diesen Block löschen. Übersetzt aus
-> `.harness/baseline/v3.5.2/templates/docs/plan/planning/slice.template.md`
+> `.harness/baseline/v5.12.0/templates/docs/plan/planning/slice.template.md`
 > ([MR-006](../../../harness/conventions.md#mr-006--baseline-committet-vendored-statt-per-url-referenziert));
 > Verweise zeigen auf die vendored Baseline und auf a-checks eigene Regeln statt auf Kurs-URLs.
 > Angelegt in slice-052.
@@ -10,8 +10,14 @@
 **Status:** open — der Zustand ist das **Verzeichnis**, nicht dieses Feld
 (`open/ → next/ → in-progress/ → done/`, Wechsel nur per `git mv` als eigener Commit,
 [`AGENTS.md`](../../../AGENTS.md) §3.3/§5).
+**Verantwortlich:** <wer den Slice hält — Rolle, nicht Person>
+**Autor:** <wer diesen Plan geschrieben hat>
+**Berührte Spec-Stellen:** <Kennung, wo das Zielelement eine trägt, sonst der §-Anker; `—` wenn keine>
 **Deckt:** `AC-*`/`ADR-*`/Fund-IDs, die dieser Slice bedient.
 **Bezug:** auslösender Slice, Roadmap-Zeile.
+
+> Die drei Kopffelder sind ab slice-098 Pflicht und werden von
+> `make verify-slice-form` geprüft; `—` ist eine gültige Antwort, Schweigen nicht.
 
 ---
 
@@ -25,9 +31,15 @@ nicht belegen lässt, ist ein Wunsch.
 Datei-/Komponenten-Ebene.
 
 > **Größen-Regel (Fund B-1 aus [slice-048](done/slice-048-modul-delta-lesen.md)).**
-> **Höchstens drei DoD-Punkte und höchstens zwei Schichten.** Passt der Slice nicht hinein,
-> ist die richtige Antwort **zerlegen**, nicht dehnen. `make verify` prüft die DoD-Zahl ab
+> **Höchstens drei Liefer-Punkte und höchstens zwei Schichten.** Passt der Slice nicht hinein,
+> ist die richtige Antwort **zerlegen**, nicht dehnen. `make verify` prüft die Zahl ab
 > slice-052 maschinell.
+>
+> **Gezählt wird nur, was mit dem Umfang wächst** — die Artefakte und Akzeptanzkriterien dieses
+> Slice. **Nicht** gezählt: Gate-Läufe, Closure-Notiz, Register, Risiko-Ausgänge; sie sind pro
+> Slice konstant und sagen über die Größe nichts (Baseline `modul-05` §Ziel-Form: Slice, Metrik
+> seit slice-098). Darum steht der Gate-Lauf unten als **feste Zeile**, nicht als Checkbox — ein
+> Gate-Lauf im DoD ist seit slice-098 ein Befund.
 
 ## 3. Auszuführende Gates
 
@@ -43,8 +55,10 @@ Abgrenzung mit Begründung. Fehlt sie, wandert später jede Nachfrage in den Sli
 
 - [ ] <prüfbares Kriterium, mit Beleg-Art>
 - [ ] <prüfbares Kriterium, mit Beleg-Art>
-- [ ] `make gates` (und bei Abschluss `make verify`) grün — **Ausgabe in eine Datei**, Exit-Code
-      getrennt geprüft, nie in eine Pipe.
+- [ ] <prüfbares Kriterium, mit Beleg-Art>
+
+Pflicht, aber **kein** Liefer-Punkt: `make gates` und zum Abschluss `make verify` grün —
+**Ausgabe in eine Datei**, Exit-Code getrennt geprüft, nie in eine Pipe.
 
 ## 6. Closure-Notiz
 
@@ -78,5 +92,5 @@ Sub-Area überhaupt eine ist: drei Inklusions-Achsen (eigene `MR-NNN` denkbar ·
 Inventur-Linie · eigene Pfad-/Datei-Familie), **Schwelle mindestens zwei**. Zu grobe Schnitte
 („das Backend") vorher ausdifferenzieren.
 
-Quelle: `.harness/baseline/v3.5.2/regelwerk/modul-05-planning-harness.md` und
-`grundlagen-konventionen.md` §Was ist eine Sub-Area?
+Quelle: `.harness/baseline/v5.12.0/regelwerk/modul-05-planning-harness.md` und
+`grundlagen-bootstrap.md` §Was ist eine Sub-Area?

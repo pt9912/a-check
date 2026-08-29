@@ -16,8 +16,18 @@
 #                 unterhalb ebenfalls konform sind (dann ist die Variable inert).
 #
 # Geprueft wird STRUKTUR:
-#   (1) hoechstens 3 DoD-Punkte (B-1)
+#   (1) hoechstens 3 LIEFER-Punkte (B-1, Metrik ab slice-098)
 #   (2) in done/: die Closure-Notiz benennt eine der drei Lerneintrag-Formen (B-5)
+#   (3) ab slice-098: kein Gate-Lauf als DoD-Punkt
+#   (4) ab slice-098: die drei Kopffelder sind gesetzt
+#
+# METRIK-WECHSEL (slice-098, Baseline v5.12.0 modul-05 §Ziel-Form: Slice).
+# Gezaehlt werden LIEFER-Punkte: "nur, was mit dem Umfang waechst". NICHT
+# gezaehlt: Gate-Laeufe, Closure-Notiz, Register, Risiko-Ausgaenge. Die
+# Zaehl-LOGIK bleibt (Checkboxen im DoD-Abschnitt) — richtig wird sie dadurch,
+# dass die Vorlage die konstanten Punkte gar nicht erst als Checkbox fuehrt.
+# Pruefung (3) haelt das offen: ohne sie kehrt der Gate-Lauf als Checkbox
+# zurueck und frisst weiter einen von drei Slots.
 #
 # NICHT geprueft: "hoechstens zwei Schichten" aus B-1 — was eine Schicht ist,
 # ist eine Ermessensfrage ueber Modul-Grenzen; ein Zaehler darueber waere
@@ -26,6 +36,7 @@ set -euo pipefail
 cd "$(dirname "$0")/.."
 
 SLICE_FORM_FROM=52          # Stichtag: erster Slice unter der Vorlage
+SLICE_HEAD_FROM=98          # Stichtag: erster Slice unter der Liefer-Punkt-Form
 MAX_DOD=3
 FORMEN='geschärfte Regel|neuer Sensor|benannte Spec-Lücke'
 
@@ -46,16 +57,43 @@ applies() {  # $1 = Pfad -> 0 = geprueft, 1 = grandfathered, 2 = Name nicht pars
   [ "$num" -ge "$SLICE_FORM_FROM" ]
 }
 
-check_file() {  # $1 = Datei, $2 = "done" oder "offen"; Befunde auf stdout
-  local f="$1" phase="$2" n fail=0 body
+# Zweiter Stichtag fuer die Pruefungen (3) und (4). Eigene Funktion aus dem
+# gleichen Grund wie applies(): der Selbsttest muss die Stufung pruefen koennen.
+# Die 46 Slices zwischen den beiden Stichtagen tragen alle einen Gate-Lauf im
+# DoD und keine Kopffelder — sie rueckwirkend umzuschreiben waere
+# Geschichts-Politur ohne Erkenntnisgewinn.
+applies_head() {  # $1 = Pfad -> 0 = neue Form gilt, 1 = nicht
+  local num; num="$(slice_num "$1")"
+  [ -n "$num" ] || return 1
+  [ "$num" -ge "$SLICE_HEAD_FROM" ]
+}
+
+check_file() {  # $1 = Datei, $2 = "done"/"offen", $3 = 1 wenn Kopf-Regeln gelten
+  local f="$1" phase="$2" headrules="${3:-0}" n fail=0 body feld
   # Nur Checkboxen IM DoD-Abschnitt zaehlen — dieselbe Abschnitts-Disziplin wie
   # in closure_body() und in verify-ac-form.sh. Eine dateiweite Zaehlung meldete
   # eine Checkliste in "Was offen bleibt" als DoD-Ueberschreitung (Review
   # 2026-07-26, R-052-F3; im Bestand noch aequivalent, also latent).
   n="$(awk '/^#+ .*DoD/{i=1;next} i&&/^#+ /{i=0} i&&/^- \[[ x]\] /{c++} END{print c+0}' "$f")"
   if [ "$n" -gt "$MAX_DOD" ]; then
-    echo "$f: $n DoD-Punkte — hoechstens $MAX_DOD erlaubt (Groessen-Regel B-1); zerlegen statt dehnen"
+    echo "$f: $n Liefer-Punkte — hoechstens $MAX_DOD erlaubt (Groessen-Regel B-1); zerlegen statt dehnen"
     fail=1
+  fi
+  if [ "$headrules" = "1" ]; then
+    # (3) Ein Gate-Lauf ist pro Slice konstant und sagt ueber die Groesse nichts.
+    if awk '/^#+ .*DoD/{i=1;next} i&&/^#+ /{i=0} i&&/^- \[[ x]\] /' "$f" \
+         | grep -qE 'make (gates|verify)'; then
+      echo "$f: Gate-Lauf als DoD-Punkt — Gate-Laeufe zaehlen nicht als Liefer-Punkt"
+      echo "    (modul-05 §Ziel-Form: Slice); als feste Zeile UNTER das DoD stellen."
+      fail=1
+    fi
+    # (4) Kopffelder. '—' ist eine gueltige Antwort, Schweigen nicht.
+    for feld in 'Verantwortlich' 'Autor' 'Spec-Stellen'; do
+      if ! grep -qE "\*\*[^*]*${feld}:\*\*" "$f"; then
+        echo "$f: Kopffeld '$feld' fehlt (modul-05 §Ziel-Form: Slice)"
+        fail=1
+      fi
+    done
   fi
   if [ "$phase" = "done" ]; then
     body="$(awk '/^## .*[Cc]losure/ && !/[Cc]losure-(Trigger|Kriterien)/ {i=1;next} i&&/^## /{i=0} i' "$f")"
@@ -82,6 +120,42 @@ self_test() {
   { echo '## 4. Was offen bleibt'; echo '- [ ] spaeter x'; echo '- [ ] spaeter y';
     echo '## 5. DoD'; echo '- [x] a'; echo '- [x] b'; echo '## 6. Closure-Notiz';
     echo '**Lerneintrag — Form: neuer Sensor.** X, weil Y.'; } > "$tmp/checkbox-ausserhalb.md"
+
+  # Fixtures fuer die Pruefungen (3) und (4) — sie laufen mit headrules=1.
+  { echo '**Verantwortlich:** wer'; echo '**Autor:** wer'; echo '**Spec-Stellen:** —';
+    echo '## 5. DoD'; echo '- [x] a'; echo '- [x] b'; echo '## 6. Closure-Notiz';
+    echo '**Lerneintrag — Form: geschärfte Regel.** X, weil Y.'; } > "$tmp/gut-neu.md"
+  { echo '**Verantwortlich:** wer'; echo '**Autor:** wer'; echo '**Spec-Stellen:** —';
+    echo '## 5. DoD'; echo '- [x] a'; echo '- [x] `make gates` gruen';
+    echo '## 6. Closure-Notiz'; echo '**Form: neuer Sensor**'; } > "$tmp/gate-im-dod.md"
+  { echo '## 5. DoD'; echo '- [x] a'; echo '## 6. Closure-Notiz';
+    echo '**Lerneintrag — Form: neuer Sensor.** X, weil Y.'; } > "$tmp/ohne-kopf.md"
+
+  if ! check_file "$tmp/gut-neu.md" done 1 >/dev/null; then
+    echo "verify-slice-form: Selbsttest FEHLGESCHLAGEN — konforme Fixture 'gut-neu' beanstandet" >&2
+    rm -rf "$tmp"; exit 2
+  fi
+  local badneu
+  for badneu in gate-im-dod ohne-kopf; do
+    if check_file "$tmp/$badneu.md" done 1 >/dev/null; then
+      echo "verify-slice-form: Selbsttest FEHLGESCHLAGEN — '$badneu' nicht erkannt (Pruefung tot)" >&2
+      rm -rf "$tmp"; exit 2
+    fi
+  done
+  # Die neuen Pruefungen duerfen UNTERHALB des zweiten Stichtags nicht feuern —
+  # sonst waeren 46 Bestands-Slices ueber Nacht rot.
+  if ! check_file "$tmp/ohne-kopf.md" done 0 >/dev/null; then
+    echo "verify-slice-form: Selbsttest FEHLGESCHLAGEN — Kopf-Regel greift trotz Grandfathering" >&2
+    rm -rf "$tmp"; exit 2
+  fi
+  if applies_head "$tmp/slice-097-alt.md"; then
+    echo "verify-slice-form: Selbsttest FEHLGESCHLAGEN — slice-097 nicht von der Kopf-Regel ausgenommen" >&2
+    rm -rf "$tmp"; exit 2
+  fi
+  if ! applies_head "$tmp/slice-098-neu.md"; then
+    echo "verify-slice-form: Selbsttest FEHLGESCHLAGEN — slice-098 wird von der Kopf-Regel uebersprungen" >&2
+    rm -rf "$tmp"; exit 2
+  fi
 
   local good
   for good in gut checkbox-ausserhalb; do
@@ -143,7 +217,8 @@ for dir in open next in-progress done; do
       uebersprungen=$((uebersprungen + 1)); continue
     fi
     geprueft=$((geprueft + 1))
-    if ! out="$(check_file "$f" "$phase")"; then
+    hr=0; applies_head "$f" && hr=1
+    if ! out="$(check_file "$f" "$phase" "$hr")"; then
       printf '%s\n' "$out" >&2; fail=1
     fi
   done
@@ -164,3 +239,4 @@ if [ "$((geprueft + uebersprungen))" -eq 0 ]; then
   exit 1
 fi
 echo "verify-slice-form ok: $geprueft Slice(s) ab slice-$SLICE_FORM_FROM geprueft, $uebersprungen aelter (grandfathered)."
+echo "  Liefer-Punkt-Metrik und Kopffelder gelten ab slice-$SLICE_HEAD_FROM; darunter grandfathered."

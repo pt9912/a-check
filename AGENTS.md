@@ -138,7 +138,7 @@ Aggregat). Ob ein Gate gerade grün ist, sagt die CI (Badge im
 | `make guard-selftest` | Selbsttest des PreToolUse-Command-Guard (Tool-Call-Gate §3.1) |
 | `make regelwerk-check` | **kein Gate** — Wartung der vendored Baseline ([MR-006](harness/conventions.md#mr-006--baseline-committet-vendored-statt-per-url-referenziert)): Integrität gegen `SHA256SUMS` fail-closed; die Freshness-Hälfte bleibt als Netz-Operation ausdrücklich ungeprüft |
 | `make gates` | alle inneren Gates (mandatory vor Handoff) |
-| `make verify-slice-form` | Form der Slice-Pläne ab slice-052: höchstens drei DoD-Punkte, benannte Lerneintrag-Form; ältere grandfathered (bootstrap-aware, slice-052) |
+| `make verify-slice-form` | Form der Slice-Pläne ab slice-052: höchstens drei **Liefer**-Punkte, benannte Lerneintrag-Form; ab slice-098 zusätzlich kein Gate-Lauf als DoD-Punkt und die drei Kopffelder (`Verantwortlich:`/`Autor:`/Spec-Stellen). Ältere grandfathered — zwei Stichtage, bootstrap-aware (slice-052, slice-098) |
 | `make verify-ac-form` | Form neuer `AC-*` (§5): Happy · Boundary · Negative · Out-of-Scope; die 19 bei Einführung bestehenden sind grandfathered (slice-054) |
 | `make verify-closure-notes` | Struktur der Closure-Notizen in `done/` (§5): genau eine, ausgefüllt, kein Platzhalter, keine Floskel (slice-050) |
 | `make verify-slice-links` | Relative Verweise wandernder Slices (`open`/`next`/`in-progress`) lösen aus **jedem** Lifecycle-Verzeichnis auf ([`SL-002`](docs/plan/steering-loop.md)); `done/` ist Endzustand und ausgenommen (slice-060) |
@@ -222,10 +222,15 @@ Aggregat). Ob ein Gate gerade grün ist, sagt die CI (Badge im
   die Zahl ist das Einzige, was die Schwelle prüfbar macht.
 - **Slice-Form:** neue Slices entstehen aus
   [`docs/plan/planning/slice.template.md`](docs/plan/planning/slice.template.md). Sie trägt die
-  Größen-Regel — **höchstens drei DoD-Punkte und höchstens zwei Schichten**; passt der Slice nicht
-  hinein, wird er **zerlegt, nicht gedehnt** — und verlangt den Lerneintrag in einer von drei
+  Größen-Regel — **höchstens drei Liefer-Punkte und höchstens zwei Schichten**; passt der Slice
+  nicht hinein, wird er **zerlegt, nicht gedehnt** — und verlangt den Lerneintrag in einer von drei
   **benannten** Formen (geschärfte Regel · neuer Sensor · benannte Spec-Lücke). `make verify`
   prüft beides ab slice-052; ältere Slices sind grandfathered.
+  **Gezählt wird nur, was mit dem Umfang wächst.** Gate-Läufe, Closure-Notiz, Register und
+  Risiko-Ausgänge zählen **nicht** — sie sind pro Slice konstant (Baseline `modul-05`
+  §Ziel-Form: Slice). Der Gate-Lauf steht darum als feste Zeile unter dem DoD; als Checkbox ist er
+  ab slice-098 ein Befund. Ab demselben Stichtag trägt der Kopf `Verantwortlich:`, `Autor:` und
+  die berührten Spec-Stellen — `—` ist eine gültige Antwort, Schweigen nicht.
 - **Closure-Pflicht:** ein Slice in `done/` trägt **genau einen**
   Closure-Abschnitt, und der ist ausgefüllt — kein Platzhalter, keine
   Floskel. Inhaltlich mindestens eines von dreien: ein **Lernsignal mit
