@@ -35,7 +35,7 @@ Verglichen wurden **17** a-check-Artefakte gegen ihre vendored Vorlage, in **zwe
 exakter Titel-Vergleich und ein Vergleich über Kernbegriffe.
 
 **Beide irren, in entgegengesetzte Richtungen.** Der exakte meldet Namensvarianten als fehlend
-(`MR-000 — Baseline-Aussage` **(inkl. ID-Schema-Deklaration)**). Der unscharfe vergibt zu viel:
+([`MR-000`](../../../../harness/conventions.md#mr-000) trägt im Repo den Zusatz *(inkl. ID-Schema-Deklaration)*). Der unscharfe vergibt zu viel:
 er hält `## Aktuelle Welle` und `## Offene Wellen` für dasselbe, weil beide „Welle" enthalten —
 und genau diese Umbenennung ist der Befund, der diesen Slice ausgelöst hat. **Kein Skript
 entscheidet das; jede Zeile braucht ein Urteil.** Die Tabelle unten trägt darum eine Spalte
@@ -107,11 +107,11 @@ Formwechsel wäre damit ein doppeltes halluziniertes Gate.
 
 ## 7. DoD
 
-- [ ] Alle 17 Artefakte mit Vorlage sind verglichen, in zwei Verfahren, und die Grenze beider
+- [x] Alle 17 Artefakte mit Vorlage sind verglichen, in zwei Verfahren, und die Grenze beider
       Verfahren ist benannt statt kaschiert (§3) — Beleg: §4.
-- [ ] Jede Sektions-Zeile trägt ein Urteil aus **echt · kein Befund · ungeprüft · deckungsgleich**;
+- [x] Jede Sektions-Zeile trägt ein Urteil aus **echt · kein Befund · ungeprüft · deckungsgleich**;
       keine Zeile bleibt ohne — Beleg: Tabelle §4 B.
-- [ ] Die zwei Befunde mit Mechanik-Folgen sind belegt statt behauptet: der Modellwechsel der
+- [x] Die zwei Befunde mit Mechanik-Folgen sind belegt statt behauptet: der Modellwechsel der
       Roadmap und die zwei Sensoren, die ein Formwechsel still abschaltet (§5).
 
 Pflicht, aber **kein** Liefer-Punkt: `make gates` und zum Abschluss `make verify` grün — Ausgabe
@@ -119,8 +119,39 @@ in eine Datei, Exit-Code getrennt geprüft, nie in eine Pipe.
 
 ## 8. Closure-Notiz
 
-_(beim Abschluss ausfüllen — genau **ein** solcher Abschnitt je Slice,
-[`AGENTS.md`](../../../../AGENTS.md) §5; `make verify` prüft das.)_
+**Geliefert:** der Form-Review, den slice-099 hätte leisten sollen — 17 Artefakte, jede Zeile mit
+Urteil, die ungeprüften als ungeprüft benannt. Umgesetzt wurde nichts.
+
+**Lerneintrag — Form: geschärfte Regel.** *Ein Review, der seinen eigenen Geltungsbereich
+begründet, hat ihn damit noch nicht geprüft.* slice-099 §3 trug eine saubere Tabelle, die den
+Umfang des Reviews aus `modul-02` herleitete — und die Herleitung war an zwei Stellen falsch: sie
+las „Singletons **mit Pflichtgliederung**" statt „Singletons", und sie verglich Überschriften statt
+Inhalt. *Weil* eine begründete Verengung genau so aussieht wie eine richtige Grenze, und der
+Unterschied nur auffällt, wenn jemand **gegen** die Herleitung misst statt mit ihr. Beide Lücken
+fand der Maintainer. **Der Prüfsatz:** die Grenze eines Reviews wird an einem Fall geprüft, der
+außerhalb liegen soll — findet man dort etwas, war es keine Grenze.
+
+**Zwei beobachtbare Closure-Kriterien:**
+
+1. Die Tabelle in §4 B trägt für **jede** Zeile eines von vier Urteilen; „ungeprüft" steht
+   viermal und ist damit sichtbar, statt als stilles Nichts zu erscheinen.
+2. Beide Mechanik-Befunde sind gemessen, nicht behauptet: `verify-slice-form` zählt in der neuen
+   Gliederung **0** statt 5 DoD-Punkte (Probe gefahren), und die Roadmap-Vorlage hat **+65/−11**
+   Zeilen, von denen der Überschriften-Vergleich genau eine sah.
+
+**Offene Risiken und ihr Ausgang:**
+
+- *Vier Zeilen sind ungeprüft* (`AGENTS.md` §3.7, `README.md`, die drei Spec-Straten) — Ausgang:
+  **weiter offen**, im Beobachtungs-Register als `BEO-011`; sie brauchen Lesearbeit, keine
+  Messung.
+- *Der Review selbst könnte wieder zu eng sein* — Ausgang: **weiter offen**, als `BEO-012` im
+  Register. Zwei Verfahren mit gegenläufigem Irrtum sind besser als eines, aber kein Beweis; die
+  nächste Lücke fände wieder jemand anders.
+- *Drei wiederkehrende Vorlagen fehlen ganz* — Ausgang: **Folge-Slice**, eigener Schnitt nach der
+  Ausführung der Form-Angleichung.
+
+**Folge-Slices:** je Artefakt geschnitten, nach Abnahme dieser Tabelle. Die Reihenfolge schlägt
+§4 vor: Roadmap und Slice-Vorlage zuerst, weil beide Mechanik berühren.
 
 ## 9. Sub-Area-Modus
 

@@ -25,6 +25,8 @@ sagt. Angelegt mit slice-101.
 | BEO-008 | `verify-slice-links` nimmt `done/` als Endzustand aus — ein **done**-Slice, der auf einen noch wandernden zeigt, bleibt ungeprüft und bricht, wenn dieser wandert | Planungs-Harness | 1× | slice-093 | offen — die Invariante ist auf wandernde Slices gerichtet, nicht auf Verweise **auf** sie; gefangen hat es `doc-check`, nicht der zuständige Sensor |
 | BEO-009 | Chronik in Dateien, die jeder Agentenlauf liest: eine Sektion, die Fortschritt erzählt, ist zwischen zwei Schritten falsch und kostet bei jedem Lauf Kontext | Harness-Einstieg | 1× | slice-103 | offen — in `conventions.md` behoben; `AGENTS.md` §5 und `harness/README.md` §Sensors tragen je eine gemessene Reststelle |
 | BEO-010 | Baseline-Normtext wird im Repo **nachgeschrieben** statt verwiesen — zwei Fassungen driften | Harness-Einstieg | 1× | slice-103 | offen — in `conventions.md` auf den Zeiger gekürzt; `AGENTS.md` §1 trägt dieselbe Klausel weiterhin im Rumpf |
+| BEO-011 | Vier Form-Vergleiche sind ungeprüft: `AGENTS.md` §3.7, `README.md` und die drei Spec-Straten — Namensvarianten oder echte Lücken, entscheidbar nur durch Lesen | Planungs-Harness | 1× | slice-105 | offen |
+| BEO-012 | Ein Review kann seinen Geltungsbereich begründen und ihn trotzdem zu eng ziehen; beide bisherigen Lücken fand der Maintainer, nicht der Review | Planungs-Harness | 1× | slice-105 | offen — zwei Verfahren mit gegenläufigem Irrtum sind besser als eines, aber kein Beweis |
 
 ## Gestrichene Einträge
 
