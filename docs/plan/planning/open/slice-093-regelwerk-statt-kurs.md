@@ -32,9 +32,10 @@ Die Ansage steht gegen den Wortlaut an zwei Stellen im Repo:
 
 **Beide sind korrekte Wiedergaben einer echten, adoptierten Baseline-Regel.** Sie steht als
 Rumpftext im vendored Regelwerk selbst
-(`.harness/baseline/v3.5.2/regelwerk/README.md`, Zeilen 13–14): *„Es trägt keine eigene
+(`.harness/baseline/v5.12.0/regelwerk/README.md`, Zeilen 18–19): *„Es trägt keine eigene
 Normativität: maßgeblich für den Inhalt bleibt der Kurs."* Netzlos nachprüfbar, kein Zitat aus
-zweiter Hand.
+zweiter Hand. Der Wortlaut ist im vorherigen Stand identisch (dort Zeilen 13–14) — die Klausel hat
+den Sprung `v3.5.2` → `v5.12.0` unverändert überstanden, dieser Slice hängt also nicht an ihm.
 
 *(Dieselbe Aussage steht zusätzlich im `conventions.template.md` der Baseline — dort aber in einem
 HTML-Kommentar, also als Bedienhinweis. Die Fundstelle der **Norm** ist der Regelwerk-Rumpf oben;
