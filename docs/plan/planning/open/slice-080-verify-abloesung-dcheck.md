@@ -25,16 +25,17 @@ ins Leere, weil zwar das Target eingebunden, aber nie konfiguriert wurde
 ([slice-074](../done/slice-074-doc-targets-wirksam.md)). Ein Modul in einem Release, das a-check
 nicht zieht, ändert hier nichts.
 
-**Vorbedingung außerhalb dieses Repos:** CR 1 und CR 2 müssen bei d-check **eingereicht** sein.
-Das ist ein Akt gegenüber einem Fremdrepo und bleibt Maintainer-Sache
-([slice-073 §4](../done/slice-073-dcheck-statt-eigenbau.md)). Solange die Einreichung nicht
-erfolgt ist, kann Trigger-Hälfte 1 nie eintreten — **dieser Slice ist dann dauerhaft blockiert,
-und das ist der ehrliche Zustand**, kein Versäumnis.
+**Beide Hälften sind erfüllt.** `v0.67.0` trägt das Modul `structure` **und** die Option
+`links.resolve-from`; der Pin ist mit [slice-115](../done/slice-115-dcheck-pin-v0670.md) gehoben.
+CR 1 und CR 2 aus [slice-073 §8](../done/slice-073-dcheck-statt-eigenbau.md) sind damit umgesetzt —
+die Vorbedingung außerhalb dieses Repos ist **entfallen**, nicht offen. Beleg: `--print-config` des
+Release nennt in beiden Konfigurationsbeispielen a-checks eigene Verzeichnisse und
+Abschnittstitel.
 
 **Rückführungen:**
 
 - `in-progress` → `open`: falls die gelieferten Module die Paritäts-Probe aus §3 nicht bestehen.
-- Verwerfen: falls d-check die CRs ablehnt. Dann bleiben die 589 Zeilen dauerhaft lokal, und
+- Verwerfen: falls d-check CR 3 ablehnt. Dann bleiben die 589 Zeilen dauerhaft lokal, und
   **diese Entscheidung gehört in eine ADR**, nicht in ein stilles Liegenlassen.
 
 ## 1. Auslöser
@@ -55,6 +56,21 @@ Das ist a-checks eigene Doktrin auf a-check angewandt: ein Shell-Skript im Konsu
 eine **generische** Invariante prüft, ist ein CR-Kandidat für das Werkzeug — *verteilen statt
 kopieren*. d-check hat dieses Muster zweimal gefahren (`vcs` aus `adr-immutable-check.sh`,
 `targets` aus `gate-consistency.sh`), beide Male mit Paritätsbeleg gegen das abgelöste Skript.
+
+**Gemessen an `v0.67.0`.** Die vier sind **nicht** gleich weit — der Lauf gegen einen Scratch-Baum
+mit echter `.d-check.yml` trennt sie:
+
+| Eigenbau | Deckung durch das Release |
+|---|---|
+| `verify-slice-links` | Vertrag passt eins zu eins (`dirs` + `fixed-dirs`); Probe steht aus |
+| `verify-closure-notes` | strukturelle Hälfte **ja** — `sections: one` fand den Doppeltreffer *Closure-Trigger* / *Closure-Notiz* selbst; zwei Regeln nötig wegen des Abschnitts-Namenswechsels im Bestand. Die Risiko-Ausgangs-Prüfung bleibt lokal: sie vergleicht §6 mit §7, `structure` ist abschnitts-**lokal** |
+| `verify-slice-form` | **nein** — `max-tasks: 3` liefert **9** `section-oversized`, acht davon die Slices 108–115 mit je **7** Task-Items und 2–3 Liefer-Punkten. Der Bestand ist regelkonform; der Zähler misst das Falsche |
+| `verify-ac-form` | **nein** — die **19** grandfatherten Anforderungen sind Abschnitte **einer** Datei, `exempt-paths` ist datei-granular |
+
+Die zwei Lücken sind **generisch, nicht a-check-eigen**: die Ziel-Form der Baseline liefert selbst
+eine DoD mit neun Checkboxen aus, sechs davon pro Slice konstant, und schreibt eine Zeile darüber,
+dass Gate-Läufe und Closure-Pflichten nicht mitzählen. Daraus entsteht **CR 3** (§8). Er ist
+Vorbedingung für die **vollständige** Ablösung — **nicht** für den Beginn dieses Slice.
 
 ## 2. Betroffene Module
 
@@ -88,7 +104,8 @@ macht als der Sensor, ist genauso ein Bruch wie eines, das weniger fängt.
 
 ## 4. Was bewusst nicht getan wird
 
-- **Die CRs einreichen.** Fremdrepo, Maintainer-Sache — siehe §0.
+- **CR 3 einreichen.** Fremdrepo, Maintainer-Sache — wie schon bei CR 1 und CR 2
+  ([slice-073 §4](../done/slice-073-dcheck-statt-eigenbau.md)).
 - **`gate-consistency` (1)+(2).** Das ist [slice-079](../done/slice-079-gate-consistency-abloesen.md) und
   hängt an keinem CR.
 - **Die lokal verbleibenden Prüfungen.** `.d-check.yml`-Modulliste, Pin-Konsistenz, `.PHONY`,
@@ -98,6 +115,8 @@ macht als der Sensor, ist genauso ein Bruch wie eines, das weniger fängt.
 
 ## 5. DoD
 
+- [ ] **CR 3 ist als Text geliefert** (§8): die zwei gemessenen Lücken in `structure`, je mit
+      Paritäts-Mutations-Beleg, und ohne Verhaltensänderung, solange die neuen Schlüssel fehlen.
 - [ ] Jeder abgelöste Sensor hat einen **Paritäts-Mutations-Beleg** in beide Richtungen. Beleg:
       die Tabelle aus §3, je Zeile ein Lauf gegen Modul **und** (vor dem Entfernen) gegen den
       Sensor.
@@ -114,3 +133,83 @@ _(beim Abschluss ausfüllen — genau **ein** solcher Abschnitt je Slice,
 ## 7. Sub-Area-Modus
 
 Alle berührten Sub-Areas GF.
+
+## 8. CR-Text für d-check
+
+Dieser Abschnitt **ist** die Lieferung aus §5 DoD 1. Er liegt im Slice, weil §4 das Einreichen
+ausdrücklich dem Maintainer überlässt — dieselbe Form wie
+[slice-073 §8](../done/slice-073-dcheck-statt-eigenbau.md).
+
+---
+
+### CR 3 — `structure`: die geprüfte Menge deklarierbar machen
+
+**Anlass — gemessen, nicht vermutet.** `structure` wendet `max-tasks` und die Abschnitts-Auswahl
+auf die **vorgefundene** Menge an. Das Regelwerk verlangt an zwei Stellen eine **erklärte
+Teilmenge**:
+
+1. **Die Größen-Regel zählt nicht alle Task-Items.** Ein Lauf von `max-tasks: 3` gegen die
+   Slice-Pläne eines Adopters (`v0.67.0`, `--enable structure`) liefert **9 Befunde**
+   `section-oversized`. Acht davon sind die Slices 108–115 — **jeder Slice, der seit Inkrafttreten
+   der Konstanten-Regel geschrieben wurde**: je **7** Task-Items, davon **2–3** Liefer-Punkte. Der
+   Bestand ist regelkonform; der Zähler misst das Falsche.
+2. **Grandfathering lebt innerhalb einer Datei.** Wer `require-all: [Happy, Boundary, Negative]`
+   über `section-pattern` durchsetzt, muss die bei Einführung bestehenden Anforderungen ausnehmen —
+   hier **19**. Sie sind Abschnitte **einer** Datei; `exempt-paths` ist datei-granular und kann sie
+   nicht erreichen. Die Alternative ist, den Bestand umzuschreiben — das trifft die Form statt der
+   Substanz und macht aus vertraglich bindenden Anforderungen Formularübungen.
+
+**Nicht adopter-spezifisch — die Ziel-Form erzeugt den Fehlbefund selbst.** Die Slice-Vorlage der
+Baseline liefert eine DoD mit **neun** Checkboxen aus, von denen **sechs** pro Slice konstant sind
+(Gate-Lauf, Closure-Notiz, Reconciliation-Register, Beobachtungs-Register, Risiko-Ausgang, drei
+Paarungen), und schreibt eine Zeile darüber selbst: *„Gate-Läufe und die vier Closure-Pflichten
+darunter zählen nicht mit."* Wer die Vorlage benutzt **und** die Größen-Regel prüft, bekommt heute
+zwangsläufig Falsch-Positive — auf **jedem** neuen Slice, während der Altbestand grün bleibt. Der
+Sensor wird über die Zeit unbrauchbar, nicht sofort.
+
+**Vertrag.** Zwei Optionen an bestehenden Regeln; ohne sie byte-identisches Verhalten. Keine neuen
+Grund-Codes — beide **verkleinern** nur die geprüfte Menge.
+
+```yaml
+structure:
+  - files: "docs/plan/planning/**/slice-*.md"
+    section-pattern: '^## .*(DoD|Definition of Done)'
+    max-tasks: 3
+    tasks-ignore-pattern: '(make gates|Closure-Notiz|Beobachtungs-Register|Risiko aus)'
+    #   Task-Items, die dieses RE2 treffen, zaehlen fuer max-tasks NICHT mit.
+    #   Ohne den Schluessel: alle Items zaehlen — heutiges Verhalten.
+
+  - files: "spec/lastenheft.md"
+    section-pattern: '^### AC-'
+    sections: each
+    require-all: [Happy, Boundary, Negative]
+    exempt-sections: '^AC-[A-Z]+-0(0[1-9]|1[0-9])\b'
+    #   Abschnitte, deren UEBERSCHRIFTSTEXT dieses RE2 trifft, prueft DIESE Regel
+    #   nicht — Geschwister von exempt-paths, eine Granularitaetsstufe tiefer.
+    #   Der Stichtag steht damit in der Konfiguration statt in einem Skript.
+```
+
+**Warum keine eigenen Module.** Beides ist dieselbe Frage mit erklärter Grundmenge, keine neue
+Frage. `tasks-ignore-pattern` gehört zu `max-tasks` wie `order-column` zu `order`;
+`exempt-sections` ist das Geschwister von `exempt-paths` eine Stufe tiefer. Als Optionen bleibt
+der Default unberührt.
+
+**Fence-Treue gilt weiter.** Beide Muster dürfen Code-Blöcke und Inline-Code nicht sehen — sonst
+kippt genau die Eigenschaft, die CR 1 gegenüber der Skript-Variante ausgezeichnet hat. Ein
+Adopter, der über sein eigenes Regelwerk schreibt, zitiert seine Konstanten-Begriffe ständig in
+Backticks.
+
+**Paritäts-Mutations-Beleg.** Die Fixtures liegen vor:
+
+| Probe | Erwartung |
+|---|---|
+| Slice mit 3 Liefer-Punkten + 4 Konstanten, `max-tasks: 3` **mit** `tasks-ignore-pattern` | **grün** (heute rot — die acht gemessenen Fälle) |
+| derselbe Slice mit **vier** Liefer-Punkten | rot |
+| `tasks-ignore-pattern` abwesend | rot — heutiges Verhalten unverändert |
+| grandfatherte Anforderung ohne `Boundary`-Marke, von `exempt-sections` getroffen | grün |
+| neue Anforderung ohne `Boundary`-Marke, nicht getroffen | rot |
+
+**Abgrenzung.** Nicht Teil des Antrags: Grandfathering **ab einer Nummer** als Werkzeug-Begriff —
+das ist über Globs bzw. RE2 ausdrückbar. Ebenfalls nicht: abschnitts-**übergreifende** Bedingungen
+(„jedes Risiko aus §6 trägt einen Ausgang in §7"). Das ist eine andere Frage und braucht einen
+eigenen Antrag, falls er sich lohnt.
