@@ -94,7 +94,7 @@ Datei-Index. Sonst fiele sie in die Klasse, die [`ADR-0031`](../../adr/0031-heur
   der Normalfall der Append-only-Disziplin; die abgelöste ADR bleibt lesbar, der Index führt
   beide, und die Nachfolgerin nennt sie in `Supersedes`.
 - *Die Folge-ADR ist Voraussetzung für
-  [slice-113](../open/slice-113-steering-loop-ins-register.md)* — **Ausgang:** Folge-Slice; dessen
+  slice-113* — **Ausgang:** Folge-Slice; dessen
   §0 nennt genau diese Bedingung.
 
 ## 7. Closure-Notiz
@@ -134,7 +134,7 @@ und druckte den Defekt wörtlich aus: dieselbe Zeile als `wrong-direction` **und
 
 **Beobachtungs-Register:** keine Beobachtung angefallen — die drei Risiken sind alle geschlossen.
 
-**Folge-Slices:** [slice-113](../open/slice-113-steering-loop-ins-register.md) ist damit entblockt;
+**Folge-Slices:** slice-113 ist damit entblockt;
 dazu der d-check-Pin-Bump, dessen erste Trigger-Hälfte heute gemessen wurde.
 
 ## 8. Sub-Area-Modus-Begründung
