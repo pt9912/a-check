@@ -95,17 +95,17 @@ heute nicht wirken.
 
 ## Steering-Loop-Einträge
 
-Gezogen aus [`docs/plan/steering-loop.md`](../../steering-loop.md) — das Register bleibt der
+Gezogen aus `docs/plan/steering-loop.md` — das Register bleibt der
 laufende Zähl-Ort. Hier stehen nur die in dieser Welle real aufgetretenen Vorfälle.
 
 | Eintrag | in dieser Welle |
 |---|---|
-| [`SL-001`](../../steering-loop.md#sl-001--gate-lauf-in-einer-pipe-verschluckt) — Gate-Lauf in einer Pipe verschluckt | **einmal**: der Guard blockierte `make doc-complete \| tail` bei der d-check-Recherche. Zähler **6 → 7** |
-| [`SL-002`](../../steering-loop.md#sl-002--relative-verweise-brechen-beim-git-mv-in-den-nächsten-zustand) — relative Verweise brechen beim Verzeichniswechsel | **zweimal**: vier präfixlose Geschwister-Verweise in [slice-087](../done/slice-087-index-vollstaendigkeit.md) (vor dem Commit gefangen) und **21 Verweise dieser Welle-Plan-Datei** beim `git mv` in `done/` — von `doc-check` gefangen, **nicht** vom zuständigen Sensor. Zähler **9 → 11** |
-| [`SL-003`](../../steering-loop.md#sl-003--commit-betreff-bezeichnet-nicht-die-enthaltene-arbeit) — Commit-Betreff bezeichnet nicht die Arbeit | **nicht aufgetreten** — zweimal aktiv vermieden: der [ADR-0030](../../adr/0030-kein-digest-im-generierten-fragment.md)-Index-Nachtrag wurde als eigener Commit mit slice-083-Bezug geführt, und der Lerneintrag von [slice-081](slice-081-heuristik-diagnose.md) vom `git mv` getrennt, damit die Lifecycle-Commits `R100` bleiben |
-| [`SL-004`](../../steering-loop.md#sl-004--ein-neuer-doku-sensor-meldet-im-ersten-lauf-sein-eigenes-umfeld) — neuer Sensor meldet sein eigenes Umfeld | **nicht aufgetreten** — aber als **Entscheidungsgrund** verwendet: [ADR-0031](../../adr/0031-heuristik-grenzen-diagnose.md) verwarf den Restmengen-Ansatz mit dem dreifach belegten Rauschprofil dieses Eintrags |
-| [`SL-005`](../../steering-loop.md#sl-005--eine-neue-datei-wird-nicht-in-ihren-handgepflegten-index-eingetragen) — Datei fehlt im handgepflegten Index | **neu, zwei Vorfälle** (siehe unten) |
-| [`SL-006`](../../steering-loop.md#sl-006--dateiname-oder-anker-aus-dem-gedächtnis-statt-aus-der-quelle) — Dateiname/Anker geraten statt nachgesehen | **neu, vier Vorfälle in dieser Welle** (drei weitere in `welle-12`) |
+| `SL-001` — Gate-Lauf in einer Pipe verschluckt | **einmal**: der Guard blockierte `make doc-complete \| tail` bei der d-check-Recherche. Zähler **6 → 7** |
+| `SL-002` — relative Verweise brechen beim Verzeichniswechsel | **zweimal**: vier präfixlose Geschwister-Verweise in [slice-087](../done/slice-087-index-vollstaendigkeit.md) (vor dem Commit gefangen) und **21 Verweise dieser Welle-Plan-Datei** beim `git mv` in `done/` — von `doc-check` gefangen, **nicht** vom zuständigen Sensor. Zähler **9 → 11** |
+| `SL-003` — Commit-Betreff bezeichnet nicht die Arbeit | **nicht aufgetreten** — zweimal aktiv vermieden: der [ADR-0030](../../adr/0030-kein-digest-im-generierten-fragment.md)-Index-Nachtrag wurde als eigener Commit mit slice-083-Bezug geführt, und der Lerneintrag von [slice-081](slice-081-heuristik-diagnose.md) vom `git mv` getrennt, damit die Lifecycle-Commits `R100` bleiben |
+| `SL-004` — neuer Sensor meldet sein eigenes Umfeld | **nicht aufgetreten** — aber als **Entscheidungsgrund** verwendet: [ADR-0031](../../adr/0031-heuristik-grenzen-diagnose.md) verwarf den Restmengen-Ansatz mit dem dreifach belegten Rauschprofil dieses Eintrags |
+| `SL-005` — Datei fehlt im handgepflegten Index | **neu, zwei Vorfälle** (siehe unten) |
+| `SL-006` — Dateiname/Anker geraten statt nachgesehen | **neu, vier Vorfälle in dieser Welle** (drei weitere in `welle-12`) |
 
 **`SL-004` ist der bemerkenswerteste Eintrag dieser Welle, obwohl er nicht auftrat.** Ein
 Register-Eintrag hat eine Architektur-Entscheidung geprägt, bevor der Fehler passieren konnte: Die

@@ -18,7 +18,7 @@ Drei Befunde an der Durchsetzungs- und Aggregat-Ebene, jeder mit einem Lauf bele
 
 | Fund | Beobachtung (gemessen) |
 |---|---|
-| **R-057-F1** | Die `GATES`-Liste des PreToolUse-Guard ist hartcodiert und kennt `doc-immutable` nicht — in [`AGENTS.md`](../../../../AGENTS.md) §4 ausdrücklich als **CI-durchgesetzt** geführt. Live belegt: `make doc-immutable \| tail -1` lief **ungehindert** durch; `make` brach mit Fehler 2 ab, der Exit-Code der Pipeline war der von `tail`. Genau der Vorgang, gegen den [SL-001](../../steering-loop.md) antritt. Nichts gleicht die Liste gegen die Target-Tabelle ab. |
+| **R-057-F1** | Die `GATES`-Liste des PreToolUse-Guard ist hartcodiert und kennt `doc-immutable` nicht — in [`AGENTS.md`](../../../../AGENTS.md) §4 ausdrücklich als **CI-durchgesetzt** geführt. Live belegt: `make doc-immutable \| tail -1` lief **ungehindert** durch; `make` brach mit Fehler 2 ab, der Exit-Code der Pipeline war der von `tail`. Genau der Vorgang, gegen den SL-001 antritt. Nichts gleicht die Liste gegen die Target-Tabelle ab. |
 | **R-052-F4** | `verify` hängt seine drei Teil-Sensoren als sequenzielle Prerequisites; `make` bricht beim ersten roten ab. Belegt: mit einem Slice-Form- **und** einem AC-Form-Verstoß zugleich meldete `make verify` nur die Slice-Form-Befunde. Kein False-Green, aber unvollständige Diagnose in der Schicht, die vor der „fertig"-Meldung Auskunft geben soll. |
 | **R-050-F2** | Das Workflow-Skelett stellt den Gate-Lauf als **Schritt 6** vor den Lifecycle-`git mv` als **Schritt 9**; der Verschiebe-Commit ist damit per Ablauf ungeprüft. Genau dort entstanden die beiden `doc-check`-roten Slice-Endstände der Kette. Ein Schritt „Verweise prüfen" fehlt, obwohl das Skelett die andere bekannte Fehlerklasse (Pipe) ausdrücklich adressiert. |
 
@@ -32,7 +32,7 @@ derselbe Fehler trat dort **zweimal** auf, einmal davon beim Schreiben der Notiz
 - [`Makefile`](../../../../Makefile) — `verify` sammelt Befunde, statt beim ersten abzubrechen
   (R-052-F4).
 - [`.claude/commands/slice.md`](../../../../.claude/commands/slice.md) — Schritt 9 (R-050-F2).
-- [`docs/plan/steering-loop.md`](../../steering-loop.md) — `SL-002` bekommt den Beleg für seinen
+- `docs/plan/steering-loop.md` — `SL-002` bekommt den Beleg für seinen
   Guide-Kandidaten 1; der Eintrag bleibt stehen, wie die Pflege-Regel es verlangt.
 
 **Zwei Schichten:** Gate-/Werkzeug-Schicht (`Makefile`, `.claude/`) und Planungs-Doku
@@ -84,7 +84,7 @@ Negativ-Proben, ohne die keiner der drei Fixes belegt wäre:
 einen **Drift-Wächter** im `--selftest`, der jedes neue Target einfordert; `make verify` führt
 seine drei Teil-Sensoren als Sequenz im selben Rezept aus und meldet alle Befunde statt nur den
 ersten; Schritt 9 des Workflow-Skeletts verlangt die Verweis-Prüfung vor dem `git mv` samt
-Kommando und benennt die zustandsunabhängige Form. [`SL-002`](../../steering-loop.md) trägt den
+Kommando und benennt die zustandsunabhängige Form. `SL-002` trägt den
 Beleg für den gelieferten Guide-Kandidaten und steht auf **halb gebaut**.
 
 **Lerneintrag — Form: neuer Sensor.**

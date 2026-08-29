@@ -100,7 +100,7 @@ auf") setzt gleiche Ebenen voraus und ist hier nachweislich unerfüllbar — der
 Lücke deshalb ausdrücklich aus ([slice-089](done/slice-089-welle-datei-verweis-invariante.md)).
 **Also: die Verweise im selben Commit nachziehen und `make gates` laufen lassen**; `doc-check` ist
 das Netz, aber erst *nach* dem `mv`.
-**Zum Steering-Loop:** die Einträge werden aus [`docs/plan/steering-loop.md`](../steering-loop.md)
+**Zum Steering-Loop:** die Einträge werden aus `docs/plan/steering-loop.md`
 **gezogen**, nicht dorthin verschoben. Das Register bleibt der laufende Zähl-Ort; ein Kanal, der
 erst bei der nächsten Closure entsteht, würde zwischen zwei Wellen nichts zählen — genau der
 Fehler, den slice-057 vermieden hat.

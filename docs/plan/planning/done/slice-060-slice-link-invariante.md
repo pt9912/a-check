@@ -2,7 +2,7 @@
 
 **Status:** der Zustand ist das **Verzeichnis** dieser Datei
 ([`AGENTS.md`](../../../../AGENTS.md) §3.3/§5) — dieses Feld führt ihn bewusst **nicht** doppelt.
-**Deckt:** die offene *computational* Hälfte von [`SL-002`](../../steering-loop.md) (neun Vorfälle).
+**Deckt:** die offene *computational* Hälfte von `SL-002` (neun Vorfälle).
 **Bezug:** dritter Fix-Schnitt der Review-Serie; [slice-059](../done/slice-059-durchsetzungs-luecken.md)
 hat die *inferential* Hälfte geliefert (Schritt 9 des Workflow-Skeletts).
 [Roadmap](../in-progress/roadmap.md).
@@ -14,7 +14,7 @@ hat die *inferential* Hälfte geliefert (Schritt 9 des Workflow-Skeletts).
 `SL-002` zählt **neun** Vorfälle: sieben in der Migrations-Kette, zwei weitere in
 [slice-058](../done/slice-058-sensor-praezision.md) — die letzten beiden **nach** dem Guide, einer
 davon beim Schreiben der Notiz über genau diesen Befund. Damit gilt hier dieselbe Diagnose wie bei
-`SL-001` vor [slice-057](../done/slice-057-steering-loop.md): *inferential feedforward* wirkt gegen
+`SL-001` vor slice-057: *inferential feedforward* wirkt gegen
 Unwissen, nicht gegen Routine. Die Regel ist nach `modul-09` **halb durchgesetzt**, solange die
 computational Hälfte fehlt.
 
@@ -43,7 +43,7 @@ andere Frage und bereits beantwortet.
 - [`AGENTS.md`](../../../../AGENTS.md) §4 — Target-Deklaration (`gate-consistency` erzwingt sie).
 - [`.claude/hooks/pretooluse-command-guard.sh`](../../../../.claude/hooks/pretooluse-command-guard.sh)
   — das neue Prüf-Target in die `GATES`-Liste; der Drift-Wächter aus slice-059 fordert es ein.
-- [`docs/plan/steering-loop.md`](../../steering-loop.md) — `SL-002` bekommt seine Antwort.
+- `docs/plan/steering-loop.md` — `SL-002` bekommt seine Antwort.
 
 **Zwei Schichten:** Gate-/Werkzeug-Schicht und Planungs-Doku.
 
@@ -77,7 +77,7 @@ Negativ-Proben:
 - [x] Das Target hängt an `make verify`, steht in [`AGENTS.md`](../../../../AGENTS.md) §4 und in
       der `GATES`-Liste des Guard; belegt durch grünen `guard-selftest` **und** eine Drift-Probe,
       die bei fehlendem Eintrag rot wird.
-- [x] [`SL-002`](../../steering-loop.md) trägt die gebaute Antwort mit Beleg; `make gates` und
+- [x] `SL-002` trägt die gebaute Antwort mit Beleg; `make gates` und
       `make verify` grün — Ausgabe in eine Datei, Exit-Code getrennt geprüft, nie in eine Pipe.
 
 ## 6. Closure-Notiz
@@ -85,7 +85,7 @@ Negativ-Proben:
 **Geliefert:** `make verify-slice-links` — die computational Hälfte von `SL-002`. Der Sensor prüft
 für die wandernden Verzeichnisse, dass jeder relative Verweis aus **jedem** Lifecycle-Verzeichnis
 auflöst, hängt an `make verify`, steht in [`AGENTS.md`](../../../../AGENTS.md) §4 und in der
-`GATES`-Liste des Guard. [`SL-002`](../../steering-loop.md) ist damit in **beiden** Quadranten
+`GATES`-Liste des Guard. `SL-002` ist damit in **beiden** Quadranten
 durchgesetzt und trägt den Beleg.
 
 **Lerneintrag — Form: geschärfte Regel.**
@@ -116,7 +116,7 @@ die Link-Extraktion sah darin einen Verweis. Behoben wurde der **Sensor**, nicht
 Code-Blöcke und Inline-Code werden jetzt vor der Extraktion entfernt, denn Text *über* einen
 Verweis ist kein Verweis. Das ist derselbe Fehlalarm-Typ wie bei
 [slice-050](../done/slice-050-verify-schicht.md) (Kursiv-Regex traf substanziellen Text) und
-[slice-057](../done/slice-057-steering-loop.md) (Muster im Argument-String) — offenbar der
+slice-057 (Muster im Argument-String) — offenbar der
 Standardfehler beim Bau eines Doku-Sensors in diesem Repo, und beim dritten Mal wäre ein eigener
 Steering-Loop-Eintrag fällig. Die Fixture dazu liegt dauerhaft im Selbsttest und trifft das Muster
 **beinahe**, kann es also wirklich prüfen (Lehre aus slice-058).

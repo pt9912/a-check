@@ -5,7 +5,7 @@
 [`AGENTS.md`](../../../../AGENTS.md) §3.3/§5).
 **Deckt:** `F-4` und `F-13` aus dem
 [Review-Report `welle-12`](../../../reviews/2026-08-09-welle-12-unabhaengig.md) (Gruppe B).
-**Bezug:** [`SL-002`](../../steering-loop.md); Roadmap-Zeile *Aktuelle Welle* in der
+**Bezug:** `SL-002`; Roadmap-Zeile *Aktuelle Welle* in der
 [Roadmap](../in-progress/roadmap.md).
 
 ---

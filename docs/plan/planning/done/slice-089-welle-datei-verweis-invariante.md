@@ -4,7 +4,7 @@
 (`open/ → next/ → in-progress/ → done/`, Wechsel nur per `git mv` als eigener Commit,
 [`AGENTS.md`](../../../../AGENTS.md) §3.3/§5).
 **Deckt:** den Folge-Befund aus [`welle-13-results.md`](../done/welle-13-results.md) §Steering-Loop;
-[`SL-002`](../../steering-loop.md#sl-002--relative-verweise-brechen-beim-git-mv-in-den-nächsten-zustand).
+`SL-002`.
 **Bezug:** [slice-060](../done/slice-060-slice-link-invariante.md) hat den Sensor gebaut,
 [slice-075](../done/slice-075-sensor-messgroesse.md) ihn um Referenz-Definitionen erweitert.
 

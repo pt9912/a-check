@@ -177,13 +177,13 @@ Aggregat). Ob ein Gate gerade grün ist, sagt die CI (Badge im
 | `make verify-slice-form` | Form der Slice-Pläne ab slice-052: höchstens drei **Liefer**-Punkte, benannte Lerneintrag-Form; ab slice-098 zusätzlich die drei Kopffelder (`Verantwortlich:`/`Autor:`/Spec-Stellen). Gate-Läufe und Closure-Pflichten zählen **nicht** als Liefer-Punkte — sie dürfen im DoD stehen, wie die Ziel-Form es vorsieht (slice-107). Ältere grandfathered — zwei Stichtage, bootstrap-aware (slice-052, slice-098) |
 | `make verify-ac-form` | Form neuer `AC-*` (§5): Happy · Boundary · Negative · Out-of-Scope; die 19 bei Einführung bestehenden sind grandfathered (slice-054) |
 | `make verify-closure-notes` | Struktur der Closure-Notizen in `done/` (§5): genau eine, ausgefüllt, kein Platzhalter, keine Floskel (slice-050) |
-| `make verify-slice-links` | Relative Verweise wandernder Slices (`open`/`next`/`in-progress`) lösen aus **jedem** Lifecycle-Verzeichnis auf ([`SL-002`](docs/plan/steering-loop.md)); `done/` ist Endzustand und ausgenommen (slice-060) |
+| `make verify-slice-links` | Relative Verweise wandernder Slices (`open`/`next`/`in-progress`) lösen aus **jedem** Lifecycle-Verzeichnis auf ([`SL-002`](docs/plan/planning/observations.md)); `done/` ist Endzustand und ausgenommen (slice-060) |
 | `make verify-observations` | Deckung des Beobachtungs-Registers ([`observations.md`](docs/plan/planning/observations.md)): jede in `done/` zitierte `BEO-NNN` hat eine Zeile, jede Zeile trägt formgebundene Belege (`slice-NNN`, Anzahl == Zähler). **Nicht** geprüft: Lage und Existenz der Beleg-Datei (`modul-06`) und die Umkehrung „jede Zeile ist zitiert" — die meisten stehen unter der Schwelle (slice-102) |
 | `make verify` | **Verifikations-Schicht** (getrennt von `gates`, Regelwerk Modul 11): beantwortet DoD-/Closure-Fragen statt Code-Fragen; vor der „fertig"-Meldung auszuführen |
 | `make image-test` | [AC-FA-DIST-001](spec/lastenheft.md#ac-fa-dist-001--distribution-image---print-mk-a-checkmk) + nativ==Container-Akzeptanz + Fragment-Parität (committete [`a-check.mk`](a-check.mk) == `--print-mk`, slice-034) gegen das gebaute Image |
 | `make ci` | CI-äquivalent: `gates` + `image-test` (Workflow `.github/workflows/ci.yml`) |
 | `make trace-check` | Traceability via Modul `commits` ([ADR-0021](docs/plan/adr/0021-commits-modul-trace-check.md)): `AC-*`/`ADR-*`/`MR-*`/`slice`-ID je Commit (§5; `MSGFILE=` Hook, `RANGE=` CI) |
-| `make commit-scope-check` | Commit-Scope `(planning)` berührt nur `docs/plan/planning/` (§5, [`SL-003`](docs/plan/steering-loop.md)); misst jeden Commit an der zu seinem Zeitpunkt geltenden Fassung (`RANGE=` wie `trace-check`, slice-062) |
+| `make commit-scope-check` | Commit-Scope `(planning)` berührt nur `docs/plan/planning/` (§5, [`SL-003`](docs/plan/planning/observations.md)); misst jeden Commit an der zu seinem Zeitpunkt geltenden Fassung (`RANGE=` wie `trace-check`, slice-062) |
 
 ## 5. Dokumentations-Regeln
 
@@ -203,7 +203,7 @@ Aggregat). Ob ein Gate gerade grün ist, sagt die CI (Badge im
   Zeitpunkt galt, ältere sind damit grandfathered.
   **Warum nur dieser Scope:** über die gesamte Historie ist die Regel hier
   rauschfrei — fünf Treffer bei 74 Commits, alle fünf echte Diskrepanzen
-  ([`SL-003`](docs/plan/steering-loop.md)). Für `docs(...)` allgemein wären es 31
+  ([`SL-003`](docs/plan/planning/observations.md)). Für `docs(...)` allgemein wären es 31
   bei 193, weil `docs(spec)` legitim `spec/` und `docs(adr)` legitim ADRs ändert;
   eine Regel, die den Bestand massenhaft bricht, wird abgeschaltet statt befolgt.
   Ein weiterer Scope wird erst geregelt, wenn er auffällt — und dann gemessen,
@@ -260,7 +260,7 @@ Aggregat). Ob ein Gate gerade grün ist, sagt die CI (Badge im
   Carveout oder Folge-Slice · *entfallen* ⇒ gestrichen **mit Begründung** · *weiter offen* ⇒
   Register (slice-101).
 - **Steering-Loop:** wiederkehrende Fehlermuster werden in
-  [`docs/plan/steering-loop.md`](docs/plan/steering-loop.md) gezählt. Ab dem
+  [`docs/plan/steering-loop.md`](docs/plan/planning/observations.md) gezählt. Ab dem
   **zweiten** gleichartigen Vorfall entsteht ein Eintrag, ab dem **dritten** ist
   es eine Harness-Lücke und verlangt einen Guide oder Sensor — „besser
   aufpassen" ist keine Antwort. Ein Eintrag ohne Vorfallszahl ist unzulässig:

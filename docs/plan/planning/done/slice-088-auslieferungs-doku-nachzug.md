@@ -9,7 +9,7 @@
 [slice-085](../done/slice-085-schicht-ohne-aufloesung.md) und
 [slice-086](../done/slice-086-forbidden-constructs-fail-closed.md).
 **Bezug:** blockiert das Release `v0.17.0`; verwandt mit
-[`SL-005`](../../steering-loop.md#sl-005--eine-neue-datei-wird-nicht-in-ihren-handgepflegten-index-eingetragen)
+`SL-005`
 (handgepflegter Ort ohne Sensor).
 
 ---
@@ -89,7 +89,7 @@ Reine Doku, kein Code, kein Vertrag:
 Nachzug übersprungen" wäre ein Vollständigkeits-Sensor über CHANGELOG und Handbuch-Historie. Der
 gehört aber erst geschnitten, wenn die Regel steht, *wann* ein Eintrag Pflicht ist — sonst erfindet
 der Sensor sie. Dieselbe Reihenfolge wie bei
-[`SL-003`](../../steering-loop.md#sl-003--commit-betreff-bezeichnet-nicht-die-enthaltene-arbeit):
+`SL-003`:
 erst die Konvention, dann ihr Sensor. Als Folge-Slice benannt, nicht mitgebaut.
 
 ## 4. Was bewusst nicht getan wird
@@ -170,7 +170,7 @@ will wissen, **wie es geht**, nicht wie es einmal war. Die Trennung ist scharf: 
 **Bewusst ohne Sensor** (§3): Ein Vollständigkeits-Wächter über CHANGELOG und Handbuch-Historie
 wäre die naheliegende Antwort auf fünf übersprungene Nachzüge. Er gehört aber erst geschnitten,
 wenn die Regel steht, *wann* ein Eintrag Pflicht ist — sonst erfindet der Sensor sie. Dieselbe
-Reihenfolge wie bei [`SL-003`](../../steering-loop.md#sl-003--commit-betreff-bezeichnet-nicht-die-enthaltene-arbeit),
+Reihenfolge wie bei `SL-003`,
 wo die Konvention der Mechanik vorausging.
 
 ## 7. Sub-Area-Modus

@@ -126,7 +126,7 @@ hätte den Bruch danach gefangen; die falsche Behauptung wäre trotzdem in `done
   Closure-Notiz genau das: einen Abschnitt über offene Risiken. Der Zusammenstoß ist systematisch, nicht
   zufällig, und er ist heute **zweimal** aufgetreten — beim zweiten Mal an dieser Notiz selbst,
   weil sie die Wendung **zitierte**. Damit ist es dieselbe Klasse wie
-  [`SL-004`](../../steering-loop.md#sl-004--ein-neuer-doku-sensor-meldet-im-ersten-lauf-sein-eigenes-umfeld):
+  `SL-004`:
   ein Sensor meldet Text, der *über* sein Muster spricht. Ausgang: **Eintrag im Steering-Loop**
   (die Regel verlangt ihn ab dem zweiten Vorfall); der Sensor-Eingriff — Zitat-Kontexte aus der
   Placeholder-Suche ausblenden — wird beim dritten fällig.

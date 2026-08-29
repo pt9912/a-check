@@ -21,7 +21,7 @@ unabhängigen Reviews.
 | E — Mechanik/Sensoren | [slice-049](slice-049-mechanik-sensoren.md) … [slice-051](slice-051-workflow-und-freigabe.md) |
 | D — Form/Templates | [slice-052](slice-052-slice-form.md) … [slice-054](slice-054-ac-form.md) |
 | C — `MR-*`-Bereinigung | [slice-055](slice-055-mr-bestand.md), [slice-056](slice-056-sub-area-modus.md) |
-| F — Steering/Closure | [slice-057](slice-057-steering-loop.md), [slice-065](slice-065-carveout-ort-und-trichter.md), [slice-066](slice-066-wellen-closure-und-rollen.md) |
+| F — Steering/Closure | slice-057, [slice-065](slice-065-carveout-ort-und-trichter.md), [slice-066](slice-066-wellen-closure-und-rollen.md) |
 | Fix-Schnitte | [slice-058](slice-058-sensor-praezision.md) … [slice-064](slice-064-guard-verkettung.md), [slice-067](slice-067-roadmap-form.md) |
 | Auslösende Analyse | [slice-046](slice-046-regelwerk-v352-migration-analyse.md) |
 | **Review-Nachlauf** | [slice-068](slice-068-phony-vollstaendig.md) … [slice-078](slice-078-rollen-uebergaben.md) |
@@ -70,15 +70,15 @@ Modell-Familie"*, und genau diese Formulierung hat sich als tragend erwiesen.
 
 ## Steering-Loop-Einträge
 
-Gezogen aus [`docs/plan/steering-loop.md`](../../steering-loop.md) — das Register bleibt der
+Gezogen aus `docs/plan/steering-loop.md` — das Register bleibt der
 laufende Zähl-Ort; hier stehen nur die in dieser Welle real aufgetretenen Vorfälle.
 
 | Eintrag | in dieser Welle |
 |---|---|
-| [`SL-001`](../../steering-loop.md) — Gate-Lauf in einer Pipe verschluckt | **einmal**: der Command-Guard blockierte `make gates` + `git commit` im selben Aufruf |
-| [`SL-002`](../../steering-loop.md) — relative Verweise brechen beim `git mv` | **dreimal** durch `verify-slice-links` gefangen, dazu zweimal durch `doc-check` nach einem Lifecycle-Wechsel |
-| [`SL-003`](../../steering-loop.md) — Commit-Betreff bezeichnet nicht die Arbeit | **zweimal**: ein `git mv` rutschte in einen Report-Commit, ein `git add -A` zog eine fremde Datei mit. Beide aufgeteilt. Dazu der reale CI-Rot-Lauf, aus dem [slice-072](slice-072-scope-sensor-praeventiv.md) entstand |
-| [`SL-004`](../../steering-loop.md) — neuer Doku-Sensor meldet sein eigenes Umfeld | **nicht aufgetreten** |
+| `SL-001` — Gate-Lauf in einer Pipe verschluckt | **einmal**: der Command-Guard blockierte `make gates` + `git commit` im selben Aufruf |
+| `SL-002` — relative Verweise brechen beim `git mv` | **dreimal** durch `verify-slice-links` gefangen, dazu zweimal durch `doc-check` nach einem Lifecycle-Wechsel |
+| `SL-003` — Commit-Betreff bezeichnet nicht die Arbeit | **zweimal**: ein `git mv` rutschte in einen Report-Commit, ein `git add -A` zog eine fremde Datei mit. Beide aufgeteilt. Dazu der reale CI-Rot-Lauf, aus dem [slice-072](slice-072-scope-sensor-praeventiv.md) entstand |
+| `SL-004` — neuer Doku-Sensor meldet sein eigenes Umfeld | **nicht aufgetreten** |
 
 `SL-003` ist der einzige, der in dieser Welle eine **Mechanik** erzeugt hat: der Scope-Sensor
 greift seit [slice-072](slice-072-scope-sensor-praeventiv.md) im `commit-msg`-Hook statt erst in

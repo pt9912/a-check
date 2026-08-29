@@ -3,7 +3,7 @@
 #
 # PROBLEM. Eine Slice-Datei wandert per `git mv` durch die Lifecycle-Verzeichnisse
 # (AGENTS.md §5). Relative Verweise, die aus ihrem heutigen Verzeichnis aufloesen,
-# tun das aus dem naechsten nicht mehr — neun Vorfaelle in docs/plan/steering-loop.md
+# tun das aus dem naechsten nicht mehr — neun Vorfaelle, gezaehlt bis slice-060
 # (SL-002), zwei davon NACH dem Guide in Schritt 9 des Workflow-Skeletts.
 #
 # ANSATZ. Nicht vorhersagen, wohin verschoben wird, sondern eine INVARIANTE pruefen.

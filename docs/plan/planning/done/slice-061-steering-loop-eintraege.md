@@ -30,7 +30,7 @@ ihn zu sein. Jedes Mal war die Korrektur dieselbe: Zitat-Kontexte ausblenden.
 
 ## 2. Betroffene Module
 
-- [`docs/plan/steering-loop.md`](../../steering-loop.md) — zwei neue Einträge.
+- `docs/plan/steering-loop.md` — zwei neue Einträge.
 - [`.claude/commands/slice.md`](../../../../.claude/commands/slice.md) — die beiden Guide-Hälften.
 
 **Eine Schicht** (Planungs-Doku und ihr Skelett). Kein Code, kein Vertrag berührt.

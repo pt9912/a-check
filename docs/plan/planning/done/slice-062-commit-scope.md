@@ -2,7 +2,7 @@
 
 **Status:** der Zustand ist das **Verzeichnis** dieser Datei
 ([`AGENTS.md`](../../../../AGENTS.md) §3.3/§5) — dieses Feld führt ihn bewusst **nicht** doppelt.
-**Deckt:** die offene Sensor-Hälfte von [`SL-003`](../../steering-loop.md) und die dort benannte
+**Deckt:** die offene Sensor-Hälfte von `SL-003` und die dort benannte
 Spec-Lücke aus [slice-061](../done/slice-061-steering-loop-eintraege.md).
 [Roadmap](../in-progress/roadmap.md).
 
@@ -42,7 +42,7 @@ Routine — zum dritten Mal belegt.
   — neues Prüf-Target in die `GATES`-Liste (der Drift-Wächter fordert es ein).
 - [`.github/workflows/ci.yml`](../../../../.github/workflows/ci.yml) — Lauf über die Commit-Range,
   neben `trace-check`.
-- [`docs/plan/steering-loop.md`](../../steering-loop.md) — `SL-003` auf fünf Vorfälle, Antwort
+- `docs/plan/steering-loop.md` — `SL-003` auf fünf Vorfälle, Antwort
   gebaut.
 
 **Zwei Schichten:** Gate-/Werkzeug-Schicht und Harness-/Planungs-Doku.
@@ -85,14 +85,14 @@ beim Schreiben des Skripts noch nicht gibt.
       zu seinem Zeitpunkt geltenden Fassung und trägt einen Selbsttest; belegt durch die vier
       Proben aus §3.
 - [x] Target in [`AGENTS.md`](../../../../AGENTS.md) §4, in der `GATES`-Liste und in der CI;
-      [`SL-003`](../../steering-loop.md) trägt fünf Vorfälle und die gebaute Antwort.
+      `SL-003` trägt fünf Vorfälle und die gebaute Antwort.
       `make gates` und `make verify` grün — Ausgabe in eine Datei, Exit-Code getrennt geprüft.
 
 ## 6. Closure-Notiz
 
 **Geliefert:** die Commit-Scope-Konvention in [`AGENTS.md`](../../../../AGENTS.md) §5 und ihr
 Sensor `make commit-scope-check` — in der `GATES`-Liste, in §4 deklariert und in der CI über die
-Commit-Range neben `trace-check`. [`SL-003`](../../steering-loop.md) trägt fünf Vorfälle und ist
+Commit-Range neben `trace-check`. `SL-003` trägt fünf Vorfälle und ist
 damit in beiden Quadranten durchgesetzt.
 
 **Lerneintrag — Form: geschärfte Regel.**

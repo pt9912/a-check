@@ -5,7 +5,7 @@
 [`AGENTS.md`](../../../../AGENTS.md) §3.3/§5).
 **Deckt:** den Nebenbefund aus [slice-069](../done/slice-069-sensor-fehler-propagierung.md) §4 —
 dort ausdrücklich **nicht** aufgenommen, weil er ein anderer Fehlermechanismus ist.
-Bezug zu [`SL-003`](../../steering-loop.md) und [ADR-0021](../../adr/0021-commits-modul-trace-check.md).
+Bezug zu `SL-003` und [ADR-0021](../../adr/0021-commits-modul-trace-check.md).
 **Bezug:** realer Vorfall am 2026-08-09 (CI-Run `31301467076`); Roadmap-Zeile *Aktuelle Welle* in
 der [Roadmap](../in-progress/roadmap.md).
 

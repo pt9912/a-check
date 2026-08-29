@@ -161,7 +161,7 @@ auf dem belegten Stand nicht hält. Es blockiert den Merge **dieser Kette** trot
 gemergt wird die Spitze und der rote Verweis bereits im Folge-Commit `b319085` repariert ist —
 der Merge-Gegenstand ist nicht der rote Zustand. Was F-1 verlangt, ist die Korrektur der
 **Behauptung** (Closure-Kriterium 1) beziehungsweise ein Sensor, der sie künftig trägt: das ist
-exakt der offene Punkt **SL-002** im [Steering-Loop](../plan/steering-loop.md) („brechende
+exakt der offene Punkt **SL-002** im Steering-Loop („brechende
 Verweise nach `git mv`", 7 Vorfälle). Dieser Report liefert dafür den ersten Beleg **mit rotem
 Gate-Lauf** statt mit Erinnerung.
 

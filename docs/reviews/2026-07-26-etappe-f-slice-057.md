@@ -15,10 +15,10 @@ Guard-Logik und der neue Steering-Loop-Kanal.
 
 **Eingangs-Kontext:**
 
-- [slice-057](../plan/planning/done/slice-057-steering-loop.md) (Gegenstand),
+- slice-057 (Gegenstand),
   [slice-048 §5](../plan/planning/done/slice-048-modul-delta-lesen.md) (Fund B-21),
   [slice-051 §4](../plan/planning/done/slice-051-workflow-und-freigabe.md) (offener Pipe-Sensor)
-- [`docs/plan/steering-loop.md`](../plan/steering-loop.md),
+- `docs/plan/steering-loop.md`,
   [`.claude/hooks/pretooluse-command-guard.sh`](../../.claude/hooks/pretooluse-command-guard.sh)
 - [`AGENTS.md`](../../AGENTS.md) §3.1 (Host-Minimum), §4 (Target-Tabelle), §5 (Steering-Loop-Regel)
 - frühere Findings: [Etappe D](2026-07-26-etappe-d-slice-052-053-054.md) F-2 (drittes Muster ohne
@@ -32,7 +32,7 @@ Guard-Logik und der neue Steering-Loop-Kanal.
 
 - `kategorie`: **MEDIUM**
 - `quelle`: [`AGENTS.md`](../../AGENTS.md) §4 (Target-Tabelle);
-  [Steering-Loop SL-001](../plan/steering-loop.md) (Zweck der Regel)
+  Steering-Loop SL-001 (Zweck der Regel)
 - `pfad`: [`.claude/hooks/pretooluse-command-guard.sh:68-71`](../../.claude/hooks/pretooluse-command-guard.sh)
   (`const GATES = new Set([...])`)
 - `befund`: Die Regel erkennt einen Gate-Lauf über eine **hartcodierte Liste** von 16
@@ -68,9 +68,9 @@ Guard-Logik und der neue Steering-Loop-Kanal.
 ### F-3 — Die Beleg-Liste von SL-002 stellt ungleiche Commits als gleichartig dar
 
 - `kategorie`: **LOW**
-- `quelle`: [`docs/plan/steering-loop.md`](../plan/steering-loop.md) §Pflege („ein Eintrag ohne
+- `quelle`: `docs/plan/steering-loop.md` §Pflege („ein Eintrag ohne
   Vorfallszahl ist unzulässig: die Zahl ist das Einzige, was die Schwelle prüfbar macht")
-- `pfad`: [`docs/plan/steering-loop.md:60-61`](../plan/steering-loop.md) (SL-002, Vorfälle)
+- `pfad`: `docs/plan/steering-loop.md:60-61` (SL-002, Vorfälle)
 - `befund`: SL-002 belegt „sieben" Vorfälle mit sieben Commit-SHAs und beschreibt sie als „jedes
   Mal einzeln nachgezogen". Fünf davon sind tatsächlich Ein- bis Zwei-Zeilen-Reparaturen; **zwei**
   nicht: `f57289d` (**200** eingefügte Zeilen) und `d436da9` (**115**) tragen jeweils die Substanz

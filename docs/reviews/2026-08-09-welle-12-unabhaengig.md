@@ -72,7 +72,7 @@ Anhang ist **nicht** Teil des unabhängigen Laufs.
 ### F-4 — Lifecycle-Link-Sensor ignoriert Referenz-Links
 
 - `kategorie`: **HIGH**
-- `quelle`: [`SL-002`](../plan/steering-loop.md); [`AGENTS.md`](../../AGENTS.md) §4
+- `quelle`: `SL-002`; [`AGENTS.md`](../../AGENTS.md) §4
 - `pfad`: [`tools/verify-slice-links.sh:40`](../../tools/verify-slice-links.sh)
 - `befund`: Extrahiert werden nur Inline-Links der Form `](...)`. Ein relativer Referenz-Link
   (`[Roadmap][roadmap]` mit `[roadmap]: roadmap.md`), der nach einem Lifecycle-Wechsel bricht,

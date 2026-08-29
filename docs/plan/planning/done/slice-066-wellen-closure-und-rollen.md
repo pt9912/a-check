@@ -50,7 +50,7 @@ steht so da.
 - **Keine Welle-Plan-Dateien für den Bestand.** Schritt 3 verlangt ein `git mv` der Plan-Datei;
   wo es nie eine gab, gibt es nichts zu verschieben. Für künftige Wellen ist die Datei Teil der
   Prozedur.
-- **Kein Verschieben des Steering-Loop-Kanals.** [slice-057](../done/slice-057-steering-loop.md)
+- **Kein Verschieben des Steering-Loop-Kanals.** slice-057
   hatte ihn als Zwischenschritt angelegt, „bis es Wellen-Closures gibt". Es gibt jetzt die
   *Prozedur*, aber noch keine geschlossene Welle — der Kanal bliebe ohne Ort. Er bleibt der
   laufende Zähl-Ort; die Closure-Notiz **zieht** ihre Einträge daraus (Schritt 3).
@@ -103,7 +103,7 @@ erster Durchlauf ist ihre Probe, und der kommt mit dem nächsten Wellen-Abschlus
 eine Prozedur anlegt und sie zugleich für erprobt erklärt, wäre dieselbe Klasse Harness-Lüge wie
 ein behauptetes Gate ohne Target.
 
-**Zum Steering-Loop-Kanal:** [slice-057](../done/slice-057-steering-loop.md) hatte ihn als
+**Zum Steering-Loop-Kanal:** slice-057 hatte ihn als
 Zwischenschritt angelegt — „bis es Wellen-Closures gibt". Diese Bedingung ist **nicht** erfüllt:
 es gibt jetzt die Prozedur, aber keine geschlossene Welle. Der Kanal bleibt darum der laufende
 Zähl-Ort, und die Closure-Notiz *zieht* ihre Einträge daraus. Ein Register, das erst bei der

@@ -11,7 +11,7 @@ und **F-3** aus
 **Bezug:** Review-Serie zur Migrations-Kette B–F (2026-07-26), erster von drei Fix-Schnitten.
 [Roadmap](../in-progress/roadmap.md) — der Verweis ist bewusst **zustandsunabhängig** geschrieben
 (`../in-progress/…` statt `roadmap.md`): so löst er aus `in-progress/` **und** aus `done/` auf und
-überlebt den Lifecycle-`git mv`. Guide-Kandidat 1 aus [SL-002](../../steering-loop.md).
+überlebt den Lifecycle-`git mv`. Guide-Kandidat 1 aus SL-002.
 
 ---
 
@@ -27,7 +27,7 @@ Drei Befunde an sonst funktionierenden Sensoren, jeder mit einem Lauf belegt:
 
 Gemeinsamer Nenner: alle drei sind **fail-closed** — keiner erzeugt ein False-Green, jeder kann
 aber Rauschen erzeugen oder am falschen Gegenstand grün melden. Ein Sensor, der rauscht, wird
-abgeschaltet statt repariert ([slice-057](../done/slice-057-steering-loop.md), SL-001).
+abgeschaltet statt repariert (slice-057, SL-001).
 
 ## 2. Betroffene Module
 
@@ -122,7 +122,7 @@ also billig — genau der Unterschied zu den in
 [Etappe B](../../../reviews/2026-07-26-etappe-b-slice-048.md) und
 [slice-049](../../../reviews/2026-07-26-slice-049-mechanik-sensoren.md) belegten Fällen, wo derselbe
 Fehler erst nach dem Commit auffiel. Der Befund stützt den Sensor-Kandidaten aus
-[SL-002](../../steering-loop.md), und zwar in seiner allgemeineren Form: relative Verweise brechen
+SL-002, und zwar in seiner allgemeineren Form: relative Verweise brechen
 nicht nur beim `git mv`, sondern auch beim **Anlegen** aus einer Vorlage anderer Tiefe.
 
 **Folge-Slices:** slice-059 (Durchsetzungs-Lücken: Guard-Gate-Liste, `make verify` ohne

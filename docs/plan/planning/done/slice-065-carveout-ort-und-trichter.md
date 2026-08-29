@@ -5,7 +5,7 @@
 **Deckt:** **B-14** (Carveout-Ort fehlt) und **B-10** (Diskrepanz-Trichter ungenutzt) aus
 [slice-048 §5](../done/slice-048-modul-delta-lesen.md).
 **Bezug:** Etappe F, zweiter von drei Schnitten; 1/3 war
-[slice-057](../done/slice-057-steering-loop.md).
+slice-057.
 [Roadmap](../in-progress/roadmap.md).
 
 ---

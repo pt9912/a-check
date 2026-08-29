@@ -6,7 +6,7 @@
 **Verantwortlich:** Implementation (diese Sitzung); Abnahme beim Maintainer.
 **Autor:** Claude (Opus 5), im Auftrag des Maintainers.
 **Berührte Spec-Stellen:** — *(keine; Sensor-Präzision ohne Vertragsberührung)*
-**Deckt:** [`SL-004`](../../steering-loop.md#sl-004--ein-neuer-doku-sensor-meldet-im-ersten-lauf-sein-eigenes-umfeld),
+**Deckt:** `SL-004`,
 zwei neue Vorfälle.
 **Bezug:** Schuld aus [slice-099](../done/slice-099-form-rest-und-fall-des-alten-baums.md).
 [Roadmap](../in-progress/roadmap.md).
@@ -20,7 +20,7 @@ ist der aufschlussreiche: die Notiz beschrieb den ersten Fehlalarm und **zitiert
 auslösende Wendung in Backticks — der Sensor meldete Text, der *über* sein Muster spricht.
 
 Das ist wörtlich die Klasse
-[`SL-004`](../../steering-loop.md#sl-004--ein-neuer-doku-sensor-meldet-im-ersten-lauf-sein-eigenes-umfeld),
+`SL-004`,
 und deren Antwort steht seit slice-061 als Guide in Schritt 5 des Workflow-Skeletts: *wer einen
 Sensor über Markdown baut, blendet Zitat-Kontexte von Anfang an aus und nimmt eine Fixture mit
 zitiertem Muster in den Selbsttest auf.* `verify-closure-notes` stammt aus slice-050 und ist
@@ -37,7 +37,7 @@ das Vokabular, aus dem die Placeholder-Liste besteht.
 ## 2. Betroffene Module
 
 `tools/verify-closure-notes.sh` und
-[`docs/plan/steering-loop.md`](../../steering-loop.md) (`SL-004`, Vorfallszahl).
+`docs/plan/steering-loop.md` (`SL-004`, Vorfallszahl).
 Eine Schicht: Gate-/Werkzeug-Schicht.
 
 ## 3. Was ausdrücklich **nicht** getan wird — und warum das eine ADR bräuchte
@@ -70,7 +70,7 @@ unterscheiden.
       (Code-Blöcke und Inline-Code entfernt) — Beleg: Diff.
 - [x] Der Selbsttest trägt eine Fixture mit zitiertem Muster, die schweigt, **und** behält die mit
       unzitiertem, die feuert — Beleg: Target-Ausgabe.
-- [x] [`SL-004`](../../steering-loop.md#sl-004--ein-neuer-doku-sensor-meldet-im-ersten-lauf-sein-eigenes-umfeld)
+- [x] `SL-004`
       nennt die zwei neuen Vorfälle mit Zahl und die Antwort — Beleg: Diff.
 
 Pflicht, aber **kein** Liefer-Punkt: `make gates` und `make verify` grün — Ausgabe in eine Datei,

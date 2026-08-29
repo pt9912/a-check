@@ -143,7 +143,7 @@ konkreteste; er gehört in den Entscheid.
 [ADR-0031](../../adr/0031-heuristik-grenzen-diagnose.md). Ausschlaggebend war nicht Eleganz,
 sondern ein gemessenes Rauschprofil: der Restmengen-Ansatz meldet Kommentare und String-Literale,
 und genau diese Klasse hat das Repo dreimal getroffen
-([`SL-004`](../../steering-loop.md)). Eine Diagnose, die bei jedem Lauf spricht, wird
+(`SL-004`). Eine Diagnose, die bei jedem Lauf spricht, wird
 weggeschaltet — dann ist sie schlechter als keine.
 
 **Beobachtbare Architektur-Aussage: die Config-Kenntnis blieb im Kern.** Beim Bau zerfiel „nicht

@@ -165,7 +165,7 @@ Zeilen, davon drei neue Skripte unter `tools/`.
 F-1 blockiert den Merge dieser Kette aus demselben Grund nicht wie in Etappe B: gemergt wird die
 Spitze, und die ist `doc-check`-grün (belegt). Was bleibt, ist die unhaltbare **Behauptung** im
 Closure-Kriterium und der fehlende Sensor dahinter — offener Punkt **SL-002** im
-[Steering-Loop](../plan/steering-loop.md). Mit diesem Report liegen nun **zwei** rote Gate-Läufe
+Steering-Loop. Mit diesem Report liegen nun **zwei** rote Gate-Läufe
 als Beleg vor statt Erinnerungswerte.
 
 F-3 ist die inhaltlich wichtigste Auflage: der Sensor ist zwar fail-closed (ein Fehlalarm

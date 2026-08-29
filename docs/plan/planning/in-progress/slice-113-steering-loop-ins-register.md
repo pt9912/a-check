@@ -44,21 +44,21 @@ slice-108 adoptiert: *„die Abwägung gehört in die ADR, die Historie in `git`
 
 ## 2. Definition of Done
 
-- [ ] `docs/plan/steering-loop.md` ist entfernt; die drei lebenden Verweise
+- [x] `docs/plan/steering-loop.md` ist entfernt; die drei lebenden Verweise
       ([`AGENTS.md`](../../../../AGENTS.md), `.claude/commands/slice.md`,
       `tools/verify-slice-links.sh`) zeigen aufs Beobachtungs-Register.
-- [ ] Die historischen Zeiger in `done/`, `docs/reviews/` und
+- [x] Die historischen Zeiger in `done/`, `docs/reviews/` und
       [`ADR-0031`](../../adr/0031-heuristik-grenzen-diagnose.md) sind entlinkt, ihre **Aussage**
       unverändert — wie in slice-112.
-- [ ] `make doc-immutable STAGED=1` grün: der Eingriff an
+- [x] `make doc-immutable STAGED=1` grün: der Eingriff an
       [`ADR-0031`](../../adr/0031-heuristik-grenzen-diagnose.md) ist zulässig, **gemessen** statt
       angenommen — sie trägt seit [`ADR-0035`](../../adr/0035-grenz-diagnose-gegen-globs.md) nicht
       mehr `Accepted`.
 
-- [ ] `make gates` grün — Ausgabe in eine Datei, Exit-Code getrennt geprüft, nie in eine Pipe.
-- [ ] Closure-Notiz mit benanntem Lerneintrag geschrieben (§7).
-- [ ] Beobachtungs-Register fortgeschrieben.
-- [ ] Jedes Risiko aus §6 trägt genau einen Ausgang.
+- [x] `make gates` grün — Ausgabe in eine Datei, Exit-Code getrennt geprüft, nie in eine Pipe.
+- [x] Closure-Notiz mit benanntem Lerneintrag geschrieben (§7).
+- [x] Beobachtungs-Register fortgeschrieben.
+- [x] Jedes Risiko aus §6 trägt genau einen Ausgang.
 
 ## 3. Plan (vor Code)
 
@@ -66,7 +66,7 @@ slice-108 adoptiert: *„die Abwägung gehört in die ADR, die Historie in `git`
 |---|---|---|
 | `docs/plan/steering-loop.md` | entfällt | zweiter Zähler |
 | `AGENTS.md`, `.claude/commands/slice.md`, `tools/verify-slice-links.sh` | update | lebende Verweise |
-| `done/`, `docs/reviews/`, `ADR-0031` | update | tote Zeiger entlinken |
+| `done/`, `docs/reviews/`, [`ADR-0031`](../../adr/0031-heuristik-grenzen-diagnose.md) | update | tote Zeiger entlinken |
 
 **Auszuführende Gates:** `make doc-immutable STAGED=1` **vor** dem Commit, dann `make gates`
 (tragend `doc-check`), zum Abschluss `make verify`.
@@ -103,8 +103,40 @@ Vorfälle ihrer Welle an ihrem vorgesehenen Ort.
 
 ## 7. Closure-Notiz
 
-_(beim Abschluss ausfüllen — genau **ein** solcher Abschnitt je Slice,
-[`AGENTS.md`](../../../../AGENTS.md) §5; `make verify` prüft das.)_
+**Geliefert:** `docs/plan/steering-loop.md` ist weg — 302 Zeilen und der zweite Zähler. 28 Dateien
+angepasst: drei lebende Verweise zeigen aufs Register, der Rest ist entlinkt, die Aussagen stehen
+unverändert.
+
+**Lerneintrag — Form: geschärfte Regel.** *Das „Warum" einer Regel gehört an die Regel, nicht in
+eine Datei daneben.* Die Frage *„wer soll mit einem Archiv etwas anfangen?"* hat die Messung
+erzwungen, die den Slice umgedreht hat: **fünf von sechs** Einträgen stehen längst am
+Verkörperungs-Ort — `SL-001` im Guard, `SL-003` in `commit-scope-check.sh`, `SL-004` in
+`verify-closure-notes.sh` und so fort. Niemand hatte das geplant; es ist passiert, **weil** wer
+einen Guard oder Sensor baut, das Warum daneben schreibt. Die separate Datei war damit von Anfang
+an die redundante Hälfte, und `SL-006` beweist die Regel von der anderen Seite: dort steht nichts,
+weil nichts gebaut wurde. **Der Prüfsatz:** bevor ein erklärendes Artefakt archiviert wird, ist zu
+messen, ob seine Erklärung nicht ohnehin dort steht, wo sie wirkt.
+
+**Zwei beobachtbare Closure-Kriterien:**
+
+1. `make doc-immutable STAGED=1` läuft mit **Exit 0** über den Eingriff an
+   [`ADR-0031`](../../adr/0031-heuristik-grenzen-diagnose.md) — zulässig, weil sie seit
+   [`ADR-0035`](../../adr/0035-grenz-diagnose-gegen-globs.md) nicht mehr `Accepted` trägt und das
+   Immutabilitäts-Prädikat damit nicht greift. **Gemessen, nicht angenommen** — genau der Punkt,
+   an dem ich die Immutabilität zuvor als Sackgasse gelesen hatte.
+2. `doc-check` prüft **228** Dateien mit **0** Befunden, nachdem eine Datei gelöscht wurde, auf die
+   27 andere zeigten.
+
+**Offene Risiken und ihr Ausgang:** siehe §6 — zwei bleiben offen und gehen ins
+**Beobachtungs-Register**, sobald sie eintreten; einer ist gestrichen mit Begründung.
+
+**Beobachtungs-Register:** keine Beobachtung angefallen. Die zwei offenen Risiken sind
+**bedingt** — sie treten ein, wenn jemand die Auffindbarkeit vermisst oder `SL-006`s Muster
+wiederkehrt. Eine Kennung entsteht beim Erstauftreten, nicht auf Vorrat; das war die Lehre aus
+slice-114.
+
+**Folge-Slices:** keine. Offen bleibt der d-check-Pin-Bump, dessen erste Trigger-Hälfte gemessen
+ist.
 
 ## 8. Sub-Area-Modus-Begründung
 

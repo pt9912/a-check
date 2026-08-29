@@ -94,7 +94,7 @@ griff").
   Extraktions-Regex gegriffen wurde.** Präzise am Fund, rauschanfällig im Umfeld: Kommentare und
   Zeichenketten-Literale mit `import` erzeugen Treffer, ebenso jede Sprach-Syntax, die das Wort
   anders nutzt. Genau diese Klasse hat das Repo schon dreimal getroffen —
-  [`SL-004`](../steering-loop.md) hält fest, dass ein neuer Sensor im ersten Lauf sein eigenes
+  `SL-004` hält fest, dass ein neuer Sensor im ersten Lauf sein eigenes
   Umfeld meldete. Eine Diagnose, die bei jedem Lauf spricht, wird weggeschaltet; dann ist sie
   schlechter als keine.
 - **Dateien ohne einen einzigen extrahierten Import melden.** Billig und falsch: eine Datei ohne
@@ -127,4 +127,4 @@ griff").
 
 | Datum | Ereignis |
 |---|---|
-| 2026-08-09 | Proposed → Accepted (Sign-off Auftraggeber). Auslöser: `CR-1` aus einem realen Konsumenten-Einsatz mit vier gemessenen Fällen und dem Vorschlag der Gegenmuster; die Gestalt „gezielte Muster" wurde gegen den Restmengen-Ansatz gewählt, weil dessen Rauschprofil im Repo dreimal belegt ist ([`SL-004`](../steering-loop.md)). Ab jetzt immutable; Ablösung nur via Folge-ADR mit `Supersedes`. |
+| 2026-08-09 | Proposed → Accepted (Sign-off Auftraggeber). Auslöser: `CR-1` aus einem realen Konsumenten-Einsatz mit vier gemessenen Fällen und dem Vorschlag der Gegenmuster; die Gestalt „gezielte Muster" wurde gegen den Restmengen-Ansatz gewählt, weil dessen Rauschprofil im Repo dreimal belegt ist (`SL-004`). Ab jetzt immutable; Ablösung nur via Folge-ADR mit `Supersedes`. |

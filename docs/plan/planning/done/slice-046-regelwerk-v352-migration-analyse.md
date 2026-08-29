@@ -150,7 +150,7 @@ umgesetzt wurden **sechs**, mit **E vor D**:
 | E — Mechanik/Sensoren *(neu, vorgezogen)* | [slice-049](../done/slice-049-mechanik-sensoren.md) … [slice-051](../done/slice-051-workflow-und-freigabe.md) |
 | D — Form/Templates | [slice-052](../done/slice-052-slice-form.md) … [slice-054](../done/slice-054-ac-form.md) |
 | C — `MR-*`-Bereinigung | [slice-055](../done/slice-055-mr-bestand.md), [slice-056](../done/slice-056-sub-area-modus.md) |
-| F — Steering/Closure *(neu)* | [slice-057](../done/slice-057-steering-loop.md), [slice-065](../done/slice-065-carveout-ort-und-trichter.md), [slice-066](../done/slice-066-wellen-closure-und-rollen.md) |
+| F — Steering/Closure *(neu)* | slice-057, [slice-065](../done/slice-065-carveout-ort-und-trichter.md), [slice-066](../done/slice-066-wellen-closure-und-rollen.md) |
 
 Der Grund für die Erweiterung steht im Drift-Log der [Roadmap](../in-progress/roadmap.md): die
 vollständige Baseline-Lektüre in Etappe B brachte elf zusätzliche Funde, und die Mechanik-Funde
