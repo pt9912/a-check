@@ -18,16 +18,28 @@
 # Geprueft wird STRUKTUR:
 #   (1) hoechstens 3 LIEFER-Punkte (B-1, Metrik ab slice-098)
 #   (2) in done/: die Closure-Notiz benennt eine der drei Lerneintrag-Formen (B-5)
-#   (3) ab slice-098: kein Gate-Lauf als DoD-Punkt
+#   (3) ENTFALLEN mit slice-107 — siehe KONSTANTE POSTEN unten
 #   (4) ab slice-098: die drei Kopffelder sind gesetzt
 #
-# METRIK-WECHSEL (slice-098, Baseline v5.12.0 modul-05 §Ziel-Form: Slice).
-# Gezaehlt werden LIEFER-Punkte: "nur, was mit dem Umfang waechst". NICHT
-# gezaehlt: Gate-Laeufe, Closure-Notiz, Register, Risiko-Ausgaenge. Die
-# Zaehl-LOGIK bleibt (Checkboxen im DoD-Abschnitt) — richtig wird sie dadurch,
-# dass die Vorlage die konstanten Punkte gar nicht erst als Checkbox fuehrt.
-# Pruefung (3) haelt das offen: ohne sie kehrt der Gate-Lauf als Checkbox
-# zurueck und frisst weiter einen von drei Slots.
+# METRIK (slice-098, korrigiert in slice-107; Baseline modul-05 §Ziel-Form).
+# Gezaehlt werden LIEFER-Punkte: "nur, was mit dem Umfang waechst".
+#
+# KONSTANTE POSTEN. slice-098 nahm den Gate-Lauf aus dem DoD heraus und meldete
+# ihn dort als Befund. Das war eine EIGENE Konstruktion: die Ziel-Form fuehrt
+# `- [ ] make gates gruen.` selbst als DoD-Punkt und schreibt daneben, dass er
+# nicht mitzaehlt. Pruefung (3) haette also jeden Slice beanstandet, der aus der
+# Vorlage entsteht. Sie ist zurueckgebaut; stattdessen ZAEHLT der Zaehler die
+# konstanten Posten nicht mit — die Baseline zaehlt sie selbst auf.
+#
+# Das ist KEINE Lockerung (AGENTS.md §3.6): die alte Regel pruefte eine
+# Bedingung, die die Baseline nicht stellt. Der neue Zaehler ist strenger — er
+# zaehlt auch in Slices richtig, die die konstanten Posten mitfuehren.
+#
+# GLIEDERUNGS-WECHSEL: die Ziel-Form heisst "## 2. Definition of Done" statt
+# "## N. DoD". Beide werden erkannt; ein Stichtag ist dafuer NICHT noetig, weil
+# die Erkennung nur weiter wird und die Konstanten-Filterung den Zaehler nur
+# senkt — kein Bestands-Slice wird dadurch rot.
+KONSTANTE='(make (gates|verify)([^-[:alnum:]]|$)|Closure-Notiz|Beobachtungs-Register|observations\.md|Reconciliation|reconciliation\.md|Risiko aus §|Risiko aus \$|trägt genau einen Ausgang|Paarungen)'
 #
 # NICHT geprueft: "hoechstens zwei Schichten" aus B-1 — was eine Schicht ist,
 # ist eine Ermessensfrage ueber Modul-Grenzen; ein Zaehler darueber waere
@@ -74,23 +86,13 @@ check_file() {  # $1 = Datei, $2 = "done"/"offen", $3 = 1 wenn Kopf-Regeln gelte
   # in closure_body() und in verify-ac-form.sh. Eine dateiweite Zaehlung meldete
   # eine Checkliste in "Was offen bleibt" als DoD-Ueberschreitung (Review
   # 2026-07-26, R-052-F3; im Bestand noch aequivalent, also latent).
-  n="$(awk '/^#+ .*DoD/{i=1;next} i&&/^#+ /{i=0} i&&/^- \[[ x]\] /{c++} END{print c+0}' "$f")"
+  n="$(awk '/^#+ .*(DoD|Definition of Done)/{i=1;next} i&&/^#+ /{i=0} i&&/^- \[[ x]\] /' "$f" \
+        | grep -cvE "$KONSTANTE" || true)"
   if [ "$n" -gt "$MAX_DOD" ]; then
     echo "$f: $n Liefer-Punkte — hoechstens $MAX_DOD erlaubt (Groessen-Regel B-1); zerlegen statt dehnen"
     fail=1
   fi
   if [ "$headrules" = "1" ]; then
-    # (3) Ein Gate-Lauf ist pro Slice konstant und sagt ueber die Groesse nichts.
-    # Das Muster endet AM TARGET-NAMEN (slice-102): `make verify` ist ein
-    # Gate-Lauf, `make verify-observations` als DoD-Punkt ist die LIEFERUNG
-    # eines neuen Targets. Ein Praefix-Match haette den zweiten Fall
-    # faelschlich beanstandet — real aufgetreten an slice-102 selbst.
-    if awk '/^#+ .*DoD/{i=1;next} i&&/^#+ /{i=0} i&&/^- \[[ x]\] /' "$f" \
-         | grep -qE 'make (gates|verify)([^-[:alnum:]]|$)'; then
-      echo "$f: Gate-Lauf als DoD-Punkt — Gate-Laeufe zaehlen nicht als Liefer-Punkt"
-      echo "    (modul-05 §Ziel-Form: Slice); als feste Zeile UNTER das DoD stellen."
-      fail=1
-    fi
     # (4) Kopffelder. '—' ist eine gueltige Antwort, Schweigen nicht.
     for feld in 'Verantwortlich' 'Autor' 'Spec-Stellen'; do
       if ! grep -qE "\*\*[^*]*${feld}:\*\*" "$f"; then
@@ -129,9 +131,23 @@ self_test() {
   { echo '**Verantwortlich:** wer'; echo '**Autor:** wer'; echo '**Spec-Stellen:** —';
     echo '## 5. DoD'; echo '- [x] a'; echo '- [x] b'; echo '## 6. Closure-Notiz';
     echo '**Lerneintrag — Form: geschärfte Regel.** X, weil Y.'; } > "$tmp/gut-neu.md"
+  # KONSTANTE POSTEN (slice-107): drei Liefer-Punkte PLUS Gate-Lauf und
+  # Closure-Pflichten muessen schweigen — die Ziel-Form fuehrt sie selbst im DoD.
   { echo '**Verantwortlich:** wer'; echo '**Autor:** wer'; echo '**Spec-Stellen:** —';
-    echo '## 5. DoD'; echo '- [x] a'; echo '- [x] `make gates` gruen';
-    echo '## 6. Closure-Notiz'; echo '**Form: neuer Sensor**'; } > "$tmp/gate-im-dod.md"
+    echo '## 2. Definition of Done'; echo '- [x] a'; echo '- [x] b'; echo '- [x] c';
+    echo '- [x] `make gates` gruen.'; echo '- [x] Closure-Notiz mit Lerneintrag.';
+    echo '- [x] Beobachtungs-Register fortgeschrieben.';
+    echo '- [x] Jedes Risiko aus §6 trägt genau einen Ausgang.';
+    echo '## 7. Closure-Notiz'; echo '**Lerneintrag — Form: neuer Sensor.** X, weil Y.'; } > "$tmp/neue-form-gut.md"
+  if ! check_file "$tmp/neue-form-gut.md" done 1 >/dev/null; then
+    echo "verify-slice-form: Selbsttest FEHLGESCHLAGEN — konstante Posten als Liefer-Punkte gezaehlt" >&2
+    rm -rf "$tmp"; exit 2
+  fi
+  # Gegenprobe: VIER echte Liefer-Punkte in der neuen Gliederung muessen feuern.
+  { echo '**Verantwortlich:** wer'; echo '**Autor:** wer'; echo '**Spec-Stellen:** —';
+    echo '## 2. Definition of Done'; echo '- [x] a'; echo '- [x] b'; echo '- [x] c'; echo '- [x] d';
+    echo '- [x] `make gates` gruen.';
+    echo '## 7. Closure-Notiz'; echo '**Form: neuer Sensor**'; } > "$tmp/gate-im-dod.md"
   # Gegenprobe zum Praefix (slice-102): ein Target, dessen Name mit `verify`
   # BEGINNT, ist als DoD-Punkt eine Lieferung und kein Gate-Lauf.
   { echo '**Verantwortlich:** wer'; echo '**Autor:** wer'; echo '**Spec-Stellen:** —';
@@ -150,7 +166,7 @@ self_test() {
     rm -rf "$tmp"; exit 2
   fi
   local badneu
-  for badneu in gate-im-dod ohne-kopf; do
+  for badneu in gate-im-dod ohne-kopf; do   # gate-im-dod = vier echte Liefer-Punkte
     if check_file "$tmp/$badneu.md" done 1 >/dev/null; then
       echo "verify-slice-form: Selbsttest FEHLGESCHLAGEN — '$badneu' nicht erkannt (Pruefung tot)" >&2
       rm -rf "$tmp"; exit 2

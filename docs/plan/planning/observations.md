@@ -29,6 +29,7 @@ sagt. Angelegt mit slice-101.
 | BEO-012 | Ein Review kann seinen Geltungsbereich begründen und ihn trotzdem zu eng ziehen; beide bisherigen Lücken fand der Maintainer, nicht der Review | Planungs-Harness | 1× | slice-105 | offen — zwei Verfahren mit gegenläufigem Irrtum sind besser als eines, aber kein Beweis |
 | BEO-013 | Die Meilenstein-Tabelle der Roadmap führt keine `Trigger`-Spalte — Abweichung schon gegenüber `v3.5.2`, nicht Migrationsfolge | Planungs-Harness | 1× | slice-106 | offen — Füllen hieße, Trigger für drei erreichte Meilensteine zu erfinden |
 | BEO-014 | Die Marker-Hälfte von *Offene Wellen* ist ungewächtert: `doc-planning` lief grün, während der Ruhe-Marker bei beanspruchtem `in-progress/` stand | Gate-/Werkzeug-Schicht | 1× | slice-106 | offen — das Modul `planning` läuft ohne Konfigurationsblock in `.d-check.yml`; ein aktiviertes Modul ohne Konfiguration meldet grün, statt zu schweigen |
+| BEO-015 | Vier Begriffe der Slice-Ziel-Form sind nicht adoptiert: `Welle:`-Feld, Reconciliation-Register, *drei Paarungen*, Herkunfts-Anker | Planungs-Harness | 1× | slice-107 | offen — je eine eigene Entscheidung nötig; vier Mechaniken ungeprüft einzuführen wäre schlimmer |
 
 ## Gestrichene Einträge
 

@@ -57,24 +57,44 @@ slice_num() {  # $1 = Pfad -> Nummer ohne fuehrende Nullen, leer wenn keine
   basename "$1" | sed -nE 's/^slice-0*([0-9]+)-.*/\1/p'
 }
 
-# Risiko-Block eines Closure-Rumpfs, Fortsetzungszeilen an ihren Aufzaehlungs-
-# punkt geklebt: ein Ausgang steht oft erst in der zweiten Zeile.
-risiko_punkte() {  # $1 = Closure-Rumpf auf stdin
+# Risiko-Block als EIGENE Sektion (Ziel-Form v5.12.0: "## 6. Risiken und
+# offene Punkte"). Die alte a-check-Form fuehrt ihn stattdessen als Block IN
+# der Closure-Notiz; beide werden gelesen, damit der Gliederungs-Wechsel
+# (slice-107) den Check nicht still abschaltet — genau die Klasse
+# "halluziniertes Gate", gegen die modul-13 steht.
+risiko_sektion() {  # $1 = Datei
   awk '
-    /^\*\*Offene Risiken/ { inblock=1; next }
-    inblock && /^\*\*/ && !/^\*\*Offene Risiken/ { inblock=0 }
-    inblock {
-      # Fortsetzungszeilen NORMALISIERT ankleben: Einrueckung raus, Mehrfach-
-      # Leerzeichen zu einem. Sonst zerreisst ein Zeilenumbruch mitten in einem
-      # Ausgang die Wendung ("gestrichen mit\n  Begruendung") und der Sensor
-      # meldet einen korrekten Ausgang als fehlend — real aufgetreten an
-      # slice-102 selbst, an der eigenen Closure-Notiz.
+    /^## .*[Rr]isiken/ { inblock=1; next }
+    inblock && /^## / { inblock=0 }
+    inblock { print }
+  ' "$1"
+}
+
+# Aufzaehlungspunkte zusammenkleben: ein Ausgang steht oft erst in der zweiten
+# Zeile. Fortsetzungszeilen NORMALISIERT ankleben (Einrueckung raus), sonst
+# zerreisst ein Umbruch die Wendung — real aufgetreten an slice-102.
+#
+# GETRENNT von der Extraktion (slice-107): woher die Zeilen kommen — Block IN
+# der Closure (alte Form) oder eigene Sektion (Ziel-Form v5.12.0) — entscheiden
+# die Funktionen darueber. Diese hier sieht nur noch Zeilen.
+punkte_kleben() {  # Zeilen auf stdin
+  awk '
+    {
       line = $0
       sub(/^[[:space:]]+/, "", line)
       if ($0 ~ /^- /) { if (buf != "") print buf; buf = line }
       else if (buf != "") { buf = buf " " line }
     }
     END { if (buf != "") print buf }
+  '
+}
+
+# Risiko-Block INNERHALB der Closure-Notiz (a-checks Form bis slice-106).
+risiko_aus_closure() {  # Closure-Rumpf auf stdin
+  awk '
+    /^\*\*Offene Risiken/ { inblock=1; next }
+    inblock && /^\*\*/ && !/^\*\*Offene Risiken/ { inblock=0 }
+    inblock { print }
   '
 }
 
@@ -139,7 +159,7 @@ check_file() {  # $1 = Datei; gibt Befunde auf stdout, Rückgabe 1 bei Befund
         echo "$f: Risiko ohne Ausgang aus der geschlossenen Dreier-Menge: ${punkt:0:70}…"
         fail=1
       fi
-    done <<< "$(printf '%s\n' "$body" | risiko_punkte)"
+    done <<< "$( { printf '%s\n' "$body" | risiko_aus_closure; risiko_sektion "$f"; } | punkte_kleben )"
   fi
   # Satzzahl (slice-075, Fund F-13): gezaehlt werden Satzzeichen, die tatsaechlich
   # ein Satzende markieren — also von Whitespace oder Zeilenende gefolgt. Die
@@ -198,6 +218,21 @@ self_test() {
     echo '- *A* — Ausgang: **gestrichen mit'; echo '  Begründung**, weil weg.'; } > "$tmp/slice-102-umbruch.md"
   if ! check_file "$tmp/slice-102-umbruch.md" >/dev/null; then
     echo "verify-closure-notes: Selbsttest FEHLGESCHLAGEN — Ausgang ueber Zeilenumbruch nicht erkannt" >&2
+    rm -rf "$tmp"; exit 2
+  fi
+  # NEUE GLIEDERUNG (slice-107): Risiken als eigene Sektion, nicht in der Closure.
+  { echo '## 6. Risiken und offene Punkte'; echo '';
+    echo '- *A* — **Ausgang:** weiter offen, `BEO-001` im Register.'; echo '';
+    echo '## 7. Closure-Notiz'; echo 'Text hier. Zweiter Satz.'; } > "$tmp/slice-102-sektion-gut.md"
+  if ! check_file "$tmp/slice-102-sektion-gut.md" >/dev/null; then
+    echo "verify-closure-notes: Selbsttest FEHLGESCHLAGEN — gueltiger Ausgang in eigener Sektion beanstandet" >&2
+    rm -rf "$tmp"; exit 2
+  fi
+  { echo '## 6. Risiken und offene Punkte'; echo '';
+    echo '- *A* — bleibt halt so.'; echo '';
+    echo '## 7. Closure-Notiz'; echo 'Text hier. Zweiter Satz.'; } > "$tmp/slice-102-sektion-ohne.md"
+  if check_file "$tmp/slice-102-sektion-ohne.md" >/dev/null; then
+    echo "verify-closure-notes: Selbsttest FEHLGESCHLAGEN — Risiko ohne Ausgang in eigener Sektion nicht erkannt" >&2
     rm -rf "$tmp"; exit 2
   fi
   { echo '## 6. Closure-Notiz'; echo 'Text hier. Zweiter Satz.'; echo '';

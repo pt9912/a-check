@@ -74,11 +74,11 @@ Ausgänge dort müssen schweigen.
 
 ## 6. DoD
 
-- [ ] `slice.template.md` trägt die acht Abschnitte der Ziel-Form, mit Regelwerk-Zeiger je
+- [x] `slice.template.md` trägt die acht Abschnitte der Ziel-Form, mit Regelwerk-Zeiger je
       Sektion; a-checks eigene Regeln bleiben, wo die Baseline schweigt.
-- [ ] `verify-slice-form` erkennt beide Gliederungen (Stichtag), zählt Liefer-Punkte **ohne** die
+- [x] `verify-slice-form` erkennt beide Gliederungen (Stichtag), zählt Liefer-Punkte **ohne** die
       konstanten Posten, und Prüfung (3) ist zurückgebaut.
-- [ ] `verify-closure-notes` findet den Risiko-Block auch als eigene Sektion; alle Fixtures aus §4
+- [x] `verify-closure-notes` findet den Risiko-Block auch als eigene Sektion; alle Fixtures aus §4
       verhalten sich wie beschrieben.
 
 Pflicht, aber **kein** Liefer-Punkt: `make gates` und zum Abschluss `make verify` grün — Ausgabe
@@ -86,8 +86,45 @@ in eine Datei, Exit-Code getrennt geprüft, nie in eine Pipe.
 
 ## 7. Closure-Notiz
 
-_(beim Abschluss ausfüllen — genau **ein** solcher Abschnitt je Slice,
-[`AGENTS.md`](../../../../AGENTS.md) §5; `make verify` prüft das.)_
+**Geliefert:** die Slice-Vorlage in der Acht-Abschnitt-Form, ein Zähler, der die konstanten Posten
+ignoriert statt sie zu verbieten, und ein Risiko-Check, der den Block in **beiden** Gliederungen
+findet.
+
+**Lerneintrag — Form: geschärfte Regel.** *Eine eigene Lösung, die eleganter aussieht als die der
+Baseline, ist zuerst ein Verdacht.* slice-098 hat den Gate-Lauf aus dem DoD **entfernt**, damit der
+Zähler nur Zählbares vorfindet — und dafür eine Prüfung gebaut, die ihn dort verbietet. Die
+Ziel-Form macht das Gegenteil: sie **führt** ihn als DoD-Punkt und schließt ihn vom Zählen aus.
+Meine Konstruktion hätte jeden Slice beanstandet, der aus der Vorlage entsteht. *Weil* ich den
+Mechanismus aus dem **Regeltext** gebaut habe (`modul-05` nennt die Nicht-Zähl-Liste) und die
+**Ziel-Form** nicht gelesen hatte, die zeigt, wie er gemeint ist. Regel und Ziel-Form sind zwei
+Hälften; wer eine liest, hat die Konstruktion noch nicht.
+
+**Zwei beobachtbare Closure-Kriterien:**
+
+1. Der Selbsttest fährt beide Richtungen der neuen Metrik: drei Liefer-Punkte **plus** Gate-Lauf
+   und drei Closure-Pflichten schweigen; **vier** echte Liefer-Punkte feuern. Und beide
+   Gliederungen: `## N. DoD` wie `## 2. Definition of Done`.
+2. `verify-closure-notes` findet den Risiko-Block in der eigenen Sektion **und** im Closure-Block,
+   je mit Positiv- und Negativ-Fixture. Ein Stichtag war dafür nicht nötig — die Erkennung wird
+   nur weiter, und die Konstanten-Filterung senkt den Zähler nur.
+
+**Offene Risiken und ihr Ausgang:**
+
+- *Vier Begriffe der Ziel-Form sind nicht adoptiert* (`Welle:`-Feld, Reconciliation-Register, drei
+  Paarungen, Herkunfts-Anker) — Ausgang: **weiter offen**, als `BEO-015` im Beobachtungs-Register.
+  Sie brauchen je eine eigene Entscheidung; vier Mechaniken ungeprüft einzuführen wäre schlimmer
+  als sie zu benennen.
+- *56 Slices stehen in der alten Gliederung* — Ausgang: **gestrichen mit Begründung**. `modul-02`
+  für wiederkehrende Vorlagen: neue Instanzen folgen der neuen Form, bestehende werden nicht
+  umgeschrieben. Beide Gliederungen werden erkannt, also braucht es dafür nicht einmal einen
+  Stichtag.
+- *Eine Prüfregel ist ohne ADR entfallen* — Ausgang: **gestrichen mit Begründung**. Keine
+  Lockerung im Sinne von [`AGENTS.md`](../../../../AGENTS.md) §3.6: die Regel prüfte eine
+  Bedingung, die die Baseline nicht stellt. Der neue Zähler ist strenger, weil er auch dort richtig
+  zählt, wo die konstanten Posten mitgeführt werden.
+
+**Folge-Slices:** die übrigen Regelwerk-Zeiger aus
+[slice-105](../done/slice-105-form-review-nachholen.md) §4 A.
 
 ## 8. Sub-Area-Modus
 
