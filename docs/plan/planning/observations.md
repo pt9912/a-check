@@ -23,6 +23,8 @@ sagt. Angelegt mit slice-101.
 | BEO-006 | Die vorgeschriebene Reihenfolge kann die Prüfung nicht abnehmen, die sie erfüllen soll: `verify-closure-notes` greift nur in `done/`, der Workflow fährt `make verify` in Schritt 8 und den `git mv` erst in Schritt 9 | Gate-/Werkzeug-Schicht | 1× | slice-099 | offen — die Closure-Notiz eines Slice wird frühestens beim **nächsten** geprüft |
 | BEO-007 | Der Risiko-Ausgangs-Sensor prüft **innerhalb** eines vorhandenen Blocks, nicht seine Existenz — wer den Block weglässt, wird nicht erwischt | Gate-/Werkzeug-Schicht | 1× | slice-102 | offen — die Existenz einzufordern verlangte ein Urteil (gab es hier überhaupt Risiken?) und erzeugte auf jedem älteren Slice Rauschen |
 | BEO-008 | `verify-slice-links` nimmt `done/` als Endzustand aus — ein **done**-Slice, der auf einen noch wandernden zeigt, bleibt ungeprüft und bricht, wenn dieser wandert | Planungs-Harness | 1× | slice-093 | offen — die Invariante ist auf wandernde Slices gerichtet, nicht auf Verweise **auf** sie; gefangen hat es `doc-check`, nicht der zuständige Sensor |
+| BEO-009 | Chronik in Dateien, die jeder Agentenlauf liest: eine Sektion, die Fortschritt erzählt, ist zwischen zwei Schritten falsch und kostet bei jedem Lauf Kontext | Harness-Einstieg | 1× | slice-103 | offen — in `conventions.md` behoben; `AGENTS.md` §5 und `harness/README.md` §Sensors tragen je eine gemessene Reststelle |
+| BEO-010 | Baseline-Normtext wird im Repo **nachgeschrieben** statt verwiesen — zwei Fassungen driften | Harness-Einstieg | 1× | slice-103 | offen — in `conventions.md` auf den Zeiger gekürzt; `AGENTS.md` §1 trägt dieselbe Klausel weiterhin im Rumpf |
 
 ## Gestrichene Einträge
 

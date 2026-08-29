@@ -47,7 +47,8 @@ Der Ist-Zustand dagegen ändert sich nur, wenn er sich ändert.
 
 ## 3. Auszuführende Gates
 
-`make gates` — tragend ist `doc-check`: die Kürzungen entfernen Verweise, und `MR-006`
+`make gates` — tragend ist `doc-check`: die Kürzungen entfernen Verweise, und
+[`MR-006`](../../../../harness/conventions.md#mr-006--baseline-committet-vendored-statt-per-url-referenziert)
 adressiert `§Baseline` per Anker. Zum Abschluss `make verify`.
 
 **Kein neuer Sensor.** Die Probe ist der Bestand: **niemand** verweist auf die drei Passagen —
@@ -66,11 +67,13 @@ gemessen, nicht angenommen; der einzige Fremdtreffer ist eine beiläufige Erwäh
 
 ## 5. DoD
 
-- [ ] §Baseline nennt Konvention, Stand, vendored Ort und Integrität — ohne Etappen-Erzählung;
+- [x] §Baseline nennt Konvention, Stand, vendored Ort und Integrität — ohne Etappen-Erzählung;
       die überholte Aussage „Offen ist allein D" ist damit weg — Beleg: Diff.
-- [ ] §Adoptierte Konventions-Quellen trägt die drei Bullets der Sollform; *Problem-Quellen* und
-      *Konventions-Vorbild* sind ersatzlos gestrichen — Beleg: Diff.
-- [ ] Die Nummern-Frage-Forensik in der Adaptions-Präambel ist weg; `doc-check` bleibt bei 0
+- [x] §Adoptierte Konventions-Quellen trägt die drei Bullets der Sollform; *Problem-Quellen* und
+      *Konventions-Vorbild* sind ersatzlos gestrichen, und das *Extern*-Bullet ist auf den Zeiger
+      gekürzt — der nachgeschriebene Baseline-Normtext steht im Vorlagen-**Kommentar**, nicht im
+      Rumpf — Beleg: Diff.
+- [x] Die Nummern-Frage-Forensik in der Adaptions-Präambel ist weg; `doc-check` bleibt bei 0
       Befunden — Beleg: Target-Ausgabe.
 
 Pflicht, aber **kein** Liefer-Punkt: `make gates` und zum Abschluss `make verify` grün — Ausgabe
@@ -78,8 +81,42 @@ in eine Datei, Exit-Code getrennt geprüft, nie in eine Pipe.
 
 ## 6. Closure-Notiz
 
-_(beim Abschluss ausfüllen — genau **ein** solcher Abschnitt je Slice,
-[`AGENTS.md`](../../../../AGENTS.md) §5; `make verify` prüft das.)_
+**Geliefert:** `harness/conventions.md` von 240 auf 215 Zeilen; §Baseline nennt den Ist-Zustand
+statt zweier Migrations-Erzählungen, §Adoptierte Konventions-Quellen trägt die drei Bullets der
+Sollform statt fünf, und die Nummern-Frage-Forensik ist weg.
+
+**Lerneintrag — Form: geschärfte Regel.** *Eine Sektion, die Fortschritt erzählt, ist zwischen
+zwei Schritten immer falsch.* §Baseline behauptete bis zu diesem Slice „Offen ist allein **D**" —
+geschrieben in slice-099, überholt seit slice-102, also **drei Slices später in derselben
+Sitzung**. Niemand hatte es nachgezogen, und niemand hätte es gemerkt: die Aussage ist von keinem
+Gate erfasst. *Weil* eine Fortschritts-Aussage bei jedem Schritt gepflegt werden muss, während der
+**Ist-Zustand** sich nur ändert, wenn er sich ändert. **Der Prüfsatz:** in eine Datei, die jeder
+Lauf liest, gehört, was **gilt** — nicht, was geschah; das Gewordene steht in `done/` und wird dort
+gesucht, wenn jemand danach fragt.
+
+**Zwei beobachtbare Closure-Kriterien:**
+
+1. 240 → 215 Zeilen, und §Adoptierte Konventions-Quellen trägt genau die drei Bullets, die die
+   Vorlage vorsieht (Extern · Vendored · In-Repo) — nachzählbar gegen
+   `.harness/baseline/v5.12.0/templates/harness/conventions.template.md`.
+2. `doc-check` prüft 218 Dateien mit 0 Befunden, **nachdem** Verweise entfernt wurden — belegt,
+   dass keine der drei Passagen ein Ziel war. Vorab gemessen: kein Dokument verlinkt sie.
+
+**Offene Risiken und ihr Ausgang:**
+
+- *Dieselbe Chronik steht an je einer Stelle in `AGENTS.md` und `harness/README.md`* — gemessen,
+  nicht vermutet: „Bis slice-077 stand hier …" und „bis slice-079 tat das `gate-consistency`".
+  Ausgang: **weiter offen**, als `BEO-009` im Beobachtungs-Register.
+- *Baseline-Normtext wird an einer weiteren Stelle nachgeschrieben* — `AGENTS.md` §1 trägt
+  dieselbe Normativitäts-Klausel im Rumpf, die hier auf den Zeiger gekürzt wurde. Sie steht als
+  Rumpftext **nur** im vendored `regelwerk/README.md`; in der Vorlage lebt sie in einem
+  HTML-Kommentar, der beim Adoptieren wegfällt. Ausgang: **weiter offen**, als `BEO-010` im
+  Beobachtungs-Register.
+- *Gestrichenes ist nur in der Historie auffindbar* — Ausgang: **gestrichen mit Begründung**. Die
+  drei Passagen sind Chronik über das Dokument selbst; ihr Ort ist `git log` und `done/`, und
+  genau dorthin verweist §Baseline jetzt ausdrücklich.
+
+**Folge-Slices:** keine — der Rest hängt an `BEO-009`.
 
 ## 7. Sub-Area-Modus
 

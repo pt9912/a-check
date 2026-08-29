@@ -22,54 +22,37 @@ die kanonische Quelle (Source Precedence, siehe
 - **Konvention:** AI-Harness-Kurs
 - **Stand:** [`v5.12.0`](https://github.com/pt9912/ai-harness-course/releases/tag/v5.12.0)
   (Release-Tag) — **Kurs-Welle 98 · 2026-08-26**, wie im Kopf des vendored
-  [`regelwerk/README.md`](../.harness/baseline/v5.12.0/regelwerk/README.md) ausgewiesen;
-  **committet vendored** unter
-  [`.harness/baseline/v5.12.0/`](../.harness/baseline/v5.12.0/regelwerk/README.md) —
-  siehe [`MR-006`](#mr-006--baseline-committet-vendored-statt-per-url-referenziert)
-- **Datum der Adoption:** 2026-06-20 (`v1.3.0`). **Stand gehoben auf `v3.5.2` am 2026-07-25**,
-  vollständig durchgeführt in `welle-12` (Etappen A–F, Slices 046–078, geschlossen 2026-08-09) —
-  aus dieser Migration ist **nichts offen**.
-- **Laufende Migration auf `v5.12.0`** (Stand gehoben am 2026-08-29, Analyse
-  [slice-092](../docs/plan/planning/done/slice-092-regelwerk-v5120-delta-analyse.md)): geschnitten
-  in vier Etappen. **A** (Vendoring + Stand), **B** (Adaptions-Durchgang) und **C** (Form:
-  Verzeichnis-Form des Adaptions-Speichers, Ausführung der Urteile, Slice-Form, Rest der Form)
-  sind abgeschlossen. Offen ist allein **D** — die neue Mechanik: Risiko-Ausgänge bei Closure und
-  das Beobachtungs-Register.
-- **Ein Stand liegt vendored**, `v5.12.0`. Der Vorgänger `v3.5.2` lag während der Etappen A–C
-  daneben — Vorschrift, nicht Rückstand: er war die Vergleichsgrundlage des Form-Reviews und ist
-  mit dessen Abschluss entfallen (`modul-02` §Freshness-Audit; slice-099). `make regelwerk-check`
-  meldet seitdem wieder genau einen Stand.
+  [`regelwerk/README.md`](../.harness/baseline/v5.12.0/regelwerk/README.md) ausgewiesen.
+- **Ort:** **committet vendored** unter
+  [`.harness/baseline/v5.12.0/`](../.harness/baseline/v5.12.0/regelwerk/README.md), Integrität
+  über `SHA256SUMS`, geprüft mit `make regelwerk-check`
+  ([`MR-006`](#mr-006--baseline-committet-vendored-statt-per-url-referenziert)). Genau **ein**
+  Stand liegt vendored; mehrere sind nur während einer Migration zulässig, und das Target weist
+  den ungeprüften dann namentlich aus.
+- **Adoptiert seit:** 2026-06-20.
+
+Wann welcher Stand gehoben wurde und in welchen Etappen, steht in
+[`docs/plan/planning/done/`](../docs/plan/planning/done/) — nicht hier. Diese Datei trägt den
+Ist-Zustand.
 
 ## Adoptierte Konventions-Quellen
 
+Pointer, keine Wiederholung des Inhalts.
+
+- **Extern (Lehrmaterial):**
+  [`ai-harness-course@v5.12.0`](https://github.com/pt9912/ai-harness-course/tree/v5.12.0)
+  (Kurs unter `kurs/de/`).
 - **Vendored Baseline (Regelwerk + Templates) — die Lese-Form:**
   [`.harness/baseline/v5.12.0/regelwerk/README.md`](../.harness/baseline/v5.12.0/regelwerk/README.md)
   (Index) und
-  [`.harness/baseline/v5.12.0/templates/README.md`](../.harness/baseline/v5.12.0/templates/README.md),
-  materialisiert aus dem self-contained `lab-regelwerk.zip` des Releases; Integrität über
-  `.harness/baseline/v5.12.0/SHA256SUMS`. **Netzlos** auf jedem Checkout, pro Abschnitt eine
-  Datei — ein Agent lädt den benötigten Abschnitt, nie das ganze Bundle
+  [`.harness/baseline/v5.12.0/templates/README.md`](../.harness/baseline/v5.12.0/templates/README.md).
+  **Netzlos** auf jedem Checkout, pro Abschnitt eine Datei — ein Agent lädt den benötigten
+  Abschnitt, nie das ganze Bundle
   ([`MR-006`](#mr-006--baseline-committet-vendored-statt-per-url-referenziert)).
-- **Extern (Lehrmaterial, maßgeblich für den Inhalt):**
-  [`ai-harness-course@v5.12.0`](https://github.com/pt9912/ai-harness-course/tree/v5.12.0)
-  (Kurs unter `kurs/de/`). Das vendored Regelwerk ist ein **didaktik-freier Extrakt** und
-  trägt keine eigene Normativität: bei Konflikt gilt der Kurs, über ihm die kanonischen
-  Quellen dieses Repos (Source Precedence).
-- **Konventions-Vorbild (Harness-Form):**
-  [`d-check`](https://github.com/pt9912/d-check) — Schwester-Tool im
-  selben Stack; Harness-Form (`AGENTS.md`/`harness/`-Trias),
-  Hexagon-Ordnerkonvention, Dockerfile-/Makefile-Muster, Pin-Politik,
-  Gate-Nachweis-Mechanik (Working-Tree-Hash, `.claude`-Hooks) werden von
-  dort übernommen, sobald die jeweiligen Slices sie anlegen.
-- **Problem-Quellen (konsolidierte Vorläufer):** die vier divergenten
-  `arch-check.sh`-Varianten, die dieses Tool ablöst — `b-cad` (C++),
-  `d-check` (Go), `grid-guide` (Rust), `d-migrate` (Kotlin; dort heute
-  nur Review statt Fitness-Function für laterale Adapter/Port-Dialekte).
-  Sie definieren die *Anforderung* (siehe
-  [`spec/lastenheft.md`](../spec/lastenheft.md) §Zweck), nicht die
-  Harness-Form.
-- **In-Repo (verkörperte Form):** `AGENTS.md`, `harness/README.md`,
-  Verzeichniskonvention `spec/` + `docs/plan/` + `harness/`.
+- **In-Repo (verkörperte Form):** [`AGENTS.md`](../AGENTS.md),
+  [`harness/README.md`](README.md), diese Datei und die Vorlagen unter
+  [`docs/plan/`](../docs/plan/planning/README.md). Referenz-Form sind die vendored
+  `templates/`; die eigenen Dateien sind daraus ausgefüllt.
 
 ## Adaptions-Block
 
@@ -80,17 +63,6 @@ akzeptierten Eintrag wird **nichts nachträglich inhaltlich geändert** —
 Korrekturen entstehen als neuer `MR` oder als ausdrückliche Aufhebung,
 analog zur ADR-Immutabilität ([`AGENTS.md`](../AGENTS.md) §3.5).
 
-> **Zur Nummern-Frage (geprüft in slice-055, ohne Befund).** Das
-> Konventions-Template druckt konkrete Einträge ab — unter anderem eine
-> `MR-003` für das Vendoring, das dieses Repo als
-> [`MR-006`](#mr-006--baseline-committet-vendored-statt-per-url-referenziert)
-> führt. Das ist **keine** Nummern-Kollision: das Template verlangt
-> ausdrücklich *chronologische* Nummerierung, und eine chronologische
-> Vergabe kann nicht zugleich pro Titel vorgegeben sein. Die abgedruckten
-> Nummern sind Beispiel-Instanzen neben dem generischen `MR-NNN`-Muster;
-> normativ sind die Pflichtfelder und diese Disziplin. Der in
-> [slice-046 §4.2](../docs/plan/planning/done/slice-046-regelwerk-v352-migration-analyse.md)
-> als Migrations-Brocken geführte Punkt entfällt damit ersatzlos.
 
 ### MR-000 — Baseline-Aussage (inkl. ID-Schema-Deklaration)
 
