@@ -65,11 +65,11 @@ Minor-Versionen ins Leere laufen.
 
 ## 6. DoD
 
-- [ ] Der Abschnitt heißt `## Offene Wellen` und trägt **beide** Aussagen: eine (leere) Liste und
+- [x] Der Abschnitt heißt `## Offene Wellen` und trägt **beide** Aussagen: eine (leere) Liste und
       den Ruhe-Marker im Wortlaut aus `modul-06` — Beleg: Diff.
-- [ ] Kopf trägt die Format-Regel, jede der sechs Sektionen ihren Regelwerk-Zeiger; der
+- [x] Kopf trägt die Format-Regel, jede der sechs Sektionen ihren Regelwerk-Zeiger; der
       Statusbericht *Erledigt ohne Welle* ist entfallen — Beleg: Diff und Zeiger-Zählung 6/6.
-- [ ] Der Fremdverweis in `docs/plan/planning/README.md` nennt den neuen Abschnittsnamen;
+- [x] Der Fremdverweis in `docs/plan/planning/README.md` nennt den neuen Abschnittsnamen;
       `doc-check` und `doc-planning` bleiben grün — Beleg: Target-Ausgabe.
 
 Pflicht, aber **kein** Liefer-Punkt: `make gates` und zum Abschluss `make verify` grün — Ausgabe
@@ -77,8 +77,40 @@ in eine Datei, Exit-Code getrennt geprüft, nie in eine Pipe.
 
 ## 7. Closure-Notiz
 
-_(beim Abschluss ausfüllen — genau **ein** solcher Abschnitt je Slice,
-[`AGENTS.md`](../../../../AGENTS.md) §5; `make verify` prüft das.)_
+**Geliefert:** `## Offene Wellen` mit beiden Aussagen, sechs Regelwerk-Zeiger, die Format-Regel im
+Kopf — und der Statusbericht *Erledigt ohne Welle* ist entfallen.
+
+**Lerneintrag — Form: benannte Spec-Lücke.** *Die Marker-Hälfte des Abschnitts ist ungewächtert,
+und das ist beim Bauen zufällig bewiesen worden.* Während dieser Slice in `in-progress/` lag,
+stand im Abschnitt bereits der Ruhe-Marker — also die Aussage „kein Slice beansprucht", bei
+beanspruchtem Slice. `modul-06` nennt das ausdrücklich einen Defekt (*„ein stehengebliebener
+Marker bei beanspruchtem Slice"*), und `make doc-planning` lief darüber **grün**. Damit ist
+gemessen, was §4 nur vermutet hatte: das Modul `planning` hält die Marker-Hälfte nicht — es läuft
+ohne Konfigurationsblock in `.d-check.yml`, dieselbe Konstellation, in der das Modul `targets`
+laut slice-074 dreizehn Minor-Versionen ins Leere lief. *Weil* ein aktiviertes Modul ohne
+Konfiguration nicht schweigt, sondern **grün meldet** — und grün von „geprüft und in Ordnung"
+nicht zu unterscheiden ist.
+
+**Zwei beobachtbare Closure-Kriterien:**
+
+1. Sechs Regelwerk-Zeiger in der Datei (gezählt), Abschnitt heißt `## Offene Wellen`, Liste und
+   Marker stehen **beide** — nicht einer statt des anderen.
+2. `doc-check` 221 Dateien 0 Befunde und `doc-planning` Exit 0, **auch** im widersprüchlichen
+   Zwischenzustand — das ist der Beleg für den Lerneintrag, nicht sein Gegenbeweis.
+
+**Offene Risiken und ihr Ausgang:**
+
+- *Die Marker-Hälfte ist ungewächtert* — Ausgang: **weiter offen**, als `BEO-014` im
+  Beobachtungs-Register, mit dem Zwischenzustand oben als Beleg.
+- *Die Wahrheit des Markers kippt mit dem `git mv`* — er ist während `in-progress/` falsch und
+  danach richtig. Ausgang: **weiter offen**, gedeckt durch `BEO-006`: ein Marker-Wächter muss am
+  selben Punkt laufen wie der Closure-Notiz-Wächter, nämlich **nach** dem `mv`.
+- *Die `Trigger`-Spalte der Meilenstein-Tabelle fehlt* — Ausgang: **weiter offen**, als `BEO-013`;
+  sie fehlt schon gegenüber `v3.5.2`, ist also keine Migrationsfolge, und sie zu füllen hieße,
+  Trigger für drei erreichte Meilensteine zu erfinden.
+
+**Folge-Slices:** die Slice-Vorlage (Befund §5 aus slice-105), danach die übrigen
+Regelwerk-Zeiger.
 
 ## 8. Sub-Area-Modus
 

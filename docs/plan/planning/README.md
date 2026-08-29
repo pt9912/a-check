@@ -61,7 +61,7 @@ Fehler, den slice-057 vermieden hat.
 *Beleg:* der Commit-Hash. Der Audit sieht *einen* Punkt, an dem die Welle schloss, statt eines
 verstreuten Verschwindens über mehrere Commits.
 
-**5 — Roadmap fortschreiben.** Die Welle wandert aus *Aktuelle Welle* in die Tabelle
+**5 — Roadmap fortschreiben.** Die Welle wandert aus *Offene Wellen* in die Tabelle
 *Abgeschlossene Wellen* (mit Zeiger auf ihre Ergebnis-Notiz); die erste Zeile aus *Nächste Wellen*
 wird zur neuen aktuellen. Hat ein Trigger dabei eine Umplanung ausgelöst, bekommt
 *Historische Trigger-Verschiebungen* ihren Eintrag.

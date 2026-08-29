@@ -1,26 +1,24 @@
 # Roadmap
 
-**Status:** Aktiv. **Letzte Änderung:** 2026-08-09.
+**Status:** Aktiv. **Letzte Änderung:** 2026-08-29.
 
-> **Was hier steht — und was nicht.** Diese Roadmap ist eine Reihenfolge von **Wellen**, kein
-> Statusbericht über Slices (`modul-06`: *„nicht ‚wann?', sondern ‚in welcher Reihenfolge
-> wovon?'"*). Was ein einzelner Slice geliefert und gelernt hat, steht in **seiner Closure-Notiz**
-> unter `done/` — hier wird darauf verwiesen, nicht wiederholt. Bis slice-067 taten das zwei
-> gewachsene Status-Blöcke (~174 Zeilen), die von den Notizen wegdrifteten; sie sind entfernt.
+**Format-Regel:** Die Roadmap ist eine Reihenfolge von **Wellen**, keine Reihenfolge von Terminen
+(Baseline-Regelwerk `modul-06-roadmap.md`). Termine werden — falls überhaupt — als Konsequenz der
+Wellen-Schätzung gezeigt, nicht als Treiber. Was ein einzelner Slice geliefert und gelernt hat,
+steht in **seiner** Closure-Notiz unter `done/`, nicht hier.
 
-## Aktuelle Welle
+---
 
-**Keine.** [`welle-13-konsumenten-befunde`](../done/welle-13-konsumenten-befunde.md) ist am
-2026-08-09 geschlossen ([`done/welle-13-results.md`](../done/welle-13-results.md)).
+## Offene Wellen
 
-**Bewusste Abweichung von Schritt 5 der Closure-Prozedur.** Sie sieht vor, dass „die erste Zeile
-aus *Nächste Wellen* zur neuen aktuellen wird". Das geschieht hier **nicht**: alle drei gelisteten
-Wellen sind **trigger-gebunden**, und kein Trigger ist gefeuert (kein Konsument mit passenden
-Richtungs-Namen, kein C#-Konsument mit Namespace ≠ Verzeichnis, keine der drei
-[slice-045](../open/slice-045-intern-extern-dateimenge.md)-Bedingungen). Eine Welle zu eröffnen,
-deren Beginn-Bedingung nicht eingetreten ist, würde die Trigger-Disziplin aushöhlen, die dieselbe
-Roadmap an anderer Stelle einfordert — „Wellen feuern auf Trigger". **Der leere Zustand ist eine
-Aussage, keine Auslassung.**
+Regeln dieser Sektion: Baseline-Regelwerk `modul-06-roadmap.md` §Roadmap-Struktur — der Abschnitt
+ist **derivativ**: Der Zustand sind die flachen Welle-Dateien; woran gearbeitet wird, sagt das
+`Welle:`-Feld der Slices in `in-progress/`. Ziel, Trigger und Closure-Kriterien stehen in der
+Welle-Datei, nicht hier.
+
+- *(keine offene Welle-Datei)*
+
+Nichts in Arbeit.
 
 **Offene Slices ohne Welle** — sie brauchen keine, ihre Trigger stehen in ihrem eigenen `§0`:
 
@@ -32,12 +30,11 @@ Aussage, keine Auslassung.**
 Ein Slice, der auf ein Fremdrepo wartet, gehört in **keine** Welle — er würde ihren
 Closure-Trigger auf unbestimmte Zeit blockieren.
 
-**Erledigt ohne Welle:** [slice-079](../done/slice-079-gate-consistency-abloesen.md) (2026-08-15) — `gate-consistency` (1)+(2) durch d-checks `targets`-Modul abgelöst, `doc-targets` ins `gates`-Aggregat; die Scope-Regression (`harness/README.md` fehlte in `doc-tables`) vor dem Abbau gemessen. · [slice-089](../done/slice-089-welle-datei-verweis-invariante.md) (2026-08-15) — `verify-slice-links` weist die Welle-Datei-Lücke aus, statt eine unerfüllbare Invariante zu prüfen. · [slice-087](../done/slice-087-index-vollstaendigkeit.md) (2026-08-09) —
-ADR-Index-Vollständigkeit als `gate-consistency` Check (6), plus CR-Text für die d-check-Ablösung
-in dessen §8. Antwort auf
-[`SL-005`](../../steering-loop.md#sl-005--eine-neue-datei-wird-nicht-in-ihren-handgepflegten-index-eingetragen).
-
 ## Nächste Wellen
+
+Regeln dieser Sektion: Baseline-Regelwerk `modul-06-roadmap.md` §Roadmap-Struktur, Bullet
+*Nächste Wellen* — die geordnete Vorschau: je Zeile Welle, Trigger als beobachtbare Bedingung,
+wichtigste Slices und geschätzter Aufwand (S/M/L, kein Termin).
 
 | Welle | Trigger (beobachtbar) | Wichtigste Slices | Aufwand |
 |---|---|---|---|
@@ -50,6 +47,8 @@ Closure-Log.)_
 
 ## Meilensteine
 
+Regeln dieser Sektion: Baseline-Regelwerk `modul-06-roadmap.md` §Welle ≠ Meilenstein ≠ Release.
+
 | Meilenstein | Welle(n) | Status |
 |---|---|---|
 | M1: Spec-Fundament steht (Lastenheft + Spezifikation + Architektur + Fundament-ADRs) | welle-01/02 | **erreicht** (2026-06-21) |
@@ -57,6 +56,10 @@ Closure-Log.)_
 | M3: erstes GHCR-Release + Pilot-Einbindung | welle-05 | **erreicht** (2026-07-05) — v0.1.0…v0.11.0 released; **zwei reale Konsumenten**: b-cad (C++, `.a-check.yml` + `a-check.mk`@v0.9.0 + `arch-check.sh` auf 75-Zeilen-P-Rest, 2026-07-04) und belief-agent (Kotlin/KMP, v0.11.0 adoptiert + Erfolg gemeldet 2026-07-05) |
 
 ## Abhängigkeitsgraph
+
+Regeln dieser Sektion: Baseline-Regelwerk `modul-06-roadmap.md` §Roadmap-Struktur — die
+Abhängigkeit steht als beobachtbare Bedingung in der `Trigger`-Spalte **und** als gerichtete Kante
+hier; eine Welle, die ohne fertige Vorgängerin nicht starten kann, ist eine Phantom-Welle.
 
 ```mermaid
 flowchart LR
@@ -72,6 +75,8 @@ flowchart LR
 ```
 
 ## Abgeschlossene Wellen
+
+Regeln dieser Sektion: Baseline-Regelwerk `modul-06-roadmap.md` §Roadmap-Struktur.
 
 | Welle | Abschluss | Closure-Beleg |
 |---|---|---|
@@ -90,6 +95,11 @@ flowchart LR
 | welle-13-konsumenten-befunde | 2026-08-09 | [`done/welle-13-results.md`](../done/welle-13-results.md) — **erster Durchlauf mit Welle-Plan-Datei** (sie wanderte per `git mv` nach `done/`, womit Schritt 3 erstmals vollständig belegt ist). Sechs Change Requests aus einem realen Fremdrepo-Einsatz, sechs Slices ([slice-081](../done/slice-081-heuristik-diagnose.md)…[slice-086](../done/slice-086-forbidden-constructs-fail-closed.md)), vier ADRs ([ADR-0030](../../adr/0030-kein-digest-im-generierten-fragment.md)…[ADR-0033](../../adr/0033-forbidden-constructs-fail-closed.md)). Ergebnis: drei Laufzeit-Diagnosen auf einer Achse — Datei ohne Schicht, Zeile ohne Kante, Ziel ohne Schicht. Verifikation: `make ci` Exit 0, Carveout-Bestand null, alle sieben lokalen Konsumenten-Konfigurationen laden unverändert |
 
 ## Historische Trigger-Verschiebungen
+
+Regeln dieser Sektion: Baseline-Regelwerk `modul-06-roadmap.md` §Roadmap-Struktur, Bullet
+*Historische Trigger-Verschiebungen* — das Drift-Log: **nur** Umplanungen (Trigger verschoben,
+präzisiert, ersetzt; Slice oder Welle umgehängt), keine Schließungen und keine erreichten
+Meilensteine — sonst führt die Tabelle ein zweites Closure-Log, und zwei Logs driften.
 
 Das **Drift-Log** (Regelwerk Modul 6, fünfter Pflicht-Abschnitt; nachgetragen in slice-053, Fund
 B-12). Neben dem Closure-Log oben macht es die Vergangenheit der Roadmap auditierbar: dort steht,
