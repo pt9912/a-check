@@ -70,9 +70,9 @@ bei der Closure-Pflicht vor slice-050.
 - **Keine erfundenen Belege.** Die Vorlage warnt ausdrücklich davor. Jede der sechs Zeilen nennt
   die Slices, in deren Closure-Notiz die Beobachtung wirklich steht; der Zähler ist deren Anzahl,
   nicht eine Schätzung.
-- **`BEO-<NNN>` wird nicht in die ID-Schema-Deklaration nachgetragen.** Sie steht in `MR-000`, und
+- **`BEO-<NNN>` wird nicht in die ID-Schema-Deklaration nachgetragen.** Sie steht in [`MR-000`](../../../../harness/conventions.md#mr-000), und
   Einträge werden nie überschrieben. Die Klasse ist ohnehin Baseline-**Default** (die neue
-  `MR-000`-Vorlage führt sie), also keine Adaption. Der Nachtrag gehört in die Überarbeitung der
+  [`MR-000`](../../../../harness/conventions.md#mr-000)-Vorlage führt sie), also keine Adaption. Der Nachtrag gehört in die Überarbeitung der
   ID-Schema-Deklaration — genau der Auflösungs-Trigger, den der Adaptions-Eintrag zur
   ADR-Vorlagen-Version bereits trägt.
 - **Keine Antwort auf die eingetragenen Beobachtungen.** Ein Register ist ein Zähler, kein
@@ -81,12 +81,12 @@ bei der Closure-Pflicht vor slice-050.
 
 ## 6. DoD
 
-- [ ] `docs/plan/planning/observations.md` steht in der Ziel-Form (beide Tabellen, `— keine —`
+- [x] `docs/plan/planning/observations.md` steht in der Ziel-Form (beide Tabellen, `— keine —`
       wo leer) und trägt sechs Beobachtungen mit formgebundenen Belegen (`slice-<NNN>`, Anzahl ==
       Zähler) — Beleg: Datei.
-- [ ] Die Modus-Deklaration führt die Sub-Area **Harness-Einstieg**; jede Sub-Area-Angabe im
+- [x] Die Modus-Deklaration führt die Sub-Area **Harness-Einstieg**; jede Sub-Area-Angabe im
       Register findet sich dort wieder — Beleg: Diff und Abgleich beider Tabellen.
-- [ ] [`AGENTS.md`](../../../../AGENTS.md) §5 nennt das Register, seinen Ort und den
+- [x] [`AGENTS.md`](../../../../AGENTS.md) §5 nennt das Register, seinen Ort und den
       Eintrags-Zeitpunkt (Slice-Closure) — Beleg: Diff.
 
 Pflicht, aber **kein** Liefer-Punkt: `make gates` und zum Abschluss `make verify` grün — Ausgabe
@@ -94,8 +94,40 @@ in eine Datei, Exit-Code getrennt geprüft, nie in eine Pipe.
 
 ## 7. Closure-Notiz
 
-_(beim Abschluss ausfüllen — genau **ein** solcher Abschnitt je Slice,
-[`AGENTS.md`](../../../../AGENTS.md) §5; `make verify` prüft das.)_
+**Geliefert:** das stehende Beobachtungs-Register mit sechs echten Beobachtungen, die neue
+Sub-Area **Harness-Einstieg**, und der Eintrags-Zeitpunkt in `AGENTS.md` §5.
+
+**Lerneintrag — Form: benannte Spec-Lücke.** *Ein Ausgang, den keine Regel verbietet, aber kein
+Ort aufnimmt, ist keiner.* Die Closure-Notizen von slice-097 bis slice-100 haben **sechsmal** den
+Ausgang „weiter offen ⇒ wandert ins Beobachtungs-Register" gewählt — auf ein Register, das es
+nicht gab. Formal war jede dieser Notizen korrekt: die Baseline nennt den Ausgang, und ich habe
+ihn benannt. *Weil* aber kein Sensor und kein Ort dahinterstand, war die Zusage in jedem einzelnen
+Fall unbelegt, und die sechs Punkte wären ohne diesen Slice verschwunden — genau die Klasse
+stiller Verlust, gegen die die Ausgangs-Pflicht überhaupt eingeführt wurde. **Der Prüfsatz:** wer
+einen Ausgang wählt, prüft, ob sein Ziel existiert; sonst ist „weiter offen" nur eine höflichere
+Form von „vergessen".
+
+**Zwei beobachtbare Closure-Kriterien:**
+
+1. Jede Sub-Area-Angabe im Register findet sich in der Modus-Deklaration wieder — maschinell
+   abgeglichen, Ergebnis „nicht deklariert: — keine —". Vor diesem Slice hätten **vier** der sechs
+   Zeilen einen Namen getragen, den die Deklaration nicht führt.
+2. Die Belege sind formgebunden und nachrechenbar: sechs Zeilen, Zähler 4/1/1/1/2/1, und die
+   Summe der genannten `slice-NNN` je Zeile stimmt mit dem Zähler überein.
+
+**Offene Risiken und ihr Ausgang:**
+
+- *Die maschinelle Hälfte fehlt* — keine Prüfung, ob eine in `done/` zitierte `BEO-NNN` eine
+  Registerzeile hat und ob jede Zeile einen Beleg trägt. Ausgang: **Folge-Slice**, Etappe D2.
+- *`BEO-NNN` steht nicht in der ID-Schema-Deklaration* — Ausgang: **weiter offen**, als
+  `BEO-004` bereits im Register; die Klasse ist Baseline-Default, der Nachtrag hängt an derselben
+  Überarbeitung.
+- *Die erste Zeile beantwortet sich selbst* — Ausgang: **gestrichen mit Begründung**. `BEO-001`
+  stand beim Erstauftreten schon bei 4×, und `modul-06` schreibt für ≥ 3× die Verkörperung vor;
+  sie ist mit diesem Slice erfolgt und im Register als solche vermerkt, statt als offen zu gelten.
+
+**Folge-Slices:** Etappe D2 — Risiko-Ausgänge und Register-Deckung als Sensor. Danach ist die
+Migration abgeschlossen.
 
 ## 8. Sub-Area-Modus
 

@@ -223,6 +223,7 @@ bündeln mehrere Sub-Areas und werden ausdifferenziert.
 | **Planungs-Harness** — `docs/plan/planning/` | 1,2,3 | Greenfield | Form und Größen-Regel stehen in der Vorlage, der Sensor `verify-slice-form` prüft sie — **seit slice-052**; davor war die Praxis unbelegt | n/a (GF), erreicht mit slice-052 |
 | **Gate-/Werkzeug-Schicht** — `tools/`, `Makefile`, `Dockerfile`, `.claude/` | 1,2,3 | Greenfield | jedes Target ist in `AGENTS.md` §4 deklariert, bevor es zählt; `gate-consistency` erzwingt das | n/a (GF) |
 | **Review-Harness** — `docs/reviews/` | 2,3 | Greenfield | Konvention und Skill vor dem Report | n/a (GF) |
+| **Harness-Einstieg** — `AGENTS.md`, `CLAUDE.md`, `harness/` | 1,2,3 | Greenfield | Briefing und Konventionen entstehen vor der Regel, die sie beschreiben; die aufgelösten Adaptionen zur Source Precedence und zum Vendoring lebten genau hier. **Nachgetragen mit slice-101**: die Lücke war seit slice-091 in vier Slices benannt (`BEO-001` im [Beobachtungs-Register](../docs/plan/planning/observations.md)) und hatte bis dahin keinen Ort | n/a (GF) |
 | **Vendored Baseline** — `.harness/baseline/` | 1,3 | **kein Modus** | externer, unveränderter Fremdtext ([`MR-006`](#mr-006--baseline-committet-vendored-statt-per-url-referenziert)); GF/BF beschreiben das Verhältnis *eigener* Doku zu *eigenem* Code und sind hier nicht anwendbar | Aktualisierung nur als Migrations-Slice |
 
 **Alle Sub-Areas mit Modus stehen auf Greenfield.** Das ist kein Zufall und

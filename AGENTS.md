@@ -214,6 +214,14 @@ Aggregat). Ob ein Gate gerade grün ist, sagt die CI (Badge im
   [`docs/plan/carveouts/`](docs/plan/carveouts/README.md); Trigger nie erreichbar ⇒ permanente
   ADR. Bootstrap-aware Gates gehören in keine der drei Klassen — sie stufen die Prüfung, sie
   nehmen keine Diskrepanz aus (slice-065).
+- **Beobachtungs-Register:** der Zähler des Steering Loops liegt als **stehende** Datei
+  [`docs/plan/planning/observations.md`](docs/plan/planning/observations.md) — nicht je Welle, weil
+  eine übernommene Sektion an einer ungebrochenen Kette hinge und eine vergessene Übernahme den
+  Zähler auf null setzte. **Eingetragen wird bei der Slice-Closure** (neue `BEO-NNN` oder Zähler
+  erhöhen und Beleg ergänzen); Belege sind formgebunden (`slice-NNN`, so viele wie der Zähler).
+  Er ist zugleich der dritte Ausgang, den jedes offene Risiko einer Closure nimmt: *eingetreten* ⇒
+  Carveout oder Folge-Slice · *entfallen* ⇒ gestrichen **mit Begründung** · *weiter offen* ⇒
+  Register (slice-101).
 - **Steering-Loop:** wiederkehrende Fehlermuster werden in
   [`docs/plan/steering-loop.md`](docs/plan/steering-loop.md) gezählt. Ab dem
   **zweiten** gleichartigen Vorfall entsteht ein Eintrag, ab dem **dritten** ist
