@@ -32,10 +32,22 @@ cd "$(dirname "$0")/.."
 REGISTER="docs/plan/planning/observations.md"
 DONE_DIR="docs/plan/planning/done"
 
-# Registerzeilen: `| BEO-NNN | Beobachtung | Sub-Area | N× | Belege | Stand |`
-# Zitat-Kontexte spielen hier keine Rolle — gelesen werden nur Tabellenzeilen,
-# die mit der Kennung beginnen.
-register_rows() { grep -E '^\| BEO-[0-9]{3} \|' "$REGISTER" 2>/dev/null || true; }
+# Registerzeilen der AKTIVEN Tabelle: `| BEO-NNN | Beobachtung | Sub-Area |
+# N× | Belege | Stand |`. Die Sektion *Gestrichene Eintraege* hat eine ANDERE
+# Spaltenzahl (Kennung | Beobachtung | Gestrichen am | Warum) — wer beide
+# zusammen liest, sucht dort eine Beleg-Spalte, die es nicht gibt, und meldet
+# jede gestrichene Zeile als beleglos. Real aufgetreten beim ersten Gebrauch
+# der Tabelle (slice-110).
+register_rows() {
+  awk '/^## Gestrichene/{exit} /^\| BEO-[0-9]{3} \|/{print}' "$REGISTER" 2>/dev/null || true
+}
+
+# Kennungen aus BEIDEN Tabellen — fuer die Zitat-Deckung. Eine gestrichene
+# Beobachtung bleibt zitierbar; ihre Zeile wechselt die Tabelle, nicht die
+# Existenz.
+alle_kennungen() {
+  grep -E '^\| BEO-[0-9]{3} \|' "$REGISTER" 2>/dev/null | awk -F'|' '{print $2}' | tr -d ' ' | sort -u
+}
 
 check_register() {  # Befunde auf stdout, 1 bei Befund
   local fail=0 line kennung zaehler belege n_belege
@@ -66,7 +78,7 @@ check_register() {  # Befunde auf stdout, 1 bei Befund
 
 check_zitate() {  # (1) zitierte Kennung ohne Zeile
   local fail=0 kennungen bekannt k
-  bekannt="$(register_rows | awk -F'|' '{print $2}' | tr -d ' ' | sort -u)"
+  bekannt="$(alle_kennungen)"
   kennungen="$(grep -rhoE 'BEO-[0-9]{3}' "$DONE_DIR" 2>/dev/null | sort -u || true)"
   for k in $kennungen; do
     if ! printf '%s\n' "$bekannt" | grep -qx "$k"; then
@@ -94,6 +106,14 @@ self_test() {
   probe '| BEO-002 | x | Planungs-Harness | 1× |  | offen |'                     rot
   probe '| BEO-003 | x | Planungs-Harness | 2× | slice-007 | offen |'            rot
   probe '| BEO-004 | x | Planungs-Harness | 1× | irgendwas | offen |'            rot
+  # Gestrichene Tabelle (slice-110): ihre Zeilen haben keine Beleg-Spalte und
+  # duerfen nicht als aktive gelesen werden.
+  printf '| Kennung | B | S | Zähler | Belege | Stand |\n|---|---|---|---|---|---|\n| BEO-001 | x | S | 1× | slice-007 | offen |\n\n## Gestrichene Einträge\n\n| Kennung | B | Gestrichen am | Warum |\n|---|---|---|---|\n| BEO-009 | y | 2026-01-01 | Ursache weg |\n' > "$tmp/reg2.md"
+  REGISTER="$tmp/reg2.md"
+  if ! check_register >/dev/null; then
+    echo "verify-observations: Selbsttest FEHLGESCHLAGEN — gestrichene Zeile als aktive gelesen" >&2
+    REGISTER="$REG_SAVE"; rm -rf "$tmp"; exit 2
+  fi
   REGISTER="$REG_SAVE"
 
   # Zitat ohne Registerzeile — die Gegenrichtung.

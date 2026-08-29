@@ -25,6 +25,12 @@ Repos genau die Schichtung, der es auch selbst folgt (Dogfooding,
 
 ## 2. Komponenten
 
+Regeln dieser Sektion: **Hier werden die `ARC-*` für Komponenten vergeben** — eine Zeile je
+Kasten des Diagramms, damit es *eine* Stelle gibt. Die Kennung ist eine Adresse, damit ein Slice
+sagen kann, welche Komponente er berührt; sie ist **keine** Anforderung. Gezählt wird fortlaufend
+je Datei, nicht je Sektion (Baseline-Regelwerk `grundlagen-source-precedence.md` §ID-Schema als
+Klammer, §Vergabe).
+
 ```mermaid
 flowchart TD
     CLI["ARC-006 Composition Root / CLI"]
@@ -69,6 +75,10 @@ flowchart TD
 | **ARC-007** | Graph-Adapter (Präsentation) | implementiert `GraphPort`; bildet das Config-Modell **pur** (kein I/O) auf ein Mermaid-`flowchart` ab ([SPEC-CLI-002](spezifikation.md#spec-cli-002--graph-renderer-vertrag)) — stabile interne Knoten-IDs + escapte Labels, `edges`/`allow`-Kanten, effektive Rollen-Farbe (geteilter Kern-Resolver), `direction`-Subgraphs, isolierte Sonderknoten für `composition_root`/`adapter_sink`; von der Composition Root (ARC-006) für `--print-graph` verdrahtet, read-only. |
 
 ## 3. Schicht-Richtung (Zugriffs-Constraints)
+
+Regeln dieser Sektion: Welche ADR eine Layering-Regel verbindlich macht, deklariert die ADR
+aufwärts in ihrem `Schärft:`-Feld — **kein ADR-Bezug in dieser Sicht** (Baseline-Regelwerk
+`grundlagen-referenz-richtung.md` §Referenz-Richtung (SDP)).
 
 ```mermaid
 flowchart LR

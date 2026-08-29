@@ -25,7 +25,7 @@ Gelesen ergibt sich:
 |---|---|---|
 | `lastenheft.md` | §5 *Globale Out-of-Scope-Punkte* und §6 *Glossar* fehlen — die Nummerierung springt von 4 auf **7** | **echt**; Inhalt ist Vertragsaussage |
 | `architecture.md` | *Externe Abhängigkeiten* und *Fehlermodelle und Resilienz* fehlen; die übrigen sind Namensvarianten | **echt**; Inhalt ist Architektur-Aussage |
-| `spezifikation.md` | gliedert nach **Vertrags-Kennung** (`SPEC-CONF-001`, `SPEC-EXTRACT-001`, …) statt nach den sieben Themen der Ziel-Form | **bewusst anders** — aber **undeklariert** |
+| `spezifikation.md` | gliedert nach **Vertrags-Kennung** statt nach den sieben Themen der Ziel-Form | **bewusst anders** — aber **undeklariert** |
 
 Der dritte Befund ist der schwerste: eine Strukturabweichung in einer kanonischen Quelle vom
 **Rang 2**, für die kein Adaptions-Eintrag existiert. Nach der Fork-Regel ist eine Abweichung ohne
@@ -33,16 +33,18 @@ benannte ersetzte Regel keine Adaption, sondern ein Fork.
 
 ## 2. Definition of Done
 
-- [ ] Die drei Straten tragen ihre Regelwerk-Zeiger (2 · 3 · 6) — Beleg: Zählung.
-- [ ] `BEO-011` ist aufgelöst und nach `Gestrichene Einträge` verschoben; die vier Zeilen sind
+- [x] Die Straten tragen die **platzierbaren** Zeiger — **2 · 2 · 1**, nicht 2 · 3 · 6: ein Zeiger
+      ist sektionsgebunden und hat kein Zuhause, wo die Sektion fehlt oder anders gliedert —
+      Beleg: Zählung und §6.
+- [x] `BEO-011` ist aufgelöst und nach `Gestrichene Einträge` verschoben; die vier Zeilen sind
       gelesen — Beleg: Register.
-- [ ] Was Maintainer-Inhalt braucht, steht als eigene Beobachtung mit Beleg im Register, nicht als
+- [x] Was Maintainer-Inhalt braucht, steht als eigene Beobachtung mit Beleg im Register, nicht als
       erfundener Text in der Spec — Beleg: Register und Diff.
 
-- [ ] `make gates` grün — Ausgabe in eine Datei, Exit-Code getrennt geprüft, nie in eine Pipe.
-- [ ] Closure-Notiz mit benanntem Lerneintrag geschrieben (§7).
-- [ ] Beobachtungs-Register fortgeschrieben.
-- [ ] Jedes Risiko aus §6 trägt genau einen Ausgang.
+- [x] `make gates` grün — Ausgabe in eine Datei, Exit-Code getrennt geprüft, nie in eine Pipe.
+- [x] Closure-Notiz mit benanntem Lerneintrag geschrieben (§7).
+- [x] Beobachtungs-Register fortgeschrieben.
+- [x] Jedes Risiko aus §6 trägt genau einen Ausgang.
 
 ## 3. Plan (vor Code)
 
@@ -86,8 +88,45 @@ umgebaut: ob sie nach Kennung oder nach Thema gliedert, ist eine Konventions-Ent
 
 ## 7. Closure-Notiz
 
-_(beim Abschluss ausfüllen — genau **ein** solcher Abschnitt je Slice,
-[`AGENTS.md`](../../../../AGENTS.md) §5; `make verify` prüft das.)_
+**Geliefert:** die vier ungeprüften Zeilen sind gelesen und geurteilt, fünf Regelwerk-Zeiger
+sitzen, und was Vertragsinhalt braucht, steht als Beobachtung statt als erfundener Text in der
+Spec.
+
+**Lerneintrag — Form: geschärfte Regel.** *Ein Regelwerk-Zeiger ist sektionsgebunden — wo die
+Sektion fehlt, fehlt nicht nur Text, sondern der Ort für die Regel.* Der Form-Review hatte
+`2 · 3 · 6` als Soll gezählt; platzierbar waren **2 · 2 · 1**. Der Rest gehört zu Sektionen, die
+es nicht gibt, oder zu einer Gliederung, die anders schneidet. *Weil* die Zeiger-Zahl aus der
+**Vorlage** stammt und damit eine Aussage über die Ziel-Form ist, nicht über die eigene Datei —
+wer sie als Soll übernimmt, hat die Sektionen schon vorausgesetzt, die er erst prüfen wollte. Die
+Zahl misst also nicht die Lücke, sie **enthält** sie.
+
+**Zwei beobachtbare Closure-Kriterien:**
+
+1. `grep` zählt 2 · 2 · 1 Zeiger in den drei Straten; `doc-check` 225 Dateien 0 Befunde — die
+   Zeiger nennen Baseline-Abschnitte in Backticks und verletzen die Referenz-Richtung nicht.
+2. `BEO-011` steht in *Gestrichene Einträge* mit Begründung, nicht still gelöscht; die zwei
+   Befunde, die aus ihm herauskamen, tragen eigene Kennungen und eigene Belege.
+
+**Offene Risiken und ihr Ausgang:**
+
+- *Vier Sektionen fehlen inhaltlich* — **Ausgang:** weiter offen, `BEO-017`. Sie zu erfinden wäre
+  schlimmer als ihr Fehlen: eine erfundene Vertragsaussage sieht abgenommen aus.
+- *Die Gliederung der Spezifikation weicht undeklariert ab* — **Ausgang:** weiter offen,
+  `BEO-018`. Rang 2, also keine Nebensache.
+- *Die Nummerierung des Lastenhefts springt von 4 auf 7* — **Ausgang:** gestrichen mit Begründung;
+  das ist der sichtbare Teil von `BEO-017`, keine eigene Beobachtung.
+
+**Beobachtungs-Register:** `BEO-011` aufgelöst und nach *Gestrichene Einträge* verschoben;
+`BEO-017` und `BEO-018` neu.
+
+**Nebenbefund, mitgefixt:** der erste Gebrauch der Tabelle *Gestrichene Einträge* hat einen Bug in
+`verify-observations` aufgedeckt — es las **jede** Zeile, die mit `| BEO-NNN |` beginnt, also auch
+die der gestrichenen Tabelle, und suchte dort eine Beleg-Spalte, die es nicht gibt. Die aktive
+Tabelle wird jetzt an der Überschrift abgeschnitten; die Zitat-Deckung liest weiterhin **beide**,
+weil eine gestrichene Beobachtung zitierbar bleibt. Fixture ergänzt. Ein Sensor, dessen zweiter
+Zustand nie vorkam, ist ungeprüft — hier war es der erste Übergang, der ihn ausgelöst hat.
+
+**Folge-Slices:** `README.md` (Projekt-Überblick) — der letzte offene Posten aus dem Form-Review.
 
 ## 8. Sub-Area-Modus-Begründung
 

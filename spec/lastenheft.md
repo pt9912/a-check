@@ -47,6 +47,13 @@ Import-Ebene, kein vollständiger Sprach-Parser (siehe `AC-QA-02`).
 
 ## 3. Funktionale Anforderungen
 
+Regeln dieser Sektion: ID-Schema `AC-FA-<BEREICH>-<NNN>` mit Bereichssegment, weil dieses Repo
+den Zählraum je Bereich führt (Baseline-Regelwerk `grundlagen-source-precedence.md` §Vergabe und
+§ID-Schema als Klammer). Jede Anforderung trägt drei Pfade — Happy · Boundary · Negative — plus
+Out-of-Scope (`modul-03-spec.md` §Ziel-Form: Akzeptanzkriterium); `make verify` prüft das für neue
+Kennungen. Eine Anforderung, deren Bedarf ersatzlos entfällt, wird **nicht gelöscht**, sondern
+trägt den Vermerk *zurückgezogen* im Titel; die Nummer bleibt vergeben.
+
 > **Schema-Konvention.** Funktionale Anforderungen verwenden Bereichskürzel:
 > `AC-FA-<BEREICH>-<NNN>`. Bereiche: `RULE` (Hexagon-Regeln), `EXTRACT`
 > (Import-Extraktion je Sprache), `CLI` (Aufruf/Ausgabe), `CONF`
@@ -603,6 +610,11 @@ Commit, den dieser Abschnitt ohnehin verlangt.
 - **Out-of-Scope:** einen korrekten Eigen-Digest zur Laufzeit ermitteln (netzlos nicht möglich; der Host kennt ihn über `docker inspect`, das Binary nicht); die Pin-Hebung beim Konsumenten automatisieren.
 
 ## 7. Historie
+
+Regeln dieser Sektion: Ab Status `Accepted` ist **jede** Änderung an diesem Dokument eine
+Vertragsänderung — auch das **Hinzufügen** einer Anforderung. Sie entsteht nur aus einem Change
+Request, nie aus einer ADR oder einem Slice. Fußabdruck je angenommenem CR: Versions-Bump oben plus
+eine Zeile hier (Baseline-Regelwerk `grundlagen-source-precedence.md` §Spec-Stratifizierung).
 
 | Version | Datum | Änderung |
 |---|---|---|

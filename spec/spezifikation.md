@@ -514,6 +514,10 @@ und [AC-QA-03](lastenheft.md#ac-qa-03--reproduzierbarkeit).
 
 ## Historie
 
+Regeln dieser Sektion: **kein ADR- und kein Slice-Verweis.** Die Decken-Regel gilt für alle drei
+Spec-Straten — welche ADR eine Festlegung schärft, deklariert die ADR aufwärts in ihrem
+`Schärft:`-Feld (Baseline-Regelwerk `modul-03-spec.md` §Ziel-Form: Spezifikation).
+
 | Version | Datum | Änderung |
 |---|---|---|
 | 0.1.0 | 2026-06-21 | Erstfassung (Technik-Stratum): `SPEC-CONF/EXTRACT/RULE/CLI/DET/DIST-001` präzisieren die Lastenheft-Verträge (Config-Schema, Extraktions-Algorithmus, Regel-Auswertung, CLI/Exit-Codes, Determinismus, Laufzeit-/Distributionsform). Sprachneutral. |
