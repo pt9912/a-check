@@ -22,17 +22,17 @@ nach Aufgabe: Slice schneiden oder schließen → `modul-05`; ADR schreiben →
 `modul-04`; Gate anlegen oder ändern → `modul-13`; Review führen → `modul-10`;
 DoD/Closure prüfen → `modul-11`; Ausnahme oder Diskrepanz einordnen →
 `modul-07`; Modus einer Sub-Area bestimmen → `modul-02` und
-`grundlagen-konventionen`; Release → `modul-16`. Es liegt **committet
+`grundlagen-bootstrap`; Release → `modul-16`. Es liegt **committet
 vendored** im Repo, also netzlos verfügbar:
-[`.harness/baseline/v3.5.2/regelwerk/README.md`](.harness/baseline/v3.5.2/regelwerk/README.md)
-ist der Index (17 Module + drei Grundlagen-Abschnitte, eine Datei je
+[`.harness/baseline/v5.12.0/regelwerk/README.md`](.harness/baseline/v5.12.0/regelwerk/README.md)
+ist der Index (17 Module + acht Grundlagen-Abschnitte, eine Datei je
 Abschnitt); die Ziel-Formen daneben unter
-[`templates/`](.harness/baseline/v3.5.2/templates/README.md). Integrität:
-`.harness/baseline/v3.5.2/SHA256SUMS`.
+[`templates/`](.harness/baseline/v5.12.0/templates/README.md). Integrität:
+`.harness/baseline/v5.12.0/SHA256SUMS`.
 
 Das vendored Regelwerk ist ein **didaktik-freier Extrakt** und trägt keine
 eigene Normativität: bei Konflikt gilt der Kurs
-([`v3.5.2`](https://github.com/pt9912/ai-harness-course/tree/v3.5.2)), über
+([`v5.12.0`](https://github.com/pt9912/ai-harness-course/tree/v5.12.0)), über
 ihm die kanonischen Quellen (Source Precedence). Der adoptierte Stand und
 die Vendoring-Begründung stehen in
 [`harness/conventions.md`](harness/conventions.md) §Baseline bzw.

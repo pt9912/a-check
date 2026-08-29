@@ -20,35 +20,40 @@ die kanonische Quelle (Source Precedence, siehe
 ## Baseline
 
 - **Konvention:** AI-Harness-Kurs
-- **Stand:** [`v3.5.2`](https://github.com/pt9912/ai-harness-course/releases/tag/v3.5.2)
-  (Release-Tag) — **Kurs-Welle 34 · 2026-07-24**, wie im Kopf des vendored
-  [`regelwerk/README.md`](../.harness/baseline/v3.5.2/regelwerk/README.md) ausgewiesen;
+- **Stand:** [`v5.12.0`](https://github.com/pt9912/ai-harness-course/releases/tag/v5.12.0)
+  (Release-Tag) — **Kurs-Welle 98 · 2026-08-26**, wie im Kopf des vendored
+  [`regelwerk/README.md`](../.harness/baseline/v5.12.0/regelwerk/README.md) ausgewiesen;
   **committet vendored** unter
-  [`.harness/baseline/v3.5.2/`](../.harness/baseline/v3.5.2/regelwerk/README.md) —
+  [`.harness/baseline/v5.12.0/`](../.harness/baseline/v5.12.0/regelwerk/README.md) —
   siehe [`MR-006`](#mr-006--baseline-committet-vendored-statt-per-url-referenziert)
-- **Datum der Adoption:** 2026-06-20 (`v1.3.0`); **Stand gehoben auf `v3.5.2` am 2026-07-25**
-  — der Sprung ist in vier Etappen geschnitten, diese ist Etappe A (Vendoring + Stand);
-  die inhaltliche Angleichung von Konventionen, `MR-*`-Bestand und Template-Konformität folgt
-  in den Etappen B–D. Für den **Migrations-Auftrag** gilt: wo eine Adaption dieses Repos nur
-  deshalb existiert, weil der `v1.3.0`-Default anders war, **gewinnt der `v3.5.2`-Default**
-  (Maintainer-Vorgabe 2026-07-25) — die Prüfung Adaption-für-Adaption ist Etappe C.
-  **Bis diese Prüfung erfolgt ist, bleiben die deklarierten `MR-*` in Kraft**: sie sind teils
-  maschinell gegatet (`MR-002`/`MR-004` über die `ids`-Muster in
-  [`.d-check.yml`](../.d-check.yml)), und ein pauschaler Vorrang würde für das heute gültige
-  ID-Schema zwei einander ausschließende Regeln nebeneinander stellen.
+- **Datum der Adoption:** 2026-06-20 (`v1.3.0`). **Stand gehoben auf `v3.5.2` am 2026-07-25**,
+  vollständig durchgeführt in `welle-12` (Etappen A–F, Slices 046–078, geschlossen 2026-08-09) —
+  aus dieser Migration ist **nichts offen**.
+- **Laufende Migration auf `v5.12.0`** (Stand gehoben am 2026-08-29, Analyse
+  [slice-092](../docs/plan/planning/done/slice-092-regelwerk-v5120-delta-analyse.md)): geschnitten
+  in vier Etappen, **diese ist A** (Vendoring + Stand-Deklaration). Es folgen der
+  Adaptions-Durchgang (B), die Form (C) und die neue Mechanik (D).
+  **Bis der Adaptions-Durchgang gelaufen ist, bleiben die deklarierten `MR-*` in Kraft** — sie sind
+  teils maschinell gegatet (`MR-002`/`MR-004` über die `ids`-Muster in
+  [`.d-check.yml`](../.d-check.yml)), und ein pauschaler Vorrang stellte für das heute gültige
+  ID-Schema zwei einander ausschließende Regeln nebeneinander.
+- **Zwei Stände liegen vendored nebeneinander**, `v3.5.2` und `v5.12.0`. Das ist Vorschrift, nicht
+  Rückstand: der alte Baum ist die Vergleichsgrundlage des Form-Reviews und fällt erst, wenn
+  Etappe C durch ist (`modul-02` §Freshness-Audit). `make regelwerk-check` prüft den höchsten
+  Stand und weist den anderen ausdrücklich als ungeprüft aus.
 
 ## Adoptierte Konventions-Quellen
 
 - **Vendored Baseline (Regelwerk + Templates) — die Lese-Form:**
-  [`.harness/baseline/v3.5.2/regelwerk/README.md`](../.harness/baseline/v3.5.2/regelwerk/README.md)
+  [`.harness/baseline/v5.12.0/regelwerk/README.md`](../.harness/baseline/v5.12.0/regelwerk/README.md)
   (Index) und
-  [`.harness/baseline/v3.5.2/templates/README.md`](../.harness/baseline/v3.5.2/templates/README.md),
+  [`.harness/baseline/v5.12.0/templates/README.md`](../.harness/baseline/v5.12.0/templates/README.md),
   materialisiert aus dem self-contained `lab-regelwerk.zip` des Releases; Integrität über
-  `.harness/baseline/v3.5.2/SHA256SUMS`. **Netzlos** auf jedem Checkout, pro Abschnitt eine
+  `.harness/baseline/v5.12.0/SHA256SUMS`. **Netzlos** auf jedem Checkout, pro Abschnitt eine
   Datei — ein Agent lädt den benötigten Abschnitt, nie das ganze Bundle
   ([`MR-006`](#mr-006--baseline-committet-vendored-statt-per-url-referenziert)).
 - **Extern (Lehrmaterial, maßgeblich für den Inhalt):**
-  [`ai-harness-course@v3.5.2`](https://github.com/pt9912/ai-harness-course/tree/v3.5.2)
+  [`ai-harness-course@v5.12.0`](https://github.com/pt9912/ai-harness-course/tree/v5.12.0)
   (Kurs unter `kurs/de/`). Das vendored Regelwerk ist ein **didaktik-freier Extrakt** und
   trägt keine eigene Normativität: bei Konflikt gilt der Kurs, über ihm die kanonischen
   Quellen dieses Repos (Source Precedence).
