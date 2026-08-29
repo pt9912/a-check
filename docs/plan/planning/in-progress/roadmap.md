@@ -24,7 +24,7 @@ Nichts in Arbeit.
 
 | Slice | Trigger | Zustand |
 |---|---|---|
-| [slice-080](../open/slice-080-verify-abloesung-dcheck.md) | d-check-Release mit `structure` + `links.resolve-from`, **und** der Pin ist gehoben | **Werkzeug-Bedingung erfüllt** (slice-115: Pin `v0.67.0`, beide Hälften gemessen); blockiert nur noch an der ausstehenden CR-Einreichung |
+| [slice-080](../open/slice-080-verify-abloesung-dcheck.md) | d-check-Release mit `structure` + `links.resolve-from`, **und** der Pin ist gehoben | **startbar** — beide Trigger-Hälften erfüllt (slice-115): `v0.67.0` trägt `structure` und `links.resolve-from`, der Pin ist gehoben. Die Vorbedingung außerhalb des Repos ist entfallen, nicht offen: `--print-config` zeigt beide CRs umgesetzt |
 | [slice-013](../open/slice-013-driving-driven-vertiefung.md), [slice-045](../open/slice-045-intern-extern-dateimenge.md) | siehe *Nächste Wellen* | vertagt, Evidenz gemessen und zu klein |
 
 Ein Slice, der auf ein Fremdrepo wartet, gehört in **keine** Welle — er würde ihren
