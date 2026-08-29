@@ -32,6 +32,7 @@ sagt. Angelegt mit slice-101.
 | BEO-016 | Hard Rule 3.7 ist **inferentiell** und hat keinen Sensor; der Bestand ist nicht gegen sie durchgesehen | Harness-Einstieg | 1× | slice-108 | offen — ein Zähler über Kommentar-Klassen wäre Schein-Genauigkeit; die Regel hängt am Review, und das ist in `AGENTS.md` §3.7 benannt |
 | BEO-017 | Vier Sektionen der Spec-Straten fehlen inhaltlich: *Globale Out-of-Scope-Punkte*, *Glossar*, *Externe Abhängigkeiten*, *Fehlermodelle und Resilienz* | Spec-Straten | 1× | slice-110 | offen — **Maintainer-Inhalt**; eine erfundene Vertragsaussage sieht abgenommen aus |
 | BEO-018 | `spec/spezifikation.md` gliedert nach Vertrags-Kennung statt nach den sieben Themen der Ziel-Form — **undeklariert**, in einer kanonischen Quelle vom Rang 2 | Spec-Straten | 1× | slice-110 | offen — entweder Adaptions-Eintrag mit benannter ersetzter Regel oder Angleichung; beides eine Entscheidung, keine Messung |
+| BEO-019 | Form-Vergleiche gegen die Vorlagen sind sprachblind: `README.md` ist englisch, die Ziel-Form deutsch — beide Verfahren meldeten drei fehlende Sektionen statt einer | Planungs-Harness | 1× | slice-111 | offen — weder exakter Titel- noch Kernbegriff-Vergleich überbrückt einen Sprachwechsel; jeder künftige Form-Review trifft dieselbe Wand |
 
 ## Gestrichene Einträge
 

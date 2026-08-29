@@ -34,6 +34,26 @@ Every finding names the file, line, rule and reason; exit codes: `0` clean, `1` 
 `2` usage/config error
 ([AC-FA-CLI-001](spec/lastenheft.md#ac-fa-cli-001--aufruf-scan-wurzel-und-exit-codes)).
 
+## What can I do today?
+
+Section rules: honest current state — what runs **now**, not what is planned. No success claim
+without a runnable proof (baseline rulebook `modul-09-implementierung.md`).
+
+- **Check any repository's layering** in eight languages (C++/Go/Rust/Kotlin/Java/Python/C#/
+  TypeScript) from a single `.a-check.yml` — `docker run … ghcr.io/pt9912/a-check` against the
+  pinned digest in [`version.md`](version.md#aktuell).
+- **Wire it into a `make` target in one line:** `--print-mk` emits the ready-made
+  [`a-check.mk`](a-check.mk) fragment; the committed file and the emitted one are byte-identical,
+  and a gate proves it.
+- **Run it hermetically:** the scan needs no network (`--network none`), reads only, and never
+  writes into the repository it checks.
+- **See the graph** instead of a list — `--print-graph` renders the layer edges.
+- **Two real consumers** run it today: `b-cad` (C++) and `belief-agent` (Kotlin/KMP).
+
+What is *not* there yet is named where it belongs: open requirements live in
+[`spec/lastenheft.md`](spec/lastenheft.md), open observations in
+[`docs/plan/planning/observations.md`](docs/plan/planning/observations.md).
+
 ## Why a-check?
 
 Four functionally overlapping `arch-check.sh` variants grew across the sibling repositories —
