@@ -373,15 +373,21 @@ Präzisiert [AC-FA-CLI-001](lastenheft.md#ac-fa-cli-001--aufruf-scan-wurzel-und-
   **Schreibweise** das Werkzeug per Konstruktion nicht zu einer beurteilbaren Kante führt, werden als
   `pfad:zeile: form` ausgewiesen — die Einlösung von
   [AC-QA-02](lastenheft.md#ac-qa-02--hermetik-und-ehrliche-heuristik-grenze) am geprüften Baum statt
-  nur in der Doku. Zwei Klassen zählen, beide allein an der Schreibweise erkennbar:
+  nur in der Doku. Zwei Klassen zählen, beide **ohne den Datei-Baum** entscheidbar — aus der
+  Schreibweise und der Konfiguration, nie aus dem Index:
   1. **Nicht extrahiert** — die Zeile greift kein Backend-Muster: ein **relativer Python-Import**
      (führender Punkt) und eine **zweite Direktive auf derselben Zeile** (`import a, b`,
      `using A; using B;`); beides benannte Grenzen aus
      [SPEC-EXTRACT-001](#spec-extract-001--import-extraktion).
-  2. **Extrahiert, aber strukturell unauflösbar** — ein Symbol mit `./`- oder `../`-Präfix unter
-     einem Auflösungs-Modus, der **nicht** `relative` ist ([SPEC-CONF-001](#spec-conf-001--konfigurationsschema)):
-     ein solcher Pfad kann kein Ziel-Glob treffen, unabhängig vom Baum-Inhalt. Unter `relative`
-     löst dieselbe Zeile auf und wird **nicht** gemeldet.
+  2. **Extrahiert, aber durch die Konfiguration unauflösbar** — ein Symbol mit `./`- oder
+     `../`-Präfix unter einem Auflösungs-Modus, der **nicht** `relative` ist
+     ([SPEC-CONF-001](#spec-conf-001--konfigurationsschema)), **und** kein Glob-Präfix der
+     `layers` kommt in einem seiner Auflösungs-Kandidaten segmentweise vor. Beide Hälften zählen:
+     die Schreibweise **allein** genügt nicht. Unter `path` wird das Symbol wörtlich zum Kandidaten
+     und die Schicht-Zuordnung sucht das Glob-Präfix segmentweise **an beliebiger Stelle** — ein
+     `../adapters/db/x.h` gegen `adapters/**` löst also auf und wird **nicht** gemeldet. Unter
+     `relative` löst dieselbe Zeile ohnehin auf. Geprüft werden Modus und Globs, beides
+     Konfiguration; der Datei-Index bleibt außen vor.
 
   **Nicht** gemeldet wird ein Symbol, das syntaktisch auflösbar wäre und im Baum nur kein Ziel
   findet — das ist von repo-**externem** Code nicht unterscheidbar, dieselbe Grenze, an der die

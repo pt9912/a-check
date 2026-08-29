@@ -385,18 +385,23 @@ const formUnresolvableRelative = "relativer Pfad, den der Auflösungs-Modus %q n
 //     relative Python import, a second directive on one line. No config knowledge
 //     is needed to see them, so the adapter finds them while it reads the source.
 //
-//  2. EXTRACTED BUT STRUCTURALLY UNRESOLVABLE — a "./" or "../" symbol under any
-//     mode other than "relative". Such a candidate cannot match a layer glob no
-//     matter what the tree contains: "path" passes it through with its dots,
-//     "fixed-root" prepends a root in front of them. This class needs the
-//     resolution mode, which is config, which is why it is derived HERE and not
-//     in the extractor.
+//  2. EXTRACTED BUT UNRESOLVABLE UNDER THIS CONFIG — a "./" or "../" symbol
+//     under any mode other than "relative" WHOSE CANDIDATES match no layer glob
+//     prefix. Both halves count (ADR-0035): the spelling alone does not decide
+//     it. "path" passes the symbol through with its dots, and layerOfCand looks
+//     for the glob prefix on segment boundaries ANYWHERE in the candidate — so
+//     "../adapters/db/x.h" against "adapters/**" DOES resolve and must not be
+//     reported. This class needs the mode AND the globs, both config, which is
+//     why it is derived HERE and not in the extractor.
 //
 // What is deliberately NOT reported: a symbol that would resolve syntactically
 // and merely finds no target in this tree. That is indistinguishable from
 // repo-EXTERNAL code — the same boundary at which UncoveredFiles leaves out the
 // target side (AC-QA-02). Mixing a certain statement with an uncertain one would
 // cost the diagnosis its credibility.
+//
+// The diagnosis stays TREE-FREE: it reads the mode and the globs, never the file
+// index. That is what keeps class 2 on the certain side of the boundary.
 func HeuristicLimits(m Model, files []FileImports) []LimitNote {
 	var out []LimitNote
 	for _, f := range files {
@@ -407,8 +412,9 @@ func HeuristicLimits(m Model, files []FileImports) []LimitNote {
 		if mode == "relative" {
 			continue // there the relative spelling is the resolving one
 		}
+		res := m.Resolution[f.Language]
 		for _, imp := range f.Imports {
-			if relativeSpecifier(imp.Symbol) {
+			if relativeSpecifier(imp.Symbol) && !anyCandHitsGlob(imp.Symbol, f.Path, res, m.Layers) {
 				out = append(out, LimitNote{
 					Path: f.Path,
 					Line: imp.Line,
@@ -427,6 +433,22 @@ func HeuristicLimits(m Model, files []FileImports) []LimitNote {
 		return out[i].Form < out[j].Form // total order (SPEC-DET-001)
 	})
 	return out
+}
+
+// anyCandHitsGlob reports whether ANY resolution candidate of imp carries a layer
+// glob prefix on a segment boundary (ADR-0035). Config only — mode plus globs; the
+// file index is never consulted, so the answer holds for every tree.
+//
+// It deliberately uses layerOfCand, the same attribution the rules use: a second,
+// simpler implementation here would be a second truth about "does this resolve",
+// and the two would drift.
+func anyCandHitsGlob(imp, srcPath string, res ResolutionConfig, layers []Layer) bool {
+	for _, cand := range resolveImport(imp, srcPath, res) {
+		if l, _ := layerOfCand(cand, layers); l != "" {
+			return true
+		}
+	}
+	return false
 }
 
 // modeName spells the effective resolution mode for the message. An empty mode

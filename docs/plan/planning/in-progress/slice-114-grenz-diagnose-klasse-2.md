@@ -39,18 +39,18 @@ die Korrektur eine **Folge-ADR mit `Supersedes`**, nicht ein Code-Fix.
 
 ## 2. Definition of Done
 
-- [ ] Folge-ADR ist `Accepted`, löst [`ADR-0031`](../../adr/0031-heuristik-grenzen-diagnose.md) im Feld `Supersedes` ab, ist im Index verlinkt und ersetzt
+- [x] Folge-ADR ist `Accepted`, löst [`ADR-0031`](../../adr/0031-heuristik-grenzen-diagnose.md) im Feld `Supersedes` ab, ist im Index verlinkt und ersetzt
       Entscheidung 5 durch eine Fassung ohne die falsche Prämisse.
-- [ ] [SPEC-CLI-001](../../../../spec/spezifikation.md#spec-cli-001--aufruf-scan-wurzel-und-exit-codes)
+- [x] [SPEC-CLI-001](../../../../spec/spezifikation.md#spec-cli-001--aufruf-scan-wurzel-und-exit-codes)
       beschreibt die Klasse so, wie sie dann gilt.
-- [ ] `HeuristicLimits` meldet Klasse 2 nur noch, wenn **kein** Layer-Glob-Präfix im Symbol
+- [x] `HeuristicLimits` meldet Klasse 2 nur noch, wenn **kein** Layer-Glob-Präfix im Symbol
       segmentweise vorkommt; Probe: die Zeile aus §1 erscheint als Befund und **nicht** mehr als
       Hinweis, ein echt unauflösbares Symbol weiterhin als Hinweis.
 
-- [ ] `make gates` grün — Ausgabe in eine Datei, Exit-Code getrennt geprüft, nie in eine Pipe.
-- [ ] Closure-Notiz mit benanntem Lerneintrag geschrieben (§7).
-- [ ] Beobachtungs-Register fortgeschrieben.
-- [ ] Jedes Risiko aus §6 trägt genau einen Ausgang.
+- [x] `make gates` grün — Ausgabe in eine Datei, Exit-Code getrennt geprüft, nie in eine Pipe.
+- [x] Closure-Notiz mit benanntem Lerneintrag geschrieben (§7).
+- [x] Beobachtungs-Register fortgeschrieben.
+- [x] Jedes Risiko aus §6 trägt genau einen Ausgang.
 
 ## 3. Plan (vor Code)
 
@@ -97,8 +97,43 @@ Datei-Index. Sonst fiele sie in die Klasse, die [`ADR-0031`](../../adr/0031-heur
 
 ## 7. Closure-Notiz
 
-_(beim Abschluss ausfüllen — genau **ein** solcher Abschnitt je Slice,
-[`AGENTS.md`](../../../../AGENTS.md) §5; `make verify` prüft das.)_
+**Geliefert:** `R-2` ist behoben — Folge-ADR, Spezifikation, Code und **zwei** Proben. Die
+Grenz-Diagnose meldet keine Zeile mehr, die auflöst.
+
+**Lerneintrag — Form: geschärfte Regel.** *Ein grüner Testlauf nach einer Änderung beweist nur,
+dass nichts kaputtging — nicht, dass die Änderung wirkt.* Nach dem Code-Change lief `make test`
+grün, und die bestehende Klasse-2-Probe hatte ihr Verhalten **nicht** geändert. Dafür gab es zwei
+Erklärungen, die sich im grünen Lauf gleich anfühlen: ihr Fixture trifft kein Glob (richtig), oder
+der Change ist wirkungslos (No-op). Erst die Messung trennte sie: die Globs des Fixtures sind
+**zweisegmentig** (`src/core/**`), der Kandidat `../ui/widget.h` trägt kein `src`-Segment — also
+bleibt die Zeile zu Recht eine Grenze. *Weil* ein Fix ohne einen Lauf gegen den **alten** Zustand
+nicht von einem No-op zu unterscheiden ist, wurde er temporär zurückgenommen; der neue Test fiel
+und druckte den Defekt wörtlich aus: dieselbe Zeile als `wrong-direction` **und** als unbeurteilt.
+
+**Zwei beobachtbare Closure-Kriterien:**
+
+1. Die Negativ-Probe gegen den alten Code liefert Exit 2 mit
+   `--- FAIL: TestLimitNoticeNotReportedWhenGlobPrefixHits` und der doppelten Ausgabe im
+   Fehlertext; mit dem Fix laufen alle Pakete grün.
+2. Beide Richtungen stehen als Test: einsegmentige Globs ⇒ Befund und **kein** Hinweis;
+   zweisegmentige ⇒ weiterhin Hinweis (die bestehende Probe, jetzt als Gegenprobe benannt).
+
+**Offene Risiken und ihr Ausgang:**
+
+- *Klasse 2 könnte auf null Fälle schrumpfen* — **Ausgang:** gestrichen mit Begründung: die
+  Gegenprobe belegt einen realen Fall, der weiterhin gemeldet wird. Die Klasse hat einen
+  Gegenstand.
+- *`ADR-0031` bleibt zitiert, obwohl abgelöst* — **Ausgang:** gestrichen mit Begründung; das ist
+  die Append-only-Disziplin, der Index führt beide, und der Status-Übergang ist der einzige, den
+  das Immutabilitäts-Gate erlaubt.
+- *Der Kommentar an `HeuristicLimits` trug dieselbe falsche Begründung wie die ADR* —
+  **Ausgang:** gestrichen mit Begründung: mitgeändert. Eine Begründung an zwei Orten driftet an
+  einem davon.
+
+**Beobachtungs-Register:** keine Beobachtung angefallen — die drei Risiken sind alle geschlossen.
+
+**Folge-Slices:** [slice-113](../open/slice-113-steering-loop-ins-register.md) ist damit entblockt;
+dazu der d-check-Pin-Bump, dessen erste Trigger-Hälfte heute gemessen wurde.
 
 ## 8. Sub-Area-Modus-Begründung
 

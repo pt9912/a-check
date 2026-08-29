@@ -1128,7 +1128,12 @@ func TestLimitNoticePythonSecondDirective(t *testing.T) { // ADR-0031 Klasse 1
 	}
 }
 
-func TestLimitNoticeCppParentRelativeInclude(t *testing.T) { // ADR-0031 Klasse 2
+// GEGENPROBE zu ADR-0035: hier sind die Glob-Praefixe ZWEIsegmentig
+// ("src/core", "src/ui"), und der Kandidat "../ui/widget.h" traegt kein
+// "src"-Segment — kein Praefix trifft, die Zeile bleibt also zu Recht eine
+// Grenze. Ohne diese Richtung waere eine Klasse, die nie feuert, von einer
+// korrekten nicht zu unterscheiden.
+func TestLimitNoticeCppParentRelativeInclude(t *testing.T) { // ADR-0035 Klasse 2, Gegenprobe
 	dir := writeRepo(t, map[string]string{
 		".a-check.yml":    cppCfg,
 		"src/core/svc.h":  "#include \"../ui/widget.h\"\n",
@@ -1139,6 +1144,37 @@ func TestLimitNoticeCppParentRelativeInclude(t *testing.T) { // ADR-0031 Klasse 
 	e := errb.String()
 	if !strings.Contains(e, "src/core/svc.h:1: relativer Pfad") || !strings.Contains(e, `"path"`) {
 		t.Fatalf("elternrelativer Include nicht mit Modus-Nennung gemeldet: %q", e)
+	}
+}
+
+// ADR-0035: ein "../"-Symbol, dessen Ziel-Segment ein Glob-Praefix TRIFFT, loest
+// unter mode "path" auf — der Kandidat behaelt seine Punkte, und die
+// Schicht-Zuordnung sucht das Praefix segmentweise an beliebiger Stelle. Vor
+// ADR-0035 erschien dieselbe Zeile gleichzeitig als Befund UND als unbeurteilt.
+const cppCfgFlach = `version: 1
+languages:
+  cpp: ["**/*.h", "**/*.cpp"]
+layers:
+  core: ["core/**"]
+  ui: ["ui/**"]
+edges:
+  - {from: ui, to: core}
+`
+
+func TestLimitNoticeNotReportedWhenGlobPrefixHits(t *testing.T) { // ADR-0035
+	dir := writeRepo(t, map[string]string{
+		".a-check.yml": cppCfgFlach,
+		"core/svc.h":   "#include \"../ui/widget.h\"\n",
+		"ui/widget.h":  "\n",
+	})
+	var out, errb bytes.Buffer
+	cli.Run([]string{dir}, &out, &errb)
+	e := errb.String()
+	if strings.Contains(e, "core/svc.h:1: relativer Pfad") {
+		t.Fatalf("aufloesende Zeile faelschlich als Grenze gemeldet (ADR-0035): %q", e)
+	}
+	if !strings.Contains(out.String(), "core/svc.h:1") {
+		t.Fatalf("die Kante muss beurteilt werden — erwartet ein Befund: %q", out.String())
 	}
 }
 
