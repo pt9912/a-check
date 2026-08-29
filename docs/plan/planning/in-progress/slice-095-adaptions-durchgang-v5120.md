@@ -93,18 +93,47 @@ Gate hält.
 
 ## 7. DoD
 
-- [ ] Alle zehn Einträge tragen ein Urteil aus der geschlossenen Fünfer-Menge, je mit **genau
+- [x] Alle zehn Einträge tragen ein Urteil aus der geschlossenen Fünfer-Menge, je mit **genau
       einer** benannten Baseline-Regel (Datei + Abschnitt im vendored Stand) — Beleg: §3.
-- [ ] Die beiden Urteile, die an **neuen** Sätzen der Baseline hängen, sind als solche belegt
+- [x] Die beiden Urteile, die an **neuen** Sätzen der Baseline hängen, sind als solche belegt
       (der Satz fehlt in `v3.5.2`), und die Nicht-Nachtragbarkeit des Pflichtfelds ist aus der
       Append-only-Regel begründet — Beleg: §3 und §4.
-- [ ] `make gates` (und bei Abschluss `make verify`) grün — **Ausgabe in eine Datei**, Exit-Code
+- [x] `make gates` (und bei Abschluss `make verify`) grün — **Ausgabe in eine Datei**, Exit-Code
       getrennt geprüft, nie in eine Pipe.
 
 ## 8. Closure-Notiz
 
-_(beim Abschluss ausfüllen — genau **ein** solcher Abschnitt je Slice,
-[`AGENTS.md`](../../../../AGENTS.md) §5; `make verify` prüft das.)_
+**Geliefert:** zehn Urteile aus der geschlossenen Fünfer-Menge, je mit genau einer benannten
+Baseline-Regel — und damit die Recherche, aus der Etappe C ihre Nachfolge-Einträge schreibt.
+
+**Lerneintrag — Form: geschärfte Regel.** *Ein Eintrag im Adaptions-Block muss eine **benannte**
+Baseline-Regel ersetzen; tut er das nicht, gehört er nicht hinein.* Der neue Stand formuliert den
+Prüfsatz selbst — *„Ein Eintrag, der keine benannte Regel ersetzt, ist ein Fork, keine Adaption"* —
+und dieser Durchgang zeigt, dass er greift: `MR-006` hat über ein Jahr als Adaption gestanden,
+*weil* er beschrieb, was das Repo tut, statt zu benennen, wovon es abweicht. Sein eigener Text
+sagte es die ganze Zeit („keine inhaltliche Abweichung … im Gegenteil: sie **stellt ihn her**") —
+nur fehlte die Regel, an der das auffällt. Der Prüfsatz gilt ab sofort auch nach vorn: er ist die
+erste Frage an die Adaption, die
+[slice-093](../open/slice-093-regelwerk-statt-kurs.md) vorschlägt.
+
+**Zwei beobachtbare Closure-Kriterien:**
+
+1. Jede der zehn Zeilen nennt Datei **und** Abschnitt im vendored Stand; alle sind netzlos unter
+   `.harness/baseline/v5.12.0/regelwerk/` nachschlagbar. Die zwei Urteile, die an neuen Sätzen
+   hängen, sind mit `grep -c` gegen `v3.5.2` belegt — je **0** Treffer.
+2. `make gates` und `make verify` je **Exit 0**; `doc-check` 193 Dateien, 0 Befunde.
+
+**Offene Risiken und ihr Ausgang:**
+
+- *Die Urteile sind gefällt, aber nicht ausgeführt* — Ausgang: **Folge-Slice**, Etappe C.
+- *Das Pflichtfeld fehlt weiterhin in allen zehn Einträgen* — Ausgang: **Folge-Slice**, Etappe C;
+  es kann per Append-only-Regel nur in Nachfolge-Einträgen entstehen (§4).
+- *`slice-092` §6 trägt weiterhin die unausführbare Anweisung* — Ausgang: **gestrichen mit
+  Begründung**. Der Slice liegt in `done/` und wird nicht überschrieben; die Korrektur steht in §4
+  dieses Slice und ist von dort auf slice-092 verlinkt. Eine Planungsaussage nachträglich
+  zurechtzurücken wäre dieselbe Klasse Edit, die dieser Slice gerade als verboten belegt hat.
+
+**Folge-Slices:** Etappe C, wird unmittelbar geschnitten; D danach.
 
 ## 9. Sub-Area-Modus
 
