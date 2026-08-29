@@ -6,14 +6,14 @@
 **Verantwortlich:** — *(bis zur Priorisierung)*
 **Autor:** Claude (Opus 5), im Auftrag des Maintainers. **Datum:** 2026-08-29.
 **Berührte Spec-Stellen:** — *(keine)*
-**Deckt:** keine `AC-*`; hängt an der Folge-ADR zu `ADR-0031` (R-2).
+**Deckt:** keine `AC-*`; hängt an der Folge-ADR zu [`ADR-0031`](../../adr/0031-heuristik-grenzen-diagnose.md) (R-2).
 **Bezug:** Maintainer-Entscheidung 2026-08-29. [Roadmap](../in-progress/roadmap.md).
 
 ---
 
 ## 0. Trigger
 
-**Start:** die Folge-ADR zu `ADR-0031` liegt vor und trägt die `SL-004`-Begründung ohne Verweis
+**Start:** die Folge-ADR zu [`ADR-0031`](../../adr/0031-heuristik-grenzen-diagnose.md) liegt vor und trägt die `SL-004`-Begründung ohne Verweis
 auf `docs/plan/steering-loop.md`. Vorher nicht — solange die immutable ADR auf die Datei zeigt,
 bräche ihr Löschen einen Verweis, den kein Slice reparieren darf.
 

@@ -1,6 +1,6 @@
 # ADR-0031 — Heuristik-Grenzen-Diagnose: benannte Formen erkennen, nicht Restmengen melden
 
-- **Status:** Accepted
+- **Status:** Superseded by ADR-0035
 - **Datum:** 2026-08-09
 - **Autor:** pt9912
 - **Bezug:** [AC-QA-02](../../../spec/lastenheft.md#ac-qa-02--hermetik-und-ehrliche-heuristik-grenze), [AC-FA-EXTRACT-001](../../../spec/lastenheft.md#ac-fa-extract-001--sprach-backends-für-die-import-extraktion), [AC-FA-CLI-001](../../../spec/lastenheft.md#ac-fa-cli-001--aufruf-scan-wurzel-und-exit-codes), [SPEC-CLI-001](../../../spec/spezifikation.md#spec-cli-001--aufruf-scan-wurzel-und-exit-codes), [SPEC-EXTRACT-001](../../../spec/spezifikation.md#spec-extract-001--import-extraktion), [SPEC-DET-001](../../../spec/spezifikation.md#spec-det-001--determinismus-vertrag), [ADR-0029](0029-abdeckungs-diagnose-advisory.md)

@@ -9,7 +9,7 @@
 — die stderr-Ausgabe eines Scans.
 **Deckt:** `R-2` aus [`docs/reviews/2026-08-15-v0170-go-kern.md`](../../../reviews/2026-08-15-v0170-go-kern.md).
 **Bezug:** Maintainer-Auftrag 2026-08-15, wörtlich: *„R-2: die Grenz-Diagnose meldet auflösende
-Zeilen fälschlich, dafür braucht es eine Folge-ADR zu ADR-0031."*
+Zeilen fälschlich, dafür braucht es eine Folge-ADR zu [`ADR-0031`](../../adr/0031-heuristik-grenzen-diagnose.md)."*
 [Roadmap](../in-progress/roadmap.md).
 
 ---
@@ -24,7 +24,7 @@ Hinweis: … core/model.cpp:1: relativer Pfad, den der Auflösungs-Modus "path" 
 ```
 
 Die Ursache steht **wörtlich in der ADR**, nicht nur im Code.
-[`ADR-0031`](../../adr/0031-heuristik-grenzen-diagnose.md) Entscheidung 5 behauptet: *„ein
+[`[`ADR-0031`](../../adr/0031-heuristik-grenzen-diagnose.md)`](../../adr/0031-heuristik-grenzen-diagnose.md) Entscheidung 5 behauptet: *„ein
 `../`-Pfad gegen einen nicht-`relative`-Modus kann kein Ziel treffen, **egal wie der Baum
 aussieht**."* Der Code wiederholt es als Kommentar.
 
@@ -34,12 +34,12 @@ Glob-Präfix mit `segIndex` **segmentweise an beliebiger Stelle**. Für `../adap
 `layers: {adapters: ["adapters/**"]}` trifft es hinter den Punkten. Unter `fixed-root` ebenso, dort
 mit vorangestellter Wurzel. Relative Includes sind in C++ die Norm — der Fall trifft breit.
 
-Weil die falsche Aussage **dokumentiert** ist und `ADR-0031` `Accepted` und damit immutabel, ist
+Weil die falsche Aussage **dokumentiert** ist und [`ADR-0031`](../../adr/0031-heuristik-grenzen-diagnose.md) `Accepted` und damit immutabel, ist
 die Korrektur eine **Folge-ADR mit `Supersedes`**, nicht ein Code-Fix.
 
 ## 2. Definition of Done
 
-- [ ] Folge-ADR mit `Supersedes: ADR-0031` ist `Accepted`, im Index verlinkt, und ersetzt
+- [ ] Folge-ADR ist `Accepted`, löst [`ADR-0031`](../../adr/0031-heuristik-grenzen-diagnose.md) im Feld `Supersedes` ab, ist im Index verlinkt und ersetzt
       Entscheidung 5 durch eine Fassung ohne die falsche Prämisse.
 - [ ] [SPEC-CLI-001](../../../../spec/spezifikation.md#spec-cli-001--aufruf-scan-wurzel-und-exit-codes)
       beschreibt die Klasse so, wie sie dann gilt.
@@ -56,9 +56,9 @@ die Korrektur eine **Folge-ADR mit `Supersedes`**, nicht ein Code-Fix.
 
 | Datei | Änderungs-Art | Begründung |
 |---|---|---|
-| `docs/plan/adr/0035-*.md` | neu | Folge-ADR, `Supersedes: ADR-0031` |
+| `docs/plan/adr/0035-*.md` | neu | Folge-ADR, löst [`ADR-0031`](../../adr/0031-heuristik-grenzen-diagnose.md) ab |
 | `docs/plan/adr/README.md` | update | Index-Pflicht |
-| `spec/spezifikation.md` | update | `SPEC-CLI-001`, Klasse 2 |
+| `spec/spezifikation.md` | update | [`SPEC-CLI-001`](../../../../spec/spezifikation.md#spec-cli-001--aufruf-scan-wurzel-und-exit-codes), Klasse 2 |
 | `internal/hexagon/core/rules.go` | update | `HeuristicLimits` |
 | `internal/cli/cli_test.go` | update | Probe beide Richtungen |
 
@@ -80,15 +80,15 @@ ADR `Accepted` und indiziert, Spec nachgezogen, Code geändert, beide Proben bel
 **Was bewusst nicht getan wird:** Klasse 1 (nicht extrahierte Zeilen) bleibt unberührt — sie
 braucht keine Konfiguration und ist von diesem Befund nicht betroffen. Und die Diagnose bleibt
 **tree-frei**: die neue Prüfung liest Modus **und Globs**, beides Konfiguration, nie den
-Datei-Index. Sonst fiele sie in die Klasse, die `ADR-0031` ausdrücklich ausgeschlossen hat und die
-`ADR-0029` schon auf der Ziel-Seite ausgeschlossen hatte.
+Datei-Index. Sonst fiele sie in die Klasse, die [`ADR-0031`](../../adr/0031-heuristik-grenzen-diagnose.md) ausdrücklich ausgeschlossen hat und die
+[`ADR-0029`](../../adr/0029-abdeckungs-diagnose-advisory.md) schon auf der Ziel-Seite ausgeschlossen hatte.
 
 ## 6. Risiken und offene Punkte
 
 - *Die Neufassung könnte Klasse 2 auf null Fälle schrumpfen* — dann wäre sie eine Regel ohne
   Gegenstand. **Ausgang:** weiter offen, `BEO-022`; die Probe in §2 misst es, und ein Fall mit
   echtem Nicht-Treffer bleibt als Fixture stehen.
-- *`ADR-0031` bleibt zitiert, obwohl abgelöst* — **Ausgang:** gestrichen mit Begründung: das ist
+- *[`ADR-0031`](../../adr/0031-heuristik-grenzen-diagnose.md) bleibt zitiert, obwohl abgelöst* — **Ausgang:** gestrichen mit Begründung: das ist
   der Normalfall der Append-only-Disziplin; die abgelöste ADR bleibt lesbar, der Index führt
   beide, und die Nachfolgerin nennt sie in `Supersedes`.
 - *Die Folge-ADR ist Voraussetzung für
