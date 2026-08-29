@@ -122,8 +122,8 @@ hätte den Bruch danach gefangen; die falsche Behauptung wäre trotzdem in `done
   den Adaptionen) — Ausgang: **Folge-Slice**, Etappe D, mit demselben Register.
 
 - *Die Placeholder-Heuristik von `verify-closure-notes` kollidiert mit dem neuen Risiko-Block* —
-  eine ihrer Wendungen beschreibt genau das, was die neue Baseline in **jeder** Closure-Notiz
-  verlangt: einen Abschnitt über offene Risiken. Der Zusammenstoß ist systematisch, nicht
+  sie kennt `noch offen` als Platzhalter-Wendung, und die neue Baseline verlangt in **jeder**
+  Closure-Notiz genau das: einen Abschnitt über offene Risiken. Der Zusammenstoß ist systematisch, nicht
   zufällig, und er ist heute **zweimal** aufgetreten — beim zweiten Mal an dieser Notiz selbst,
   weil sie die Wendung **zitierte**. Damit ist es dieselbe Klasse wie
   [`SL-004`](../../steering-loop.md#sl-004--ein-neuer-doku-sensor-meldet-im-ersten-lauf-sein-eigenes-umfeld):

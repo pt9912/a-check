@@ -66,11 +66,11 @@ unterscheiden.
 
 ## 5. DoD
 
-- [ ] Placeholder- und Floskel-Prüfung laufen über denselben Zitat-Vorfilter wie die Satzzählung
+- [x] Placeholder- und Floskel-Prüfung laufen über denselben Zitat-Vorfilter wie die Satzzählung
       (Code-Blöcke und Inline-Code entfernt) — Beleg: Diff.
-- [ ] Der Selbsttest trägt eine Fixture mit zitiertem Muster, die schweigt, **und** behält die mit
+- [x] Der Selbsttest trägt eine Fixture mit zitiertem Muster, die schweigt, **und** behält die mit
       unzitiertem, die feuert — Beleg: Target-Ausgabe.
-- [ ] [`SL-004`](../../steering-loop.md#sl-004--ein-neuer-doku-sensor-meldet-im-ersten-lauf-sein-eigenes-umfeld)
+- [x] [`SL-004`](../../steering-loop.md#sl-004--ein-neuer-doku-sensor-meldet-im-ersten-lauf-sein-eigenes-umfeld)
       nennt die zwei neuen Vorfälle mit Zahl und die Antwort — Beleg: Diff.
 
 Pflicht, aber **kein** Liefer-Punkt: `make gates` und `make verify` grün — Ausgabe in eine Datei,
@@ -78,8 +78,44 @@ Exit-Code getrennt geprüft, nie in eine Pipe.
 
 ## 6. Closure-Notiz
 
-_(beim Abschluss ausfüllen — genau **ein** solcher Abschnitt je Slice,
-[`AGENTS.md`](../../../../AGENTS.md) §5; `make verify` prüft das.)_
+**Geliefert:** Placeholder- und Floskel-Prüfung laufen über denselben Zitat-Vorfilter wie die
+Satzzählung, mit Fixtures in beide Richtungen — und die in slice-099 verbogene Formulierung ist
+auf ihre zitierte Fassung zurückgesetzt.
+
+**Lerneintrag — Form: geschärfte Regel.** *Ein Guide für Neubauten erreicht den Bestand nicht — und
+eine Konventions-Änderung kann einen jahrelang stillen Sensor scharf machen.* Der `SL-004`-Guide
+steht seit slice-061 in Schritt 5 des Workflow-Skeletts und richtet sich an den Moment, in dem ein
+Sensor **gebaut** wird. `verify-closure-notes` ist aus slice-050 und war damit nie sein Adressat;
+der Vorfilter fehlte ihm vier Monate lang folgenlos. Folgenlos blieb er, *weil* Closure-Notizen
+bis dahin nicht über Offenes sprachen — bis die Baseline `v5.12.0` in **jeder** Notiz einen
+Abschnitt über offene Risiken verlangte. Erst diese Konventions-Änderung hat den Sensor in
+Vokabular geführt, das er nicht von seinem Prüfgegenstand unterscheiden konnte. **Der Prüfsatz für
+künftige Migrationen:** ein Baseline-Sprung ändert nicht nur, was dokumentiert wird, sondern
+**worüber** die Dokumente sprechen — und damit, worauf bestehende Textsensoren treffen.
+
+**Zwei beobachtbare Closure-Kriterien:**
+
+1. Der Selbsttest fährt beide Richtungen: dieselbe Wendung **zitiert** muss schweigen,
+   **unzitiert** muss feuern. Ohne die zweite Fixture wäre ein Vorfilter, der alles verschluckt,
+   von einem korrekten nicht zu unterscheiden.
+2. Der eigentliche Beweis ist der Bestand, nicht die Fixture: die Stelle in
+   [slice-099](../done/slice-099-form-rest-und-fall-des-alten-baums.md), an der der Sensor
+   gefeuert hatte, trägt wieder ihre zitierte Fassung — und `make verify-closure-notes` läuft mit
+   Exit 0 über 95 Notizen.
+
+**Offene Risiken und ihr Ausgang:**
+
+- *Die Platzhalter-Liste enthält eine Wendung, die auch unzitiert legitim vorkommt* — Ausgang:
+  **weiter offen**, fürs Beobachtungs-Register (Etappe D). Sie zu streichen wäre eine
+  Schwellen-Senkung und braucht nach [`AGENTS.md`](../../../../AGENTS.md) §3.6 eine ADR;
+  entschieden wird am nächsten unzitierten Vorfall.
+- *`SL-004` steht jetzt bei fünf Vorfällen und hat weiterhin keinen Sensor* — Ausgang:
+  **gestrichen mit Begründung**. Der Eintrag begründet das selbst: das Muster ist **Bauwissen**
+  über Sensoren, kein wiederkehrender Laufzeit-Fehler; es gibt keinen Lauf, in dem es sich zeigen
+  könnte. Was die zwei neuen Vorfälle ändern, ist nicht die Antwort, sondern ihre Reichweite — der
+  Guide gilt ab jetzt auch für den **Bestand**, nicht nur für Neubauten.
+
+**Folge-Slices:** Etappe D — Risiko-Ausgänge als Sensor und das Beobachtungs-Register.
 
 ## 7. Sub-Area-Modus
 

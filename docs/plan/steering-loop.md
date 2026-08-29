@@ -173,13 +173,39 @@ ohne Ort nicht überlebt.
   Prüfgegenstand spricht, statt ihn zu sein — zitierte Muster in Inline-Code, Code-Blöcken oder
   Argument-Strings. Die Korrektur ist jedes Mal dieselbe: Zitat-Kontexte vor der Auswertung
   ausblenden.
-- **Vorfälle:** **drei**, je beim ersten scharfen Lauf:
+- **Vorfälle:** **fünf**. Drei beim ersten scharfen Lauf eines *neuen* Sensors — und zwei am
+  2026-08-29 an einem **alten**, der den Vorfilter nie bekommen hat:
   - [slice-050](planning/done/slice-050-verify-schicht.md) — `verify-closure-notes`: drei
     Fehlalarm-Wellen, darunter ein Kursiv-Regex, der substanziellen Text als Platzhalter las.
   - [slice-057](planning/done/slice-057-steering-loop.md) — Guard-Regel 2: Fehlalarm auf das
     Pipe-Muster in einem Argument-String; Ursache der Quote-Behandlung.
   - [slice-060](planning/done/slice-060-slice-link-invariante.md) — `verify-slice-links`:
     Fehlalarm auf einen Verweis, den das eigene Slice-Dokument in Backticks **zitiert**.
+  - [slice-099](planning/done/slice-099-form-rest-und-fall-des-alten-baums.md) — zweimal
+    `verify-closure-notes`: einmal an einer Closure-Notiz, die eine Platzhalter-Wendung
+    **unzitiert** in einem Risiko-Satz führte, und unmittelbar darauf an der Notiz, die **diesen
+    Vorfall beschrieb** und die Wendung dabei in Backticks zitierte.
+
+**Was die zwei neuen Vorfälle hinzufügen — und warum sie nicht bloß Wiederholung sind.** Die drei
+alten trafen je einen *frisch gebauten* Sensor; der Guide aus slice-061 richtet sich an genau
+diesen Moment. `verify-closure-notes` ist aus slice-050 und damit **älter als der Guide** — an ihm
+zeigt sich, dass ein Guide für Neubauten den Bestand nicht erreicht. Ausgelöst hat es die
+Baseline `v5.12.0`: sie verlangt in **jeder** Closure-Notiz einen Abschnitt über offene Risiken,
+und damit spricht der Bestand seit dem 2026-08-29 regelmäßig über genau das Vokabular, aus dem die
+Platzhalter-Liste besteht. **Eine Konventions-Änderung kann einen jahrelang stillen Sensor scharf
+machen.**
+
+**Zweimal falsch behandelt, bevor es richtig behandelt wurde.** In beiden Fällen wurde zuerst der
+*Text* angepasst — genau das, wovor die Nebenbeobachtung unten warnt. Erst der dritte Anlauf hat
+den *Sensor* angefasst (slice-100):
+Placeholder- und Floskel-Prüfung laufen jetzt über denselben Zitat-Vorfilter wie die Satzzählung,
+mit Fixtures in **beide** Richtungen. Die verbogene Formulierung wurde danach auf ihre zitierte
+Fassung zurückgesetzt — sonst wäre die Beobachtung trotz Sensor-Fix verloren gewesen.
+
+**Offen, ausdrücklich nicht mitgefixt:** die Platzhalter-Liste enthält eine Wendung, die auch
+**unzitiert** legitim in einem Risiko-Block steht (der erste der beiden Vorfälle). Sie zu streichen
+wäre eine Schwellen-Senkung und braucht nach [`AGENTS.md`](../../AGENTS.md) §3.6 eine ADR. Die
+Frage liegt im Beobachtungs-Register; entschieden wird sie am nächsten unzitierten Vorfall.
 - **Klasse:** Schwelle überschritten (3×) ⇒ Harness-Lücke.
 - **Antwort (Guide, slice-061):** Schritt 5 des Workflow-Skeletts — wer einen Sensor über Markdown
   baut, blendet Zitat-Kontexte **von Anfang an** aus und nimmt eine Fixture mit zitiertem Muster

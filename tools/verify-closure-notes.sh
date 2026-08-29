@@ -54,7 +54,7 @@ count_closure_headings() {  # $1 = Datei
 }
 
 check_file() {  # $1 = Datei; gibt Befunde auf stdout, Rückgabe 1 bei Befund
-  local f="$1" n body sentences fail=0
+  local f="$1" n body prosa sentences fail=0
   n="$(count_closure_headings "$f")"
   if [ "$n" -eq 0 ]; then
     echo "$f: kein Closure-Abschnitt (AGENTS.md §5)"
@@ -69,11 +69,23 @@ check_file() {  # $1 = Datei; gibt Befunde auf stdout, Rückgabe 1 bei Befund
     echo "$f: Closure-Abschnitt ist leer"
     return 1
   fi
-  if printf '%s\n' "$body" | grep -qE "$PLACEHOLDER"; then
+  # ZITAT-VORFILTER (slice-100, SL-004). Text, der UEBER ein Muster spricht, ist
+  # nicht das Muster. Der Sensor hat zweimal an einer Notiz gefeuert, die die
+  # ausloesende Wendung in Backticks zitierte. Denselben Vorfilter benutzen die
+  # Satzzaehlung unten (seit slice-075) und verify-slice-links — die Placeholder-
+  # und Floskel-Pruefung sahen ihn als einzige nicht.
+  #
+  # KEINE Lockerung: die Platzhalter-Liste bleibt unveraendert. Sie enthaelt eine
+  # Wendung, die in einem Risiko-Block auch UNZITIERT legitim vorkommt; sie zu
+  # streichen waere eine Schwellen-Senkung und braucht nach AGENTS.md §3.6 eine
+  # ADR. Diese Frage steht im Beobachtungs-Register, nicht in diesem Skript.
+  prosa="$(printf '%s\n' "$body" \
+    | sed -e '/^[[:space:]]*```/,/^[[:space:]]*```/d' -e 's/`[^`]*`//g')"
+  if printf '%s\n' "$prosa" | grep -qE "$PLACEHOLDER"; then
     echo "$f: Closure-Abschnitt trägt einen Platzhalter statt eines Lerneintrags"
     fail=1
   fi
-  if printf '%s\n' "$body" | grep -qiE "$FLOSKELN"; then
+  if printf '%s\n' "$prosa" | grep -qiE "$FLOSKELN"; then
     echo "$f: Closure-Abschnitt besteht aus einer Floskel ohne Substanz"
     fail=1
   fi
@@ -86,9 +98,7 @@ check_file() {  # $1 = Datei; gibt Befunde auf stdout, Rückgabe 1 bei Befund
   # alte `grep -v '^\s*```'` liess den Inhalt stehen, obwohl der Kommentar
   # "ausserhalb von Code-Zeilen" behauptete. Inline-Code ebenso — beides derselbe
   # Vorfilter wie in verify-slice-links.
-  sentences="$(printf '%s\n' "$body" \
-    | sed -e '/^[[:space:]]*```/,/^[[:space:]]*```/d' -e 's/`[^`]*`//g' \
-    | grep -oE '[.!?]([[:space:]]|$)' | wc -l)"
+  sentences="$(printf '%s\n' "$prosa" | grep -oE '[.!?]([[:space:]]|$)' | wc -l)"
   if [ "$sentences" -lt 2 ]; then
     echo "$f: Closure-Abschnitt trägt weniger als zwei Sätze"
     fail=1
@@ -118,6 +128,22 @@ self_test() {
       rm -rf "$tmp"; exit 2
     fi
   done
+  # ZITAT-VORFILTER, beide Richtungen (slice-100, SL-004). Die erste Fixture ist
+  # die eigentliche Probe: dieselbe Wendung, einmal zitiert und einmal nicht.
+  # Ohne die zweite waere ein Vorfilter, der alles verschluckt, von einem
+  # korrekten nicht zu unterscheiden.
+  { echo '## 6. Closure-Notiz';
+    echo 'Der Sensor kennt `noch offen` als Platzhalter-Wendung. Das ist ein Zitat.'; } > "$tmp/zitiert.md"
+  if ! check_file "$tmp/zitiert.md" >/dev/null; then
+    echo "verify-closure-notes: Selbsttest FEHLGESCHLAGEN — zitiertes Muster als Platzhalter gemeldet (SL-004)" >&2
+    rm -rf "$tmp"; exit 2
+  fi
+  { echo '## 6. Closure-Notiz';
+    echo 'Der Rest ist noch offen. Zweiter Satz hier.'; } > "$tmp/unzitiert.md"
+  if check_file "$tmp/unzitiert.md" >/dev/null; then
+    echo "verify-closure-notes: Selbsttest FEHLGESCHLAGEN — unzitierter Platzhalter nicht erkannt (Vorfilter zu breit)" >&2
+    rm -rf "$tmp"; exit 2
+  fi
   # Satzzaehlung, beide Richtungen (slice-075, Fund F-13). Die erste Fixture ist
   # die eigentliche Probe: ein Punkt im Dateinamen darf kein Satzende sein.
   { echo '## 6. Closure-Notiz'; echo 'Geprueft via foo.go.'; } > "$tmp/ein-satz.md"
