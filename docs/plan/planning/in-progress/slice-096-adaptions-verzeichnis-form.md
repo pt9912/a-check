@@ -42,10 +42,10 @@ die Zeile den alten Überschriften-Slug als **zweiten** Anker daneben, sonst rot
 veröffentlichten Verweise."* Jede Index-Zeile bekommt also **zwei** Anker — die stabile Kennung
 `mr-NNN` für neue Verweise, den alten Slug für die bestehenden.
 
-Belegen kann das nur `doc-check`: es prüft jeden Link **und** jeden Anker, und der Bestand hat
-über 30 solcher Verweise.
+Belegen kann das nur `doc-check`: es prüft jeden Link **und** jeden Anker. Der Bestand trägt
+**137** solcher Verweise in **48** Dateien — gezählt, nicht geschätzt.
 
-**`MR-000` bleibt inline.** Die Vorlage führt ihn ausdrücklich weiter im Index — er ist die
+**[`MR-000`](../../../../harness/conventions.md#mr-000) bleibt inline.** Die Vorlage führt ihn ausdrücklich weiter im Index — er ist die
 Adoptions-Erklärung, keine Adaption, und gilt für jeden Lauf. Sein Anker bleibt damit unberührt.
 
 ## 4. Auszuführende Gates
@@ -53,9 +53,9 @@ Adoptions-Erklärung, keine Adaption, und gilt für jeden Lauf. Sein Anker bleib
 `make gates` — tragend ist `doc-check` (Links, Anker, Kennungs-Linkpflicht) und
 `gate-consistency`. Zum Abschluss `make verify`.
 
-**Kein neuer Sensor**, also keine Negativ-Probe. Die Probe ist der Bestand selbst: über 30
-vorhandene Verweise auf die alten Slugs sind die schärfste Prüfung, die dieser Formwechsel
-bekommen kann — sie waren vorher grün und müssen es danach sein.
+**Kein neuer Sensor**, also keine Negativ-Probe. Die Probe ist der Bestand selbst: 137 vorhandene
+Verweise auf die alten Slugs sind die schärfste Prüfung, die dieser Formwechsel bekommen kann —
+sie waren vorher grün und müssen es danach sein.
 
 ## 5. Was bewusst nicht getan wird
 
@@ -71,19 +71,51 @@ bekommen kann — sie waren vorher grün und müssen es danach sein.
 
 ## 6. DoD
 
-- [ ] Neun Eintrags-Dateien unter `harness/conventions/` (die aufgelöste unter `done/`),
-      Inhalt unverändert übernommen; `conventions.md` trägt Präambel, `MR-000` inline und **zwei**
+- [x] Neun Eintrags-Dateien unter `harness/conventions/` (die aufgelöste unter `done/`),
+      Inhalt unverändert übernommen; `conventions.md` trägt Präambel, [`MR-000`](../../../../harness/conventions.md#mr-000) inline und **zwei**
       Index-Tabellen — Beleg: Diff und Verzeichnis-Zustand.
-- [ ] Jede Index-Zeile trägt **beide** Anker (Kennung + alter Überschriften-Slug); `doc-check`
-      meldet **0** Befunde, obwohl über 30 Verweise auf die alten Slugs im Bestand stehen —
+- [x] Jede Index-Zeile trägt **beide** Anker (Kennung + alter Überschriften-Slug); `doc-check`
+      meldet **0** Befunde, obwohl **137** Verweise auf die alten Slugs im Bestand stehen —
       Beleg: Target-Ausgabe mit Exit-Code.
-- [ ] `make gates` (und bei Abschluss `make verify`) grün — **Ausgabe in eine Datei**, Exit-Code
+- [x] `make gates` (und bei Abschluss `make verify`) grün — **Ausgabe in eine Datei**, Exit-Code
       getrennt geprüft, nie in eine Pipe.
 
 ## 7. Closure-Notiz
 
-_(beim Abschluss ausfüllen — genau **ein** solcher Abschnitt je Slice,
-[`AGENTS.md`](../../../../AGENTS.md) §5; `make verify` prüft das.)_
+**Geliefert:** neun Eintrags-Dateien unter `harness/conventions/`, ein Index aus zwei Tabellen mit
+Doppelankern, und **137 bestehende Verweise, die den Formwechsel überlebt haben**, ohne dass einer
+von Hand angefasst wurde.
+
+**Lerneintrag — Form: geschärfte Regel.** *Eine Kennung in ihrer eigenen Zieldatei ist von der
+Linkpflicht befreit; verlässt sie diese Datei, wird die Pflicht scharf.* `.d-check.yml` bindet
+`MR-\d{3}` an `harness/conventions.md` als `target` — solange die Einträge **in** dieser Datei
+standen, brauchte keine der dortigen Erwähnungen einen Link. Der Umzug in eigene Dateien hat aus
+sieben stillen Erwähnungen sofort sieben `id-unlinked` gemacht, *weil* dieselbe Kennung an einem
+anderen Ort eine andere Regel trifft. Zwei davon waren **fremde** Kennungen (die des
+Baseline-Templates und die von `ai-harness-init`) — sie zu verlinken wäre schlimmer als sie
+stehenzulassen, denn ein Link hätte sie zu a-checks Adaptionen erklärt. Richtig ist dort der
+`d-check:ignore`-Marker mit Grund, nicht der Link. **Die Prüfsatz-Form:** *Wandert Text aus der
+Zieldatei einer `ids`-Regel heraus, ist vor dem Verlinken zu fragen, wessen Kennung das ist.*
+
+**Zwei beobachtbare Closure-Kriterien:**
+
+1. `doc-check` prüft 203 Dateien mit **0** Befunden; die Zahl der Verweise auf alte
+   Überschriften-Slugs ist mit `grep` als **137** in **48** Dateien belegt. Beide Anker sind
+   also nachweislich in Gebrauch — `doc-check` meldete `anchor-missing`, solange einer fehlte.
+2. `harness/conventions.md` trägt keine `### MR-NNN`-Überschrift mehr außer der von
+   [`MR-000`](../../../../harness/conventions.md#mr-000); jeder Agentenlauf liest ab jetzt eine
+   Tabellenzeile je aktiver Adaption statt acht Volltexte.
+
+**Offene Risiken und ihr Ausgang:**
+
+- *Die B-Urteile sind weiter nicht ausgeführt* — Ausgang: **Folge-Slice**, Etappe C2.
+- *Die Spalte `Ersetzt-Baseline-Regel` steht überall auf `—`* — Ausgang: **Folge-Slice**, C2; sie
+  darf per Append-only-Regel nur in Nachfolge-Einträgen entstehen.
+- *Die Schätzung „über 30 Verweise" im geschnittenen Slice war um Faktor vier zu niedrig* —
+  Ausgang: **gestrichen mit Begründung**; die Zahl ist vor dem Abschluss gemessen und im Text
+  ersetzt worden, das Risiko hat sich damit erledigt statt fortzubestehen.
+
+**Folge-Slices:** Etappe C2 (Urteils-Ausführung), danach C3 und D.
 
 ## 8. Sub-Area-Modus
 
