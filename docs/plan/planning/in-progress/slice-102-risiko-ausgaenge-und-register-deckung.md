@@ -75,11 +75,11 @@ Beleg feuert · Beleg-Anzahl ≠ Zähler feuert · das echte Register schweigt.
 
 ## 6. DoD
 
-- [ ] `verify-closure-notes` prüft in `done/` jede Zeile eines vorhandenen Risiko-Blocks auf genau
+- [x] `verify-closure-notes` prüft in `done/` jede Zeile eines vorhandenen Risiko-Blocks auf genau
       einen Ausgang aus der geschlossenen Dreier-Menge — Beleg: Target-Ausgabe und Selbsttest.
-- [ ] `make verify-observations` prüft Register-Deckung (zitierte `BEO-NNN` ⇒ Zeile; Zeile ⇒
+- [x] `make verify-observations` prüft Register-Deckung (zitierte `BEO-NNN` ⇒ Zeile; Zeile ⇒
       Beleg; Beleg-Form und Anzahl == Zähler) und hängt in `verify` — Beleg: Target-Ausgabe.
-- [ ] Das neue Target steht in [`AGENTS.md`](../../../../AGENTS.md) §4 **und**
+- [x] Das neue Target steht in [`AGENTS.md`](../../../../AGENTS.md) §4 **und**
       [`harness/README.md`](../../../../harness/README.md) §Sensors; `doc-targets` grün — Beleg:
       Target-Ausgabe.
 
@@ -88,8 +88,47 @@ in eine Datei, Exit-Code getrennt geprüft, nie in eine Pipe.
 
 ## 7. Closure-Notiz
 
-_(beim Abschluss ausfüllen — genau **ein** solcher Abschnitt je Slice,
-[`AGENTS.md`](../../../../AGENTS.md) §5; `make verify` prüft das.)_
+**Geliefert:** zwei Prüfungen für zwei Pflichten, die seit slice-101 im Repo standen und niemand
+maß — Risiko-Ausgänge aus der geschlossenen Dreier-Menge und die Deckung des
+Beobachtungs-Registers. **Damit ist die Migration `v3.5.2` → `v5.12.0` abgeschlossen.**
+
+**Lerneintrag — Form: neuer Sensor.** Neu beobachtbar sind zwei Dinge: *ein Risiko, dessen Ausgang
+nicht aus der Dreier-Menge stammt*, und *eine Registerzeile ohne formgebundenen Beleg*. Was den
+ersten Fall lehrreich macht, steht im eigenen Bestand: slice-092 führt den Ausgang
+„Maintainer-Entscheidung" — damals völlig vernünftig, denn die geschlossene Menge galt im Repo
+noch nicht. **Genau das ist der Wert einer geschlossenen Menge:** ohne sie erfindet jeder Autor
+den Ausgang, der gerade passt, und die Frage, ob ein Risiko wirklich versorgt ist, wird wieder zum
+Urteil. *Weil* eine Menge nur dann urteilsfrei prüfbar ist, wenn sie abgeschlossen ist, ist der
+vierte Ausgang kein Detail, sondern der Unterschied zwischen Form und Ermessen.
+
+**Zwei beobachtbare Closure-Kriterien:**
+
+1. `make verify-observations` läuft mit Exit 0 über **sieben** Beobachtungen; sein Selbsttest
+   fährt vier Register-Fixtures (gut · ohne Beleg · Anzahl ungleich Zähler · Freitext-Beleg) und
+   eine Zitat-Fixture. Ohne die erste wäre ein Muster, das alles durchlässt, nicht erkennbar.
+2. Der Selbsttest von `verify-closure-notes` fährt **drei** Risiko-Richtungen — gültige Ausgänge
+   schweigen, fehlender Ausgang feuert, Ausgang außerhalb der Menge feuert — plus die
+   Grandfathering-Probe unter dem Stichtag.
+
+**Offene Risiken und ihr Ausgang:**
+
+- *Ein Slice, der den Risiko-Block ganz weglässt, wird nicht geprüft* — Ausgang: **weiter offen**,
+  als `BEO-007` im Beobachtungs-Register.
+- *Die Lage und Existenz der Beleg-Datei bleiben ungeprüft* — Ausgang: **weiter offen**, gedeckt
+  durch `BEO-006` im Beobachtungs-Register; `modul-06` schließt die Prüfung vor dem `git mv`
+  ausdrücklich aus.
+- *Vor dem Stichtag stehen Ausgänge außerhalb der Dreier-Menge* — Ausgang: **gestrichen mit
+  Begründung**. Sie entstanden, bevor die Menge im Repo galt; rückwirkendes Umschreiben wäre
+  Geschichts-Politur, und die Grandfathering-Probe im Selbsttest hält die Stufung in beide
+  Richtungen fest.
+
+- *Ein drittes zu weites Muster ist beim Bauen aufgefallen und mitgefixt* — `verify-slice-form`
+  suchte `make (gates|verify)` als Präfix und beanstandete damit **diesen** Slice: sein DoD-Punkt
+  liefert das Target `make verify-observations`, was eine Lieferung ist und kein Gate-Lauf. Das
+  Muster endet jetzt am Target-Namen, mit Gegenprobe im Selbsttest. Ausgang: **gestrichen mit
+  Begründung** — behoben, samt Fixture, die den Fall künftig hält.
+
+**Folge-Slices:** keine — die Migration ist abgeschlossen. Was offen bleibt, steht im Register.
 
 ## 8. Sub-Area-Modus
 

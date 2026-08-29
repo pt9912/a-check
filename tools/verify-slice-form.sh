@@ -81,8 +81,12 @@ check_file() {  # $1 = Datei, $2 = "done"/"offen", $3 = 1 wenn Kopf-Regeln gelte
   fi
   if [ "$headrules" = "1" ]; then
     # (3) Ein Gate-Lauf ist pro Slice konstant und sagt ueber die Groesse nichts.
+    # Das Muster endet AM TARGET-NAMEN (slice-102): `make verify` ist ein
+    # Gate-Lauf, `make verify-observations` als DoD-Punkt ist die LIEFERUNG
+    # eines neuen Targets. Ein Praefix-Match haette den zweiten Fall
+    # faelschlich beanstandet — real aufgetreten an slice-102 selbst.
     if awk '/^#+ .*DoD/{i=1;next} i&&/^#+ /{i=0} i&&/^- \[[ x]\] /' "$f" \
-         | grep -qE 'make (gates|verify)'; then
+         | grep -qE 'make (gates|verify)([^-[:alnum:]]|$)'; then
       echo "$f: Gate-Lauf als DoD-Punkt — Gate-Laeufe zaehlen nicht als Liefer-Punkt"
       echo "    (modul-05 §Ziel-Form: Slice); als feste Zeile UNTER das DoD stellen."
       fail=1
@@ -128,6 +132,16 @@ self_test() {
   { echo '**Verantwortlich:** wer'; echo '**Autor:** wer'; echo '**Spec-Stellen:** —';
     echo '## 5. DoD'; echo '- [x] a'; echo '- [x] `make gates` gruen';
     echo '## 6. Closure-Notiz'; echo '**Form: neuer Sensor**'; } > "$tmp/gate-im-dod.md"
+  # Gegenprobe zum Praefix (slice-102): ein Target, dessen Name mit `verify`
+  # BEGINNT, ist als DoD-Punkt eine Lieferung und kein Gate-Lauf.
+  { echo '**Verantwortlich:** wer'; echo '**Autor:** wer'; echo '**Spec-Stellen:** —';
+    echo '## 5. DoD'; echo '- [x] `make verify-observations` prueft die Deckung';
+    echo '- [x] b'; echo '## 6. Closure-Notiz';
+    echo '**Lerneintrag — Form: neuer Sensor.** X, weil Y.'; } > "$tmp/target-als-lieferung.md"
+  if ! check_file "$tmp/target-als-lieferung.md" done 1 >/dev/null; then
+    echo "verify-slice-form: Selbsttest FEHLGESCHLAGEN — Target-Lieferung als Gate-Lauf beanstandet (Praefix-Match)" >&2
+    rm -rf "$tmp"; exit 2
+  fi
   { echo '## 5. DoD'; echo '- [x] a'; echo '## 6. Closure-Notiz';
     echo '**Lerneintrag — Form: neuer Sensor.** X, weil Y.'; } > "$tmp/ohne-kopf.md"
 

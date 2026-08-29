@@ -21,6 +21,7 @@ sagt. Angelegt mit slice-101.
 | BEO-004 | Ein Adaptions-Eintrag korrigiert eine Repo-Aussage statt einer Baseline-Regel und ist damit unter dem Fork-Test ein Rückbau-Kandidat | Harness-Einstieg | 1× | slice-097 | offen — auflösbar erst mit der Überarbeitung der ID-Schema-Deklaration; der Eintrag trägt den Trigger selbst |
 | BEO-005 | Die Platzhalter-Liste von `verify-closure-notes` enthält eine Wendung, die **unzitiert** legitim in einem Risiko-Block steht | Gate-/Werkzeug-Schicht | 2× | slice-099, slice-100 | offen — Streichen wäre eine Schwellen-Senkung und braucht nach [`AGENTS.md`](../../../AGENTS.md) §3.6 eine ADR; entschieden wird am nächsten unzitierten Vorfall |
 | BEO-006 | Die vorgeschriebene Reihenfolge kann die Prüfung nicht abnehmen, die sie erfüllen soll: `verify-closure-notes` greift nur in `done/`, der Workflow fährt `make verify` in Schritt 8 und den `git mv` erst in Schritt 9 | Gate-/Werkzeug-Schicht | 1× | slice-099 | offen — die Closure-Notiz eines Slice wird frühestens beim **nächsten** geprüft |
+| BEO-007 | Der Risiko-Ausgangs-Sensor prüft **innerhalb** eines vorhandenen Blocks, nicht seine Existenz — wer den Block weglässt, wird nicht erwischt | Gate-/Werkzeug-Schicht | 1× | slice-102 | offen — die Existenz einzufordern verlangte ein Urteil (gab es hier überhaupt Risiken?) und erzeugte auf jedem älteren Slice Rauschen |
 
 ## Gestrichene Einträge
 

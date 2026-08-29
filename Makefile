@@ -46,7 +46,7 @@ NO_CACHE_FILTER_COV  := --no-cache-filter coverage
         gate-consistency guard-selftest record-gates gates image-test ci \
         trace-check hooks suppression-check regelwerk-check commit-scope-check \
         verify verify-closure-notes verify-slice-form verify-ac-form \
-        verify-slice-links
+        verify-slice-links verify-observations
 
 # Gates seriell: unter `make -j` liefen die Sub-Gates sonst parallel und die
 # Reihenfolge/der Abbruch bei rotem Gate wären nicht garantiert.
@@ -102,6 +102,9 @@ verify-ac-form: ## Form neuer Akzeptanzkriterien (Happy/Boundary/Negative + Out-
 verify-slice-links: ## Verweise wandernder Slices ueberleben den Lifecycle-Wechsel (SL-002); done/ ist Endzustand und ausgenommen.
 	@bash tools/verify-slice-links.sh
 
+verify-observations: ## Deckung des Beobachtungs-Registers: zitierte BEO-Kennung hat eine Zeile, jede Zeile traegt formgebundene Belege.
+	@bash tools/verify-observations.sh
+
 commit-scope-check: ## Commit-Scope (planning) beruehrt nur docs/plan/planning/ (AGENTS §5, SL-003). MSGFILE=<datei> (Hook, prueft den Index VOR dem Commit), RANGE=a..b (CI), sonst HEAD~1..HEAD.
 	@MSGFILE="$(MSGFILE)" RANGE="$(RANGE)" bash tools/commit-scope-check.sh
 
@@ -124,6 +127,7 @@ verify: ## Verifikations-Schicht: DoD-/Closure-Fragen (vor der "fertig"-Meldung;
 	bash tools/verify-slice-form.sh    || fail=1; \
 	bash tools/verify-ac-form.sh       || fail=1; \
 	bash tools/verify-slice-links.sh   || fail=1; \
+	bash tools/verify-observations.sh  || fail=1; \
 	if [ "$$fail" -ne 0 ]; then \
 	  echo "[verify] FAIL — mindestens eine Verifikations-Frage ist offen; alle Befunde stehen oben." >&2; \
 	  exit 1; \

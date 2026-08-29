@@ -142,6 +142,7 @@ Aggregat). Ob ein Gate gerade grün ist, sagt die CI (Badge im
 | `make verify-ac-form` | Form neuer `AC-*` (§5): Happy · Boundary · Negative · Out-of-Scope; die 19 bei Einführung bestehenden sind grandfathered (slice-054) |
 | `make verify-closure-notes` | Struktur der Closure-Notizen in `done/` (§5): genau eine, ausgefüllt, kein Platzhalter, keine Floskel (slice-050) |
 | `make verify-slice-links` | Relative Verweise wandernder Slices (`open`/`next`/`in-progress`) lösen aus **jedem** Lifecycle-Verzeichnis auf ([`SL-002`](docs/plan/steering-loop.md)); `done/` ist Endzustand und ausgenommen (slice-060) |
+| `make verify-observations` | Deckung des Beobachtungs-Registers ([`observations.md`](docs/plan/planning/observations.md)): jede in `done/` zitierte `BEO-NNN` hat eine Zeile, jede Zeile trägt formgebundene Belege (`slice-NNN`, Anzahl == Zähler). **Nicht** geprüft: Lage und Existenz der Beleg-Datei (`modul-06`) und die Umkehrung „jede Zeile ist zitiert" — die meisten stehen unter der Schwelle (slice-102) |
 | `make verify` | **Verifikations-Schicht** (getrennt von `gates`, Regelwerk Modul 11): beantwortet DoD-/Closure-Fragen statt Code-Fragen; vor der „fertig"-Meldung auszuführen |
 | `make image-test` | [AC-FA-DIST-001](spec/lastenheft.md#ac-fa-dist-001--distribution-image---print-mk-a-checkmk) + nativ==Container-Akzeptanz + Fragment-Parität (committete [`a-check.mk`](a-check.mk) == `--print-mk`, slice-034) gegen das gebaute Image |
 | `make ci` | CI-äquivalent: `gates` + `image-test` (Workflow `.github/workflows/ci.yml`) |

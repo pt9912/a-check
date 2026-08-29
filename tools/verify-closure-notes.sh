@@ -33,6 +33,18 @@ set -euo pipefail
 cd "$(dirname "$0")/.."
 
 DONE_DIR="docs/plan/planning/done"
+# Stichtag fuer die Risiko-Ausgaenge (slice-102, Baseline v5.12.0 modul-05
+# §Offene Risiken werden bei Closure aufgeloest). Bootstrap-aware wie bei
+# verify-slice-form: aeltere Notizen entstanden, BEVOR die geschlossene
+# Dreier-Menge im Repo galt — slice-092 fuehrt etwa "Maintainer-Entscheidung"
+# als Ausgang, damals korrekt, heute ausserhalb der Menge. Rueckwirkend
+# umzuschreiben waere Geschichts-Politur.
+RISK_FROM=102
+# Die drei Ausgaenge als FORM, nicht als Inhalt: eingetreten -> Carveout oder
+# Folge-Slice mit ID · entfallen -> gestrichen mit Begruendung · weiter offen ->
+# Beobachtungs-Register. Ob der eingetragene Ausgang TRAEGT, bleibt Urteil
+# (modul-06: "Mensch urteilt, Maschine prueft Deckung").
+AUSGAENGE='(Carveout|Folge-Slice|gestrichen mit Begründung|Beobachtungs-Register|BEO-[0-9]{3})'
 # Nur echte Platzhalter-Wendungen — NICHT jede kursive Klammer: slice-040/041
 # tragen substanziellen Text in genau dieser Schreibweise, ein breiter Regex
 # haette sie faelschlich als Platzhalter gemeldet (Fehlalarm im ersten Lauf).
@@ -41,6 +53,24 @@ FLOSKELN='^(fertig|erledigt|wie geplant umgesetzt|war ok|alles gut|läuft)\.?$'
 
 # Rumpf eines Closure-Abschnitts: ab der Überschrift bis zur nächsten
 # `## `-Überschrift, ohne die Überschrift selbst.
+slice_num() {  # $1 = Pfad -> Nummer ohne fuehrende Nullen, leer wenn keine
+  basename "$1" | sed -nE 's/^slice-0*([0-9]+)-.*/\1/p'
+}
+
+# Risiko-Block eines Closure-Rumpfs, Fortsetzungszeilen an ihren Aufzaehlungs-
+# punkt geklebt: ein Ausgang steht oft erst in der zweiten Zeile.
+risiko_punkte() {  # $1 = Closure-Rumpf auf stdin
+  awk '
+    /^\*\*Offene Risiken/ { inblock=1; next }
+    inblock && /^\*\*/ && !/^\*\*Offene Risiken/ { inblock=0 }
+    inblock {
+      if ($0 ~ /^- /) { if (buf != "") print buf; buf = $0 }
+      else if (buf != "") { buf = buf " " $0 }
+    }
+    END { if (buf != "") print buf }
+  '
+}
+
 closure_body() {  # $1 = Datei
   awk '
     /^## .*[Cc]losure/ && !/[Cc]losure-(Trigger|Kriterien)/ { inblock=1; next }
@@ -89,6 +119,21 @@ check_file() {  # $1 = Datei; gibt Befunde auf stdout, Rückgabe 1 bei Befund
     echo "$f: Closure-Abschnitt besteht aus einer Floskel ohne Substanz"
     fail=1
   fi
+  # Risiko-Ausgaenge (slice-102). Geprueft wird INNERHALB eines vorhandenen
+  # Blocks, nicht seine Existenz: modul-05 bindet die Pflicht an *notierte*
+  # Risiken. Wer den Block weglaesst, wird nicht erwischt — benannte Grenze,
+  # dieselbe Klasse wie "hoechstens zwei Schichten" in verify-slice-form.
+  local num punkt
+  num="$(slice_num "$f")"
+  if [ -n "$num" ] && [ "$num" -ge "$RISK_FROM" ]; then
+    while IFS= read -r punkt; do
+      [ -n "$punkt" ] || continue
+      if ! printf '%s' "$punkt" | grep -qE "Ausgang:.*$AUSGAENGE"; then
+        echo "$f: Risiko ohne Ausgang aus der geschlossenen Dreier-Menge: ${punkt:0:70}…"
+        fail=1
+      fi
+    done <<< "$(printf '%s\n' "$body" | risiko_punkte)"
+  fi
   # Satzzahl (slice-075, Fund F-13): gezaehlt werden Satzzeichen, die tatsaechlich
   # ein Satzende markieren — also von Whitespace oder Zeilenende gefolgt. Die
   # alte Zaehlung nahm JEDES `.`/`!`/`?`; die einzeilige Notiz
@@ -128,6 +173,38 @@ self_test() {
       rm -rf "$tmp"; exit 2
     fi
   done
+  # RISIKO-AUSGAENGE, drei Richtungen (slice-102). Ohne die dritte Fixture
+  # waere ein Muster, das alles durchlaesst, von einem korrekten nicht zu
+  # unterscheiden — und ohne die zweite eines, das nur "Ausgang:" sucht.
+  { echo '## 6. Closure-Notiz'; echo 'Text hier. Zweiter Satz.'; echo '';
+    echo '**Offene Risiken und ihr Ausgang:**'; echo '';
+    echo '- *A* — Ausgang: **Folge-Slice**, slice-900.';
+    echo '- *B* — Ausgang: **gestrichen mit Begründung**, weil weg.';
+    echo '- *C* — Ausgang: **weiter offen**, fürs Beobachtungs-Register.'; } > "$tmp/slice-102-gut.md"
+  if ! check_file "$tmp/slice-102-gut.md" >/dev/null; then
+    echo "verify-closure-notes: Selbsttest FEHLGESCHLAGEN — gueltige Risiko-Ausgaenge beanstandet" >&2
+    rm -rf "$tmp"; exit 2
+  fi
+  { echo '## 6. Closure-Notiz'; echo 'Text hier. Zweiter Satz.'; echo '';
+    echo '**Offene Risiken und ihr Ausgang:**'; echo '';
+    echo '- *A* — bleibt halt so.'; } > "$tmp/slice-102-ohne.md"
+  if check_file "$tmp/slice-102-ohne.md" >/dev/null; then
+    echo "verify-closure-notes: Selbsttest FEHLGESCHLAGEN — Risiko ohne Ausgang nicht erkannt" >&2
+    rm -rf "$tmp"; exit 2
+  fi
+  { echo '## 6. Closure-Notiz'; echo 'Text hier. Zweiter Satz.'; echo '';
+    echo '**Offene Risiken und ihr Ausgang:**'; echo '';
+    echo '- *A* — Ausgang: **Maintainer-Entscheidung**.'; } > "$tmp/slice-102-fremd.md"
+  if check_file "$tmp/slice-102-fremd.md" >/dev/null; then
+    echo "verify-closure-notes: Selbsttest FEHLGESCHLAGEN — Ausgang ausserhalb der Dreier-Menge akzeptiert" >&2
+    rm -rf "$tmp"; exit 2
+  fi
+  # Grandfathering: derselbe Block unter dem Stichtag muss schweigen.
+  cp "$tmp/slice-102-ohne.md" "$tmp/slice-091-alt.md"
+  if ! check_file "$tmp/slice-091-alt.md" >/dev/null; then
+    echo "verify-closure-notes: Selbsttest FEHLGESCHLAGEN — Risiko-Regel greift trotz Grandfathering" >&2
+    rm -rf "$tmp"; exit 2
+  fi
   # ZITAT-VORFILTER, beide Richtungen (slice-100, SL-004). Die erste Fixture ist
   # die eigentliche Probe: dieselbe Wendung, einmal zitiert und einmal nicht.
   # Ohne die zweite waere ein Vorfilter, der alles verschluckt, von einem
