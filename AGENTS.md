@@ -7,6 +7,10 @@ Dokumentation ändert. Sie verweist auf die kanonischen Quellen und
 formuliert die Hard Rules, die der Implementation-Agent immer einhalten
 muss.
 
+Regeln dieser Datei: Baseline-Regelwerk `modul-09-implementierung.md` §Ziel-Form: AGENTS.md —
+sie trägt Hard Rules und Pointer auf kanonische Quellen, sie dupliziert deren Inhalt nicht;
+sonst entsteht Drift.
+
 **Bei Konflikt zwischen dieser Datei und einer kanonischen Quelle gilt
 die kanonische Quelle** (Source Precedence — siehe
 [`harness/README.md`](harness/README.md)).
@@ -104,7 +108,39 @@ Korrekturen entstehen als neue ADR mit `Supersedes ADR-NN`.
 Jede Schwellen-Senkung (Coverage, Linter-Strenge, Prüfregel) ist ein
 ADR, kein PR-Kommentar.
 
+### 3.7 Ein Kommentar beschreibt, was da ist
+
+Regeln dieser Sektion: Baseline-Regelwerk `grundlagen-harness-dateien.md` §Was ein Kommentar
+trägt. Gilt für Code, Konfiguration, Skripte — **und für Zustandsfelder**.
+
+Ein Kommentar trägt genau eine dieser Klassen — **Zusage · Kopplung · Abgrenzung · Rang-Zeiger ·
+Grenze** — und schreibt an den, der die Stelle *ändert*, nicht an den, der die Entscheidung
+*trifft*.
+
+**Falsch:** Konjunktiv über die verworfene Alternative („ohne dieses Feld behauptete die Ausgabe
+eine Verteilung, die nicht stattgefunden hat").
+**Richtig:** Indikativ über den Zustand („verteilt ist wahr, wenn die Splitting-Regel angewendet
+werden konnte").
+
+**Falsch:** abwesenden Text beschreiben („die frühere Fassung prüfte nur die Länge").
+**Richtig:** die geltende Zusage nennen; die vorige hält `git`.
+
+**Zustandsfelder ebenso.** Eine `Stand`-/`Status`-Zelle in Roadmap, Beobachtungs-Register oder
+Meilenstein-Tabelle nennt den Zustand und den Beleg als auflösbaren Anker, nicht die Chronik; das
+Drift-Log der Roadmap trägt nur Umplanungen, keine Schließungen und keine erreichten Meilensteine.
+
+**Begründung:** Die Abwägung gehört in die ADR, die Historie in `git`, die Herkunft in **ein**
+auflösbares Feld. Was daneben steht, liest jeder Lauf mit und bezahlt es mit Kontext.
+
+**Durchsetzung:** keine — die Regel ist **inferentiell**: „ist dieser Satz Chronik?" ist ein
+Urteil, kein Match. Sie hängt am Review, nicht an einem Lauf. Diese Grenze ist benannt, nicht
+verschwiegen (`modul-13`: einen Sensor zu behaupten, wo keiner steht, ist selbst eine
+Harness-Lüge).
+
 ## 4. Quality Gates
+
+Regeln dieser Sektion: Nur Targets aufzählen, die im Makefile **existieren** — halluzinierte
+Gates sind die häufigste Form von Harness-Lüge (Baseline-Regelwerk `modul-13-quality-gates.md`).
 
 Nur hier gelistete Targets existieren im Makefile. Halluzinierte Gates
 sind die häufigste Form von Harness-Lüge; `make gate-consistency` erzwingt

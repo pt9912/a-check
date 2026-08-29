@@ -30,14 +30,14 @@ und der Roadmap genommen haben — nur war sie dort eine Ansage und ist hier ein
 
 ## 2. Definition of Done
 
-- [ ] `AGENTS.md` trägt `### 3.7`, auf a-check bezogen und mit den fünf Klassen — Beleg: Diff.
-- [ ] Die drei Regelwerk-Zeiger stehen (Datei-Zeiger in §1, §3.7, §4) — Beleg: Zählung 3/3.
-- [ ] `BEO-011` verliert die `AGENTS.md`-Hälfte, der Rest der Zeile bleibt — Beleg: Register.
+- [x] `AGENTS.md` trägt `### 3.7`, auf a-check bezogen und mit den fünf Klassen — Beleg: Diff.
+- [x] Die drei Regelwerk-Zeiger stehen (Datei-Zeiger in §1, §3.7, §4) — Beleg: Zählung 3/3.
+- [x] `BEO-011` verliert die `AGENTS.md`-Hälfte, der Rest der Zeile bleibt — Beleg: Register.
 
-- [ ] `make gates` grün — Ausgabe in eine Datei, Exit-Code getrennt geprüft, nie in eine Pipe.
-- [ ] Closure-Notiz mit benanntem Lerneintrag geschrieben (§7).
-- [ ] Beobachtungs-Register fortgeschrieben.
-- [ ] Jedes Risiko aus §6 trägt genau einen Ausgang.
+- [x] `make gates` grün — Ausgabe in eine Datei, Exit-Code getrennt geprüft, nie in eine Pipe.
+- [x] Closure-Notiz mit benanntem Lerneintrag geschrieben (§7).
+- [x] Beobachtungs-Register fortgeschrieben.
+- [x] Jedes Risiko aus §6 trägt genau einen Ausgang.
 
 ## 3. Plan (vor Code)
 
@@ -77,8 +77,36 @@ im Repo wäre ein eigener Slice und bräuchte eine Messung, wie groß er ist. Eb
 
 ## 7. Closure-Notiz
 
-_(beim Abschluss ausfüllen — genau **ein** solcher Abschnitt je Slice,
-[`AGENTS.md`](../../../../AGENTS.md) §5; `make verify` prüft das.)_
+**Geliefert:** `AGENTS.md` trägt Hard Rule 3.7 und drei Regelwerk-Zeiger (0/3 → 3/3).
+
+**Lerneintrag — Form: benannte Spec-Lücke.** *Eine Regel, die der Maintainer mündlich durchsetzt,
+steht in der adoptierten Baseline — und fehlte im Repo.* Die Vorgabe „keine Chronik oder Forensik,
+das müllt den Kontext des Code-Agenten zu" kam heute als Ansage; sie ist wörtlich `modul-09`/
+`grundlagen-harness-dateien` §Was ein Kommentar trägt, verkörpert als Hard Rule 3.7 der Ziel-Form.
+Zwei Slices (103, 106) haben danach gehandelt, **ohne** dass die Regel im Repo stand. *Weil* der
+Form-Review sie als „ungeprüft" markiert und niemand nachgelesen hatte — und weil eine mündlich
+befolgte Regel sich anfühlt wie eine vorhandene. **Der Prüfsatz:** wer eine Anweisung befolgt,
+prüft, ob sie im Repo steht; sonst gilt sie nur, solange derselbe Mensch zusieht.
+
+**Zwei beobachtbare Closure-Kriterien:**
+
+1. `grep` zählt drei Regelwerk-Zeiger in `AGENTS.md`, §3 führt sieben Hard Rules statt sechs.
+2. `doc-check` 223 Dateien 0 Befunde und `doc-targets` Exit 0 — der neue §4-Zeiger hat die
+   Target-Tabelle nicht verschoben.
+
+**Offene Risiken und ihr Ausgang:**
+
+- *Die Regel ist inferentiell und hat keinen Sensor* — **Ausgang:** weiter offen, `BEO-016`.
+  `modul-13` verlangt genau das: einen Sensor zu behaupten, wo keiner steht, wäre selbst eine
+  Harness-Lüge. Die Grenze steht in der Regel selbst.
+- *Der Bestand ist nicht gegen die Regel durchgesehen* — **Ausgang:** weiter offen, ebenfalls
+  `BEO-016`. Ein rückwirkender Durchgang bräuchte erst eine Messung seines Umfangs.
+
+**Beobachtungs-Register:** `BEO-011` auf 2× erhöht und verkleinert — die `AGENTS.md`-Hälfte ist
+gelesen und war eine echte Lücke; `BEO-016` neu angelegt.
+
+**Folge-Slices:** `docs/plan/planning/README.md` (vier Sektionen, vier Zeiger), danach die
+Spec-Straten.
 
 ## 8. Sub-Area-Modus-Begründung
 
