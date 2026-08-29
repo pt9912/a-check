@@ -31,16 +31,14 @@ die kanonische Quelle (Source Precedence, siehe
   aus dieser Migration ist **nichts offen**.
 - **Laufende Migration auf `v5.12.0`** (Stand gehoben am 2026-08-29, Analyse
   [slice-092](../docs/plan/planning/done/slice-092-regelwerk-v5120-delta-analyse.md)): geschnitten
-  in vier Etappen, **diese ist A** (Vendoring + Stand-Deklaration). Es folgen der
-  Adaptions-Durchgang (B), die Form (C) und die neue Mechanik (D).
-  **Bis der Adaptions-Durchgang gelaufen ist, bleiben die deklarierten `MR-*` in Kraft** — sie sind
-  teils maschinell gegatet (`MR-002`/`MR-004` über die `ids`-Muster in
-  [`.d-check.yml`](../.d-check.yml)), und ein pauschaler Vorrang stellte für das heute gültige
-  ID-Schema zwei einander ausschließende Regeln nebeneinander.
-- **Zwei Stände liegen vendored nebeneinander**, `v3.5.2` und `v5.12.0`. Das ist Vorschrift, nicht
-  Rückstand: der alte Baum ist die Vergleichsgrundlage des Form-Reviews und fällt erst, wenn
-  Etappe C durch ist (`modul-02` §Freshness-Audit). `make regelwerk-check` prüft den höchsten
-  Stand und weist den anderen ausdrücklich als ungeprüft aus.
+  in vier Etappen. **A** (Vendoring + Stand), **B** (Adaptions-Durchgang) und **C** (Form:
+  Verzeichnis-Form des Adaptions-Speichers, Ausführung der Urteile, Slice-Form, Rest der Form)
+  sind abgeschlossen. Offen ist allein **D** — die neue Mechanik: Risiko-Ausgänge bei Closure und
+  das Beobachtungs-Register.
+- **Ein Stand liegt vendored**, `v5.12.0`. Der Vorgänger `v3.5.2` lag während der Etappen A–C
+  daneben — Vorschrift, nicht Rückstand: er war die Vergleichsgrundlage des Form-Reviews und ist
+  mit dessen Abschluss entfallen (`modul-02` §Freshness-Audit; slice-099). `make regelwerk-check`
+  meldet seitdem wieder genau einen Stand.
 
 ## Adoptierte Konventions-Quellen
 

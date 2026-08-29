@@ -120,7 +120,7 @@ ist keine Ermessensfrage, sobald die konstanten Punkte gar nicht erst als Checkb
 - *46 Slices zwischen den beiden Stichtagen tragen die alte Form* — Ausgang: **gestrichen mit
   Begründung**. Grandfathering ist die Antwort; ein rückwirkender Umbau wäre Geschichts-Politur
   ohne Erkenntnisgewinn, und der Sensor prüft die Stufung in beide Richtungen.
-- *Der Rest der Form ist noch offen* (`## Leseordnung`, fünf Provenienz-Zeiger, Fall des alten
+- *Der Rest der Form steht aus* (`## Leseordnung`, fünf Provenienz-Zeiger, Fall des alten
   vendored Baums) — Ausgang: **Folge-Slice C4**. Diese Menge war nach C1 aus meiner
   Etappen-Aufzählung gefallen und ist in §5 ausdrücklich wieder aufgenommen.
 - *„Höchstens zwei Schichten" bleibt ungeprüft* — Ausgang: **weiter offen**, gehört ins

@@ -60,7 +60,7 @@ Stop-Hook-„frischer-Klon"-Restlücke.
 
 <!--
 Drei Spalten — KEIN Lauf-Status (Form des Baseline-Templates
-`.harness/baseline/v3.5.2/templates/harness/README.template.md` §Sensors —
+`.harness/baseline/v5.12.0/templates/harness/README.template.md` §Sensors —
 vendored und damit netzlos nachschlagbar; Stand siehe conventions.md
 §Baseline). Die Bindung-Spalte trägt STRUKTURELLE Referenzen (AC-/ADR-/CO-/
 Slice-ID, Schwelle, Image-Hash) — nicht, ob ein Gate gerade grün ist.
@@ -166,3 +166,19 @@ unabhängiger Lauf bleibt eine eigene Übergabe.
 6. Repo-weiten Gate-Lauf vor Handoff (`make gates`, sobald slice-003 ihn anlegt).
 7. Doku/Indizes aktualisieren, falls ein öffentlicher Vertrag berührt.
 8. Ausgeführte Sensors und verbleibende Risiken berichten.
+
+## Leseordnung
+
+Für den neuen Menschen — **geordnet**, nicht vollständig. Eine Leseordnung, die alles nennt, ist
+keine (Baseline-Regelwerk `grundlagen-harness-dateien.md` §harness/README.md als Einstiegspunkt).
+
+1. [`README.md`](../README.md) — was `a-check` ist und wofür, in fünf Minuten.
+2. [`AGENTS.md` §3 Harte Regeln](../AGENTS.md#3-harte-regeln) — was hier **nie** getan wird.
+   Wer nur einen Abschnitt liest, liest diesen.
+3. [`spec/lastenheft.md`](../spec/lastenheft.md) — was vertraglich zugesagt ist; alles Weitere
+   präzisiert das nur.
+4. Bei Bedarf: [`conventions.md`](conventions.md) — ID-Schemata, Adaptionen ggü. der Baseline,
+   Modus je Sub-Area. Nachschlagewerk, keine Vorab-Lektüre.
+
+Für **Agenten** gilt stattdessen der Pfad oben unter §Minimal agent workflow; er beginnt bei
+dieser Datei, nicht beim Projekt-Überblick.

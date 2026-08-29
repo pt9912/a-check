@@ -4,7 +4,7 @@
 - **Gilt für:** Plan-/Design-/Code-Review der Doku- und (ab slice-003)
   Code-Artefakte dieses Repos.
 - **Bezug:** [`AGENTS.md`](../../AGENTS.md) §3 (Hard Rules) + §5 (Traceability);
-  Regelwerk **v3.5.2** Modul 10 (vendored: [`.harness/baseline/v3.5.2/regelwerk/modul-10-review-harness.md`](../baseline/v3.5.2/regelwerk/modul-10-review-harness.md)). Baseline: [`harness/conventions.md`](../../harness/conventions.md) §Baseline.
+  Regelwerk **v5.12.0** Modul 10 (vendored: [`.harness/baseline/v5.12.0/regelwerk/modul-10-review-harness.md`](../baseline/v5.12.0/regelwerk/modul-10-review-harness.md)). Baseline: [`harness/conventions.md`](../../harness/conventions.md) §Baseline.
 
 Repo-spezifisches „worauf achtest du", damit ein Reviewer-Agent zwischen
 Sessions nicht driftet (Regelwerk Modul 10). Diese Datei wird versioniert,
