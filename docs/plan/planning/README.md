@@ -5,19 +5,65 @@ abschließbaren Vorhaben. Der Slice-Zyklus ist eine Zustandsmaschine über Verze
 (`open/` → `next/` → `in-progress/` → `done/`, [`AGENTS.md`](../../../AGENTS.md) §5); die Welle
 liegt eine Ebene darüber und schließt über eine **Prozedur**, nicht über einen Datei-Übergang.
 
-- Slice-Form: [`slice.template.md`](slice.template.md) — höchstens drei DoD-Punkte, höchstens
-  zwei Schichten, benannte Lerneintrag-Form. **Maschinell geprüft von `make verify` sind die
-  DoD-Zahl und die benannte Lerneintrag-Form**; „höchstens zwei Schichten" ist **Review-Sache**
-  und ausdrücklich kein Gate — was eine Schicht ist, ist eine Ermessensfrage über Modul-Grenzen,
-  und ein Zähler darüber wäre Schein-Genauigkeit
+- Slice-Form: [`slice.template.md`](slice.template.md) — höchstens drei **Liefer**-Punkte,
+  höchstens zwei Schichten, benannte Lerneintrag-Form. Gezählt wird nur, was mit dem Umfang
+  wächst; Gate-Läufe und Closure-Pflichten zählen nicht mit. **Maschinell geprüft von
+  `make verify` sind die Zahl und die benannte Lerneintrag-Form**; „höchstens zwei Schichten" ist
+  **Review-Sache** und ausdrücklich kein Gate — was eine Schicht ist, ist eine Ermessensfrage über
+  Modul-Grenzen, und ein Zähler darüber wäre Schein-Genauigkeit
   ([`tools/verify-slice-form.sh`](../../../tools/verify-slice-form.sh) trägt dieselbe Begründung).
-  Bis slice-076 las sich diese Zeile, als fiele alle drei Punkte ein Gate.
-- Sequenzierungs-Autorität ist die [Roadmap](in-progress/roadmap.md); sie bleibt es auch nach
-  einer Wellen-Closure.
+
+## Lifecycle-Bedeutungen
+
+Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md` §Lifecycle als State
+Machine — der Zustand ist das Verzeichnis, kein Status-Feld. **Wann** gewechselt wird, steht als
+Übergangs-Tabelle in [`AGENTS.md`](../../../AGENTS.md) §5; hier steht, **was** ein Verzeichnis
+bedeutet.
+
+| Verzeichnis | Bedeutung |
+|---|---|
+| `open/` | Geplant, noch nicht priorisiert. Keine Garantie auf Umsetzung. |
+| `next/` | Als Nächstes priorisiert; das Feld `Verantwortlich:` im Slice-Kopf ist gesetzt. |
+| `in-progress/` | Beansprucht: der `git mv` hierher liegt **vor** der Arbeit. |
+| `done/` | DoD erfüllt, Closure-Notiz vorhanden, Gates grün. |
+
+## Slices vs. Wellen — zwei Ablagen, dieselbe Regel
+
+Regeln dieser Sektion: Baseline-Regelwerk `modul-06-roadmap.md` §Wann Arbeit eine Welle braucht.
+
+- **Slices** tragen ihren Zustand über das **Verzeichnis**.
+- Eine **Welle** ebenso: der Welle-Plan liegt **flach** in `planning/`, solange sie läuft, und
+  wandert bei Closure per `git mv` nach `done/`, neben seine Ergebnis-Notiz. Den aktiven Durchlauf
+  `open/` → `next/` → `in-progress/` durchläuft er nicht; `done/` ist sein einziges
+  Lifecycle-Verzeichnis. **Geplante** Wellen haben keine Datei — sie stehen in der Roadmap.
+- Der aktive Durchlauf nimmt ausschließlich **Slices** auf; `done/` archiviert zusätzlich
+  abgeschlossene **Nicht-Slice-Records**. Aufgelöste Carveouts wandern **nicht** hierher, sondern
+  nach [`docs/plan/carveouts/done/`](../carveouts/README.md).
+
+Flach neben den Lifecycle-Verzeichnissen liegt das **Beobachtungs-Register**
+([`observations.md`](observations.md)): der Steering-Loop-Zähler, fortgeschrieben bei **jeder**
+Slice-Closure, unabhängig von Wellen. Ein `reconciliation.md` führt a-check nicht — es gehört zum
+Brownfield-Bootstrap, den dieses Repo nicht hatte.
+
+## Aktueller Stand
+
+Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md` §Lifecycle als State
+Machine — kein Snapshot; der Stand ergibt sich aus den Verzeichnissen.
+
+**Hier steht bewusst keine Tabelle.** Ein Snapshot des Stands driftet gegen die Verzeichnisse,
+sobald ein `git mv` läuft, und niemand merkt es — der Stand ist `ls` über `open/`, `next/`,
+`in-progress/`, `done/`.
+
+## Roadmap
+
+Regeln dieser Sektion: Baseline-Regelwerk `modul-06-roadmap.md` §Roadmap-Struktur.
+
+Sequenzierungs-Autorität ist [`in-progress/roadmap.md`](in-progress/roadmap.md) — auch nach einer
+Wellen-Closure.
 
 ## Wellen-Closure-Prozedur
 
-Angelegt in slice-066 (Fund **B-13**), Quelle `modul-06` §Wellen-Closure. **Fünf Schritte, jeder
+Quelle: `modul-06` §Wellen-Closure. **Fünf Schritte, jeder
 mit einem Beleg — keiner mit einem Datum.** Erst wenn alle fünf Belege vorliegen, ist eine Welle
 *auditierbar* geschlossen.
 
@@ -63,7 +109,7 @@ verstreuten Verschwindens über mehrere Commits.
 
 **5 — Roadmap fortschreiben.** Die Welle wandert aus *Offene Wellen* in die Tabelle
 *Abgeschlossene Wellen* (mit Zeiger auf ihre Ergebnis-Notiz); die erste Zeile aus *Nächste Wellen*
-wird zur neuen aktuellen. Hat ein Trigger dabei eine Umplanung ausgelöst, bekommt
+rückt unter *Offene Wellen* nach, sofern ihr Trigger gefeuert hat. Hat ein Trigger dabei eine Umplanung ausgelöst, bekommt
 *Historische Trigger-Verschiebungen* ihren Eintrag.
 *Beleg:* der Roadmap-Diff.
 

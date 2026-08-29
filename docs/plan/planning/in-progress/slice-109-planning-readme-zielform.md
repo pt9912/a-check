@@ -26,16 +26,16 @@ Verzeichnissen, sonst driftet die Tabelle."* Eine fehlende Sektion ist hier also
 
 ## 2. Definition of Done
 
-- [ ] Die vier Sektionen stehen, je mit Regelwerk-Zeiger (0/4 → 4/4) — Beleg: Diff und Zählung.
-- [ ] Die zwei Chronik-Stellen sind entfernt und die Größen-Regel nennt **Liefer-Punkte** statt
+- [x] Die vier Sektionen stehen, je mit Regelwerk-Zeiger (0/4 → 4/4) — Beleg: Diff und Zählung.
+- [x] Die zwei Chronik-Stellen sind entfernt und die Größen-Regel nennt **Liefer-Punkte** statt
       DoD-Punkte — Beleg: Diff.
-- [ ] `BEO-011` verliert nichts; die Zeile betrifft `README.md` und die Spec-Straten — Beleg:
+- [x] `BEO-011` verliert nichts; die Zeile betrifft `README.md` und die Spec-Straten — Beleg:
       Register unverändert.
 
-- [ ] `make gates` grün — Ausgabe in eine Datei, Exit-Code getrennt geprüft, nie in eine Pipe.
-- [ ] Closure-Notiz mit benanntem Lerneintrag geschrieben (§7).
-- [ ] Beobachtungs-Register fortgeschrieben.
-- [ ] Jedes Risiko aus §6 trägt genau einen Ausgang.
+- [x] `make gates` grün — Ausgabe in eine Datei, Exit-Code getrennt geprüft, nie in eine Pipe.
+- [x] Closure-Notiz mit benanntem Lerneintrag geschrieben (§7).
+- [x] Beobachtungs-Register fortgeschrieben.
+- [x] Jedes Risiko aus §6 trägt genau einen Ausgang.
 
 ## 3. Plan (vor Code)
 
@@ -75,8 +75,38 @@ nicht, was mit dem Dokument geschah.
 
 ## 7. Closure-Notiz
 
-_(beim Abschluss ausfüllen — genau **ein** solcher Abschnitt je Slice,
-[`AGENTS.md`](../../../../AGENTS.md) §5; `make verify` prüft das.)_
+**Geliefert:** vier Sektionen der Ziel-Form mit 4/4 Regelwerk-Zeigern, zwei Chronik-Stellen
+entfernt, die Größen-Regel auf Liefer-Punkte nachgezogen — und eine dritte Restspur der alten
+Roadmap-Benennung in Schritt 5 der Closure-Prozedur mitgenommen.
+
+**Lerneintrag — Form: geschärfte Regel.** *Eine fehlende Sektion kann eine fehlende **Warnung**
+sein.* Die Ziel-Form führt *Aktueller Stand* nicht, um einen Stand zu tragen, sondern um eine
+Tabelle zu **verbieten**: „nicht als Snapshot hier eintragen — sonst driftet sie." Wer beim
+Form-Vergleich nur zählt, welche Überschriften fehlen, liest so etwas als Formalie und lässt es
+weg. *Weil* eine Sektion, die nur eine Regel trägt und keinen Inhalt, beim Überschriften-Vergleich
+genauso aussieht wie eine überflüssige. **Der Prüfsatz:** bei jeder fehlenden Sektion erst lesen,
+*was sie tut*, bevor entschieden wird, ob sie gebraucht wird.
+
+**Zwei beobachtbare Closure-Kriterien:**
+
+1. `grep` zählt vier Regelwerk-Zeiger; die Datei trägt die vier Sektionsnamen der Ziel-Form.
+2. `doc-check` 224 Dateien 0 Befunde — die entfernten Chronik-Stellen waren keine Ziele, und die
+   vier neuen Sektionen bringen keine toten Verweise.
+
+**Offene Risiken und ihr Ausgang:**
+
+- *Die Grenze zwischen Begründung und Chronik ist ein Urteil* — die Zahl *21 Verweise* bleibt,
+  weil sie sagt, **warum** die Regel gilt; „Bis slice-076 las sich diese Zeile…" ging, weil es
+  sagt, **was mit dem Dokument geschah**. **Ausgang:** weiter offen, `BEO-016` deckt die
+  inferentielle Hälfte von Hard Rule 3.7 ab.
+- *Die Wellen-Closure-Prozedur ist unangetastet geblieben* — **Ausgang:** gestrichen mit
+  Begründung: sie ist a-checks Ausarbeitung von `modul-06` und trägt Belege, die die Ziel-Form
+  nicht kennt; sie nebenbei zu kürzen wäre ein Schnitt ohne eigene Begründung.
+
+**Beobachtungs-Register:** keine Beobachtung angefallen — die zwei Risiken oben sind von
+bestehenden Zeilen gedeckt.
+
+**Folge-Slices:** die drei Spec-Straten (`BEO-011`-Rest) und `README.md`.
 
 ## 8. Sub-Area-Modus-Begründung
 
