@@ -64,8 +64,15 @@ risiko_punkte() {  # $1 = Closure-Rumpf auf stdin
     /^\*\*Offene Risiken/ { inblock=1; next }
     inblock && /^\*\*/ && !/^\*\*Offene Risiken/ { inblock=0 }
     inblock {
-      if ($0 ~ /^- /) { if (buf != "") print buf; buf = $0 }
-      else if (buf != "") { buf = buf " " $0 }
+      # Fortsetzungszeilen NORMALISIERT ankleben: Einrueckung raus, Mehrfach-
+      # Leerzeichen zu einem. Sonst zerreisst ein Zeilenumbruch mitten in einem
+      # Ausgang die Wendung ("gestrichen mit\n  Begruendung") und der Sensor
+      # meldet einen korrekten Ausgang als fehlend — real aufgetreten an
+      # slice-102 selbst, an der eigenen Closure-Notiz.
+      line = $0
+      sub(/^[[:space:]]+/, "", line)
+      if ($0 ~ /^- /) { if (buf != "") print buf; buf = line }
+      else if (buf != "") { buf = buf " " line }
     }
     END { if (buf != "") print buf }
   '
@@ -183,6 +190,14 @@ self_test() {
     echo '- *C* — Ausgang: **weiter offen**, fürs Beobachtungs-Register.'; } > "$tmp/slice-102-gut.md"
   if ! check_file "$tmp/slice-102-gut.md" >/dev/null; then
     echo "verify-closure-notes: Selbsttest FEHLGESCHLAGEN — gueltige Risiko-Ausgaenge beanstandet" >&2
+    rm -rf "$tmp"; exit 2
+  fi
+  # Ausgang ueber einen Zeilenumbruch hinweg — die Probe fuer das Ankleben.
+  { echo '## 6. Closure-Notiz'; echo 'Text hier. Zweiter Satz.'; echo '';
+    echo '**Offene Risiken und ihr Ausgang:**'; echo '';
+    echo '- *A* — Ausgang: **gestrichen mit'; echo '  Begründung**, weil weg.'; } > "$tmp/slice-102-umbruch.md"
+  if ! check_file "$tmp/slice-102-umbruch.md" >/dev/null; then
+    echo "verify-closure-notes: Selbsttest FEHLGESCHLAGEN — Ausgang ueber Zeilenumbruch nicht erkannt" >&2
     rm -rf "$tmp"; exit 2
   fi
   { echo '## 6. Closure-Notiz'; echo 'Text hier. Zweiter Satz.'; echo '';

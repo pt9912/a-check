@@ -128,6 +128,12 @@ vierte Ausgang kein Detail, sondern der Unterschied zwischen Form und Ermessen.
   Muster endet jetzt am Target-Namen, mit Gegenprobe im Selbsttest. Ausgang: **gestrichen mit
   Begründung** — behoben, samt Fixture, die den Fall künftig hält.
 
+- *Der neue Risiko-Sensor hatte selbst einen Bug, gefunden an dieser Notiz* — er klebte
+  Fortsetzungszeilen mit ihrer Einrückung an, sodass ein über zwei Zeilen gebrochener Ausgang das
+  Muster verfehlte und als fehlend gemeldet wurde. Aufgefallen ist es erst **nach** dem `git mv`,
+  weil die Prüfung nur in `done/` greift — dieselbe Reihenfolge-Falle wie `BEO-006`. Ausgang:
+  **gestrichen mit Begründung** — behoben, mit einer Fixture, die den Umbruch-Fall hält.
+
 **Folge-Slices:** keine — die Migration ist abgeschlossen. Was offen bleibt, steht im Register.
 
 ## 8. Sub-Area-Modus
