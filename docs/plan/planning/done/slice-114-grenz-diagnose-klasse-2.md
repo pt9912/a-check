@@ -86,8 +86,10 @@ Datei-Index. Sonst fiele sie in die Klasse, die [`ADR-0031`](../../adr/0031-heur
 ## 6. Risiken und offene Punkte
 
 - *Die Neufassung könnte Klasse 2 auf null Fälle schrumpfen* — dann wäre sie eine Regel ohne
-  Gegenstand. **Ausgang:** weiter offen, `BEO-022`; die Probe in §2 misst es, und ein Fall mit
-  echtem Nicht-Treffer bleibt als Fixture stehen.
+  Gegenstand. **Ausgang:** weiter offen im **Beobachtungs-Register**, falls die Probe in §2 zeigt,
+  dass kein Fall übrig bleibt. Eine Kennung wird erst beim Erstauftreten vergeben; das Register
+  ist die Vergabestelle, nicht der Plan. Ein Fall mit echtem Nicht-Treffer bleibt als Fixture
+  stehen.
 - *[`ADR-0031`](../../adr/0031-heuristik-grenzen-diagnose.md) bleibt zitiert, obwohl abgelöst* — **Ausgang:** gestrichen mit Begründung: das ist
   der Normalfall der Append-only-Disziplin; die abgelöste ADR bleibt lesbar, der Index führt
   beide, und die Nachfolgerin nennt sie in `Supersedes`.
@@ -123,7 +125,7 @@ und druckte den Defekt wörtlich aus: dieselbe Zeile als `wrong-direction` **und
 - *Klasse 2 könnte auf null Fälle schrumpfen* — **Ausgang:** gestrichen mit Begründung: die
   Gegenprobe belegt einen realen Fall, der weiterhin gemeldet wird. Die Klasse hat einen
   Gegenstand.
-- *`ADR-0031` bleibt zitiert, obwohl abgelöst* — **Ausgang:** gestrichen mit Begründung; das ist
+- *[`ADR-0031`](../../adr/0031-heuristik-grenzen-diagnose.md) bleibt zitiert, obwohl abgelöst* — **Ausgang:** gestrichen mit Begründung; das ist
   die Append-only-Disziplin, der Index führt beide, und der Status-Übergang ist der einzige, den
   das Immutabilitäts-Gate erlaubt.
 - *Der Kommentar an `HeuristicLimits` trug dieselbe falsche Begründung wie die ADR* —
