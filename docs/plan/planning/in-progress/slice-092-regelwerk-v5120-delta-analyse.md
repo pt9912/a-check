@@ -166,16 +166,48 @@ wäre ebenfalls eine begründete Antwort und ist billiger als vier Etappen.
 
 ## 7. DoD
 
-- [ ] Sprung-Umfang gemessen und die Gleichwertigkeit Baum ↔ vendored Extrakt **belegt** (§2).
-- [ ] Die Brocken benannt und je Brocken die betroffene Repo-Stelle genannt (§4), die Lücken der
+- [x] Sprung-Umfang gemessen und die Gleichwertigkeit Baum ↔ vendored Extrakt **belegt** (§2).
+- [x] Die Brocken benannt und je Brocken die betroffene Repo-Stelle genannt (§4), die Lücken der
       Analyse ausgewiesen statt als Vollständigkeit ausgegeben (§5).
-- [ ] Etappen-Vorschlag steht (§6); `make gates` und `make verify` grün — **Ausgabe in eine
+- [x] Etappen-Vorschlag steht (§6); `make gates` und `make verify` grün — **Ausgabe in eine
       Datei**, Exit-Code getrennt geprüft, nie in eine Pipe.
 
 ## 8. Closure-Notiz
 
-_(beim Abschluss ausfüllen — genau **ein** solcher Abschnitt je Slice,
-[`AGENTS.md`](../../../../AGENTS.md) §5; `make verify` prüft das.)_
+**Geliefert:** die Messung des Sprungs `v3.5.2` → `v5.12.0` über den vendored Artefakt-Umfang, vier
+benannte Migrations-Brocken mit je einer betroffenen Repo-Stelle, drei Entwarnungen, zwei bereits
+heute falsche Aussagen im Repo — und ein Etappen-Vorschlag, der der Prozedur folgt, die die neue
+Baseline inzwischen selbst vorschreibt.
+
+**Lerneintrag — Form: geschärfte Regel.** *Eine methodische Vorsicht, die aus einem früheren Slice
+übernommen wird, ist eine Aussage über die damalige Lage — sie wird gemessen, bevor sie befolgt
+oder verworfen wird.* Konkret: slice-046 §2 hält fest, gelesen werde „das kanonische Artefakt …
+nicht der Git-Baum". Beide naheliegenden Umgänge damit wären falsch gewesen — blind befolgen hätte
+diese Analyse an ein Release-Asset gebunden, das netzlos nicht vorliegt; blind übergehen hätte eine
+unbelegte Messgrundlage geliefert. Ein `diff -r` plus ein Zeilen-Filter hat die Frage in zwei
+Befehlen entschieden: 74 abweichende Zeilen, **alle** Link-Umschreibungen, null inhaltliche
+Abweichung. Aus der geerbten Vorsicht wurde damit eine **belegte Äquivalenz** — die Vorsicht gilt
+der Provenienz, nicht der Delta-Messung. *Weil* eine übernommene Vorsicht sonst entweder zur
+unbegründeten Blockade oder zur stillen Nachlässigkeit wird, und beides sich gleich anfühlt.
+
+**Zwei beobachtbare Closure-Kriterien:**
+
+1. Die Zahlen in §2 sind mit `git diff --stat v3.5.2 v5.12.0 -- lab/regelwerk` nachrechenbar, und
+   §5 nennt die **nicht** gelesenen Module namentlich statt Vollständigkeit zu behaupten.
+2. `make gates` und `make verify` je **Exit 0** auf dem Stand dieses Slice, Ausgabe in Dateien,
+   Exit-Codes getrennt geprüft.
+
+**Offene Risiken und ihr Ausgang.** Die neue Baseline verlangt das (§4.4); adoptiert ist die Regel
+noch nicht, befolgt wird sie hier trotzdem:
+
+- *Das Urteil je Adaption steht aus* — Ausgang: **Folge-Slice**, Etappe B aus §6.
+- *Sieben Module sind nur vermessen, nicht gelesen* — Ausgang: **Folge-Slice**, Etappe B; die
+  Lücke ist in §5 namentlich ausgewiesen, nicht stillgelegt.
+- *Ob der Sprung überhaupt jetzt kommt, ist offen* — Ausgang: **Maintainer-Entscheidung**, in §6
+  ausdrücklich als Alternative formuliert (Auslöser deklarieren, Pin bewusst stehen lassen).
+
+**Folge-Slices:** keine vergeben. Vier Etappen A–D sind in §6 vorgeschlagen und brauchen die
+Abnahme, bevor sie IDs bekommen — Slice-IDs werden referenziert, nicht auf Vorrat erfunden.
 
 ## 9. Sub-Area-Modus
 
