@@ -109,7 +109,7 @@ Baseline-Regel — und damit die Recherche, aus der Etappe C ihre Nachfolge-Eint
 **Lerneintrag — Form: geschärfte Regel.** *Ein Eintrag im Adaptions-Block muss eine **benannte**
 Baseline-Regel ersetzen; tut er das nicht, gehört er nicht hinein.* Der neue Stand formuliert den
 Prüfsatz selbst — *„Ein Eintrag, der keine benannte Regel ersetzt, ist ein Fork, keine Adaption"* —
-und dieser Durchgang zeigt, dass er greift: `MR-006` hat über ein Jahr als Adaption gestanden,
+und dieser Durchgang zeigt, dass er greift: [`MR-006`](../../../../harness/conventions.md#mr-006--baseline-committet-vendored-statt-per-url-referenziert) stand seit dem 2026-07-25 als Adaption,
 *weil* er beschrieb, was das Repo tut, statt zu benennen, wovon es abweicht. Sein eigener Text
 sagte es die ganze Zeit („keine inhaltliche Abweichung … im Gegenteil: sie **stellt ihn her**") —
 nur fehlte die Regel, an der das auffällt. Der Prüfsatz gilt ab sofort auch nach vorn: er ist die
