@@ -70,7 +70,7 @@ unabhängigen Laufs.
 
 - `kategorie`: **HIGH**
 - `quelle`: Slice-Dateikonvention; Vertrag von `verify-slice-form`; Auftragsfrage P6
-- `pfad`: [`docs/plan/planning/slice.template.md:3`](../plan/planning/slice.template.md),
+- `pfad`: `docs/plan/planning/slice.template.md:3`,
   [`tools/verify-slice-form.sh:32`](../../tools/verify-slice-form.sh),
   [`tools/verify-slice-form.sh:114`](../../tools/verify-slice-form.sh)
 - `befund`: Eine Datei `slice-068.md` trifft den Haupt-Glob `slice-*.md`, aber nicht die

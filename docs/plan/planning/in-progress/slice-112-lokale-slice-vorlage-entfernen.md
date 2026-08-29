@@ -26,17 +26,17 @@ während der Stand längst `v5.12.0` war.
 
 ## 2. Definition of Done
 
-- [ ] Die Datei ist entfernt; die **drei** lebenden Verweise zeigen auf den vendored Pfad —
+- [x] Die Datei ist entfernt; die **drei** lebenden Verweise zeigen auf den vendored Pfad —
       Beleg: `grep` und `doc-check`.
-- [ ] An beiden Doku-Stellen steht, was beim Kopieren **anzupassen** ist: die Zeile
+- [x] An beiden Doku-Stellen steht, was beim Kopieren **anzupassen** ist: die Zeile
       `Lerneintrag — Form: …` und die vier Felder, die a-check nicht führt — Beleg: Diff.
-- [ ] [`AGENTS.md`](../../../../AGENTS.md) §4 beschreibt `verify-slice-form` korrekt; die Aussage
+- [x] [`AGENTS.md`](../../../../AGENTS.md) §4 beschreibt `verify-slice-form` korrekt; die Aussage
       „kein Gate-Lauf als DoD-Punkt" ist seit slice-107 falsch — Beleg: Diff.
 
-- [ ] `make gates` grün — Ausgabe in eine Datei, Exit-Code getrennt geprüft, nie in eine Pipe.
-- [ ] Closure-Notiz mit benanntem Lerneintrag geschrieben (§7).
-- [ ] Beobachtungs-Register fortgeschrieben.
-- [ ] Jedes Risiko aus §6 trägt genau einen Ausgang.
+- [x] `make gates` grün — Ausgabe in eine Datei, Exit-Code getrennt geprüft, nie in eine Pipe.
+- [x] Closure-Notiz mit benanntem Lerneintrag geschrieben (§7).
+- [x] Beobachtungs-Register fortgeschrieben.
+- [x] Jedes Risiko aus §6 trägt genau einen Ausgang.
 
 ## 3. Plan (vor Code)
 
@@ -79,8 +79,39 @@ Entscheidung mit eigener Begründung, nicht ein Analogieschluss.
 
 ## 7. Closure-Notiz
 
-_(beim Abschluss ausfüllen — genau **ein** solcher Abschnitt je Slice,
-[`AGENTS.md`](../../../../AGENTS.md) §5; `make verify` prüft das.)_
+**Geliefert:** die lokale Vorlage ist weg; drei lebende Verweise zeigen auf die vendored Ziel-Form
+und nennen die zwei Anpassungen, die beim Kopieren nötig sind. Dazu eine falsche Sensor-Beschreibung
+in `AGENTS.md` §4 korrigiert.
+
+**Lerneintrag — Form: geschärfte Regel.** *Eine Regel wird an ihrem Zweck geprüft, nicht an ihrem
+Wortlaut — und wer sie zitiert, trägt die Beweislast für beides.* Ich hatte die Entfernung mit
+*„wiederkehrend ⇒ co-located behalten"* abgelehnt. Der Wortlaut stimmte; der **Zweck** — eine
+Ziel-Form dort, wo Instanzen entstehen — war längst erfüllt, weil der vendored Baum committet und
+netzlos im Repo liegt. *Weil* ein wörtliches Zitat wie ein Argument aussieht, auch wenn es die
+Frage nicht beantwortet, ob die Bedingung der Regel schon anders erfüllt ist. Die lokale Kopie hat
+in der Zwischenzeit genau das getan, wovor die Baseline sonst warnt: sie ist gedriftet und stand
+bis slice-107 auf einer Gliederung, die es nicht mehr gab.
+
+**Zwei beobachtbare Closure-Kriterien:**
+
+1. `doc-check` 226 Dateien 0 Befunde **nach** dem Löschen — die drei toten Zeiger in `done/` und
+   in zwei Review-Reports sind entlinkt, ihre **Aussage** aber unverändert: Hard Rule 3.7 verbietet
+   das Umschreiben von Gewesenem, nicht das Entfernen eines Pfades, dessen Ziel es nicht mehr gibt.
+2. `AGENTS.md` §4 beschreibt `verify-slice-form` wieder korrekt; die Behauptung „kein Gate-Lauf als
+   DoD-Punkt" stand dort noch, obwohl slice-107 die Prüfung zurückgebaut hat.
+
+**Offene Risiken und ihr Ausgang:**
+
+- *Die Ziel-Form liegt nur noch tag-gescopt* — jeder Baseline-Sprung verschiebt drei Verweise.
+  **Ausgang:** weiter offen, `BEO-020` im Register. Das ist der Preis, den die co-located-Regel
+  vermeiden wollte; er ist klein und jetzt benannt statt übersehen.
+- *Wer aus der vendored Vorlage kopiert, bekommt Felder für Artefakte, die a-check nicht führt* —
+  **Ausgang:** gestrichen mit Begründung: beide Verweis-Stellen nennen die zwei Anpassungen, und
+  die drei Lerneintrag-Formen stehen ohnehin in `AGENTS.md` §5.
+
+**Beobachtungs-Register:** `BEO-020` neu.
+
+**Folge-Slices:** keine.
 
 ## 8. Sub-Area-Modus-Begründung
 

@@ -174,7 +174,7 @@ Aggregat). Ob ein Gate gerade grün ist, sagt die CI (Badge im
 | `make guard-selftest` | Selbsttest des PreToolUse-Command-Guard (Tool-Call-Gate §3.1) |
 | `make regelwerk-check` | **kein Gate** — Wartung der vendored Baseline ([MR-006](harness/conventions.md#mr-006--baseline-committet-vendored-statt-per-url-referenziert)): Integrität gegen `SHA256SUMS` fail-closed; die Freshness-Hälfte bleibt als Netz-Operation ausdrücklich ungeprüft |
 | `make gates` | alle inneren Gates (mandatory vor Handoff) |
-| `make verify-slice-form` | Form der Slice-Pläne ab slice-052: höchstens drei **Liefer**-Punkte, benannte Lerneintrag-Form; ab slice-098 zusätzlich kein Gate-Lauf als DoD-Punkt und die drei Kopffelder (`Verantwortlich:`/`Autor:`/Spec-Stellen). Ältere grandfathered — zwei Stichtage, bootstrap-aware (slice-052, slice-098) |
+| `make verify-slice-form` | Form der Slice-Pläne ab slice-052: höchstens drei **Liefer**-Punkte, benannte Lerneintrag-Form; ab slice-098 zusätzlich die drei Kopffelder (`Verantwortlich:`/`Autor:`/Spec-Stellen). Gate-Läufe und Closure-Pflichten zählen **nicht** als Liefer-Punkte — sie dürfen im DoD stehen, wie die Ziel-Form es vorsieht (slice-107). Ältere grandfathered — zwei Stichtage, bootstrap-aware (slice-052, slice-098) |
 | `make verify-ac-form` | Form neuer `AC-*` (§5): Happy · Boundary · Negative · Out-of-Scope; die 19 bei Einführung bestehenden sind grandfathered (slice-054) |
 | `make verify-closure-notes` | Struktur der Closure-Notizen in `done/` (§5): genau eine, ausgefüllt, kein Platzhalter, keine Floskel (slice-050) |
 | `make verify-slice-links` | Relative Verweise wandernder Slices (`open`/`next`/`in-progress`) lösen aus **jedem** Lifecycle-Verzeichnis auf ([`SL-002`](docs/plan/steering-loop.md)); `done/` ist Endzustand und ausgenommen (slice-060) |
@@ -265,8 +265,11 @@ Aggregat). Ob ein Gate gerade grün ist, sagt die CI (Badge im
   es eine Harness-Lücke und verlangt einen Guide oder Sensor — „besser
   aufpassen" ist keine Antwort. Ein Eintrag ohne Vorfallszahl ist unzulässig:
   die Zahl ist das Einzige, was die Schwelle prüfbar macht.
-- **Slice-Form:** neue Slices entstehen aus
-  [`docs/plan/planning/slice.template.md`](docs/plan/planning/slice.template.md). Sie trägt die
+- **Slice-Form:** neue Slices entstehen aus der **vendored Ziel-Form**
+  [`.harness/baseline/v5.12.0/templates/docs/plan/planning/slice.template.md`](.harness/baseline/v5.12.0/templates/docs/plan/planning/slice.template.md) — a-check führt keine eigene Kopie, sie würde gegen die Baseline driften.
+  **Beim Kopieren anzupassen:** die Zeile `Lerneintrag — Form: <…>` ergänzen (die Ziel-Form kennt
+  sie nicht als Feld, `make verify` verlangt sie) und die vier Felder streichen, die a-check nicht
+  führt — `Welle:`, Reconciliation-Register, *drei Paarungen*, Herkunfts-Anker. Die Regel trägt die
   Größen-Regel — **höchstens drei Liefer-Punkte und höchstens zwei Schichten**; passt der Slice
   nicht hinein, wird er **zerlegt, nicht gedehnt** — und verlangt den Lerneintrag in einer von drei
   **benannten** Formen (geschärfte Regel · neuer Sensor · benannte Spec-Lücke). `make verify`

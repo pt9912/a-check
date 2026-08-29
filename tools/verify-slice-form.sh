@@ -255,7 +255,7 @@ for dir in open next in-progress done; do
 done
 
 if [ "$fail" -ne 0 ]; then
-  echo "verify-slice-form: FAIL — Slice-Form verletzt (docs/plan/planning/slice.template.md)." >&2
+  echo "verify-slice-form: FAIL — Slice-Form verletzt (Ziel-Form: AGENTS.md §5)." >&2
   exit 1
 fi
 

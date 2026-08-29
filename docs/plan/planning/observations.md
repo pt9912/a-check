@@ -33,6 +33,7 @@ sagt. Angelegt mit slice-101.
 | BEO-017 | Vier Sektionen der Spec-Straten fehlen inhaltlich: *Globale Out-of-Scope-Punkte*, *Glossar*, *Externe Abhängigkeiten*, *Fehlermodelle und Resilienz* | Spec-Straten | 1× | slice-110 | offen — **Maintainer-Inhalt**; eine erfundene Vertragsaussage sieht abgenommen aus |
 | BEO-018 | `spec/spezifikation.md` gliedert nach Vertrags-Kennung statt nach den sieben Themen der Ziel-Form — **undeklariert**, in einer kanonischen Quelle vom Rang 2 | Spec-Straten | 1× | slice-110 | offen — entweder Adaptions-Eintrag mit benannter ersetzter Regel oder Angleichung; beides eine Entscheidung, keine Messung |
 | BEO-019 | Form-Vergleiche gegen die Vorlagen sind sprachblind: `README.md` ist englisch, die Ziel-Form deutsch — beide Verfahren meldeten drei fehlende Sektionen statt einer | Planungs-Harness | 1× | slice-111 | offen — weder exakter Titel- noch Kernbegriff-Vergleich überbrückt einen Sprachwechsel; jeder künftige Form-Review trifft dieselbe Wand |
+| BEO-020 | Die Ziel-Form liegt nur noch **tag-gescopt** unter `.harness/baseline/<tag>/templates/` — jeder Baseline-Sprung verschiebt die Verweise darauf | Planungs-Harness | 1× | slice-112 | offen — das ist der Preis, den die co-located-Regel vermeiden wollte; drei Verweise, klein und benannt |
 
 ## Gestrichene Einträge
 

@@ -32,7 +32,7 @@ Spec-Stellen. Dieser Slice trägt sie bereits — er ist der erste unter der neu
 
 ## 2. Betroffene Module
 
-- [`docs/plan/planning/slice.template.md`](../slice.template.md) — Kopffelder, Größen-Regel,
+- `docs/plan/planning/slice.template.md` — Kopffelder, Größen-Regel,
   DoD-Form.
 - `tools/verify-slice-form.sh` — zwei neue Prüfungen, je mit Negativ-Probe.
 - [`AGENTS.md`](../../../../AGENTS.md) §4 (Target-Zweck) und §5 (Slice-Form-Regel).

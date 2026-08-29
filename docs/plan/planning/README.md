@@ -5,7 +5,9 @@ abschließbaren Vorhaben. Der Slice-Zyklus ist eine Zustandsmaschine über Verze
 (`open/` → `next/` → `in-progress/` → `done/`, [`AGENTS.md`](../../../AGENTS.md) §5); die Welle
 liegt eine Ebene darüber und schließt über eine **Prozedur**, nicht über einen Datei-Übergang.
 
-- Slice-Form: [`slice.template.md`](slice.template.md) — höchstens drei **Liefer**-Punkte,
+- Slice-Form: die **vendored Ziel-Form** [`slice.template.md`](../../../.harness/baseline/v5.12.0/templates/docs/plan/planning/slice.template.md) — a-check führt keine
+  eigene Kopie. **Beim Kopieren:** Zeile `Lerneintrag — Form: <…>` ergänzen, die vier nicht
+  geführten Felder streichen ([`AGENTS.md`](../../../AGENTS.md) §5). Höchstens drei **Liefer**-Punkte,
   höchstens zwei Schichten, benannte Lerneintrag-Form. Gezählt wird nur, was mit dem Umfang
   wächst; Gate-Läufe und Closure-Pflichten zählen nicht mit. **Maschinell geprüft von
   `make verify` sind die Zahl und die benannte Lerneintrag-Form**; „höchstens zwei Schichten" ist
