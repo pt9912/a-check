@@ -1,8 +1,8 @@
 # MR-006 — Baseline committet vendored statt per URL referenziert
 
 - **Datum:** 2026-07-25
-- **Geltungsbereich:** [`AGENTS.md`](../../AGENTS.md) §1, [§Baseline](../conventions.md#baseline),
-  [`harness/README.md` §Guides](../README.md#guides-feedforward-quellen)
+- **Geltungsbereich:** [`AGENTS.md`](../../../AGENTS.md) §1, [§Baseline](../../conventions.md#baseline),
+  [`harness/README.md` §Guides](../../README.md#guides-feedforward-quellen)
 - **Adaption:** Provenienz/Konkretisierung, **keine** inhaltliche Abweichung vom
   `v3.5.2`-Default — im Gegenteil: sie **stellt ihn her**. Regelwerk *und* Templates der
   Baseline liegen **committet vendored** unter
@@ -18,11 +18,11 @@
   `ai-harness-init` (dortige `MR-007`, vendored `v3.5.1`). <!-- d-check:ignore (fremde MR-Kennung des Repos ai-harness-init, nicht a-checks) -->
 - **Abgrenzung:** Der vendored Baum ist **externer, unveränderter Fremdtext** mit eigenen
   Platzhaltern und Template-Kennungen — er ist **nicht** a-checks Doku. Darum nimmt
-  [`.d-check.yml`](../../.d-check.yml) ihn per `scan.ignore` aus dem Doku-Gate: sonst prüfte
+  [`.d-check.yml`](../../../.d-check.yml) ihn per `scan.ignore` aus dem Doku-Gate: sonst prüfte
   `doc-check` fremde Platzhalter gegen a-checks Kennungs- und Linkregeln.
 - **Nummern-Hinweis:** Das `conventions.template.md` der Baseline führt diese Adaption als
   `MR-003`. <!-- d-check:ignore (MR-Kennung des Baseline-Templates, nicht a-checks) --> Diese Nummer ist hier belegt
-  ([`MR-003`](../conventions.md#mr-003), aufgelöst 2026-06-21), darum
+  ([`MR-003`](../../conventions.md#mr-003), aufgelöst 2026-06-21), darum
   die nächste freie — dieselbe Praxis wie in `ai-harness-init` (dort `MR-007`). <!-- d-check:ignore (fremde MR-Kennung des Repos ai-harness-init, nicht a-checks) --> Ob die
   Nummern-Identität mit dem Template hergestellt wird, entscheidet Etappe C der Migration.
 - **Auflösungs-Trigger:** permanent (Provenienz/Baseline-Konformität).

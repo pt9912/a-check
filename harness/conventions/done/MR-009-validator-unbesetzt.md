@@ -12,7 +12,7 @@
   über die Adoption eines Releases, nicht über einen Validierungsbeleg. Eine Übergabe zu
   *definieren*, die niemand ausführt, wäre eine Zusage ohne Deckung — genau die Klasse
   Harness-Lüge, gegen die `modul-13` steht. Die ausführliche Herleitung steht seit slice-066 in
-  [`harness/README.md`](../README.md#rollen-und-ihre-übergabe-artefakte); dieser Eintrag macht sie zur
+  [`harness/README.md`](../../README.md#rollen-und-ihre-übergabe-artefakte); dieser Eintrag macht sie zur
   **deklarierten** Abweichung statt zu einer Fußnote.
 - **Folgewirkung, ausdrücklich:** die Vollständigkeits-Erwartung von `modul-08` („jedes der neun
   Artefakte") gilt für dieses Repo **ausgewiesen eingeschränkt** auf sieben. Ohne diese Zeile
@@ -26,5 +26,5 @@
   seinen Bedarf schriftlich bestätigt, statt sie durch Adoption stillschweigend zu zeigen.
   Beides ist heute nicht vorhanden; der Eintrag ist bis dahin **nicht** permanent, sondern
   begründet ausgesetzt. Gefunden als `B-9` in
-  [slice-048](../../docs/plan/planning/done/slice-048-modul-delta-lesen.md), als offen belegt durch
-  den [Review-Report vom 2026-08-09](../../docs/reviews/2026-08-09-welle-12-unabhaengig.md) (`F-11`).
+  [slice-048](../../../docs/plan/planning/done/slice-048-modul-delta-lesen.md), als offen belegt durch
+  den [Review-Report vom 2026-08-09](../../../docs/reviews/2026-08-09-welle-12-unabhaengig.md) (`F-11`).

@@ -136,15 +136,12 @@ werden nie überschrieben); sie entsteht in den Nachfolge-Einträgen der Etappe 
 
 | MR | Titel | Geltungsbereich | Ersetzt-Baseline-Regel |
 |---|---|---|---|
-
-| [MR-001](conventions/MR-001-spezifikations-schicht.md) <a id="mr-001"></a><a id="mr-001--source-precedence-mit-eigener-spezifikations-schicht"></a> | Source Precedence mit eigener Spezifikations-Schicht | [`harness/README.md` §Source precedence](README.md#source-precedence) | — *(C2)* |
-| [MR-002](conventions/MR-002-id-schema-bereichskuerzel.md) <a id="mr-002"></a><a id="mr-002--id-schema-mit-bereichskürzeln-ab-initialer-fassung"></a> | ID-Schema mit Bereichskürzeln ab initialer Fassung | [`spec/lastenheft.md`](../spec/lastenheft.md), alle Traceability-Verweise | — *(C2)* |
-| [MR-004](conventions/MR-004-spec-strata-id-schemata.md) <a id="mr-004"></a><a id="mr-004--spezifikation-und-architektur-strata-und-id-schemata"></a> | Spezifikation und Architektur: Strata und ID-Schemata | [`spec/spezifikation.md`](../spec/spezifikation.md), [`spec/architecture.md`](../spec/architecture.md) | — *(C2)* |
-| [MR-005](conventions/MR-005-referenzmatrix.md) <a id="mr-005"></a><a id="mr-005--referenzmatrix-intra-spec-richtung--adrslice-disziplin-d-check-angleichung"></a> | Referenzmatrix: intra-Spec-Richtung + ADR→Slice-Disziplin | [`.d-check.yml`](../.d-check.yml) (`matrix`), [`docs/plan/adr/`](../docs/plan/adr/) | — *(C2)* |
-| [MR-006](conventions/MR-006-baseline-vendored.md) <a id="mr-006"></a><a id="mr-006--baseline-committet-vendored-statt-per-url-referenziert"></a> | Baseline committet vendored statt per URL referenziert | [`AGENTS.md`](../AGENTS.md) §1, [§Baseline](#baseline), [`harness/README.md` §Guides](README.md#guides-feedforward-quellen) | — *(C2)* |
-| [MR-007](conventions/MR-007-adr-vorlagen-version.md) <a id="mr-007"></a><a id="mr-007--adr-vorlagen-version-v352-statt-v130"></a> | ADR-Vorlagen-Version statt `v1.3.0` | [`MR-000`](#mr-000--baseline-aussage-inkl-id-schema-deklaration) §ID-Schema, Zeile zu `ADR-NNNN` | — *(C2)* |
-| [MR-008](conventions/MR-008-kein-replay.md) <a id="mr-008"></a><a id="mr-008--kein-replay-keine-agenten-telemetrie"></a> | Kein Replay, keine Agenten-Telemetrie | gesamtes Repo; Baseline-Module `modul-12`, `modul-15` | — *(C2)* |
-| [MR-009](conventions/MR-009-validator-unbesetzt.md) <a id="mr-009"></a><a id="mr-009--validator-rolle-unbesetzt-zwei-übergaben-ohne-artefakt"></a> | Validator-Rolle unbesetzt, zwei Übergaben ohne Artefakt | gesamtes Repo; Baseline-Modul `modul-08` | — *(C2)* |
+| [MR-011](conventions/MR-011-verfeinerungs-form.md) <a id="mr-011"></a> | Verfeinerungen tragen `SPEC-*` statt der Suffix-Form | [`spec/spezifikation.md`](../spec/spezifikation.md) | [`grundlagen-source-precedence.md` §ID-Schema als Klammer](../.harness/baseline/v5.12.0/regelwerk/grundlagen-source-precedence.md#id-schema-als-klammer) |
+| [MR-012](conventions/MR-012-referenzmatrix-grandfathering.md) <a id="mr-012"></a> | Referenz-Richtung maschinell, ADRs 0001–0020 grandfathered | [`.d-check.yml`](../.d-check.yml) (`matrix`), [`docs/plan/adr/`](../docs/plan/adr/) | [`grundlagen-referenz-richtung.md` §Referenz-Richtung (SDP)](../.harness/baseline/v5.12.0/regelwerk/grundlagen-referenz-richtung.md#referenz-richtung-sdp-wer-darf-wen-referenzieren) |
+| [MR-013](conventions/MR-013-adr-vorlagen-version.md) <a id="mr-013"></a> | ADR-Vorlage ist die vendored Fassung `v5.12.0` | [`MR-000`](#mr-000) §ID-Schema, Zeile zu `ADR-NNNN` | — *(korrigiert eine Repo-Aussage; Rückbau-Kandidat, im Eintrag benannt)* |
+| [MR-014](conventions/MR-014-keine-agenten-telemetrie.md) <a id="mr-014"></a> | Keine Agenten-Telemetrie | gesamtes Repo; Baseline-Modul `modul-15` | [`modul-15-observability.md` §Kernidee](../.harness/baseline/v5.12.0/regelwerk/modul-15-observability.md#kernidee-modul-15) |
+| [MR-015](conventions/MR-015-welle-closure-ohne-replay.md) <a id="mr-015"></a> | Welle-Closure ohne Replay-Lauf (`make ci` grün) | [`docs/plan/planning/`](../docs/plan/planning/README.md) | [`modul-06-roadmap.md` §Wellen-Closure-Prozedur](../.harness/baseline/v5.12.0/regelwerk/modul-06-roadmap.md#wellen-closure-prozedur-modul-6) |
+| [MR-016](conventions/MR-016-validator-unbesetzt.md) <a id="mr-016"></a> | Validator-Rolle unbesetzt | gesamtes Repo; Baseline-Modul `modul-08` | [`modul-08-agentenrollen.md` §Die neun Übergaben](../.harness/baseline/v5.12.0/regelwerk/modul-08-agentenrollen.md#die-neun-übergaben-und-ihre-artefakte-modul-8) |
 
 ### Aufgelöste Adaptionen
 
@@ -155,8 +152,16 @@ bricht.
 
 | MR | aufgelöst durch |
 |---|---|
-
+| [MR-001](conventions/done/MR-001-spezifikations-schicht.md) <a id="mr-001"></a><a id="mr-001--source-precedence-mit-eigener-spezifikations-schicht"></a> | [MR-010](conventions/done/MR-010-rueckbau-drei-adaptionen.md) |
+| [MR-002](conventions/done/MR-002-id-schema-bereichskuerzel.md) <a id="mr-002"></a><a id="mr-002--id-schema-mit-bereichskürzeln-ab-initialer-fassung"></a> | [MR-010](conventions/done/MR-010-rueckbau-drei-adaptionen.md) |
 | [MR-003](conventions/done/MR-003-source-precedence-ohne-docs-user.md) <a id="mr-003"></a><a id="mr-003--source-precedence-ohne-docsuser-rang"></a> | Ereignis am 2026-06-21 ([Benutzerhandbuch](../docs/user/benutzerhandbuch.md) angelegt), **kein** Nachfolge-Eintrag — die Auflösung datiert vor der Verzeichnis-Form |
+| [MR-004](conventions/done/MR-004-spec-strata-id-schemata.md) <a id="mr-004"></a><a id="mr-004--spezifikation-und-architektur-strata-und-id-schemata"></a> | [MR-011](conventions/MR-011-verfeinerungs-form.md) |
+| [MR-005](conventions/done/MR-005-referenzmatrix.md) <a id="mr-005"></a><a id="mr-005--referenzmatrix-intra-spec-richtung--adrslice-disziplin-d-check-angleichung"></a> | [MR-012](conventions/MR-012-referenzmatrix-grandfathering.md) |
+| [MR-006](conventions/done/MR-006-baseline-vendored.md) <a id="mr-006"></a><a id="mr-006--baseline-committet-vendored-statt-per-url-referenziert"></a> | [MR-010](conventions/done/MR-010-rueckbau-drei-adaptionen.md) |
+| [MR-007](conventions/done/MR-007-adr-vorlagen-version.md) <a id="mr-007"></a><a id="mr-007--adr-vorlagen-version-v352-statt-v130"></a> | [MR-013](conventions/MR-013-adr-vorlagen-version.md) |
+| [MR-008](conventions/done/MR-008-kein-replay.md) <a id="mr-008"></a><a id="mr-008--kein-replay-keine-agenten-telemetrie"></a> | [MR-014](conventions/MR-014-keine-agenten-telemetrie.md) |
+| [MR-009](conventions/done/MR-009-validator-unbesetzt.md) <a id="mr-009"></a><a id="mr-009--validator-rolle-unbesetzt-zwei-übergaben-ohne-artefakt"></a> | [MR-016](conventions/MR-016-validator-unbesetzt.md) |
+| [MR-010](conventions/done/MR-010-rueckbau-drei-adaptionen.md) <a id="mr-010"></a> | — *(Rückbau-Eintrag; mit seiner Entstehung erledigt, siehe Datei)* |
 
 ## Anforderungs-Anlege-Prozess
 
