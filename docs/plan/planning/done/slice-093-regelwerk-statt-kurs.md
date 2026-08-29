@@ -120,6 +120,14 @@ Antwort.
    die es nie gab, nicht zu unterscheiden. Dieselbe Regel, die das Beobachtungs-Register für
    gestrichene Einträge setzt.
 
+**Offene Risiken und ihr Ausgang:**
+
+- *Der `git mv` dieses Slice hat drei Verweise in bereits geschlossenen Slices gebrochen* — sie
+  zeigten auf `../open/`. `verify-slice-links` sah das nicht: es nimmt `done/` als Endzustand aus
+  und richtet seine Invariante auf **wandernde** Slices, nicht auf Verweise **auf** sie. Gefangen
+  hat es `doc-check`. Ausgang: **weiter offen**, als `BEO-008` im Beobachtungs-Register; die drei
+  Verweise sind nachgezogen.
+
 **Folge-Slices:** keine.
 
 ## 7. Sub-Area-Modus

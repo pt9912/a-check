@@ -89,7 +89,7 @@ Gate hält.
   `harness/conventions.md` §Baseline. Ein Urteil ist noch keine Aufhebung.
 - **Kein Urteil über die Kurs-Klausel.** Ob das Repo dem vendored Regelwerk statt dem Kurs folgt,
   ist eine **neue** Adaption und nicht Teil dieses Bestands — sie hat ihren eigenen Slice
-  ([slice-093](../open/slice-093-regelwerk-statt-kurs.md)).
+  ([slice-093](../done/slice-093-regelwerk-statt-kurs.md)).
 
 ## 7. DoD
 
@@ -114,7 +114,7 @@ und dieser Durchgang zeigt, dass er greift: [`MR-006`](../../../../harness/conve
 sagte es die ganze Zeit („keine inhaltliche Abweichung … im Gegenteil: sie **stellt ihn her**") —
 nur fehlte die Regel, an der das auffällt. Der Prüfsatz gilt ab sofort auch nach vorn: er ist die
 erste Frage an die Adaption, die
-[slice-093](../open/slice-093-regelwerk-statt-kurs.md) vorschlägt.
+[slice-093](../done/slice-093-regelwerk-statt-kurs.md) vorschlägt.
 
 **Zwei beobachtbare Closure-Kriterien:**
 

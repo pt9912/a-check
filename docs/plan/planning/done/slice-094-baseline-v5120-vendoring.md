@@ -58,7 +58,7 @@ umziehen. Zum Abschluss `make verify`.
   Review-Reports nennen `v3.5.2` als das, was damals galt. Das ist korrekt und bleibt. Ebenso die
   Provenienz-Passagen in den Adaptions-Einträgen — sie gehören in den Durchgang der Etappe B.
 - **Eine Ausnahme, mit Grund:** die Beleg-Stelle in
-  [slice-093](../open/slice-093-regelwerk-statt-kurs.md) wandert mit. Sie ist kein
+  [slice-093](../done/slice-093-regelwerk-statt-kurs.md) wandert mit. Sie ist kein
   Form-Zeiger und keine historische Aussage, sondern eine Messung am **gerade adoptierten** Stand;
   bewegt sich der Stand und die Zitatstelle nicht, wird aus dem Beleg eine Falschaussage. Der
   Wortlaut ist in beiden Ständen identisch, nur die Zeilennummern verschieben sich (13–14 → 18–19)
