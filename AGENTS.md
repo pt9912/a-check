@@ -163,6 +163,7 @@ Aggregat). Ob ein Gate gerade grün ist, sagt die CI (Badge im
 | `make doc-planning` | Planning-Lifecycle-Konsistenz Roadmap ↔ `in-progress` (Modul `planning`, DC-FA-PLAN-001) |
 | `make doc-tracked` | Getrackt-Status auflösbarer Referenz-Ziele (Modul `tracked`, DC-FA-TRK-001) |
 | `make doc-targets` | Deklarations-Konsistenz Doku ↔ Build-Targets (Modul `targets`, DC-FA-TGT-001), konfiguriert in [`.d-check.yml`](.d-check.yml) seit slice-074. **Im `gates`-Aggregat seit slice-079** — es hat dort `gate-consistency` (1)+(2) abgelöst, deren Parität in beiden Richtungen gemessen ist (slice-073/079) |
+| `make doc-structure` | Struktur-Invarianten innerhalb der Dokumente (Modul `structure`, DC-FA-STRUCT-001) — mit dem Pin `v0.67.0` verfuegbar, ohne Konfigurationsblock in [`.d-check.yml`](.d-check.yml) und **nicht im `gates`-Aggregat**; ob es die `verify-*`-Skripte abloesen kann, misst slice-080 |
 | `make doc-help` | Liste der `doc-*`-Targets (Utility) |
 | `make lint` | golangci-lint mit dem Projekt-Profil (§3.2, [ADR-0005](docs/plan/adr/0005-lint-profil.md)) |
 | `make test` | Akzeptanzkriterien der `AC-FA-*` als Go-Tests |

@@ -28,18 +28,18 @@ handgeschrieben. Der Vergleich mit der neuen Fassung zeigt genau eine Änderung 
 
 ## 2. Definition of Done
 
-- [ ] `d-check.mk` ist aus `v0.67.0 --print-mk` neu erzeugt, die **einzige** a-check-Anpassung
+- [x] `d-check.mk` ist aus `v0.67.0 --print-mk` neu erzeugt, die **einzige** a-check-Anpassung
       (Digest sticht Tag) ist wieder angebracht, und der Digest ist aus **zwei** Quellen bestätigt.
-- [ ] `doc-structure` ist in [`AGENTS.md`](../../../../AGENTS.md) §4 **und**
+- [x] `doc-structure` ist in [`AGENTS.md`](../../../../AGENTS.md) §4 **und**
       [`harness/README.md`](../../../../harness/README.md) §Sensors deklariert und in der
       GATES-Liste des PreToolUse-Guard — `doc-targets` und `guard-selftest` belegen beides.
-- [ ] `make gates` bleibt über den **unveränderten** Bestand grün: derselbe Befundstand mit einem
+- [x] `make gates` bleibt über den **unveränderten** Bestand grün: derselbe Befundstand mit einem
       Werkzeug, das sechzehn Releases jünger ist.
 
-- [ ] `make gates` grün — Ausgabe in eine Datei, Exit-Code getrennt geprüft, nie in eine Pipe.
-- [ ] Closure-Notiz mit benanntem Lerneintrag geschrieben (§7).
-- [ ] Beobachtungs-Register fortgeschrieben.
-- [ ] Jedes Risiko aus §6 trägt genau einen Ausgang.
+- [x] `make gates` grün — Ausgabe in eine Datei, Exit-Code getrennt geprüft, nie in eine Pipe.
+- [x] Closure-Notiz mit benanntem Lerneintrag geschrieben (§7).
+- [x] Beobachtungs-Register fortgeschrieben.
+- [x] Jedes Risiko aus §6 trägt genau einen Ausgang.
 
 ## 3. Plan (vor Code)
 
@@ -84,8 +84,49 @@ Modul `targets` lief so **dreizehn Minor-Versionen** ins Leere. Ebenso bleiben `
 
 ## 7. Closure-Notiz
 
-_(beim Abschluss ausfüllen — genau **ein** solcher Abschnitt je Slice,
-[`AGENTS.md`](../../../../AGENTS.md) §5; `make verify` prüft das.)_
+**Geliefert:** Der Pin steht auf `v0.67.0`, der Digest ist aus zwei Quellen belegt, das Fragment
+ist neu erzeugt, und `doc-structure` ist in beiden Doku-Tabellen und der GATES-Liste deklariert.
+
+**Lerneintrag — Form: geschärfte Regel.** *Ein Pin-Bump ist keine Zeilen-Änderung, solange das
+Werkzeug seine Module über eine **geschlossene Verbots-Liste gegen eine offene Menge** auswählt.*
+Jedes Einzelmodul-Target im Fragment hat die Form `--enable X --disable <alle anderen, einzeln
+aufgezählt>`. Diese Aufzählung ist beim Erzeugen vollständig und veraltet mit **jedem** Modul, das
+stromaufwärts hinzukommt. Hier waren es zwei (`structure`, `workflows`); ein reiner Tausch der
+beiden Pin-Zeilen hätte sie in **fünf** Targets mitlaufen lassen, die per Vertrag genau ein Modul
+fahren. Der Fehler wäre **grün** eingezogen: er wirkt in Richtung *mehr* Prüfung und fällt erst
+auf, wenn ein zugeschaltetes Modul zufällig etwas findet — dann aber unter einem Target-Namen, der
+etwas anderes verspricht. Kein Gate deckt das ab: `gate-consistency` prüft die Wohlgeformtheit von
+Tag und Digest, nicht die Vollständigkeit der Disable-Listen. *Weil* das so ist, ist die im Kopf
+von [`d-check.mk`](../../../../d-check.mk) genannte Reihenfolge — erst `--print-mk`, dann den
+Digest setzen — nicht Bequemlichkeit, sondern die einzige Form, die diese Drift ausschließt.
+
+**Zwei beobachtbare Closure-Kriterien:**
+
+1. `diff` des committeten Fragments gegen `d-check:v0.67.0 --print-mk` ist auf die
+   a-check-Anpassung reduziert: fünf Rezept-Zeilen tragen `--disable structure --disable
+   workflows`, ein Target (`doc-structure`) kommt hinzu, sonst nichts.
+2. Alle sechs `doc-*`-Sensoren laufen über den **unveränderten** Bestand grün, jeder mit
+   **229 Dateien, 0 Befunden** — `doc-check`, `doc-targets`, `doc-planning`, `doc-tracked`,
+   `doc-immutable STAGED=1` und das neue `doc-structure`.
+
+**Offene Risiken und ihr Ausgang:**
+
+- *`sources` ist jetzt erreichbar und deckt die Asset-Integrität der vendored Baseline* —
+  **Ausgang:** weiter offen im **Beobachtungs-Register** als `BEO-021`.
+- *Sechzehn Releases können Verhalten geändert haben, das dieser Bestand nicht auslöst* —
+  **Ausgang:** gestrichen mit Begründung: der Null-Befund gilt für die heutige Doku, und eine
+  Aussage über ungeschriebene Dokumente wäre nicht belegbar. Der nächste Gate-Lauf misst sie.
+- *Die zweite Trigger-Hälfte von [slice-080](../open/slice-080-verify-abloesung-dcheck.md) fällt
+  damit* — **Ausgang:** Folge-Slice; beide Hälften sind jetzt erfüllt.
+
+**Beobachtungs-Register:** `BEO-021` neu angelegt; `BEO-014` auf **2×** erhöht — `doc-structure`
+meldet ohne `structure`-Block grün statt zu schweigen, dieselbe Form, die `targets` nach slice-074
+dreizehn Minor-Versionen lang zeigte. Das ist hier **kein** Wiederholungsfehler: die Doku sagt an
+beiden Stellen ausdrücklich, dass kein Konfigurationsblock existiert und das Target nicht im
+Aggregat steht.
+
+**Folge-Slices:** [slice-080](../open/slice-080-verify-abloesung-dcheck.md) ist an seiner
+Werkzeug-Bedingung entblockt und hängt nur noch an der externen Vorbedingung (CR-Einreichung).
 
 ## 8. Sub-Area-Modus-Begründung
 

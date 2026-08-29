@@ -6,6 +6,19 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
+### Changed
+
+- **doc-check-Tooling (`d-check.mk`): Pin des Schwester-Tools `d-check` von **v0.51.1** auf
+  **v0.67.0** gehoben (`@sha256:c6c1465b…`, via `DCHECK_DIGEST`, Digest aus zwei Quellen
+  bestätigt; slice-115).** Das Fragment ist **neu erzeugt**, nicht nur umgepinnt: die sechzehn
+  Releases bringen zwei neue Module (`structure`, `workflows`), und jedes Einzelmodul-Target
+  schaltet sie jetzt ausdrücklich ab — ein reiner Pin-Tausch hätte sie in `doc-immutable`,
+  `doc-commits`, `doc-planning`, `doc-tracked` und `doc-targets` still mitlaufen lassen. Neu ist
+  das Target `make doc-structure` (Modul `structure`, DC-FA-STRUCT-001); es ist in beiden
+  Doku-Tabellen deklariert, hat aber **keinen Konfigurationsblock** in `.d-check.yml` und steht
+  **nicht** im `gates`-Aggregat. Dev-Tooling, netzlos, read-only; der Befundstand über den
+  unveränderten Bestand ist identisch zur vorigen Fassung (229 Dateien, 0 Befunde).
+
 ## [0.17.0] - 2026-08-09
 
 ### Changed
