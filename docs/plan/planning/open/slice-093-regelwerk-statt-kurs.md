@@ -11,12 +11,16 @@ von [`harness/conventions.md`](../../../../harness/conventions.md).
 
 ---
 
-## 0. Trigger
+## 0. Trigger — **negativ eingetreten am 2026-08-29**
 
-**Beginn:** Bestätigung des Maintainers, dass die Ansage als **deklarierte Adaption** landen soll
-(und nicht als bloße Arbeitsanweisung für die laufende Sitzung). Der Unterschied ist beobachtbar:
-eine Adaption ändert zwei Sätze im Repo und bekommt einen Eintrag, eine Arbeitsanweisung ändert
-nichts.
+**Beginn war:** Bestätigung des Maintainers, dass die Ansage als **deklarierte Adaption** landen
+soll (und nicht als bloße Arbeitsanweisung für die laufende Sitzung). Der Unterschied ist
+beobachtbar: eine Adaption ändert zwei Sätze im Repo und bekommt einen Eintrag, eine
+Arbeitsanweisung ändert nichts.
+
+**Die Antwort war „nein".** Der Trigger ist damit entschieden, nicht offen — der Slice wird
+geschlossen, ohne umgesetzt zu werden. Die DoD-Haken bleiben leer, weil nichts von dem entstanden
+ist, was sie fordern; die Closure-Notiz sagt, warum.
 
 Der Slice wartet **nicht** auf die Entscheidung über die `v5.12.0`-Migration — er gilt unter dem
 heute adoptierten Stand genauso (§4).
@@ -91,8 +95,32 @@ den ein Gate künftig hält.
 
 ## 6. Closure-Notiz
 
-_(beim Abschluss ausfüllen — genau **ein** solcher Abschnitt je Slice,
-[`AGENTS.md`](../../../../AGENTS.md) §5; `make verify` prüft das.)_
+**Geliefert:** eine **Entscheidung**, kein Artefakt. Die Ansage „Wir benutzen das Regelwerk, nicht
+den Kurs" bleibt Arbeitsanweisung; sie wird **nicht** als Adaption deklariert. `AGENTS.md` §1 und
+`harness/conventions.md` behalten ihren Wortlaut, und die Klausel im vendored Regelwerk bleibt,
+was sie ist: eine Provenienz-Aussage über die Ableitung des Extrakts, keine Leseanweisung an den
+Agenten.
+
+**Lerneintrag — Form: geschärfte Regel.** *Eine Arbeitsanweisung ist keine Konventions-Änderung,
+und die Messung entscheidet das nicht.* Die Analyse in §1 war korrekt und ist es weiterhin: die
+Klausel steht als Rumpftext im adoptierten Regelwerk, und sie verlangt im Konfliktfall etwas, das
+dieses Repo netzlos nicht tun kann. Daraus folgt aber **nicht**, dass sie deklariert abweichend
+gehört. *Weil* der Schluss von „diese Regel ist hier nicht ausführbar" auf „also weichen wir
+erklärtermaßen ab" einen Schritt überspringt, den nur der Maintainer gehen kann: ob eine inert
+gebliebene Klausel überhaupt stört. Sie stört nicht — ein Tie-Break, der nie gezogen wird, kostet
+nichts. **Der Prüfsatz:** ein Befund begründet, dass eine Frage gestellt wird, nie schon ihre
+Antwort.
+
+**Zwei beobachtbare Closure-Kriterien:**
+
+1. Im Repo hat sich **nichts** geändert: `AGENTS.md` §1 und `harness/conventions.md`
+   §Adoptierte Konventions-Quellen tragen denselben Wortlaut wie vor diesem Slice, und der
+   Adaptions-Block führt keinen neuen Eintrag. Das ist die Lieferung, nicht ihr Ausbleiben.
+2. Der Slice liegt in `done/` statt gelöscht zu sein — eine still entfernte Datei wäre von einer,
+   die es nie gab, nicht zu unterscheiden. Dieselbe Regel, die das Beobachtungs-Register für
+   gestrichene Einträge setzt.
+
+**Folge-Slices:** keine.
 
 ## 7. Sub-Area-Modus
 
@@ -100,3 +128,7 @@ Berührt werden die Harness-Konventionen und das Briefing. Beide liegen unter **
 Modus-Deklaration pro Sub-Area — dieselbe Lücke, die
 [slice-091 §7](../done/slice-091-claude-md-auf-verweis-reduzieren.md) benannt hat. Alle berührten
 Sub-Areas mit Modus sind GF.
+
+*(Nachtrag beim Abschluss: die Lücke ist seit slice-101 geschlossen — die Sub-Area
+**Harness-Einstieg** ist deklariert und trägt im Beobachtungs-Register die Kennung `BEO-001`.
+Der Satz oben beschreibt den Stand, als dieser Plan geschrieben wurde.)*
