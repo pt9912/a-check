@@ -18,13 +18,12 @@ Welle-Datei, nicht hier.
 
 - *(keine offene Welle-Datei)*
 
-Nichts in Arbeit.
+In Arbeit: [slice-128](../in-progress/slice-128-dependabot-hebungskanal.md) — Hebungs-Kanal.
 
 **Offene Slices ohne Welle** — sie brauchen keine, ihre Trigger stehen in ihrem eigenen `§0`:
 
 | Slice | Trigger | Zustand |
 |---|---|---|
-| [slice-128](../open/slice-128-dependabot-hebungskanal.md) | eingetreten — [slice-124](../done/slice-124-image-scan-cve.md) hat den Sensor geliefert, sein Erstlauf neun Befunde gemessen | **startbar** — der Kanal hebt, was der Sensor meldet; die `trace-check`-Kopplung ist vor der Konfiguration zu messen |
 | [slice-127](../open/slice-127-dockerhub-spiegel.md) | **zweiteilig**: das Release aus der Sicherheits-Kette ist durch **und** die Betriebs-Vorbedingungen stehen (Hub-Repo, Token mit Scope `read/write/delete`) | **wartet** — trägt eine offene Entscheidung: der Manifest-Digest ist registry-lokal, a-checks Pin-Regime steht auf **einem** Digest an neun Stellen |
 | [slice-013](../open/slice-013-driving-driven-vertiefung.md), [slice-045](../open/slice-045-intern-extern-dateimenge.md) | siehe *Nächste Wellen* | vertagt, Evidenz gemessen und zu klein |
 
