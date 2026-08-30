@@ -51,8 +51,8 @@ Doku-Hygiene des CR-Textes selbst.
 
 **Trigger für die Ablösung von `verify-ac-form`** — zweiteilig, beide Hälften beobachtbar:
 
-1. **Ein d-check-Release trägt die Unterscheidung aus §9.** Prüfbar an `--print-config`: die
-   `structure`-Sektion nennt den neuen Schlüssel.
+1. **Ein d-check-Release trägt `exempt-expect-count`** (§9, Abweichung 1). Prüfbar an
+   `--print-config`: die `structure`-Sektion nennt den Schlüssel namentlich.
 2. **Der Pin in [`d-check.mk`](../../../../d-check.mk) ist auf dieses Release gehoben.**
 
 Die zweite Hälfte ist die, die man leicht wegläßt — `targets` lief so dreizehn Minor-Versionen ins
@@ -80,57 +80,70 @@ wie bei CR 1 und CR 2 ([slice-073 §4](../done/slice-073-dcheck-statt-eigenbau.m
 
 ## 6. Risiken und offene Punkte
 
-- *d-check lehnt ab, weil die Nullmengen-Härte bewusst hart ist* — **Ausgang:** eingetreten, und
-  zwar auf die nützlichste Weise: zurückgewiesen wurde nicht das Anliegen, sondern die **Form** des
-  ersten Entwurfs, der eine nicht-fatale Meldung voraussetzte. Aufgelöst in diesem Slice durch die
-  Überarbeitung auf Weg 3 (§9). Bleibt auch die überarbeitete Fassung ohne Zusage, ist das ein
-  **Folge-Slice** mit einer ADR: dann bleibt `verify-ac-form` dauerhaft lokal, und diese
-  Entscheidung gehört begründet, nicht stillschweigend.
+- *d-check lehnt ab, weil die Nullmengen-Härte bewusst hart ist* — **Ausgang:** entfallen,
+  gestrichen mit Begründung: der Antrag ist **in der Sache angenommen** (§9). Zurückgewiesen wurde
+  zweimal nur die Form — erst die vorausgesetzte nicht-fatale Meldung, dann die Erlaubnis anstelle
+  einer Zahl. Die vorgesehene ADR über einen dauerhaften Verbleib von `verify-ac-form` wird damit
+  nicht gebraucht.
 - *Der Antrag wiederholt den Fehler von CR 3 und übersieht wieder eine Konsequenz* —
-  **Ausgang:** eingetreten. Genau das ist passiert, und es ist der Lerneintrag dieses Slice (§7);
-  als wiederkehrendes Muster steht es im **Beobachtungs-Register** als `BEO-022`.
+  **Ausgang:** eingetreten, und zwar **zweimal in diesem Slice**: erst die vorausgesetzte
+  nicht-fatale Meldung, dann der ungemessene Preis der `--doctor`-Wahl. Beides ist der Lerneintrag
+  (§7) und steht als `BEO-022` im **Beobachtungs-Register**, jetzt bei 3×.
 
 ## 7. Closure-Notiz
 
-**Geliefert:** CR 4 als Text (§9) — der Antrag, der `verify-ac-form` ablösbar macht, in einer
-Fassung, die am Vertrag des Zielwerkzeugs geprüft ist. Er entscheidet sich ausdrücklich für einen
-von drei Wegen und benennt, was dieser Weg kostet: die Sichtbarkeit wandert aus dem Gate-Lauf in
-`--doctor` und ist dort schwächer. §4 nennt zwei beobachtbare Trigger für die spätere Ablösung —
-das Release **oder** ein zwanzigstes `AC-*`.
+**Geliefert:** CR 4 als Text (§9), **in der Sache angenommen** — d-check Lastenheft `0.78.0`. Der
+Bruch aus [slice-080](../done/slice-080-verify-abloesung-dcheck.md) ist behoben: die
+Nullmengen-Härte unterscheidet künftig eine erklärte Teilmenge von einem Selektor-Defekt. §4 nennt
+den geschärften Trigger für die Ablösung von `verify-ac-form` — `exempt-expect-count` verfügbar
+und Pin gehoben —, daneben steht weiter der alternative Weg über ein zwanzigstes `AC-*`.
 
-**Lerneintrag — Form: geschärfte Regel.** *Bevor ein CR eine Eigenschaft des Zielwerkzeugs zur
-Bedingung macht, wird sie an dessen Lastenheft belegt — mit Kennung, nicht als Annahme.* Der erste
-Entwurf verlangte, die Regel solle „nicht nichts, sondern eine **nicht-fatale** Zeile" melden. Es
-gibt keine nicht-fatalen Befunde: `model.Finding` trägt kein Schwere-Feld, und
-[`DC-FA-CLI-003`](https://github.com/pt9912/d-check/blob/main/spec/lastenheft.md#dc-fa-cli-003--exit-codes)
-führt *„differenzierte Exit-Codes pro Befund-Kategorie"* ausdrücklich als **Out-of-Scope**. Der
-Antrag hätte damit unbemerkt einen Schweregrad eingeführt — eine Vertragsänderung, getarnt als
-Konfigurations-Option. *Weil* das Zielwerkzeug sein Lastenheft öffentlich führt, war das
-**vorab prüfbar**: ein `sed` über den Abschnitt hätte gereicht, und derselbe Abschnitt trug am
-Ende auch die Lösung (das Boundary-Kriterium von `DC-FA-CLI-007`: `--doctor` gibt bei **null**
-Befunden eine Diagnose aus, ist also schon heute ein Renderer für Nicht-Befunde). Dieselbe Klasse
-traf CR 3, dort gegen den **eigenen** Bestand: er beantragte, 19 von 19 Abschnitten auszunehmen,
-ohne zu zählen, dass danach keiner übrig bleibt.
+**Lerneintrag — Form: geschärfte Regel.** *Jede Behauptung in einem CR, die eine Messung zulässt,
+wird gemessen — auch die über die eigenen Kosten.* Der Antrag hat sie **dreimal** nicht gemessen,
+und jedes Mal war die Messung zwei Handgriffe entfernt:
+
+1. **Gegen den eigenen Bestand** (CR 3): er beantragte, 19 von 19 Abschnitten auszunehmen, ohne zu
+   zählen, dass danach keiner übrig bleibt. Ein `grep -c '^### AC-'` hätte es gezeigt.
+2. **Gegen den fremden Vertrag** (CR 4, erster Entwurf): er machte eine *„nicht-fatale Zeile"* zur
+   Bedingung.
+   [`DC-FA-CLI-003`](https://github.com/pt9912/d-check/blob/main/spec/lastenheft.md#dc-fa-cli-003--exit-codes)
+   führt differenzierte Exit-Codes als **Out-of-Scope**; das Lastenheft ist öffentlich.
+3. **Gegen den eigenen Gate-Pfad** (CR 4, zweiter Entwurf): er nannte den Preis der
+   `--doctor`-Wahl *„schwächer"*. d-check hat für sein Repo **null** gemessen, und für a-check
+   gilt dasselbe — `Makefile`-Aggregate 0, `.github/workflows/` 0, `.githooks/` 0. *„Schwächer"*
+   war beschönigend: es war **keine** Sichtbarkeit.
+
+*Weil* der dritte Fall die eigenen Kosten betraf, ist die Regel weiter als „fremde Verträge
+prüfen": ein CR argumentiert über zwei Systeme, und **beide** sind messbar. Die Gegenprobe zeigt,
+dass es kein Aufwandsproblem ist — dieselbe Sitzung hat den Pin-Bump, die Modul-Parität und die
+Backtick-Falle sauber vorab gemessen. Gemessen wurde, was *Arbeit* war; behauptet wurde, was
+*Argument* war.
 
 **Zwei beobachtbare Closure-Kriterien:**
 
 1. Jede Zusage in §9, die eine Eigenschaft von d-check behauptet, trägt eine Kennung mit Link —
-   `DC-FA-CLI-003` für die Exit-Code-Binärität, `DC-FA-CLI-007` für den Diagnose-Modus, [`ADR-0075`](https://github.com/pt9912/d-check/blob/main/docs/plan/adr/0075-erklaerte-teilmenge-in-structure.md)
+   [`DC-FA-CLI-003`](https://github.com/pt9912/d-check/blob/main/spec/lastenheft.md#dc-fa-cli-003--exit-codes)
+   für die Exit-Code-Binärität,
+   [`DC-FA-CLI-007`](https://github.com/pt9912/d-check/blob/main/spec/lastenheft.md#dc-fa-cli-007--diagnose-modus)
+   für den Diagnose-Modus,
+   [`ADR-0075`](https://github.com/pt9912/d-check/blob/main/docs/plan/adr/0075-erklaerte-teilmenge-in-structure.md)
    für die Sichtbarkeits-Zusage, gegen die abgegrenzt wird.
-2. Der Antrag benennt seinen Preis in einer eigenen Passage („Die Sichtbarkeit wandert") statt ihn
-   in der Vertrags-Formulierung verschwinden zu lassen. Beobachtbar daran, dass die
-   Drei-Wege-Tabelle auch die beiden **nicht** gewählten Wege mit ihren Kosten führt.
+2. Die Antwort ist im Slice nicht zusammengefasst, sondern **je Abweichung mit ihrer Folge**
+   eingetragen: Abweichung 1 schärft den Trigger in §4, Abweichung 2 ist durch eigene Messung
+   bestätigt statt übernommen, Abweichung 3 korrigiert eine Zusage des Antragstexts.
 
-**Offene Risiken und ihr Ausgang:** beide aus §6 eingetreten und dort aufgelöst — der erste durch
-die Überarbeitung, der zweite als Lerneintrag und `BEO-022`.
+**Offene Risiken und ihr Ausgang:** beide aus §6 — der erste entfallen (angenommen), der zweite
+eingetreten und als `BEO-022` verbucht.
 
-**Beobachtungs-Register:** `BEO-022` neu angelegt (Gate-/Werkzeug-Schicht, 2×, Belege slice-080
-und slice-116): ein CR-Text wird formuliert, ohne ihn gegen den Bestand oder den fremden Vertrag
-durchzurechnen. Beim dritten Vorfall ist es eine Harness-Lücke und verlangt einen Guide.
+**Beobachtungs-Register:** `BEO-022` auf **3×** erhöht (Belege slice-080, slice-116 zweimal) und
+verallgemeinert: nicht nur „gegen den Bestand oder den fremden Vertrag", sondern **jede messbare
+Behauptung**. Damit ist die Schwelle überschritten — ab dem dritten gleichartigen Vorfall ist es
+eine Harness-Lücke und verlangt einen Guide oder Sensor, nicht „besser aufpassen"
+([`AGENTS.md`](../../../../AGENTS.md) §5).
 
-**Folge-Slices:** keiner zwingend. Tritt einer der beiden Trigger aus §4 ein, wird
-`verify-ac-form` abgelöst; lehnt d-check auch Weg 3 ab, entsteht eine ADR über den dauerhaften
-Verbleib.
+**Folge-Slices:** ein **Guide für CR-Texte** — die Schwelle von `BEO-022` ist erreicht, und dieser
+Slice trägt ihn nicht mehr (er hätte sonst drei Liefer-Punkte statt zwei). Dazu die Ablösung von
+`verify-ac-form`, sobald einer der beiden Trigger aus §4 eintritt.
 ## 8. Sub-Area-Modus-Begründung
 
 **Vorgelagert — Sub-Area-Wahl prüfen:** berührt wird die **Gate-/Werkzeug-Schicht** (der Antrag
@@ -153,6 +166,39 @@ ausdrücklich dem Maintainer überlässt — dieselbe Form wie
 ---
 
 ### CR 4 — `structure`: die legitime Leermenge einer erklärten Teilmenge
+
+**Ergebnis: in der Sache angenommen, in der Form nicht** — Lastenheft `0.78.0`,
+[ADR-0078](https://github.com/pt9912/d-check/blob/main/docs/plan/adr/0078-erklaerte-leermenge-mit-zahl.md).
+Angenommen unverändert: der optionale Schlüssel an derselben Bedingung, byte-identisches Verhalten
+ohne ihn, die Abgrenzung gegen `exempt-paths`, kein Schweregrad, Fence-Treue, und das Argument
+gegen *„die Regel weglassen"*. Drei Abweichungen:
+
+1. **`exempt-expect-count: <n>` statt `exempt-may-empty: true`** — eine **Deklaration** statt einer
+   Erlaubnis. Der Grund ist die Risiko-Aussage dieses Antrags selbst: das Muster *„kann nur
+   veralten"*. Genau dieser Fall ist mit einer Erlaubnis **stumm** und mit einer Zahl **laut**.
+   Die Prüfung läuft beidseitig und immer, nicht nur bei leerer Restmenge.
+2. **Die Sichtbarkeit bleibt im Gate-Lauf**, nicht in `--doctor`. Der Antrag nannte den Preis
+   *„schwächer"*; d-check hat ihn für sein Repo gemessen und **null** gefunden — kein Gate fährt
+   dort `--doctor`. **Für a-check gilt dasselbe, hier nachgemessen:** `Makefile`-Aggregate 0,
+   `.github/workflows/` 0, `.githooks/` 0; `doc-doctor` ist advisory
+   ([`AGENTS.md`](../../../../AGENTS.md) §4) und steht in keinem Aggregat. Der angebotene
+   Re-Evaluierungs-Trigger — *„fahrt ihr `--doctor` in einem Gate, trägt eure Form"* — ist damit
+   **nicht** gezogen.
+3. **Es gibt doch einen neuen Grund-Code**, `section-exempt-mismatch`. Der Antrag sagte *„kein
+   neuer Grund-Code"*; das galt seiner Form, die nur unterdrückt. Eine **Zahl** kann falsch sein
+   und verlangt eine andere Reparatur — *Aufzählung oder Zahl nachziehen* statt *Selektor
+   korrigieren* —, und die Befund-Deduplikation läuft über den Grund mit.
+
+**Was daraus für die Ablösung folgt.** Der Trigger aus §4 ist damit präziser: nicht „ein Release
+trägt den Schlüssel", sondern **`exempt-expect-count` ist verfügbar und der Pin ist gehoben**. Die
+Konfiguration trägt dann `exempt-expect-count: 19` — und der zwanzigste `AC-*` meldet, wenn die
+Zahl nicht mitgezogen wird, statt still durchzulaufen.
+
+Der Antragstext bleibt darunter unverändert stehen — er ist die Lieferung aus §2 und der Beleg
+dafür, was beantragt wurde.
+
+---
+
 
 **Anlass — gemessen, und der Messende ist derselbe, der CR 3 gestellt hat.** CR 3 hat geliefert,
 was er beantragte: `exempt-section-pattern` erreicht Bestände **innerhalb** einer Datei, die
