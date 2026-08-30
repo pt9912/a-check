@@ -1,6 +1,6 @@
 # Roadmap
 
-**Status:** Aktiv. **Letzte Änderung:** 2026-08-29.
+**Status:** Aktiv. **Letzte Änderung:** 2026-08-30.
 
 **Format-Regel:** Die Roadmap ist eine Reihenfolge von **Wellen**, keine Reihenfolge von Terminen
 (Baseline-Regelwerk `modul-06-roadmap.md`). Termine werden — falls überhaupt — als Konsequenz der
@@ -18,13 +18,12 @@ Welle-Datei, nicht hier.
 
 - *(keine offene Welle-Datei)*
 
-Nichts in Arbeit.
+In Arbeit: [slice-080](slice-080-verify-abloesung-dcheck.md) — die vier `verify-*` durch d-check-Module ablösen.
 
 **Offene Slices ohne Welle** — sie brauchen keine, ihre Trigger stehen in ihrem eigenen `§0`:
 
 | Slice | Trigger | Zustand |
 |---|---|---|
-| [slice-080](../open/slice-080-verify-abloesung-dcheck.md) | d-check-Release mit `structure` + `links.resolve-from`, **und** der Pin ist gehoben | **startbar** — beide Trigger-Hälften erfüllt (slice-115): `v0.67.0` trägt `structure` und `links.resolve-from`, der Pin ist gehoben. Die Vorbedingung außerhalb des Repos ist entfallen, nicht offen: `--print-config` zeigt beide CRs umgesetzt |
 | [slice-013](../open/slice-013-driving-driven-vertiefung.md), [slice-045](../open/slice-045-intern-extern-dateimenge.md) | siehe *Nächste Wellen* | vertagt, Evidenz gemessen und zu klein |
 
 Ein Slice, der auf ein Fremdrepo wartet, gehört in **keine** Welle — er würde ihren
