@@ -21,19 +21,19 @@ selben Schritt nach, statt sie dem nächsten Gate-Lauf zu überlassen.
 
 ## 2. Definition of Done
 
-- [ ] Ein Target bewegt einen Slice und zieht **beide** im Bestand vorkommenden Verweis-Formen
+- [x] Ein Target bewegt einen Slice und zieht **beide** im Bestand vorkommenden Verweis-Formen
       nach — `../<verzeichnis>/<datei>` (26 Fundstellen) und
       `docs/plan/planning/<verzeichnis>/<datei>` (2) —, **repo-weit**, nicht nur unter
       `docs/plan/planning/`: `docs/reviews/` trägt gemessen ebenfalls solche Verweise.
-- [ ] Ein Selbsttest belegt die Ersetzung in beiden Richtungen: die zu treffende Form wird
+- [x] Ein Selbsttest belegt die Ersetzung in beiden Richtungen: die zu treffende Form wird
       getroffen, eine **zitierte** oder fremde Form nicht.
-- [ ] Workflow-Skelett (Schritt 9) und [`AGENTS.md`](../../../../AGENTS.md) §5 nennen das Target
+- [x] Workflow-Skelett (Schritt 9) und [`AGENTS.md`](../../../../AGENTS.md) §5 nennen das Target
       statt der Merkregel.
 
-- [ ] `make gates` grün — Ausgabe in eine Datei, Exit-Code getrennt geprüft, nie in eine Pipe.
-- [ ] Closure-Notiz mit benanntem Lerneintrag geschrieben (§7).
-- [ ] Beobachtungs-Register fortgeschrieben.
-- [ ] Jedes Risiko aus §6 trägt genau einen Ausgang.
+- [x] `make gates` grün — Ausgabe in eine Datei, Exit-Code getrennt geprüft, nie in eine Pipe.
+- [x] Closure-Notiz mit benanntem Lerneintrag geschrieben (§7).
+- [x] Beobachtungs-Register fortgeschrieben.
+- [x] Jedes Risiko aus §6 trägt genau einen Ausgang.
 
 ## 3. Plan (vor Code)
 
@@ -84,19 +84,57 @@ zwei Regeln unter einen Namen zu legen.
 
 ## 6. Risiken und offene Punkte
 
-- *Ein `sed` über Dateipfade trifft auch Vorkommen in Code-Blöcken oder Backticks* — anders als
-  bei einem **Sensor** ist das hier meist richtig: ein zitierter Pfad, der auf die bewegte Datei
-  zeigt, ist nach dem `mv` genauso falsch wie ein Link. **Ausgang:** <bei Closure>
-- *Das Werkzeug ersetzt die Aufmerksamkeit nicht, es verschiebt sie* — wer es nicht aufruft, hat
-  denselben Bruch wie vorher. **Ausgang:** <bei Closure>
+- *Ein `sed` über Dateipfade trifft auch Vorkommen in Code-Blöcken oder Backticks* — **Ausgang:**
+  gestrichen mit Begründung: anders als bei einem **Sensor** ist das hier richtig. Ein zitierter
+  Pfad, der auf die bewegte Datei zeigt, ist nach dem `mv` genauso falsch wie ein Link; der
+  Selbsttest führt die zitierte Form darum als **Treffer**, nicht als Gegenprobe.
+- *Das Werkzeug ersetzt die Aufmerksamkeit nicht, es verschiebt sie* — **Ausgang:** weiter offen im
+  **Beobachtungs-Register**: wer `git mv` von Hand fährt, hat denselben Bruch wie vorher. Der
+  Unterschied ist, dass der richtige Weg jetzt **kürzer** ist als der falsche, nicht länger.
 
 ## 7. Closure-Notiz
 
-_(beim Abschluss ausfüllen — genau **ein** solcher Abschnitt je Slice,
-[`AGENTS.md`](../../../../AGENTS.md) §5.)_
+**Geliefert:** `make slice-mv SLICE=<slice-NNN> TO=<zustand>` — der `git mv` samt Nachzug der
+Verweise **auf** die bewegte Datei, repo-weit und in beiden im Bestand gemessenen Formen. Vier
+Fehlerfälle greifen (fehlende Argumente, fremdes Zielverzeichnis, unbekannter Slice, schon dort),
+der Selbsttest fährt fünf Fixtures. Workflow-Skelett Schritt 9,
+[`AGENTS.md`](../../../../AGENTS.md) §4/§5 und die `NICHT_PRUEFEND`-Liste des Guard sind nachgezogen.
 
-**Lerneintrag — Form: <geschärfte Regel | neuer Sensor | benannte Spec-Lücke>**
+**Lerneintrag — Form: geschärfte Regel.** *Wo ein Guide an einer Fehler-Familie schon einmal
+versagt hat, ist die Antwort auf den dritten Vorfall ein Werkzeug — kein zweiter Guide.* Die
+Baseline lässt bei überschrittener Schwelle beides zu („Guide **oder** Sensor"), und die Wahl
+wirkt beliebig, bis man die Trefferquote danebenlegt: [`SL-002`](../observations.md) — dieselbe
+Familie, nur die Gegenrichtung — zählt neun Vorfälle, **zwei davon nach** dem Guide in Schritt 9.
+Ein Guide, der einmal überlesen wurde, wird zweimal überlesen. *Weil* das so ist, ist die Frage
+bei der Schwelle nicht „Guide oder Sensor?", sondern „hat diese Familie schon einen Guide, und hat
+er getragen?". Die stärkere Antwort ist nicht die aufwendigere, sondern die, die den **richtigen
+Weg kürzer macht als den falschen**: `make slice-mv SLICE=… TO=…` ist weniger zu tippen als
+`git mv` plus `grep -rl` plus `sed`.
 
+**Drei beobachtbare Closure-Kriterien:**
+
+1. Der Selbsttest fährt **beide** Richtungen: zwei Fixtures müssen ersetzt werden (Link-Form und
+   zitierte Form), drei dürfen es **nicht** (andere Datei, anderes Verzeichnis, präfixlose
+   Nicht-Form). Ohne die drei Gegenproben wäre eine Ersetzung, die alles umschreibt, von einer
+   korrekten nicht zu unterscheiden.
+2. Der **Drift-Wächter des Guard hat sofort gegriffen** — `guard-selftest` meldete
+   *„Pruef-Target 'slice-mv' fehlt in der GATES-Liste"*, bevor das Target je gelaufen war. Das ist
+   sein zweiter echter Einsatz nach slice-060, und beide Male hat er einen Zustand gemeldet, den
+   niemand gesucht hat. Die Auflösung war nicht Aufnahme, sondern `NICHT_PRUEFEND` **mit
+   Begründung**: der Exit-Code sagt „Bewegung geglückt", nicht „Bestand in Ordnung".
+3. Dieser Slice ist selbst mit dem Werkzeug nach `done/` gewandert — der Beleg steht im
+   Lifecycle-Commit.
+
+**Offene Risiken und ihr Ausgang:** der erste gestrichen mit Begründung, der zweite weiter offen
+im Register.
+
+**Beobachtungs-Register:** [`BEO-008`](../observations.md) ist **verkörpert** in
+`make slice-mv` — die Beobachtung bleibt mit ihrem Zähler stehen, ihr Stand nennt jetzt den Ort.
+Neu ist nichts: der zweite Risiko-Ausgang („das Werkzeug ersetzt die Aufmerksamkeit nicht") ist
+dieselbe Beobachtung, nicht eine weitere.
+
+**Folge-Slices:** [slice-117](../open/slice-117-handbuch-verweis-cli.md) (Handbuch-Verweis) ist
+startbar; der Guide für CR-Texte aus [`BEO-022`](../observations.md) steht weiter aus.
 ## 8. Sub-Area-Modus-Begründung
 
 **Vorgelagert — Sub-Area-Wahl prüfen:** berührt werden die **Gate-/Werkzeug-Schicht** (`tools/`,

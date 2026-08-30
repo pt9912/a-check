@@ -174,6 +174,7 @@ Aggregat). Ob ein Gate gerade grün ist, sagt die CI (Badge im
 | `make suppression-check` | Fitness Function zum Suppression-Verbot (§3.2, [ADR-0005](docs/plan/adr/0005-lint-profil.md)): keine `//nolint`-Direktive in den Go-Quellen — `nolintlint` prüft nur Wohlgeformtheit, nicht Existenz (slice-049) |
 | `make guard-selftest` | Selbsttest des PreToolUse-Command-Guard (Tool-Call-Gate §3.1) |
 | `make regelwerk-check` | **kein Gate** — Wartung der vendored Baseline ([MR-006](harness/conventions.md#mr-006--baseline-committet-vendored-statt-per-url-referenziert)): Integrität gegen `SHA256SUMS` fail-closed; die Freshness-Hälfte bleibt als Netz-Operation ausdrücklich ungeprüft |
+| `make slice-mv` | **kein Gate** — ein Werkzeug: Lifecycle-Wechsel eines Slice per `git mv` **samt der Verweise auf ihn**, repo-weit und in beiden im Bestand vorkommenden Formen (`SLICE=<slice-NNN> TO=<open\|next\|in-progress\|done>`). Antwort auf [`BEO-008`](docs/plan/planning/observations.md) bei 3× (slice-118); die Gegenrichtung — Verweise **in** wandernden Dateien — trägt `doc-check` |
 | `make gates` | alle inneren Gates (mandatory vor Handoff) |
 | `make verify-ac-form` | Form neuer `AC-*` (§5): Happy · Boundary · Negative · Out-of-Scope; die 19 bei Einführung bestehenden sind grandfathered (slice-054) |
 | `make verify-risiko-ausgaenge` | Jedes in §6 **notierte** Risiko trägt genau einen Ausgang aus der geschlossenen Dreier-Menge (§5, ab slice-102). Bleibt lokal, weil die Prüfung §6 mit §7 vergleicht und `structure` abschnitts-**lokal** ist; die strukturelle Hälfte des früheren `verify-closure-notes` liegt seit slice-080 in `doc-structure`. **Nicht** geprüft: die Existenz eines Risiko-Blocks |
@@ -213,7 +214,7 @@ Aggregat). Ob ein Gate gerade grün ist, sagt die CI (Badge im
 - Neue ADRs müssen den ADR-Index aktualisieren.
 - Roadmap/Status-Geschichte lebt in `docs/plan/planning/`, nicht in der
   Architektur-Spec.
-- **Slice-Lifecycle** ist reine Datei-Bewegung (`git mv`, siehe §3.3) — der
+- **Slice-Lifecycle** ist reine Datei-Bewegung (`make slice-mv`, das den `git mv` samt der Verweise **auf** die Datei fährt; siehe §3.3) — der
   Zustand ist das Verzeichnis, kein Feld im Dokument. **Fünf** Übergänge, drei
   vorwärts und zwei zurück:
 

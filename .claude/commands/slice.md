@@ -60,19 +60,24 @@ Eine ADR schärft die Spezifikation, **nie** das Lastenheft.
    laufen lassen — sonst gilt der aufgezeichnete Nachweis für einen älteren Inhaltsstand und der
    Stop-Hook blockiert zu Recht.
 
-9. Lifecycle: `git mv` in den nächsten Zustand als **eigener** Commit, ohne Inhaltsänderung.
+9. Lifecycle: **`make slice-mv SLICE=<slice-NNN> TO=<zustand>`**. Das Target macht den `git mv`
+   **und** zieht die Verweise **auf** die Datei nach — repo-weit, in beiden vorkommenden Formen.
+   Beides gehört in **einen** Commit: der Rename bleibt bei 100 %, die Verweise liegen in
+   *anderen* Dateien (Hard Rule §3.3).
 
-   **Die Verweis-Prüfung läuft schon vorher mit:** seit slice-080 trägt sie das Modul `links`
-   (`links.resolve-from`), also `make doc-check` — und damit `make gates`, nicht mehr `make verify`.
-   Sie prüft die Invariante *„jeder relative Verweis löst aus **jedem**
-   Lifecycle-Verzeichnis auf"* — wer dort grün ist, übersteht den `git mv`.
+   **Von Hand ist es dreimal schiefgegangen** ([`BEO-008`](../../docs/plan/planning/observations.md)):
+   `git mv` bewegt die Datei, die Verweise auf sie bleiben stehen. Gefangen hat es jedes Mal
+   `doc-check` — **nach** dem Wechsel.
 
-   Ist es rot, ist die Korrektur ein **eigener** Commit **vor** dem `git mv` (Hard Rule §3.3).
+   **Die Gegenrichtung läuft schon in Schritt 6 mit:** Verweise *in* wandernden Dateien prüft seit
+   slice-080 das Modul `links` (`links.resolve-from`), also `make doc-check` und damit
+   `make gates`. Invariante: *„jeder relative Verweis löst aus **jedem** Lifecycle-Verzeichnis
+   auf"*. Ist sie rot, ist die Korrektur ein **eigener** Commit **vor** dem `git mv`.
    Der kritische Fall ist die **präfixlose** Nachbardatei (`roadmap.md`), nicht der Pfad mit
-   `../`; richtig ist die zustandsunabhängige Form `../in-progress/roadmap.md`, die aus allen
-   Lifecycle-Verzeichnissen auflöst. Diese Prüfung von Hand nachzubauen lohnt nicht — ein
-   naives `grep` über die Links meldet auch **zitierte** Verweise in Backticks, was der Sensor
-   ausdrücklich ausnimmt ([`SL-002`](../../docs/plan/planning/observations.md)).
+   `../`; richtig ist die zustandsunabhängige Form `../in-progress/roadmap.md`. Diese Prüfung von
+   Hand nachzubauen lohnt nicht — ein naives `grep` über die Links meldet auch **zitierte**
+   Verweise in Backticks, was die Regel ausdrücklich ausnimmt
+   ([`SL-002`](../../docs/plan/planning/observations.md)).
 
 10. Berichten: welche Sensoren liefen, mit echter Ausgabe, und welche Risiken offen bleiben.
     **Keine Erfolgsmeldung ohne Gate-Ausgabe.**

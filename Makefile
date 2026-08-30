@@ -45,7 +45,7 @@ NO_CACHE_FILTER_COV  := --no-cache-filter coverage
 .PHONY: help compile lint test coverage-gate build arch-check arch-graph \
         gate-consistency guard-selftest record-gates gates image-test ci \
         trace-check hooks suppression-check regelwerk-check commit-scope-check \
-        verify verify-risiko-ausgaenge verify-ac-form verify-observations
+        verify verify-risiko-ausgaenge verify-ac-form verify-observations slice-mv
 
 # Gates seriell: unter `make -j` liefen die Sub-Gates sonst parallel und die
 # Reihenfolge/der Abbruch bei rotem Gate wären nicht garantiert.
@@ -100,6 +100,12 @@ verify-observations: ## Deckung des Beobachtungs-Registers: zitierte BEO-Kennung
 
 commit-scope-check: ## Commit-Scope (planning) beruehrt nur docs/plan/planning/ (AGENTS §5, SL-003). MSGFILE=<datei> (Hook, prueft den Index VOR dem Commit), RANGE=a..b (CI), sonst HEAD~1..HEAD.
 	@MSGFILE="$(MSGFILE)" RANGE="$(RANGE)" bash tools/commit-scope-check.sh
+
+# KEIN Gate — ein WERKZEUG. Es prueft nichts, es bewegt: `git mv` plus den Nachzug
+# der Verweise AUF die bewegte Datei (BEO-008, slice-118). Die Gegenrichtung —
+# Verweise IN wandernden Dateien — traegt das Modul `links` (doc-check).
+slice-mv: ## Lifecycle-Wechsel eines Slice samt der Verweise auf ihn (AGENTS §5). SLICE=<slice-NNN> TO=<open|next|in-progress|done>
+	@bash tools/slice-mv.sh "$(SLICE)" "$(TO)"
 
 # Die Teil-Sensoren laufen als Sequenz im selben Rezept, NICHT als
 # Prerequisites: make bricht sonst beim ersten roten Target ab, und wer zwei
