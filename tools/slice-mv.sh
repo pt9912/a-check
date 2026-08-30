@@ -17,7 +17,15 @@
 # waren PRUEFUNGEN — die kann ein Modul uebernehmen. Dies ist eine BEWEGUNG;
 # d-check ist read-only (DC-QA-03) und wird nie eine Datei verschieben.
 #
-# NICHT BEHANDELT (ehrliche Grenze, AC-QA-02): Welle-Plan-Dateien. Sie wechseln
+# NICHT BEHANDELT (ehrliche Grenzen, AC-QA-02) — zwei Stueck.
+#
+# (1) SEMANTIK. Das Werkzeug zieht PFADE nach, keine Aussagen. Die Roadmap-Zeile
+# "In Arbeit: <slice>" bleibt nach dem Wechsel nach done/ stehen und muss von Hand
+# fallen; ihr Verweis ist dann korrekt und ihre Aussage falsch. Beim ersten Einsatz
+# (slice-118 selbst) sofort aufgetreten. Ein Werkzeug, das Zustandssaetze umschreibt,
+# muesste raten, welcher Satz einen Zustand behauptet — das ist Urteil, kein Match.
+#
+# (2) WELLE-PLAN-DATEIEN. Sie wechseln
 # beim Closure-mv die Verzeichnis-TIEFE (flach -> done/), und ein Pfad aus
 # Tiefe n braucht aus n+1 ein zusaetzliches "../" — eine andere Ersetzung als
 # der Verzeichnis-Tausch auf gleicher Ebene (slice-089).
