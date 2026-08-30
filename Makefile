@@ -45,7 +45,7 @@ NO_CACHE_FILTER_COV  := --no-cache-filter coverage
 .PHONY: help compile lint test coverage-gate build arch-check arch-graph \
         gate-consistency guard-selftest record-gates gates image-test ci \
         trace-check hooks suppression-check regelwerk-check commit-scope-check \
-        verify verify-risiko-ausgaenge verify-observations slice-mv
+        verify verify-risiko-ausgaenge verify-observations slice-mv image-scan
 
 # Gates seriell: unter `make -j` liefen die Sub-Gates sonst parallel und die
 # Reihenfolge/der Abbruch bei rotem Gate wären nicht garantiert.
@@ -97,6 +97,11 @@ verify-observations: ## Deckung des Beobachtungs-Registers: zitierte BEO-Kennung
 
 commit-scope-check: ## Commit-Scope (planning) beruehrt nur docs/plan/planning/ (AGENTS §5, SL-003). MSGFILE=<datei> (Hook, prueft den Index VOR dem Commit), RANGE=a..b (CI), sonst HEAD~1..HEAD.
 	@MSGFILE="$(MSGFILE)" RANGE="$(RANGE)" bash tools/commit-scope-check.sh
+
+# KEIN Bestandteil von `gates` — der Scan braucht NETZ, und das ist hier der Zweck,
+# nicht ein Zugestaendnis (ADR-0037). `gates` bleibt hermetisch.
+image-scan: ## CVE-Scan gegen das PUBLIZIERTE Image (Netz, NICHT in gates, Trivy digest-gepinnt; ADR-0037). Skript-Exit 1 = behebbare CRITICAL/HIGH, 2 = gescheitert — ueber make nicht unterscheidbar.
+	@bash tools/image-scan.sh
 
 # KEIN Gate — ein WERKZEUG. Es prueft nichts, es bewegt: `git mv` plus den Nachzug
 # der Verweise AUF die bewegte Datei (BEO-008, slice-118). Die Gegenrichtung —

@@ -214,10 +214,15 @@ if [ "${1:-}" = "--selftest" ]; then
   # `make doc-repair | git apply -` ist der vorgesehene Aufruf, und ein Guard,
   # der ihn blockiert, wuerde umgangen statt befolgt.
   #
+  # `image-scan` steht hier, weil sein Ausgang bestimmungsgemaess WEITERVERARBEITET
+  # wird: make normalisiert jeden Fehlschlag auf Exit 2, also liest der Workflow den
+  # Ausgang aus dem LOG (ADR-0037). Ein Pipe-Verbot schuetzte einen Exit-Code, den
+  # niemand auswerten kann (slice-124).
+  #
   # `slice-mv` steht hier, weil es NICHT prueft, sondern BEWEGT: sein Exit-Code sagt
   # "Bewegung geglueckt", nicht "Bestand in Ordnung". Ein Pipe-Verbot darauf schuetzte
   # keinen Befund — es gibt keinen (slice-118).
-  NICHT_PRUEFEND="help doc-help doc-doctor doc-repair doc-trace compile build arch-graph a-check a-check-graph record-gates hooks slice-mv"
+  NICHT_PRUEFEND="help doc-help doc-doctor doc-repair doc-trace compile build arch-graph a-check a-check-graph record-gates hooks slice-mv image-scan"
   gates_liste="$(sed -n '/const GATES = new Set(\[/,/\]);/p' "$0" | grep -oE '"[a-z][a-z0-9-]*"' | tr -d '"' | tr '\n' ' ')"
   alle_targets="$(grep -hoE '^[a-z][a-z0-9-]*:' Makefile d-check.mk 2>/dev/null | tr -d ':' | sort -u)"
   for t in $alle_targets; do

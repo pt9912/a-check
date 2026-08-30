@@ -23,20 +23,20 @@ auslösen muss.
 
 ## 2. Definition of Done
 
-- [ ] Eine ADR begründet die drei Entscheidungen, die dieser Sensor trifft — **Netz als Zweck**
+- [x] Eine ADR begründet die drei Entscheidungen, die dieser Sensor trifft — **Netz als Zweck**
       (nicht als Zugeständnis), **nicht im `gates`-Aggregat**, und **nur behebbare CRITICAL/HIGH**
       entscheiden über rot. Sie steht im ADR-Index.
-- [ ] `tools/image-scan.sh` + `make image-scan`: Trivy digest-gepinnt, Auswertung als **netzlos
+- [x] `tools/image-scan.sh` + `make image-scan`: Trivy digest-gepinnt, Auswertung als **netzlos
       prüfbare** Funktion mit `--selftest`, fail-closed bei leerer Prüfmenge. Exit 0/1/2.
-- [ ] `.github/workflows/image-scan.yml` fährt ihn zeitgesteuert **und** per `workflow_dispatch`;
+- [x] `.github/workflows/image-scan.yml` fährt ihn zeitgesteuert **und** per `workflow_dispatch`;
       der Ausgang wird aus dem **Log** gelesen, nicht aus dem Exit-Code. Deklaration in
       [`AGENTS.md`](../../../../AGENTS.md) §4 und
       [`harness/README.md`](../../../../harness/README.md) §Sensors.
 
-- [ ] `make gates` grün — Ausgabe in eine Datei, Exit-Code getrennt geprüft, nie in eine Pipe.
-- [ ] Closure-Notiz mit benanntem Lerneintrag geschrieben (§7).
-- [ ] Beobachtungs-Register fortgeschrieben.
-- [ ] Jedes Risiko aus §6 trägt genau einen Ausgang.
+- [x] `make gates` grün — Ausgabe in eine Datei, Exit-Code getrennt geprüft, nie in eine Pipe.
+- [x] Closure-Notiz mit benanntem Lerneintrag geschrieben (§7).
+- [x] Beobachtungs-Register fortgeschrieben.
+- [x] Jedes Risiko aus §6 trägt genau einen Ausgang.
 
 ## 3. Plan (vor Code)
 
@@ -105,21 +105,69 @@ Wochen ein weggeklicktes Abzeichen.
 
 ## 6. Risiken und offene Punkte
 
-- *Der erste Lauf könnte Befunde melden, die dieser Slice nicht behebt* — **Ausgang:** <bei Closure>
-- *Der Zähl-Pfad hängt an Trivys Template-Feldnamen; werden sie umbenannt, rendert das Template
-  nichts und das sähe aus wie ein sauberes Bild* — der Digest-Pin hält das still, solange er steht.
-  **Ausgang:** <bei Closure>
-- *`schedule` ist eine Abtastung, keine Zusage — GitHub schaltet es in inaktiven Repos nach 60
-  Tagen ab, und ein still abgeschalteter Nachtlauf sieht aus wie ein grüner* —
-  **Ausgang:** <bei Closure>
+- *Der erste Lauf könnte Befunde melden, die dieser Slice nicht behebt* — **Ausgang:**
+  eingetreten, **Folge-Slice**. Der Lauf fand **9 behebbare HIGH**, alle in der Go-`stdlib`
+  `v1.26.4` des publizierten Image; die OS-Fläche (vier Debian-Pakete) meldete **0**. Dieser Slice
+  liefert den Sensor, nicht die Sauberkeit — das stand so in §5, bevor gemessen wurde. Die
+  Behebung ist eine Go-Hebung plus Release und damit ein eigener Vorgang.
+- *Der Zähl-Pfad hängt an Trivys Template-Feldnamen* — **Ausgang:** weiter offen im
+  **Beobachtungs-Register**: der Digest-Pin hält es still, solange er steht, und `--selftest`
+  deckt die Auswertung, nicht die Feldnamen. Ein Trivy-Bump muss den Zähl-Pfad gegen einen echten
+  Lauf prüfen, nicht gegen den Selbsttest.
+- *`schedule` ist eine Abtastung, keine Zusage* — **Ausgang:** weiter offen im
+  **Beobachtungs-Register**: GitHub schaltet zeitgesteuerte Workflows in inaktiven Repos nach 60
+  Tagen ab, und ein still abgeschalteter Nachtlauf sieht aus wie ein grüner. `workflow_dispatch`
+  mildert das (der Lauf ist von Hand auslösbar), hebt es aber nicht auf.
 
 ## 7. Closure-Notiz
 
-_(beim Abschluss ausfüllen — genau **ein** solcher Abschnitt je Slice,
-[`AGENTS.md`](../../../../AGENTS.md) §5.)_
+**Geliefert:** `make image-scan` — Trivy `0.74.0` digest-gepinnt gegen
+`ghcr.io/pt9912/a-check:latest`, mit netzlos prüfbarer Auswertung (`--selftest`, sieben
+Fixtures), fail-closed bei leerer Prüfmenge, und dem Nachtlauf
+[`image-scan.yml`](../../../../.github/workflows/image-scan.yml). Dazu
+[ADR-0037](../../adr/0037-cve-scan-gegen-das-publizierte-image.md) für die drei Entscheidungen:
+Netz als Zweck, außerhalb von `gates`, nur behebbare CRITICAL/HIGH entscheiden.
 
-**Lerneintrag — Form: <geschärfte Regel | neuer Sensor | benannte Spec-Lücke>**
+**Lerneintrag — Form: neuer Sensor.** *Ein Gate, das an einen **Commit** gebunden ist, kann eine
+ganze Klasse von Zusagen prinzipiell nicht halten — die, deren Gegenstand sich **ohne** Commit
+ändert.* Das war die Prämisse der ADR, und der erste Lauf hat sie **sofort** belegt: neun
+behebbare HIGH im publizierten Image, während `make gates` über denselben Baum grün ist. Beides
+ist gleichzeitig wahr und widerspricht sich nicht — sie messen verschiedene Gegenstände. *Weil*
+a-check bis heute **kein** Netz-Gate hatte, ließ sich diese Lücke auch nicht per Analogie
+schließen: die Abgrenzung „Netz ist der Zweck, nicht ein Zugeständnis" musste für sich stehen,
+statt sich auf eine bestehende Klasse zu berufen.
 
+**Vier beobachtbare Closure-Kriterien:**
+
+1. **Der Sensor hat beim ersten Lauf gefunden, wofür er gebaut ist:** 9 behebbare HIGH in der
+   Go-`stdlib` `v1.26.4`, OS-Fläche 0. Ein Sensor, dessen Erstlauf nichts findet, ist von einem
+   toten nicht zu unterscheiden.
+2. **Die `make`-Falle ist belegt, nicht behauptet:** das Skript endete mit **1** (behebbare
+   Befunde), `make image-scan` mit **2**. Genau deshalb liest der Workflow den Ausgang aus dem
+   **Log**; wer `rc` auswertete, meldete neun gemessene Befunde als „Scan gescheitert".
+3. Der Selbsttest fährt beide Richtungen — vier Eingaben müssen zählen, eine darf **nicht**
+   (`xx FINDING …`, Marker mitten in der Zeile). Ohne diese Probe wäre `grep FINDING` von
+   `grep '^FINDING '` nicht zu unterscheiden.
+4. Das Target steht in `NICHT_PRUEFEND` des Guard **mit Begründung**: sein Ausgang wird
+   bestimmungsgemäß weiterverarbeitet. Ein Pipe-Verbot schützte hier einen Exit-Code, den niemand
+   auswerten kann.
+
+**Ein Fund am Rande, der beinahe durchgerutscht wäre:** mein erster Workflow trug
+`actions/checkout@de0fac2e… # v5.0.0` — derselbe Digest wie in `ci.yml`, aber mit **falschem**
+Tag-Kommentar (dort steht `v6.0.2`). Der Digest ist die Wahrheit, der Kommentar nur Lesehilfe;
+falsch ist er trotzdem, und er sieht richtig aus. Gefunden hat es der Abgleich gegen die
+bestehenden Workflows, kein Gate — a-check hat keine `workflow_pins`-Prüfung.
+
+**Offene Risiken und ihr Ausgang:** der erste eingetreten (Folge-Slice), die anderen beiden weiter
+offen im Register.
+
+**Beobachtungs-Register:** `BEO-026` neu angelegt (CI-Schicht, 1×, Beleg slice-124): a-check prüft
+die Form seiner Workflow-`uses:`-Einträge nicht — weder den Pin noch die Übereinstimmung von
+Digest und Tag-Kommentar. Der falsche Kommentar oben ist der Beleg.
+
+**Folge-Slices:** die **Go-Hebung auf 1.27** (Maintainer-Wort; `golang:1.27` ist verfügbar,
+`go1.27.0`, Digest ermittelt) samt Release — sie behebt die neun Befunde. Danach der
+**Hebungs-Kanal** (Dependabot), der künftige Fälle dieser Art ohne Handarbeit meldet.
 ## 8. Sub-Area-Modus-Begründung
 
 **Vorgelagert — Sub-Area-Wahl prüfen:** berührt werden die **Gate-/Werkzeug-Schicht** (`tools/`,
