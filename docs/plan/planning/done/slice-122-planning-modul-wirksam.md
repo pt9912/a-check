@@ -84,9 +84,10 @@ können. Ein Wellen-Register führt a-check nicht.
   Register, nicht die Roadmap. Die zweite Modul-Fähigkeit (`closure:`) bleibt deshalb
   unkonfiguriert — **dort** gäbe es die Kollision, mit `doc-structure`.
 - *`doc-planning` im Aggregat macht jeden Lifecycle-Wechsel gate-pflichtig* — **Ausgang:**
-  eingetreten und beabsichtigt. Wer einen Slice bewegt und die Roadmap-Zeile vergisst, bekommt ab
-  jetzt ein rotes Gate statt eines stillen Widerspruchs. Das trifft genau die Lücke, die
-  `make slice-mv` offenlässt: das Werkzeug zieht **Pfade** nach, keine Semantik
+  **gestrichen mit Begründung**: das war kein Risiko, sondern die Wirkung, die der Slice
+  herstellen soll. Wer einen Slice bewegt und die Roadmap-Zeile vergisst, bekommt ab jetzt ein
+  rotes Gate statt eines stillen Widerspruchs. Das trifft genau die Lücke, die `make slice-mv`
+  offenlässt: das Werkzeug zieht **Pfade** nach, keine Semantik
   ([slice-118](../done/slice-118-lifecycle-wechsel-werkzeug.md) §7). Werkzeug und Gate greifen
   jetzt ineinander.
 
@@ -121,15 +122,17 @@ Repo, das keinen Block führt — und genau diese Verwechslung hielt `BEO-014` z
    `BEO-024` aus [slice-121](../done/slice-121-port-richtung-inbound-outbound.md), hier
    vermieden statt eingegangen.
 
-**Offene Risiken und ihr Ausgang:** der erste gestrichen mit Begründung, der zweite eingetreten
-und beabsichtigt.
+**Offene Risiken und ihr Ausgang:** beide **gestrichen mit Begründung**, aus demselben Grund —
+eine gewollte Wirkung ist kein Risiko. Dass die geschlossene Dreier-Menge dafür keine eigene
+Kategorie führt (*eingetreten* meint „schiefgegangen", nicht „so geplant"), ist der zweite
+Register-Eintrag dieses Slice.
 
-**Beobachtungs-Register:** [`BEO-014`](../observations.md) ist **verkörpert** — der Zähler bleibt
+**Beobachtungs-Register:** drei Einträge. [`BEO-014`](../observations.md) ist **verkörpert** — der Zähler bleibt
 bei 2×, sein Stand nennt jetzt den Ort. Damit ist die Beobachtung für `planning` aufgelöst; die
 allgemeinere Familie führt [`BEO-023`](../observations.md) weiter (ein Prüfer ohne Gegenstand
-bleibt unkalibriert).
+bleibt unkalibriert). Neu ist [`BEO-025`](../observations.md) (2×, Belege slice-121 und slice-122): die geschlossene Dreier-Menge der Risiko-Ausgänge kennt keine Kategorie für *„eingetreten und so gewollt"* — beide Male musste eine beabsichtigte Wirkung zu `gestrichen mit Begründung` umformuliert werden.
 
-**Ein zweiter Register-Eintrag fiel dabei an, ungesucht.** [`BEO-006`](../observations.md)
+**Und einer fiel ungesucht an.** [`BEO-006`](../observations.md)
 geht auf **2×**: der Risiko-Ausgang von
 [slice-121](../done/slice-121-port-richtung-inbound-outbound.md) traf die geschlossene
 Dreier-Menge nicht (*„eingetreten und beabsichtigt"* ist keiner der drei) — und fiel erst
@@ -138,7 +141,7 @@ Reihenfolge-Falle, die `BEO-006` seit slice-099 beschreibt, hier zum ersten Mal 
 eingetreten. Korrigiert: es war nie ein Risiko, sondern die Absicht — also **gestrichen
 mit Begründung**.
 
-**Folge-Slices:** keiner zwingend. Offen bleibt [`BEO-024`](../observations.md) — die Zuordnung
+**Folge-Slices:** ein Sensor für [`BEO-006`](../observations.md) — der Zähler steht mit diesem Slice auf **3×**, die Schwelle ist überschritten. Dazu offen: [`BEO-024`](../observations.md) — die Zuordnung
 in zwei Paketen aus [slice-121](../done/slice-121-port-richtung-inbound-outbound.md); sie ist
 strukturell lösbar, indem eine Seite die andere liest.
 ## 8. Sub-Area-Modus-Begründung
