@@ -57,28 +57,31 @@ eine **generische** Invariante prüft, ist ein CR-Kandidat für das Werkzeug —
 kopieren*. d-check hat dieses Muster zweimal gefahren (`vcs` aus `adr-immutable-check.sh`,
 `targets` aus `gate-consistency.sh`), beide Male mit Paritätsbeleg gegen das abgelöste Skript.
 
-**Gemessen an `v0.67.0`.** Die vier sind **nicht** gleich weit — der Lauf gegen einen Scratch-Baum
-mit echter `.d-check.yml` trennt sie:
+**Gemessen an `v0.68.0`** (die Erstmessung lief gegen `v0.67.0`, das CR 3 noch nicht trug — der
+Unterschied steht in der letzten Spalte). Die vier sind **nicht** gleich weit:
 
-| Eigenbau | Deckung durch das Release |
-|---|---|
-| `verify-slice-links` | Vertrag passt eins zu eins (`dirs` + `fixed-dirs`); Probe steht aus |
-| `verify-closure-notes` | strukturelle Hälfte **ja** — `sections: one` fand den Doppeltreffer *Closure-Trigger* / *Closure-Notiz* selbst; zwei Regeln nötig wegen des Abschnitts-Namenswechsels im Bestand. Die Risiko-Ausgangs-Prüfung bleibt lokal: sie vergleicht §6 mit §7, `structure` ist abschnitts-**lokal** |
-| `verify-slice-form` | **nein** — `max-tasks: 3` liefert **9** `section-oversized`, acht davon die Slices 108–115 mit je **7** Task-Items und 2–3 Liefer-Punkten. Der Bestand ist regelkonform; der Zähler misst das Falsche |
-| `verify-ac-form` | **nein** — die **19** grandfatherten Anforderungen sind Abschnitte **einer** Datei, `exempt-paths` ist datei-granular |
+| Eigenbau | Deckung durch `v0.67.0` | Deckung durch `v0.68.0` |
+|---|---|---|
+| `verify-slice-links` | Vertrag passt eins zu eins (`dirs` + `fixed-dirs`); Probe stand aus | **abgelöst** — Probe gefahren, Parität in beide Richtungen |
+| `verify-closure-notes` | strukturelle Hälfte **ja** — `sections: one` fand den Doppeltreffer *Closure-Trigger* / *Closure-Notiz* selbst | **strukturelle Hälfte abgelöst**; die Risiko-Ausgangs-Prüfung bleibt lokal: sie vergleicht §6 mit §7, `structure` ist abschnitts-**lokal** |
+| `verify-slice-form` | **nein** — `max-tasks: 3` lieferte **9** `section-oversized`, acht davon Slices mit 2–3 Liefer-Punkten. Der Bestand war regelkonform; der Zähler maß das Falsche | **abgelöst** — `tasks-ignore-pattern` erklärt die Grundmenge, 229 Dateien / 0 Befunde |
+| `verify-ac-form` | **nein** — die **19** grandfatherten Anforderungen sind Abschnitte **einer** Datei, `exempt-paths` ist datei-granular | **weiterhin nein** — `exempt-section-pattern` erreicht sie, aber ein zwanzigstes AC gibt es nicht: die Menge liefe leer, und die Nullmengen-Härte meldet `section-missing`, wo der Sensor grün lässt |
 
-Die zwei Lücken sind **generisch, nicht a-check-eigen**: die Ziel-Form der Baseline liefert selbst
+Die zwei Lücken waren **generisch, nicht a-check-eigen**: die Ziel-Form der Baseline liefert selbst
 eine DoD mit neun Checkboxen aus, sechs davon pro Slice konstant, und schreibt eine Zeile darüber,
-dass Gate-Läufe und Closure-Pflichten nicht mitzählen. Daraus entsteht **CR 3** (§8). Er ist
-Vorbedingung für die **vollständige** Ablösung — **nicht** für den Beginn dieses Slice.
+dass Gate-Läufe und Closure-Pflichten nicht mitzählen. Daraus entstand **CR 3** (§8) — angenommen
+und in `v0.68.0` umgesetzt.
 
 ## 2. Betroffene Module
 
-Zwei Schichten:
+Drei Schichten:
 
 1. **[`.d-check.yml`](../../../../.d-check.yml)** — Konfiguration der neuen Module.
-2. **`tools/`** — die vier `verify-*.sh` entfallen, dazu ihre Einhängung in
-   [`Makefile`](../../../../Makefile) und die Zeilen in [`AGENTS.md`](../../../../AGENTS.md) §4.
+2. **`tools/`** — zwei `verify-*.sh` entfallen ganz, ein drittes schrumpft auf seinen
+   abschnitts-übergreifenden Kern, `verify-ac-form.sh` bleibt (§6). Dazu die Einhängung in
+   [`Makefile`](../../../../Makefile), die Zeilen in [`AGENTS.md`](../../../../AGENTS.md) §4 und
+   [`harness/README.md`](../../../../harness/README.md) §Sensors sowie die GATES-Liste des Guard.
+3. **`d-check.mk`** — der Pin auf `v0.68.0`, ohne den die zwei neuen Schlüssel ins Leere liefen.
 
 ## 3. Auszuführende Gates
 
@@ -115,21 +118,81 @@ macht als der Sensor, ist genauso ein Bruch wie eines, das weniger fängt.
 
 ## 5. DoD
 
-- [ ] **CR 3 ist als Text geliefert** (§8): die zwei gemessenen Lücken in `structure`, je mit
+- [x] **CR 3 ist als Text geliefert** (§8): die zwei gemessenen Lücken in `structure`, je mit
       Paritäts-Mutations-Beleg, und ohne Verhaltensänderung, solange die neuen Schlüssel fehlen.
-- [ ] Jeder abgelöste Sensor hat einen **Paritäts-Mutations-Beleg** in beide Richtungen. Beleg:
+- [x] Jeder abgelöste Sensor hat einen **Paritäts-Mutations-Beleg** in beide Richtungen. Beleg:
       die Tabelle aus §3, je Zeile ein Lauf gegen Modul **und** (vor dem Entfernen) gegen den
       Sensor.
-- [ ] Die abgelösten `verify-*.sh` sind entfernt, ihre Einhängung in
+- [x] Die abgelösten `verify-*.sh` sind entfernt, ihre Einhängung in
       [`Makefile`](../../../../Makefile) und [`AGENTS.md`](../../../../AGENTS.md) §4 nachgezogen.
       Beleg: `make gate-consistency` grün (Doku ↔ Makefile), `make verify` grün.
-- [ ] `make gates` grün — **Ausgabe in eine Datei**, Exit-Code getrennt geprüft, nie in eine Pipe.
+- [x] `make gates` grün — **Ausgabe in eine Datei**, Exit-Code getrennt geprüft, nie in eine Pipe.
 
 ## 6. Closure-Notiz
 
-_(beim Abschluss ausfüllen — genau **ein** solcher Abschnitt je Slice,
-[`AGENTS.md`](../../../../AGENTS.md) §5; `make verify` prüft das.)_
+**Geliefert:** Zwei Eigenbau-Sensoren sind entfallen (`verify-slice-form.sh`,
+`verify-slice-links.sh`), ein dritter ist auf seinen abschnitts-übergreifenden Kern reduziert und
+heißt jetzt nach dem, was er tut (`verify-risiko-ausgaenge.sh`, 323 → 187 Zeilen). Zusammen **509
+Zeilen Shell weniger, keine Zusage weniger** — jede Befundklasse ist vor dem Entfernen gegen
+Sensor **und** Modul gefahren worden, in beide Richtungen. Der Pin steht auf `v0.68.0`, das CR 3
+aus §8 umsetzt.
 
+**Lerneintrag — Form: geschärfte Regel.** *Ein `hint` gehört nur an eine Regel, deren modul-eigene
+Meldung generisch ist — er gewinnt gegen sie, und wo sie Zahlen oder Namen trägt, kostet er
+Diagnose.* Gemessen: die Kopffeld-Regel meldete achtzehnmal `section-marker-missing`, und mein
+`hint` sagte dazu „Kopf trägt Verantwortlich/Autor/Spec-Stellen" — welche der drei Marken fehlte,
+stand nirgends. Erst nach dem Entfernen des `hint` nannte die modul-eigene Meldung sie:
+`geforderte Marke fehlt: Spec-Stellen:` — und damit auch den Fehler, nämlich dass der Bestand
+`**Berührte Spec-Stellen:**` schreibt und `require-all` keine freie Substring-Suche ist. Dasselbe
+gilt für die Größen-Regel, deren Meldung `trägt 4 Task-Items (3 ignoriert), erlaubt sind 3` drei
+Zahlen führt, die kein verfasster Satz ersetzt. *Weil* der `hint` per Vertrag gewinnt, ist er kein
+additives Feld: ihn zu setzen heißt, die Meldung des Moduls zu **verwerfen**. Er bleibt darum nur
+dort stehen, wo die Regel eine Zusage hütet, die aus dem Grund-Code allein nicht hervorgeht.
+
+**Drei beobachtbare Closure-Kriterien:**
+
+1. Der Paritäts-Mutations-Beleg deckt **beide** Richtungen, je Befundklasse ein Lauf gegen Sensor
+   und Modul: vierter Liefer-Punkt, fehlende Lerneintrag-Form, fehlendes Kopffeld, zwei
+   Closure-Abschnitte, Rumpf aus einer Floskel, präfixloser Verweis — sechsmal `Sensor=2 Modul=2`,
+   und über den unveränderten Bestand `Sensor=0 Modul=0`.
+2. `make verify` läuft grün mit `doc-structure` im Aggregat; `make doc-check` grün mit
+   `links.resolve-from` — 229 Dateien, 0 Befunde.
+3. Die Lifecycle-Invariante hat die **Schicht gewechselt**: sie hing an `verify`, sie hängt jetzt
+   an `gates`. Beobachtbar daran, dass `make doc-check` sie fährt und das Workflow-Skelett in
+   Schritt 9 darauf zeigt statt auf Schritt 8.
+
+**Was nicht abgelöst werden konnte, und warum das kein Rest ist.** `verify-ac-form` bleibt
+vollständig lokal. Das Muster `exempt-section-pattern` erreicht die 19 grandfatherten
+Anforderungen sauber — genau das war CR 3 —, aber es gibt kein zwanzigstes AC. Die Regel liefe
+leer, und d-check meldet dann per Vertrag `section-missing`, während der Sensor die legitime
+Leermenge grün lässt. Das ist der Bruch, den §3 als Abbruchbedingung nennt: *ein Modul, das mehr
+rot macht als der Sensor, ist genauso ein Bruch wie eines, das weniger fängt.* Die Nullmengen-Härte
+ist dabei richtig — sie verhindert das stille Abschalten einer Regel. Sie kollidiert nur mit einem
+Bestand, in dem die geprüfte Menge legitim leer sein darf. Ebenso bleibt die Risiko-Ausgangs-Prüfung
+lokal: sie misst §6 an §7, und `structure` prüft abschnitts-**lokal**.
+
+**Offene Risiken und ihr Ausgang:**
+
+- *Regel (3) verlangt die **nummerierte** Closure-Überschrift, weil d-check zwei Regeln gleicher
+  Identität abweist; ein künftiger Slice mit unnummeriertem Abschnitt entginge ihr* —
+  **Ausgang:** weiter offen im **Beobachtungs-Register**, die Grenze steht im Regel-Kommentar.
+- *Die Identitäts-Regel zwingt zu unterschiedlichen Mustern, wo zwei Bedingungen dieselbe
+  Abschnitts-Menge treffen, aber verschiedenes Grandfathering brauchen* — **Ausgang:** gestrichen
+  mit Begründung: hier war der Unterschied sachlich belegbar (63 von 63 halten die nummerierte
+  Form ein), und ein CR wäre erst fällig, wenn ein Fall auftritt, in dem er es nicht ist.
+- *Verweise **auf** wandernde Slices bleiben ungeprüft* — **Ausgang:** Folge-Slice; der Zähler von
+  `BEO-008` steht mit diesem Slice auf **3×** und hat damit die Schwelle überschritten.
+
+**Beobachtungs-Register:** `BEO-008` auf **3×** erhöht (Beleg slice-080) und als Harness-Lücke
+markiert — dreizehn Verweise aus `done/` zeigten nach dem `git mv` ins Leere, gefangen hat es
+wieder `doc-check` **nach** dem Wechsel. `BEO-005` und `BEO-006` auf die neue Verortung nachgezogen
+(die Platzhalter-Liste lebt als `forbid-pattern`). Bei `BEO-014` ist die zweite Hälfte
+(`doc-structure` ohne Konfigurationsblock) **entfallen** — der Block existiert; für `planning`
+steht die Beobachtung unverändert.
+
+**Folge-Slices:** ein Sensor für `BEO-008` (Verweise auf wandernde Slices); `verify-ac-form` wird
+ablösbar, sobald ein zwanzigstes AC entsteht — dann ist die Menge nicht mehr leer und die
+Nullmengen-Härte kollidiert nicht mehr.
 ## 7. Sub-Area-Modus
 
 Alle berührten Sub-Areas GF.
@@ -143,6 +206,25 @@ ausdrücklich dem Maintainer überlässt — dieselbe Form wie
 ---
 
 ### CR 3 — `structure`: die geprüfte Menge deklarierbar machen
+
+**Ergebnis: angenommen und umgesetzt in `v0.68.0`** (d-check slice-179,
+[dessen ADR-0075](https://github.com/pt9912/d-check/blob/main/docs/plan/adr/0075-erklaerte-teilmenge-in-structure.md)
+nennt „ein eingehender CR eines Adopters" als Anlass). Zwei Abweichungen vom Antrag, beide
+begründet und beide hier nachgemessen:
+
+1. **Der Schlüssel heißt `exempt-section-pattern`, nicht `exempt-sections`.** In `structure`
+   bedeutet das Suffix `-pattern` RE2, und `exclude-sections` ist in zwei anderen Modulen bereits
+   als Liste *literaler* Überschriften vergeben.
+2. **Das Abschnitts-Muster sieht die ROHE Überschriften-Zeile** samt `#`-Folge — wie
+   `section-pattern` daneben. Der Antrag hatte `'^AC-…'` vorgeschlagen; das trifft am realen
+   Lastenheft **nichts**, weil dort `### AC-…` steht. Die umgesetzte Fassung nimmt genau die
+   Falle heraus, in die der Antrag selbst gelaufen war.
+
+Der Antragstext bleibt darunter unverändert stehen — er ist die Lieferung aus §5 DoD 1 und der
+Beleg dafür, was beantragt wurde.
+
+---
+
 
 **Anlass — gemessen, nicht vermutet.** `structure` wendet `max-tasks` und die Abschnitts-Auswahl
 auf die **vorgefundene** Menge an. Das Regelwerk verlangt an zwei Stellen eine **erklärte
