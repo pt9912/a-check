@@ -23,16 +23,16 @@ wurde.
 
 ## 2. Definition of Done
 
-- [ ] [`Dockerfile`](../../../../Dockerfile) pinnt `v2.13.2`: Version **und** Digest gemeinsam
+- [x] [`Dockerfile`](../../../../Dockerfile) pinnt `v2.13.2`: Version **und** Digest gemeinsam
       gehoben, wie bei jedem Basis-Image dieses Repos.
-- [ ] `make lint` ist grün — **oder** die neuen Befunde sind behoben. Kommt eine Regel hinzu, die
+- [x] `make lint` ist grün — **oder** die neuen Befunde sind behoben. Kommt eine Regel hinzu, die
       den Bestand trifft, ist ihre Behandlung Teil dieses Slice: eine Deaktivierung wäre eine
       Schwellen-Senkung und bräuchte nach [`AGENTS.md`](../../../../AGENTS.md) §3.6 eine ADR.
 
-- [ ] `make gates` grün — Ausgabe in eine Datei, Exit-Code getrennt geprüft, nie in eine Pipe.
-- [ ] Closure-Notiz mit benanntem Lerneintrag geschrieben (§7).
-- [ ] Beobachtungs-Register fortgeschrieben.
-- [ ] Jedes Risiko aus §6 trägt genau einen Ausgang.
+- [x] `make gates` grün — Ausgabe in eine Datei, Exit-Code getrennt geprüft, nie in eine Pipe.
+- [x] Closure-Notiz mit benanntem Lerneintrag geschrieben (§7).
+- [x] Beobachtungs-Register fortgeschrieben.
+- [x] Jedes Risiko aus §6 trägt genau einen Ausgang.
 
 ## 3. Plan (vor Code)
 
@@ -74,16 +74,47 @@ Inline-Suppression ist ohnehin verboten (§3.2). Behoben wird der Code, nicht de
 
 ## 6. Risiken und offene Punkte
 
-- *Eine Minor-Stufe bringt neue Prüfungen; der Bestand könnte sie brechen* —
-  **Ausgang:** <bei Closure>
+- *Eine Minor-Stufe bringt neue Prüfungen; der Bestand könnte sie brechen* — **Ausgang:**
+  entfallen, gestrichen mit Begründung: `make lint` läuft über den unveränderten Bestand grün.
+  Keine neue Regel greift, keine Behebung war nötig, und die zweite Hälfte der DoD („oder behoben")
+  blieb ungenutzt. Das ist der günstige Ausgang, nicht der erwartete — er war vor dem Lauf nicht
+  bestimmbar.
 
 ## 7. Closure-Notiz
 
-_(beim Abschluss ausfüllen — genau **ein** solcher Abschnitt je Slice,
-[`AGENTS.md`](../../../../AGENTS.md) §5.)_
+**Geliefert:** Der Lint-Pin steht auf `v2.13.2`, Version und Digest gemeinsam gehoben. `make lint`
+und `make gates` laufen über den unveränderten Bestand grün; `suppression-check` bestätigt, dass
+keine Inline-Suppression entstanden ist.
 
-**Lerneintrag — Form: <geschärfte Regel | neuer Sensor | benannte Spec-Lücke>**
+**Lerneintrag — Form: geschärfte Regel.** *Ein Slice darf eine Ungewissheit **tragen**, statt sie
+wegzuplanen — die DoD nennt dann beide Ausgänge, und der Plan sagt, warum die Messung fehlt.*
+Bei den letzten drei Pin-Hebungen dieses Repos stand jeweils eine Zeile *„das Risiko ist vorab
+gemessen, nicht abgeschätzt"* im Plan, und sie trug: Digest, Fragment-Diff, Sensor-Läufe waren
+vorher bekannt. Hier ging das **nicht** — ob ein Lint-Stand über einen fremden Bestand meldet,
+sagt erst sein Lauf; jede Vorab-Aussage wäre eine Behauptung gewesen, genau die Klasse, die
+[`BEO-022`](../observations.md) zählt. Die ehrliche Form war deshalb nicht „gemessen", sondern
+eine **zweigeteilte DoD** (`grün` **oder** `behoben`) plus der ausdrückliche Satz, was ungemessen
+bleibt. *Weil* eine Ungewissheit im Plan sichtbar ist, verschiebt sie sich nicht stillschweigend
+in die Ausführung.
 
+**Zwei beobachtbare Closure-Kriterien:**
+
+1. Die Hebung ist **vollständig**: Version **und** Digest. Ein gehobener Tag mit stehendem Digest
+   zöge weiterhin das alte Bild — dieselbe Klasse Fehler, die
+   [slice-125](../done/slice-125-go-toolchain-1-27.md) beim Basis-Image vermieden hat.
+2. Der Ausgang steht in der DoD, die ihn vorgesehen hat: die erste Hälfte trat ein, die zweite
+   blieb ungenutzt. Ein Plan, der nur den günstigen Fall kennt, hätte den anderen zur Überraschung
+   gemacht.
+
+**Offene Risiken und ihr Ausgang:** das eine entfallen, gestrichen mit Begründung.
+
+**Beobachtungs-Register:** keine neue Beobachtung. Der Lauf hat nichts gezeigt, was über die
+Hebung hinausweist — und das ausdrücklich festzuhalten ist die Antwort, nicht ein leeres Feld.
+
+**Folge-Slices:** keiner aus diesem Slice. Offen bleibt die Kette aus
+[slice-124](../done/slice-124-image-scan-cve.md) und
+[slice-125](../done/slice-125-go-toolchain-1-27.md): das **Release**, das die Toolchain-Hebung
+veröffentlicht, und danach der **Hebungs-Kanal** (Dependabot).
 ## 8. Sub-Area-Modus-Begründung
 
 **Vorgelagert — Sub-Area-Wahl prüfen:** berührt wird die **Build-Schicht** (`Dockerfile`), wie in

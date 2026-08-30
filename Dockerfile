@@ -4,7 +4,7 @@
 # digest-gepinnt (AC-QA-03 Reproduzierbarkeit). Das Laufzeit-Image ist
 # statisch gelinkt auf distroless/static (AC-QA-02, AC-FA-DIST-001).
 ARG GO_VERSION=1.27.0
-ARG GOLANGCI_LINT_VERSION=v2.12.2
+ARG GOLANGCI_LINT_VERSION=v2.13.2
 
 # ---- deps ------------------------------------------------------------------
 FROM golang:${GO_VERSION}@sha256:0ecdc2a9f6156af6451080bfe3d8382a662fcc4e209608c6f919e643453514c1 AS deps
@@ -22,7 +22,7 @@ COPY . .
 RUN CGO_ENABLED=0 go build -o /tmp/a-check ./cmd/a-check
 
 # ---- lint ------------------------------------------------------------------
-FROM golangci/golangci-lint:${GOLANGCI_LINT_VERSION}@sha256:5cceeef04e53efe1470638d4b4b4f5ceefd574955ab3941b2d9a68a8c9ad5240 AS lint
+FROM golangci/golangci-lint:${GOLANGCI_LINT_VERSION}@sha256:ba07dffad130794ae79ebaa0056809d18c0168f3f846480ffd3eb6c04578b83d AS lint
 WORKDIR /src
 ENV GOFLAGS="-buildvcs=false"
 COPY --from=deps /go/pkg/mod /go/pkg/mod
