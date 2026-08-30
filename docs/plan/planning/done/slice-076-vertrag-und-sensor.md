@@ -30,7 +30,7 @@ sauber begründet; die Doku hat sie nur nie übernommen.
 [`AGENTS.md`](../../../../AGENTS.md) §5 und
 [`harness/conventions.md`](../../../../harness/conventions.md) §Anforderungs-Anlege-Prozess
 verlangen die drei Pfade **im Given/When/Then-Stil**.
-[`tools/verify-ac-form.sh`](../../../../tools/verify-ac-form.sh) prüft, ob vier fettgedruckte
+`tools/verify-ac-form.sh` prüft, ob vier fettgedruckte
 Bezeichner vorkommen — ein AC mit viermal „beliebiger Text" besteht.
 
 **Die zwei Fälle lösen sich gegenläufig auf**, und genau das macht sie zu einem Slice: bei `F-6`
@@ -43,7 +43,7 @@ Zwei Schichten:
 
 1. **Doku** — [`docs/plan/planning/README.md`](../README.md) (`F-6`), und je nach Entscheid
    [`AGENTS.md`](../../../../AGENTS.md) §5 / [`harness/conventions.md`](../../../../harness/conventions.md) (`F-3`).
-2. **`tools/`** — [`verify-ac-form.sh`](../../../../tools/verify-ac-form.sh), falls der Entscheid
+2. **`tools/`** — `verify-ac-form.sh`, falls der Entscheid
    zum Sensor geht.
 
 ## 3. Auszuführende Gates

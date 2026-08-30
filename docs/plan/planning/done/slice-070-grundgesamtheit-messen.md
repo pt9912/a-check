@@ -45,7 +45,7 @@ heute zweierlei: *zu alt* und *nicht erkannt*. Nur das erste ist legitim.
 Eine Schicht: **`tools/`** — `verify-closure-notes.sh`,
 `verify-slice-form.sh`,
 `verify-slice-links.sh`,
-[`verify-ac-form.sh`](../../../../tools/verify-ac-form.sh).
+`verify-ac-form.sh`.
 
 ## 3. Auszuführende Gates
 

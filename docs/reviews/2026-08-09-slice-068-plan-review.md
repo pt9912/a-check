@@ -29,7 +29,7 @@ unabhängigen Laufs.
 - `quelle`: Fund `F-12` aus dem [`welle-12`-Report](2026-08-09-welle-12-unabhaengig.md);
   Roadmap-Trigger; Regelwerk Modul 13
 - `pfad`: `slice-068`-Entwurf @ `4b029e4` Zeilen 68 und 85;
-  [`tools/verify-ac-form.sh:103`](../../tools/verify-ac-form.sh),
+  `tools/verify-ac-form.sh:103`,
   `tools/verify-slice-links.sh:106`
 - `befund`: Eine nichtleere Quelle kann null erkannte Einträge oder nur einen Restbestand
   enthalten; sie bleibt dann nach dem beschriebenen Entscheid grün. Zugleich sind null gefilterte

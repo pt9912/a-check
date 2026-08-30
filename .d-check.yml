@@ -190,3 +190,35 @@ structure:
     exempt-paths:
       - "docs/plan/planning/**/slice-0[0-8][0-9]-*.md"
       - "docs/plan/planning/**/slice-09[0-7]-*.md"
+
+  # (5) AC-Form: jede NEUE Anforderung traegt Happy · Boundary · Negative ·
+  #     Out-of-Scope (AGENTS §5). Loest tools/verify-ac-form.sh ab (slice-120).
+  #
+  #     `exempt-expect-count` ist der Schluessel, an dem diese Abloesung haengt
+  #     (d-check ADR-0078, aus a-checks CR 4). Ohne ihn meldete die Regel heute
+  #     `section-missing`: das Lastenheft traegt genau 19 `### AC-`-Ueberschriften,
+  #     und alle 19 sind grandfathered — die geprueste Menge waere leer, und die
+  #     Nullmengen-Haerte wirft Konfigurationsdefekt und Bestandszustand in einen
+  #     Grund-Code. Die ZAHL trennt beides: stimmt sie, ist die leere Menge der
+  #     deklarierte Zustand; weicht sie ab, meldet `section-exempt-mismatch`.
+  #
+  #     MARKEN-FORM, gemessen statt vom abgeloesten Sensor uebernommen. Die Marken
+  #     tragen den Doppelpunkt und treffen damit die Form, die ALLE 19 bestehenden
+  #     nutzen (`- **Happy:** Given …`, 17 Fundstellen). verify-ac-form suchte
+  #     stattdessen `^**Happy Path:**` — Zeilenanfang OHNE Listen-Marker und mit
+  #     einem Wort, das im Repo NULL mal vorkommt und das die kanonische Quelle
+  #     (harness/conventions.md §Anforderungs-Anlege-Prozess: "Happy/Boundary/
+  #     Negative") nicht kennt. Er haette jede neue AC in Bestandsform beanstandet;
+  #     gemerkt hat es niemand, weil seine Pruefmenge leer war (slice-120).
+  #
+  #     Die 19 stehen damit an ZWEI Orten — in der Aufzählung und als Zahl. Das
+  #     ist Absicht und die eigentliche Zusage: die Aufzählung kann veralten, und
+  #     die Zahl macht das laut statt stumm. Sie wird von Hand nachgezogen; die
+  #     Grandfather-Liste waechst laut AGENTS §5 nicht mit.
+  - files: "spec/lastenheft.md"
+    section-pattern: '^### AC-'
+    sections: each
+    require-all: ["Happy:", "Boundary:", "Negative:", "Out-of-Scope:"]
+    exempt-section-pattern: '^### (AC-FA-RULE-0(0[1-9]|1[01])|AC-FA-EXTRACT-001|AC-FA-CLI-00[12]|AC-FA-CONF-001|AC-FA-DIST-001|AC-QA-0[123])\b'
+    exempt-expect-count: 19
+    hint: "neue AC braucht Happy, Boundary, Negative und Out-of-Scope (AGENTS §5); die 19 bei Einfuehrung bestehenden sind grandfathered"

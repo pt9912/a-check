@@ -23,18 +23,18 @@ entfällt: `verify-ac-form` geht ins Modul `structure` über.
 
 ## 2. Definition of Done
 
-- [ ] Der Pin steht auf `v0.69.0`, das Fragment ist aus `--print-mk` **neu erzeugt** (nicht
+- [x] Der Pin steht auf `v0.69.0`, das Fragment ist aus `--print-mk` **neu erzeugt** (nicht
       zeilenweise getauscht, slice-115), der Digest aus **zwei** Quellen belegt.
-- [ ] Eine fünfte `structure`-Regel deckt die AC-Form mit `exempt-expect-count: 19`; die 19
+- [x] Eine fünfte `structure`-Regel deckt die AC-Form mit `exempt-expect-count: 19`; die 19
       grandfatherten Anforderungen bleiben ausgenommen, ein zwanzigstes `AC-*` wird geprüft.
-- [ ] `tools/verify-ac-form.sh` ist entfernt, seine Einhängung in
+- [x] `tools/verify-ac-form.sh` ist entfernt, seine Einhängung in
       [`Makefile`](../../../../Makefile), [`AGENTS.md`](../../../../AGENTS.md) §4 und der
       GATES-Liste des Guard nachgezogen. Beleg: Paritäts-Mutations-Probe in **beide** Richtungen.
 
-- [ ] `make gates` grün — Ausgabe in eine Datei, Exit-Code getrennt geprüft, nie in eine Pipe.
-- [ ] Closure-Notiz mit benanntem Lerneintrag geschrieben (§7).
-- [ ] Beobachtungs-Register fortgeschrieben.
-- [ ] Jedes Risiko aus §6 trägt genau einen Ausgang.
+- [x] `make gates` grün — Ausgabe in eine Datei, Exit-Code getrennt geprüft, nie in eine Pipe.
+- [x] Closure-Notiz mit benanntem Lerneintrag geschrieben (§7).
+- [x] Beobachtungs-Register fortgeschrieben.
+- [x] Jedes Risiko aus §6 trägt genau einen Ausgang.
 
 ## 3. Plan (vor Code)
 
@@ -86,18 +86,73 @@ der nur noch sich selbst bestätigt.*
 ## 6. Risiken und offene Punkte
 
 - *Die Zahl `19` steht ab jetzt an zwei Orten — in der Aufzählung und als Deklaration* —
-  **Ausgang:** <bei Closure>
-- *Der Befund bricht laut Änderungsprotokoll des Empfängers die **Datei** ab und verdeckt den Rest*
-  — das ist bei einer Datei mit **einer** Regel folgenlos, bei mehreren nicht.
-  **Ausgang:** <bei Closure>
+  **Ausgang:** gestrichen mit Begründung: das ist nicht die Redundanz, sondern die **Zusage**. Eine
+  Aufzählung allein kann veralten, ohne dass es auffällt; die Zahl macht genau das laut. Der
+  Empfänger nennt die Kehrseite selbst — wer die Zahl mitzieht, ohne die Aufzählung zu prüfen, hat
+  einen Wächter, der nur noch sich selbst bestätigt —, und die steht als Grenze im
+  Konfigurations-Kommentar.
+- *Der Befund bricht die **Datei** ab und verdeckt den Rest* — **Ausgang:** weiter offen im
+  **Beobachtungs-Register** als Teil von `BEO-023`: heute folgenlos, weil genau **eine** Regel auf
+  `spec/lastenheft.md` zeigt. Kommt eine zweite dazu, verdeckt ein `section-exempt-mismatch` sie.
 
 ## 7. Closure-Notiz
 
-_(beim Abschluss ausfüllen — genau **ein** solcher Abschnitt je Slice,
-[`AGENTS.md`](../../../../AGENTS.md) §5.)_
+**Geliefert:** Der Pin steht auf `v0.69.0` (Digest aus zwei Quellen, Fragment neu erzeugt), eine
+fünfte `structure`-Regel deckt die AC-Form mit `exempt-expect-count: 19`, und
+`tools/verify-ac-form.sh` ist entfallen. Damit ist die Ablösung aus
+[slice-080](../done/slice-080-verify-abloesung-dcheck.md) **vollständig**: alle vier Eigenbau-Sensoren
+sind in Modulen aufgegangen, zusammen **653 Zeilen** Shell.
 
-**Lerneintrag — Form: <geschärfte Regel | neuer Sensor | benannte Spec-Lücke>**
+**Lerneintrag — Form: geschärfte Regel.** *Ein Prüfer mit leerer Prüfmenge meldet grün und ist
+damit nicht „unbenutzt", sondern **unkalibriert** — seine Zusage ist ungeprüft, solange kein
+Gegenstand entsteht.* Die Paritäts-Probe hat einen Sensor gefunden, der seit slice-054 grün im
+Aggregat stand und **jede** neue Anforderung falsch beanstandet hätte. Er suchte
+`^**Happy Path:**` — Zeilenanfang **ohne** Listen-Marker, mit einem Wort, das im Repo **null**
+mal vorkommt und das die kanonische Quelle nicht kennt
+([`harness/conventions.md`](../../../../harness/conventions.md) §Anforderungs-Anlege-Prozess sagt
+*„Happy/Boundary/Negative"*). Alle 19 bestehenden schreiben `- **Happy:**` als Listenpunkt.
 
+*Weil* seine Prüfmenge leer war, konnte das nicht auffallen: er meldete `0 neue AC(s) geprueft, 19
+grandfathered` — und das ist **korrekt**. Die Leermenge auszuweisen (slice-070, Fund F-12) schützt
+also vor dem stillen Verschwinden des Prüfbestands, **nicht** vor einer falschen Zusage über einen
+Gegenstand, den es nie gab. Das sind zwei verschiedene Ehrlichkeiten.
+
+Aufgedeckt hat es nicht das Lesen, sondern die **Probe mit einem echten zwanzigsten `AC-*`**. Ohne
+sie wäre der Fehler entweder mit dem Skript verschwunden (folgenlos) oder ins Modul kopiert worden
+(verewigt) — und die Ablösung hätte in beiden Fällen „Parität" gemeldet.
+
+**Drei beobachtbare Closure-Kriterien:**
+
+1. Die Proben-Matrix trennt Sensor und Modul in **vier** Formen, nicht in einer:
+
+   | Probe | Form der neuen AC | Sensor | Modul |
+   |---|---|---|---|
+   | A | ohne die vier Bausteine | rot | rot |
+   | B | `- **Happy:**` — Bestandsform aller 19 | **rot** | grün |
+   | B′ | `- **Happy Path:**` | **rot** | grün |
+   | B″ | `**Happy Path:**` ohne Listen-Marker | grün | **rot** |
+   | C | unverändert, 0 neue | grün | grün |
+
+   Der Sensor ist **nur** in einer Form grün, die keine bestehende Anforderung hat.
+2. Das ist **keine Lockerung** ([`AGENTS.md`](../../../../AGENTS.md) §3.6, also ohne ADR
+   zulässig): ein Gate, das jede gültige Eingabe rot meldet, ist nicht streng, sondern kaputt. Die
+   neue Regel misst gegen die **kanonische Quelle** und gegen den Bestand — der Sensor gegen
+   keines von beidem.
+3. Die Deklaration ist widerlegbar: `18` statt `19` liefert `section-exempt-mismatch` mit **beiden**
+   Zahlen. Eine Erlaubnis (`exempt-may-empty`, die erste Antragsform) hätte das nicht geleistet.
+
+**Offene Risiken und ihr Ausgang:** der erste gestrichen mit Begründung, der zweite weiter offen im
+Register.
+
+**Beobachtungs-Register:** `BEO-023` neu angelegt (Gate-/Werkzeug-Schicht, 1×, Beleg slice-120):
+ein Prüfer mit leerer Prüfmenge bleibt unkalibriert. Verwandt mit `BEO-014` (aktiviertes Modul
+**ohne Konfiguration** meldet grün), aber verschieden: dort fehlt der Gegenstand der
+Konfiguration, hier der Gegenstand der Prüfung.
+
+**Folge-Slices:** [slice-117](../open/slice-117-handbuch-verweis-cli.md) — und der bekommt durch
+dieses Release eine Präzedenz: `v0.69.0` löst dieselbe Aufgabe für das Schwester-Tool und wählt
+**dieselbe** URL-Form (Hauptzweig, ohne Versionsangabe, mit Verweis auf den Software-Versions-
+Stempel im Handbuch-Kopf) — unabhängig gefunden, bevor slice-117 geschnitten war.
 ## 8. Sub-Area-Modus-Begründung
 
 **Vorgelagert — Sub-Area-Wahl prüfen:** berührt wird die **Gate-/Werkzeug-Schicht**

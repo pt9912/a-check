@@ -62,7 +62,7 @@ Anhang ist **nicht** Teil des unabhängigen Laufs.
   [`harness/conventions.md`](../../harness/conventions.md) §Anforderungs-Anlege-Prozess
 - `pfad`: [`AGENTS.md:198`](../../AGENTS.md),
   [`harness/conventions.md:311`](../../harness/conventions.md),
-  [`tools/verify-ac-form.sh:47`](../../tools/verify-ac-form.sh)
+  `tools/verify-ac-form.sh:47`
 - `befund`: Der Vertrag verlangt Happy/Boundary/Negative im Given/When/Then-Stil und behauptet
   deren Durchsetzung. Der Sensor prüft nur vier fettgedruckte Bezeichner; ein neues AC mit viermal
   „beliebiger Text" wurde als vollständig akzeptiert.
@@ -174,7 +174,7 @@ Der im Auftrag vorgegebene Defekt von Item 6 wurde nicht nochmals als eigenes Fi
 - `pfad`: `tools/verify-closure-notes.sh:116`,
   `tools/verify-slice-form.sh:114`,
   `tools/verify-slice-links.sh:106`,
-  [`tools/verify-ac-form.sh:103`](../../tools/verify-ac-form.sh)
+  `tools/verify-ac-form.sh:103`
 - `befund`: In einer leeren Planning-/Lastenheft-Fixture meldeten alle vier Sensoren Exit 0 und
   ausdrücklich „0 … ok". Ein verschwundener Prüfbestand wird damit als erfüllte Verifikation
   behandelt.

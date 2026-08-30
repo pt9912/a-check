@@ -8,13 +8,16 @@
 # direkt über DCHECK_IMAGE oder bequemer über DCHECK_DIGEST (sticht den Tag):
 #   DCHECK_DIGEST = sha256:<digest>
 #
-# a-check-Anpassung (einzige, slice-019/slice-036/slice-115/slice-080): DCHECK_DIGEST
-# ist auf den v0.68.0-Release-Digest gepinnt (Digest sticht Tag → Reproduzierbarkeit
-# sinngemäß AC-QA-03). Sonst verbatim aus `d-check:v0.68.0 --print-mk`.
+# a-check-Anpassung (einzige, slice-019/slice-036/slice-115/slice-080/slice-120):
+# DCHECK_DIGEST ist auf den v0.69.0-Release-Digest gepinnt (Digest sticht Tag →
+# Reproduzierbarkeit sinngemäß AC-QA-03). Sonst verbatim aus `d-check:v0.69.0 --print-mk`.
 # Refresh/Bump: `docker run --rm ghcr.io/pt9912/d-check:vX --print-mk`, dann
 # DCHECK_DIGEST via `docker inspect --format '{{index .RepoDigests 0}}'` neu setzen.
-DCHECK_IMAGE ?= ghcr.io/pt9912/d-check:v0.68.0
-DCHECK_DIGEST ?= sha256:c4acc96310b6f4463235464730917156b21637495156b305acf63cb91b1d2449
+#
+# Benutzerhandbuch (aufgabenorientiert, deutsch):
+#   https://github.com/pt9912/d-check/blob/main/docs/user/benutzerhandbuch.md
+DCHECK_IMAGE ?= ghcr.io/pt9912/d-check:v0.69.0
+DCHECK_DIGEST ?= sha256:dca9b3504e8d9dabfbe1a2c7ad975f5be10613328c0026981f5fcfd792f42f78
 # TRACE_FLAGS: optionale Flags für die RTM-Targets (z. B. --json).
 TRACE_FLAGS ?=
 

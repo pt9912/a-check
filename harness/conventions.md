@@ -146,7 +146,7 @@ Pflicht-Bausteine pro Anforderung:
 - **Drei Akzeptanzkriterien** (Happy/Boundary/Negative im
   Given/When/Then-Stil) plus explizite **Out-of-Scope**-Liste.
   **Maschinell geprüft ist davon nur, dass die vier Bausteine benannt sind**
-  (`make verify-ac-form`, ab slice-054); ob ein Kriterium tatsächlich im
+  (`make doc-structure`, ab slice-054, seit slice-120 im Modul `structure`); ob ein Kriterium tatsächlich im
   Given/When/Then-Stil formuliert ist, bleibt **Review-Sache** — dieselbe Grenze
   wie bei „höchstens zwei Schichten" der Slice-Form. Bis slice-076 las sich diese
   Zeile, als wäre auch der Stil durchgesetzt.

@@ -45,7 +45,7 @@ NO_CACHE_FILTER_COV  := --no-cache-filter coverage
 .PHONY: help compile lint test coverage-gate build arch-check arch-graph \
         gate-consistency guard-selftest record-gates gates image-test ci \
         trace-check hooks suppression-check regelwerk-check commit-scope-check \
-        verify verify-risiko-ausgaenge verify-ac-form verify-observations slice-mv
+        verify verify-risiko-ausgaenge verify-observations slice-mv
 
 # Gates seriell: unter `make -j` liefen die Sub-Gates sonst parallel und die
 # Reihenfolge/der Abbruch bei rotem Gate wären nicht garantiert.
@@ -92,9 +92,6 @@ regelwerk-check: ## Wartung (KEIN Gate): Integritaet der vendored Baseline gegen
 verify-risiko-ausgaenge: ## Jedes in §6 notierte Risiko traegt einen Ausgang aus der Dreier-Menge (AGENTS §5, ab slice-102).
 	@bash tools/verify-risiko-ausgaenge.sh
 
-verify-ac-form: ## Form neuer Akzeptanzkriterien (Happy/Boundary/Negative + Out-of-Scope); die 19 bestehenden grandfathered.
-	@bash tools/verify-ac-form.sh
-
 verify-observations: ## Deckung des Beobachtungs-Registers: zitierte BEO-Kennung hat eine Zeile, jede Zeile traegt formgebundene Belege.
 	@bash tools/verify-observations.sh
 
@@ -127,7 +124,6 @@ slice-mv: ## Lifecycle-Wechsel eines Slice samt der Verweise auf ihn (AGENTS §5
 verify: ## Verifikations-Schicht: DoD-/Closure-Fragen (vor der "fertig"-Meldung; getrennt von gates).
 	@fail=0; \
 	bash tools/verify-risiko-ausgaenge.sh || fail=1; \
-	bash tools/verify-ac-form.sh       || fail=1; \
 	bash tools/verify-observations.sh  || fail=1; \
 	$(MAKE) --no-print-directory doc-structure || fail=1; \
 	if [ "$$fail" -ne 0 ]; then \
