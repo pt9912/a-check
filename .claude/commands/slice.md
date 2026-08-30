@@ -52,7 +52,9 @@ Eine ADR schärft die Spezifikation, **nie** das Lastenheft.
 
 7. Doku/Indizes nachziehen, falls ein öffentlicher Vertrag berührt ist (Lastenheft, Spezifikation,
    Benutzerhandbuch, ADR-Index, CHANGELOG).
-8. Closure-Notiz schreiben — genau eine, ausgefüllt, mit mindestens einem von drei Inhalten
+8. Closure-Notiz schreiben — genau eine, ausgefüllt, mit mindestens einem von drei Inhalten.
+   **Hat der Slice eine `AC-*`-Anforderung angelegt, steht ihre Kennung hier** (im Plan konnte
+   sie nicht stehen — sie existierte noch nicht; `make doc-complete` prüft es).
    (Lernsignal *mit Ursache* · konkretes Folge-Slice · beobachtbare Architektur-Aussage), dann:
 
    ```sh

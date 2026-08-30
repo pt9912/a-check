@@ -121,7 +121,7 @@ ein eigener Slice, sonst trägt dieser vier Liefer-Punkte statt drei.
 
 ## 7. Closure-Notiz
 
-**Geliefert:** `a-check --help` trägt eine vollständige Usage-Ausgabe — Kurzbeschreibung,
+**Geliefert:** [AC-FA-CLI-003](../../../../spec/lastenheft.md#ac-fa-cli-003--usage-ausgabe-und-handbuch-verweis) — `a-check --help` trägt eine vollständige Usage-Ausgabe — Kurzbeschreibung,
 Aufruf-Syntax mit Pfad-Parameter, Options-Liste, Konfigurations-Hinweis und die Handbuch-URL;
 dieselbe URL steht im Kopfkommentar des `--print-mk`-Fragments. **Eine** Konstante im Code speist
 beide. Vorher gab `--help` nur Go's Default aus: `Usage of a-check:` plus drei Flags.

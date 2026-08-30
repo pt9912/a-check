@@ -23,20 +23,20 @@ Vollständigkeits-Gate hängt an `verify`.
 
 ## 2. Definition of Done
 
-- [ ] Die bestehende Waise ist behoben — der Slice, der die Anforderung umgesetzt hat, nennt ihre
+- [x] Die bestehende Waise ist behoben — der Slice, der die Anforderung umgesetzt hat, nennt ihre
       Kennung in der Closure-Notiz. Beleg: `make doc-complete` meldet **0 Waisen**, Exit 0.
-- [ ] `doc-complete` hängt im `verify`-Aggregat; [`AGENTS.md`](../../../../AGENTS.md) §4 und
+- [x] `doc-complete` hängt im `verify`-Aggregat; [`AGENTS.md`](../../../../AGENTS.md) §4 und
       [`harness/README.md`](../../../../harness/README.md) §Sensors führen es nicht mehr als
       **advisory**, sondern mit seiner Bindung.
-- [ ] Die **Ursache** ist als Regel benannt, nicht nur der Einzelfall: wer eine Anforderung
+- [x] Die **Ursache** ist als Regel benannt, nicht nur der Einzelfall: wer eine Anforderung
       anlegt, kann ihre Kennung im Plan nicht verlinken (sie existiert noch nicht) — **in der
       Closure-Notiz existiert sie**. Das steht im Workflow-Skelett und in
       [`AGENTS.md`](../../../../AGENTS.md) §5.
 
-- [ ] `make gates` grün — Ausgabe in eine Datei, Exit-Code getrennt geprüft, nie in eine Pipe.
-- [ ] Closure-Notiz mit benanntem Lerneintrag geschrieben (§7).
-- [ ] Beobachtungs-Register fortgeschrieben.
-- [ ] Jedes Risiko aus §6 trägt genau einen Ausgang.
+- [x] `make gates` grün — Ausgabe in eine Datei, Exit-Code getrennt geprüft, nie in eine Pipe.
+- [x] Closure-Notiz mit benanntem Lerneintrag geschrieben (§7).
+- [x] Beobachtungs-Register fortgeschrieben.
+- [x] Jedes Risiko aus §6 trägt genau einen Ausgang.
 
 ## 3. Plan (vor Code)
 
@@ -83,17 +83,63 @@ ist genau die Regel, die verhindert, dass Kennungen ins Leere zeigen.
 
 ## 6. Risiken und offene Punkte
 
-- *Die Regel verlagert Arbeit in die Closure, die dort vergessen werden kann* — **Ausgang:** <bei Closure>
+- *Die Regel verlagert Arbeit in die Closure, die dort vergessen werden kann* — **Ausgang:**
+  gestrichen mit Begründung: genau deshalb steht sie nicht allein als Guide da. `doc-complete`
+  hängt seit diesem Slice im `verify`-Aggregat und läuft beim Abschluss jedes Slice — vergessen
+  wird ab jetzt gemeldet, nicht überlesen. Ein Guide **plus** Sensor, nicht ein Guide statt eines.
 - *`doc-complete` im `verify`-Aggregat macht jede neue Anforderung sofort abschluss-blockierend* —
-  **Ausgang:** <bei Closure>
+  **Ausgang:** gestrichen mit Begründung: das ist die Wirkung, die der Slice herstellt, und sie
+  ist wohlfeil zu erfüllen — eine Kennung mit Link in der Closure-Notiz. Wer eine Anforderung
+  anlegt und in **keinem** Slice nennt, hat sie nicht belegt; das früh zu sagen ist billiger als
+  spät.
 
 ## 7. Closure-Notiz
 
-_(beim Abschluss ausfüllen — genau **ein** solcher Abschnitt je Slice,
-[`AGENTS.md`](../../../../AGENTS.md) §5.)_
+**Geliefert:** Die Waise ist behoben (`make doc-complete`: **20 Anforderungen, 0 Waisen**), das
+Vollständigkeits-Gate hängt im `verify`-Aggregat, und die Ursache steht als Regel in
+[`AGENTS.md`](../../../../AGENTS.md) §5 und im Workflow-Skelett — nicht nur der Einzelfall.
 
-**Lerneintrag — Form: <geschärfte Regel | neuer Sensor | benannte Spec-Lücke>**
+**Lerneintrag — Form: geschärfte Regel.** *Wo zwei Regeln einen Zielkonflikt erzeugen, ist die
+Lösung oft kein Nachgeben, sondern ein anderer **Zeitpunkt**.* Hier standen zwei Zusagen
+gegeneinander, beide richtig: IDs werden **referenziert statt erfunden** (im Plan existiert die
+neue Kennung nicht), und jede genannte Kennung ist **linkpflichtig** (ein Link ins Leere macht
+`doc-check` rot). Der Plan konnte die Anforderung also nur umschreiben — und wurde damit für die
+Requirements-Matrix unsichtbar. Beide Regeln zu behalten wirkt nach Widerspruch, bis man fragt,
+*wann* die Kennung existiert: **bei der Closure**. Dort ist die Anforderung geschrieben, der Link
+löst auf, und die Matrix sieht den Slice. *Weil* die Auflösung am Zeitpunkt hängt und nicht am
+Regeltext, wäre jede Lockerung — Linkpflicht aufweichen, Planning-Dateien aus `ids` nehmen — teuer
+und unnötig gewesen.
 
+**Drei beobachtbare Closure-Kriterien:**
+
+1. `make doc-complete` meldet **0 Waisen** bei 20 Anforderungen; vor diesem Slice war es 1 Waise
+   und Exit 1.
+2. Die Prüfung läuft ab jetzt **von selbst**: `doc-complete` steht im `verify`-Aggregat, das jeder
+   Slice-Abschluss fährt. Vorher war es advisory und lief nie — aufgefallen ist die Waise nur,
+   weil jemand das Target von Hand aufrief.
+3. Regel und Sensor greifen ineinander:
+   [`AGENTS.md`](../../../../AGENTS.md) §5 sagt **wo** die Kennung hingehört (Closure-Notiz) und
+   **warum** sie im Plan nicht stehen kann; `doc-complete` prüft, dass sie irgendwo steht. Keiner
+   der beiden allein hätte den Fall gefangen.
+
+**Der Anlass war die eigene Arbeit dieser Sitzung.**
+[slice-117](../done/slice-117-handbuch-verweis-cli.md) hat
+[AC-FA-CLI-003](../../../../spec/lastenheft.md#ac-fa-cli-003--usage-ausgabe-und-handbuch-verweis)
+angelegt, umgesetzt, getestet und im Handbuch dokumentiert — und die Kennung **null** mal genannt.
+Die Traceability-Matrix führte sie als Waise, während jede inhaltliche Zusage erfüllt war. Das ist
+kein Flüchtigkeitsfehler, sondern die vorhersehbare Folge des Zielkonflikts: **jeder** Slice, der
+eine Anforderung anlegt, läuft hinein.
+
+**Offene Risiken und ihr Ausgang:** beide gestrichen mit Begründung.
+
+**Beobachtungs-Register:** [`BEO-023`](../observations.md) auf **2×** erhöht (Beleg slice-123) und
+um die zweite Form erweitert: ein Prüfer bleibt nicht nur ohne **Gegenstand** unkalibriert,
+sondern auch ohne **Aufruf**. `doc-complete` war beides nicht — es hatte einen Gegenstand und
+hätte gemeldet; es lief nur nie.
+
+**Folge-Slices:** ein Sensor für [`BEO-006`](../observations.md) (3×, Schwelle überschritten)
+bleibt der nächste; dazu [`BEO-024`](../observations.md) und die Entscheidung zu
+[`BEO-025`](../observations.md).
 ## 8. Sub-Area-Modus-Begründung
 
 **Vorgelagert — Sub-Area-Wahl prüfen:** berührt wird die **Gate-/Werkzeug-Schicht** (`Makefile`)

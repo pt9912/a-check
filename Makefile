@@ -126,6 +126,7 @@ verify: ## Verifikations-Schicht: DoD-/Closure-Fragen (vor der "fertig"-Meldung;
 	bash tools/verify-risiko-ausgaenge.sh || fail=1; \
 	bash tools/verify-observations.sh  || fail=1; \
 	$(MAKE) --no-print-directory doc-structure || fail=1; \
+	$(MAKE) --no-print-directory doc-complete  || fail=1; \
 	if [ "$$fail" -ne 0 ]; then \
 	  echo "[verify] FAIL — mindestens eine Verifikations-Frage ist offen; alle Befunde stehen oben." >&2; \
 	  exit 1; \

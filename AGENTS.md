@@ -145,18 +145,19 @@ Gates sind die häufigste Form von Harness-Lüge (Baseline-Regelwerk `modul-13-q
 Nur hier gelistete Targets existieren im Makefile. Halluzinierte Gates
 sind die häufigste Form von Harness-Lüge; `make gate-consistency` erzwingt
 die Übereinstimmung Doku ↔ Makefile mechanisch. Die Code-Gates sind
-Dockerfile-Stages, die Meta-Gates laufen als Host-Bash. **Mandatory** ist,
-was im `gates`-Aggregat hängt; die `doc-*`-Targets jenseits von `doc-check`
-und `doc-immutable` sind **advisory** (`d-check`-Funktionen, nicht im
-Aggregat). Ob ein Gate gerade grün ist, sagt die CI (Badge im
-[`README.md`](README.md)), nicht diese Tabelle.
+Dockerfile-Stages, die Meta-Gates laufen als Host-Bash. **Mandatory** ist, was in einem der
+beiden Aggregate hängt: `gates` (Code-Fragen) oder `verify` (DoD-/Closure-Fragen). Von den
+`doc-*`-Targets sind das `doc-check`, `doc-targets`, `doc-planning` und `doc-immutable` (in
+`gates`) sowie `doc-structure` und `doc-complete` (in `verify`); die übrigen sind **advisory** —
+`d-check`-Funktionen, die man aufruft, wenn man sie braucht. Ob ein Gate gerade grün ist, sagt
+die CI (Badge im [`README.md`](README.md)), nicht diese Tabelle.
 
 | Target | Zweck |
 |---|---|
 | `make doc-check` | Doku-Links/Anker/Kennungen via `d-check` (Schwester-Tool, digest-gepinnt, netzlos, read-only); seit slice-080 zusätzlich die **Lifecycle-Invariante** ([`SL-002`](docs/plan/planning/observations.md)) über `links.resolve-from` — sie hat `verify-slice-links` abgelöst und liegt damit in der Gate- statt der Verifikations-Schicht |
 | `make doc-trace` | advisory Requirements Traceability Matrix via `d-check` (DC-FA-CLI-009; `TRACE_FLAGS=--json`) |
-| `make doc-complete` | Vollständigkeits-Gate: Requirements-Waise ⇒ Exit 1 (DC-FA-CLI-011) |
-| `make doc-doctor` | erklärende Diagnose mit Fix-Kandidaten (DC-FA-CLI-007) |
+| `make doc-complete` | Vollständigkeits-Gate: eine Anforderung ohne referenzierenden Slice ⇒ Exit 1 (DC-FA-CLI-011). Seit slice-123 **im `verify`-Aggregat** — davor advisory und damit nie gelaufen; eine Waise fiel erst auf, als jemand das Target von Hand aufrief |
+| `make doc-doctor` | erklärende Diagnose mit Fix-Kandidaten (DC-FA-CLI-007) — **advisory** |
 | `make doc-repair` | Reparatur-Patch (unified diff) auf stdout, git-apply-rein (DC-FA-CLI-008) |
 | `make doc-immutable` | ADR-Immutabilität (§3.5) via git-Diff (Modul `vcs`; `RANGE=`/`STAGED=1`, DC-FA-VCS-001) — **CI-durchgesetzt** über die Commit-Range ([`ci.yml`](.github/workflows/ci.yml)) |
 | `make doc-commits` | Commit-Message-Traceability (Modul `commits`; `RANGE=`, DC-FA-COMMITS-001) |
@@ -207,6 +208,13 @@ Aggregat). Ob ein Gate gerade grün ist, sagt die CI (Badge im
   eine Regel, die den Bestand massenhaft bricht, wird abgeschaltet statt befolgt.
   Ein weiterer Scope wird erst geregelt, wenn er auffällt — und dann gemessen,
   nicht geraten.
+- **Wer eine Anforderung anlegt, nennt ihre Kennung in der Closure-Notiz.** Im **Plan** kann er es
+  nicht: IDs werden referenziert statt erfunden, die neue Kennung existiert dort noch nicht, und
+  jede genannte ist linkpflichtig — ein Link ins Leere macht `doc-check` rot. Also umschreibt der
+  Plan sie („eine neue `AC-FA-CLI`-Kennung"), und die Requirements-Matrix sieht den Slice **nicht**.
+  Bei der Closure ist die Anforderung geschrieben; dort steht die Kennung mit Link. Durchgesetzt
+  durch `make doc-complete` im `verify`-Aggregat (slice-123) — eine Anforderung ohne
+  referenzierenden Slice ist ab dann abschluss-blockierend.
 - Neue oder geänderte `AC-*`-Anforderungen entstehen nur in
   [`spec/lastenheft.md`](spec/lastenheft.md) — nie per ADR (ADRs schärfen
   die Spezifikation, nicht das Lastenheft).
