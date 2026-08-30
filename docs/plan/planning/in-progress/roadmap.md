@@ -18,14 +18,13 @@ Welle-Datei, nicht hier.
 
 - *(keine offene Welle-Datei)*
 
-Nichts in Arbeit.
+In Arbeit: [slice-118](../in-progress/slice-118-lifecycle-wechsel-werkzeug.md) — Lifecycle-Wechsel als Werkzeug.
 
 **Offene Slices ohne Welle** — sie brauchen keine, ihre Trigger stehen in ihrem eigenen `§0`:
 
 | Slice | Trigger | Zustand |
 |---|---|---|
 | [slice-117](../open/slice-117-handbuch-verweis-cli.md) | eingetreten — Maintainer-Auftrag, keine Vorbedingung | **startbar** — Spec-first: die Anforderung entsteht vor dem Code |
-| [slice-118](../open/slice-118-lifecycle-wechsel-werkzeug.md) | eingetreten — [`BEO-008`](../observations.md) bei 3×, Schwelle überschritten | **startbar** — ein Werkzeug, kein Guide: der Guide ist an derselben Familie schon einmal gescheitert |
 | [slice-013](../open/slice-013-driving-driven-vertiefung.md), [slice-045](../open/slice-045-intern-extern-dateimenge.md) | siehe *Nächste Wellen* | vertagt, Evidenz gemessen und zu klein |
 
 Ein Slice, der auf ein Fremdrepo wartet, gehört in **keine** Welle — er würde ihren
