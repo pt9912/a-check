@@ -24,6 +24,7 @@ Nichts in Arbeit.
 
 | Slice | Trigger | Zustand |
 |---|---|---|
+| [slice-116](../open/slice-116-nullmengen-haerte-cr.md) | eingetreten — der Bruch ist in [slice-080](../done/slice-080-verify-abloesung-dcheck.md) gemessen | **startbar** — der CR-Text ist die Lieferung; einreichen bleibt Maintainer-Sache |
 | [slice-013](../open/slice-013-driving-driven-vertiefung.md), [slice-045](../open/slice-045-intern-extern-dateimenge.md) | siehe *Nächste Wellen* | vertagt, Evidenz gemessen und zu klein |
 
 Ein Slice, der auf ein Fremdrepo wartet, gehört in **keine** Welle — er würde ihren
