@@ -226,6 +226,8 @@ Rollen-Mapping (Ergänzung): `app`→`app-impurity`. Befund-**Namen** der übrig
 
 ### AC-FA-RULE-008 — Richtungs-Dimension (Regel `port-direction-mismatch`)
 
+<a id="ac-fa-rule-008"></a><a id="ac-fa-rule-008--driving-driven-port-richtung-regel-port-direction-mismatch"></a>
+
 **Verfeinert:** [AC-FA-RULE-006](#ac-fa-rule-006--schicht-rollen-generische-regel-anwendung) um eine **orthogonale** Richtungs-Dimension (`direction`).
 
 **Beschreibung:** Eine `port`- oder `adapter`-Schicht trägt optional eine Richtung

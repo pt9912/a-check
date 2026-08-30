@@ -16,7 +16,7 @@ Layer-Root** liegen (kein weiteres Verzeichnis), degeneriert dieses Segment zum
 Sub-Einheiten, und jedes eigene `.cpp → .h`-Include feuert als `lateral-adapter`.
 
 Der b-cad-Pilot (2026-07-03, verifizierter v0.8.0-Lauf) macht das messbar: die
-Richtungs-Modellierung ([AC-FA-RULE-008](../../../spec/lastenheft.md#ac-fa-rule-008--richtungs-dimension-regel-port-direction-mismatch))
+Richtungs-Modellierung ([AC-FA-RULE-008](../../../spec/lastenheft.md#ac-fa-rule-008--driving-driven-port-richtung-regel-port-direction-mismatch))
 verlangt **pro-Adapter-Layer** (eine `direction` je Schicht; b-cads Adapter sind
 verschieden gerichtet), und b-cads Adapter halten ihre Dateien flach im
 Verzeichnis-Root — Ergebnis: **40 Falsch-Positive** `lateral-adapter` (ausnahmslos
