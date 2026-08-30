@@ -113,3 +113,80 @@ targets:
   doc-tables: [AGENTS.md, harness/README.md]
   authority: AGENTS.md
   exempt-targets: [help, build, compile, hooks, arch-graph]
+
+# Modul-Option `links.resolve-from` (slice-080): loest tools/verify-slice-links.sh
+# ab (SL-002). Invariante: ein relativer Verweis einer WANDERNDEN Datei muss aus
+# JEDEM Lifecycle-Verzeichnis aufloesen — sonst bricht ihn der naechste `git mv`.
+# `done/` ist Endzustand und nur ZIEL (fixed-dirs), nie Quelle: ein kuenftiger
+# Wechsel kann dortige Verweise nicht mehr brechen.
+links:
+  resolve-from:
+    - dirs:
+        - docs/plan/planning/open
+        - docs/plan/planning/next
+        - docs/plan/planning/in-progress
+      fixed-dirs:
+        - docs/plan/planning/done
+
+# Modul `structure` (DC-FA-STRUCT-001, slice-080): loest die STRUKTURELLEN
+# Haelften von verify-slice-form.sh und verify-closure-notes.sh ab. Erreichbar
+# erst mit dem Pin `v0.68.0` — `tasks-ignore-pattern` und
+# `exempt-section-pattern` entstanden aus a-checks CR 3 (d-check ADR-0075).
+# `make doc-structure` aktiviert es per --enable; NICHT in der modules-Liste,
+# im hermetischen Default-doc-check also inert.
+structure:
+  # (1) Groessen-Regel: hoechstens drei LIEFER-Punkte im DoD, ab slice-052.
+  #     `tasks-ignore-pattern` nimmt die pro Slice KONSTANTEN Posten heraus —
+  #     "gezaehlt wird nur, was mit dem Umfang waechst" (AGENTS §5).
+  #     Das Muster ist VERANKERT und sieht den BEREINIGTEN Item-Text: der
+  #     Gate-Lauf steht als `make gates` in Inline-Code, und der ist beim
+  #     Zaehlen zu Leerzeichen bereinigt — ein Muster auf die Wendung selbst
+  #     traefe null Items (d-check ADR-0075, hier nachgemessen).
+  - files: "docs/plan/planning/**/slice-*.md"
+    section-pattern: '^#+ .*(DoD|Definition of Done)'
+    max-tasks: 3
+    tasks-ignore-pattern: '^( *grün|Closure-Notiz|Beobachtungs-Register|Jedes Risiko|Reconciliation)'
+    exempt-paths:
+      - "docs/plan/planning/**/slice-0[0-4][0-9]-*.md"
+      - "docs/plan/planning/**/slice-050-*.md"
+      - "docs/plan/planning/**/slice-051-*.md"
+
+  # (2) Closure-Struktur in done/: GENAU EINER, ausgefuellt, kein Platzhalter,
+  #     mindestens zwei Saetze (AGENTS §5). `exempt-section-pattern` haelt
+  #     "Closure-Trigger"/"Closure-Kriterien" heraus — eigene, legitime
+  #     Abschnitte, keine Abschluss-Notiz. Vor slice-080 tat das ein `grep -v`.
+  - files: "docs/plan/planning/done/slice-*.md"
+    section-pattern: '^## .*[Cc]losure'
+    exempt-section-pattern: '^## .*[Cc]losure-(Trigger|Kriterien)'
+    sections: one
+    non-empty: true
+    min-sentences: 2
+    forbid-pattern: '(beim Abschluss|_\(folgt\)_|TODO|TBD|noch offen|(?mi:^(fertig|erledigt|wie geplant umgesetzt|war ok|alles gut|läuft)\.?$))'
+    hint: "genau eine ausgefuellte Closure-Notiz je Slice (AGENTS §5) — Platzhalter und Floskel zaehlen nicht"
+
+  # (3) Lerneintrag-Form: die Closure-Notiz benennt EINE der drei Formen
+  #     (AGENTS §5, Fund B-5). Ab slice-052 wie (1). Das Muster ist ENGER als in
+  #     (2) — es verlangt die NUMMERIERTE Ueberschrift der Ziel-Form, die der
+  #     Bestand ab slice-052 ausnahmslos einhaelt (63 von 63 gemessen). Zwei
+  #     Regeln auf DERSELBEN Kennung (files + beide Muster) weist d-check als
+  #     doppelte Regel-Identitaet ab; der Unterschied ist darum sachlich, nicht
+  #     kosmetisch. GRENZE: ein kuenftiger Slice mit UNnummeriertem
+  #     Closure-Abschnitt entginge dieser Regel — (2) faengt ihn nicht auf.
+  - files: "docs/plan/planning/done/slice-*.md"
+    section-pattern: '^## [0-9]+\. [Cc]losure'
+    exempt-section-pattern: '^## .*[Cc]losure-(Trigger|Kriterien)'
+    require-pattern: 'Form: *(geschärfte Regel|neuer Sensor|benannte Spec-Lücke)'
+    hint: "Lerneintrag in einer der drei benannten Formen: geschaerfte Regel | neuer Sensor | benannte Spec-Luecke"
+    exempt-paths:
+      - "docs/plan/planning/done/slice-0[0-4][0-9]-*.md"
+      - "docs/plan/planning/done/slice-050-*.md"
+      - "docs/plan/planning/done/slice-051-*.md"
+
+  # (4) Kopffelder ab slice-098: `—` ist eine gueltige Antwort, Schweigen nicht.
+  #     Der "Abschnitt" ist der Kopf vom Titel bis zur ersten `##`-Ueberschrift.
+  - files: "docs/plan/planning/**/slice-*.md"
+    section-pattern: '^# slice-'
+    require-all: ["Verantwortlich:", "Autor:", "Berührte Spec-Stellen:"]
+    exempt-paths:
+      - "docs/plan/planning/**/slice-0[0-8][0-9]-*.md"
+      - "docs/plan/planning/**/slice-09[0-7]-*.md"
