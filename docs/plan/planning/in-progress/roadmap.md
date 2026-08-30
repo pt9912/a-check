@@ -24,6 +24,7 @@ Nichts in Arbeit.
 
 | Slice | Trigger | Zustand |
 |---|---|---|
+| [slice-121](../open/slice-121-port-richtung-inbound-outbound.md) | eingetreten — Maintainer-Vorgabe, keine Vorbedingung | **startbar** — Spec-first; die alte Schreibweise am Port wird Exit 2 (Entscheid) |
 | [slice-013](../open/slice-013-driving-driven-vertiefung.md), [slice-045](../open/slice-045-intern-extern-dateimenge.md) | siehe *Nächste Wellen* | vertagt, Evidenz gemessen und zu klein |
 
 Ein Slice, der auf ein Fremdrepo wartet, gehört in **keine** Welle — er würde ihren
