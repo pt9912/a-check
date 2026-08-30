@@ -7,7 +7,7 @@
 **Autor:** Claude (Opus 5), im Auftrag des Maintainers. **Datum:** 2026-08-29.
 **Berührte Spec-Stellen:** — *(keine)*
 **Deckt:** die zweite Trigger-Hälfte von
-[slice-080](../in-progress/slice-080-verify-abloesung-dcheck.md).
+[slice-080](../done/slice-080-verify-abloesung-dcheck.md).
 **Bezug:** Maintainer-Auftrag 2026-08-29. [Roadmap](../in-progress/roadmap.md).
 
 ---
@@ -66,7 +66,7 @@ Pin gehoben, Digest zweifach belegt, `doc-structure` deklariert, Gates grün.
 
 **Was bewusst nicht getan wird:** `doc-structure` wandert **nicht** ins `gates`-Aggregat und wird
 **nicht** konfiguriert. Ob es die vier `verify-*` ablösen kann, ist Gegenstand von
-[slice-080](../in-progress/slice-080-verify-abloesung-dcheck.md) und braucht dessen Messung. Ein Target
+[slice-080](../done/slice-080-verify-abloesung-dcheck.md) und braucht dessen Messung. Ein Target
 einzubinden, ohne es zu konfigurieren, ist genau der Fehler, den `slice-074` gemessen hat: das
 Modul `targets` lief so **dreizehn Minor-Versionen** ins Leere. Ebenso bleiben `workflows`,
 `citations` und `sources` unangetastet — je eine eigene Sichtung.
@@ -116,7 +116,7 @@ Digest setzen — nicht Bequemlichkeit, sondern die einzige Form, die diese Drif
 - *Sechzehn Releases können Verhalten geändert haben, das dieser Bestand nicht auslöst* —
   **Ausgang:** gestrichen mit Begründung: der Null-Befund gilt für die heutige Doku, und eine
   Aussage über ungeschriebene Dokumente wäre nicht belegbar. Der nächste Gate-Lauf misst sie.
-- *Die zweite Trigger-Hälfte von [slice-080](../in-progress/slice-080-verify-abloesung-dcheck.md) fällt
+- *Die zweite Trigger-Hälfte von [slice-080](../done/slice-080-verify-abloesung-dcheck.md) fällt
   damit* — **Ausgang:** Folge-Slice; beide Hälften sind jetzt erfüllt.
 
 **Beobachtungs-Register:** `BEO-021` neu angelegt; `BEO-014` auf **2×** erhöht — `doc-structure`
@@ -125,7 +125,7 @@ dreizehn Minor-Versionen lang zeigte. Das ist hier **kein** Wiederholungsfehler:
 beiden Stellen ausdrücklich, dass kein Konfigurationsblock existiert und das Target nicht im
 Aggregat steht.
 
-**Folge-Slices:** [slice-080](../in-progress/slice-080-verify-abloesung-dcheck.md) ist an seiner
+**Folge-Slices:** [slice-080](../done/slice-080-verify-abloesung-dcheck.md) ist an seiner
 Werkzeug-Bedingung entblockt und hängt nur noch an der externen Vorbedingung (CR-Einreichung).
 
 ## 8. Sub-Area-Modus-Begründung

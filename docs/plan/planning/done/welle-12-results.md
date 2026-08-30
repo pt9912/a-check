@@ -28,7 +28,7 @@ unabhängigen Reviews.
 
 **Der Review-Nachlauf gehört zur Welle**, nicht daneben: ohne ihn wäre die Migration *behauptet*,
 nicht belegt. [slice-079](../done/slice-079-gate-consistency-abloesen.md) und
-[slice-080](../in-progress/slice-080-verify-abloesung-dcheck.md) gehören **nicht** dazu — sie sind aus der
+[slice-080](../done/slice-080-verify-abloesung-dcheck.md) gehören **nicht** dazu — sie sind aus der
 Arbeit entstanden, haben aber einen anderen Gegenstand (d-check-Ablösung) und eigene Trigger.
 
 ## Was funktionierte
@@ -88,7 +88,7 @@ der CI.
 
 - [slice-079](../done/slice-079-gate-consistency-abloesen.md) — Ablösung von `gate-consistency`
   (1)+(2) durch d-checks `targets`-Modul. Trigger: sofort, wartet auf nichts.
-- [slice-080](../in-progress/slice-080-verify-abloesung-dcheck.md) — Ablösung der vier `verify-*`.
+- [slice-080](../done/slice-080-verify-abloesung-dcheck.md) — Ablösung der vier `verify-*`.
   Trigger: ein d-check-Release trägt `structure` + `links.resolve-from` **und** der Pin ist
   gehoben. Vorbedingung: CR 1/CR 2 aus
   [slice-073 §8](slice-073-dcheck-statt-eigenbau.md) eingereicht — **noch nicht erfolgt**.

@@ -147,7 +147,7 @@ Befund-Parität gemessen, sondern der **Geltungsbereich** — welche Dateien, we
 welche Ausnahmen der alte Sensor kannte und ob der neue dieselben kennt.* Die Parität ist die
 leichtere Hälfte: sie zeigt sich an einer Fixture. Der Scope steht in Konfiguration und
 Argumentlisten und verschwindet lautlos mit dem Code, der ihn nannte. **Zu prüfen wäre** das für
-[slice-080](../in-progress/slice-080-verify-abloesung-dcheck.md) vorab: die vier `verify-*`-Sensoren
+[slice-080](../done/slice-080-verify-abloesung-dcheck.md) vorab: die vier `verify-*`-Sensoren
 tragen Grundgesamtheiten (Lifecycle-Verzeichnisse, Grandfathering-Schwellen, `done/`-Ausnahme), die
 in keinem CR-Text stehen.
 

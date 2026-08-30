@@ -101,7 +101,7 @@ wäre hier die falsche Zusage.
 - **Blockiert:** nichts.
 - **Ausdrücklich nicht in dieser Welle, obwohl offen:**
   [slice-079](../done/slice-079-gate-consistency-abloesen.md) (Harness-Nachlauf aus `welle-12`,
-  ohne Welle) und [slice-080](../in-progress/slice-080-verify-abloesung-dcheck.md) (wartet auf ein
+  ohne Welle) und [slice-080](../done/slice-080-verify-abloesung-dcheck.md) (wartet auf ein
   d-check-Release). **Ein Slice, der auf ein Fremdrepo wartet, gehört in keine Welle** — er würde
   ihren Closure-Trigger auf unbestimmte Zeit blockieren. Genau dieser Fehler hielt `slice-046`
   zwei Wochen offen.
