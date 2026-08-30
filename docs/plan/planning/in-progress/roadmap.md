@@ -24,6 +24,7 @@ Nichts in Arbeit.
 
 | Slice | Trigger | Zustand |
 |---|---|---|
+| [slice-124](../open/slice-124-image-scan-cve.md) | eingetreten — Maintainer-Auftrag; das Image existiert (v0.17.0) | **startbar** — der Sensor vor dem Hebungs-Kanal |
 | [slice-013](../open/slice-013-driving-driven-vertiefung.md), [slice-045](../open/slice-045-intern-extern-dateimenge.md) | siehe *Nächste Wellen* | vertagt, Evidenz gemessen und zu klein |
 
 Ein Slice, der auf ein Fremdrepo wartet, gehört in **keine** Welle — er würde ihren
