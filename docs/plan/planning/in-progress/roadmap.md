@@ -18,7 +18,7 @@ Welle-Datei, nicht hier.
 
 - *(keine offene Welle-Datei)*
 
-Nichts in Arbeit.
+In Arbeit: [slice-129](../in-progress/slice-129-risiko-ausgaenge-vor-dem-mv.md) — Risiko-Ausgänge vor dem `mv`.
 
 **Offene Slices ohne Welle** — sie brauchen keine, ihre Trigger stehen in ihrem eigenen `§0`:
 
