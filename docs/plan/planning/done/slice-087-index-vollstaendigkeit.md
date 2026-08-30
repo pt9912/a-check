@@ -7,7 +7,7 @@
 den Wiederholungsfall in [slice-085](../done/slice-085-schicht-ohne-aufloesung.md).
 **Bezug:** dieselbe Fehlerklasse, die [slice-071](../done/slice-071-sensor-scope-vollstaendig.md)
 für das Regelwerk-Manifest geschlossen hat; Ablösungs-Muster nach
-[slice-073](../done/slice-073-dcheck-statt-eigenbau.md)/[slice-080](../open/slice-080-verify-abloesung-dcheck.md).
+[slice-073](../done/slice-073-dcheck-statt-eigenbau.md)/[slice-080](../in-progress/slice-080-verify-abloesung-dcheck.md).
 
 ---
 
@@ -21,7 +21,7 @@ nichts.
 
 - `in-progress` → `open`: falls der Entscheid aus §3 auf den d-check-CR fällt **und** die
   Einreichung Maintainer-Sache bleibt — dann ist der Slice blockiert wie
-  [slice-080](../open/slice-080-verify-abloesung-dcheck.md), und das ist der ehrliche Zustand.
+  [slice-080](../in-progress/slice-080-verify-abloesung-dcheck.md), und das ist der ehrliche Zustand.
 
 ## 1. Auslöser
 
@@ -83,9 +83,9 @@ Slices und Roadmap festgelegt. `--trace --require-complete` findet **Anforderung
 
 | Weg | Dafür | Dagegen |
 |---|---|---|
-| **Lokaler Sensor** (~15 Zeilen `comm -13`, Muster [slice-071](../done/slice-071-sensor-scope-vollstaendig.md)) | schützt **heute**; die Fehlerrate ist belegt | ein weiterer P-Rest, den [slice-079](../done/slice-079-gate-consistency-abloesen.md)/[slice-080](../open/slice-080-verify-abloesung-dcheck.md) später wieder abtragen |
+| **Lokaler Sensor** (~15 Zeilen `comm -13`, Muster [slice-071](../done/slice-071-sensor-scope-vollstaendig.md)) | schützt **heute**; die Fehlerrate ist belegt | ein weiterer P-Rest, den [slice-079](../done/slice-079-gate-consistency-abloesen.md)/[slice-080](../in-progress/slice-080-verify-abloesung-dcheck.md) später wieder abtragen |
 | **Nur d-check-CR** | die richtige Heimat; d-check hat die Datei-Menge bereits | Einreichung ist Maintainer-Sache; bis dahin schützt **nichts**, und der Fehler wiederholt sich messbar |
-| **Beides** | Schutz jetzt, Ablösung später mit Trigger wie [slice-080](../open/slice-080-verify-abloesung-dcheck.md) | doppelte Buchführung für 15 Zeilen |
+| **Beides** | Schutz jetzt, Ablösung später mit Trigger wie [slice-080](../in-progress/slice-080-verify-abloesung-dcheck.md) | doppelte Buchführung für 15 Zeilen |
 
 **Neigung des Autors: „beides".** Die Ablösungs-Lektion aus
 [slice-073](../done/slice-073-dcheck-statt-eigenbau.md) galt 589 Zeilen in vier Sensoren; hier

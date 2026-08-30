@@ -18,7 +18,7 @@ Welle-Datei, nicht hier.
 
 - *(keine offene Welle-Datei)*
 
-In Arbeit: [slice-080](slice-080-verify-abloesung-dcheck.md) — die vier `verify-*` durch d-check-Module ablösen.
+In Arbeit: [slice-080](../in-progress/slice-080-verify-abloesung-dcheck.md) — die vier `verify-*` durch d-check-Module ablösen.
 
 **Offene Slices ohne Welle** — sie brauchen keine, ihre Trigger stehen in ihrem eigenen `§0`:
 

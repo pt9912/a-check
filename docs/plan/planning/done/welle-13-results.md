@@ -155,7 +155,7 @@ dazwischenstand: **Wissen allein verhindert den Fehler nicht.**
   sobald ein Teilausfall real auftritt.
 
 **Unverändert offen aus `welle-12`:** [slice-079](../done/slice-079-gate-consistency-abloesen.md),
-[slice-080](../open/slice-080-verify-abloesung-dcheck.md) (wartet auf ein d-check-Release) und
+[slice-080](../in-progress/slice-080-verify-abloesung-dcheck.md) (wartet auf ein d-check-Release) und
 `F-9` (Freigabe-Belege).
 
 ## Verifikation (Schritt 1 der Prozedur)
