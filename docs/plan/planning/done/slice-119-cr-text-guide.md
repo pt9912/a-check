@@ -135,7 +135,7 @@ bleibt bei 3×, sein Stand nennt jetzt den Ort. Die zweite Ausprägung („die f
 gemessen") ist in der Beschreibung ergänzt — sie ist bei uns **nicht** aufgetreten und erhöht
 darum nichts; der Empfänger führt sie bei sich als eigene Klasse mit eigenem Zähler.
 
-**Folge-Slices:** [slice-117](../in-progress/slice-117-handbuch-verweis-cli.md) (Handbuch-Verweis) bleibt
+**Folge-Slices:** [slice-117](../done/slice-117-handbuch-verweis-cli.md) (Handbuch-Verweis) bleibt
 der einzige offene; beide Schwellen dieser Sitzung sind damit beantwortet — `BEO-008` mit einem
 Werkzeug, `BEO-022` mit einem Guide.
 ## 8. Sub-Area-Modus-Begründung

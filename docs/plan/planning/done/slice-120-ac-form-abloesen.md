@@ -149,7 +149,7 @@ ein Prüfer mit leerer Prüfmenge bleibt unkalibriert. Verwandt mit `BEO-014` (a
 **ohne Konfiguration** meldet grün), aber verschieden: dort fehlt der Gegenstand der
 Konfiguration, hier der Gegenstand der Prüfung.
 
-**Folge-Slices:** [slice-117](../in-progress/slice-117-handbuch-verweis-cli.md) — und der bekommt durch
+**Folge-Slices:** [slice-117](../done/slice-117-handbuch-verweis-cli.md) — und der bekommt durch
 dieses Release eine Präzedenz: `v0.69.0` löst dieselbe Aufgabe für das Schwester-Tool und wählt
 **dieselbe** URL-Form (Hauptzweig, ohne Versionsangabe, mit Verweis auf den Software-Versions-
 Stempel im Handbuch-Kopf) — unabhängig gefunden, bevor slice-117 geschnitten war.
