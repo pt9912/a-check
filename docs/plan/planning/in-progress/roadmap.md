@@ -18,13 +18,12 @@ Welle-Datei, nicht hier.
 
 - *(keine offene Welle-Datei)*
 
-Nichts in Arbeit.
+In Arbeit: [slice-126](../in-progress/slice-126-lint-pin-v2-13-2.md) — Lint-Pin-Hebung.
 
 **Offene Slices ohne Welle** — sie brauchen keine, ihre Trigger stehen in ihrem eigenen `§0`:
 
 | Slice | Trigger | Zustand |
 |---|---|---|
-| [slice-126](../open/slice-126-lint-pin-v2-13-2.md) | eingetreten — Maintainer-Wort; der Stand ist verfügbar, Digest ermittelt | **startbar** — Pin-Hebung; der Befundstand ist ungemessen und Teil des Slice |
 | [slice-013](../open/slice-013-driving-driven-vertiefung.md), [slice-045](../open/slice-045-intern-extern-dateimenge.md) | siehe *Nächste Wellen* | vertagt, Evidenz gemessen und zu klein |
 
 Ein Slice, der auf ein Fremdrepo wartet, gehört in **keine** Welle — er würde ihren
