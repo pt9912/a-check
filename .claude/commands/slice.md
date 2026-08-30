@@ -62,8 +62,9 @@ Eine ADR schärft die Spezifikation, **nie** das Lastenheft.
 
 9. Lifecycle: `git mv` in den nächsten Zustand als **eigener** Commit, ohne Inhaltsänderung.
 
-   **Die Verweis-Prüfung läuft in Schritt 8 bereits mit:** `make verify` enthält seit slice-060
-   `verify-slice-links`. Es prüft die Invariante *„jeder relative Verweis löst aus **jedem**
+   **Die Verweis-Prüfung läuft schon vorher mit:** seit slice-080 trägt sie das Modul `links`
+   (`links.resolve-from`), also `make doc-check` — und damit `make gates`, nicht mehr `make verify`.
+   Sie prüft die Invariante *„jeder relative Verweis löst aus **jedem**
    Lifecycle-Verzeichnis auf"* — wer dort grün ist, übersteht den `git mv`.
 
    Ist es rot, ist die Korrektur ein **eigener** Commit **vor** dem `git mv` (Hard Rule §3.3).

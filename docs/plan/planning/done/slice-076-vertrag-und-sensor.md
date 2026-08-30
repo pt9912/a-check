@@ -16,7 +16,7 @@ Gruppe A misst hier nichts falsch — die Lücke sitzt zwischen dem, was zugesag
 gemessen wird. Und sie zeigt in **beide Richtungen**:
 
 **`F-6` — der Sensor ist ehrlich, die Doku ist es nicht.**
-[`tools/verify-slice-form.sh:22`](../../../../tools/verify-slice-form.sh) schreibt selbst:
+`tools/verify-slice-form.sh:22` schreibt selbst:
 
 > NICHT geprueft: „hoechstens zwei Schichten" aus B-1 — was eine Schicht ist, ist eine
 > Ermessensfrage ueber Modul-Grenzen; ein Zaehler darueber waere Schein-Genauigkeit. Bleibt Sache
@@ -101,7 +101,7 @@ geändert; beide trugen die Wahrheit bereits im Kopfkommentar.
 Ein Regex auf die drei Wörter prüfte ihr *Vorkommen*, nicht die Form — „Given/When/Then" als bloße
 Aufzählung bestünde, ein sauber formulierter Satz ohne die Reizwörter fiele durch. Das ist
 dieselbe Schein-Genauigkeit, die
-[`tools/verify-slice-form.sh`](../../../../tools/verify-slice-form.sh) beim Schichten-Zähler
+`tools/verify-slice-form.sh` beim Schichten-Zähler
 ausdrücklich ablehnt. Die Entscheidung war damit **nicht offen im luftleeren Raum**: das Repo hatte
 sie für den strukturell gleichen Fall schon getroffen, nur nie auf den zweiten übertragen.
 

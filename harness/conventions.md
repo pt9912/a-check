@@ -189,7 +189,7 @@ bündeln mehrere Sub-Areas und werden ausdifferenziert.
 | **Entscheidungen** — `docs/plan/adr/` | 1,2,3 | Greenfield | ADR vor Code; Immutabilität maschinell durchgesetzt (`doc-immutable`) | n/a (GF) |
 | **Kern und Regeln** — `internal/hexagon/` | 1,2,3 | Greenfield | jede Regel hat eine `AC-FA-RULE-*` als Anker; Dogfooding über `arch-check` | n/a (GF) |
 | **Adapter** — `internal/adapter/` | 2,3 | Greenfield | Ports vor Adaptern; die Schichtung ist selbst gegatet | n/a (GF) |
-| **Planungs-Harness** — `docs/plan/planning/` | 1,2,3 | Greenfield | Form und Größen-Regel stehen in der Vorlage, der Sensor `verify-slice-form` prüft sie — **seit slice-052**; davor war die Praxis unbelegt | n/a (GF), erreicht mit slice-052 |
+| **Planungs-Harness** — `docs/plan/planning/` | 1,2,3 | Greenfield | Form und Größen-Regel stehen in der Vorlage, der Sensor `doc-structure` prüft sie — **seit slice-052**; davor war die Praxis unbelegt | n/a (GF), erreicht mit slice-052 |
 | **Gate-/Werkzeug-Schicht** — `tools/`, `Makefile`, `Dockerfile`, `.claude/` | 1,2,3 | Greenfield | jedes Target ist in `AGENTS.md` §4 deklariert, bevor es zählt; `gate-consistency` erzwingt das | n/a (GF) |
 | **Review-Harness** — `docs/reviews/` | 2,3 | Greenfield | Konvention und Skill vor dem Report | n/a (GF) |
 | **Harness-Einstieg** — `AGENTS.md`, `CLAUDE.md`, `harness/` | 1,2,3 | Greenfield | Briefing und Konventionen entstehen vor der Regel, die sie beschreiben; die aufgelösten Adaptionen zur Source Precedence und zum Vendoring lebten genau hier. **Nachgetragen mit slice-101**: die Lücke war seit slice-091 in vier Slices benannt (`BEO-001` im [Beobachtungs-Register](../docs/plan/planning/observations.md)) und hatte bis dahin keinen Ort | n/a (GF) |

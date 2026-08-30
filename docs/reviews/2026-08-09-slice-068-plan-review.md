@@ -30,7 +30,7 @@ unabhängigen Laufs.
   Roadmap-Trigger; Regelwerk Modul 13
 - `pfad`: `slice-068`-Entwurf @ `4b029e4` Zeilen 68 und 85;
   [`tools/verify-ac-form.sh:103`](../../tools/verify-ac-form.sh),
-  [`tools/verify-slice-links.sh:106`](../../tools/verify-slice-links.sh)
+  `tools/verify-slice-links.sh:106`
 - `befund`: Eine nichtleere Quelle kann null erkannte Einträge oder nur einen Restbestand
   enthalten; sie bleibt dann nach dem beschriebenen Entscheid grün. Zugleich sind null gefilterte
   Einheiten sowohl bei `verify-ac-form` als auch bei `verify-slice-links` legitime Zustände — der
@@ -71,8 +71,8 @@ unabhängigen Laufs.
 - `kategorie`: **HIGH**
 - `quelle`: Slice-Dateikonvention; Vertrag von `verify-slice-form`; Auftragsfrage P6
 - `pfad`: `docs/plan/planning/slice.template.md:3`,
-  [`tools/verify-slice-form.sh:32`](../../tools/verify-slice-form.sh),
-  [`tools/verify-slice-form.sh:114`](../../tools/verify-slice-form.sh)
+  `tools/verify-slice-form.sh:32`,
+  `tools/verify-slice-form.sh:114`
 - `befund`: Eine Datei `slice-068.md` trifft den Haupt-Glob `slice-*.md`, aber nicht die
   Nummernextraktion, die einen weiteren Bindestrich und Kurztitel verlangt. `applies()` liefert
   deshalb `false` und der Hauptlauf zählt die neue Datei als „älter (grandfathered)" — obwohl die

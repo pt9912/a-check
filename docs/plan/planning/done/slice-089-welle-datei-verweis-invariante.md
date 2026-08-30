@@ -25,7 +25,7 @@
 **Mechanismus: der Sensor prüft eine Invariante, die für eine ganze Gattung nicht gilt — und sagt
 das nirgends.**
 
-[`tools/verify-slice-links.sh`](../../../../tools/verify-slice-links.sh) begründet seinen Ansatz
+`tools/verify-slice-links.sh` begründet seinen Ansatz
 wörtlich: *„Alle vier Lifecycle-Verzeichnisse liegen auf derselben Ebene, also gilt: Ein relativer
 Verweis muss aus **jedem** Lifecycle-Verzeichnis auflösen."* Diese Voraussetzung ist bei
 Welle-Plan-Dateien **nicht erfüllt**: sie liegen flach unter `docs/plan/planning/` und wandern bei
@@ -56,7 +56,7 @@ die False-Greens aus [slice-070](../done/slice-070-grundgesamtheit-messen.md)/[s
 
 ## 2. Betroffene Module
 
-[`tools/verify-slice-links.sh`](../../../../tools/verify-slice-links.sh) in jedem Fall; bei einem
+`tools/verify-slice-links.sh` in jedem Fall; bei einem
 Struktur-Entscheid zusätzlich [`planning/README.md`](../README.md) (Welle-Lifecycle) und die
 bestehende Welle-Datei.
 

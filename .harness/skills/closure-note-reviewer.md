@@ -2,7 +2,7 @@
 
 * Status: Accepted
 * Bezug: [`AGENTS.md`](../../AGENTS.md) §5 (Closure-Pflicht), `make verify` /
-  `tools/verify-closure-notes.sh`, Regelwerk `modul-11-verification.md` §Schritt 5,
+  `make doc-structure` (Modul `structure`), Regelwerk `modul-11-verification.md` §Schritt 5,
   `modul-15-observability.md` (Doku-Konsistenz)
 * Gilt für: den *inferentiellen* Nachlauf zu `make verify` — greift dort, wo Struktur allein die
   Floskel nicht fängt
@@ -15,7 +15,7 @@
 > [ADR-0011](../../docs/plan/adr/0011-domain-application-trennung-rolle-app.md) — die
 > Domain/Application-Trennung —, und Python-Tooling widerspräche
 > [`AGENTS.md`](../../AGENTS.md) §3.1 (Docker/make-only). Die Pflicht ist darum in `AGENTS.md` §5
-> verankert, das Struktur-Gate ist `tools/verify-closure-notes.sh`. Blind kopierte Bezüge wären
+> verankert, das Struktur-Gate ist `make doc-structure`. Blind kopierte Bezüge wären
 > halluzinierte Anker gewesen.
 
 ## Kontext-Eingang (Pflicht)
@@ -88,8 +88,8 @@ Zusätzlich am Ende je betrachteter Charge eine Zeile „geprüft, ohne Befund: 
 Bei **dreimaligem** HIGH derselben Floskel-Art:
 
 - das Muster in [`AGENTS.md`](../../AGENTS.md) §5 als benanntes Anti-Pattern aufnehmen
-- prüfen, ob `tools/verify-closure-notes.sh` die Floskel *strukturell* fangen könnte
-  (`FLOSKELN`-Liste erweitern) → dann ins Struktur-Gate heben; ein deterministischer Marker ist
+- prüfen, ob das Modul `structure` die Floskel *strukturell* fangen könnte
+  (`forbid-pattern` in [`.d-check.yml`](../../.d-check.yml) erweitern) → dann ins Struktur-Gate heben; ein deterministischer Marker ist
   billiger als inferentielles Nachlesen
 - die Slice-Form schärfen, falls der Abschnitt die Pflicht-Inhalte nicht klar genug abfragt
   (Etappe D, Fund B-5)

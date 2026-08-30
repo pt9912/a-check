@@ -29,7 +29,7 @@
 # die drei Woerter pruefte ihr Vorkommen, nicht die Form — "Given/When/Then" als
 # blosse Aufzaehlung wuerde bestehen, ein sauber formulierter Satz ohne die
 # Reizwoerter durchfallen. Das ist dieselbe Schein-Genauigkeit, die
-# verify-slice-form beim Schichten-Zaehler ausdruecklich ablehnt (B-1). Statt den
+# die Groessen-Regel beim Schichten-Zaehler ausdruecklich ablehnt (B-1). Statt den
 # Sensor zu dehnen, hat slice-076 die ZUSAGE in harness/conventions.md
 # zurueckgenommen: sie nennt jetzt, was maschinell faellt und was nicht.
 set -euo pipefail

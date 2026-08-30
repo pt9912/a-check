@@ -45,8 +45,7 @@ NO_CACHE_FILTER_COV  := --no-cache-filter coverage
 .PHONY: help compile lint test coverage-gate build arch-check arch-graph \
         gate-consistency guard-selftest record-gates gates image-test ci \
         trace-check hooks suppression-check regelwerk-check commit-scope-check \
-        verify verify-risiko-ausgaenge verify-slice-form verify-ac-form \
-        verify-slice-links verify-observations
+        verify verify-risiko-ausgaenge verify-ac-form verify-observations
 
 # Gates seriell: unter `make -j` liefen die Sub-Gates sonst parallel und die
 # Reihenfolge/der Abbruch bei rotem Gate wären nicht garantiert.
@@ -90,17 +89,11 @@ suppression-check: ## Hard Rule AGENTS §3.2: keine Inline-Suppression (//nolint
 regelwerk-check: ## Wartung (KEIN Gate): Integritaet der vendored Baseline gegen SHA256SUMS (MR-006); Freshness bleibt ungeprueft.
 	@bash tools/regelwerk-check.sh
 
-verify-risiko-ausgaenge: ## Struktur der Closure-Notizen in done/ (AGENTS §5): genau eine, ausgefuellt, kein Platzhalter.
+verify-risiko-ausgaenge: ## Jedes in §6 notierte Risiko traegt einen Ausgang aus der Dreier-Menge (AGENTS §5, ab slice-102).
 	@bash tools/verify-risiko-ausgaenge.sh
-
-verify-slice-form: ## Form der Slice-Plaene ab slice-052 (max. 3 DoD-Punkte, benannte Lerneintrag-Form); aeltere grandfathered.
-	@bash tools/verify-slice-form.sh
 
 verify-ac-form: ## Form neuer Akzeptanzkriterien (Happy/Boundary/Negative + Out-of-Scope); die 19 bestehenden grandfathered.
 	@bash tools/verify-ac-form.sh
-
-verify-slice-links: ## Verweise wandernder Slices ueberleben den Lifecycle-Wechsel (SL-002); done/ ist Endzustand und ausgenommen.
-	@bash tools/verify-slice-links.sh
 
 verify-observations: ## Deckung des Beobachtungs-Registers: zitierte BEO-Kennung hat eine Zeile, jede Zeile traegt formgebundene Belege.
 	@bash tools/verify-observations.sh
@@ -115,19 +108,22 @@ commit-scope-check: ## Commit-Scope (planning) beruehrt nur docs/plan/planning/ 
 # unabhaengige Fragen — sie soll ALLE beantworten, auch wenn eine mit Nein
 # ausgeht. Die Einzel-Targets bleiben fuer den gezielten Aufruf bestehen.
 #
-# OHNE ZAHLENANGABE, bewusst (slice-077, Fund F-15): hier stand "die drei
-# Teil-Sensoren", waehrend das Rezept vier ausfuehrt — die vierte kam mit
-# verify-slice-links (slice-060) hinzu, ohne dass jemand die Zahl nachzog. Die
-# Zahl war nie die Aussage; die Aussage ist "alle, nicht nur die erste". Eine
-# Angabe, die bei jeder Erweiterung mitgepflegt werden muss und keinen Inhalt
-# traegt, ist eine Drift-Quelle ohne Gegenwert.
+# OHNE ZAHLENANGABE, bewusst (slice-077, Fund F-15): hier stand einmal eine
+# Zahl, waehrend das Rezept eine andere Menge ausfuehrte — ein hinzugekommener
+# Sensor zog sie nicht nach. Die Zahl war nie die Aussage; die Aussage ist
+# "alle, nicht nur die erste". Eine Angabe, die bei jeder Erweiterung
+# mitgepflegt werden muss und keinen Inhalt traegt, ist eine Drift-Quelle
+# ohne Gegenwert.
+#
+# Eine der Fragen ist seit slice-080 ein MODUL-Target statt eines Skripts
+# (doc-structure). Es haengt aus demselben Grund hier und nicht an gates:
+# es beantwortet Form- und Closure-Fragen, keine Code-Fragen.
 verify: ## Verifikations-Schicht: DoD-/Closure-Fragen (vor der "fertig"-Meldung; getrennt von gates).
 	@fail=0; \
 	bash tools/verify-risiko-ausgaenge.sh || fail=1; \
-	bash tools/verify-slice-form.sh    || fail=1; \
 	bash tools/verify-ac-form.sh       || fail=1; \
-	bash tools/verify-slice-links.sh   || fail=1; \
 	bash tools/verify-observations.sh  || fail=1; \
+	$(MAKE) --no-print-directory doc-structure || fail=1; \
 	if [ "$$fail" -ne 0 ]; then \
 	  echo "[verify] FAIL — mindestens eine Verifikations-Frage ist offen; alle Befunde stehen oben." >&2; \
 	  exit 1; \

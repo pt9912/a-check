@@ -13,7 +13,7 @@ liegt eine Ebene darüber und schließt über eine **Prozedur**, nicht über ein
   `make verify` sind die Zahl und die benannte Lerneintrag-Form**; „höchstens zwei Schichten" ist
   **Review-Sache** und ausdrücklich kein Gate — was eine Schicht ist, ist eine Ermessensfrage über
   Modul-Grenzen, und ein Zähler darüber wäre Schein-Genauigkeit
-  ([`tools/verify-slice-form.sh`](../../../tools/verify-slice-form.sh) trägt dieselbe Begründung).
+  (die Regel-Kommentare in [`.d-check.yml`](../../../.d-check.yml) tragen dieselbe Begründung).
 
 ## Lifecycle-Bedeutungen
 
@@ -94,10 +94,11 @@ die Verzeichnis-Position, kein `Status`-Feld, wie beim Slice.
 *Beleg:* die Notiz existiert und nennt je Punkt etwas Prüfbares.
 **Dieser `git mv` bricht *jeden* relativen Verweis der Plan-Datei** — anders als beim Slice wechselt
 er die **Verzeichnistiefe** (flach → `done/`), und ein Pfad aus Tiefe *n* braucht aus *n+1* ein
-zusätzliches `../`. Bei `welle-13` waren es **21** Verweise auf einen Schlag. `verify-slice-links`
-kann das **nicht** abfangen: seine Invariante („ein Verweis löst aus jedem Lifecycle-Verzeichnis
-auf") setzt gleiche Ebenen voraus und ist hier nachweislich unerfüllbar — der Sensor weist die
-Lücke deshalb ausdrücklich aus ([slice-089](done/slice-089-welle-datei-verweis-invariante.md)).
+zusätzliches `../`. Bei `welle-13` waren es **21** Verweise auf einen Schlag. Die
+Lifecycle-Invariante (`links.resolve-from`, seit slice-080 im Modul `links`) kann das **nicht**
+abfangen: ihre Bedingung („ein Verweis löst aus jedem Lifecycle-Verzeichnis
+auf") setzt gleiche Ebenen voraus und ist hier nachweislich unerfüllbar — die Lücke ist deshalb
+ausdrücklich ausgewiesen ([slice-089](done/slice-089-welle-datei-verweis-invariante.md)).
 **Also: die Verweise im selben Commit nachziehen und `make gates` laufen lassen**; `doc-check` ist
 das Netz, aber erst *nach* dem `mv`.
 **Zum Steering-Loop:** die Einträge werden aus `docs/plan/steering-loop.md`

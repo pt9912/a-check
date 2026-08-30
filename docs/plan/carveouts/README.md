@@ -36,7 +36,7 @@ Nein, „das werden wir nie tun" ⇒ **permanente ADR** unter
 | **BF-Sub-Area-Markierung** | Diskrepanz-Cluster im selben Geltungsbereich | ganze Sub-Area | Modus-Tabelle in [`conventions.md`](../../../harness/conventions.md#modus-deklaration-pro-sub-area) |
 | **permanente ADR** | der Trigger ist ehrlich nie zu erreichen | dauerhafte Regel | [`docs/plan/adr/`](../adr/README.md) |
 
-**Nicht hierher gehören bootstrap-aware Gates.** Eine Reifestufung des *Gates selbst* (`verify-slice-form`
+**Nicht hierher gehören bootstrap-aware Gates.** Eine Reifestufung des *Gates selbst* (die Größen-Regel in `doc-structure`
 ab slice-052, das AC-Grandfathering, der Stichtag in `commit-scope-check`) ist kein Carveout: sie
 stuft die Prüfung, sie nimmt keine Diskrepanz aus. Die Achsen zu verwechseln erzeugt das
 „Bootstrap-Schlupfloch" — Stufung ohne Trigger ist Carveout-Wildwuchs, eine Carveout-Kaskade ohne
@@ -67,7 +67,7 @@ begründet woanders hin:
 | `.golangci.yml` §exclusions | permanent, getragen von [ADR-0005](../adr/0005-lint-profil.md) |
 | `.d-check.yml` `scan.ignore` für die vendored Baseline | permanent, getragen von [MR-006](../../../harness/conventions.md#mr-006--baseline-committet-vendored-statt-per-url-referenziert) |
 | `.d-check.yml` `exempt-paths` für ADR 0001–0020 | permanent, getragen von [MR-005](../../../harness/conventions.md#mr-005--referenzmatrix-intra-spec-richtung--adrslice-disziplin-d-check-angleichung) |
-| Grandfathering in `verify-slice-form`, `verify-ac-form`, `commit-scope-check` | bootstrap-aware Gate, kein Carveout (siehe oben) |
+| Grandfathering in `doc-structure` (`exempt-paths`), `verify-ac-form`, `commit-scope-check` | bootstrap-aware Gate, kein Carveout (siehe oben) |
 | `regelwerk-check`-Integrität außerhalb des `gates`-Aggregats | kein Gate ausgenommen; `modul-13` führt es als Muster „vorhanden, aber nicht als Gate behauptet" |
 
 Ein leerer Ort ist ehrlich. Eine deklarierte ID-Reihe **ohne** Ort war es nicht — genau der Fund

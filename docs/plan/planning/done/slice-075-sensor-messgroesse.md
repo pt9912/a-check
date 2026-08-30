@@ -15,12 +15,12 @@
 **Mechanismus: der Sensor misst eine Ersatzgröße, die der echten nur ähnlich sieht.** Er ist weder
 falsch-grün noch zu spät — er misst schlicht etwas anderes, als sein Name und seine Meldung sagen.
 
-**`F-13` — [`tools/verify-closure-notes.sh:80`](../../../../tools/verify-closure-notes.sh)**
+**`F-13` — `tools/verify-closure-notes.sh:80`**
 zählt Sätze über `grep -oE '[.!?]'`. Gemessen: die Zeile „Geprueft via `foo.go`." ergibt **2** —
 der Punkt im Dateinamen zählt als Satzende. Eine einzeilige Closure-Notiz besteht damit die
 Mindestzahl von zwei Sätzen.
 
-**`F-4` — [`tools/verify-slice-links.sh`](../../../../tools/verify-slice-links.sh)** extrahiert
+**`F-4` — `tools/verify-slice-links.sh`** extrahiert
 Links über `grep -oE '\]\([^)]*\)'` und sieht damit **nur Inline-Links**. Ein Referenz-Link
 (`[Roadmap][rm]` mit `[rm]: roadmap.md`) bricht beim Lifecycle-Wechsel genauso, wird aber nie
 geprüft.
@@ -32,8 +32,8 @@ Messgröße im Bestand.
 
 ## 2. Betroffene Module
 
-Eine Schicht: **`tools/`** — [`verify-closure-notes.sh`](../../../../tools/verify-closure-notes.sh)
-und [`verify-slice-links.sh`](../../../../tools/verify-slice-links.sh).
+Eine Schicht: **`tools/`** — `verify-closure-notes.sh`
+und `verify-slice-links.sh`.
 
 ## 3. Auszuführende Gates
 
@@ -75,9 +75,9 @@ Link-Extraktion, die auch korrekte Verweise meldet, wären kein Fortschritt.
 
 ## 6. Closure-Notiz
 
-**Geliefert:** [`verify-closure-notes.sh`](../../../../tools/verify-closure-notes.sh) zählt
+**Geliefert:** `verify-closure-notes.sh` zählt
 Satzzeichen nur noch, wenn Whitespace oder Zeilenende folgt;
-[`verify-slice-links.sh`](../../../../tools/verify-slice-links.sh) erfasst zusätzlich
+`verify-slice-links.sh` erfasst zusätzlich
 Referenz-**Definitionen**. Beide Korrekturen sind mit je zwei Selbsttest-Fixturen gegen Rückfall
 gesichert.
 

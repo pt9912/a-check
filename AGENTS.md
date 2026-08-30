@@ -153,7 +153,7 @@ Aggregat). Ob ein Gate gerade grün ist, sagt die CI (Badge im
 
 | Target | Zweck |
 |---|---|
-| `make doc-check` | Doku-Links/Anker/Kennungen via `d-check` (Schwester-Tool, digest-gepinnt, netzlos, read-only) |
+| `make doc-check` | Doku-Links/Anker/Kennungen via `d-check` (Schwester-Tool, digest-gepinnt, netzlos, read-only); seit slice-080 zusätzlich die **Lifecycle-Invariante** ([`SL-002`](docs/plan/planning/observations.md)) über `links.resolve-from` — sie hat `verify-slice-links` abgelöst und liegt damit in der Gate- statt der Verifikations-Schicht |
 | `make doc-trace` | advisory Requirements Traceability Matrix via `d-check` (DC-FA-CLI-009; `TRACE_FLAGS=--json`) |
 | `make doc-complete` | Vollständigkeits-Gate: Requirements-Waise ⇒ Exit 1 (DC-FA-CLI-011) |
 | `make doc-doctor` | erklärende Diagnose mit Fix-Kandidaten (DC-FA-CLI-007) |
@@ -163,7 +163,7 @@ Aggregat). Ob ein Gate gerade grün ist, sagt die CI (Badge im
 | `make doc-planning` | Planning-Lifecycle-Konsistenz Roadmap ↔ `in-progress` (Modul `planning`, DC-FA-PLAN-001) |
 | `make doc-tracked` | Getrackt-Status auflösbarer Referenz-Ziele (Modul `tracked`, DC-FA-TRK-001) |
 | `make doc-targets` | Deklarations-Konsistenz Doku ↔ Build-Targets (Modul `targets`, DC-FA-TGT-001), konfiguriert in [`.d-check.yml`](.d-check.yml) seit slice-074. **Im `gates`-Aggregat seit slice-079** — es hat dort `gate-consistency` (1)+(2) abgelöst, deren Parität in beiden Richtungen gemessen ist (slice-073/079) |
-| `make doc-structure` | Struktur-Invarianten innerhalb der Dokumente (Modul `structure`, DC-FA-STRUCT-001) — mit dem Pin `v0.67.0` verfuegbar, ohne Konfigurationsblock in [`.d-check.yml`](.d-check.yml) und **nicht im `gates`-Aggregat**; ob es die `verify-*`-Skripte abloesen kann, misst slice-080 |
+| `make doc-structure` | Struktur-Invarianten innerhalb der Dokumente (Modul `structure`, DC-FA-STRUCT-001): Größen-Regel, Closure-Struktur, Lerneintrag-Form, Kopffelder. Seit slice-080 in [`.d-check.yml`](.d-check.yml) konfiguriert und **im `verify`-Aggregat** — es hat `verify-slice-form` und die strukturelle Hälfte von `verify-closure-notes` abgelöst, Parität je Befundklasse gemessen. Braucht den Pin `v0.68.0` (`tasks-ignore-pattern`, `exempt-section-pattern`) |
 | `make doc-help` | Liste der `doc-*`-Targets (Utility) |
 | `make lint` | golangci-lint mit dem Projekt-Profil (§3.2, [ADR-0005](docs/plan/adr/0005-lint-profil.md)) |
 | `make test` | Akzeptanzkriterien der `AC-FA-*` als Go-Tests |
@@ -175,10 +175,8 @@ Aggregat). Ob ein Gate gerade grün ist, sagt die CI (Badge im
 | `make guard-selftest` | Selbsttest des PreToolUse-Command-Guard (Tool-Call-Gate §3.1) |
 | `make regelwerk-check` | **kein Gate** — Wartung der vendored Baseline ([MR-006](harness/conventions.md#mr-006--baseline-committet-vendored-statt-per-url-referenziert)): Integrität gegen `SHA256SUMS` fail-closed; die Freshness-Hälfte bleibt als Netz-Operation ausdrücklich ungeprüft |
 | `make gates` | alle inneren Gates (mandatory vor Handoff) |
-| `make verify-slice-form` | Form der Slice-Pläne ab slice-052: höchstens drei **Liefer**-Punkte, benannte Lerneintrag-Form; ab slice-098 zusätzlich die drei Kopffelder (`Verantwortlich:`/`Autor:`/Spec-Stellen). Gate-Läufe und Closure-Pflichten zählen **nicht** als Liefer-Punkte — sie dürfen im DoD stehen, wie die Ziel-Form es vorsieht (slice-107). Ältere grandfathered — zwei Stichtage, bootstrap-aware (slice-052, slice-098) |
 | `make verify-ac-form` | Form neuer `AC-*` (§5): Happy · Boundary · Negative · Out-of-Scope; die 19 bei Einführung bestehenden sind grandfathered (slice-054) |
-| `make verify-risiko-ausgaenge` | Struktur der Closure-Notizen in `done/` (§5): genau eine, ausgefüllt, kein Platzhalter, keine Floskel (slice-050) |
-| `make verify-slice-links` | Relative Verweise wandernder Slices (`open`/`next`/`in-progress`) lösen aus **jedem** Lifecycle-Verzeichnis auf ([`SL-002`](docs/plan/planning/observations.md)); `done/` ist Endzustand und ausgenommen (slice-060) |
+| `make verify-risiko-ausgaenge` | Jedes in §6 **notierte** Risiko trägt genau einen Ausgang aus der geschlossenen Dreier-Menge (§5, ab slice-102). Bleibt lokal, weil die Prüfung §6 mit §7 vergleicht und `structure` abschnitts-**lokal** ist; die strukturelle Hälfte des früheren `verify-closure-notes` liegt seit slice-080 in `doc-structure`. **Nicht** geprüft: die Existenz eines Risiko-Blocks |
 | `make verify-observations` | Deckung des Beobachtungs-Registers ([`observations.md`](docs/plan/planning/observations.md)): jede in `done/` zitierte `BEO-NNN` hat eine Zeile, jede Zeile trägt formgebundene Belege (`slice-NNN`, Anzahl == Zähler). **Nicht** geprüft: Lage und Existenz der Beleg-Datei (`modul-06`) und die Umkehrung „jede Zeile ist zitiert" — die meisten stehen unter der Schwelle (slice-102) |
 | `make verify` | **Verifikations-Schicht** (getrennt von `gates`, Regelwerk Modul 11): beantwortet DoD-/Closure-Fragen statt Code-Fragen; vor der „fertig"-Meldung auszuführen |
 | `make image-test` | [AC-FA-DIST-001](spec/lastenheft.md#ac-fa-dist-001--distribution-image---print-mk-a-checkmk) + nativ==Container-Akzeptanz + Fragment-Parität (committete [`a-check.mk`](a-check.mk) == `--print-mk`, slice-034) gegen das gebaute Image |

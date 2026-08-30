@@ -28,7 +28,7 @@ verify-ac-form ok: 0 neue AC(s) geprueft, 19 bei Einfuehrung bestehende (grandfa
 Null geprüfte Einheiten, Ergebnis „ok" (`F-12`; betrifft alle vier `verify-*`-Sensoren).
 
 Dazu der Spezialfall `R-068-F4` — gemessen an
-[`tools/verify-slice-form.sh:32`](../../../../tools/verify-slice-form.sh):
+`tools/verify-slice-form.sh:32`:
 
 ```
 slice-068.md                      -> number=''      → grandfathered
@@ -42,9 +42,9 @@ heute zweierlei: *zu alt* und *nicht erkannt*. Nur das erste ist legitim.
 
 ## 2. Betroffene Module
 
-Eine Schicht: **`tools/`** — [`verify-closure-notes.sh`](../../../../tools/verify-closure-notes.sh),
-[`verify-slice-form.sh`](../../../../tools/verify-slice-form.sh),
-[`verify-slice-links.sh`](../../../../tools/verify-slice-links.sh),
+Eine Schicht: **`tools/`** — `verify-closure-notes.sh`,
+`verify-slice-form.sh`,
+`verify-slice-links.sh`,
 [`verify-ac-form.sh`](../../../../tools/verify-ac-form.sh).
 
 ## 3. Auszuführende Gates

@@ -73,7 +73,7 @@ Anhang ist **nicht** Teil des unabhängigen Laufs.
 
 - `kategorie`: **HIGH**
 - `quelle`: `SL-002`; [`AGENTS.md`](../../AGENTS.md) §4
-- `pfad`: [`tools/verify-slice-links.sh:40`](../../tools/verify-slice-links.sh)
+- `pfad`: `tools/verify-slice-links.sh:40`
 - `befund`: Extrahiert werden nur Inline-Links der Form `](...)`. Ein relativer Referenz-Link
   (`[Roadmap][roadmap]` mit `[roadmap]: roadmap.md`), der nach einem Lifecycle-Wechsel bricht,
   wird nicht gesehen.
@@ -95,7 +95,7 @@ Anhang ist **nicht** Teil des unabhängigen Laufs.
 - `quelle`: Fund `B-1` aus [slice-048](../plan/planning/done/slice-048-modul-delta-lesen.md);
   Planning-Harness
 - `pfad`: [`docs/plan/planning/README.md:8`](../plan/planning/README.md),
-  [`tools/verify-slice-form.sh:22`](../../tools/verify-slice-form.sh)
+  `tools/verify-slice-form.sh:22`
 - `befund`: Die Planungs-Doku ordnet „höchstens zwei Schichten" ausdrücklich `make verify` zu. Das
   Skript erklärt dieselbe Regel dagegen als ungeprüfte Review-Sache; ein Fixture-Slice mit drei
   benannten Schichten lief grün.
@@ -171,9 +171,9 @@ Der im Auftrag vorgegebene Defekt von Item 6 wurde nicht nochmals als eigenes Fi
 
 - `kategorie`: **MEDIUM**
 - `quelle`: Sensor-Präzision; Leitfrage A2 des Auftrags
-- `pfad`: [`tools/verify-closure-notes.sh:116`](../../tools/verify-closure-notes.sh),
-  [`tools/verify-slice-form.sh:114`](../../tools/verify-slice-form.sh),
-  [`tools/verify-slice-links.sh:106`](../../tools/verify-slice-links.sh),
+- `pfad`: `tools/verify-closure-notes.sh:116`,
+  `tools/verify-slice-form.sh:114`,
+  `tools/verify-slice-links.sh:106`,
   [`tools/verify-ac-form.sh:103`](../../tools/verify-ac-form.sh)
 - `befund`: In einer leeren Planning-/Lastenheft-Fixture meldeten alle vier Sensoren Exit 0 und
   ausdrücklich „0 … ok". Ein verschwundener Prüfbestand wird damit als erfüllte Verifikation
@@ -184,7 +184,7 @@ Der im Auftrag vorgegebene Defekt von Item 6 wurde nicht nochmals als eigenes Fi
 
 - `kategorie`: **MEDIUM**
 - `quelle`: Closure-Pflicht; Leitfrage A1 des Auftrags
-- `pfad`: [`tools/verify-closure-notes.sh:80`](../../tools/verify-closure-notes.sh)
+- `pfad`: `tools/verify-closure-notes.sh:80`
 - `befund`: Die behauptete Mindestzahl von zwei Sätzen wird über die Anzahl von `.`, `!` und `?`
   ermittelt. Die einzelne Zeile „Geprüft via `foo.go`." wurde wegen des Punkts im Dateinamen als
   zwei Sätze und damit als ausgefüllte Closure akzeptiert.

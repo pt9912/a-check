@@ -34,7 +34,7 @@ abgeschaltet statt repariert (slice-057, SL-001).
 - [`tools/suppression-check.sh`](../../../../tools/suppression-check.sh) — Erkennungs-Muster,
   Negativ-Fixture, Kommentar-Korrektur (R-049-F3, R-049-F5).
 - [`tools/regelwerk-check.sh`](../../../../tools/regelwerk-check.sh) — Stand-Auswahl (R-049-F4).
-- [`tools/verify-slice-form.sh`](../../../../tools/verify-slice-form.sh) — Abschnitts-Schnitt der
+- `tools/verify-slice-form.sh` — Abschnitts-Schnitt der
   DoD-Zählung (R-052-F3).
 
 **Eine Schicht** (Gate-/Werkzeug-Schicht). Kein `AC-*`, kein `SPEC-*`, keine ADR berührt: die
