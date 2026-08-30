@@ -248,3 +248,24 @@ planning:
   # Slice in der Sektion genannt ist. Zwei Slices in in-progress/ bei einer
   # Sektion, die nur einen nennt, bleiben gruen — und das WIP-Limit (AGENTS §5)
   # faengt das Modul ebenfalls nicht.
+
+# Modul `workflows` (slice-130): Deklarations-Form der `uses:`-Referenzen unter
+# `.github/workflows`. `dir:` ist der Aktivierungs-Schalter — ohne ihn ist das
+# Modul inert und meldete 0 Befunde bei Exit 0, dieselbe Klasse wie die
+# targets-Luecke (slice-074) und die planning-Luecke (BEO-014).
+#
+# GEPRUEFT WIRD DIE FORM, NICHT DIE GUELTIGKEIT: eine fremde Referenz nennt
+# einen vollen 40-stelligen SHA (uses-pin-missing) mit Tag-Kommentar dahinter
+# (uses-pin-untagged). Ob der Kommentar zum SHA PASST, sagt das Modul nicht —
+# das waere Netz, und d-check ist hermetisch. Der Widerspruch, der diesen Slice
+# ausgeloest hat (ein Digest, zwei Tag-Kommentare), bleibt damit ungedeckt und
+# steht als BEO-026 weiter offen.
+#
+# Die lokale Referenz (`./…`) braucht keinen Pin — sie loest auf denselben
+# Commit auf wie ihr Aufrufer —, dafuer zwei andere Zusagen: das Ziel existiert
+# (uses-local-missing), und der aufrufende JOB fuehrt die Rechte, die es
+# verlangt (uses-local-perms-undeclared/-narrow). Der erste Lauf fand hier den
+# latenten Bruch in release.yml, der die Hub-Darstellung bei v0.18.0 zur
+# Handarbeit machte (slice-130 §4).
+workflows:
+  dir: .github/workflows

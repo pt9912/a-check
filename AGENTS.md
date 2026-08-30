@@ -147,7 +147,8 @@ sind die häufigste Form von Harness-Lüge; `make gate-consistency` erzwingt
 die Übereinstimmung Doku ↔ Makefile mechanisch. Die Code-Gates sind
 Dockerfile-Stages, die Meta-Gates laufen als Host-Bash. **Mandatory** ist, was in einem der
 beiden Aggregate hängt: `gates` (Code-Fragen) oder `verify` (DoD-/Closure-Fragen). Von den
-`doc-*`-Targets sind das `doc-check`, `doc-targets`, `doc-planning` und `doc-immutable` (in
+`doc-*`-Targets sind das `doc-check`, `doc-targets`, `doc-planning`, `doc-workflows` und
+`doc-immutable` (in
 `gates`) sowie `doc-structure` und `doc-complete` (in `verify`); die übrigen sind **advisory** —
 `d-check`-Funktionen, die man aufruft, wenn man sie braucht. Ob ein Gate gerade grün ist, sagt
 die CI (Badge im [`README.md`](README.md)), nicht diese Tabelle.
@@ -162,6 +163,7 @@ die CI (Badge im [`README.md`](README.md)), nicht diese Tabelle.
 | `make doc-immutable` | ADR-Immutabilität (§3.5) via git-Diff (Modul `vcs`; `RANGE=`/`STAGED=1`, DC-FA-VCS-001) — **CI-durchgesetzt** über die Commit-Range ([`ci.yml`](.github/workflows/ci.yml)) |
 | `make doc-commits` | Commit-Message-Traceability (Modul `commits`; `RANGE=`, DC-FA-COMMITS-001) |
 | `make doc-planning` | Planning-Lifecycle-Konsistenz Roadmap ↔ `in-progress` (Modul `planning`, DC-FA-PLAN-001): liegt ein Slice in `in-progress/`, muss die Roadmap-Sektion ihn **benennen** statt den Ruhe-Marker zu tragen. Seit slice-122 in [`.d-check.yml`](.d-check.yml) konfiguriert und **im `gates`-Aggregat** — davor lief es ohne Gegenstand und meldete grün ([`BEO-014`](docs/plan/planning/observations.md)). Die zweite und dritte Modul-Fähigkeit (`closure:`, `waves:`) bleiben bewusst unkonfiguriert: die Closure-Struktur prüft `doc-structure` |
+| `make doc-workflows` | Deklarations-Form der `uses:`-Referenzen unter `.github/workflows` (Modul `workflows`): eine **fremde** Referenz nennt einen vollen 40-stelligen SHA mit Tag-Kommentar dahinter, eine **lokale** (`./…`) braucht keinen Pin, dafür ein existierendes Ziel und einen Aufrufer-Job, der die verlangten Rechte führt. Konfiguriert und **im `gates`-Aggregat seit slice-130**; das einzige eigene `doc-*`-Target, weil [`d-check.mk`](d-check.mk) für dieses Modul keines erzeugt. Geprüft wird die **Form**, nicht die **Gültigkeit**: ob der Tag-Kommentar zum SHA passt, sagt es nicht — das wäre Netz, und der Widerspruch aus [`BEO-026`](docs/plan/planning/observations.md) bleibt damit ungedeckt |
 | `make doc-tracked` | Getrackt-Status auflösbarer Referenz-Ziele (Modul `tracked`, DC-FA-TRK-001) |
 | `make doc-targets` | Deklarations-Konsistenz Doku ↔ Build-Targets (Modul `targets`, DC-FA-TGT-001), konfiguriert in [`.d-check.yml`](.d-check.yml) seit slice-074. **Im `gates`-Aggregat seit slice-079** — es hat dort `gate-consistency` (1)+(2) abgelöst, deren Parität in beiden Richtungen gemessen ist (slice-073/079) |
 | `make doc-structure` | Struktur-Invarianten innerhalb der Dokumente (Modul `structure`, DC-FA-STRUCT-001), **fünf Regeln**: Größen-Regel, Closure-Struktur, Lerneintrag-Form, Kopffelder, **AC-Form**. Konfiguriert in [`.d-check.yml`](.d-check.yml) und **im `verify`-Aggregat** — es hat alle vier Eigenbau-Sensoren aus slice-080 abgelöst (`verify-slice-form`, die strukturelle Hälfte von `verify-closure-notes` und seit slice-120 `verify-ac-form`), Parität je Befundklasse gemessen. Braucht den Pin `v0.69.0` (`tasks-ignore-pattern`, `exempt-section-pattern`, `exempt-expect-count`) |

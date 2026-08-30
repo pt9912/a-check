@@ -4,7 +4,8 @@
 `open/`, `next/`, `in-progress/`, `done/`. Er wechselt nur durch `make slice-mv`
 ([`AGENTS.md`](../../../../AGENTS.md) §3.3/§5).
 
-**Bezug:** [`BEO-026`](../observations.md) — bei **2×** nach dem zweiten Vorfall (§3).
+**Bezug:** [`BEO-026`](../observations.md) — bei **3×**: zwei Vorfälle standen beim Schnitt (§3),
+der dritte entstand während der Arbeit (§8).
 
 **Berührte Spec-Stellen:** — *(keine)* — die CI-Schicht ist nicht Gegenstand des Lastenhefts.
 
@@ -21,20 +22,20 @@ Modul `workflows` ist seit dem Pin `v0.67.0` verfügbar und war nie eingeschalte
 
 ## 2. Definition of Done
 
-- [ ] Modul `workflows` in [`.d-check.yml`](../../../../.d-check.yml) konfiguriert, als
+- [x] Modul `workflows` in [`.d-check.yml`](../../../../.d-check.yml) konfiguriert, als
       `make doc-workflows` aufrufbar und im `gates`-Aggregat — mit dem Aktivierungs-Schalter
       `dir:`, ohne den das Modul inert wäre (dieselbe Klasse wie
       [`BEO-014`](../observations.md)).
-- [ ] Der vom Modul gefundene Rechte-Defekt in
+- [x] Der vom Modul gefundene Rechte-Defekt in
       [`release.yml`](../../../../.github/workflows/release.yml) ist behoben: der aufrufende Job
       führt die Rechte, die das lokale Ziel verlangt.
-- [ ] Der widersprüchliche Tag-Kommentar ist korrigiert — **gegen die Quelle gemessen**, nicht
+- [x] Der widersprüchliche Tag-Kommentar ist korrigiert — **gegen die Quelle gemessen**, nicht
       aus der Nachbarzeile geschlossen.
 
-- [ ] `make gates` grün — Ausgabe in eine Datei, Exit-Code getrennt geprüft, nie in eine Pipe.
-- [ ] Closure-Notiz mit benanntem Lerneintrag geschrieben (§7).
-- [ ] Beobachtungs-Register fortgeschrieben.
-- [ ] Jedes Risiko aus §6 trägt genau einen Ausgang.
+- [x] `make gates` grün — Ausgabe in eine Datei, Exit-Code getrennt geprüft, nie in eine Pipe.
+- [x] Closure-Notiz mit benanntem Lerneintrag geschrieben (§7).
+- [x] Beobachtungs-Register fortgeschrieben.
+- [x] Jedes Risiko aus §6 trägt genau einen Ausgang.
 
 ## 3. Plan (vor Code)
 
@@ -129,12 +130,83 @@ kein Gate dorthin sah.
 ## 6. Risiken und offene Punkte
 
 - *Die Rechte-Korrektur könnte den Release-Job selbst berühren und einen laufenden Pfad brechen* —
-  **Ausgang:** *(beim Abschluss ausfüllen)*
+  **Ausgang:** gestrichen mit Begründung: die Änderung **gibt** dem aufrufenden Job zwei Zeilen
+  `permissions:`, sie nimmt keine. Der `release`-Job und der Spiegel-Schritt sind unberührt; der
+  einzige Pfad, dessen Rechte sich ändern, ist der, der heute nicht läuft.
 - *Das Modul könnte im Bestand weitere Befunde erzeugen, die den `gates`-Lauf rot machen* —
-  **Ausgang:** *(beim Abschluss ausfüllen)*
+  **Ausgang:** gestrichen mit Begründung: gemessen, nicht vermutet — **genau ein** Befund im
+  ganzen Bestand (§4), behoben, danach `doc-workflows` 0 Befunde und `make gates` **EXIT=0**.
+  Die vier Workflow-Dateien tragen acht `uses:`-Referenzen — **sieben** fremde, alle formgerecht
+  gepinnt, und **eine** lokale, die genau den Befund trug.
 - *Der ungedeckte Digest↔Tag-Widerspruch bleibt ohne Sensor und wiederholt sich* —
-  **Ausgang:** *(beim Abschluss ausfüllen)*
+  **Ausgang:** **eingetreten**, noch in diesem Slice, an einer dritten Stelle (§8) ⇒ Folge-Slice
+  benannt und [`BEO-026`](../observations.md) auf **3×** geschärft.
 
 ## 7. Closure-Notiz
 
-_(beim Abschluss ausfüllen — genau **ein** solcher Abschnitt je Slice.)_
+**Geliefert:** Das Modul `workflows` ist konfiguriert, als `make doc-workflows` aufrufbar und im
+`gates`-Aggregat. Es hat im ersten Lauf einen latenten Release-Bruch gefunden (§4), der behoben
+ist; der widersprüchliche Tag-Kommentar in
+[`release.yml`](../../../../.github/workflows/release.yml) trägt jetzt den **gemessenen** Wert.
+
+**Lerneintrag — Form: geschärfte Regel.** *Wer einen Sensor wegen eines Vorfalls einschaltet,
+prüft zuerst, ob er genau **diesen** Vorfall fängt — sonst kauft er Deckung für eine andere Frage
+und hält den Anlass für erledigt.* Der Anlass war ein Digest mit zwei Tag-Kommentaren. Das Modul
+prüft, **dass** ein Tag-Kommentar dasteht, nicht **welcher**; beide Zeilen des Anlasses sind
+formgerecht. Hätte ich das nicht vor dem Schnitt nachgelesen, stünde `BEO-026` heute als
+„verkörpert" im Register — *weil* ein grünes Target wie eine Antwort aussieht, auch wenn es eine
+andere Frage beantwortet. Dieselbe Klasse wie [`BEO-023`](../observations.md), nur eine Ebene
+höher: dort war die Prüfmenge leer, hier ist es die Prüf**frage**.
+
+**Der Sensor hat trotzdem mehr geliefert als der Anlass verlangte.** Er deckt die *lokale*
+Referenz, an die niemand gedacht hatte, und fand dort den Grund, warum die Hub-Darstellung bei
+v0.18.0 von Hand gestartet werden musste (§4). Das ist die beobachtbare Architektur-Aussage: die
+Rechte-Kette eines aufgerufenen Workflows ist eine **Deklaration**, keine Laufzeit-Eigenschaft —
+und Deklarationen sind hermetisch prüfbar.
+
+**Drei beobachtbare Closure-Kriterien:**
+
+1. `make doc-workflows` meldete am Bestand **einen** Befund (`uses-local-perms-undeclared`,
+   `release.yml:242`), nach der Korrektur **null**.
+2. Der falsche Tag-Kommentar ist gegen die Quelle geprüft, nicht gegen die Nachbarzeile:
+   `v4.2.0` → `650006c6…`, `v3.6.0` → `5e57cd11…`. Der Digest **ist** v4.2.0.
+3. Zwei Bestands-Sensoren haben die Erweiterung selbst beanstandet, bevor sie grün wurde:
+   `gate-consistency` (`doc-workflows` fehlte in `.PHONY`) und `guard-selftest` (es fehlte in der
+   `GATES`-Liste des Command-Guard, sein Lauf wäre also pipebar geblieben). Beide Male war der
+   Befund berechtigt — der Sensor für neue Targets funktioniert.
+
+**Was die Disable-Liste betrifft:** das Target zählt die **sechs Module der `modules:`-Liste** auf,
+nicht alle Module des Pins. Die Fragment-Targets tun Letzteres, weil sie generisch erzeugt sind und
+die Konfiguration nicht kennen; von Hand wäre es eine geschlossene Liste gegen eine offene Menge —
+die Falle aus [slice-115](../done/slice-115-dcheck-pin-v0670.md). Die sechs Namen stehen im selben
+Repo und fallen beim Ändern auf.
+
+**Offene Risiken und ihr Ausgang:** zwei gestrichen mit Begründung, eines **eingetreten** (§8).
+
+**Beobachtungs-Register:** [`BEO-026`](../observations.md) ist von **1×** auf **3×** geschärft und
+neu gefasst — die Klasse ist nicht „Workflow-`uses:`", sondern **jede Versions-Angabe neben einem
+Digest**. Sie bleibt **offen**: die Form deckt dieser Slice, die Gültigkeit nicht.
+
+**Folge-Slice:** die dritte Ausprägung aus §8 — die widersprüchlichen Versions-Variablen zwischen
+[`Makefile`](../../../../Makefile) und [`Dockerfile`](../../../../Dockerfile).
+
+## 8. Der dritte Vorfall entstand während dieses Slice
+
+Beim Lesen des Makefile-Kopfs, aus einem anderen Grund:
+
+| Ort | Angabe |
+|---|---|
+| [`Makefile`](../../../../Makefile) | `GO_VERSION ?= 1.26.4`, `GOLANGCI_LINT_VERSION ?= v2.12.2` |
+| [`Dockerfile`](../../../../Dockerfile) `ARG` | `GO_VERSION=1.27.0`, `GOLANGCI_LINT_VERSION=v2.13.2` |
+
+Das Makefile sticht den `ARG` per `--build-arg`. Was tatsächlich läuft, sagt aber **keine** der
+beiden Zahlen, denn daneben steht ein Digest, und der sticht den Tag. **Gemessen** im gepinnten
+Basis-Image: `go1.27.0`.
+
+Die Hebung ist also im `ARG` angekommen und im Makefile nicht — folgenlos für den Build, aber die
+Zahl dort behauptet seither etwas Falsches. Das ist dieselbe Klasse wie der Tag-Kommentar, nur
+schärfer: dort widersprach eine Zahl einem Digest, hier widersprechen sich **zwei** Zahlen, und
+gültig ist keine.
+
+**Nicht in diesem Slice.** Die Größen-Regel lässt drei Liefer-Punkte, und die drei sind vergeben;
+ein vierter würde den Slice dehnen statt zerlegen ([`AGENTS.md`](../../../../AGENTS.md) §5).

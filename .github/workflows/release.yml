@@ -155,7 +155,7 @@ jobs:
       # bereits veroeffentlichten GHCR-Digest — der Teilstand ist gueltig, und
       # wer aufraeumt, muss wissen, was schon draussen ist.
       - name: Log in to Docker Hub
-        uses: docker/login-action@650006c6eb7dba73a995cc03b0b2d7f5ca915bee # v3.6.0
+        uses: docker/login-action@650006c6eb7dba73a995cc03b0b2d7f5ca915bee # v4.2.0
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
@@ -239,6 +239,13 @@ jobs:
   hub-description:
     name: Hub-Darstellung
     needs: release
+    # Ein aufgerufener Workflow bekommt nur, was der aufrufende JOB fuehrt: der
+    # Kopf oben ist `permissions: {}`, und was der Job nicht deklariert, kann er
+    # nicht weitergeben. Ohne diese zwei Zeilen bricht GitHub den Lauf VOR dem
+    # ersten Job ab — ohne Log und ohne Hinweis auf die Zeile. Genau darum musste
+    # die Hub-Darstellung bei v0.18.0 von Hand gestartet werden (slice-130).
+    permissions:
+      contents: read     # das Ziel liest das Repo fuer den Beschreibungstext
     uses: ./.github/workflows/hub-description.yml
     with:
       version: v${{ needs.release.outputs.version }}
