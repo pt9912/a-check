@@ -24,6 +24,7 @@ Nichts in Arbeit.
 
 | Slice | Trigger | Zustand |
 |---|---|---|
+| [slice-122](../open/slice-122-planning-modul-wirksam.md) | eingetreten — [`BEO-014`](../observations.md) bei 2×, die Lücke ist gemessen | **startbar** — ein Gate, das läuft, grün meldet und nichts prüft |
 | [slice-013](../open/slice-013-driving-driven-vertiefung.md), [slice-045](../open/slice-045-intern-extern-dateimenge.md) | siehe *Nächste Wellen* | vertagt, Evidenz gemessen und zu klein |
 
 Ein Slice, der auf ein Fremdrepo wartet, gehört in **keine** Welle — er würde ihren
