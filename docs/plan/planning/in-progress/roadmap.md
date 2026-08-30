@@ -18,14 +18,13 @@ Welle-Datei, nicht hier.
 
 - *(keine offene Welle-Datei)*
 
-Nichts in Arbeit.
+In Arbeit: [slice-120](../in-progress/slice-120-ac-form-abloesen.md) — verify-ac-form ablösen.
 
 **Offene Slices ohne Welle** — sie brauchen keine, ihre Trigger stehen in ihrem eigenen `§0`:
 
 | Slice | Trigger | Zustand |
 |---|---|---|
 | [slice-117](../open/slice-117-handbuch-verweis-cli.md) | eingetreten — Maintainer-Auftrag, keine Vorbedingung | **startbar** — Spec-first: die Anforderung entsteht vor dem Code |
-| [slice-120](../open/slice-120-ac-form-abloesen.md) | eingetreten — beide Hälften aus [slice-116 §4](../done/slice-116-nullmengen-haerte-cr.md), je einzeln gemessen | **startbar** — schließt die Ablösung aus [slice-080](../done/slice-080-verify-abloesung-dcheck.md) ab |
 | [slice-013](../open/slice-013-driving-driven-vertiefung.md), [slice-045](../open/slice-045-intern-extern-dateimenge.md) | siehe *Nächste Wellen* | vertagt, Evidenz gemessen und zu klein |
 
 Ein Slice, der auf ein Fremdrepo wartet, gehört in **keine** Welle — er würde ihren
