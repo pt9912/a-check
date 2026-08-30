@@ -18,7 +18,7 @@ Welle-Datei, nicht hier.
 
 - *(keine offene Welle-Datei)*
 
-In Arbeit: [slice-126](../in-progress/slice-126-lint-pin-v2-13-2.md) — Lint-Pin-Hebung.
+Nichts in Arbeit.
 
 **Offene Slices ohne Welle** — sie brauchen keine, ihre Trigger stehen in ihrem eigenen `§0`:
 
