@@ -6,6 +6,8 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
+## [0.18.0] - 2026-08-30
+
 ### Changed — BREAKING
 
 - **Die Richtungs-Dimension trägt je Rolle ihr eigenes Vokabular** (`AC-FA-RULE-008` neu gefasst,
