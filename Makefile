@@ -6,8 +6,13 @@
 
 include d-check.mk
 
-GO_VERSION            ?= 1.26.4
-GOLANGCI_LINT_VERSION ?= v2.12.2
+# Diese beiden gehen als --build-arg ins Dockerfile und stechen dort den
+# ARG-Default. WIRKSAM ist keine von beiden: neben dem Tag steht ein Digest, und
+# der sticht den Tag. Die Zahl benennt also, was im gepinnten Image liegt —
+# gemessen 1.27.0 bzw. 2.13.2 — und `make version-coherence` haelt sie gegen die
+# ARG-Defaults, damit die beiden Orte nicht auseinanderlaufen (slice-131).
+GO_VERSION            ?= 1.27.0
+GOLANGCI_LINT_VERSION ?= v2.13.2
 IMAGE                 ?= a-check
 
 # VERSION fließt ins OCI-Label org.opencontainers.image.version (Dockerfile
@@ -46,7 +51,7 @@ NO_CACHE_FILTER_COV  := --no-cache-filter coverage
         gate-consistency guard-selftest record-gates gates image-test ci \
         trace-check hooks suppression-check regelwerk-check commit-scope-check \
         verify verify-risiko-ausgaenge verify-observations slice-mv image-scan \
-        doc-workflows
+        doc-workflows version-coherence
 
 # Gates seriell: unter `make -j` liefen die Sub-Gates sonst parallel und die
 # Reihenfolge/der Abbruch bei rotem Gate wären nicht garantiert.
@@ -115,6 +120,14 @@ doc-workflows: ## Deklarations-Form der uses:-Referenzen unter .github/workflows
 	  --disable links --disable anchors --disable ids \
 	  --disable matrix --disable spans --disable hostpaths
 
+# Antwort auf BEO-026 bei 3x (slice-131). Es prueft KOHAERENZ, nicht Wahrheit:
+# derselbe uses:-SHA traegt ueberall denselben Tag-Kommentar, und eine
+# Versions-Variable, die Makefile UND Dockerfile fuehren, hat an beiden Orten
+# denselben Wert. Zwei uebereinstimmend falsche Angaben bleiben gruen — die
+# Registry zu fragen waere Netz, und `gates` ist hermetisch.
+version-coherence: ## Kohaerenz doppelt deklarierter Versions-Angaben (uses:-SHA <-> Tag-Kommentar, Makefile <-> Dockerfile-ARG).
+	@bash tools/verify-versions-kohaerent.sh
+
 # KEIN Bestandteil von `gates` — der Scan braucht NETZ, und das ist hier der Zweck,
 # nicht ein Zugestaendnis (ADR-0037). `gates` bleibt hermetisch.
 image-scan: ## CVE-Scan gegen das PUBLIZIERTE Image (Netz, NICHT in gates, Trivy digest-gepinnt; ADR-0037). Skript-Exit 1 = behebbare CRITICAL/HIGH, 2 = gescheitert — ueber make nicht unterscheidbar.
@@ -158,7 +171,7 @@ verify: ## Verifikations-Schicht: DoD-/Closure-Fragen (vor der "fertig"-Meldung;
 record-gates: ## Gate-Nachweis (Working-Tree-Hash) für den Stop-Hook schreiben.
 	@bash tools/harness/record-gates.sh
 
-gates: lint test coverage-gate arch-check doc-check doc-targets doc-planning doc-workflows gate-consistency suppression-check guard-selftest record-gates ## alle inneren Gates (mandatory vor Handoff).
+gates: lint test coverage-gate arch-check doc-check doc-targets doc-planning doc-workflows gate-consistency version-coherence suppression-check guard-selftest record-gates ## alle inneren Gates (mandatory vor Handoff).
 
 image-test: build ## AC-FA-DIST-001 + nativ==Container-Akzeptanz gegen das gebaute Image.
 	@IMAGE=$(IMAGE) bash tools/image-test.sh

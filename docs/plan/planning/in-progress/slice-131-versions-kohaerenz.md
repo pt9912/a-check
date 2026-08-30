@@ -23,19 +23,19 @@ richtig auszusehen.
 
 ## 2. Definition of Done
 
-- [ ] Die beiden Versions-Variablen im [`Makefile`](../../../../Makefile) tragen den **gemessenen**
+- [x] Die beiden Versions-Variablen im [`Makefile`](../../../../Makefile) tragen den **gemessenen**
       Wert des jeweils gepinnten Images (§3), nicht den zuletzt geschriebenen.
-- [ ] `tools/verify-versions-kohaerent.sh` prüft **zwei** Kohärenz-Regeln (§4) und trägt einen
+- [x] `tools/verify-versions-kohaerent.sh` prüft **zwei** Kohärenz-Regeln (§4) und trägt einen
       Selbsttest, der beide Richtungen jeder Regel abdeckt — auch die, in der der Sensor nichts
       finden **darf**.
-- [ ] `make version-coherence` ist im `gates`-Aggregat und in
+- [x] `make version-coherence` ist im `gates`-Aggregat und in
       [`AGENTS.md`](../../../../AGENTS.md) §4 sowie
       [`harness/README.md`](../../../../harness/README.md) deklariert.
 
-- [ ] `make gates` grün — Ausgabe in eine Datei, Exit-Code getrennt geprüft, nie in eine Pipe.
-- [ ] Closure-Notiz mit benanntem Lerneintrag geschrieben (§7).
-- [ ] Beobachtungs-Register fortgeschrieben.
-- [ ] Jedes Risiko aus §6 trägt genau einen Ausgang.
+- [x] `make gates` grün — Ausgabe in eine Datei, Exit-Code getrennt geprüft, nie in eine Pipe.
+- [x] Closure-Notiz mit benanntem Lerneintrag geschrieben (§7).
+- [x] Beobachtungs-Register fortgeschrieben.
+- [x] Jedes Risiko aus §6 trägt genau einen Ausgang.
 
 ## 3. Der dritte Vorfall, gemessen
 
@@ -93,12 +93,60 @@ zieht diese Grenze für den einen Fall, in dem Netz der Zweck ist).
 ## 6. Risiken und offene Punkte
 
 - *Die Angleichung der Makefile-Werte könnte den Build verändern* —
-  **Ausgang:** *(beim Abschluss ausfüllen)*
+  **Ausgang:** gestrichen mit Begründung: **gemessen am Lauf**, nicht überlegt. Der `gates`-Lauf
+  nach der Änderung meldet **23× `CACHED`** — dieselben Layer wie vorher, weil der Digest
+  unverändert ist. Geändert hat sich nur, was in der Referenz **danebensteht**:
+  `golang:1.26.4@sha256:0ecdc2a9…` heißt jetzt `golang:1.27.0@sha256:0ecdc2a9…`.
 - *Regel 1 könnte legitime Fälle beanstanden — denselben SHA mit absichtlich verschiedenen
-  Kommentaren* — **Ausgang:** *(beim Abschluss ausfüllen)*
+  Kommentaren* — **Ausgang:** gestrichen mit Begründung: der Fall existiert nicht. Ein SHA bezeichnet **einen**
+  Commit; zwei Namen dafür sind keine Absicht, sondern der Befund. Der Selbsttest hält die
+  Gegenrichtung fest (derselbe SHA mehrfach mit **gleichem** Tag schweigt), damit die Regel nicht
+  auf Wiederholung, sondern auf Widerspruch anspricht.
 - *Der Sensor prüft Kohärenz, nicht Wahrheit; zwei gleich falsche Angaben bleiben grün* —
-  **Ausgang:** *(beim Abschluss ausfüllen)*
+  **Ausgang:** weiter offen, [`BEO-026`](../observations.md) im Register — der Zähler bleibt bei
+  3×, sein Stand nennt jetzt die gedeckte und die offene Hälfte.
 
 ## 7. Closure-Notiz
 
-_(beim Abschluss ausfüllen — genau **ein** solcher Abschnitt je Slice.)_
+**Geliefert:** `make version-coherence` hängt im `gates`-Aggregat und prüft zwei Kohärenz-Regeln
+(§4); die beiden Makefile-Werte tragen den gemessenen Stand des gepinnten Images. Der Sensor fand
+beim ersten Lauf genau die zwei Divergenzen, wegen derer er gebaut wurde, und schweigt danach.
+
+**Lerneintrag — Form: geschärfte Regel.** *Eine Beobachtung, die als Netz-Frage formuliert ist,
+verhindert den Sensor, den sie eigentlich verlangt — man prüfe zuerst, was die Vorfälle
+gemeinsam haben, nicht was ihre Überschrift sagt.* [`BEO-026`](../observations.md) hieß drei Slices
+lang „der Tag-Kommentar wird nicht gegen den Digest geprüft". Das stimmt und ist unlösbar, *weil*
+es die Registry braucht — und genau darum lag die Beobachtung so lange still: sie beschrieb ihre
+eigene Unmöglichkeit. Beim Nachzählen war **keiner** der drei Vorfälle diese Frage. Jeder war
+dieselbe Angabe an zwei Orten, verschieden geschrieben (§4) — eine Aussage über den Bestand gegen
+sich selbst, hermetisch prüfbar, in einem Skript von unter 140 Zeilen.
+
+**Die beobachtbare Architektur-Aussage** steht in der Referenz selbst: `golang:1.26.4@sha256:0ecdc…`
+war eine Zeile, die sich **in sich** widersprach — der Tag nannte eine Version, der Digest enthielt
+eine andere, und die Ausführung ignorierte den Tag. Solche Zeilen sind nicht falsch im Sinne von
+kaputt, sie sind *unwiderlegbar*: nichts an ihnen bricht, also fällt nichts auf. Ein Sensor ist
+dort die einzige Instanz, die überhaupt hinsieht.
+
+**Drei beobachtbare Closure-Kriterien:**
+
+1. Der Sensor meldete am Bestand **zwei** Divergenzen (`GO_VERSION`, `GOLANGCI_LINT_VERSION`),
+   nach der Angleichung **null** — bei 3 gepinnten SHAs und 3 doppelt deklarierten Variablen.
+2. Die Angleichung ist **folgenlos für den Build**, gemessen: 23× `CACHED`, derselbe Digest,
+   dieselben Layer.
+3. Der Selbsttest deckt **beide** Richtungen **beider** Regeln — auch die, in der der Sensor
+   schweigen muss. Ein Prüfer, der immer feuert, ist von einem korrekten nicht zu unterscheiden;
+   dieselbe Überlegung wie in [slice-129](../done/slice-129-risiko-ausgaenge-vor-dem-mv.md).
+
+**Was der Sensor nicht kann, und warum das hier steht:** er erklärt keine der beiden Deklarationen
+zur führenden. Läuft etwas auseinander, sagt er *dass*, nicht *welche* stimmt — die Antwort stand
+in diesem Slice im gepinnten Image und war eine Messung, keine Ableitung. Ein Sensor, der hier
+selbst entschiede, würde raten.
+
+**Offene Risiken und ihr Ausgang:** zwei gestrichen mit Begründung, eines weiter offen.
+
+**Beobachtungs-Register:** [`BEO-026`](../observations.md) ist **verkörpert für die Kohärenz**;
+der Zähler bleibt bei 3×, und der Stand nennt beide Hälften — die gedeckte und die offene.
+
+**Folge-Slices:** keiner zwingend. Regel 1 wäre ein CR-Kandidat für das `workflows`-Modul
+([slice-130](../done/slice-130-workflows-modul-uses-form.md)) — sie ist dort besser aufgehoben als
+hier, weil sie fremde Repos genauso trifft; nötig ist er nicht, der Sensor läuft.

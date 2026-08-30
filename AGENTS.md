@@ -173,6 +173,7 @@ die CI (Badge im [`README.md`](README.md)), nicht diese Tabelle.
 | `make coverage-gate` | Gesamt-Coverage ≥ 90 % über `./internal/...` ([ADR-0006](docs/plan/adr/0006-coverage-gate.md)) |
 | `make arch-check` | Eigen-Architektur via `a-check` selbst (Dogfooding) |
 | `make gate-consistency` | Meta-Gate: `.d-check.yml`-Module (Harness-Lügen-Schutz) + Pin-Konsistenz (Digest-Gleichheit harte Pins == `version.md#aktuell`, Version == CHANGELOG, `d-check.mk`-Deklaration; slice-018) + ADR-Index-Vollständigkeit (jede ADR-Datei ist im Index verlinkt; slice-087) |
+| `make version-coherence` | Kohärenz **doppelt deklarierter** Versions-Angaben (slice-131, Antwort auf [`BEO-026`](docs/plan/planning/observations.md) bei 3×): derselbe `uses:`-SHA trägt unter `.github/workflows/` überall denselben Tag-Kommentar, und eine Versions-Variable, die [`Makefile`](Makefile) **und** [`Dockerfile`](Dockerfile) führen, hat an beiden Orten denselben Wert. Geprüft wird **Divergenz, nicht Unwahrheit** — zwei übereinstimmend falsche Angaben bleiben grün; die Registry zu fragen wäre Netz, und `gates` ist hermetisch. Der Sensor erklärt **keine** Seite zur führenden |
 | `make record-gates` | Gate-Nachweis (Working-Tree-Hash) für den Stop-Hook |
 | `make suppression-check` | Fitness Function zum Suppression-Verbot (§3.2, [ADR-0005](docs/plan/adr/0005-lint-profil.md)): keine `//nolint`-Direktive in den Go-Quellen — `nolintlint` prüft nur Wohlgeformtheit, nicht Existenz (slice-049) |
 | `make guard-selftest` | Selbsttest des PreToolUse-Command-Guard (Tool-Call-Gate §3.1) |
