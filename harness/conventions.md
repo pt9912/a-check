@@ -143,6 +143,16 @@ Pflicht-Bausteine pro Anforderung:
   [`MR-002`](#mr-002--id-schema-mit-bereichskürzeln-ab-initialer-fassung));
   ein neues Bereichskürzel wird dort in der Schema-Konvention
   deklariert. Nichtfunktionale Anforderungen: `AC-QA-<NN>`.
+- **Stabiler Anker.** Die Überschrift trägt darunter einen expliziten
+  `<a id="ac-fa-…">` mit der **Kennung** — sonst ist ihr Wortlaut faktisch
+  immutabel: verlinkt eine `Accepted`-ADR den generierten Slug, bricht jede
+  Umbenennung ihn, und der Nachzug in der ADR verletzt die
+  Immutabilität ([`AGENTS.md`](../AGENTS.md) §3.5). Gemessen an
+  [`AC-FA-RULE-008`](../spec/lastenheft.md#ac-fa-rule-008): eine Umbenennung erzeugte einen Widerspruch zwischen
+  `make doc-check` (Anker müssen auflösen) und `make doc-immutable` (ADRs sind
+  unantastbar), den **kein** Weg auflöst — außer diesem. Wird eine Überschrift
+  dennoch umbenannt, bleibt der **alte** Slug als zweiter Anker stehen; dieselbe
+  Doppelung führen die `MR-`-Kennungen weiter unten seit ihrer Umbenennung.
 - **Drei Akzeptanzkriterien** (Happy/Boundary/Negative im
   Given/When/Then-Stil) plus explizite **Out-of-Scope**-Liste.
   **Maschinell geprüft ist davon nur, dass die vier Bausteine benannt sind**
