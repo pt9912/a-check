@@ -97,7 +97,7 @@ grün.
 
 **Was bewusst nicht getan wird:** `verify-ac-form` **ablösen**. Dieser Slice legt zwar das
 zwanzigste `AC-*` an und macht damit den alternativen Trigger aus
-[slice-116 §4](../in-progress/slice-116-nullmengen-haerte-cr.md) wahr — die Ablösung selbst ist
+[slice-116 §4](../done/slice-116-nullmengen-haerte-cr.md) wahr — die Ablösung selbst ist
 ein eigener Slice, sonst trägt dieser vier Liefer-Punkte statt drei.
 
 ## 6. Risiken und offene Punkte
