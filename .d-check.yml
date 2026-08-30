@@ -222,3 +222,29 @@ structure:
     exempt-section-pattern: '^### (AC-FA-RULE-0(0[1-9]|1[01])|AC-FA-EXTRACT-001|AC-FA-CLI-00[12]|AC-FA-CONF-001|AC-FA-DIST-001|AC-QA-0[123])\b'
     exempt-expect-count: 19
     hint: "neue AC braucht Happy, Boundary, Negative und Out-of-Scope (AGENTS §5); die 19 bei Einfuehrung bestehenden sind grandfathered"
+
+# Modul `planning` (DC-FA-PLAN-001): Lifecycle-Konsistenz Roadmap <-> in-progress/.
+# Ohne diesen Block lief `make doc-planning` WIRKUNGSLOS — d-check aktiviert das
+# Modul per --enable, findet keine Konfiguration und meldet 0 Befunde, Exit 0
+# (BEO-014, 2x; dieselbe Klasse wie die targets-Luecke aus slice-074).
+#
+# KEIN Default trifft hier: a-checks Roadmap fuehrt die Sektion `## Offene Wellen`
+# (Default `## Aktuelle Welle`) und den Ruhe-Marker `Nichts in Arbeit.` (Default
+# `Keine aktive Welle`). GEMESSEN: mit den Defaults meldet das Modul nicht etwa
+# Unsinn, sondern FAIL-CLOSED — "kanonische Ueberschrift fehlt, Aktiv-Status nicht
+# bestimmbar". Die Luecke war also nicht eine falsche Konfiguration, sondern GAR
+# keine: fail-closed schuetzt erst ab der ersten Zeile.
+#
+# `closure:` und `waves:` bleiben BEWUSST unkonfiguriert (slice-122): die
+# Closure-Struktur prueft seit slice-080 das Modul `structure`, und zwei Pruefer
+# auf dieselbe Zusage laufen auseinander. Ein Wellen-Register fuehrt a-check nicht.
+planning:
+  roadmap: docs/plan/planning/in-progress/roadmap.md
+  heading: "## Offene Wellen"
+  marker: "Nichts in Arbeit."
+  #
+  # BENANNTE GRENZE (gemessen, slice-122): geprueft wird die AEQUIVALENZ
+  # "Slice(s) vorhanden <-> Ruhe-Marker steht nicht", NICHT ob jeder einzelne
+  # Slice in der Sektion genannt ist. Zwei Slices in in-progress/ bei einer
+  # Sektion, die nur einen nennt, bleiben gruen — und das WIP-Limit (AGENTS §5)
+  # faengt das Modul ebenfalls nicht.

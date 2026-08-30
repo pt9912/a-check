@@ -102,10 +102,10 @@ Vertagungs-Argument sich ändert, ist ein Folge-Slice.
 ## 6. Risiken und offene Punkte
 
 - *Bestehende Konsumenten-Configs mit `direction: driving` an Port-Schichten brechen* —
-  **Ausgang:** eingetreten und **beabsichtigt** (Maintainer-Entscheid). Die Meldung nennt
-  Schicht, Wert **und** die für diese Rolle gültige Menge; die Umstellung ist eine Zeile je
-  Schicht. Belegt an den eigenen Tests: drei brachen beim ersten Lauf, genau die mit der alten
-  Vokabel.
+  **Ausgang:** **gestrichen mit Begründung**: das war nie ein Risiko, sondern die **Absicht**
+  des Maintainer-Entscheids. Die Meldung nennt Schicht, Wert **und** die für diese Rolle gültige
+  Menge; die Umstellung ist eine Zeile je Schicht. Belegt an den eigenen Tests: drei brachen beim
+  ersten Lauf, genau die mit der alten Vokabel.
 - *Die Supersede-Verweise könnten mehr Arbeit sein als die Sache selbst* — **Ausgang:**
   gestrichen mit Begründung: **null** Befunde, gemessen statt angenommen. Die sechs Verweiser
   liegen entweder in keiner `matrix`-Klasse (`CHANGELOG.md`, der ADR-Index) oder in einer ohne
@@ -158,7 +158,7 @@ Vokabular ist unbeantwortbar, welches dort gälte — sie ist jetzt ein Fehler. 
 Anforderung und in der ADR, nicht nur im Code; ein Test, der vorher „lädt inert" hieß, heißt
 jetzt „wird abgewiesen".
 
-**Offene Risiken und ihr Ausgang:** der erste eingetreten und beabsichtigt, der zweite
+**Offene Risiken und ihr Ausgang:** der erste gestrichen mit Begründung (die Wirkung war die Absicht), der zweite
 gestrichen mit Begründung, der dritte weiter offen im Register.
 
 **Beobachtungs-Register:** `BEO-024` neu angelegt (Implementierung, 1×, Beleg slice-121): dieselbe
