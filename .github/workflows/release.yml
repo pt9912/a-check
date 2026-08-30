@@ -28,6 +28,10 @@ jobs:
     name: release (ghcr.io image push)
     runs-on: ubuntu-latest
     timeout-minutes: 30
+    outputs:
+      # Fuer den Folge-Job hub-description: dieselbe Version, die den
+      # Spiegel und das GitHub-Release traegt — keine zweite Ableitung.
+      version: ${{ steps.tag.outputs.version }}
     permissions:
       contents: write    # GitHub-Release mit Digest-Pin anlegen
       packages: write
@@ -139,6 +143,64 @@ jobs:
             echo '```'
           } >> "$GITHUB_STEP_SUMMARY"
 
+      # Docker-Hub-Spiegel (AC-FA-DIST-002, ADR-0039). Zusage ist DASSELBE Bild,
+      # nicht ein zweiter Bau. Er steht NACH dem GHCR-Push, damit die Quelle nie
+      # hinter dem Spiegel zurueckliegt.
+      #
+      # GLEICHHEITS-GROESSE IST DER CONFIG-DIGEST, nicht der Manifest-Digest:
+      # letzterer ist registry-lokal (Blob-Kompression) und waere auf beiden
+      # Seiten verschieden, auch bei identischem Inhalt.
+      #
+      # FAIL-CLOSED: der Spiegel ist eine Zusage. Die Fehlermeldung nennt den
+      # bereits veroeffentlichten GHCR-Digest — der Teilstand ist gueltig, und
+      # wer aufraeumt, muss wissen, was schon draussen ist.
+      - name: Log in to Docker Hub
+        uses: docker/login-action@650006c6eb7dba73a995cc03b0b2d7f5ca915bee # v3.6.0
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Mirror to Docker Hub
+        env:
+          VERSION: ${{ steps.tag.outputs.version }}
+          IS_STABLE: ${{ steps.tag.outputs.is_stable }}
+          GHCR_DIGEST: ${{ steps.push.outputs.digest }}
+          HUB_IMAGE: ${{ vars.DOCKERHUB_IMAGE || 'pt9912/a-check' }}
+        run: |
+          set -euo pipefail
+          trap 'echo "::error::Docker-Hub-Spiegel fehlgeschlagen. BEREITS VEROEFFENTLICHT: ${GHCR_DIGEST} auf ghcr.io — das Release ist unvollstaendig, der GHCR-Stand aber gueltig."' ERR
+
+          SRC="$REGISTRY/$IMAGE_NAME:v$VERSION"
+          docker tag "$SRC" "$HUB_IMAGE:v$VERSION"
+          docker push "$HUB_IMAGE:v$VERSION"
+          if [[ "$IS_STABLE" == "true" ]]; then
+            docker tag "$SRC" "$HUB_IMAGE:latest"
+            docker push "$HUB_IMAGE:latest"
+          fi
+
+          # Der Config-Digest steht im Manifest; er beschreibt den INHALT und
+          # ist damit die Groesse, die auf beiden Registries gleich sein muss.
+          config_digest() {
+            docker manifest inspect "$1" \
+              | sed -n 's/.*"config":{[^}]*"digest":"\(sha256:[0-9a-f]\{64\}\)".*/\1/p' \
+              | head -1
+          }
+          C_GHCR="$(config_digest "$SRC")"
+          C_HUB="$(config_digest "$HUB_IMAGE:v$VERSION")"
+          [ -n "$C_GHCR" ] && [ -n "$C_HUB" ] || {
+            echo "::error::Config-Digest nicht ermittelbar (ghcr='$C_GHCR', hub='$C_HUB')."
+            exit 1
+          }
+          if [ "$C_GHCR" != "$C_HUB" ]; then
+            echo "::error::Spiegel-Ungleichheit: config ghcr=$C_GHCR, hub=$C_HUB — es sind nicht dieselben Bilder."
+            exit 1
+          fi
+          echo "Spiegel geprueft: Config-Digest identisch ($C_GHCR)."
+          {
+            echo ""
+            echo "Docker-Hub-Spiegel: \`$HUB_IMAGE:v$VERSION\` — Config-Digest identisch."
+          } >> "$GITHUB_STEP_SUMMARY"
+
       # GitHub-Release mit dem Digest-Pin in den Notes — der Pin ist die
       # Referenz, die Konsumenten-Repos in a-check.mk eintragen.
       - name: Create GitHub Release
@@ -161,3 +223,16 @@ jobs:
               --target "$GITHUB_SHA" \
               $PRERELEASE_FLAG
           fi
+
+  # Die Hub-DARSTELLUNG, getrennt vom Spiegel und ausdruecklich NICHT
+  # fail-closed (ADR-0039): das Bild ist die Zusage, der Beschreibungstext ist
+  # Praesentation. Der Job laeuft NACH dem Release-Job und nur, wenn dieser
+  # durch ist — eine Seite zu setzen, die auf ein nicht veroeffentlichtes Bild
+  # zeigt, waere eine Falschaussage.
+  hub-description:
+    name: Hub-Darstellung
+    needs: release
+    uses: ./.github/workflows/hub-description.yml
+    with:
+      version: v${{ needs.release.outputs.version }}
+    secrets: inherit

@@ -92,6 +92,8 @@ Repository sie erneut setzen muss — und weil ihr Fehlen **still** wirkt:
 |---|---|---|
 | **Dependabot-Alerts** | keine Meldung über bekannte Schwachstellen in Abhängigkeiten | *Settings → Code security* |
 | **`dependabot_security_updates`** | ein CVE **ohne** neues Upstream-Release öffnet **keinen** PR — der Kanal aus [ADR-0038](../plan/adr/0038-dependabot-als-hebungskanal.md) erreicht die Fundklasse von `make image-scan` dann nur zur Hälfte | ebenda |
+| **`DOCKERHUB_USERNAME`** / **`DOCKERHUB_TOKEN`** | kein Docker-Hub-Spiegel — und das Release ist **fehlgeschlagen**, denn der Spiegel ist fail-closed ([AC-FA-DIST-002](../../spec/lastenheft.md#ac-fa-dist-002)) | *Settings → Secrets and variables → Actions* |
+| **Token-Scope `read/write/delete`** | der **Push** gelingt, der **Metadaten-`PATCH`** nicht: das Bild liegt auf Docker Hub, Kurztext und Overview bleiben leer. Der Lauf ist trotzdem grün (`continue-on-error`) und meldet es als **Warnung** — siehe [`packaging/dockerhub/README.md`](../../packaging/dockerhub/README.md) | am **bestehenden** Token änderbar; der Wert bleibt derselbe |
 
 **Warum das hier steht und nicht nur in der ADR:** eine Zusage, die an einem
 Schalter hängt, den das Repo nicht sieht, ist von einer erfüllten nicht zu

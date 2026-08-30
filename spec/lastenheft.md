@@ -1,6 +1,6 @@
 # Lastenheft — a-check
 
-**Version:** 0.25.0
+**Version:** 0.26.0
 
 **Status:** Draft
 
@@ -626,6 +626,40 @@ digest-gepinnte `A_CHECK_IMAGE`-Variable — kein zweiter Digest, keine Skript-K
 
 **Out-of-Scope:** Nicht-Docker-Distribution (Binary-Releases) in 0.1.0; ein Datei-schreibendes oder Browser-öffnendes Graph-Target (`a-check-graph` schreibt nur nach stdout, Umleiten ist Nutzer-Sache); weitere Ausgabeformate (`--graph-format` DOT/Graphviz) — eigener Folge-Slice.
 
+### AC-FA-DIST-002 — Docker-Hub-Spiegel
+
+<a id="ac-fa-dist-002"></a>
+
+**Beschreibung:** Das Release-Image wird zusätzlich nach `docker.io/pt9912/a-check`
+gespiegelt. **Zusage ist dasselbe Bild, nicht ein zweiter Bau:** gespiegelt wird
+der Inhalt, der bereits auf GHCR liegt. Die Gleichheits-Größe ist der
+**Config-Digest** — er ist bei identischem Inhalt auf beiden Registries gleich;
+der **Manifest-Digest** ist es **nicht**, weil er von der Blob-Kompression der
+jeweiligen Registry abhängt. Die Pipeline prüft die Config-Gleichheit **nach**
+dem Push und **fail-closed**: schlägt sie fehl, ist das Release fehlgeschlagen.
+
+**Der Spiegel steht nach dem GHCR-Push**, damit die Quelle nie hinter dem
+Spiegel zurückliegt.
+
+**Die Pin-Stellen dieses Repos bleiben GHCR-gebunden**
+([AC-QA-03](#ac-qa-03--reproduzierbarkeit)): `a-check.mk`, beide READMEs und
+`version.md#aktuell` nennen den GHCR-Digest. Wer vom Spiegel zieht, nimmt den
+Digest **der Registry, aus der er zieht** — ein von GHCR kopierter löst dort
+nicht auf. Die Hub-Seite sagt das.
+
+**Die Darstellung ist nicht Teil der Zusage.** Kurztext und Overview-Seite
+werden gesetzt, aber ein Fehlschlag macht kein Release rot: das Bild ist die
+Zusage, der Beschreibungstext ist Präsentation.
+
+**Akzeptanzkriterien:**
+
+- **Happy:** Given ein stabiles Release, when die Pipeline läuft, then liegt dasselbe Bild auf beiden Registries und der **Config-Digest** ist identisch — geprüft nach dem Push, Exit 0.
+- **Boundary:** Given ein Prerelease, when die Pipeline läuft, then wird gespiegelt, aber **kein** `:latest` gesetzt — wie auf GHCR ([AC-FA-DIST-001](#ac-fa-dist-001--distribution-image---print-mk-a-checkmk)).
+- **Negative:** Given ein Spiegel-Push, der fehlschlägt oder dessen Config-Digest abweicht, when die Pipeline läuft, then **Exit ≠ 0** und das Release gilt als fehlgeschlagen; die Meldung nennt den bereits veröffentlichten GHCR-Digest, damit der gültige Teilstand sichtbar bleibt.
+- **Negative (Darstellung):** Given der Metadaten-Upload wird abgelehnt (Token-Scope zu eng), when die Pipeline läuft, then bleibt das Release **grün**, und der Fehlschlag wird als Warnung mit wahrscheinlicher Ursache gemeldet — nicht verschwiegen.
+
+**Out-of-Scope:** Eine Docker-Hub-Kategorie per Automatik (die Upload-Action hat dafür keinen Input; sie bleibt eine Entscheidung im Web-UI und steht als Text im `packaging/`-README); ein Spiegel auf weitere Registries; Pin-Stellen dieses Repos auf den Hub-Digest umzustellen.
+
 ## 4. Nichtfunktionale Anforderungen
 
 ### AC-QA-01 — Determinismus
@@ -698,3 +732,4 @@ eine Zeile hier (Baseline-Regelwerk `grundlagen-source-precedence.md` §Spec-Str
 | 0.22.0 | 2026-07-25 | Neu **`AC-FA-RULE-011`** (`construct-leak`: ein optionaler `constructs`-Block hebt die `tech`-Scoping-Mechanik — Zone als Pfad/Pfad-Liste, `match: substring\|regex`, `composition_root: allow\|forbid` — von extrahierten Import-Symbolen auf **Roh-Quelltext**; jedes Vorkommen außerhalb der Zone ist ein Befund, Exit 1). Prüfung **scan-weit** (auch Dateien in keinem `layers`-Glob; `exclude` greift davor), auf derselben Quell-Vorbereitung wie `forbidden_constructs` — in den C-Syntax-Sprachen kommentar-bereinigt (Treffer nur im Kommentar meldet nicht, ausgewiesene Divergenz zur `grep`-Referenz), in Python nicht (`#`-Kommentare bleiben stehen, ausgewiesene Grenze). `AC-FA-CONF-001` um den Block + fail-closed-Decoding erweitert. Damit werden Konstrukte prüfbar, die keine Import-Zeile sind (Aufruf-Monopol `dlopen`); die schichtgebundenen `forbidden_constructs`/`AC-FA-RULE-004` bleiben unberührt. Evidenz: b-cad-P-Rest (Regel P1), Fixture-vermessen. slice-042 (Kandidat 1 aus slice-025). |
 | 0.24.0 | 2026-08-30 | Neu **`AC-FA-CLI-003`** (Usage-Ausgabe und Handbuch-Verweis): `--help` trägt Kurzbeschreibung, Aufruf-Syntax, Konfigurations-Hinweis und die **URL des Benutzerhandbuchs**; dieselbe URL steht im Kopfkommentar des per `--print-mk` erzeugten Fragments, das in ein **fremdes** Repo reist. **Zugesichert ist die Anwesenheit der Bestandteile, nicht ihr Wortlaut** — ein Test bindet sich nicht an die Formulierung. Die URL zeigt **tag-frei** auf den Hauptzweig: das Binary kennt seinen Release-Kontext zur Laufzeit nicht, ein zur Build-Zeit eingesetzter versionierter Link nennte immer den Vorgänger — dieselbe Mechanik, die `AC-QA-03` in 0.23.0 für den Image-Digest entschieden hat. Der Preis ist benannt: wer ein altes Release fährt, landet auf dem aktuellen Handbuch und liest dort den Software-Versions-Stempel. slice-117. |
 | 0.25.0 | 2026-08-30 | **`AC-FA-RULE-008` neu gefasst:** die Richtungs-Dimension trägt je Rolle **ihr eigenes Vokabular** — an `role: port` `inbound`/`outbound`, an `role: adapter` `driving`/`driven`. Ein Port *treibt* nichts, er wird benutzt; ein Adapter ist nicht *eingehend*, er treibt oder wird getrieben. Bisher galt `driving`/`driven` für **beide**, obwohl die Beschreibung die Äquivalenz („`driving` = primär/inbound") selbst nannte und nur die eine Hälfte als Wert zuließ. `port-direction-mismatch` prüft dadurch eine **Paarung** (`driving`↔`inbound`, `driven`↔`outbound`) statt einer String-Gleichheit; die Regel-Aussage ist unverändert. **Breaking:** die falsche Vokabel an einer Rolle ist Exit-Code 2 mit nennender Meldung — kein still akzeptiertes Alias, weil a-check kein Warn-Level kennt und die alte Schreibweise sonst unbemerkt bliebe. `AC-FA-CONF-001` im Schema nachgezogen. slice-121. |
+| 0.26.0 | 2026-08-30 | Neu **`AC-FA-DIST-002`** (Docker-Hub-Spiegel): das Release-Image wird zusätzlich nach `docker.io/pt9912/a-check` gespiegelt — **dasselbe Bild, nicht ein zweiter Bau**. Gleichheits-Größe ist der **Config-Digest** (der Manifest-Digest ist registry-lokal, er hängt an der Blob-Kompression); die Pipeline prüft ihn **nach** dem Push und **fail-closed**. Die Pin-Stellen dieses Repos bleiben **GHCR-gebunden** — wer vom Spiegel zieht, nimmt den Digest der Registry, aus der er zieht. Die **Darstellung** (Kurztext, Overview-Seite) ist ausdrücklich **nicht** Teil der Zusage: ein Fehlschlag dort macht kein Release rot, wird aber gemeldet. slice-127. |
