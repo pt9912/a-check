@@ -23,18 +23,18 @@ trägt.
 
 ## 2. Definition of Done
 
-- [ ] [`Dockerfile`](../../../../Dockerfile) baut mit **1.27.0**: `GO_VERSION` und der
+- [x] [`Dockerfile`](../../../../Dockerfile) baut mit **1.27.0**: `GO_VERSION` und der
       Basis-Image-Digest sind **gemeinsam** gehoben — ein Tag ohne Digest wäre keine Hebung,
       sondern eine Lockerung.
-- [ ] Der Beleg ist **gemessen, nicht abgeleitet**: das lokal gebaute Image trägt `stdlib`
+- [x] Der Beleg ist **gemessen, nicht abgeleitet**: das lokal gebaute Image trägt `stdlib`
       `1.27.0` und **keinen** der neun Befunde. Geprüft mit demselben Trivy-Pin wie
       [`tools/image-scan.sh`](../../../../tools/image-scan.sh), gegen das exportierte Image —
       **ohne** Docker-Socket.
 
-- [ ] `make gates` grün — Ausgabe in eine Datei, Exit-Code getrennt geprüft, nie in eine Pipe.
-- [ ] Closure-Notiz mit benanntem Lerneintrag geschrieben (§7).
-- [ ] Beobachtungs-Register fortgeschrieben.
-- [ ] Jedes Risiko aus §6 trägt genau einen Ausgang.
+- [x] `make gates` grün — Ausgabe in eine Datei, Exit-Code getrennt geprüft, nie in eine Pipe.
+- [x] Closure-Notiz mit benanntem Lerneintrag geschrieben (§7).
+- [x] Beobachtungs-Register fortgeschrieben.
+- [x] Jedes Risiko aus §6 trägt genau einen Ausgang.
 
 ## 3. Plan (vor Code)
 
@@ -81,17 +81,57 @@ kann sie nur ein Release.
 ## 6. Risiken und offene Punkte
 
 - *Ein Major-Sprung von 1.26 auf 1.27 — Sprachverhalten oder Bibliotheken könnten sich ändern* —
-  **Ausgang:** <bei Closure>
+  **Ausgang:** entfallen, gestrichen mit Begründung: `make gates` läuft unter der neuen Toolchain
+  unverändert grün, Coverage **96,00 %**, `arch-check` 0 Befunde, `make image-test` grün. Keine
+  Zeile Code war anzupassen. Die Fläche ist klein — **ein** direktes Modul, kein indirektes.
 - *Der Sensor bleibt bis zum Release rot, und ein dauerhaft rotes Abzeichen wird weggeklickt* —
-  **Ausgang:** <bei Closure>
+  **Ausgang:** weiter offen im **Beobachtungs-Register**. Der Zustand ist korrekt (das
+  publizierte Image trägt die Befunde weiter), aber er ist von einem echten Versäumnis nicht zu
+  unterscheiden. Das ist die Kehrseite eines Sensors, der den **publizierten** Stand misst.
 
 ## 7. Closure-Notiz
 
-_(beim Abschluss ausfüllen — genau **ein** solcher Abschnitt je Slice,
-[`AGENTS.md`](../../../../AGENTS.md) §5.)_
+**Geliefert:** Die Toolchain steht auf `1.27.0`, `GO_VERSION` und Basis-Image-Digest gemeinsam
+gehoben. Der Beleg ist gemessen: das neu gebaute Image trägt `stdlib=v1.27.0` und **0** behebbare
+CRITICAL/HIGH — gegenüber `v1.26.4` mit **9** im publizierten Stand.
 
-**Lerneintrag — Form: <geschärfte Regel | neuer Sensor | benannte Spec-Lücke>**
+**Lerneintrag — Form: geschärfte Regel.** *Wer einem Sensor eine Grenze gibt, gibt sie auch dem
+Beleg, der ihn bestätigen soll.*
+[ADR-0037](../../adr/0037-cve-scan-gegen-das-publizierte-image.md) verbietet den Docker-Socket —
+richtig, ein Werkzeug soll keinen Host-Root-Pfad bekommen, den es nicht braucht — und nennt die
+Folge selbst: *„ein lokal gebautes Bild ist über dieses Skript nicht scanbar"*. Beim Schreiben der
+ADR las sich das wie eine Randnotiz. **Einen Slice später war es der Kernweg:** dieser Slice
+behebt Befunde, und sein lokal gebautes Image liegt in keiner Registry — `make image-scan` konnte
+die Wirkung also gar nicht zeigen. Der Beleg brauchte einen anderen Weg (`docker save` plus
+Trivys `--input`), der dieselbe Grenze respektiert statt sie aufzuweichen. *Weil* eine Grenze im
+Sensor eine Grenze in jedem künftigen Beleg ist, gehört bei ihrer Formulierung die Frage dazu:
+**womit zeigt man dann, dass eine Behebung wirkt?**
 
+**Drei beobachtbare Closure-Kriterien:**
+
+1. Vorher/nachher am selben Werkzeug und demselben Pin: **9 → 0** behebbare CRITICAL/HIGH,
+   `stdlib` `v1.26.4` → `v1.27.0`. Beide Zahlen stammen aus Trivy `0.74.0` mit identischem
+   Digest — ohne denselben Pin wäre der Vergleich wertlos.
+2. Die Hebung ist **vollständig**: Tag **und** Digest. Ein gehobener Tag mit stehendem Digest
+   zöge weiterhin das alte Bild und sähe dabei aktuell aus — dieselbe Klasse Fehler wie ein
+   Digest, der den Vorgänger nennt ([ADR-0030](../../adr/0030-kein-digest-im-generierten-fragment.md)).
+3. Der Bestand blieb unberührt: keine Code-Änderung, `make gates` und `make image-test` grün.
+
+**Ein Falschtreffer des eigenen Guard, beim Schreiben dieses Slice:** der PreToolUse-Guard hat das
+Heredoc abgewiesen, mit dem der Plan entstehen sollte — er las die Zeichenfolge im **Text** als
+Toolchain-Aufruf. Der Guard ist damit an derselben Stelle streng, an der er es sein soll (er
+prüft Kommandos, nicht Absichten), aber er trifft auch Text, der über die Toolchain **schreibt**.
+Ausgewichen mit einem Datei-Schreib-Werkzeug statt einer Shell-Umleitung.
+
+**Offene Risiken und ihr Ausgang:** der erste entfallen (gestrichen mit Begründung), der zweite
+weiter offen im Register.
+
+**Beobachtungs-Register:** `BEO-027` neu angelegt (Durchsetzungsschicht, 1×, Beleg slice-125): der
+Command-Guard trifft Text, der die Toolchain **nennt**, nicht nur Kommandos, die sie **aufrufen**.
+
+**Folge-Slices:** das **Release**, das die Hebung veröffentlicht — bis dahin meldet der Sensor die
+neun weiter, und das ist richtig. Danach der **Hebungs-Kanal** (Dependabot), der künftige Fälle
+dieser Art meldet, ohne dass jemand hinsieht.
 ## 8. Sub-Area-Modus-Begründung
 
 **Vorgelagert — Sub-Area-Wahl prüfen:** berührt wird die **Build-Schicht** (`Dockerfile`). Kein

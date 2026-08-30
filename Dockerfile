@@ -3,11 +3,11 @@
 # Jede Gate ist eine Stage (`docker build --target …`); Bases sind
 # digest-gepinnt (AC-QA-03 Reproduzierbarkeit). Das Laufzeit-Image ist
 # statisch gelinkt auf distroless/static (AC-QA-02, AC-FA-DIST-001).
-ARG GO_VERSION=1.26.4
+ARG GO_VERSION=1.27.0
 ARG GOLANGCI_LINT_VERSION=v2.12.2
 
 # ---- deps ------------------------------------------------------------------
-FROM golang:${GO_VERSION}@sha256:792443b89f65105abba56b9bd5e97f680a80074ac62fc844a584212f8c8102c3 AS deps
+FROM golang:${GO_VERSION}@sha256:0ecdc2a9f6156af6451080bfe3d8382a662fcc4e209608c6f919e643453514c1 AS deps
 WORKDIR /src
 ENV GOFLAGS="-mod=readonly -buildvcs=false" \
     GOMODCACHE=/go/pkg/mod \
