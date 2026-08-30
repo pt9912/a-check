@@ -55,6 +55,21 @@ grep -qE '^a-check-graph:' "$WORK/mk.c.out" || fail "--print-mk: a-check-graph-T
 grep -qF -- '--print-graph /src' "$WORK/mk.c.out" || fail "--print-mk: a-check-graph-Recipe ruft nicht --print-graph auf"
 echo "image-test: (1) Happy — --print-mk nativ == Container == committete a-check.mk (Fragment-Parität), A_CHECK_IMAGE + a-check/a-check-graph-Targets vorhanden"
 
+# --- (1b) AC-FA-CLI-003: Handbuch-URL in BEIDEN Ausgaben --------------------
+# Die Zusage ist "eine Stelle im Code, zwei Ausgaben". Sie faellt nicht auf,
+# wenn nur eine der beiden geprueft wird — darum hier beide gegen DIESELBE
+# Zeichenkette. Geprueft wird die ANWESENHEIT, nicht der Wortlaut drumherum.
+HB_URL="https://github.com/pt9912/a-check/blob/main/docs/user/benutzerhandbuch.md"
+grep -qF -- "$HB_URL" "$WORK/mk.c.out" || fail "--print-mk: Kopfkommentar ohne Handbuch-URL (AC-FA-CLI-003)"
+hlp=0; docker run --rm --network none "$IMG" --help >"$WORK/help.out" 2>"$WORK/help.err" || hlp=$?
+[ "$hlp" -eq 0 ] || fail "--help: Exit $hlp, want 0 (AC-FA-CLI-003)"
+grep -qF -- "$HB_URL" "$WORK/help.err" || fail "--help: Usage ohne Handbuch-URL (AC-FA-CLI-003)"
+for marke in 'Aufruf:' '[pfad]' '.a-check.yml'; do
+  grep -qF -- "$marke" "$WORK/help.err" || fail "--help: Bestandteil '$marke' fehlt (AC-FA-CLI-003)"
+done
+[ ! -s "$WORK/help.out" ] || fail "--help schreibt auf stdout statt stderr (SPEC-CLI-001)"
+echo "image-test: (1b) AC-FA-CLI-003 — Handbuch-URL in --print-mk UND --help, Usage-Bestandteile vollstaendig, stdout leer"
+
 # --- (2) Boundary: --print-config, read-only-Mount → Exit 0 -----------------
 mkdir -p "$WORK/ro"
 pc_n=0; "$WORK/a-check" --print-config >"$WORK/pc.n.out" 2>/dev/null || pc_n=$?

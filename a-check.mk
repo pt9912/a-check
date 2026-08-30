@@ -1,6 +1,9 @@
 # a-check.mk — Architektur-Gate via a-check, zum `include` in das
 # Makefile des konsumierenden Repos. Erzeugt von `a-check --print-mk`.
 #
+# Benutzerhandbuch (aufgabenorientiert, deutsch):
+#   https://github.com/pt9912/a-check/blob/main/docs/user/benutzerhandbuch.md
+#
 # PFLICHT VOR DEM ERSTEN LAUF: A_CHECK_IMAGE auf den Release-Digest setzen.
 # Der Platzhalter unten ist KEIN gueltiger Verweis — `make a-check` bricht
 # damit ab. Das ist Absicht: a-check kann den Digest seines eigenen Image nicht

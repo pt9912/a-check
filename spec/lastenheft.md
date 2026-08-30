@@ -1,6 +1,6 @@
 # Lastenheft — a-check
 
-**Version:** 0.23.0
+**Version:** 0.24.0
 
 **Status:** Draft
 
@@ -462,6 +462,37 @@ no-scan-Modus nicht auf (`AC-QA-02`).
 
 **Out-of-Scope:** Nicht-Mermaid-Formate (DOT/Graphviz) und ein Findings-/Verstoß-Graph (der reale Import-Graph mit markierten Befunden) — eigene Folge-Slices; die visuelle Darstellung von `tech` (Muster/Badge) — Folge-Inkrement; scanzeitige, datei-mengenabhängige Auflösungs-Mehrdeutigkeiten (Mehr-Wurzel) — sie brauchen einen realen Scan und sind kein Vertrag des no-scan-Modus; Auto-Layout-Tuning (Mermaid ordnet selbst; sehr große Configs können unübersichtlich werden — dokumentierte Grenze).
 
+### AC-FA-CLI-003 — Usage-Ausgabe und Handbuch-Verweis
+
+**Beschreibung:** `a-check --help` gibt eine **Usage-Ausgabe** aus, die vier
+Bestandteile trägt: eine Kurzbeschreibung dessen, was das Werkzeug tut; die
+**Aufruf-Syntax** samt optionalem Pfad-Parameter; einen Hinweis auf die
+Konfigurationsdatei `.a-check.yml`; und die **URL des Benutzerhandbuchs**.
+Dieselbe URL trägt der **Kopfkommentar** des per `--print-mk` erzeugten
+Fragments ([AC-FA-DIST-001](#ac-fa-dist-001--distribution-image---print-mk-a-checkmk)):
+das Fragment reist in ein **fremdes** Repo, und sein Kopf ist der einzige Ort,
+an dem ein Zeiger auf die Dokumentation dauerhaft mitfährt.
+
+**Zugesichert ist die Anwesenheit der Bestandteile, nicht ihr Wortlaut.** Ein
+Test darf prüfen, *dass* Aufruf-Zeile, Konfigurations-Hinweis und URL erscheinen;
+er darf sich nicht an ihre Formulierung binden.
+
+**Die URL zeigt auf den Hauptzweig, ohne Versionsangabe.** Das Binary kennt
+seinen eigenen Release-Kontext zur Laufzeit nicht — es trägt keine eingebackene
+Version —, und ein zur Build-Zeit eingesetzter versionierter Link nennte immer
+den **Vorgänger**-Stand: gültig aussehend und falsch. Die tag-freie URL kann
+dafür nicht veralten, zeigt aber auch nie auf den Stand, den ein gepinntes Image
+fährt; wer die passende Fassung braucht, liest den Software-Versions-Stempel im
+Kopf des Handbuchs.
+
+**Akzeptanzkriterien:**
+
+- **Happy:** Given das Image, when `a-check --help` läuft, then eine Usage-Ausgabe mit Kurzbeschreibung, Aufruf-Syntax, Konfigurations-Hinweis und Handbuch-URL, Exit-Code 0 — und es wird **nichts** ins Repo geschrieben (read-only).
+- **Boundary:** Given `a-check --print-mk`, when es läuft, then trägt der Kopfkommentar des Fragments dieselbe Handbuch-URL wie die Usage-Ausgabe; zwei Läufe sind byte-identisch (`AC-QA-01`).
+- **Negative:** Given ein unbekanntes Flag (`a-check --bogus`), when es läuft, then Exit-Code 2 und die Usage-Ausgabe auf stderr — der Nutzungsfehler bleibt ein Fehler, er wird nicht durch den Hilfetext zu Exit-Code 0.
+
+**Out-of-Scope:** Eine versionierte oder digest-gebundene Handbuch-URL (das Binary kennt seinen Release-Kontext nicht); lokalisierte Usage-Ausgaben (die Ausgabe ist deutsch wie das Handbuch); ein `--version`-Flag und eine Ausgabe der Konfigurations-Fundstelle — eigene Folge-Inkremente; die Erreichbarkeit der URL (das Werkzeug ist hermetisch, `AC-QA-02`, und prüft sie nie).
+
 ### AC-FA-CONF-001 — Konfigurationsdatei `.a-check.yml`
 
 **Beschreibung:** `.a-check.yml` deklariert: die Sprache(n) + Datei-Globs je
@@ -644,3 +675,4 @@ eine Zeile hier (Baseline-Regelwerk `grundlagen-source-precedence.md` §Spec-Str
 | 0.21.0 | 2026-07-24 | Neu **`AC-FA-RULE-009`** (`lateral-slice`: eine `app`-Datei importiert eine fremde Use-Case-Slice — verschiedene `app`-Globs — → kategorischer Befund; opt-in über per-Slice-Globs, ein einziges `app`-Glob inert) und **`AC-FA-RULE-010`** (`port-locality`: eine `app`-Datei importiert einen Port außerhalb dessen pfad-abgeleiteten Scope-Verzeichnisses — use-case-lokal ⊂ business-area ⊂ app-weit — → kategorischer Befund; nur `app`-Importeure, Adapter-Implementierung nicht erfasst). Beide gaten die **Vertical-Slice-Achse** von HexSlice (Doc `hexslice-architecture`); Voraussetzung ist ein als Import-Ziel auflösbarer `app`-/`port`-Glob (literales Präfix, `AC-QA-02`-Grenze). Evidenz: realer HexSlice-Go-Konsument. slice-039. |
 | 0.23.0 | 2026-08-09 | **`AC-QA-03` neu gefasst:** das von `--print-mk` **erzeugte** Fragment trägt **keinen konkreten Digest** mehr, sondern einen Platzhalter mit Bezugsquelle ([ADR-0030](../docs/plan/adr/0030-kein-digest-im-generierten-fragment.md)); die im Repo **committete** `a-check.mk` trägt weiterhin den echten Digest. Grund: ein Binary kann den Digest des Image, in dem es läuft, strukturell nicht kennen — er entsteht erst beim Push, das Binary ist vorher gebaut. Der eingebackene Wert nannte darum **immer den Vorgänger** und sah dabei autoritativ aus. Gemessen: `v0.16.0` gab `v0.15.0` aus. **Realer Schaden:** ein Konsument pinnte über den dokumentierten Bump-Weg `v0.15.0` statt `v0.16.0` und vermisste den `constructs`-Block, ohne die Ursache zu sehen. Drei AK ergänzt (Happy/Boundary/Negative). slice-083 (`CR-5`). |
 | 0.22.0 | 2026-07-25 | Neu **`AC-FA-RULE-011`** (`construct-leak`: ein optionaler `constructs`-Block hebt die `tech`-Scoping-Mechanik — Zone als Pfad/Pfad-Liste, `match: substring\|regex`, `composition_root: allow\|forbid` — von extrahierten Import-Symbolen auf **Roh-Quelltext**; jedes Vorkommen außerhalb der Zone ist ein Befund, Exit 1). Prüfung **scan-weit** (auch Dateien in keinem `layers`-Glob; `exclude` greift davor), auf derselben Quell-Vorbereitung wie `forbidden_constructs` — in den C-Syntax-Sprachen kommentar-bereinigt (Treffer nur im Kommentar meldet nicht, ausgewiesene Divergenz zur `grep`-Referenz), in Python nicht (`#`-Kommentare bleiben stehen, ausgewiesene Grenze). `AC-FA-CONF-001` um den Block + fail-closed-Decoding erweitert. Damit werden Konstrukte prüfbar, die keine Import-Zeile sind (Aufruf-Monopol `dlopen`); die schichtgebundenen `forbidden_constructs`/`AC-FA-RULE-004` bleiben unberührt. Evidenz: b-cad-P-Rest (Regel P1), Fixture-vermessen. slice-042 (Kandidat 1 aus slice-025). |
+| 0.24.0 | 2026-08-30 | Neu **`AC-FA-CLI-003`** (Usage-Ausgabe und Handbuch-Verweis): `--help` trägt Kurzbeschreibung, Aufruf-Syntax, Konfigurations-Hinweis und die **URL des Benutzerhandbuchs**; dieselbe URL steht im Kopfkommentar des per `--print-mk` erzeugten Fragments, das in ein **fremdes** Repo reist. **Zugesichert ist die Anwesenheit der Bestandteile, nicht ihr Wortlaut** — ein Test bindet sich nicht an die Formulierung. Die URL zeigt **tag-frei** auf den Hauptzweig: das Binary kennt seinen Release-Kontext zur Laufzeit nicht, ein zur Build-Zeit eingesetzter versionierter Link nennte immer den Vorgänger — dieselbe Mechanik, die `AC-QA-03` in 0.23.0 für den Image-Digest entschieden hat. Der Preis ist benannt: wer ein altes Release fährt, landet auf dem aktuellen Handbuch und liest dort den Software-Versions-Stempel. slice-117. |

@@ -19,11 +19,47 @@ import (
 	"github.com/pt9912/a-check/internal/hexagon/core"
 )
 
+// handbuchURL ist die EINE Stelle, an der die Handbuch-Adresse steht; die
+// Usage-Ausgabe und der Kopfkommentar des --print-mk-Fragments teilen sie
+// (SPEC-CLI-001). Sie ist bewusst TAG-FREI: das Binary traegt keine
+// eingebackene Version (der Build fuehrt kein -X), koennte einen versionierten
+// Link also nur mit dem Stand des VORGAENGER-Release fuellen — dieselbe Lage,
+// die ADR-0030 fuer den Image-Digest entschieden hat. Der Preis steht in
+// AC-FA-CLI-003: wer ein altes Release faehrt, landet auf dem aktuellen
+// Handbuch und liest dort den Software-Versions-Stempel.
+const handbuchURL = "https://github.com/pt9912/a-check/blob/main/docs/user/benutzerhandbuch.md"
+
+// usage schreibt die Usage-Ausgabe (AC-FA-CLI-003). Zugesichert ist die
+// ANWESENHEIT der vier Bestandteile, nicht ihr Wortlaut — die Tests binden sich
+// an die Marken und die URL, nicht an die Formulierung dazwischen.
+func usage(fs *flag.FlagSet, errw io.Writer) {
+	_, _ = fmt.Fprint(errw, `a-check — prueft einen Quellbaum gegen die in .a-check.yml
+deklarierte Hexagon-Architektur (netzlos, read-only).
+
+Aufruf:
+  a-check [optionen] [pfad]
+
+  [pfad]   Scan-Wurzel (Default: /src im Container).
+
+Optionen:
+`)
+	fs.PrintDefaults()
+	_, _ = fmt.Fprintf(errw, `
+Konfiguration (.a-check.yml in der Scan-Wurzel):
+  a-check --print-config             kommentiertes Start-Geruest ausgeben
+  a-check --print-mk                 includebares a-check.mk ausgeben
+
+Benutzerhandbuch (aufgabenorientiert, deutsch):
+  %s
+`, handbuchURL)
+}
+
 // Run parses args, runs the architecture check and returns the process exit
 // code: 0 (no finding), 1 (findings), 2 (usage/config error).
 func Run(args []string, out, errw io.Writer) int {
 	fs := flag.NewFlagSet("a-check", flag.ContinueOnError)
 	fs.SetOutput(errw)
+	fs.Usage = func() { usage(fs, errw) }
 	printConfig := fs.Bool("print-config", false, "kommentiertes .a-check.yml-Gerüst ausgeben (read-only)")
 	printMk := fs.Bool("print-mk", false, "includebares a-check.mk ausgeben (read-only)")
 	printGraph := fs.Bool("print-graph", false, "Architektur-Graph (Mermaid) aus .a-check.yml ausgeben (read-only, kein Scan)")
@@ -186,6 +222,9 @@ const mkImagePlaceholder = "ghcr.io/pt9912/a-check@sha256:SETZE-HIER-DEN-RELEASE
 
 const mkFragment = `# a-check.mk — Architektur-Gate via a-check, zum ` + "`include`" + ` in das
 # Makefile des konsumierenden Repos. Erzeugt von ` + "`a-check --print-mk`" + `.
+#
+# Benutzerhandbuch (aufgabenorientiert, deutsch):
+#   https://github.com/pt9912/a-check/blob/main/docs/user/benutzerhandbuch.md
 #
 # PFLICHT VOR DEM ERSTEN LAUF: A_CHECK_IMAGE auf den Release-Digest setzen.
 # Der Platzhalter unten ist KEIN gueltiger Verweis — ` + "`make a-check`" + ` bricht

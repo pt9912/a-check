@@ -357,6 +357,19 @@ Präzisiert [AC-FA-CLI-001](lastenheft.md#ac-fa-cli-001--aufruf-scan-wurzel-und-
 - **Befunde** auf stdout, ein Datensatz je Zeile im Format
   `pfad:zeile: regelname: meldung`; **Zusammenfassung** (Anzahl je Regel,
   Gesamtzahl) auf stderr.
+- **Usage-Ausgabe** (`--help`, präzisiert
+  [AC-FA-CLI-003](lastenheft.md#ac-fa-cli-003--usage-ausgabe-und-handbuch-verweis)): vier
+  Bestandteile in dieser Reihenfolge — Kurzbeschreibung, `Aufruf:`-Block mit
+  `a-check [optionen] [pfad]`, Options-Liste, `Konfiguration:`-Hinweis auf `.a-check.yml`, und
+  abschließend `Benutzerhandbuch:` mit der URL. Sie geht auf **stderr**, wie jede Diagnose; bei
+  `--help` ist der Exit-Code `0`, bei unbekanntem Flag `2`. **Zugesichert ist die Anwesenheit der
+  Bestandteile, nicht ihr Wortlaut** — Tests binden sich an die URL und an die Marken
+  (`Aufruf:`, `Konfiguration:`, `Benutzerhandbuch:`), nicht an Formulierungen dazwischen.
+- **Handbuch-URL**, an **einer** Stelle im Code definiert und von zwei Ausgaben geteilt: der
+  Usage-Ausgabe und dem Kopfkommentar des Fragments aus
+  [SPEC-DIST-001](#spec-dist-001--laufzeitform-und-distribution). Sie ist **tag-frei**
+  (`…/blob/main/…`); das Binary trägt keine eingebackene Version und könnte einen versionierten
+  Link nur mit dem Stand des Vorgänger-Release füllen.
 - **Abdeckungs-Diagnose** (advisory, auf stderr **nach** der Zusammenfassung): Gescannte Dateien,
   die in **keinem** `layers`-Glob liegen, unterliegen keiner Schicht-Regel — eine bewusste
   fail-open-Grenze ([AC-QA-02](lastenheft.md#ac-qa-02--hermetik-und-ehrliche-heuristik-grenze)),

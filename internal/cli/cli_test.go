@@ -1415,3 +1415,61 @@ func TestResolutionNoticeDeterministic(t *testing.T) { // AC-QA-01
 		t.Fatalf("Schichten muessen stabil nach Namen sortiert sein: %q", e1.String())
 	}
 }
+
+// AC-FA-CLI-003: die Usage-Ausgabe traegt vier Bestandteile. Geprueft wird ihre
+// ANWESENHEIT, nicht der Wortlaut — die Marken und die URL, nichts dazwischen.
+func TestUsageBestandteile(t *testing.T) {
+	var out, errb bytes.Buffer
+	if code := cli.Run([]string{"--help"}, &out, &errb); code != 0 {
+		t.Fatalf("--help: exit %d, want 0", code)
+	}
+	u := errb.String()
+	for _, marke := range []string{
+		"Aufruf:",
+		"[pfad]",
+		"Konfiguration",
+		".a-check.yml",
+		"Benutzerhandbuch",
+		"https://github.com/pt9912/a-check/blob/main/docs/user/benutzerhandbuch.md",
+	} {
+		if !strings.Contains(u, marke) {
+			t.Errorf("--help ohne %q (AC-FA-CLI-003): %q", marke, u)
+		}
+	}
+	if out.Len() != 0 {
+		t.Errorf("--help schreibt auf stdout statt stderr: %q", out.String())
+	}
+}
+
+// AC-FA-CLI-003 Negative: der Nutzungsfehler bleibt ein Fehler. Ohne diese Probe
+// waere eine Usage-Ausgabe, die IMMER Exit 0 liefert, von einer korrekten nicht
+// zu unterscheiden.
+func TestUsageBeiUnbekanntemFlagBleibtExit2(t *testing.T) {
+	var out, errb bytes.Buffer
+	code := cli.Run([]string{"--bogus"}, &out, &errb)
+	if code != 2 {
+		t.Fatalf("--bogus: exit %d, want 2 (SPEC-CLI-001)", code)
+	}
+	if !strings.Contains(errb.String(), "Benutzerhandbuch") {
+		t.Errorf("--bogus: Usage fehlt auf stderr: %q", errb.String())
+	}
+}
+
+// AC-FA-CLI-003 Boundary: Fragment und Usage teilen DIESELBE URL. Ohne diese
+// Probe koennten die beiden Stellen auseinanderlaufen, und die Zusage "eine
+// Stelle im Code" waere nicht mehr gedeckt.
+func TestHandbuchURLInFragmentUndUsage(t *testing.T) {
+	const url = "https://github.com/pt9912/a-check/blob/main/docs/user/benutzerhandbuch.md"
+	var mkOut, mkErr bytes.Buffer
+	if code := cli.Run([]string{"--print-mk"}, &mkOut, &mkErr); code != 0 {
+		t.Fatalf("--print-mk: exit %d", code)
+	}
+	if !strings.Contains(mkOut.String(), url) {
+		t.Errorf("--print-mk: Kopfkommentar ohne Handbuch-URL (AC-FA-CLI-003)")
+	}
+	var hOut, hErr bytes.Buffer
+	cli.Run([]string{"--help"}, &hOut, &hErr)
+	if !strings.Contains(hErr.String(), url) {
+		t.Errorf("--help: Usage ohne Handbuch-URL (AC-FA-CLI-003)")
+	}
+}

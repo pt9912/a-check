@@ -27,22 +27,22 @@ Verweis-Zeile im erzeugten Fragment und ein Aufruf-Kopf in `--help`.
 
 ## 2. Definition of Done
 
-- [ ] Eine neue `AC-FA-CLI`-Kennung im [Lastenheft](../../../../spec/lastenheft.md) deckt die
+- [x] Eine neue `AC-FA-CLI`-Kennung im [Lastenheft](../../../../spec/lastenheft.md) deckt die
       **Usage-Ausgabe**: Kurzbeschreibung, Aufruf-Syntax, Konfigurationsdatei, Handbuch-Verweis.
       Sie sichert die **Anwesenheit** dieser Bestandteile zu, **nicht den Wortlaut** — und trägt
       die vier Bausteine (Happy · Boundary · Negative · Out-of-Scope), weil
       `verify-ac-form` sie als **neue** Anforderung prüft.
-- [ ] `a-check --help` gibt den Kopf aus; die Spezifikation ist an
+- [x] `a-check --help` gibt den Kopf aus; die Spezifikation ist an
       [SPEC-CLI-001](../../../../spec/spezifikation.md#spec-cli-001--aufruf-scan-wurzel-und-exit-codes)
       nachgezogen. Beleg: ein Test auf die Bestandteile, nicht auf den Text.
-- [ ] Das `--print-mk`-Fragment **und** die committete
+- [x] Das `--print-mk`-Fragment **und** die committete
       [`a-check.mk`](../../../../a-check.mk) tragen die Handbuch-Zeile. Beleg: `make image-test`
       (Fragment-Parität, slice-034).
 
-- [ ] `make gates` grün — Ausgabe in eine Datei, Exit-Code getrennt geprüft, nie in eine Pipe.
-- [ ] Closure-Notiz mit benanntem Lerneintrag geschrieben (§7).
-- [ ] Beobachtungs-Register fortgeschrieben.
-- [ ] Jedes Risiko aus §6 trägt genau einen Ausgang.
+- [x] `make gates` grün — Ausgabe in eine Datei, Exit-Code getrennt geprüft, nie in eine Pipe.
+- [x] Closure-Notiz mit benanntem Lerneintrag geschrieben (§7).
+- [x] Beobachtungs-Register fortgeschrieben.
+- [x] Jedes Risiko aus §6 trägt genau einen Ausgang.
 
 ## 3. Plan (vor Code)
 
@@ -102,23 +102,71 @@ ein eigener Slice, sonst trägt dieser vier Liefer-Punkte statt drei.
 
 ## 6. Risiken und offene Punkte
 
-- *Die URL-Form-Entscheidung könnte eine eigene ADR verlangen statt einer Plan-Passage* — sie ist
-  eine **Anwendung** von [ADR-0030](../../adr/0030-kein-digest-im-generierten-fragment.md), nicht
-  eine neue Entscheidung; §3 nennt die Ableitung. **Ausgang:** <bei Closure>
-- *Ein Test auf Prosa wird brüchig* — geprüft wird die **Anwesenheit** der Bestandteile (URL,
-  Aufruf-Zeile, Konfigurations-Hinweis), nicht ihr Wortlaut; die Anforderung sagt das
-  ausdrücklich. **Ausgang:** <bei Closure>
-- *Die Handbuch-URL ist die erste Netz-Adresse im erzeugten Fragment* — sie wird nie abgerufen
-  (das Fragment ist Text, das Modul `external` ist nicht aktiv), aber sie ist eine Zusage über
-  ein fremdes System. **Ausgang:** <bei Closure>
+- *Die URL-Form-Entscheidung könnte eine eigene ADR verlangen statt einer Plan-Passage* —
+  **Ausgang:** gestrichen mit Begründung, und die trägt jetzt doppelt. Erstens ist sie eine
+  **Anwendung** von [ADR-0030](../../adr/0030-kein-digest-im-generierten-fragment.md), nicht eine
+  neue Entscheidung. Zweitens hat das Schwester-Tool dieselbe Aufgabe unabhängig gelöst und
+  **dieselbe** Form gewählt — tag-frei, mit Verweis auf den Software-Versions-Stempel im
+  Handbuch-Kopf. Zwei Repos, dieselbe Zwangslage, dieselbe Antwort: das ist kein Ermessen, das
+  eine ADR bräuchte.
+- *Ein Test auf Prosa wird brüchig* — **Ausgang:** gestrichen mit Begründung: die geprüften
+  **Marken** stehen in der Spezifikation
+  ([SPEC-CLI-001](../../../../spec/spezifikation.md#spec-cli-001--aufruf-scan-wurzel-und-exit-codes)),
+  nicht im Test. Der Test beruft sich darauf, statt sie zu erfinden — genau der Fehler, den
+  [slice-120](../done/slice-120-ac-form-abloesen.md) an `verify-ac-form` gemessen hat.
+- *Die Handbuch-URL ist die erste Netz-Adresse im erzeugten Fragment* — **Ausgang:** weiter offen
+  im **Beobachtungs-Register** als Teil von `BEO-021`-Nachbarschaft: sie wird nie abgerufen (das
+  Werkzeug ist hermetisch, das Modul `external` ist nicht aktiv), bleibt aber eine Zusage über ein
+  fremdes System, das sich ändern kann.
 
 ## 7. Closure-Notiz
 
-_(beim Abschluss ausfüllen — genau **ein** solcher Abschnitt je Slice,
-[`AGENTS.md`](../../../../AGENTS.md) §5.)_
+**Geliefert:** `a-check --help` trägt eine vollständige Usage-Ausgabe — Kurzbeschreibung,
+Aufruf-Syntax mit Pfad-Parameter, Options-Liste, Konfigurations-Hinweis und die Handbuch-URL;
+dieselbe URL steht im Kopfkommentar des `--print-mk`-Fragments. **Eine** Konstante im Code speist
+beide. Vorher gab `--help` nur Go's Default aus: `Usage of a-check:` plus drei Flags.
 
-**Lerneintrag — Form: <geschärfte Regel | neuer Sensor | benannte Spec-Lücke>**
+**Lerneintrag — Form: geschärfte Regel.** *Wo eine Anforderung nur die **Anwesenheit** zusichert
+und nicht den Wortlaut, gehören die geprüften **Marken** in die Spezifikation — nicht in den Test.*
+Sonst erfindet der Test seine eigene Erwartung, und die Anforderung deckt sie nicht.
+[slice-120](../done/slice-120-ac-form-abloesen.md) hat genau diesen Fall gemessen: `verify-ac-form`
+suchte `^**Happy Path:**`, ein Wortlaut, den **niemand** deklariert hatte und den die kanonische
+Quelle nicht kennt — der Sensor war seine eigene Autorität. Hier stehen die vier Marken
+(`Aufruf:`, `[pfad]`, `.a-check.yml`, `Benutzerhandbuch`) darum in
+[SPEC-CLI-001](../../../../spec/spezifikation.md#spec-cli-001--aufruf-scan-wurzel-und-exit-codes),
+und drei Tests plus `image-test` berufen sich darauf. *Weil* die Marken deklariert sind, darf die
+Prosa dazwischen sich ändern, ohne ein Gate zu brechen — was die Anforderung ausdrücklich erlaubt.
 
+**Drei beobachtbare Closure-Kriterien:**
+
+1. Die neue Anforderung ist die **zwanzigste** und damit der **erste echte Gegenstand** der Regel
+   aus [slice-120](../done/slice-120-ac-form-abloesen.md). Sie greift, gegengeprobt: die
+   `Boundary`-Marke entfernt ⇒ `section-marker-missing` auf der Überschriftszeile der neuen `AC-*`;
+   zurückgebaut ⇒ grün. Der abgelöste Sensor hätte dieselbe Anforderung in Bestandsform beanstandet.
+2. Die Zusage „eine Stelle im Code, zwei Ausgaben" ist **beidseitig** geprüft — ein Go-Test und
+   eine `image-test`-Stufe vergleichen `--help` und `--print-mk` gegen **dieselbe** Zeichenkette.
+   Eine einseitige Probe hätte ein Auseinanderlaufen nicht gesehen.
+3. Der Nutzungsfehler bleibt ein Fehler: `--bogus` liefert Exit **2** *und* die Usage. Ohne diese
+   Probe wäre eine Usage-Ausgabe, die immer Exit 0 liefert, von einer korrekten nicht zu
+   unterscheiden.
+
+**Beobachtbare Architektur-Aussage:** Dieselbe Aufgabe hat das Schwester-Tool in `v0.69.0`
+unabhängig gelöst — und **dieselbe** URL-Form gewählt, mit derselben Begründung (das Binary kennt
+seinen Release-Kontext nicht) und demselben benannten Preis (wer ein altes Release fährt, liest den
+Software-Versions-Stempel im Handbuch-Kopf). Die Entscheidung war damit nicht Geschmack, sondern
+von der Zwangslage bestimmt: ein Build ohne eingebackene Version kann keinen versionierten Link
+setzen, der nicht den Vorgänger nennt.
+
+**Offene Risiken und ihr Ausgang:** die ersten beiden gestrichen mit Begründung, der dritte weiter
+offen im Register.
+
+**Beobachtungs-Register:** keine neue Beobachtung. `BEO-023` (ein Prüfer mit leerer Prüfmenge
+bleibt unkalibriert) hat mit dieser Anforderung seinen **ersten Gegenstand** bekommen; der Stand
+nennt jetzt den Beleg, dass die Nachfolge-Regel greift.
+
+**Folge-Slices:** keiner offen. Die Roadmap führt danach nur noch die vertagten
+[slice-013](../open/slice-013-driving-driven-vertiefung.md) und
+[slice-045](../open/slice-045-intern-extern-dateimenge.md).
 ## 8. Sub-Area-Modus-Begründung
 
 **Vorgelagert — Sub-Area-Wahl prüfen:** berührt werden die **Spec-Straten** (neue Anforderung,
