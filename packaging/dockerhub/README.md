@@ -22,6 +22,24 @@ Hub-Seite ist die Außensicht und folgt darin
 Plattform steht. Was **hier** steht, ist Betriebswissen für dieses Repo und
 bleibt deutsch wie der Rest der Doku.
 
+## Transport: die Darstellung funktioniert — gemessen
+
+**Stand 2026-08-30:** beide Felder sind gesetzt, der Inhalt ist **englisch**.
+Beleg ist nicht der Ausgang des Laufs, sondern die **Hub-API**: `description`
+trägt den Kurztext aus [`description.txt`](description.txt), `full_description`
+die Seite aus [`overview.md`](overview.md) mit ersetztem `__VERSION__`.
+Der `workflow_dispatch`-Lauf las die Version korrekt aus
+[`version.md`](../../version.md) (`v0.18.0`).
+
+**Damit ist der Token-Scope belegt** — der Punkt, an dem der erste Lauf im
+Schwester-Repo scheiterte. **Der Spiegel selbst ist seit demselben Tag belegt:** das
+Repository trägt `v0.18.0` und `latest` (von Hand gespiegelt, weil der Tag auf einem Commit
+sitzt, der den Spiegel-Schritt noch nicht kannte). **Gemessen:** der **Config**-Digest ist auf
+beiden Registries identisch (`sha256:e4f357f0…`), der **Manifest**-Digest nicht
+(`356aeaea…` gegen `5bdd40ca…`) — genau die Lage, die
+[ADR-0039](../../docs/plan/adr/0039-spiegel-gleichheit-ist-der-config-digest.md) zur
+Entscheidung macht.
+
 ## Was beim ersten Lauf schiefgehen kann — und woran man es erkennt
 
 Die drei Punkte stammen aus dem Schwester-Repo, wo jeder einen Vorfall gekostet
@@ -45,7 +63,7 @@ hat. Sie stehen hier, damit sie nicht zweimal bezahlt werden:
 
 ## Category
 
-**Zu setzen: „Developer tools"** (`developer-tools`) — sichtbar auf der
+**Gesetzt: „Developer tools"** (`developer-tools`) — sichtbar auf der
 Repo-Seite als Marke neben `IMAGE`. Bleibt **manuell**: die Action hat keinen
 Input dafür, und kein Lauf setzt sie zurück.
 

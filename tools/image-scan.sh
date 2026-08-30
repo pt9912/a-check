@@ -50,11 +50,17 @@ set -uo pipefail
 TRIVY_VERSION="${TRIVY_VERSION:-0.74.0}"
 TRIVY_DIGEST="${TRIVY_DIGEST:-sha256:62b1e65e8869bc4b4c6aa4fa2b21595256c7c2f6018a9d9ad61caf87187c1969}"
 
-# Geprueft wird, was Anwender ziehen. Heute ist das EIN Bezugsweg; kommt ein
-# Docker-Hub-Spiegel dazu, gehoert sein Ref hier daneben — und zwar erst, wenn
-# er ein Bild traegt: ein Ref ohne Bild machte den Nachtlauf ab dem ersten Tag
-# rot.
-IMAGE_SCAN_REFS="${IMAGE_SCAN_REFS:-ghcr.io/pt9912/a-check:latest}"
+# Geprueft wird, was Anwender ziehen -- und seit dem Spiegel (AC-FA-DIST-002)
+# sind das ZWEI Registries. Der Hub-Ref stand hier zunaechst NICHT, weil er
+# kein Bild trug; ein Ref ohne Bild haette den Nachtlauf ab dem ersten Tag rot
+# gemacht. Seit 2026-08-30 traegt er eines (slice-127).
+#
+# GEMESSEN vor der Aufnahme, statt angenommen: beide Refs tragen denselben
+# Inhalt -- der CONFIG-Digest ist identisch (sha256:e4f357f0...), der
+# MANIFEST-Digest nicht (356aeaea vs. 5bdd40ca), weil er registry-lokal ist.
+# Damit ist eine zweite, vom Scan unabhaengige Bestaetigung der
+# Inhalts-Gleichheit da.
+IMAGE_SCAN_REFS="${IMAGE_SCAN_REFS:-ghcr.io/pt9912/a-check:latest pt9912/a-check:latest}"
 
 # Cache ausserhalb des Repos: der Arbeitsbaum bleibt sauber, und `git status`
 # meldet keine Werkzeug-Artefakte. XDG_CACHE_HOME wird geehrt.

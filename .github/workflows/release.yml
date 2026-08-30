@@ -180,8 +180,15 @@ jobs:
 
           # Der Config-Digest steht im Manifest; er beschreibt den INHALT und
           # ist damit die Groesse, die auf beiden Registries gleich sein muss.
+          # GEMESSEN, nicht uebernommen: `docker manifest inspect` gibt
+          # MEHRZEILIGES, eingeruecktes JSON aus. Ein einzeiliges sed-Muster
+          # greift darauf NICHT -- es lieferte leer, und ein Vergleich zweier
+          # leerer Werte meldet faelschlich Gleichheit. Der Riegel unten faengt
+          # das (fail-closed), aber der Spiegel waere blockiert statt geprueft.
+          # Darum erst Whitespace entfernen, dann matchen (slice-127).
           config_digest() {
             docker manifest inspect "$1" \
+              | tr -d ' \n\t' \
               | sed -n 's/.*"config":{[^}]*"digest":"\(sha256:[0-9a-f]\{64\}\)".*/\1/p' \
               | head -1
           }
