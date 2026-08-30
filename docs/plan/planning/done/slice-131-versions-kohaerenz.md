@@ -119,7 +119,8 @@ lang „der Tag-Kommentar wird nicht gegen den Digest geprüft". Das stimmt und 
 es die Registry braucht — und genau darum lag die Beobachtung so lange still: sie beschrieb ihre
 eigene Unmöglichkeit. Beim Nachzählen war **keiner** der drei Vorfälle diese Frage. Jeder war
 dieselbe Angabe an zwei Orten, verschieden geschrieben (§4) — eine Aussage über den Bestand gegen
-sich selbst, hermetisch prüfbar, in einem Skript von unter 140 Zeilen.
+sich selbst, hermetisch prüfbar, in einem Skript von **160** Zeilen (`wc -l`, davon 19 für die
+erste Regel).
 
 **Die beobachtbare Architektur-Aussage** steht in der Referenz selbst: `golang:1.26.4@sha256:0ecdc…`
 war eine Zeile, die sich **in sich** widersprach — der Tag nannte eine Version, der Digest enthielt
