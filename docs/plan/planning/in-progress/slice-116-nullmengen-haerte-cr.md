@@ -23,16 +23,16 @@ unterscheiden können.
 
 ## 2. Definition of Done
 
-- [ ] **CR 4 ist als Text geliefert** (§9): Anlass mit der Messung aus
+- [x] **CR 4 ist als Text geliefert** (§9): Anlass mit der Messung aus
       [slice-080](../done/slice-080-verify-abloesung-dcheck.md), Vertragsvorschlag, die
-      Abgrenzung gegen `exempt-paths` und das vorweggenommene Gegenargument.
-- [ ] Der **Trigger** für die spätere Ablösung steht beobachtbar in §4 — ein anderer Mensch kann
+      Abgrenzung gegen `exempt-paths`, das vorweggenommene Gegenargument — und die **Wahl** zwischen den drei am Vertrag gangbaren Wegen samt ihrem Preis.
+- [x] Der **Trigger** für die spätere Ablösung steht beobachtbar in §4 — ein anderer Mensch kann
       sagen, ob er eingetreten ist, ohne Rückfrage.
 
-- [ ] `make gates` grün — Ausgabe in eine Datei, Exit-Code getrennt geprüft, nie in eine Pipe.
-- [ ] Closure-Notiz mit benanntem Lerneintrag geschrieben (§7).
-- [ ] Beobachtungs-Register fortgeschrieben.
-- [ ] Jedes Risiko aus §6 trägt genau einen Ausgang.
+- [x] `make gates` grün — Ausgabe in eine Datei, Exit-Code getrennt geprüft, nie in eine Pipe.
+- [x] Closure-Notiz mit benanntem Lerneintrag geschrieben (§7).
+- [x] Beobachtungs-Register fortgeschrieben.
+- [x] Jedes Risiko aus §6 trägt genau einen Ausgang.
 
 ## 3. Plan (vor Code)
 
@@ -80,19 +80,57 @@ wie bei CR 1 und CR 2 ([slice-073 §4](../done/slice-073-dcheck-statt-eigenbau.m
 
 ## 6. Risiken und offene Punkte
 
-- *d-check lehnt ab, weil die Nullmengen-Härte bewusst hart ist* — dann bleibt `verify-ac-form`
-  dauerhaft lokal, und **das gehört in eine ADR**, nicht in stilles Liegenlassen.
-  **Ausgang:** <bei Closure>
+- *d-check lehnt ab, weil die Nullmengen-Härte bewusst hart ist* — **Ausgang:** eingetreten, und
+  zwar auf die nützlichste Weise: zurückgewiesen wurde nicht das Anliegen, sondern die **Form** des
+  ersten Entwurfs, der eine nicht-fatale Meldung voraussetzte. Aufgelöst in diesem Slice durch die
+  Überarbeitung auf Weg 3 (§9). Bleibt auch die überarbeitete Fassung ohne Zusage, ist das ein
+  **Folge-Slice** mit einer ADR: dann bleibt `verify-ac-form` dauerhaft lokal, und diese
+  Entscheidung gehört begründet, nicht stillschweigend.
 - *Der Antrag wiederholt den Fehler von CR 3 und übersieht wieder eine Konsequenz* —
-  **Ausgang:** <bei Closure>
+  **Ausgang:** eingetreten. Genau das ist passiert, und es ist der Lerneintrag dieses Slice (§7);
+  als wiederkehrendes Muster steht es im **Beobachtungs-Register** als `BEO-022`.
 
 ## 7. Closure-Notiz
 
-_(beim Abschluss ausfüllen — genau **ein** solcher Abschnitt je Slice,
-[`AGENTS.md`](../../../../AGENTS.md) §5.)_
+**Geliefert:** CR 4 als Text (§9) — der Antrag, der `verify-ac-form` ablösbar macht, in einer
+Fassung, die am Vertrag des Zielwerkzeugs geprüft ist. Er entscheidet sich ausdrücklich für einen
+von drei Wegen und benennt, was dieser Weg kostet: die Sichtbarkeit wandert aus dem Gate-Lauf in
+`--doctor` und ist dort schwächer. §4 nennt zwei beobachtbare Trigger für die spätere Ablösung —
+das Release **oder** ein zwanzigstes `AC-*`.
 
-**Lerneintrag — Form: <geschärfte Regel | neuer Sensor | benannte Spec-Lücke>**
+**Lerneintrag — Form: geschärfte Regel.** *Bevor ein CR eine Eigenschaft des Zielwerkzeugs zur
+Bedingung macht, wird sie an dessen Lastenheft belegt — mit Kennung, nicht als Annahme.* Der erste
+Entwurf verlangte, die Regel solle „nicht nichts, sondern eine **nicht-fatale** Zeile" melden. Es
+gibt keine nicht-fatalen Befunde: `model.Finding` trägt kein Schwere-Feld, und
+[`DC-FA-CLI-003`](https://github.com/pt9912/d-check/blob/main/spec/lastenheft.md#dc-fa-cli-003--exit-codes)
+führt *„differenzierte Exit-Codes pro Befund-Kategorie"* ausdrücklich als **Out-of-Scope**. Der
+Antrag hätte damit unbemerkt einen Schweregrad eingeführt — eine Vertragsänderung, getarnt als
+Konfigurations-Option. *Weil* das Zielwerkzeug sein Lastenheft öffentlich führt, war das
+**vorab prüfbar**: ein `sed` über den Abschnitt hätte gereicht, und derselbe Abschnitt trug am
+Ende auch die Lösung (das Boundary-Kriterium von `DC-FA-CLI-007`: `--doctor` gibt bei **null**
+Befunden eine Diagnose aus, ist also schon heute ein Renderer für Nicht-Befunde). Dieselbe Klasse
+traf CR 3, dort gegen den **eigenen** Bestand: er beantragte, 19 von 19 Abschnitten auszunehmen,
+ohne zu zählen, dass danach keiner übrig bleibt.
 
+**Zwei beobachtbare Closure-Kriterien:**
+
+1. Jede Zusage in §9, die eine Eigenschaft von d-check behauptet, trägt eine Kennung mit Link —
+   `DC-FA-CLI-003` für die Exit-Code-Binärität, `DC-FA-CLI-007` für den Diagnose-Modus, [`ADR-0075`](https://github.com/pt9912/d-check/blob/main/docs/plan/adr/0075-erklaerte-teilmenge-in-structure.md)
+   für die Sichtbarkeits-Zusage, gegen die abgegrenzt wird.
+2. Der Antrag benennt seinen Preis in einer eigenen Passage („Die Sichtbarkeit wandert") statt ihn
+   in der Vertrags-Formulierung verschwinden zu lassen. Beobachtbar daran, dass die
+   Drei-Wege-Tabelle auch die beiden **nicht** gewählten Wege mit ihren Kosten führt.
+
+**Offene Risiken und ihr Ausgang:** beide aus §6 eingetreten und dort aufgelöst — der erste durch
+die Überarbeitung, der zweite als Lerneintrag und `BEO-022`.
+
+**Beobachtungs-Register:** `BEO-022` neu angelegt (Gate-/Werkzeug-Schicht, 2×, Belege slice-080
+und slice-116): ein CR-Text wird formuliert, ohne ihn gegen den Bestand oder den fremden Vertrag
+durchzurechnen. Beim dritten Vorfall ist es eine Harness-Lücke und verlangt einen Guide.
+
+**Folge-Slices:** keiner zwingend. Tritt einer der beiden Trigger aus §4 ein, wird
+`verify-ac-form` abgelöst; lehnt d-check auch Weg 3 ab, entsteht eine ADR über den dauerhaften
+Verbleib.
 ## 8. Sub-Area-Modus-Begründung
 
 **Vorgelagert — Sub-Area-Wahl prüfen:** berührt wird die **Gate-/Werkzeug-Schicht** (der Antrag
@@ -155,8 +193,33 @@ nicht versehentlich zu breit werden — es kann nur veralten, und dann meldet di
 | `section-pattern` trifft **nichts** | Konfigurationsdefekt: falsches Muster, falsche Datei, umbenannter Abschnitt | `section-missing` ✔ richtig |
 | Muster trifft, **`exempt-section-pattern` nimmt alle** | Bestandszustand: die erklärte Ausnahme deckt gerade alles — *„es gibt noch nichts Neues zu prüfen"* | `section-missing` ✘ |
 
+**Korrektur des Antrags — der erste Entwurf war am Modell nicht prüfbar.** Er machte die
+Sichtbarkeit zur Bedingung („die Regel meldet eine **nicht-fatale** Zeile"). Die gibt es nicht:
+`model.Finding` trägt kein Schwere-Feld, und
+[`DC-FA-CLI-003`](https://github.com/pt9912/d-check/blob/main/spec/lastenheft.md#dc-fa-cli-003--exit-codes)
+ist binär — *ein Befund ist der Exit-1*, und „differenzierte Exit-Codes pro Befund-Kategorie" führt
+dieselbe Anforderung ausdrücklich als **Out-of-Scope**. Der Antrag hätte damit stillschweigend
+einen Schweregrad eingeführt. Die Fassung unten entscheidet sich stattdessen für einen der drei
+gangbaren Wege und benennt, was sie dabei aufgibt.
+
+**Die drei Wege, und warum es der dritte wird.**
+
+| Weg | Was er kostet |
+|---|---|
+| Befund verschwindet ersatzlos | genau die Sichtbarkeit, die der Anlass verlangt — der Adopter merkt nicht, wenn seine Regel nichts mehr tut |
+| Schweregrad in `model.Finding` | Vertragsänderung an `DC-FA-CLI-003`/`DC-FA-CLI-004`, viel größer als dieser Antrag, und ein **eigener** Entscheid des Werkzeugs |
+| Sichtbarkeit über `--doctor` | die Zeile steht nicht mehr im Gate-Lauf, sondern im Diagnose-Modus — **schwächer**, aber ohne Vertragsbruch |
+
+**Der dritte Weg ist tragfähig, weil `--doctor` diese Form schon führt.**
+[`DC-FA-CLI-007`](https://github.com/pt9912/d-check/blob/main/spec/lastenheft.md#dc-fa-cli-007--diagnose-modus)
+verlangt in seinem Boundary-Kriterium: *„Given ein Repo **ohne Befunde**, when `d-check --doctor`
+läuft, then Exit-Code 0 und eine Diagnose, die ‚0 Befunde' ausweist."* Der Modus rendert also
+bereits heute etwas, das kein Befund ist, und seine Diagnose erscheint *„auf stdout unabhängig vom
+Code"*. Eine Zeile über deklarierte Leermengen fügt sich dort ein, ohne `model.Finding`, die
+Exit-Codes oder das Zeilenformat zu berühren.
+
 **Vertrag.** Ein optionaler Schlüssel an derselben Bedingung; ohne ihn byte-identisches Verhalten.
-Kein neuer Grund-Code.
+Kein neuer Grund-Code, kein neues Befund-Feld, keine Änderung an `DC-FA-CLI-003`/`-004`.
 
 ```yaml
 structure:
@@ -166,18 +229,27 @@ structure:
     require-all: [Happy, Boundary, Negative, Out-of-Scope]
     exempt-section-pattern: '^### (AC-FA-RULE-…|…)'
     exempt-may-empty: true
-    #   NUR fuer exempt-section-pattern: leert die Ausnahme die Menge, ist das
-    #   kein Befund, sondern ein Bestandszustand — die Regel wartet auf den
-    #   ersten nicht ausgenommenen Abschnitt. Ohne den Schluessel: section-missing,
-    #   heutiges Verhalten. Greift NICHT fuer exempt-paths und NICHT, wenn schon
-    #   section-pattern nichts trifft — das bleibt ein Defekt.
+    #   NUR fuer exempt-section-pattern: leert die Ausnahme die Menge, entsteht
+    #   KEIN Befund — die Regel wartet auf den ersten nicht ausgenommenen
+    #   Abschnitt. Ohne den Schluessel: section-missing, heutiges Verhalten.
+    #   Greift NICHT fuer exempt-paths und NICHT, wenn schon section-pattern
+    #   nichts trifft — das bleibt ein Defekt.
 ```
 
-**Die Sichtbarkeit bleibt, und das ist die Bedingung.** [ADR-0075](https://github.com/pt9912/d-check/blob/main/docs/plan/adr/0075-erklaerte-teilmenge-in-structure.md) hält fest, dass die Meldung die
-Zahl der ignorierten Items nennt, *„auch bei null"* — eine Zusage, die nicht wirkt, gehört
-sichtbar. Dasselbe hier: mit gesetztem Schlüssel meldet die Regel **nicht nichts**, sondern eine
-nicht-fatale Zeile — *„alle 19 Abschnitte sind ausgenommen; die Regel greift beim ersten
-weiteren"*. Wer die Ausnahme zu breit zieht, sieht es; er sieht es nur nicht mehr als Fehler.
+**Die Sichtbarkeit wandert, und das ist der Preis — hier benannt statt verschwiegen.** Im
+Gate-Lauf ist der Zustand ab dann stumm. `--doctor` führt ihn: eine Zeile je Regel mit gesetztem
+Schlüssel, die die Regel-Identität und die Zahl der ausgenommenen Abschnitte nennt — *„alle 19
+Abschnitte ausgenommen; greift beim ersten weiteren"* —, in `--doctor --json` als eigenes Feld
+neben `findings`, damit sie nicht als Befund fehlgelesen wird.
+
+**Warum der Preis hier vertretbar ist.** Die Sichtbarkeits-Zusage aus
+[ADR-0075](https://github.com/pt9912/d-check/blob/main/docs/plan/adr/0075-erklaerte-teilmenge-in-structure.md)
+zielt auf ein Muster, das **wirkt, aber danebengreift** — dort ist die stille Fehlkonfiguration
+die Gefahr. Hier ist der Fall umgekehrt: das Muster trifft **alles**, und es ist eine namentliche
+Aufzählung von 19 Kennungen. Es kann nicht versehentlich zu breit werden; es kann nur veralten,
+wenn der Bestand wächst und jemand die Aufzählung mitpflegt. Genau dafür ist `--doctor` der
+richtige Ort — ein Modus, den man befragt, wenn man wissen will, was das Werkzeug gerade *nicht*
+prüft.
 
 **Warum nicht „die Regel einfach weglassen, bis es etwas zu prüfen gibt".** Das ist die
 naheliegende Antwort und die falsche: eine Regel, die man erst einschalten muss, wenn ihr Fall
