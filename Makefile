@@ -45,7 +45,7 @@ NO_CACHE_FILTER_COV  := --no-cache-filter coverage
 .PHONY: help compile lint test coverage-gate build arch-check arch-graph \
         gate-consistency guard-selftest record-gates gates image-test ci \
         trace-check hooks suppression-check regelwerk-check commit-scope-check \
-        verify verify-closure-notes verify-slice-form verify-ac-form \
+        verify verify-risiko-ausgaenge verify-slice-form verify-ac-form \
         verify-slice-links verify-observations
 
 # Gates seriell: unter `make -j` liefen die Sub-Gates sonst parallel und die
@@ -90,8 +90,8 @@ suppression-check: ## Hard Rule AGENTS §3.2: keine Inline-Suppression (//nolint
 regelwerk-check: ## Wartung (KEIN Gate): Integritaet der vendored Baseline gegen SHA256SUMS (MR-006); Freshness bleibt ungeprueft.
 	@bash tools/regelwerk-check.sh
 
-verify-closure-notes: ## Struktur der Closure-Notizen in done/ (AGENTS §5): genau eine, ausgefuellt, kein Platzhalter.
-	@bash tools/verify-closure-notes.sh
+verify-risiko-ausgaenge: ## Struktur der Closure-Notizen in done/ (AGENTS §5): genau eine, ausgefuellt, kein Platzhalter.
+	@bash tools/verify-risiko-ausgaenge.sh
 
 verify-slice-form: ## Form der Slice-Plaene ab slice-052 (max. 3 DoD-Punkte, benannte Lerneintrag-Form); aeltere grandfathered.
 	@bash tools/verify-slice-form.sh
@@ -123,7 +123,7 @@ commit-scope-check: ## Commit-Scope (planning) beruehrt nur docs/plan/planning/ 
 # traegt, ist eine Drift-Quelle ohne Gegenwert.
 verify: ## Verifikations-Schicht: DoD-/Closure-Fragen (vor der "fertig"-Meldung; getrennt von gates).
 	@fail=0; \
-	bash tools/verify-closure-notes.sh || fail=1; \
+	bash tools/verify-risiko-ausgaenge.sh || fail=1; \
 	bash tools/verify-slice-form.sh    || fail=1; \
 	bash tools/verify-ac-form.sh       || fail=1; \
 	bash tools/verify-slice-links.sh   || fail=1; \
