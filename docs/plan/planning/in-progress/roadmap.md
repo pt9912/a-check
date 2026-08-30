@@ -18,13 +18,12 @@ Welle-Datei, nicht hier.
 
 - *(keine offene Welle-Datei)*
 
-Nichts in Arbeit.
+In Arbeit: [slice-125](../in-progress/slice-125-go-toolchain-1-27.md) — Toolchain-Hebung.
 
 **Offene Slices ohne Welle** — sie brauchen keine, ihre Trigger stehen in ihrem eigenen `§0`:
 
 | Slice | Trigger | Zustand |
 |---|---|---|
-| [slice-125](../open/slice-125-go-toolchain-1-27.md) | eingetreten — Risiko-Ausgang aus [slice-124](../done/slice-124-image-scan-cve.md): neun behebbare HIGH sind gemessen | **startbar** — die Toolchain ist verfügbar, Digest zweifach belegt |
 | [slice-013](../open/slice-013-driving-driven-vertiefung.md), [slice-045](../open/slice-045-intern-extern-dateimenge.md) | siehe *Nächste Wellen* | vertagt, Evidenz gemessen und zu klein |
 
 Ein Slice, der auf ein Fremdrepo wartet, gehört in **keine** Welle — er würde ihren
