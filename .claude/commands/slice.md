@@ -21,6 +21,9 @@ Argument (optional): der Slice, um den es geht — `/slice slice-052-…` oder e
 4. Kleinste sinnvolle Änderung planen — **Plan vor Code**.
 
 Spec-first, falls ein Vertrag berührt ist: Lastenheft-CR → ADR → Spezifikation → Code → Tests.
+Entsteht ein **CR an ein fremdes Werkzeug**, läuft er vor dem Hinausgehen durch den Skill
+[`.harness/skills/cr-text-reviewer.md`](../../.harness/skills/cr-text-reviewer.md) — jeder Satz,
+der eine Tatsache behauptet, braucht seinen Handgriff (`BEO-022`, 3×).
 Eine ADR schärft die Spezifikation, **nie** das Lastenheft.
 
 ## Während der Arbeit

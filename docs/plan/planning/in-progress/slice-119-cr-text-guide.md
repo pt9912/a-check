@@ -21,20 +21,20 @@ Stelle, an der die letzten drei ihre Fehler hatten.
 
 ## 2. Definition of Done
 
-- [ ] Ein Skill `.harness/skills/cr-text-reviewer.md` prüft einen CR-Text gegen die **zwei
+- [x] Ein Skill `.harness/skills/cr-text-reviewer.md` prüft einen CR-Text gegen die **zwei
       belegten Ausprägungen**: eine messbare Behauptung gar nicht gemessen, oder die **eigene**
       Menge gemessen und über die **fremde** ausgesagt. Er trägt die vier belegten Fälle als
       Fixtures — drei eigene, einer vom Empfänger.
-- [ ] Der Skill nennt die **Prüf-Frage je Behauptungs-Klasse** (eigener Bestand · fremder Vertrag ·
+- [x] Der Skill nennt die **Prüf-Frage je Behauptungs-Klasse** (eigener Bestand · fremder Vertrag ·
       eigener Gate-Pfad) mit dem Handgriff, der sie beantwortet — nicht „sorgfältig prüfen".
-- [ ] Das Workflow-Skelett verweist an der Stelle darauf, an der CR-Texte entstehen; der
+- [x] Das Workflow-Skelett verweist an der Stelle darauf, an der CR-Texte entstehen; der
       Skill-Index in [`AGENTS.md`](../../../../AGENTS.md) §5 nennt ihn neben dem
       Closure-Note-Reviewer.
 
-- [ ] `make gates` grün — Ausgabe in eine Datei, Exit-Code getrennt geprüft, nie in eine Pipe.
-- [ ] Closure-Notiz mit benanntem Lerneintrag geschrieben (§7).
-- [ ] Beobachtungs-Register fortgeschrieben.
-- [ ] Jedes Risiko aus §6 trägt genau einen Ausgang.
+- [x] `make gates` grün — Ausgabe in eine Datei, Exit-Code getrennt geprüft, nie in eine Pipe.
+- [x] Closure-Notiz mit benanntem Lerneintrag geschrieben (§7).
+- [x] Beobachtungs-Register fortgeschrieben.
+- [x] Jedes Risiko aus §6 trägt genau einen Ausgang.
 
 ## 3. Plan (vor Code)
 
@@ -90,18 +90,54 @@ der sie erzeugt, und das hat bei vier Stück getragen.
 
 ## 6. Risiken und offene Punkte
 
-- *Ein Guide, den niemand aufruft, ist wirkungslos — genau der Befund aus slice-118* —
-  **Ausgang:** <bei Closure>
+- *Ein Guide, den niemand aufruft, ist wirkungslos — genau der Befund aus
+  [slice-118](../done/slice-118-lifecycle-wechsel-werkzeug.md)* — **Ausgang:** weiter offen im
+  **Beobachtungs-Register**. Der Verweis steht an **zwei** Stellen im Pfad
+  ([`AGENTS.md`](../../../../AGENTS.md) §5 und Workflow-Skelett bei „Spec-first"), aber das ist
+  eine Verbesserung der Chance, kein Beleg für Wirkung. Der nächste CR misst es.
 - *Die Fixtures sind vier Fälle aus zwei Repos; eine fünfte Klasse könnte danebenliegen* —
-  **Ausgang:** <bei Closure>
+  **Ausgang:** gestrichen mit Begründung: der Skill führt die Klassen ausdrücklich als
+  **„bisher belegte"** und fordert das Nachtragen einer weiteren samt Zähler-Erhöhung. Eine
+  geschlossene Liste zu behaupten, wäre der Fehler gewesen — die offene ist die Antwort.
 
 ## 7. Closure-Notiz
 
-_(beim Abschluss ausfüllen — genau **ein** solcher Abschnitt je Slice,
-[`AGENTS.md`](../../../../AGENTS.md) §5.)_
+**Geliefert:** [`.harness/skills/cr-text-reviewer.md`](../../../../.harness/skills/cr-text-reviewer.md)
+— der Prüf-Durchgang für einen CR-Text, bevor er den Slice verlässt. Er markiert jeden Satz, der
+eine **Tatsache** über ein System behauptet, und nennt je Klasse den Handgriff, der sie belegt:
+`grep -c` über den eigenen Bestand, den Abschnitt im fremden Lastenheft, `grep` über die
+Gate-Pfade. Vier Fixtures aus zwei Repos, davon drei eigene Fehler.
 
-**Lerneintrag — Form: <geschärfte Regel | neuer Sensor | benannte Spec-Lücke>**
+**Lerneintrag — Form: geschärfte Regel.** *Ein Beleg wird nicht daran geprüft, **ob** gemessen
+wurde, sondern **ob die gemessene Menge die ist**, über die der Satz redet.* Die drei eigenen
+Fälle waren offene Annahmen und damit leicht zu sehen, sobald man hinschaute. Der vierte — vom
+Empfänger, und von ihm selbst gemeldet — ist die schärfere Form: eine **Tabelle mit vier
+Messzeilen**, deren vierte ungemessen war. Er hatte seine eigenen Gate-Dateien gemessen und über
+unser Fragment ausgesagt. *Weil* die Aussage im Ergebnis sogar zutraf, wäre sie ohne die Prüfung
+nie aufgefallen — und wäre trotzdem kein Beleg gewesen. Der Empfänger hat das selbst so eingeordnet
+(*„dass unsere unbelegte Behauptung im Ergebnis zutraf, macht sie nicht zu einem Beleg"*) und
+seinen Zähler stehen lassen. Genau darum ist die Prüf-Frage nicht „hast du gemessen?" — diese
+Frage hätte der vierte Fall mit **ja** beantwortet.
 
+**Zwei beobachtbare Closure-Kriterien:**
+
+1. Der Skill trägt die vier Fälle als **benannte Fixtures** mit Klasse und Ausprägung, nicht als
+   Prosa — wer ihn prüfen will, hat vier Eingaben mit erwartetem Ergebnis.
+2. Die Klassen-Liste ist ausdrücklich **offen** („die drei bisher belegten") und fordert das
+   Nachtragen einer weiteren samt Zähler-Erhöhung. Eine geschlossene Liste hätte denselben Fehler
+   wiederholt, den der Skill fangen soll: eine Vollständigkeit behaupten, die nicht gemessen ist.
+
+**Offene Risiken und ihr Ausgang:** der erste weiter offen im Register, der zweite gestrichen mit
+Begründung.
+
+**Beobachtungs-Register:** [`BEO-022`](../observations.md) ist **verkörpert** im Skill; der Zähler
+bleibt bei 3×, sein Stand nennt jetzt den Ort. Die zweite Ausprägung („die falsche Menge
+gemessen") ist in der Beschreibung ergänzt — sie ist bei uns **nicht** aufgetreten und erhöht
+darum nichts; der Empfänger führt sie bei sich als eigene Klasse mit eigenem Zähler.
+
+**Folge-Slices:** [slice-117](../open/slice-117-handbuch-verweis-cli.md) (Handbuch-Verweis) bleibt
+der einzige offene; beide Schwellen dieser Sitzung sind damit beantwortet — `BEO-008` mit einem
+Werkzeug, `BEO-022` mit einem Guide.
 ## 8. Sub-Area-Modus-Begründung
 
 **Vorgelagert — Sub-Area-Wahl prüfen:** berührt wird der **Harness-Einstieg** (Skill, AGENTS §5,

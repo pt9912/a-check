@@ -279,6 +279,16 @@ Aggregat). Ob ein Gate gerade grün ist, sagt die CI (Badge im
   §Ziel-Form: Slice). Der Gate-Lauf steht darum als feste Zeile unter dem DoD; als Checkbox ist er
   ab slice-098 ein Befund. Ab demselben Stichtag trägt der Kopf `Verantwortlich:`, `Autor:` und
   die berührten Spec-Stellen — `—` ist eine gültige Antwort, Schweigen nicht.
+- **CR-Texte an ein fremdes Werkzeug** (bisher vier an `d-check`) leben im Slice, der sie erzeugt,
+  und gehen erst nach einem Prüf-Durchgang hinaus: der Skill
+  [`.harness/skills/cr-text-reviewer.md`](.harness/skills/cr-text-reviewer.md) markiert jeden Satz,
+  der eine **Tatsache** über ein System behauptet — das eigene oder das fremde —, und nennt den
+  Handgriff, der ihn belegt. Anlass ist [`BEO-022`](docs/plan/planning/observations.md) bei **3×**:
+  dreimal stand eine Behauptung als Annahme da, die eine Messung zugelassen hätte. Die Prüf-Frage
+  ist **nicht** „hast du gemessen?", sondern „hast du *das* gemessen, worüber du redest?" — die
+  zweite Ausprägung misst die eigene Menge und sagt über die fremde aus, sieht dabei aus wie ein
+  Beleg und kann sogar zutreffen. **Kein Sensor:** ob ein Satz gemessen wurde, ist ein Urteil über
+  seinen Entstehungsweg, kein Match (§3.7).
 - **Closure-Pflicht:** ein Slice in `done/` trägt **genau einen**
   Closure-Abschnitt, und der ist ausgefüllt — kein Platzhalter, keine
   Floskel. Inhaltlich mindestens eines von dreien: ein **Lernsignal mit
