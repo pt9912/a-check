@@ -27,6 +27,22 @@ set -euo pipefail
 cd "$(dirname "$0")/.."
 
 DONE_DIR="docs/plan/planning/done"
+# Der Sensor greift AUCH in in-progress/ — aber nur bei Slices, deren
+# Closure-Notiz AUSGEFUELLT ist (slice-129, BEO-006 bei 3x).
+#
+# WARUM NICHT NUR done/: dort greift die Pruefung erst NACH dem `git mv`, und
+# der Workflow faehrt `make verify` in Schritt 8, den Wechsel in Schritt 9. Ein
+# Formfehler fiel damit zweimal in Folge erst auf, als der NAECHSTE Slice lief
+# (slice-121 ueber slice-122, slice-122 bei sich selbst). Der zweite Schaden ist
+# der teurere: wer nach dem `mv` am Inhalt arbeiten muss, erzeugt genau den
+# Commit, den AGENTS.md §3.3 verbietet -- der Lifecycle-Commit von slice-122
+# zeigt Rename 85 % statt 100 %.
+#
+# WARUM DER ZUSTAND DER NOTIZ UND NICHT DER ORT: ein Slice in in-progress/ ist
+# IN ARBEIT und traegt am Anfang den Vorlagen-Platzhalter. Ihn zu beanstanden
+# hiesse, jeden laufenden Slice rot zu melden. Erst wenn die Notiz ausgefuellt
+# ist, ist der Slice abschlussbereit -- genau der Moment vor Schritt 9.
+PROGRESS_DIR="docs/plan/planning/in-progress"
 # Stichtag (slice-102, Baseline v5.12.0 modul-05 §Offene Risiken werden bei
 # Closure aufgeloest). Aeltere Notizen entstanden, BEVOR die geschlossene
 # Dreier-Menge galt — slice-092 fuehrt etwa "Maintainer-Entscheidung" als
@@ -83,6 +99,14 @@ punkte_kleben() {  # Zeilen auf stdin
     }
     END { if (buf != "") print buf }
   '
+}
+
+
+# Traegt die Closure-Notiz noch den Vorlagen-Platzhalter? Dann ist der Slice in
+# Arbeit und wird in in-progress/ NICHT geprueft. Die Wendung stammt aus der
+# Ziel-Form; sie steht kursiv-eingeklammert direkt unter der Ueberschrift.
+notiz_offen() {  # $1 = Datei; 0 = Platzhalter (in Arbeit), 1 = ausgefuellt
+  closure_body "$1" | grep -q 'beim Abschluss ausfüllen'
 }
 
 check_file() {  # $1 = Datei; gibt Befunde auf stdout, Rueckgabe 1 bei Befund
@@ -143,6 +167,26 @@ self_test() {
       rm -rf "$tmp"; exit 2
     fi
   done
+  # NEUE BEDINGUNG (slice-129): der Ausloeser ist der ZUSTAND der Notiz, nicht
+  # das Verzeichnis. Beide Richtungen, sonst waere eine Erkennung, die alles
+  # fuer offen haelt, von einer korrekten nicht zu unterscheiden.
+  { echo '## 6. Risiken und offene Punkte'; echo '';
+    echo '- *A* — **Ausgang:** weiter offen, `BEO-001` im Register.'; echo '';
+    echo '## 7. Closure-Notiz'; echo '';
+    echo '_(beim Abschluss ausfüllen — genau **ein** solcher Abschnitt je Slice.)_'; } > "$tmp/slice-102-in-arbeit.md"
+  if ! notiz_offen "$tmp/slice-102-in-arbeit.md"; then
+    echo "verify-risiko-ausgaenge: Selbsttest FEHLGESCHLAGEN — Platzhalter nicht als 'in Arbeit' erkannt" >&2
+    rm -rf "$tmp"; exit 2
+  fi
+  { echo '## 6. Risiken und offene Punkte'; echo '';
+    echo '- *A* — **Ausgang:** weiter offen, `BEO-001` im Register.'; echo '';
+    echo '## 7. Closure-Notiz'; echo '';
+    echo '**Geliefert:** etwas. **Lerneintrag — Form: neuer Sensor.** X, weil Y.'; } > "$tmp/slice-102-fertig.md"
+  if notiz_offen "$tmp/slice-102-fertig.md"; then
+    echo "verify-risiko-ausgaenge: Selbsttest FEHLGESCHLAGEN — ausgefuellte Notiz als 'in Arbeit' erkannt (Pruefung wuerde still uebersprungen)" >&2
+    rm -rf "$tmp"; exit 2
+  fi
+
   # Grandfathering: derselbe Block unter dem Stichtag muss schweigen.
   cp "$tmp/slice-102-ohne.md" "$tmp/slice-091-alt.md"
   if ! check_file "$tmp/slice-091-alt.md" >/dev/null; then
@@ -156,8 +200,29 @@ self_test
 
 fail=0
 count=0
+offen=0
 for f in "$DONE_DIR"/slice-*.md; do
   [ -e "$f" ] || continue
+  count=$((count + 1))
+  if ! out="$(check_file "$f")"; then
+    printf '%s\n' "$out" >&2
+    fail=1
+  elif [ -n "$out" ]; then
+    printf '%s\n' "$out" >&2
+    fail=1
+  fi
+done
+
+# in-progress/: nur die abschlussbereiten. Ein Slice mit Platzhalter ist in
+# Arbeit und wird uebersprungen -- SICHTBAR, nicht still: die Schluss-Meldung
+# nennt die Zahl. Ein Ueberspringen, das niemand sieht, waere von einer
+# Pruefung, die nichts findet, nicht zu unterscheiden.
+for f in "$PROGRESS_DIR"/slice-*.md; do
+  [ -e "$f" ] || continue
+  if notiz_offen "$f"; then
+    offen=$((offen + 1))
+    continue
+  fi
   count=$((count + 1))
   if ! out="$(check_file "$f")"; then
     printf '%s\n' "$out" >&2
@@ -184,4 +249,6 @@ if [ "$count" -eq 0 ]; then
   echo "  nicht 'nichts zu pruefen'." >&2
   exit 1
 fi
-echo "verify-risiko-ausgaenge ok: $count Slice(s) in done/, jedes notierte Risiko mit Ausgang (Selbsttest gefeuert)."
+printf "verify-risiko-ausgaenge ok: %s Slice(s) geprueft (done/ + abschlussbereite in in-progress/), jedes notierte Risiko mit Ausgang" "$count"
+if [ "$offen" -gt 0 ]; then printf ", %s in Arbeit uebersprungen" "$offen"; fi
+echo " (Selbsttest gefeuert)."

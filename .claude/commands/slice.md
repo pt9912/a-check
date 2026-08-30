@@ -55,6 +55,11 @@ Eine ADR schärft die Spezifikation, **nie** das Lastenheft.
 8. Closure-Notiz schreiben — genau eine, ausgefüllt, mit mindestens einem von drei Inhalten.
    **Hat der Slice eine `AC-*`-Anforderung angelegt, steht ihre Kennung hier** (im Plan konnte
    sie nicht stehen — sie existierte noch nicht; `make doc-complete` prüft es).
+   **Die Risiko-Ausgänge werden ab hier geprüft, nicht erst nach dem `git mv`:**
+   `verify-risiko-ausgaenge` sieht `in-progress/` mit, sobald die Closure-Notiz
+   ausgefüllt ist (slice-129). Vorher fiel ein Formfehler erst beim **nächsten**
+   Slice auf — und zwang zu einer Inhaltsänderung nach dem `mv`, also zu einem
+   Verstoß gegen Hard Rule §3.3.
    (Lernsignal *mit Ursache* · konkretes Folge-Slice · beobachtbare Architektur-Aussage), dann:
 
    ```sh

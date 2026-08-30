@@ -21,19 +21,19 @@ Slice `make verify` fährt.
 
 ## 2. Definition of Done
 
-- [ ] `verify-risiko-ausgaenge` prüft **auch** `in-progress/` — aber nur Slices, deren
+- [x] `verify-risiko-ausgaenge` prüft **auch** `in-progress/` — aber nur Slices, deren
       Closure-Notiz **ausgefüllt** ist. Ein Slice mit Vorlagen-Platzhalter ist in Arbeit und darf
       nicht beanstandet werden; das ist die Bedingung, an der die Erweiterung hängt.
-- [ ] Der Selbsttest deckt **beide** Richtungen der neuen Bedingung: eine ausgefüllte Notiz in
+- [x] Der Selbsttest deckt **beide** Richtungen der neuen Bedingung: eine ausgefüllte Notiz in
       `in-progress/` mit fehlerhaftem Ausgang wird gemeldet, eine unausgefüllte **nicht**.
-- [ ] [`AGENTS.md`](../../../../AGENTS.md) §4 und
+- [x] [`AGENTS.md`](../../../../AGENTS.md) §4 und
       [`harness/README.md`](../../../../harness/README.md) §Sensors nennen den erweiterten
       Geltungsbereich; das Workflow-Skelett sagt, was das für Schritt 8 bedeutet.
 
-- [ ] `make gates` grün — Ausgabe in eine Datei, Exit-Code getrennt geprüft, nie in eine Pipe.
-- [ ] Closure-Notiz mit benanntem Lerneintrag geschrieben (§7).
-- [ ] Beobachtungs-Register fortgeschrieben.
-- [ ] Jedes Risiko aus §6 trägt genau einen Ausgang.
+- [x] `make gates` grün — Ausgabe in eine Datei, Exit-Code getrennt geprüft, nie in eine Pipe.
+- [x] Closure-Notiz mit benanntem Lerneintrag geschrieben (§7).
+- [x] Beobachtungs-Register fortgeschrieben.
+- [x] Jedes Risiko aus §6 trägt genau einen Ausgang.
 
 ## 3. Plan (vor Code)
 
@@ -94,17 +94,65 @@ Closure-Notiz **inhaltlich** prüfen — das bleibt beim Skill
 ## 6. Risiken und offene Punkte
 
 - *Die Platzhalter-Erkennung könnte eine ausgefüllte Notiz für unausgefüllt halten und still
-  durchlassen* — **Ausgang:** <bei Closure>
+  durchlassen* — **Ausgang:** gestrichen mit Begründung: der Selbsttest führt **beide**
+  Richtungen als eigene Fixtures — Platzhalter muss als „in Arbeit" erkannt werden, ausgefüllte
+  Notiz **nicht**. Die zweite ist die wichtigere: eine Erkennung, die alles für offen hält, würde
+  jede Prüfung still überspringen und wäre von einer korrekten nicht zu unterscheiden.
 - *Die Prüfung läuft ab jetzt zweimal über denselben Slice (in `in-progress/` und in `done/`)* —
-  **Ausgang:** <bei Closure>
+  **Ausgang:** gestrichen mit Begründung: das ist keine Doppelung, sondern der Zweck. Der erste
+  Lauf fängt den Fehler **vor** dem `mv`, der zweite hält den Bestand. Kosten: ein Dateilauf pro
+  Slice, einmalig.
 
 ## 7. Closure-Notiz
 
-_(beim Abschluss ausfüllen — genau **ein** solcher Abschnitt je Slice,
-[`AGENTS.md`](../../../../AGENTS.md) §5.)_
+**Geliefert:** `verify-risiko-ausgaenge` prüft `in-progress/` mit, sobald die Closure-Notiz dort
+ausgefüllt ist. Die Meldung nennt die übersprungenen sichtbar (*„1 in Arbeit übersprungen"*), der
+Selbsttest deckt beide Richtungen der neuen Bedingung, und
+[`AGENTS.md`](../../../../AGENTS.md) §4 sowie das Workflow-Skelett sagen, was das für Schritt 8
+bedeutet.
 
-**Lerneintrag — Form: <geschärfte Regel | neuer Sensor | benannte Spec-Lücke>**
+**Lerneintrag — Form: geschärfte Regel.** *Ein Sensor, dessen Geltungsbereich am **Ort** hängt,
+prüft zum falschen Zeitpunkt, wenn der Ort erst durch die Arbeit entsteht.* Der Sensor sah
+`done/` — und dorthin kommt ein Slice per `git mv`, also **nach** dem Moment, in dem seine
+Closure-Notiz fertig ist. Der richtige Auslöser ist nicht das Verzeichnis, sondern der **Zustand**
+der Notiz: sie trägt den Vorlagen-Platzhalter, solange gearbeitet wird, und ist ausgefüllt, wenn
+der Slice abschlussbereit ist. *Weil* dieser Zustand mechanisch erkennbar ist, konnte der Sensor
+den Ort verlassen; wäre er es nicht, wäre ein Guide die einzige Antwort gewesen.
 
+**Der zweite Schaden war der teurere, und er ist der eigentliche Grund.** Ein später Befund kostet
+eine Korrektur. Aber wer nach dem `mv` noch am Inhalt arbeiten muss, erzeugt genau den Commit, den
+[`AGENTS.md`](../../../../AGENTS.md) §3.3 verbietet — der Lifecycle-Commit von
+[slice-122](../done/slice-122-planning-modul-wirksam.md) zeigt **Rename 85 %** statt 100 %. Der
+Sensor zwang zu einem Regelbruch, um seinen eigenen Befund zu beheben. Das ist keine Unbequemlichkeit,
+sondern ein Widerspruch im Regelwerk selbst.
+
+**Drei beobachtbare Closure-Kriterien:**
+
+1. **Die Probe ist an diesem Slice selbst gefahren:** ein fehlerhafter Ausgang in seiner eigenen
+   §6 — bei ausgefüllter Notiz, noch in `in-progress/` — wurde gemeldet (Exit 1, Datei genannt);
+   zurückgebaut ⇒ Exit 0. Vor slice-129 wäre derselbe Fehler erst nach dem `mv` aufgefallen.
+2. Das Überspringen ist **sichtbar**: die Schluss-Meldung nennt die Zahl der in Arbeit
+   befindlichen Slices. Ein Übersprung, den niemand sieht, wäre von einer Prüfung, die nichts
+   findet, nicht zu unterscheiden — dieselbe Klasse wie
+   [`BEO-023`](../observations.md).
+3. Die Grundgesamtheits-Grenze zählt **beide** Verzeichnisse: 126 geprüft, 1 übersprungen.
+
+**Was offen bleibt, und warum es nicht mitwandert:** `doc-structure` (die Closure-**Struktur**)
+prüft weiter nur `done/`. Sein `files`-Glob kann die Bedingung „nur wenn ausgefüllt" nicht
+ausdrücken — ein Glob über `in-progress/` beanstandete jeden laufenden Slice. Diese Hälfte von
+[`BEO-006`](../observations.md) bleibt bestehen; sie wäre erst mit einer Modul-Fähigkeit lösbar,
+die es heute nicht gibt.
+
+**Offene Risiken und ihr Ausgang:** beide gestrichen mit Begründung.
+
+**Beobachtungs-Register:** [`BEO-006`](../observations.md) ist **verkörpert** für die
+Risiko-Ausgänge; der Zähler bleibt bei 3×, sein Stand nennt jetzt den Ort **und** die verbliebene
+Hälfte (`doc-structure`).
+
+**Folge-Slices:** keiner zwingend. Der nächste naheliegende Schritt ist
+[`BEO-026`](../observations.md) — das Modul `workflows` ist seit `v0.67.0` im Pin verfügbar und
+nie konfiguriert; seit [slice-128](../done/slice-128-dependabot-hebungskanal.md) erzeugt der
+Hebungs-Kanal genau die `uses:`-Hebungen, deren Form dort ungeprüft bleibt.
 ## 8. Sub-Area-Modus-Begründung
 
 **Vorgelagert — Sub-Area-Wahl prüfen:** berührt wird die **Gate-/Werkzeug-Schicht** (`tools/`) und
