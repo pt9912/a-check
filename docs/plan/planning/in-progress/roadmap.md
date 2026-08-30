@@ -18,7 +18,7 @@ Welle-Datei, nicht hier.
 
 - *(keine offene Welle-Datei)*
 
-In Arbeit: [slice-119](../in-progress/slice-119-cr-text-guide.md) — Guide für CR-Texte.
+Nichts in Arbeit.
 
 **Offene Slices ohne Welle** — sie brauchen keine, ihre Trigger stehen in ihrem eigenen `§0`:
 
