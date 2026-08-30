@@ -133,7 +133,7 @@ im Register.
 Neu ist nichts: der zweite Risiko-Ausgang („das Werkzeug ersetzt die Aufmerksamkeit nicht") ist
 dieselbe Beobachtung, nicht eine weitere.
 
-**Folge-Slices:** [slice-117](../open/slice-117-handbuch-verweis-cli.md) (Handbuch-Verweis) ist
+**Folge-Slices:** [slice-117](../in-progress/slice-117-handbuch-verweis-cli.md) (Handbuch-Verweis) ist
 startbar; der Guide für CR-Texte aus [`BEO-022`](../observations.md) steht weiter aus.
 ## 8. Sub-Area-Modus-Begründung
 
