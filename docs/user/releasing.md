@@ -82,6 +82,23 @@ jedem `v*`-Tag-Push:
    („Status", „aktuelles Release", Handbuch-Software-Version) verlinken auf
    `version.md#aktuell` und brauchen **keinen** Bump.
 
+## Vorbedingungen (Repository-Schalter)
+
+Zwei Dinge dieses Betriebs leben **nicht im Repo**, sondern in der
+GitHub-Oberfläche. Sie stehen hier, weil ein Fork oder ein neu aufgesetztes
+Repository sie erneut setzen muss — und weil ihr Fehlen **still** wirkt:
+
+| Schalter | Ohne ihn | Wo |
+|---|---|---|
+| **Dependabot-Alerts** | keine Meldung über bekannte Schwachstellen in Abhängigkeiten | *Settings → Code security* |
+| **`dependabot_security_updates`** | ein CVE **ohne** neues Upstream-Release öffnet **keinen** PR — der Kanal aus [ADR-0038](../plan/adr/0038-dependabot-als-hebungskanal.md) erreicht die Fundklasse von `make image-scan` dann nur zur Hälfte | ebenda |
+
+**Warum das hier steht und nicht nur in der ADR:** eine Zusage, die an einem
+Schalter hängt, den das Repo nicht sieht, ist von einer erfüllten nicht zu
+unterscheiden. `make image-scan` meldet weiter, was im publizierten Image
+steckt; dass daraus **automatisch** ein PR wird, sagt kein Gate. Wer das Repo
+übernimmt, prüft es einmal — und trägt das Ergebnis in den Freigabe-Eintrag.
+
 ## Freigabe-Checkliste
 
 Produktionsreife heißt **belegte** Betriebsfähigkeit, nicht „gebaut". Darum gilt hier:

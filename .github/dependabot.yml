@@ -1,0 +1,86 @@
+# Dependabot als HEBENDER Kanal (ADR-0038).
+#
+# ZUSAGE: was `make image-scan` meldet, bekommt hier einen Weg, der nicht daran
+# haengt, dass jemand hinsieht. Der Sensor (ADR-0037) fand beim ersten Lauf
+# neun behebbare HIGH; gehoben hat sie ein Mensch, in zwei Slices an einem Tag.
+# Das traegt einmal, nicht als Verfahren.
+#
+# KOPPLUNG, und sie steht VOR der Konfiguration: `make trace-check` verlangt in
+# der PR-CI von JEDER Commit-Message eine AC-/ADR-/MR-/slice-Kennung
+# (AGENTS.md §5). Dependabots Botschaften tragen keine. GEMESSEN gegen das
+# echte Gate:
+#   "build(deps): bump gopkg.in/yaml.v3 from 3.0.1 to 3.0.2"   -> Exit 2,
+#                                                                 commit-untraceable
+#   dieselbe Zeile mit [ADR-0038] im Praefix                   -> Exit 0
+# Deshalb traegt jeder `commit-message.prefix` unten die Kennung DIESES
+# Entscheids -- die ADR, die Dependabot erlaubt, ist der ehrliche Anker fuer die
+# Commits, die daraus entstehen. `commits.exempt-pattern` in .d-check.yml bleibt
+# UNVERAENDERT: die Loesung macht die neue Commit-Klasse gate-KONFORM, statt sie
+# auszunehmen.
+#
+# KOPPLUNG zwei, und sie ist KEINE Datei: der Kanal erreicht die Fundklasse des
+# Sensors nur zur Haelfte, wenn die Repository-Schalter aus sind --
+# `dependabot_security_updates` und die Dependabot-Alerts. Ohne sie oeffnet ein
+# CVE OHNE neues Upstream-Release keinen PR. Sie leben in der
+# GitHub-Oberflaeche, nicht im Repo; siehe docs/user/releasing.md
+# §Vorbedingungen.
+#
+# ABGRENZUNG: kein Automerge. Dependabot oeffnet PRs; geprueft wird mit
+# `make ci`, und der Merge bleibt ein Akt -- dieselbe Linie wie bei jeder
+# Digest-Hebung dieses Repos (ADR-0030).
+version: 2
+
+updates:
+  # Module. Der Zuschnitt ist klein und das aendert die Form: go.mod fuehrt EIN
+  # direktes Require und KEIN indirektes. Deshalb steht hier KEIN
+  # `allow: dependency-type: all` -- im Schwester-Repo ist das die Bedingung,
+  # unter der der Eintrag ueberhaupt wirkt (dreizehn von vierzehn Befunden lagen
+  # dort indirekt); hier waere es eine Zeile ohne Gegenstand.
+  #
+  # Ebenso kein `groups`: bei einem Require gibt es nichts zu buendeln, und eine
+  # Gruppe ohne Mitglieder ist eine Zusage, die nicht wirkt.
+  - package-ecosystem: gomod
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+      time: "05:00"
+      timezone: Europe/Berlin
+    open-pull-requests-limit: 5
+    commit-message:
+      # Die Kennung ist Pflicht, nicht Zierde -- siehe Kopf.
+      prefix: build(deps) [ADR-0038]
+
+  # GitHub Actions. Fremde Actions laufen mit den Zugangsdaten dieses
+  # Repositories; ihre Aktualisierungen sind sicherheitsrelevant.
+  #
+  # ZWEI externe `uses:` verteilt ueber drei Workflows (actions/checkout,
+  # docker/login-action), beide digest-gepinnt. Die Form BLEIBT Pflicht: ein
+  # Dependabot-PR, der einen Tag statt eines SHA setzte, waere ein Rueckschritt.
+  # HEUTE PRUEFT DAS KEIN GATE (BEO-026) -- dieser Kanal macht die Luecke
+  # praktisch relevanter, weil er solche Hebungen erst erzeugt.
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+      time: "05:00"
+      timezone: Europe/Berlin
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: build(ci) [ADR-0038]
+
+# BEWUSST NICHT AUFGENOMMEN -- `docker`.
+#
+# Ein Digest-Hoist ist ein BEWUSSTER COMMIT, kein Auto-Update (ADR-0030). Die
+# beiden Hebungen vom 2026-08-30 -- Toolchain und Lint-Pin -- liefen genau so:
+# Digest aus zwei Quellen belegt, Gates gelesen, Wirkung gemessen.
+#
+# Der Trivy-Pin (tools/image-scan.sh), der Schwester-Tool-Pin (d-check.mk) und
+# der Baseline-Pin fallen ohnehin heraus: sie leben in keinem Manifest, das
+# Dependabot liest.
+#
+# KEINE `labels:` -- absichtlich. Sind sie gesetzt, ERSETZEN sie die
+# Default-Labels, und nicht im Repo existierende werden still ignoriert; das
+# Ergebnis waeren PRs ganz ohne Label. So legt Dependabot sein `dependencies`
+# selbst an.

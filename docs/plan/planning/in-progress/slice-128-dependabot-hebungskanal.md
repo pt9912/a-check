@@ -22,18 +22,18 @@ hinsieht.
 
 ## 2. Definition of Done
 
-- [ ] `.github/dependabot.yml` deckt beide Ökosysteme dieses Repos — Module und Actions — mit
+- [x] `.github/dependabot.yml` deckt beide Ökosysteme dieses Repos — Module und Actions — mit
       `commit-message.prefix`, der eine Traceability-Kennung trägt (siehe §3).
-- [ ] Eine ADR begründet **zwei** Entscheidungen: warum der Kanal existiert (der Sensor meldet,
+- [x] Eine ADR begründet **zwei** Entscheidungen: warum der Kanal existiert (der Sensor meldet,
       hebt aber nicht) und warum **kein** Automerge. Sie steht im ADR-Index.
-- [ ] Die **Betriebs-Kopplung** ist dokumentiert, nicht nur die Datei: ohne die Repository-Schalter
+- [x] Die **Betriebs-Kopplung** ist dokumentiert, nicht nur die Datei: ohne die Repository-Schalter
       (`dependabot_security_updates`, Alerts) öffnet ein CVE **ohne** neues Upstream-Release
       keinen PR — der Kanal erreicht die Fundklasse des Sensors dann nur zur Hälfte.
 
-- [ ] `make gates` grün — Ausgabe in eine Datei, Exit-Code getrennt geprüft, nie in eine Pipe.
-- [ ] Closure-Notiz mit benanntem Lerneintrag geschrieben (§7).
-- [ ] Beobachtungs-Register fortgeschrieben.
-- [ ] Jedes Risiko aus §6 trägt genau einen Ausgang.
+- [x] `make gates` grün — Ausgabe in eine Datei, Exit-Code getrennt geprüft, nie in eine Pipe.
+- [x] Closure-Notiz mit benanntem Lerneintrag geschrieben (§7).
+- [x] Beobachtungs-Register fortgeschrieben.
+- [x] Jedes Risiko aus §6 trägt genau einen Ausgang.
 
 ## 3. Plan (vor Code)
 
@@ -109,20 +109,63 @@ sieht, wäre eine Harness-Lüge.
 
 ## 6. Risiken und offene Punkte
 
-- *Der Präfix könnte an `commit-scope-check` scheitern statt an `trace-check`* — die Scope-Regel
-  gilt nur für `(planning)`, aber gemessen ist das nicht. **Ausgang:** <bei Closure>
-- *Ein wöchentlicher PR-Strom ohne Merge-Disziplin wird zum Rauschen, das man wegklickt* —
-  dieselbe Klasse wie ein dauerhaft rotes Abzeichen. **Ausgang:** <bei Closure>
-- *Der Kanal deckt die Fundklasse des Sensors nur, wenn die Repository-Schalter an sind — und das
-  ist außerhalb dieses Repos nicht prüfbar* — **Ausgang:** <bei Closure>
+- *Der Präfix könnte an `commit-scope-check` scheitern statt an `trace-check`* — **Ausgang:**
+  gestrichen mit Begründung: **gemessen**, beide Formen sind grün. Die Scope-Regel gilt nur für
+  `(planning)`, und `build(deps)`/`build(ci)` fallen nicht darunter — das war zu erwarten, aber
+  ungeprüft.
+- *Ein wöchentlicher PR-Strom ohne Merge-Disziplin wird zum Rauschen* — **Ausgang:** weiter offen
+  im **Beobachtungs-Register** als Teil von `BEO-030`. Das Limit von fünf offenen PRs je Ökosystem
+  ist eine Gegenmaßnahme, keine Lösung; ob der Strom trägt, sagt erst der Betrieb.
+- *Der Kanal deckt die Fundklasse des Sensors nur bei gesetzten Repository-Schaltern, und das ist
+  außerhalb dieses Repos nicht prüfbar* — **Ausgang:** weiter offen im **Beobachtungs-Register**
+  (`BEO-030`), dokumentiert in [`releasing.md`](../../../../docs/user/releasing.md)
+  §Vorbedingungen.
 
 ## 7. Closure-Notiz
 
-_(beim Abschluss ausfüllen — genau **ein** solcher Abschnitt je Slice,
-[`AGENTS.md`](../../../../AGENTS.md) §5.)_
+**Geliefert:** `.github/dependabot.yml` für beide Ökosysteme dieses Repos,
+[ADR-0038](../../adr/0038-dependabot-als-hebungskanal.md) für die zwei Entscheidungen, und die
+Betriebs-Vorbedingungen als eigener Abschnitt in
+[`releasing.md`](../../../../docs/user/releasing.md).
 
-**Lerneintrag — Form: <geschärfte Regel | neuer Sensor | benannte Spec-Lücke>**
+**Lerneintrag — Form: geschärfte Regel.** *Eine neue Commit-Klasse wird gate-**konform** gemacht,
+nicht ausgenommen — die Ausnahme gilt weiter, wenn der Anlass längst weg ist.* Der bequeme Weg lag
+offen: `commits.exempt-pattern` in [`.d-check.yml`](../../../../.d-check.yml) um Dependabots
+Präfix erweitern. Er wäre kürzer gewesen und hätte genau die richtige Klasse getroffen. Er nimmt
+aber eine Zusage **zurück**, statt sie zu erfüllen: die Traceability-Pflicht sagt, dass jeder
+Commit auf eine Entscheidung zeigt — und ein Dependabot-Commit tut das, nämlich auf die ADR, die
+den Kanal erlaubt. *Weil* der Präfix diese ADR nennt, ist er kein Trick, sondern die wahre Aussage.
+Die Ausnahme hätte behauptet, es gäbe keine Entscheidung dahinter.
 
+**Drei beobachtbare Closure-Kriterien:**
+
+1. Die Kopplung ist in **beide** Richtungen gegen das echte Gate gemessen, vor der Konfiguration:
+   `build(deps): bump …` ⇒ **Exit 2**, `commit-untraceable`; dieselbe Zeile mit der Kennung von [ADR-0038](../../adr/0038-dependabot-als-hebungskanal.md) ⇒
+   **Exit 0**. Ohne die rote Hälfte wäre ein Präfix, der nichts bewirkt, von einem wirksamen nicht
+   zu unterscheiden.
+2. `commits.exempt-pattern` ist **unverändert** — nachprüfbar am Diff dieses Slice.
+3. Der Zuschnitt ist gemessen und die Konfiguration folgt ihm: **kein**
+   `allow: dependency-type: all` (es gibt kein indirektes Require) und **kein** `groups` (bei einem
+   Require gibt es nichts zu bündeln). Beides steht im Schwester-Repo und wäre hier eine Zeile ohne
+   Gegenstand — kopiert statt geprüft.
+
+**Was der Kanal nicht kann, und wo das steht:** ohne die Repository-Schalter öffnet ein CVE **ohne**
+neues Upstream-Release keinen PR. Die Schalter leben in der GitHub-Oberfläche; dieser Slice kann sie
+nennen und ihre Wirkung erklären, setzen muss sie der Maintainer. Ein Slice, der eine Zusage über
+einen Schalter behauptet, den er nicht sieht, wäre eine Harness-Lüge — deshalb steht die
+Vorbedingung in [`releasing.md`](../../../../docs/user/releasing.md) und nicht als Häkchen hier.
+
+**Offene Risiken und ihr Ausgang:** der erste gestrichen mit Begründung (gemessen), die anderen
+beiden weiter offen im Register.
+
+**Beobachtungs-Register:** `BEO-030` neu angelegt (CI-Schicht, 1×, Beleg slice-128): die Wirkung
+dieses Kanals hängt an zwei Schaltern außerhalb des Repos, und kein Gate kann sagen, ob sie stehen.
+
+**Folge-Slices:** [slice-127](../open/slice-127-dockerhub-spiegel.md) (Docker-Hub-Spiegel) — sein
+erster Trigger, das Release, ist mit **v0.18.0** eingetreten; offen bleibt der zweite (Hub-Repo und
+Token-Scope). Dazu [`BEO-026`](../observations.md): der Kanal **erzeugt** künftige
+`uses:`-Hebungen, deren Form heute kein Gate prüft — die Lücke wird dadurch praktisch relevanter,
+nicht kleiner.
 ## 8. Sub-Area-Modus-Begründung
 
 **Vorgelagert — Sub-Area-Wahl prüfen:** berührt werden die **CI-Schicht** (`.github/`), die
