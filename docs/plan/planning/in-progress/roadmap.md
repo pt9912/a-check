@@ -18,13 +18,12 @@ Welle-Datei, nicht hier.
 
 - *(keine offene Welle-Datei)*
 
-Nichts in Arbeit.
+In Arbeit: [slice-124](../in-progress/slice-124-image-scan-cve.md) — CVE-Scan gegen das publizierte Image.
 
 **Offene Slices ohne Welle** — sie brauchen keine, ihre Trigger stehen in ihrem eigenen `§0`:
 
 | Slice | Trigger | Zustand |
 |---|---|---|
-| [slice-124](../open/slice-124-image-scan-cve.md) | eingetreten — Maintainer-Auftrag; das Image existiert (v0.17.0) | **startbar** — der Sensor vor dem Hebungs-Kanal |
 | [slice-013](../open/slice-013-driving-driven-vertiefung.md), [slice-045](../open/slice-045-intern-extern-dateimenge.md) | siehe *Nächste Wellen* | vertagt, Evidenz gemessen und zu klein |
 
 Ein Slice, der auf ein Fremdrepo wartet, gehört in **keine** Welle — er würde ihren
