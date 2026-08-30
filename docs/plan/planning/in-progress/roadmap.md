@@ -24,6 +24,7 @@ Nichts in Arbeit.
 
 | Slice | Trigger | Zustand |
 |---|---|---|
+| [slice-125](../open/slice-125-go-toolchain-1-27.md) | eingetreten — Risiko-Ausgang aus [slice-124](../done/slice-124-image-scan-cve.md): neun behebbare HIGH sind gemessen | **startbar** — die Toolchain ist verfügbar, Digest zweifach belegt |
 | [slice-013](../open/slice-013-driving-driven-vertiefung.md), [slice-045](../open/slice-045-intern-extern-dateimenge.md) | siehe *Nächste Wellen* | vertagt, Evidenz gemessen und zu klein |
 
 Ein Slice, der auf ein Fremdrepo wartet, gehört in **keine** Welle — er würde ihren
