@@ -18,7 +18,7 @@ Welle-Datei, nicht hier.
 
 - *(keine offene Welle-Datei)*
 
-In Arbeit: [slice-121](../in-progress/slice-121-port-richtung-inbound-outbound.md) — Port-Richtung inbound/outbound.
+Nichts in Arbeit.
 
 **Offene Slices ohne Welle** — sie brauchen keine, ihre Trigger stehen in ihrem eigenen `§0`:
 
