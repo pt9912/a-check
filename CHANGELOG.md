@@ -6,18 +6,81 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
+### Changed — BREAKING
+
+- **Die Richtungs-Dimension trägt je Rolle ihr eigenes Vokabular** (`AC-FA-RULE-008` neu gefasst,
+  Lastenheft 0.25.0, [ADR-0036](docs/plan/adr/0036-port-richtung-inbound-outbound.md) supersedes
+  ADR-0012; slice-121). An `role: port` gilt `direction: inbound|outbound`, an `role: adapter`
+  `driving|driven`. Ein Port *treibt* nichts, er wird benutzt; ein Adapter ist nicht *eingehend*,
+  er treibt oder wird getrieben. Bisher galt `driving`/`driven` für **beide**, obwohl die
+  Beschreibung die Äquivalenz („`driving` = primär/inbound") selbst nannte und nur die eine Hälfte
+  als Wert zuließ. `port-direction-mismatch` prüft dadurch eine **Paarung** (`driving`↔`inbound`,
+  `driven`↔`outbound`) statt einer String-Gleichheit; die Regel-Aussage ist unverändert.
+  **Migration:** eine Zeile je Port-Schicht. Die falsche Vokabel an einer Rolle ist **Exit 2** mit
+  einer Meldung, die Schicht, Wert und die für **diese** Rolle gültige Menge nennt — kein still
+  akzeptiertes Alias, weil a-check kein Warn-Level kennt und die alte Schreibweise sonst unbemerkt
+  bliebe. **Ebenfalls neu abgewiesen:** eine Richtung an einer Schicht **ohne** Port-/Adapter-Rolle
+  (auch aus der Namens-Inferenz); sie lud bis 0.24.0 stillschweigend, war aber wirkungslos.
+
+### Added
+
+- **`a-check --help` gibt eine vollständige Usage-Ausgabe** (`AC-FA-CLI-003`, Lastenheft 0.24.0;
+  slice-117): Kurzbeschreibung, Aufruf-Syntax mit Pfad-Parameter, Options-Liste,
+  Konfigurations-Hinweis auf `.a-check.yml` und die **URL des Benutzerhandbuchs**. Dieselbe URL
+  trägt der Kopfkommentar des per `--print-mk` erzeugten Fragments — es reist in ein **fremdes**
+  Repo, und sein Kopf ist der einzige Ort, an dem ein Zeiger auf die Dokumentation dauerhaft
+  mitfährt. **Zugesichert ist die Anwesenheit der Bestandteile, nicht ihr Wortlaut.** Die URL zeigt
+  **tag-frei** auf den Hauptzweig: das Binary trägt keine eingebackene Version und könnte einen
+  versionierten Link nur mit dem Stand des Vorgänger-Release füllen — dieselbe Mechanik, die
+  [ADR-0030](docs/plan/adr/0030-kein-digest-im-generierten-fragment.md) für den Image-Digest
+  entschied. Vorher gab `--help` nur Go's Default aus: `Usage of a-check:` plus drei Flags.
+
+- **CVE-Scan gegen das publizierte Image** (`make image-scan`,
+  [ADR-0037](docs/plan/adr/0037-cve-scan-gegen-das-publizierte-image.md); slice-124). Trivy
+  digest-gepinnt gegen `ghcr.io/pt9912/a-check:latest`, mit netzlos prüfbarer Auswertung
+  (`--selftest`) und einem zeitgesteuerten Workflow. **a-checks erstes Netz-Gate** — und darum
+  ausdrücklich **nicht** im `gates`-Aggregat: der Scan braucht Netz für die Vuln-Datenbank, und
+  das ist hier der **Zweck**, nicht ein Zugeständnis; `gates` bleibt hermetisch. Über rot
+  entscheiden **nur behebbare** CRITICAL/HIGH — ein Nachtlauf, der an unbehebbaren
+  Basis-Image-CVEs rot wird, ist in zwei Wochen ein weggeklicktes Abzeichen. Der Erstlauf fand
+  **neun** behebbare HIGH im publizierten Image, während `make gates` über denselben Baum grün war.
+
+### Fixed
+
+- **Neun bekannte HIGH-Schwachstellen der Go-`stdlib` behoben** (slice-125). Die Toolchain steht
+  auf `1.27.0` (Tag **und** Basis-Image-Digest gemeinsam gehoben); das neu gebaute Image trägt
+  `stdlib v1.27.0` und **null** behebbare CRITICAL/HIGH — gegenüber `v1.26.4` mit neun. Gemessen
+  mit demselben Trivy-Pin, gegen das exportierte Image (der Scanner liest sonst aus der Registry
+  und kann lokale Bilder nicht sehen).
+
 ### Changed
 
-- **doc-check-Tooling (`d-check.mk`): Pin des Schwester-Tools `d-check` von **v0.51.1** auf
-  **v0.67.0** gehoben (`@sha256:c6c1465b…`, via `DCHECK_DIGEST`, Digest aus zwei Quellen
-  bestätigt; slice-115).** Das Fragment ist **neu erzeugt**, nicht nur umgepinnt: die sechzehn
-  Releases bringen zwei neue Module (`structure`, `workflows`), und jedes Einzelmodul-Target
-  schaltet sie jetzt ausdrücklich ab — ein reiner Pin-Tausch hätte sie in `doc-immutable`,
-  `doc-commits`, `doc-planning`, `doc-tracked` und `doc-targets` still mitlaufen lassen. Neu ist
-  das Target `make doc-structure` (Modul `structure`, DC-FA-STRUCT-001); es ist in beiden
-  Doku-Tabellen deklariert, hat aber **keinen Konfigurationsblock** in `.d-check.yml` und steht
-  **nicht** im `gates`-Aggregat. Dev-Tooling, netzlos, read-only; der Befundstand über den
-  unveränderten Bestand ist identisch zur vorigen Fassung (229 Dateien, 0 Befunde).
+- **Lint-Pin auf `v2.13.2`** (slice-126), Version und Digest gemeinsam gehoben; `make lint` läuft
+  über den unveränderten Bestand grün.
+
+- **doc-check-Tooling (`d-check.mk`): Pin des Schwester-Tools von `v0.51.1` auf `v0.69.0`**
+  (slice-115, slice-080, slice-120). Das Fragment ist bei jedem Schritt **neu erzeugt**, nicht
+  umgepinnt: die Einzelmodul-Targets führen eine geschlossene Verbots-Liste gegen eine **offene**
+  Modul-Menge, und jedes stromaufwärts hinzugekommene Modul liefe sonst still in fünf Targets mit,
+  die per Vertrag genau eines fahren. Dev-Tooling, netzlos, read-only.
+
+### Harness (nicht anwender-sichtbar)
+
+Diese Einträge berühren keinen Vertrag des Werkzeugs, ändern aber, woran seine Entwicklung
+gemessen wird — sie stehen hier, damit ein Leser der Historie sie nicht im `git log` suchen muss.
+
+- **Die vier Eigenbau-Sensoren aus slice-080 sind vollständig durch `d-check`-Module abgelöst**
+  (slice-080, slice-120): `verify-slice-form`, `verify-slice-links`, `verify-ac-form` und die
+  strukturelle Hälfte von `verify-closure-notes` — zusammen **653 Zeilen** Shell, jede mit
+  Paritäts-Mutations-Beleg in beide Richtungen vor dem Entfernen. Was lokal blieb, heißt jetzt
+  nach dem, was es tut (`verify-risiko-ausgaenge`).
+- **`make slice-mv`** (slice-118): der Lifecycle-Wechsel zieht die Verweise **auf** die bewegte
+  Datei selbst nach — repo-weit, in beiden vorkommenden Formen.
+- **`doc-planning` und `doc-complete` prüfen wieder etwas** (slice-122, slice-123): das erste lief
+  ohne Konfigurationsblock und meldete grün, das zweite war advisory und lief nie. Beide hängen
+  jetzt in einem Aggregat.
+- **Skill `cr-text-reviewer`** (slice-119): Belegbarkeit eines CR-Textes, bevor er ein fremdes
+  Repo erreicht.
 
 ## [0.17.0] - 2026-08-09
 
