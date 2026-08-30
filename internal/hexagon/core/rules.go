@@ -183,7 +183,7 @@ func EffectiveRole(l Layer) string {
 	if l.Role != "" {
 		return l.Role
 	}
-	return inferRole(l.Name)
+	return InferRole(l.Name)
 }
 
 // roleOf returns a layer's role by name: the explicit role: (AC-FA-RULE-006), else
@@ -224,8 +224,11 @@ func layerByName(name string, m Model) Layer {
 	return Layer{}
 }
 
-// inferRole maps the conventional layer names to roles (Rückwärtskompatibilität).
-func inferRole(name string) string {
+// InferRole maps the conventional layer names to roles (Rückwärtskompatibilität).
+// Exported since ADR-0036: the config adapter validates the direction against
+// the vocabulary of the EFFECTIVE role and must not duplicate this mapping —
+// two copies of a naming convention drift, and the drift would be silent.
+func InferRole(name string) string {
 	switch name {
 	case "core":
 		return "domain"
@@ -267,15 +270,38 @@ func wrongDirection(m Model, f FileImports, tl string) bool {
 	return tl != f.Layer && !edgeAllowed(f.Layer, tl, m)
 }
 
+// portFor nennt die Port-Richtung, die zu einer Adapter-Richtung gehoert
+// (ADR-0036). DIE EINE PAARUNGS-TABELLE — sie ist der Grund, warum die Regel
+// keine String-Gleichheit mehr sein kann: die beiden Seiten fuehren
+// verschiedene Vokabulare (ein Port TREIBT nichts, er wird benutzt). Als
+// Funktion statt als Paket-Variable (Lint-Profil, ADR-0005).
+func portFor(adapterDir string) string {
+	switch adapterDir {
+	case "driving":
+		return "inbound"
+	case "driven":
+		return "outbound"
+	default:
+		return ""
+	}
+}
+
 // directionMismatch reports an adapter->port import across opposite directions
 // when BOTH sides declare one — categorical and edge-independent (AC-FA-RULE-008,
 // it sits before wrong-direction in ruleFor). The caller guarantees src role
 // adapter and target role port.
+//
+// Geprueft wird die PAARUNG, nicht die Gleichheit: driving gehoert zu inbound,
+// driven zu outbound. Eine unbekannte Adapter-Richtung kann kein Paar bilden und
+// meldet — sie kaeme nur durch, wenn die Validierung sie durchgelassen haette,
+// und dann ist das Melden richtig.
 func directionMismatch(m Model, srcLayer, tgtLayer string) bool {
 	sd, td := dirOf(srcLayer, m), dirOf(tgtLayer, m)
-	return sd != "" && td != "" && sd != td
+	if sd == "" || td == "" {
+		return false
+	}
+	return portFor(sd) != td
 }
-
 // sortFindings imposes the TOTAL order of SPEC-DET-001: path, line, rule, msg.
 // The message is the last key on purpose — one line can carry several findings
 // of the same rule (two constructs / two forbidden_constructs patterns), and

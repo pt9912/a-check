@@ -459,19 +459,74 @@ func decodeLayerObject(node yaml.Node, name, path string) ([]string, string, str
 	if !validRole(yl.Role) {
 		return nil, "", "", fmt.Errorf("%s: Schicht %q: ungültige role %q (domain|app|port|adapter)", path, name, yl.Role)
 	}
-	if !validDirection(yl.Direction) {
-		return nil, "", "", fmt.Errorf("%s: Schicht %q: ungültige direction %q (driving|driven)", path, name, yl.Direction)
+	// Die Richtung wird gegen das Vokabular der EFFEKTIVEN Rolle geprueft:
+	// fehlt `role`, gilt die Namens-Inferenz (AC-FA-RULE-006). Sonst kaeme
+	// `ports: {globs: [...], direction: driving}` ohne explizite Rolle durch —
+	// genau die Schreibweise, die ADR-0036 abschafft.
+	effRole := yl.Role
+	if effRole == "" {
+		effRole = core.InferRole(name)
+	}
+	if !validDirectionFor(effRole, yl.Direction) {
+		return nil, "", "", fmt.Errorf("%s: Schicht %q: ungültige direction %q an role %q (%s)",
+			path, name, yl.Direction, effRole, dirVocabList(effRole))
 	}
 	return yl.Globs, yl.Role, yl.Direction, nil
 }
 
 func knownLayerKey(k string) bool { return k == "globs" || k == "role" || k == "direction" }
 
+// dirVocab nennt die fuer eine Rolle gueltige Richtungs-Menge (AC-FA-RULE-008,
+// ADR-0036). DIE EINE TABELLE der Config-Seite: sie speist die Validierung UND
+// die Fehlermeldung. Als Funktion statt als Paket-Variable, weil das Lint-Profil
+// globale Zustandstraeger verbietet (ADR-0005) — und eine Suppression waere
+// nach AGENTS §3.2 ohnehin keine Option.
+//
+// Ein Port TREIBT nichts, er wird benutzt: seine Richtung sagt, wohin die
+// Schnittstelle zeigt (inbound|outbound). Ein Adapter ist nicht EINGEHEND,
+// er treibt oder wird getrieben (driving|driven).
+func dirVocab(role string) []string {
+	switch role {
+	case "port":
+		return []string{"inbound", "outbound"}
+	case "adapter":
+		return []string{"driving", "driven"}
+	default:
+		return nil
+	}
+}
+
+// validDirectionFor prueft die Richtung gegen das Vokabular IHRER Rolle. Die
+// leere Richtung ist immer gueltig (die Dimension ist opt-in). Eine Richtung an
+// einer Rolle ohne Vokabular ist ein Fehler: sie waere wirkungslos und sagte
+// etwas, das keine Regel liest (ADR-0036).
+func validDirectionFor(role, d string) bool {
+	if d == "" {
+		return true
+	}
+	for _, v := range dirVocab(role) {
+		if d == v {
+			return true
+		}
+	}
+	return false
+}
+
+// dirVocabList rendert die gueltige Menge fuer die Fehlermeldung. Sie MUSS
+// rollen-spezifisch sein — eine feste Menge zu nennen schickte den Leser auf
+// die falsche Haelfte (ADR-0036 §Konsequenzen).
+func dirVocabList(role string) string {
+	v := dirVocab(role)
+	if v == nil {
+		return "keine — nur an role: port oder role: adapter"
+	}
+	return strings.Join(v, "|")
+}
+
 func validRole(r string) bool {
 	return r == "" || r == "domain" || r == "app" || r == "port" || r == "adapter"
 }
 
-func validDirection(d string) bool { return d == "" || d == "driving" || d == "driven" }
 
 func sortedKeys[V any](m map[string]V) []string {
 	ks := make([]string, 0, len(m))

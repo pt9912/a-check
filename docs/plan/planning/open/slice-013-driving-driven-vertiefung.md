@@ -4,7 +4,7 @@
 Nachmessung §2a): **Teil B (Port→Port-Richtungsregel) ist verworfen**, **Teil A (Auto-Inferenz)
 ist vertagt**. Der Slice bleibt als Entwurf für Teil A offen; die Trigger stehen in §0.
 **Bezug:** Carry-forward aus [slice-012 §7](../done/slice-012-driving-driven-layerof.md);
-verfeinert [AC-FA-RULE-008](../../../../spec/lastenheft.md#ac-fa-rule-008--driving-driven-port-richtung-regel-port-direction-mismatch);
+verfeinert [AC-FA-RULE-008](../../../../spec/lastenheft.md#ac-fa-rule-008--richtungs-dimension-regel-port-direction-mismatch);
 löst die in [ADR-0012](../../adr/0012-driving-driven-richtung-orthogonale-dimension.md)
 als *out-of-scope* gestellten Richtungs-Inkremente. [Roadmap](../in-progress/roadmap.md).
 **Evidenz-Kandidat:** externes Repo `x-wal` (lokal) — Kotlin-Hexagon mit `adapters/driving`+`adapters/driven` und `port/input`+`port/output`; **noch ohne `.a-check.yml`** (struktureller Kandidat, kein aktiver Konsument).
@@ -139,7 +139,7 @@ Substring-Grammatik träfe sie alle. Drei Dinge stehen dagegen:
    `driving`/`driven`. Die empfohlene Vokabel greift dort **nicht**; sie zu erweitern heißt,
    fremde Begriffe zu interpretieren — genau das, was Entscheid B ausschließen wollte.
 2. **Keine Wirkung:** belief-agent deklariert **keine Port-Schicht**. `direction` steuert allein
-   `port-direction-mismatch` ([AC-FA-RULE-008](../../../../spec/lastenheft.md#ac-fa-rule-008--driving-driven-port-richtung-regel-port-direction-mismatch)),
+   `port-direction-mismatch` ([AC-FA-RULE-008](../../../../spec/lastenheft.md#ac-fa-rule-008--richtungs-dimension-regel-port-direction-mismatch)),
    und die Regel verlangt **beide** Seiten gesetzt. Die Inferenz erzeugte dort 16 Richtungen
    **ohne jede Prüfwirkung** — Metadaten, die nichts gaten.
 3. **Sie wäre nicht rückwärtskompatibel-neutral** (neuer Befund, im Entwurf nicht bedacht):
@@ -211,7 +211,7 @@ Supersede-Präzedenzen).
 
 **Rückgrat = Teil A (Auto-Inferenz).** Teil-B-Schritte sind *konditional* hinter Entscheid 0.
 
-1. **Spec (A) zuerst:** [AC-FA-RULE-008](../../../../spec/lastenheft.md#ac-fa-rule-008--driving-driven-port-richtung-regel-port-direction-mismatch)-Out-of-Scope-Zeile **geschärft** (Namens-Inferenz *rein*, Glob-/Pfad-Inferenz bleibt *out*) + **3 neue AC** (Happy/Boundary/Negative) + Bump (nächster Minor, §3.3) + Historie; Spezifikation; Folge-ADR (Re-Eval, §3.3) + Index.
+1. **Spec (A) zuerst:** [AC-FA-RULE-008](../../../../spec/lastenheft.md#ac-fa-rule-008--richtungs-dimension-regel-port-direction-mismatch)-Out-of-Scope-Zeile **geschärft** (Namens-Inferenz *rein*, Glob-/Pfad-Inferenz bleibt *out*) + **3 neue AC** (Happy/Boundary/Negative) + Bump (nächster Minor, §3.3) + Historie; Spezifikation; Folge-ADR (Re-Eval, §3.3) + Index.
 2. `rules.go` `dirOf`: Inferenz-Zweig — `driving`/`driven`-Hinweis im Schicht-**Namen** (nicht Glob; §6-A), Grammatik §6-E, wenn `Direction==""`.
 3. Tests (A): Inferenz happy / expliziter Vorrang / kein-Hinweis / **Beide-Hinweise-Konflikt** (§6-E).
 4. ~~**[nur falls Entscheid 0 ⇒ B]** `rules.go` **eigener `case`-Arm** (`srcRole=="port" && tgtRole=="port"`) + eigener Befund-Name (§6-C) + Tests (mismatch/kategorisch/boundary).~~ — **entfällt, Teil B ist verworfen (§0).**
@@ -220,7 +220,7 @@ Supersede-Präzedenzen).
 ## 5. Definition of Done
 
 **Rückgrat A:**
-- [ ] [AC-FA-RULE-008](../../../../spec/lastenheft.md#ac-fa-rule-008--driving-driven-port-richtung-regel-port-direction-mismatch)-**Out-of-Scope-Zeile geschärft**: Namens-Inferenz zugelassen, **Glob-/Pfad-Inferenz bleibt out-of-scope** (sonst öffnet der Edit zu viel).
+- [ ] [AC-FA-RULE-008](../../../../spec/lastenheft.md#ac-fa-rule-008--richtungs-dimension-regel-port-direction-mismatch)-**Out-of-Scope-Zeile geschärft**: Namens-Inferenz zugelassen, **Glob-/Pfad-Inferenz bleibt out-of-scope** (sonst öffnet der Edit zu viel).
 - [ ] **Drei neue AC** (Happy/Boundary/Negative) für die Inferenz (Anforderungs-Anlege-Prozess) + Bump (nächster Minor, §3.3) + Historie.
 - [ ] Folge-ADR (Re-Evaluierung von [ADR-0012](../../adr/0012-driving-driven-richtung-orthogonale-dimension.md), `Supersedes: —`, §3.3) `Accepted` + Index; Spezifikation (Regel-/Schema-Strata) nachgezogen.
 - [ ] `dirOf`-Inferenz in `rules.go` (Grammatik §6-E); Tests (happy/Vorrang/kein-Hinweis/Beide-Hinweise).
@@ -276,7 +276,7 @@ Teil B verworfen; Wiedervorlage nur bei erstem real gemessenem Port→Port-Cross
   `Supersedes: —`; **kein** neues Keyword, **keine** §3.5-Kollision ([ADR-0012](../../adr/0012-driving-driven-richtung-orthogonale-dimension.md) löst seinen eigenen
   Re-Eval-Trigger auf, bleibt immutable). *Empfehlung: dieses Muster.*
 - **Entscheid F — neue AC unter RULE-008 vs. eigene Anforderung:** die Inferenz-ACs als Erweiterung
-  von [AC-FA-RULE-008](../../../../spec/lastenheft.md#ac-fa-rule-008--driving-driven-port-richtung-regel-port-direction-mismatch)
+  von [AC-FA-RULE-008](../../../../spec/lastenheft.md#ac-fa-rule-008--richtungs-dimension-regel-port-direction-mismatch)
   (gleiche Richtungs-Anforderung, Versionshistorie der ID) **oder** eine neue eigene
   `AC-FA-RULE`-Anforderung (eigene ID nach dem Konventions-Schema). *Empfehlung: unter RULE-008
   erweitern — dieselbe Anforderung, wie zuvor das Extraktions-Backend um Java erweitert wurde.*

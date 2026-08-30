@@ -86,9 +86,11 @@ type ResolutionConfig struct {
 // optional role (domain|app|port|adapter, AC-FA-RULE-006/007) that drives the
 // purity rules; a blank role falls back to name inference
 // (core/ports/adapters/application), and a layer resolving to no role is only
-// edge-checked. Direction (driving|driven, AC-FA-RULE-008) is an OPTIONAL
-// dimension ORTHOGONAL to the role: it governs only port-direction-mismatch and
-// is never inferred from the name; a blank direction opts the layer out.
+// edge-checked. Direction (AC-FA-RULE-008, ADR-0036) is an OPTIONAL
+// dimension ORTHOGONAL to the role, and its VALUE SET DEPENDS ON THE ROLE:
+// inbound|outbound on a port, driving|driven on an adapter — a port does not
+// drive, it is used. It governs only port-direction-mismatch, is never inferred
+// from the name, and a blank direction opts the layer out.
 type Layer struct {
 	Name      string
 	Globs     []string

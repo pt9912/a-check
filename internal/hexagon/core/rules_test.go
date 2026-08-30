@@ -521,20 +521,22 @@ func TestDomainImportsTech(t *testing.T) { // AC-FA-RULE-007: domain->tech ist c
 
 // --- AC-FA-RULE-008 / ADR-0012: Driving/Driven-Port-Richtung (welle-10b/b2b) ---
 
-// dirModel: getrennte driving/driven Adapter- und Port-Schichten mit expliziten
-// Richtungen. Die Kante cli->api erlaubt den happy-Fall, ohne wrong-direction.
+// dirModel: getrennte Adapter- und Port-Schichten mit expliziten Richtungen —
+// die Ports in IHREM Vokabular (inbound/outbound), die Adapter in ihrem
+// (driving/driven), ADR-0036. Die Kante cli->api erlaubt den happy-Fall,
+// ohne wrong-direction.
 func dirModel() Model {
 	return Model{
 		Layers: []Layer{
 			{Name: "cli", Globs: []string{"cli/**"}, Role: "adapter", Direction: "driving"},
-			{Name: "api", Globs: []string{"api/**"}, Role: "port", Direction: "driving"},
-			{Name: "store", Globs: []string{"store/**"}, Role: "port", Direction: "driven"},
+			{Name: "api", Globs: []string{"api/**"}, Role: "port", Direction: "inbound"},
+			{Name: "store", Globs: []string{"store/**"}, Role: "port", Direction: "outbound"},
 		},
 		Edges: []Edge{{From: "cli", To: "api"}},
 	}
 }
 
-func TestPortDirectionHappy(t *testing.T) { // AC-FA-RULE-008 happy: driving-Adapter -> driving-Port
+func TestPortDirectionHappy(t *testing.T) { // AC-FA-RULE-008 happy: driving-Adapter -> inbound-Port (das Paar)
 	fs := mustEval(t, dirModel(), []FileImports{
 		{Path: "cli/c.go", Layer: "cli", Imports: []Import{{Symbol: "api/u", Line: 1}}},
 	})
@@ -543,7 +545,7 @@ func TestPortDirectionHappy(t *testing.T) { // AC-FA-RULE-008 happy: driving-Ada
 	}
 }
 
-func TestPortDirectionMismatch(t *testing.T) { // AC-FA-RULE-008 negative: driving-Adapter -> driven-Port
+func TestPortDirectionMismatch(t *testing.T) { // AC-FA-RULE-008 negative: driving-Adapter -> outbound-Port (kein Paar)
 	fs := mustEval(t, dirModel(), []FileImports{
 		{Path: "cli/c.go", Layer: "cli", Imports: []Import{{Symbol: "store/s", Line: 2}}},
 	})
@@ -1833,5 +1835,43 @@ func TestWrongDirectionLayerlessSourceLabel(t *testing.T) { // ADR-0029 §5: kei
 	}
 	if !strings.HasPrefix(fs[0].Msg, "(ohne Schicht) -> ") {
 		t.Fatalf("schichtlose Quelle muss benannt werden, got %q", fs[0].Msg)
+	}
+}
+
+// ADR-0036: die Regel prueft eine PAARUNG, keine String-Gleichheit. Die Tabelle
+// haelt beide Richtungen der Zusage — das Paar schweigt, das Nicht-Paar meldet.
+// Ohne die Gruen-Faelle waere eine Regel, die immer meldet, von einer korrekten
+// nicht zu unterscheiden; ohne die Rot-Faelle eine, die nie meldet.
+func TestPortDirectionPaarung(t *testing.T) {
+	for _, c := range []struct {
+		name, adapterDir, portDir string
+		wantFinding               bool
+	}{
+		{"driving->inbound", "driving", "inbound", false},
+		{"driven->outbound", "driven", "outbound", false},
+		{"driving->outbound", "driving", "outbound", true},
+		{"driven->inbound", "driven", "inbound", true},
+		{"adapter ohne Richtung", "", "inbound", false},
+		{"port ohne Richtung", "driving", "", false},
+	} {
+		m := Model{
+			Layers: []Layer{
+				{Name: "a", Globs: []string{"a/**"}, Role: "adapter", Direction: c.adapterDir},
+				{Name: "p", Globs: []string{"p/**"}, Role: "port", Direction: c.portDir},
+			},
+			Edges: []Edge{{From: "a", To: "p"}},
+		}
+		fs := mustEval(t, m, []FileImports{
+			{Path: "a/x.go", Layer: "a", Imports: []Import{{Symbol: "p/y", Line: 1}}},
+		})
+		got := false
+		for _, f := range fs {
+			if f.Rule == "port-direction-mismatch" {
+				got = true
+			}
+		}
+		if got != c.wantFinding {
+			t.Errorf("%s: port-direction-mismatch=%v, want %v (Befunde: %v)", c.name, got, c.wantFinding, fs)
+		}
 	}
 }

@@ -1,9 +1,9 @@
 # ADR-0012 — Driving/Driven-Richtung als orthogonale Schicht-Dimension
 
-- **Status:** Accepted
+- **Status:** Superseded by ADR-0036
 - **Datum:** 2026-06-23
 - **Autor:** pt9912
-- **Bezug:** [AC-FA-RULE-008](../../../spec/lastenheft.md#ac-fa-rule-008--driving-driven-port-richtung-regel-port-direction-mismatch) (neu; Lastenheft 0.5.0→0.6.0), [AC-FA-RULE-006](../../../spec/lastenheft.md#ac-fa-rule-006--schicht-rollen-generische-regel-anwendung) (Rollen-Mechanismus)
+- **Bezug:** [AC-FA-RULE-008](../../../spec/lastenheft.md#ac-fa-rule-008--richtungs-dimension-regel-port-direction-mismatch) (neu; Lastenheft 0.5.0→0.6.0), [AC-FA-RULE-006](../../../spec/lastenheft.md#ac-fa-rule-006--schicht-rollen-generische-regel-anwendung) (Rollen-Mechanismus)
 - **Schärft:** [SPEC-RULE-001](../../../spec/spezifikation.md#spec-rule-001--regel-auswertung) + [SPEC-CONF-001](../../../spec/spezifikation.md#spec-conf-001--konfigurationsschema) — macht die optionale Richtung und die Regel `port-direction-mismatch` verbindlich.
 - **Supersedes:** —
 

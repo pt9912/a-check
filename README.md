@@ -26,7 +26,7 @@ by a single config file. Seven universal rules, each one requirement in the
 - `app-impurity` — the application layer imports no adapter and no framework/tech (it may use the domain and ports)
   ([AC-FA-RULE-007](spec/lastenheft.md#ac-fa-rule-007--rolle-app-und-strenge-domain))
 - `port-direction-mismatch` — an adapter talks only to ports of **its** direction (optional `driving`/`driven` dimension, orthogonal to the role)
-  ([AC-FA-RULE-008](spec/lastenheft.md#ac-fa-rule-008--driving-driven-port-richtung-regel-port-direction-mismatch))
+  ([AC-FA-RULE-008](spec/lastenheft.md#ac-fa-rule-008--richtungs-dimension-regel-port-direction-mismatch))
 
 Imports are extracted **text-heuristically** per language (C++/Go/Rust/Kotlin/Java/Python/C#/TypeScript)
 ([AC-FA-EXTRACT-001](spec/lastenheft.md#ac-fa-extract-001--sprach-backends-für-die-import-extraktion)).

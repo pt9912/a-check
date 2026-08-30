@@ -1,6 +1,6 @@
 # Benutzerhandbuch: a-check
 
-**Handbuch-Version:** 1.36 · **Software-Version:** [aktuelles Release](../../version.md#aktuell) · **Stand:** 2026-08-30 ·
+**Handbuch-Version:** 1.37 · **Software-Version:** [aktuelles Release](../../version.md#aktuell) · **Stand:** 2026-08-30 ·
 **Autor:** pt9912 (Maintainer)
 
 ---
@@ -239,7 +239,7 @@ Jeder Befund nennt die Regel. Die Regeln und ihre Behebung:
 | `lateral-slice` | Eine `app`-Datei importiert eine **fremde Use-Case-Slice derselben `app`-Schicht** (ein anderes Glob *derselben* Schicht). **Kategorisch** (Kante hebt nicht auf). Nur aktiv bei **per-Slice-Globs**; ein einziges Glob lässt die Regel inert. **Getrennte `app`-Layer** (z. B. `services`/`services_geo`) sind edge-regiert, nicht betroffen. | Fachliche Verträge zwischen Slices über **Ports** führen, nicht über direkten Slice-Code (geteilter app-Code ist heute nicht vorgesehen). |
 | `tech-leak` | Ein Framework/Tech (Muster als Substring oder Regex, `match`) erscheint außerhalb seines Adapters. | Den Tech-Zugriff in den zugeordneten Adapter kapseln. |
 | `port-impurity` | Ein Port importiert einen Adapter oder ein Framework/Tech, oder enthält ein per `forbidden_constructs` (Abschnitt 4) verbotenes Konstrukt. Domänentypen des Kerns darf ein Port referenzieren. | Den Port von Adapter-/Tech-Importen befreien (Kern-Referenzen sind erlaubt). |
-| `port-direction-mismatch` | Ein Adapter mit Richtung `driving`/`driven` importiert einen Port der *anderen* Richtung (beide deklariert) — Treiber-Adapter sprechen nur `driving`-Ports, getriebene nur `driven`-Ports. **Kategorisch** (Kante hebt nicht auf). | Den Import über die passende Richtung führen (z. B. über die `app`-Schicht), oder die Schicht-`direction` korrigieren. Ohne `direction` greift die Regel nicht. |
+| `port-direction-mismatch` | Ein Adapter importiert einen Port der *nicht passenden* Seite (beide Richtungen deklariert). Das Vokabular hängt an der Rolle: Ports sind `inbound`/`outbound`, Adapter `driving`/`driven`. Zusammen gehören `driving`↔`inbound` und `driven`↔`outbound` — ein treibender Adapter spricht nur eingehende Ports. **Kategorisch** (Kante hebt nicht auf). | Den Import über die passende Seite führen (z. B. über die `app`-Schicht), oder die Schicht-`direction` korrigieren. Ohne `direction` greift die Regel nicht. |
 | `port-locality` | Eine `app`-Datei importiert einen **im App-Baum geschachtelten** Port **außerhalb dessen Scope-Verzeichnis** — use-case-lokal (`…/createorder/ports`) ⊂ business-area (`…/order/ports`) ⊂ app-weit (`…/ports`). **Kategorisch.** Nur `app`-Importeure. Bei **klassischem Hexagonal** (Ports als Geschwister der App, `…/ports` neben `…/services`) ist die Regel **inert**. | Den Port auf die passende Ebene heben („so gemeinsam wie nötig") oder den fremden slice-lokalen Port nicht importieren. |
 | `construct-leak` | Ein per `constructs` (Abschnitt 4) deklariertes **Roh-Text-Muster** steht außerhalb seiner erlaubten Zone — z. B. ein `dlopen(`-**Aufruf** außerhalb des Plugin-Adapters. Gilt **scan-weit**, auch in Dateien ohne Schicht; Treffer in Kommentaren zählen nicht. | Das Konstrukt in seine Zone verlagern (oder hinter einen Port führen). Ist die Stelle legitim, die Zone im `constructs`-Eintrag erweitern (`adapter` nimmt auch eine Liste). |
 | `wrong-direction` | Ein Import läuft entgegen einer erlaubten Schicht-Kante. | Die Kante in `edges` aufnehmen (falls legitim) oder den Import umdrehen. |
@@ -724,14 +724,17 @@ edges:
 ```
 
 **Richtung (`direction`).** Eine `port`- oder `adapter`-Schicht trägt **optional** eine
-Richtung `direction: driving` oder `direction: driven` — **orthogonal** zur Rolle.
-`driving` = primär/inbound (Use-Case-Schnittstelle, vom Treiber-Adapter aufgerufen),
-`driven` = sekundär/outbound (vom Kern/App definiert, vom getriebenen Adapter
-implementiert). Ein `role: adapter` spricht dann nur Ports **seiner** Richtung; importiert
-ein driving-Adapter einen driven-Port (oder umgekehrt, beide Seiten deklariert), ist das
+Richtung — **orthogonal** zur Rolle, mit **rollen-abhängigem** Wertebereich:
+an `role: port` gilt `direction: inbound` oder `outbound`, an `role: adapter`
+`driving` oder `driven`. Ein Port *treibt* nichts, er wird benutzt; ein Adapter ist nicht
+*eingehend*, er treibt oder wird getrieben. `inbound` = eingehende Schnittstelle (Use-Case,
+von außen aufgerufen), `outbound` = ausgehende (vom Kern/App definiert, nach außen
+implementiert). **Die falsche Vokabel an einer Rolle ist ein Konfigurationsfehler** (Exit 2);
+die Meldung nennt die für diese Rolle gültige Menge. Importiert
+ein `driving`-Adapter einen `outbound`-Port (oder umgekehrt, beide Seiten deklariert), ist das
 `port-direction-mismatch` (kategorisch — `edges`/`allow` heben nicht auf). Tragen die
 Schichten **keine** `direction`, ändert sich nichts — die Dimension ist rein additiv und
-braucht getrennte `driving`/`driven`-**Adapter- und -Port**-Schichten, um zu greifen.
+braucht getrennte Adapter-Schichten (`driving`/`driven`) **und** Port-Schichten (`inbound`/`outbound`), um zu greifen.
 
 ## 5. Berechtigungen und Sicherheit
 
@@ -899,3 +902,4 @@ und die [Spezifikation](../../spec/spezifikation.md); ein Überblick steht in de
 | 1.37 | 2026-08-09 | §2 um den **Grenz-Hinweis** ergänzt: a-check nennt jetzt mit Datei, Zeile und Grund die Import-Zeilen, deren **Schreibweise** zu keiner prüfbaren Kante führt — nicht extrahierte Formen (relativer Python-Import, zweite Direktive auf derselben Zeile) und `./`/`../`-Pfade unter einem `resolution`-Modus, der sie nicht auflöst. **Kein Befund, kein Exit-Code-Wechsel**; erscheint gerade auch bei null Befunden, weil er dort „sauber" von „nicht angesehen" trennt. §6 verweist für die zwei gemeldeten Formen darauf. Spez 0.28.0, [ADR-0031](../plan/adr/0031-heuristik-grenzen-diagnose.md), slice-081. |
 | 1.38 | 2026-08-09 | §2 um den **Auflösungs-Hinweis** ergänzt: löst im **ganzen** Scan kein Import-Symbol auf eine Schicht auf, obwohl Symbole extrahiert wurden, nennt a-check je Schicht Datei- und Symbolzahl — die gefährlichste Konfiguration, weil alles grün aussieht und nichts geprüft wird (typisch: `layers`-Globs mit einem Präfix, das in den echten Importpfaden fehlt). Auslösung **repo-weit, nicht je Schicht**: eine einzelne Schicht ohne auflösende Importe ist normal (abhängigkeitsfreier Kern) — daraus folgt ausdrücklich, dass ein **Teil**ausfall still bleibt. Spez 0.29.0, [ADR-0032](../plan/adr/0032-aufloesungs-diagnose-repoweit.md), slice-085. |
 | 1.39 | 2026-08-09 | §4: neuer Absatz **„Verbotene Konstrukte je Schicht (`forbidden_constructs`)"** — der Block gilt nur für Schichten mit der Rolle `port`, und ein Eintrag, der nie melden könnte (unbekannte Schicht, andere Rolle, leeres Muster, leere Musterliste), bricht jetzt mit **Exit-Code 2** statt still zu wirken; bis `v0.16.0` waren alle vier Fälle stumm. Ergänzt um die Abgrenzung zu `constructs` (Blacklist je Schicht ↔ Monopol je Zone — komplementär, nicht austauschbar) und den Glossar-Eintrag. §3.3 zugleich korrigiert: das **erzeugte** `--print-mk`-Fragment trägt einen **Platzhalter** statt eines Digests (neuer Pflicht-Schritt 2 mit beiden Bezugsquellen) und ruft die Runtime über `$(DOCKER)` — inklusive der Reihenfolge-Regel, dass `DOCKER` **vor** dem `include` gesetzt sein muss. Spez 0.30.0, [ADR-0033](../plan/adr/0033-forbidden-constructs-fail-closed.md)/[ADR-0030](../plan/adr/0030-kein-digest-im-generierten-fragment.md), slice-086/083/082/088. |
+| 1.37 | 2026-08-30 | §4 und die Regel-Tabelle an Lastenheft 0.25.0 angeglichen: der Wertebereich von `direction` ist **rollen-abhängig** — `inbound`/`outbound` an `role: port`, `driving`/`driven` an `role: adapter` ([ADR-0036](../plan/adr/0036-port-richtung-inbound-outbound.md)). Ein Port *treibt* nichts, er wird benutzt. `port-direction-mismatch` prüft dadurch eine **Paarung** (`driving`↔`inbound`, `driven`↔`outbound`). **Breaking:** die falsche Vokabel an einer Rolle ist Exit 2 mit nennender Meldung; ebenso eine Richtung an einer Schicht ohne Port-/Adapter-Rolle, die bis 0.24.0 stillschweigend lud. |

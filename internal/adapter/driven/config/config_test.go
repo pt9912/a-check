@@ -142,7 +142,7 @@ func TestLayerRoleAppAccepted(t *testing.T) { // AC-FA-RULE-007: role: app wird 
 }
 
 func TestLayerDirectionAccepted(t *testing.T) { // AC-FA-RULE-008: {role, direction} akzeptiert + dekodiert
-	body := "version: 1\nlanguages:\n  go: [\"**/*.go\"]\nlayers:\n  cli: {globs: [\"cli/**\"], role: adapter, direction: driving}\n  api: {globs: [\"api/**\"], role: port, direction: driven}\nedges:\n  - {from: cli, to: api}\n"
+	body := "version: 1\nlanguages:\n  go: [\"**/*.go\"]\nlayers:\n  cli: {globs: [\"cli/**\"], role: adapter, direction: driving}\n  api: {globs: [\"api/**\"], role: port, direction: inbound}\nedges:\n  - {from: cli, to: api}\n"
 	m, err := New().Load(write(t, body))
 	if err != nil {
 		t.Fatalf("{role, direction} sollte akzeptiert werden, got %v", err)
@@ -151,7 +151,7 @@ func TestLayerDirectionAccepted(t *testing.T) { // AC-FA-RULE-008: {role, direct
 	for _, l := range m.Layers {
 		got[l.Name] = l.Direction
 	}
-	if got["cli"] != "driving" || got["api"] != "driven" {
+	if got["cli"] != "driving" || got["api"] != "inbound" {
 		t.Fatalf("direction nicht dekodiert: %+v", m.Layers)
 	}
 }
@@ -163,19 +163,50 @@ func TestLayerInvalidDirectionFailsClosed(t *testing.T) { // AC-FA-RULE-008: dir
 	}
 }
 
-func TestLayerDirectionWithoutRoleAccepted(t *testing.T) { // AC-FA-RULE-008: direction ohne role lädt (inert — die Regel braucht role adapter/port)
+func TestLayerDirectionWithoutRoleRejected(t *testing.T) { // ADR-0036: Richtung ohne Port-/Adapter-Rolle ist ein Fehler
+	// Bis 0.24.0 lud das stillschweigend ("inert"). Mit rollen-abhaengigem
+	// Vokabular ist unbeantwortbar, WELCHES hier gaelte — und eine Richtung, die
+	// keine Regel liest, ist eine Zusage ins Leere.
 	body := "version: 1\nlanguages:\n  go: [\"**/*.go\"]\nlayers:\n  x: {globs: [\"x/**\"], direction: driving}\n  core: [\"core/**\"]\nedges:\n  - {from: x, to: core}\n"
-	m, err := New().Load(write(t, body))
-	if err != nil {
-		t.Fatalf("direction ohne role sollte laden (inert), got %v", err)
+	_, err := New().Load(write(t, body))
+	if err == nil {
+		t.Fatal("direction ohne Port-/Adapter-Rolle muss abgewiesen werden (ADR-0036)")
 	}
-	for _, l := range m.Layers {
-		if l.Name == "x" && (l.Direction != "driving" || l.Role != "") {
-			t.Fatalf("x: erwarte direction=driving, role=\"\" (inert), got %+v", l)
-		}
+	if !strings.Contains(err.Error(), "nur an role: port oder role: adapter") {
+		t.Errorf("Meldung nennt die Bedingung nicht: %v", err)
 	}
 }
 
+func TestLayerDirectionVokabelProRolle(t *testing.T) { // AC-FA-RULE-008: das Vokabular haengt an der Rolle
+	// Tabelle mit BEIDEN Richtungen: die richtige Vokabel schweigt, die falsche
+	// meldet — und die Meldung nennt die fuer DIESE Rolle gueltige Menge. Ohne
+	// die Gruen-Faelle waere eine Validierung, die alles abweist, von einer
+	// korrekten nicht zu unterscheiden.
+	for _, c := range []struct {
+		name, role, dir string
+		wantErr         bool
+		wantMenge       string
+	}{
+		{"ports_in", "port", "inbound", false, ""},
+		{"ports_out", "port", "outbound", false, ""},
+		{"ports_bad", "port", "driving", true, "inbound|outbound"},
+		{"cli", "adapter", "driving", false, ""},
+		{"db", "adapter", "driven", false, ""},
+		{"cli_bad", "adapter", "inbound", true, "driving|driven"},
+	} {
+		body := "version: 1\nlanguages:\n  go: [\"**/*.go\"]\nlayers:\n  l: {globs: [\"l/**\"], role: " +
+			c.role + ", direction: " + c.dir + "}\n  core: [\"core/**\"]\nedges:\n  - {from: l, to: core}\n"
+		_, err := New().Load(write(t, body))
+		switch {
+		case c.wantErr && err == nil:
+			t.Errorf("%s: role %s + direction %s muss abgewiesen werden", c.name, c.role, c.dir)
+		case !c.wantErr && err != nil:
+			t.Errorf("%s: role %s + direction %s muss akzeptiert werden, got %v", c.name, c.role, c.dir, err)
+		case c.wantErr && !strings.Contains(err.Error(), c.wantMenge):
+			t.Errorf("%s: Meldung nennt %q nicht: %v", c.name, c.wantMenge, err)
+		}
+	}
+}
 // techBody baut eine minimale gültige Config mit einem tech-Eintrag.
 func techBody(entry string) string {
 	return "version: 1\nlanguages:\n  go: [\"**/*.go\"]\nlayers:\n  core: [\"core/**\"]\n  adapters: [\"adapters/**\"]\nedges:\n  - {from: adapters, to: core}\ntech:\n  - " + entry + "\n"

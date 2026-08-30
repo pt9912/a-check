@@ -32,7 +32,7 @@ Schwester-Repo `hexslice-architecture` (Stand 2026-07-24; nicht Teil dieses Repo
 benannt, kein repo-relativer Link und kein Host-Pfad).
 **Bezug:** wertet die HexSlice-Regeln gegen das bestehende Rollen-/Kanten-Modell
 ([AC-FA-RULE-006](../../../../spec/lastenheft.md#ac-fa-rule-006--schicht-rollen-generische-regel-anwendung)
-… [AC-FA-RULE-008](../../../../spec/lastenheft.md#ac-fa-rule-008--driving-driven-port-richtung-regel-port-direction-mismatch),
+… [AC-FA-RULE-008](../../../../spec/lastenheft.md#ac-fa-rule-008--richtungs-dimension-regel-port-direction-mismatch),
 [SPEC-RULE-001](../../../../spec/spezifikation.md#spec-rule-001--regel-auswertung)) und den Produkt-Scope
 ([Lastenheft §1](../../../../spec/lastenheft.md#1-zweck-und-geltungsbereich)). [Roadmap](../in-progress/roadmap.md).
 
@@ -88,7 +88,7 @@ Verboten: `Domain → Application`, `Domain → Adapters`, `Application → Adap
 | 4 | Ports Besitz der Application (app-weit / business-area-spezifisch) | Rolle `port` | [`port-impurity`](../../../../spec/lastenheft.md#ac-fa-rule-004--port-disziplin-regel-port-impurity) | ⚠️ **eingeschränkt** (§4.0) |
 | 4 | Ports **tiefen-agnostisch verschachtelt** (`application/**/ports/**`) | von `application` überschattet → Rolle `app` | *fehlklassifiziert* | ❌ **Lücke** (§4.0) |
 | 6 | Inbound Adapter | `adapter` + `direction: driving` | — | ✅ heute |
-| 7 | Outbound Adapter impl. Ports | `adapter` + `direction: driven` | [`port-direction-mismatch`](../../../../spec/lastenheft.md#ac-fa-rule-008--driving-driven-port-richtung-regel-port-direction-mismatch) | ⚠️ **nur bei richtungs-getrennten Port-Schichten** (§4.3) |
+| 7 | Outbound Adapter impl. Ports | `adapter` + `direction: driven` | [`port-direction-mismatch`](../../../../spec/lastenheft.md#ac-fa-rule-008--richtungs-dimension-regel-port-direction-mismatch) | ⚠️ **nur bei richtungs-getrennten Port-Schichten** (§4.3) |
 | — | `Adapters→App`, `App→Domain`, `Adapters→Ports` erlaubt | `edges` | [`wrong-direction`](../../../../spec/lastenheft.md#ac-fa-rule-005--schicht-richtung-regel-wrong-direction) | ✅ heute |
 | — | `Domain→App/Adapters` verboten | `core-impurity` kategorisch | — | ✅ heute |
 | — | `App→Adapters` verboten | `app-impurity` | — | ✅ heute |
@@ -208,7 +208,7 @@ Denkbare, aber **noch nicht bewertete** Modellierungen:
 ### 4.3 Richtungs-Prüfung nur bei getrennten Port-Schichten (verifiziert)
 
 **Befund F-2 des Reviews.** `port-direction-mismatch`
-([AC-FA-RULE-008](../../../../spec/lastenheft.md#ac-fa-rule-008--driving-driven-port-richtung-regel-port-direction-mismatch))
+([AC-FA-RULE-008](../../../../spec/lastenheft.md#ac-fa-rule-008--richtungs-dimension-regel-port-direction-mismatch))
 feuert nur, wenn **beide** Seiten `direction` tragen; `dirOf` inferiert **keine** Richtung aus dem
 Namen (verifiziert: `rules.go` `dirOf`). Basis-HexSlice modelliert Ports als *einen* Begriff (nicht
 `driving`/`driven`-getrennt) — mit einer undirektionalen `ports`-Schicht ist die Regel **inert**,

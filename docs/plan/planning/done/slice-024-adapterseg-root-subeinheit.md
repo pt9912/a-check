@@ -29,7 +29,7 @@ Services- oder Kern-Befunde. Ursache: das Sub-Einheiten-Segment aus
 [ADR-0010](../../adr/0010-layer-relativer-adapterseg-laengster-praefix.md) degeneriert für
 Dateien **direkt im Layer-Root** zum **Dateinamen**. Pro-Adapter-Layer sind aber die
 Voraussetzung jeder `direction`-Modellierung
-([AC-FA-RULE-008](../../../../spec/lastenheft.md#ac-fa-rule-008--driving-driven-port-richtung-regel-port-direction-mismatch):
+([AC-FA-RULE-008](../../../../spec/lastenheft.md#ac-fa-rule-008--richtungs-dimension-regel-port-direction-mismatch):
 eine Richtung je Schicht) — die Falsch-Positiv-Klasse blockiert also genau den vom Maintainer
 beauftragten Ausbau. Dateinamen sind keine Architektur-Einheiten; Sub-Einheiten sind — wie
 Schichten — Verzeichnisse.

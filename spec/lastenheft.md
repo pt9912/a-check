@@ -1,6 +1,6 @@
 # Lastenheft — a-check
 
-**Version:** 0.24.0
+**Version:** 0.25.0
 
 **Status:** Draft
 
@@ -222,35 +222,51 @@ Rollen-Mapping (Ergänzung): `app`→`app-impurity`. Befund-**Namen** der übrig
 - **Negative (domain):** Given eine `role: domain`-Schicht, when sie eine `port`- (oder `app`-/`adapter`-)Schicht importiert (auch bei deklarierter Kante), then ein Befund (`core-impurity`) und Exit-Code 1.
 - **Boundary:** Given eine Config ohne `role:` und ohne Layer `application`/`app` (klassisch `core`/`ports`/`adapters`), when `a-check` läuft, then identisches Verhalten wie 0.4.0.
 
-**Out-of-Scope:** feinere `app`-interne Struktur; die `driving`/`driven`-**Richtung** als orthogonales Attribut (kein Port-Subtyp) liefert [AC-FA-RULE-008](#ac-fa-rule-008--driving-driven-port-richtung-regel-port-direction-mismatch).
+**Out-of-Scope:** feinere `app`-interne Struktur; die `driving`/`driven`-**Richtung** als orthogonales Attribut (kein Port-Subtyp) liefert [AC-FA-RULE-008](#ac-fa-rule-008--richtungs-dimension-regel-port-direction-mismatch).
 
-### AC-FA-RULE-008 — Driving-Driven-Port-Richtung (Regel `port-direction-mismatch`)
+### AC-FA-RULE-008 — Richtungs-Dimension (Regel `port-direction-mismatch`)
 
 **Verfeinert:** [AC-FA-RULE-006](#ac-fa-rule-006--schicht-rollen-generische-regel-anwendung) um eine **orthogonale** Richtungs-Dimension (`direction`).
 
 **Beschreibung:** Eine `port`- oder `adapter`-Schicht trägt optional eine Richtung
-`direction` ∈ {`driving`, `driven`}. `driving` = primär/inbound (Use-Case-Schnittstelle,
-vom Treiber-Adapter aufgerufen); `driven` = sekundär/outbound (vom Kern/App definiert,
-vom getriebenen Adapter implementiert). Die Richtung ist **orthogonal** zur Rolle: die
-Reinheits-Regeln (`core-impurity`/`app-impurity`/`port-impurity`/`lateral-adapter`)
-bleiben rollen-basiert unverändert. Neue Regel `port-direction-mismatch`: ein
-`role: adapter` mit Richtung X, der eine `role: port`-Schicht mit Richtung Y (Y ≠ X,
-**beide gesetzt**) importiert, ist ein Befund (**kategorisch** — `edges`/`allow` heben
-nicht auf, wie `lateral-adapter`; nur `composition_root` befreit): ein Treiber-Adapter
-spricht nur `driving`-Ports, ein getriebener Adapter nur `driven`-Ports. Schichten **ohne**
-`direction` unterliegen der Regel **nicht** (Rückwärtskompatibilität: ohne Deklaration
-ändert sich nichts). Die `app`-Schicht ist richtungs-agnostisch (nutzt `driven`-Ports,
-implementiert `driving`-Ports) und wird nicht erfasst. Befund-**Namen** der übrigen
-Regeln bleiben unverändert.
+`direction`. **Das Vokabular richtet sich nach der Rolle**, weil die beiden Seiten
+verschiedene Dinge benennen:
+
+- an `role: port` gilt `direction` ∈ {`inbound`, `outbound`} — die Richtung, in der die
+  Schnittstelle steht: `inbound` = eingehend (Use-Case-Schnittstelle, von außen aufgerufen),
+  `outbound` = ausgehend (vom Kern/App definiert, nach außen implementiert);
+- an `role: adapter` gilt `direction` ∈ {`driving`, `driven`} — die Rolle im Betrieb:
+  `driving` = treibend (ruft die Anwendung), `driven` = getrieben (wird von ihr gerufen).
+
+Ein Port *treibt* nichts; er wird benutzt. Ein Adapter ist nicht *eingehend*; er treibt oder
+wird getrieben. Die falsche Vokabel an einer Rolle ist ein **Konfigurationsfehler**
+([AC-FA-CONF-001](#ac-fa-conf-001--konfigurationsdatei-a-checkyml), Exit-Code 2) und keine
+akzeptierte Schreibvariante.
+
+**Eine Richtung an einer Schicht ohne Port-/Adapter-Rolle ist ebenfalls ein Fehler** —
+auch die effektive Rolle aus der Namens-Inferenz zählt. Welches der beiden Vokabulare
+dort gälte, ist unbeantwortbar, und eine Richtung, die **keine** Regel liest, ist eine
+Zusage ins Leere. Bis 0.24.0 lud sie stillschweigend.
+
+Die Richtung ist **orthogonal** zur Rolle: die Reinheits-Regeln
+(`core-impurity`/`app-impurity`/`port-impurity`/`lateral-adapter`) bleiben rollen-basiert
+unverändert. Regel `port-direction-mismatch`: ein `role: adapter` mit Richtung X, der eine
+`role: port`-Schicht mit Richtung Y importiert, ist ein Befund, wenn X und Y **nicht das Paar
+bilden** — `driving` gehört zu `inbound`, `driven` zu `outbound`; beide müssen gesetzt sein.
+Ein treibender Adapter spricht nur eingehende Ports, ein getriebener nur ausgehende. Der Befund
+ist **kategorisch** — `edges`/`allow` heben ihn nicht auf, wie bei `lateral-adapter`; nur
+`composition_root` befreit. Schichten **ohne** `direction` unterliegen der Regel **nicht**. Die
+`app`-Schicht ist richtungs-agnostisch (nutzt `outbound`-Ports, implementiert `inbound`-Ports)
+und wird nicht erfasst. Befund-**Namen** der übrigen Regeln bleiben unverändert.
 
 **Akzeptanzkriterien:**
 
-- **Happy:** Given ein `role: adapter`, `direction: driving`, when er eine `role: port`, `direction: driving`-Schicht importiert, then kein Befund.
-- **Negative:** Given ein `role: adapter`, `direction: driving`, when er eine `role: port`, `direction: driven`-Schicht importiert, then ein Befund (`port-direction-mismatch`) und Exit-Code 1.
-- **Negative (kategorisch):** Given ein `role: adapter`, `direction: driving` **und eine deklarierte `allow`-Kante** auf die `role: port`, `direction: driven`-Schicht, when er sie importiert, then **dennoch** ein Befund (`port-direction-mismatch`) und Exit-Code 1 — die Richtung ist nicht über `edges`/`allow` aufhebbar.
-- **Boundary:** Given Schichten **ohne** `direction` (klassisch `role: port`/`adapter`), when `a-check` läuft, then identisches Verhalten wie 0.5.0.
+- **Happy:** Given ein `role: adapter`, `direction: driving`, when er eine `role: port`, `direction: inbound`-Schicht importiert, then kein Befund — das ist das Paar.
+- **Boundary:** Given Schichten **ohne** `direction`, when `a-check` läuft, then identisches Verhalten wie ohne die Dimension; die Regel ist opt-in und inert.
+- **Negative:** Given ein `role: adapter`, `direction: driving`, when er eine `role: port`, `direction: outbound`-Schicht importiert, then ein Befund (`port-direction-mismatch`) und Exit-Code 1 — auch mit deklarierter `allow`-Kante, denn die Richtung ist kategorisch.
+- **Negative (Vokabel):** Given `role: port` mit `direction: driving` **oder** `role: adapter` mit `direction: inbound`, when `a-check` läuft, then Exit-Code 2 mit einer Meldung, die Schicht, den ungültigen Wert **und** die für diese Rolle gültige Menge nennt.
 
-**Out-of-Scope:** Auto-Inferenz der Richtung aus Namen/Pfad (`driving`/`driven` im Pfad); Richtungs-Regeln zwischen Ports untereinander — späteres Inkrement.
+**Out-of-Scope:** Auto-Inferenz der Richtung aus Namen/Pfad; Richtungs-Regeln zwischen Ports untereinander.
 
 ### AC-FA-RULE-009 — Slice-Isolation (Regel `lateral-slice`)
 
@@ -295,7 +311,7 @@ greift **nur für im Application-Baum geschachtelte Ports** — der Port-Scope m
 gibt es keine per-Slice-Lokalität und die Regel bleibt **inert**. **Kategorisch** — `edges`/`allow` heben
 nicht auf; nur `composition_root` befreit. Erfasst werden **nur `app`-Importeure**;
 ein Adapter, der einen Port **implementiert** (Implementierungs-Beziehung, richtungs-/edge-regiert,
-[AC-FA-RULE-008](#ac-fa-rule-008--driving-driven-port-richtung-regel-port-direction-mismatch)), ist
+[AC-FA-RULE-008](#ac-fa-rule-008--richtungs-dimension-regel-port-direction-mismatch)), ist
 **nicht** erfasst. Der Scope ist **pfad-abgeleitet** (keine Deklaration); die Ableitung setzt einen als
 Import-Ziel auflösbaren Port-Glob voraus (literales Präfix,
 [AC-QA-02](#ac-qa-02--hermetik-und-ehrliche-heuristik-grenze)).
@@ -499,8 +515,11 @@ Kopf des Handbuchs.
 Schicht, die Schichten (`core`/`ports`/`adapters`/…) mit Pfad-Mustern, die
 erlaubten Kanten, die Tech→Adapter-Zuordnungen und die gemeinsame Adapter-Senke. Ein `layers`-Eintrag
 ist **entweder** eine Glob-Liste (`name: [globs]`, Rolle per Namens-Inferenz)
-**oder** ein Objekt `{globs: [...], role: domain|app|port|adapter, direction: driving|driven}`
-([AC-FA-RULE-006](#ac-fa-rule-006--schicht-rollen-generische-regel-anwendung), [AC-FA-RULE-008](#ac-fa-rule-008--driving-driven-port-richtung-regel-port-direction-mismatch)); `direction` ist optional.
+**oder** ein Objekt `{globs: [...], role: domain|app|port|adapter, direction: …}`. Die
+Richtung ist optional und ihr Wertebereich **rollen-abhängig**: an `role: port`
+`inbound|outbound`, an `role: adapter` `driving|driven`; jede andere Kombination ist ein
+Konfigurationsfehler (Exit-Code 2)
+([AC-FA-RULE-006](#ac-fa-rule-006--schicht-rollen-generische-regel-anwendung), [AC-FA-RULE-008](#ac-fa-rule-008--richtungs-dimension-regel-port-direction-mismatch)).
 Ein `tech`-Eintrag ist `{pattern, adapter}` — `adapter` als Pfad **oder**
 Pfad-**Liste** (Symbol in jedem gelisteten Adapter erlaubt; leere Liste
 unzulässig) — mit optionalem `match: substring|regex` (Default `substring`;
@@ -676,3 +695,4 @@ eine Zeile hier (Baseline-Regelwerk `grundlagen-source-precedence.md` §Spec-Str
 | 0.23.0 | 2026-08-09 | **`AC-QA-03` neu gefasst:** das von `--print-mk` **erzeugte** Fragment trägt **keinen konkreten Digest** mehr, sondern einen Platzhalter mit Bezugsquelle ([ADR-0030](../docs/plan/adr/0030-kein-digest-im-generierten-fragment.md)); die im Repo **committete** `a-check.mk` trägt weiterhin den echten Digest. Grund: ein Binary kann den Digest des Image, in dem es läuft, strukturell nicht kennen — er entsteht erst beim Push, das Binary ist vorher gebaut. Der eingebackene Wert nannte darum **immer den Vorgänger** und sah dabei autoritativ aus. Gemessen: `v0.16.0` gab `v0.15.0` aus. **Realer Schaden:** ein Konsument pinnte über den dokumentierten Bump-Weg `v0.15.0` statt `v0.16.0` und vermisste den `constructs`-Block, ohne die Ursache zu sehen. Drei AK ergänzt (Happy/Boundary/Negative). slice-083 (`CR-5`). |
 | 0.22.0 | 2026-07-25 | Neu **`AC-FA-RULE-011`** (`construct-leak`: ein optionaler `constructs`-Block hebt die `tech`-Scoping-Mechanik — Zone als Pfad/Pfad-Liste, `match: substring\|regex`, `composition_root: allow\|forbid` — von extrahierten Import-Symbolen auf **Roh-Quelltext**; jedes Vorkommen außerhalb der Zone ist ein Befund, Exit 1). Prüfung **scan-weit** (auch Dateien in keinem `layers`-Glob; `exclude` greift davor), auf derselben Quell-Vorbereitung wie `forbidden_constructs` — in den C-Syntax-Sprachen kommentar-bereinigt (Treffer nur im Kommentar meldet nicht, ausgewiesene Divergenz zur `grep`-Referenz), in Python nicht (`#`-Kommentare bleiben stehen, ausgewiesene Grenze). `AC-FA-CONF-001` um den Block + fail-closed-Decoding erweitert. Damit werden Konstrukte prüfbar, die keine Import-Zeile sind (Aufruf-Monopol `dlopen`); die schichtgebundenen `forbidden_constructs`/`AC-FA-RULE-004` bleiben unberührt. Evidenz: b-cad-P-Rest (Regel P1), Fixture-vermessen. slice-042 (Kandidat 1 aus slice-025). |
 | 0.24.0 | 2026-08-30 | Neu **`AC-FA-CLI-003`** (Usage-Ausgabe und Handbuch-Verweis): `--help` trägt Kurzbeschreibung, Aufruf-Syntax, Konfigurations-Hinweis und die **URL des Benutzerhandbuchs**; dieselbe URL steht im Kopfkommentar des per `--print-mk` erzeugten Fragments, das in ein **fremdes** Repo reist. **Zugesichert ist die Anwesenheit der Bestandteile, nicht ihr Wortlaut** — ein Test bindet sich nicht an die Formulierung. Die URL zeigt **tag-frei** auf den Hauptzweig: das Binary kennt seinen Release-Kontext zur Laufzeit nicht, ein zur Build-Zeit eingesetzter versionierter Link nennte immer den Vorgänger — dieselbe Mechanik, die `AC-QA-03` in 0.23.0 für den Image-Digest entschieden hat. Der Preis ist benannt: wer ein altes Release fährt, landet auf dem aktuellen Handbuch und liest dort den Software-Versions-Stempel. slice-117. |
+| 0.25.0 | 2026-08-30 | **`AC-FA-RULE-008` neu gefasst:** die Richtungs-Dimension trägt je Rolle **ihr eigenes Vokabular** — an `role: port` `inbound`/`outbound`, an `role: adapter` `driving`/`driven`. Ein Port *treibt* nichts, er wird benutzt; ein Adapter ist nicht *eingehend*, er treibt oder wird getrieben. Bisher galt `driving`/`driven` für **beide**, obwohl die Beschreibung die Äquivalenz („`driving` = primär/inbound") selbst nannte und nur die eine Hälfte als Wert zuließ. `port-direction-mismatch` prüft dadurch eine **Paarung** (`driving`↔`inbound`, `driven`↔`outbound`) statt einer String-Gleichheit; die Regel-Aussage ist unverändert. **Breaking:** die falsche Vokabel an einer Rolle ist Exit-Code 2 mit nennender Meldung — kein still akzeptiertes Alias, weil a-check kein Warn-Level kennt und die alte Schreibweise sonst unbemerkt bliebe. `AC-FA-CONF-001` im Schema nachgezogen. slice-121. |
