@@ -18,7 +18,7 @@ Welle-Datei, nicht hier.
 
 - *(keine offene Welle-Datei)*
 
-In Arbeit: [slice-125](../in-progress/slice-125-go-toolchain-1-27.md) — Toolchain-Hebung.
+Nichts in Arbeit.
 
 **Offene Slices ohne Welle** — sie brauchen keine, ihre Trigger stehen in ihrem eigenen `§0`:
 
