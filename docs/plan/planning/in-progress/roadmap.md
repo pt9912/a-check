@@ -25,6 +25,7 @@ Nichts in Arbeit.
 | Slice | Trigger | Zustand |
 |---|---|---|
 | [slice-117](../open/slice-117-handbuch-verweis-cli.md) | eingetreten — Maintainer-Auftrag, keine Vorbedingung | **startbar** — Spec-first: die Anforderung entsteht vor dem Code |
+| [slice-119](../open/slice-119-cr-text-guide.md) | eingetreten — [`BEO-022`](../observations.md) bei 3×, Schwelle überschritten | **startbar** — ein Guide, kein Werkzeug: für CR-Texte ist noch keiner gescheitert |
 | [slice-013](../open/slice-013-driving-driven-vertiefung.md), [slice-045](../open/slice-045-intern-extern-dateimenge.md) | siehe *Nächste Wellen* | vertagt, Evidenz gemessen und zu klein |
 
 Ein Slice, der auf ein Fremdrepo wartet, gehört in **keine** Welle — er würde ihren
