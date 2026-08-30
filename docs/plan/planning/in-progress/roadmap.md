@@ -18,7 +18,7 @@ Welle-Datei, nicht hier.
 
 - *(keine offene Welle-Datei)*
 
-In Arbeit: [slice-127](../in-progress/slice-127-dockerhub-spiegel.md) — Docker-Hub-Spiegel.
+Nichts in Arbeit.
 
 **Offene Slices ohne Welle** — sie brauchen keine, ihre Trigger stehen in ihrem eigenen `§0`:
 

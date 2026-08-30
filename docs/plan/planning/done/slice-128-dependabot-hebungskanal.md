@@ -161,7 +161,7 @@ beiden weiter offen im Register.
 **Beobachtungs-Register:** `BEO-030` neu angelegt (CI-Schicht, 1×, Beleg slice-128): die Wirkung
 dieses Kanals hängt an zwei Schaltern außerhalb des Repos, und kein Gate kann sagen, ob sie stehen.
 
-**Folge-Slices:** [slice-127](../in-progress/slice-127-dockerhub-spiegel.md) (Docker-Hub-Spiegel) — sein
+**Folge-Slices:** [slice-127](../done/slice-127-dockerhub-spiegel.md) (Docker-Hub-Spiegel) — sein
 erster Trigger, das Release, ist mit **v0.18.0** eingetreten; offen bleibt der zweite (Hub-Repo und
 Token-Scope). Dazu [`BEO-026`](../observations.md): der Kanal **erzeugt** künftige
 `uses:`-Hebungen, deren Form heute kein Gate prüft — die Lücke wird dadurch praktisch relevanter,
