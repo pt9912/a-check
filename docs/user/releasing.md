@@ -35,7 +35,7 @@ Version geschnitten — **zusammen** mit dem `version.md#aktuell`-Bump: der Pin-
 (slice-018) verlangt `version.md#aktuell` == aktuellstes `CHANGELOG`-Release; ein
 CHANGELOG-Schnitt **vor** dem Tag (ohne version.md-Bump) macht `make ci` in der Pipeline
 rot. So bleibt `version.md#aktuell` bis zum Publish beim vorigen Release (immer wahr —
-nie ein unveröffentlichter Digest). Das Lastenheft steht bei **0.17.0** (eigene Doku-Achse,
+nie ein unveröffentlichter Digest). Das Lastenheft steht bei **0.26.0** (eigene Doku-Achse,
 **≠** der Release-Tag: v0.10.0 trägt Lastenheft 0.16.0).
 
 ## Release auslösen

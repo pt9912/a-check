@@ -69,7 +69,7 @@ Lauf-Wahrheit pro Commit liegt in der CI, nicht in diesem Rang-9-Dokument.
 
 | Target | Vertrag | Bindung |
 |---|---|---|
-| `make doc-check` | Links/Anker/Kennungs-Linkpflicht/Referenzmatrix der Repo-Doku via `d-check` (Schwester-Tool, digest-gepinnt, `--network none`, read-only) **und** die Lifecycle-Invariante wandernder Slices (`links.resolve-from`) | Harness-Prozess (Doku-Hygiene; Dogfooding des Stacks); Bootstrap-Gate; [`SL-002`](../docs/plan/planning/observations.md) seit slice-080 (löst `verify-slice-links` ab) |
+| `make doc-check` | Links/Anker/Kennungs-Linkpflicht/Referenzmatrix der Repo-Doku via `d-check` (Schwester-Tool, digest-gepinnt, `--network none`, read-only) **und** die Lifecycle-Invariante wandernder Slices (`links.resolve-from`) **und** die Versions-Kohärenz zwischen Dokumenten (`versions`: eine Prosa-Angabe über die Version eines anderen eigenen Dokuments gegen dessen Kopf; seit slice-133) | Harness-Prozess (Doku-Hygiene; Dogfooding des Stacks); Bootstrap-Gate; [`SL-002`](../docs/plan/planning/observations.md) seit slice-080 (löst `verify-slice-links` ab) |
 | `make lint` | golangci-lint mit Projekt-Profil; Inline-Suppressions verboten | [`ADR-0005`](../docs/plan/adr/0005-lint-profil.md) (Lint-Profil); slice-003 |
 | `make test` | Akzeptanzkriterien der bezogenen `AC-FA-*` als Tests; Determinismus-Test | [`AC-QA-01`](../spec/lastenheft.md#ac-qa-01--determinismus) (AC-Bindung); slice-003 |
 | `make coverage-gate` | Gesamt-Coverage ≥ Schwelle über `./internal/...` (`-coverpkg`, `tools/coverage-gate.sh`) | Kalibrierungs-Bindung **90 %** seit 2026-06-21 ([`ADR-0006`](../docs/plan/adr/0006-coverage-gate.md); Senkung nur per ADR, [`AGENTS.md` §3.6](../AGENTS.md#36-gates-dürfen-nicht-ohne-adr-gelockert-werden)); slice-003 |

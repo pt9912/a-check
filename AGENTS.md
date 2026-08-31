@@ -155,7 +155,7 @@ die CI (Badge im [`README.md`](README.md)), nicht diese Tabelle.
 
 | Target | Zweck |
 |---|---|
-| `make doc-check` | Doku-Links/Anker/Kennungen via `d-check` (Schwester-Tool, digest-gepinnt, netzlos, read-only); seit slice-080 zusätzlich die **Lifecycle-Invariante** ([`SL-002`](docs/plan/planning/observations.md)) über `links.resolve-from` — sie hat `verify-slice-links` abgelöst und liegt damit in der Gate- statt der Verifikations-Schicht |
+| `make doc-check` | Doku-Links/Anker/Kennungen via `d-check` (Schwester-Tool, digest-gepinnt, netzlos, read-only); seit slice-080 zusätzlich die **Lifecycle-Invariante** ([`SL-002`](docs/plan/planning/observations.md)) über `links.resolve-from` — sie hat `verify-slice-links` abgelöst und liegt damit in der Gate- statt der Verifikations-Schicht; seit slice-133 zusätzlich die **Versions-Kohärenz zwischen Dokumenten** über `versions` — eine Prosa-Angabe über die Version eines *anderen* eigenen Dokuments wird gegen dessen Kopf gehalten (`version-stale`). **Nicht** Digests: der Erwartungswert kommt versions-förmig aus dem `current-from`-Span, ein `sha256:` bricht dort fail-closed ab — die Digest-Gleichheit bleibt bei `gate-consistency` |
 | `make doc-trace` | advisory Requirements Traceability Matrix via `d-check` (DC-FA-CLI-009; `TRACE_FLAGS=--json`) |
 | `make doc-complete` | Vollständigkeits-Gate: eine Anforderung ohne referenzierenden Slice ⇒ Exit 1 (DC-FA-CLI-011). Seit slice-123 **im `verify`-Aggregat** — davor advisory und damit nie gelaufen; eine Waise fiel erst auf, als jemand das Target von Hand aufrief |
 | `make doc-doctor` | erklärende Diagnose mit Fix-Kandidaten (DC-FA-CLI-007) — **advisory** |

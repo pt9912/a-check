@@ -18,7 +18,7 @@ scan:
   # a-checks Doku, darum nicht gegen a-checks Kennungs-/Linkregeln pruefen.
   ignore: [".harness/baseline/**"]
 
-modules: [links, anchors, ids, matrix, spans, hostpaths]
+modules: [links, anchors, ids, matrix, spans, hostpaths, versions]
 
 ids:
   patterns:
@@ -76,6 +76,17 @@ matrix:
 # (`.github/workflows/ci.yml`, neben `trace-check`) — so ist §3.5 maschinell
 # durchgesetzt. Kern = ADR ohne Kopf-Status-Zeile und ohne `Geschichte`;
 # head-allow lässt den Proposed→Accepted- und den Supersede-Übergang zu.
+
+# Eine Versions-Angabe, die a-check ueber ein ANDERES eigenes Dokument macht,
+# wird gegen dessen Kopf gehalten. Der Erwartungswert kommt versions-foermig aus
+# dem `current-from`-Span; ein Digest kann das Modul nicht tragen (gemessen,
+# slice-133: `keine Version im adressierten Span`, Exit 2) — die Digest-Gleichheit
+# bleibt darum bei `tools/gate-consistency.sh`.
+versions:
+  patterns:
+    - pin-pattern: 'Lastenheft steht bei \*\*(\d+\.\d+\.\d+)\*\*'
+      current-from: spec/lastenheft.md#lastenheft--a-check
+
 vcs:
   paths: ["docs/plan/adr/[0-9]*.md"]
   immutable-when: '^- \*\*Status:\*\* Accepted'
