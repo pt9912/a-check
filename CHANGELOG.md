@@ -65,6 +65,23 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 - **Die Regelwerk-Abschnitte unter `.claude/rules/` sind Symlinks** auf die vendored Baseline
   (`MR-006`) statt einer zweiten Kopie, die dagegen driften könnte.
 
+- **`make doc-check` hält eine Doku-Aussage gegen den Kopf des Dokuments, über das sie redet**
+  (Modul `versions`; slice-133). Konkreter Anlass: `releasing.md` nannte das Lastenheft bei
+  `0.17.0`, während es bei `0.26.0` stand — neun Minor-Stände, die kein Gate sah, *weil*
+  `gate-consistency` nur a-checks eigene Release-Achse gegen den CHANGELOG hält und die
+  Lastenheft-Achse ausdrücklich eine zweite ist. **Grenze, gemessen:** einen `sha256:`-Digest kann
+  das Modul nicht tragen — der Erwartungswert kommt versions-förmig aus dem `current-from`-Span;
+  die Digest-Gleichheit der harten Pins bleibt bei `tools/gate-consistency.sh`.
+
+- **Die Commit-Range der CI fällt bei unerreichbarer Basis auf den Default-Branch**
+  (`make ci-range-selftest`, `tools/ci-commit-range.sh`; slice-134). Die Weiche fing bisher nur den
+  *neuen Branch* (all-zeros); ein **Force-Push** liefert einen gültig aussehenden SHA, den der
+  Runner-Klon nicht kennt — `actions/checkout` holt verwaiste Objekte nicht, auch nicht mit
+  `fetch-depth: 0`. Dependabot rebast bei jedem Lauf, und die Range-Prüfungen brachen darum mit
+  *„Range-Basis nicht auflösbar"* ab. Die Logik liegt jetzt in einem Skript statt inline im
+  Workflow — **nicht** der Lesbarkeit wegen, sondern weil ein `run:`-Block weder Selbsttest noch
+  Gate hat.
+
 ## [0.18.0] - 2026-08-30
 
 ### Changed — BREAKING
