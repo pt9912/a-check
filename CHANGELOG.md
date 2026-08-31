@@ -6,6 +6,8 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
+## [0.19.0] - 2026-08-31
+
 ### Added
 
 - **Das Release-Image liegt zusätzlich auf Docker Hub** (`AC-FA-DIST-002`, Lastenheft 0.26.0,
