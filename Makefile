@@ -48,7 +48,7 @@ NO_CACHE_FILTER_COV  := --no-cache-filter coverage
 # getan zu haben. `gate-consistency` prueft die Vollstaendigkeit (slice-068,
 # Fund F-1 des unabhaengigen Reviews).
 .PHONY: help compile lint test coverage-gate build arch-check arch-graph \
-        gate-consistency guard-selftest record-gates gates image-test ci \
+        gate-consistency guard-selftest ci-range-selftest record-gates gates image-test ci \
         trace-check hooks suppression-check regelwerk-check commit-scope-check \
         verify verify-risiko-ausgaenge verify-observations slice-mv image-scan \
         doc-workflows version-coherence
@@ -85,6 +85,9 @@ arch-graph: build ## Architektur-Graph (Mermaid) der eigenen .a-check.yml auf st
 
 gate-consistency: ## Meta-Gate: dokumentierte Targets ↔ Makefile, .d-check.yml-Module (Harness-Lügen-Schutz).
 	@bash tools/gate-consistency.sh
+
+ci-range-selftest: ## Selbsttest der CI-Commit-Range-Weiche (vier Faelle, inkl. Force-Push).
+	@bash tools/ci-commit-range.sh --selftest
 
 guard-selftest: ## Selbsttest des PreToolUse-Command-Guard (Denylist greift, Host-Toolchain blockiert).
 	@bash .claude/hooks/pretooluse-command-guard.sh --selftest
@@ -171,7 +174,7 @@ verify: ## Verifikations-Schicht: DoD-/Closure-Fragen (vor der "fertig"-Meldung;
 record-gates: ## Gate-Nachweis (Working-Tree-Hash) für den Stop-Hook schreiben.
 	@bash tools/harness/record-gates.sh
 
-gates: lint test coverage-gate arch-check doc-check doc-targets doc-planning doc-workflows gate-consistency version-coherence suppression-check guard-selftest record-gates ## alle inneren Gates (mandatory vor Handoff).
+gates: lint test coverage-gate arch-check doc-check doc-targets doc-planning doc-workflows gate-consistency version-coherence suppression-check guard-selftest ci-range-selftest record-gates ## alle inneren Gates (mandatory vor Handoff).
 
 image-test: build ## AC-FA-DIST-001 + nativ==Container-Akzeptanz gegen das gebaute Image.
 	@IMAGE=$(IMAGE) bash tools/image-test.sh
