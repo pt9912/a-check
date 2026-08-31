@@ -6,6 +6,65 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
+### Added
+
+- **Das Release-Image liegt zusätzlich auf Docker Hub** (`AC-FA-DIST-002`, Lastenheft 0.26.0,
+  [ADR-0039](docs/plan/adr/0039-spiegel-gleichheit-ist-der-config-digest.md); slice-127). Zugesagt
+  ist **dasselbe Bild**, nicht ein zweiter Bau: der Spiegel-Schritt läuft **nach** dem GHCR-Push und
+  vergleicht den **Config**-Digest beider Registries. Der Manifest-Digest sieht aus wie *die*
+  Identität eines Image, ist aber registry-lokal (Blob-Kompression) und auf beiden Seiten
+  verschieden — auch bei identischem Inhalt; ein von GHCR kopierter Manifest-Digest löst auf Docker
+  Hub **nicht** auf, und wer ihn als Pin weitergibt, merkt es erst beim Konsumenten. Der Schritt ist
+  **fail-closed**: schlägt der Spiegel fehl, ist das Release fehlgeschlagen, und die Fehlermeldung
+  nennt den bereits veröffentlichten GHCR-Digest — der Teilstand ist gültig, und wer aufräumt, muss
+  wissen, was schon draußen ist. Das Pin-Regime bleibt unangetastet: vier Stellen, ein Digest. Wer
+  vom Spiegel zieht, nimmt den Digest **seiner** Registry.
+
+### Fixed
+
+- **Der Release startet die Hub-Darstellung wieder selbst** (slice-130). Der Job `hub-description`
+  in [`release.yml`](.github/workflows/release.yml) ruft einen lokalen Workflow, der
+  `contents: read` verlangt, führte aber kein eigenes `permissions:` und erbte den Workflow-Kopf
+  `permissions: {}`. Ein aufgerufener Workflow bekommt nur, was der aufrufende **Job** selbst
+  deklariert; GitHub bricht diesen Fall **vor dem ersten Job** ab — ohne Log, ohne Job, ohne Hinweis
+  auf die schuldige Zeile. Beim Release v0.18.0 musste die Hub-Darstellung darum von Hand über
+  `workflow_dispatch` gestartet werden. Die Ursache stand seit slice-127 im Repo und fiel keinem
+  Gate auf, weil keines dorthin sah.
+
+- **Der Config-Digest-Vergleich des Spiegels greift** (slice-127). `docker manifest inspect` gibt
+  mehrzeiliges, eingerücktes JSON aus; ein einzeiliges `sed`-Muster traf darauf nicht und lieferte
+  leer — und ein Vergleich zweier leerer Werte meldet fälschlich Gleichheit. Der Riegel dahinter
+  fängt das (fail-closed), der Spiegel wäre aber blockiert statt geprüft gewesen. Ebenfalls
+  korrigiert: die Hub-Referenz im CVE-Sensor.
+
+### Harness (nicht anwender-sichtbar)
+
+- **`make doc-workflows`** prüft die Deklarations-Form der `uses:`-Referenzen unter
+  `.github/workflows/` und hängt im `gates`-Aggregat (slice-130). Geprüft wird die **Form**, nicht
+  die **Gültigkeit**: dass ein Tag-Kommentar dasteht, nicht welcher — das wäre Netz. Der Sensor fand
+  im ersten Lauf den oben behobenen Release-Bruch.
+
+- **`make version-coherence`** hält **doppelt deklarierte** Versions-Angaben gegeneinander
+  (slice-131): derselbe `uses:`-SHA trägt überall denselben Tag-Kommentar, und eine Versions-Variable,
+  die `Makefile` **und** `Dockerfile` führen, hat an beiden Orten denselben Wert. Geprüft wird
+  **Divergenz, nicht Unwahrheit** — zwei übereinstimmend falsche Angaben bleiben grün.
+
+- **`verify-risiko-ausgaenge` prüft `in-progress/` mit**, sobald die Closure-Notiz dort ausgefüllt
+  ist (slice-129). Der Auslöser ist der **Zustand** der Notiz, nicht das Verzeichnis: der alte
+  Sensor sah nur `done/` und zwang damit zu einer Inhaltsänderung **nach** dem `git mv` — also zu
+  genau dem Commit, den AGENTS.md §3.3 verbietet.
+
+- **Dependabot als Hebungs-Kanal** für beide Ökosysteme dieses Repos
+  ([ADR-0038](docs/plan/adr/0038-dependabot-als-hebungskanal.md); slice-128). Der Commit-Präfix
+  nennt die ADR und ist damit gate-**konform**, statt per `commits.exempt-pattern` von der
+  Traceability-Pflicht ausgenommen zu werden.
+
+- **CR 5 an d-check** (ein SHA, ein Tag-Kommentar) steht übergabefertig im Slice; der Versand liegt
+  beim Maintainer (slice-132).
+
+- **Die Regelwerk-Abschnitte unter `.claude/rules/` sind Symlinks** auf die vendored Baseline
+  (`MR-006`) statt einer zweiten Kopie, die dagegen driften könnte.
+
 ## [0.18.0] - 2026-08-30
 
 ### Changed — BREAKING
