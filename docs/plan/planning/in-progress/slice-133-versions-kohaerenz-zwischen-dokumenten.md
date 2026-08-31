@@ -25,18 +25,18 @@ wenn sie nicht mehr stimmt — statt so lange richtig auszusehen, bis jemand zuf
 
 ## 2. Definition of Done
 
-- [ ] Das Modul `versions` ist in [`.d-check.yml`](../../../../.d-check.yml) konfiguriert und läuft
+- [x] Das Modul `versions` ist in [`.d-check.yml`](../../../../.d-check.yml) konfiguriert und läuft
       über `modules:` in `make doc-check` — damit **ohne neues Target** im `gates`-Aggregat.
-- [ ] Die Angabe in [`releasing.md`](../../../../docs/user/releasing.md) §Versionsquelle nennt den
+- [x] Die Angabe in [`releasing.md`](../../../../docs/user/releasing.md) §Versionsquelle nennt den
       **gemessenen** Stand des Lastenhefts, nicht den zuletzt geschriebenen.
-- [ ] [`AGENTS.md`](../../../../AGENTS.md) §4 und
+- [x] [`AGENTS.md`](../../../../AGENTS.md) §4 und
       [`harness/README.md`](../../../../harness/README.md) nennen die neue Fähigkeit **samt ihrer
       Grenze** (kein Digest).
 
-- [ ] `make gates` grün — Ausgabe in eine Datei, Exit-Code getrennt geprüft, nie in eine Pipe.
-- [ ] Closure-Notiz mit benanntem Lerneintrag geschrieben (§7).
-- [ ] Beobachtungs-Register fortgeschrieben.
-- [ ] Jedes Risiko aus §6 trägt genau einen Ausgang.
+- [x] `make gates` grün — Ausgabe in eine Datei, Exit-Code getrennt geprüft, nie in eine Pipe.
+- [x] Closure-Notiz mit benanntem Lerneintrag geschrieben (§7).
+- [x] Beobachtungs-Register fortgeschrieben.
+- [x] Jedes Risiko aus §6 trägt genau einen Ausgang.
 
 ## 3. Der Befund, und warum ihn nichts gefangen hat
 
@@ -88,17 +88,64 @@ sind je eine eigene Messung, kein Anhängsel.
   wäre genau die Schein-Genauigkeit, die [`AGENTS.md`](../../../../AGENTS.md) §5 verbietet.
 - **`current-from` hängt am Heading-Slug `#lastenheft--a-check`.** Wird die H1 des Lastenhefts
   umbenannt, zeigt der Anker ins Leere.
-  **Ausgang:** *entfallen* — d-check bricht diesen Fall **fail-closed** ab (Exit 2, „keine Version
+  **Ausgang:** *entfallen*, **gestrichen mit Begründung**: d-check bricht diesen Fall **fail-closed** ab (Exit 2, „keine Version
   im adressierten Span" bzw. `anchor-missing` über das Modul `anchors`). Ein Bruch, der auffällt,
   ist kein offenes Risiko.
 - **Das Modul kann die Digest-Gleichheit nicht tragen**, der Eigenbau bleibt also stehen.
-  **Ausgang:** *entfallen* — gemessen (§4) und an beiden Orten benannt, an denen jemand das
+  **Ausgang:** *entfallen*, **gestrichen mit Begründung**: gemessen (§4) und an beiden Orten benannt, an denen jemand das
   Gegenteil vermuten würde ([`AGENTS.md`](../../../../AGENTS.md) §4 und der Kommentar über dem
   `versions:`-Block).
 
 ## 7. Closure-Notiz
 
-*(wird vor dem `git mv` nach `done/` ausgefüllt)*
+**Geliefert:** Das Modul `versions` steht in der `modules:`-Liste der
+[`.d-check.yml`](../../../../.d-check.yml) und läuft damit in `make doc-check` — im `gates`-Aggregat
+**ohne eigenes Target**. Das eine Muster-Quellen-Paar hält die Lastenheft-Angabe in
+[`releasing.md`](../../../../docs/user/releasing.md) gegen den H1-Span von
+[`spec/lastenheft.md`](../../../../spec/lastenheft.md); die Zahl dort nennt den gemessenen Stand.
+[`AGENTS.md`](../../../../AGENTS.md) §4 und
+[`harness/README.md`](../../../../harness/README.md) nennen die Fähigkeit samt ihrer Grenze.
+
+**Lerneintrag — Form: neuer Sensor.** *Ein Sensor, der eine Aussage prüft, muss gegen die Menge
+gemessen werden, über die er aussagt — und zwar in beide Richtungen, bevor er ins Aggregat geht.*
+Die grüne Richtung allein ist wertlos: ein Muster, das **nichts** trifft, liefert dieselben
+„0 Befund(e)" wie eines, das alles trifft und zufrieden ist. Belegt ist der Sensor erst durch den
+Lauf, in dem er **meldet** — hier durch die Rückstellung auf `0.17.0`, also auf genau den Befund,
+der ihn ausgelöst hat. *Weil* [`BEO-023`](../observations.md) diese Klasse zweimal in Folge
+getroffen hat (leere Prüfmenge bei `verify-ac-form`, nie gefahrenes `doc-complete`), war die
+Zwei-Richtungs-Messung hier keine Kür, sondern die Bedingung dafür, den Sensor überhaupt
+einzuschalten.
+
+**Die Auswahl war die eigentliche Arbeit, nicht die Konfiguration.** Der naheliegende Kandidat
+`citations` prüft *wortgleiche Zitate* und hätte hier eine Attrappe ergeben: Zitate unter 16
+Zeichen bleiben ungeprüft, `„0.17.0"` hat sechs. Eine `d-check:cite`-Direktive über dieser Angabe
+hätte ausgesehen wie ein Wächter und geschwiegen — dieselbe Fundklasse, gegen die der Slice
+gebaut ist, erzeugt durch seine eigene Konfiguration. Aufgefallen ist es nur, weil im Testfall
+**beide** Formen nebeneinander standen und der Lauf **einen** statt zwei Befunden meldete.
+
+**Drei beobachtbare Closure-Kriterien:**
+
+1. Beide Richtungen am **echten** Bestand, nicht an einer Fixture: `253 Datei(en), 0 Befund(e)`
+   bei übereinstimmendem Wert; `docs/user/releasing.md:38 0.17.0 version-stale — trägt 0.17.0,
+   erwartet 0.26.0` nach der Rückstellung.
+2. Der Gegenstand ist **gezählt**, nicht vermutet: genau ein Treffer des Musters im Bestand
+   (`releasing.md:38`), genau ein versions-fähiges Token im `current-from`-Span
+   (`**Version:** 0.26.0`).
+3. `make gates` grün nach der Änderung (Ausgabe in Datei, Exit-Code getrennt geprüft).
+
+**Beobachtungs-Register (`../observations.md`):** [`BEO-028`](../observations.md) auf **2×**
+erhöht, Beleg `slice-133` ergänzt — der `[Unreleased]`-Abschnitt lag bei der Release-Prep erneut
+leer, diesmal über 21 Commits seit `v0.18.0`. [`BEO-023`](../observations.md) bleibt bei **2×**:
+zitiert als Risiko-Klasse (§6), aber kein dritter Vorfall — dieser Slice hat die Leermenge
+ausgeschlossen, statt in sie zu laufen.
+
+**Folge-Slices:** keiner. Weitere Muster-Quellen-Paare (der `d-check`-Pin, die Baseline `v5.12.0`)
+sind je eine eigene Messung und in §5 ausdrücklich abgegrenzt.
+
+**Risiken aus §6:** drei, jedes mit genau einem Ausgang — *weiter offen* → Beobachtungs-Register
+(Wortlaut-Bindung, [`BEO-023`](../observations.md)); *entfallen*, gestrichen mit Begründung
+(Anker-Bruch ist fail-closed); *entfallen*, gestrichen mit Begründung (Digest-Grenze gemessen und
+benannt).
 
 ## 8. Sub-Area-Modus-Begründung
 
