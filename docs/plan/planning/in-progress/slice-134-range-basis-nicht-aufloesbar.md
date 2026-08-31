@@ -24,19 +24,19 @@ rebast wurde.
 
 ## 2. Definition of Done
 
-- [ ] `tools/ci-commit-range.sh` ermittelt die Commit-Range aus den drei Fällen und behandelt eine
+- [x] `tools/ci-commit-range.sh` ermittelt die Commit-Range aus den drei Fällen und behandelt eine
       **nicht erreichbare** Basis wie einen neuen Branch; es feuert bei jedem Lauf seinen
       Selbsttest.
-- [ ] [`ci.yml`](../../../../.github/workflows/ci.yml) ruft das Skript statt der Inline-Weiche —
+- [x] [`ci.yml`](../../../../.github/workflows/ci.yml) ruft das Skript statt der Inline-Weiche —
       die Range-Logik steht damit an **einem** Ort und ist lokal ausführbar.
-- [ ] `make ci-range-selftest` hängt im `gates`-Aggregat und ist in
+- [x] `make ci-range-selftest` hängt im `gates`-Aggregat und ist in
       [`AGENTS.md`](../../../../AGENTS.md) §4 sowie
       [`harness/README.md`](../../../../harness/README.md) deklariert.
 
-- [ ] `make gates` grün — Ausgabe in eine Datei, Exit-Code getrennt geprüft, nie in eine Pipe.
-- [ ] Closure-Notiz mit benanntem Lerneintrag geschrieben (§7).
-- [ ] Beobachtungs-Register fortgeschrieben.
-- [ ] Jedes Risiko aus §6 trägt genau einen Ausgang.
+- [x] `make gates` grün — Ausgabe in eine Datei, Exit-Code getrennt geprüft, nie in eine Pipe.
+- [x] Closure-Notiz mit benanntem Lerneintrag geschrieben (§7).
+- [x] Beobachtungs-Register fortgeschrieben.
+- [x] Jedes Risiko aus §6 trägt genau einen Ausgang.
 
 ## 3. Der Vorfall, gemessen
 
@@ -51,9 +51,9 @@ make: *** [Makefile:158: trace-check] Error 2
 
 Die Basis stammt aus `github.event.before`. **Nachgeschlagen, nicht vermutet:** beide Basen
 (`9dfc858b…` für PR #1, `f944e762…` für PR #2) tragen dieselbe Commit-Message wie der jeweilige
-Branch-Head — `build(ci) [ADR-0038]: bump …` — bei anderem SHA, und keine von beiden liegt auf
-`main`. Das ist ein **Force-Push**: Dependabot rebast seinen Branch auf neueres `main` und schiebt
-neu.
+Branch-Head — `build(ci) […]: bump …`, mit dem im Kopf verlinkten ADR-Präfix — bei anderem SHA,
+und keine von beiden liegt auf `main`. Das ist ein **Force-Push**: Dependabot rebast seinen Branch
+auf neueres `main` und schiebt neu.
 
 Der alte Commit bleibt serverseitig auflösbar — die API gibt ihn her —, ist aber von keiner Ref
 mehr erreichbar. `actions/checkout` holt ihn deshalb nicht in den Runner-Klon, und `fetch-depth: 0`
@@ -108,7 +108,53 @@ Repository-Einstellung außerhalb des Repos.
 
 ## 7. Closure-Notiz
 
-*(wird vor dem `git mv` nach `done/` ausgefüllt)*
+**Geliefert:** `tools/ci-commit-range.sh` trägt die Weiche samt Selbsttest über vier Fälle;
+[`ci.yml`](../../../../.github/workflows/ci.yml) ruft es statt der Inline-Fassung;
+`make ci-range-selftest` hängt im `gates`-Aggregat und steht in
+[`AGENTS.md`](../../../../AGENTS.md) §4, in
+[`harness/README.md`](../../../../harness/README.md) und in der GATES-Liste des
+PreToolUse-Command-Guard.
+
+**Lerneintrag — Form: geschärfte Regel.** *Eine Fallunterscheidung, die man nicht ausführen kann,
+ist keine Logik, sondern eine Vermutung mit Einrückung.* Die Weiche stand vier Zeilen im YAML und
+sah vollständig aus; sie deckte zwei von drei Lagen. Aufgefallen ist das nicht durch Lesen — sie
+wurde mehrfach gelesen —, sondern erst durch einen fremden Bot, der die dritte Lage erzeugte.
+*Weil* der `run:`-Block eines Workflows nur auf dem Runner läuft, gab es für ihn weder Selbsttest
+noch Gate; das Modul `workflows` aus [slice-130](../done/slice-130-workflows-modul-uses-form.md)
+prüft die **Deklarations**-Form der `uses:`-Einträge und sieht in die Blöcke ausdrücklich nicht
+hinein. Die Regel, die daraus folgt: Ablauf-Logik gehört aus dem Workflow heraus in ein Skript,
+sobald sie mehr als einen Fall unterscheidet — nicht wegen der Lesbarkeit, sondern weil sie erst
+dort einen Wächter bekommen kann.
+
+**Die Diagnose wäre fast die falsche gewesen.** Der erste Verdacht war „der Commit ist nicht
+auffindbar, also hat Dependabot ihn weggedrückt". Die API gab ihn aber her — der Commit
+**existiert**. Erst die Frage *wo* er nicht existiert (im Runner-Klon, nicht auf dem Server) traf
+den Sachverhalt, und mit ihr das richtige Prädikat: `git cat-file -e` fragt nach Erreichbarkeit,
+nicht nach Existenz. Ein Fix auf die erste Diagnose hin hätte die Basis erneut serverseitig geholt
+und wäre grün geworden, ohne die Lage zu treffen.
+
+**Drei beobachtbare Closure-Kriterien:**
+
+1. Der Selbsttest fängt den **tatsächlichen** Defekt: gegen die Fassung vor der Reparatur meldet
+   er *„unerreichbare Basis (Force-Push) nicht abgefangen"*, Exit 2.
+2. Er fängt auch die Gegenrichtung: gegen eine Fassung, die **immer** auf den Default-Branch
+   fällt, meldet er *„erreichbare Basis wird nicht benutzt"*, Exit 2. Ohne diesen vierten Fall
+   wäre ein Skript, das nie die Range benutzt, von einem richtigen nicht zu unterscheiden.
+3. `make gates` grün mit dem neuen Target im Aggregat — `ci-range-selftest ok: vier Faelle`.
+
+**Beobachtungs-Register (`../observations.md`):** neue [`BEO-033`](../observations.md) angelegt
+(CI-Schicht, 1×, Beleg `slice-134`) — eine Weiche, deren Verhalten an der Semantik eines **fremden**
+Event-Feldes hängt, ist lokal nicht prüfbar; der Selbsttest misst das eigene Skript, nicht die
+Annahme darüber. [`BEO-030`](../observations.md) und [`BEO-023`](../observations.md) wurden
+gesichtet und **nicht** erhöht (§8).
+
+**Folge-Slices:** keiner. Ob ein roter Branch-Lauf einen Schutz auslösen soll, ist eine
+Repository-Einstellung außerhalb des Repos (§5).
+
+**Risiken aus §6:** drei, jedes mit genau einem Ausgang — *weiter offen* → Beobachtungs-Register
+([`BEO-033`](../observations.md)); *entfallen*, gestrichen mit Begründung (der Fallback misst mehr,
+nie weniger); *entfallen*, gestrichen mit Begründung (die Logik steht danach an **einem** Ort statt
+inline).
 
 ## 8. Sub-Area-Modus-Begründung
 
