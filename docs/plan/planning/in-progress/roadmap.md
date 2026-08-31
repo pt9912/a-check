@@ -18,7 +18,7 @@ Welle-Datei, nicht hier.
 
 - *(keine offene Welle-Datei)*
 
-Nichts in Arbeit.
+In Arbeit: [slice-133](../in-progress/slice-133-versions-kohaerenz-zwischen-dokumenten.md) — eine Aussage über ein anderes Dokument wird gegen dessen Kopf gehalten.
 
 **Offene Slices ohne Welle** — sie brauchen keine, ihre Trigger stehen in ihrem eigenen `§0`:
 
