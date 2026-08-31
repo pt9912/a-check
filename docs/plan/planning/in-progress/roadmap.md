@@ -18,7 +18,7 @@ Welle-Datei, nicht hier.
 
 - *(keine offene Welle-Datei)*
 
-Nichts in Arbeit.
+In Arbeit: [slice-134](../in-progress/slice-134-range-basis-nicht-aufloesbar.md) — eine Range-Basis, die es im Klon nicht gibt, ist kein Traceability-Befund.
 
 **Offene Slices ohne Welle** — sie brauchen keine, ihre Trigger stehen in ihrem eigenen `§0`:
 
