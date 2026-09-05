@@ -44,9 +44,19 @@ BF-Markierung ist verschleierte Sub-Area-Brownfield.
 
 ## Form eines Carveouts
 
-Datei: `docs/plan/carveouts/CO-<NNN>-<kurztitel>.md`, aus
-[`carveout.template.md`](carveout.template.md). **Sechs Pflicht-Header-Felder:** Status · Datum
-angelegt · Letzte Prüfung · betroffenes Gate · Geltungsbereich · **Folge-Slice**.
+Datei: `docs/plan/carveouts/CO-<NNN>-<kurztitel>.md`, aus der vendored Ziel-Form
+[`.harness/baseline/v6.0.0/templates/docs/plan/carveouts/carveout.template.md`](../../../.harness/baseline/v6.0.0/templates/docs/plan/carveouts/carveout.template.md)
+— a-check führt keine eigene Kopie, sie würde gegen die Baseline driften (dieselbe Begründung wie
+bei der Slice-Vorlage, [`AGENTS.md`](../../../AGENTS.md) §5, „Slice-Form"; a-checks frühere lokale
+Kopie hatte genau das getan — ein Provenienz-Zeiger auf `v6.0.0` bumpte, während der Aufbau noch
+auf einem älteren Stand blieb, gefunden und entfernt in slice-149). **Sechs Pflicht-Header-Felder:**
+Status · Datum angelegt · Letzte Prüfung · betroffenes Gate · Geltungsbereich · **Folge-Slice**.
+
+**Beim Kopieren anzupassen:** die Verweise course-relativ → a-checks eigene Pfade (`AGENTS.md`
+statt Kurs-Konventionen); den Abschnitt `## Geschichte` streichen — er trägt Audit-Einträge einer
+Wellen-Closure-Prozedur, die a-check noch nicht durchläuft (Fund **B-13**, siehe
+[§Audit](#audit)); das Feld `Betroffenes Gate` auf eines der in
+[`AGENTS.md`](../../../AGENTS.md) §4 deklarierten Targets binden, kein erfundenes.
 
 - **Ohne Folge-Slice** ist der Carveout de facto permanent — dann gehört er über den Trichter in
   eine ADR, nicht hierher.
