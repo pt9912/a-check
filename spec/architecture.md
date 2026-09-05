@@ -1,6 +1,6 @@
 # Architektur — a-check
 
-**Version:** 0.3.0
+**Version:** 0.4.0
 
 **Status:** Draft
 
@@ -98,7 +98,21 @@ fremden Repos prüft — die Eigen-Architektur ist damit über das Tool selbst
 nachweisbar (Dogfooding,
 [AC-QA-02](lastenheft.md#ac-qa-02--hermetik-und-ehrliche-heuristik-grenze)).
 
-## 4. Sequenz: ein Scan-Lauf
+## 4. Externe Abhängigkeiten
+
+Regeln dieser Sektion: Auch die Schnittstelle zu einem externen System trägt eine `ARC-*` — die
+Kennung benennt den *Berührungspunkt*, nicht das fremde System.
+
+`a-check` läuft selbst **hermetisch** — netzlos (`--network none`), keine Laufzeit-Abhängigkeit
+zu einem externen Dienst ([AC-QA-02](lastenheft.md#ac-qa-02--hermetik-und-ehrliche-heuristik-grenze)).
+Externe Systeme berühren nur den **Distributions**-Weg, nie den Scan-Lauf selbst.
+
+| ID | System | Rolle | Substituierbarkeit |
+|---|---|---|---|
+| **ARC-008** | GHCR (`ghcr.io`) | primäre Registry — Image-Distribution, digest-gepinnt ([SPEC-DIST-001](spezifikation.md#spec-dist-001--laufzeitform-und-distribution)) | austauschbar (jede OCI-Registry); die Pin-Mechanik bindet an den Digest, nicht an die Registry-Identität |
+| **ARC-009** | Docker Hub | Spiegel des GHCR-Images ([AC-FA-DIST-002](lastenheft.md#ac-fa-dist-002)) | optional — kein Laufzeit-Bezug, reiner Zweit-Kanal |
+
+## 5. Sequenz: ein Scan-Lauf
 
 ```mermaid
 sequenceDiagram
@@ -138,7 +152,25 @@ sequenceDiagram
     GRAPH-->>CLI: Mermaid-flowchart auf stdout, Exit 0
 ```
 
-## 5. Geltung der Constraints
+## 6. Fehlermodelle und Resilienz
+
+Regeln dieser Sektion: Fehlerbehandlung ist Bestandteil der Sicht, weil sie zeigt, **welche
+Schicht** einen Fehlerfall zuerst sieht — Details des Exit-Code-Vertrags trägt
+[AC-FA-CLI-001](lastenheft.md#ac-fa-cli-001--aufruf-scan-wurzel-und-exit-codes).
+
+| Fehlerquelle | Behandlung-Schicht | Ausgabe |
+|---|---|---|
+| Fehlende/ungültige `.a-check.yml` | ARC-004 Konfigurations-Adapter → ARC-006 Composition Root meldet Exit 2 | stderr, mit Zeilenangabe wo die Fehlerquelle eine Zeile hat |
+| Unbekanntes Flag/Restargument | ARC-006 Composition Root | stderr, Exit 2 |
+| Architektur-Befund (Regelverstoß) | ARC-001 Kern wertet aus, ARC-005 Report-Adapter formatiert | Befunde auf stdout, Zusammenfassung auf stderr, Exit 1 |
+| Kein Befund | ARC-005 Report-Adapter | Zusammenfassung auf stderr, Exit 0 |
+
+**Resilienz-Grenze:** `a-check` fängt keinen Fehler ab, um weiterzulaufen — jeder der drei
+Exit-Codes ist terminal für den Lauf (kein Teilergebnis, kein Retry). Das ist bewusst: ein
+Architektur-Gate, das bei einem Konfigurationsfehler "so gut es geht" weiterprüft, wäre
+still-falsch-grün für den nicht geprüften Rest ([AC-QA-02](lastenheft.md#ac-qa-02--hermetik-und-ehrliche-heuristik-grenze)).
+
+## 7. Geltung der Constraints
 
 Die Zugriffs-Constraints aus §3 sind maschinell prüfbar (Eigen-`arch-check`,
 Dogfooding) und spiegeln die Regel-Semantik aus
@@ -146,10 +178,11 @@ Dogfooding) und spiegeln die Regel-Semantik aus
 Port-Disziplin und Schicht-Richtung gelten für `a-check` selbst wie für die
 geprüften Repos.
 
-## 6. Historie
+## 8. Historie
 
 | Version | Datum | Änderung |
 |---|---|---|
 | 0.1.0 | 2026-06-21 | Erstfassung (Sicht-Stratum): Hexagon-Komponenten `ARC-001…006` (Kern/Ports/Extraktions-/Config-/Report-Adapter/Composition Root), Schicht-Richtung und Scan-Sequenz; sprach-/meilensteinfrei, visualisiert Lastenheft + Spezifikation. |
 | 0.2.0 | 2026-06-22 | ARC-002 nachgezogen: Ports sind eigene `ports`-Schicht, die Domänentypen referenziert (statt Co-Location im Kern-Paket); §2-Abhängigkeitsrichtung Ports→Kern korrigiert. |
 | 0.3.0 | 2026-07-09 | Graph-Ausgabe additiv eingeordnet: neues **ARC-007** (Graph-Präsentationsadapter, pur, implementiert `GraphPort`); **ARC-002** um `GraphPort` ergänzt; **ARC-003** um den validation-only `Validate`-Einstieg (Sprach-Backends ohne Walk); **ARC-006** bedient zusätzlich `--print-graph`; §4 um die no-scan-Sequenz (`Config.Load → Extraktion.Validate → GraphPort.Render → stdout`) erweitert. Sprach-/meilensteinfrei; visualisiert [SPEC-CLI-002](spezifikation.md#spec-cli-002--graph-renderer-vertrag). |
+| 0.4.0 | 2026-09-05 | Zwei gegen die v6.0.0-Baseline-Ziel-Form nachgezogene Abschnitte: neues **§4 Externe Abhängigkeiten** (**ARC-008** GHCR, **ARC-009** Docker-Hub-Spiegel — beide reine Distributions-Berührungspunkte, kein Laufzeit-Bezug) und neues **§6 Fehlermodelle und Resilienz** (Exit-Code-Vertrag aus [AC-FA-CLI-001](lastenheft.md#ac-fa-cli-001--aufruf-scan-wurzel-und-exit-codes) je Behandlung-Schicht aufgeschlüsselt). Folge-Sektionen §5/§7/§8 rücken nach; kein Cross-Referenz-Bruch (nur §2 ist von außen zitiert, unverändert). Kein neuer Fakt — beide Abschnitte fassen bereits an anderer Stelle belegte Aussagen an der von der Ziel-Form vorgesehenen Stelle zusammen. |

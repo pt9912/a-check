@@ -1,6 +1,6 @@
 # Lastenheft — a-check
 
-**Version:** 0.26.0
+**Version:** 0.27.0
 
 **Status:** Draft
 
@@ -29,12 +29,7 @@ Es ist das **Architektur-Gegenstück zu `d-check`** (Doku-Referenzen):
 dieselbe Gründungslogik (eine Familie driftender Skripte durch ein
 Werkzeug ersetzen), eine Abstraktionsebene höher.
 
-**Out of Scope (Produkt):** `a-check` ersetzt keine sprach-eigene,
-compile-time durchgesetzte Modulgrenze (z. B. Gradle-Module in
-`d-migrate`), sondern ergänzt sie um die *fein­granularen*
-Fitness-Functions, die der Compiler nicht abdeckt (laterale
-Adapter-Kanten, Port-Disziplin). Es ist eine **Heuristik** auf
-Import-Ebene, kein vollständiger Sprach-Parser (siehe `AC-QA-02`).
+**Out of Scope (Produkt):** siehe [§5 Globale Out-of-Scope-Punkte](#5-globale-out-of-scope-punkte).
 
 ## 2. Stakeholder
 
@@ -695,6 +690,32 @@ Commit, den dieser Abschnitt ohnehin verlangt.
 - **Negative:** Given ein Konsument übernimmt das Fragment unverändert, when `make a-check` läuft, then bricht der Aufruf sichtbar am Platzhalter ab, statt still ein fremdes Release zu ziehen.
 - **Out-of-Scope:** einen korrekten Eigen-Digest zur Laufzeit ermitteln (netzlos nicht möglich; der Host kennt ihn über `docker inspect`, das Binary nicht); die Pin-Hebung beim Konsumenten automatisieren.
 
+## 5. Globale Out-of-Scope-Punkte
+
+Nicht-Anforderungen, die für das Gesamtsystem gelten — im Unterschied zu den Out-of-Scope-Punkten
+je Anforderung in §3/§4, die nur den jeweiligen AC begrenzen.
+
+- `a-check` ersetzt keine sprach-eigene, compile-time durchgesetzte Modulgrenze (z. B. Gradle-Module
+  in `d-migrate`), sondern ergänzt sie um die feingranularen Fitness-Functions, die der Compiler
+  nicht abdeckt (laterale Adapter-Kanten, Port-Disziplin) — siehe §1.
+- `a-check` ist eine **Heuristik** auf Import-Ebene, kein vollständiger Sprach-Parser
+  ([AC-QA-02](#ac-qa-02--hermetik-und-ehrliche-heuristik-grenze)).
+- Kein Auto-Fix/keine Reparatur von Architekturverstößen — es gibt keinen deterministisch
+  ableitbaren Fix (siehe [AC-FA-CLI-002](#ac-fa-cli-002--architektur-graph-ausgabe)).
+
+## 6. Glossar
+
+Begriffe, die in diesem Lastenheft feststehend verwendet werden — Definitionen aus §3/§4
+übernommen, nicht neu festgelegt.
+
+| Begriff | Bedeutung im Lastenheft |
+|---|---|
+| **Schicht-Rolle** | Eine von `domain`/`port`/`adapter`/`app`, die eine Schicht trägt (explizit via `role:` oder aus dem Namen abgeleitet) und bestimmt, welche Reinheits-Regel auf sie angewandt wird ([AC-FA-RULE-006](#ac-fa-rule-006--schicht-rollen-generische-regel-anwendung)). |
+| **Sub-Einheit** | Ein Verzeichnis (nie ein Dateiname) innerhalb einer Adapter-Schicht, relativ zu deren Glob-Präfix unterschieden; trennt, welche Importe innerhalb derselben Schicht als lateral gelten ([AC-FA-RULE-002](#ac-fa-rule-002--keine-lateralen-adapter-kanten-regel-lateral-adapter)). |
+| **Composition Root** | Der konfigurierte Ort, an dem Verdrahtung (DI) stattfinden darf und der von der `tech`-Kapselung standardmäßig ausgenommen ist (`composition_root: allow` \| `forbid`, siehe [AC-FA-RULE-003](#ac-fa-rule-003--tech-kapselung-regel-tech-leak)). |
+| **driving / driven** | Die Betriebsrichtung eines `adapter` (`driving` = treibt die Anwendung an, `driven` = wird von ihr angesteuert) — orthogonal zur Rolle, nicht zu verwechseln mit `inbound`/`outbound` an einem `port` ([AC-FA-RULE-008](#ac-fa-rule-008--richtungs-dimension-regel-port-direction-mismatch)). |
+| **Heuristik-Grenze** | Eine dokumentierte, bewusste Lücke der text-basierten Extraktion (kein Sprach-Parser) — wird ausgewiesen statt verschwiegen ([AC-QA-02](#ac-qa-02--hermetik-und-ehrliche-heuristik-grenze)). |
+
 ## 7. Historie
 
 Regeln dieser Sektion: Ab Status `Accepted` ist **jede** Änderung an diesem Dokument eine
@@ -733,3 +754,4 @@ eine Zeile hier (Baseline-Regelwerk `grundlagen-source-precedence.md` §Spec-Str
 | 0.24.0 | 2026-08-30 | Neu **`AC-FA-CLI-003`** (Usage-Ausgabe und Handbuch-Verweis): `--help` trägt Kurzbeschreibung, Aufruf-Syntax, Konfigurations-Hinweis und die **URL des Benutzerhandbuchs**; dieselbe URL steht im Kopfkommentar des per `--print-mk` erzeugten Fragments, das in ein **fremdes** Repo reist. **Zugesichert ist die Anwesenheit der Bestandteile, nicht ihr Wortlaut** — ein Test bindet sich nicht an die Formulierung. Die URL zeigt **tag-frei** auf den Hauptzweig: das Binary kennt seinen Release-Kontext zur Laufzeit nicht, ein zur Build-Zeit eingesetzter versionierter Link nennte immer den Vorgänger — dieselbe Mechanik, die `AC-QA-03` in 0.23.0 für den Image-Digest entschieden hat. Der Preis ist benannt: wer ein altes Release fährt, landet auf dem aktuellen Handbuch und liest dort den Software-Versions-Stempel. slice-117. |
 | 0.25.0 | 2026-08-30 | **`AC-FA-RULE-008` neu gefasst:** die Richtungs-Dimension trägt je Rolle **ihr eigenes Vokabular** — an `role: port` `inbound`/`outbound`, an `role: adapter` `driving`/`driven`. Ein Port *treibt* nichts, er wird benutzt; ein Adapter ist nicht *eingehend*, er treibt oder wird getrieben. Bisher galt `driving`/`driven` für **beide**, obwohl die Beschreibung die Äquivalenz („`driving` = primär/inbound") selbst nannte und nur die eine Hälfte als Wert zuließ. `port-direction-mismatch` prüft dadurch eine **Paarung** (`driving`↔`inbound`, `driven`↔`outbound`) statt einer String-Gleichheit; die Regel-Aussage ist unverändert. **Breaking:** die falsche Vokabel an einer Rolle ist Exit-Code 2 mit nennender Meldung — kein still akzeptiertes Alias, weil a-check kein Warn-Level kennt und die alte Schreibweise sonst unbemerkt bliebe. `AC-FA-CONF-001` im Schema nachgezogen. slice-121. |
 | 0.26.0 | 2026-08-30 | Neu **`AC-FA-DIST-002`** (Docker-Hub-Spiegel): das Release-Image wird zusätzlich nach `docker.io/pt9912/a-check` gespiegelt — **dasselbe Bild, nicht ein zweiter Bau**. Gleichheits-Größe ist der **Config-Digest** (der Manifest-Digest ist registry-lokal, er hängt an der Blob-Kompression); die Pipeline prüft ihn **nach** dem Push und **fail-closed**. Die Pin-Stellen dieses Repos bleiben **GHCR-gebunden** — wer vom Spiegel zieht, nimmt den Digest der Registry, aus der er zieht. Die **Darstellung** (Kurztext, Overview-Seite) ist ausdrücklich **nicht** Teil der Zusage: ein Fehlschlag dort macht kein Release rot, wird aber gemeldet. slice-127. |
+| 0.27.0 | 2026-09-05 | Gegen die v6.0.0-Baseline-Ziel-Form nachgezogen: neu **§5 Globale Out-of-Scope-Punkte** (das bisher in §1 stehende produktweite „Out of Scope" dorthin verschoben, §1 zeigt jetzt per Verweis) und **§6 Glossar** (fünf im Dokument bereits feststehend verwendete Begriffe: Schicht-Rolle, Sub-Einheit, Composition Root, driving/driven, Heuristik-Grenze). Kein neuer Fakt — beide Abschnitte konsolidieren bereits an anderer Stelle belegte Aussagen an der von der Ziel-Form vorgesehenen Stelle; Status bleibt `Draft`, daher keine Change-Request-Pflicht (§7). |
