@@ -189,6 +189,8 @@ die CI (Badge im [`README.md`](README.md)), nicht diese Tabelle.
 | `make ci` | CI-äquivalent: `gates` + `image-test` (Workflow `.github/workflows/ci.yml`) |
 | `make trace-check` | Traceability via Modul `commits` ([ADR-0021](docs/plan/adr/0021-commits-modul-trace-check.md)): `AC-*`/`ADR-*`/`MR-*`/`slice`-ID je Commit (§5; `MSGFILE=` Hook, `RANGE=` CI) |
 | `make commit-scope-check` | Commit-Scope `(planning)` berührt nur `docs/plan/planning/` (§5, [`SL-003`](docs/plan/planning/observations/README.md)); misst jeden Commit an der zu seinem Zeitpunkt geltenden Fassung (`RANGE=` wie `trace-check`, slice-062) |
+| `make archive-wave-test` | Testsuite von `tools/archive-wave/` (eigenes `go.mod` — **nicht** Teil von `make test`, das nur das Hauptmodul deckt) |
+| `make archive-wave` | Setzt Baseline-Regelwerk `modul-06-roadmap.md` §Wellen-Closure-Prozedur Schritt 4 um (`WELLE=<id>` sammelt die Slices einer Welle über ihr `**Welle:**`-Feld und deren Review-Reports, baut `done/<welle-id>/archiv.zip`, ersetzt Volltexte durch Stubs, zieht Verweise nach; `SLICE=<id>`/`REVIEW=<datei>` für wellenlose Einzel-Fälle), `APPLY=1` optional. **`WELLE=` nennt die kurze numerische Form** (`welle-12`, nicht `welle-12-regelwerk-migration`) — das Werkzeug matcht nur die Ziffernfolge im `**Welle:**`-Feld, a-checks eigene Roadmap-IDs tragen einen beschreibenden Suffix, den es nicht kennt (slice-144, per Dry-Run gemessen). Unverändert aus `d-check` übernommen (eigenständig, `tools/archive-wave/README.md`); **kein Gate**, von Hand ausgelöster Vorgang, sicherer Default ohne `APPLY=1` (nichts wird geschrieben) |
 
 ## 5. Dokumentations-Regeln
 

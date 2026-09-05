@@ -51,7 +51,7 @@ NO_CACHE_FILTER_COV  := --no-cache-filter coverage
         gate-consistency guard-selftest ci-range-selftest record-gates gates image-test ci \
         trace-check hooks suppression-check regelwerk-check commit-scope-check \
         verify verify-risiko-ausgaenge verify-observations slice-mv image-scan \
-        doc-workflows version-coherence
+        doc-workflows version-coherence archive-wave-test archive-wave
 
 # Gates seriell: unter `make -j` liefen die Sub-Gates sonst parallel und die
 # Reihenfolge/der Abbruch bei rotem Gate wären nicht garantiert.
@@ -193,3 +193,15 @@ trace-check: ## Traceability via Modul commits (ADR-0021): AC-/ADR-/MR-/slice-ID
 hooks: ## git-Hooks installieren (core.hooksPath -> .githooks; commit-msg Traceability). AGENTS §5.
 	@git config core.hooksPath .githooks
 	@echo "[hooks] core.hooksPath=.githooks — commit-msg Traceability-Gate aktiv"
+
+# archive-wave (Baseline-Regelwerk modul-06-roadmap.md §Wellen-Closure-
+# Prozedur, Schritt 4): eigenstaendiges Werkzeug unter tools/archive-wave/,
+# unveraendert aus d-check uebernommen (dasselbe Planning-Layout, portabel
+# per README-Zusage, kein Import aus einem d-check-internen Paket). Eigenes
+# go.mod, darum eigenes Test-Target statt Teil von `make test`.
+archive-wave-test: ## archive-wave-Testsuite (eigenes go.mod, nicht Teil von `make test`).
+	$(MAKE) -C tools/archive-wave test GO_VERSION=$(GO_VERSION) PROGRESS_FLAG='$(PROGRESS_FLAG)'
+
+archive-wave: ## Welle oder wellenlosen Slice archivieren: make archive-wave WELLE=welle-NN|SLICE=slice-NNN|REVIEW=datei.md [APPLY=1].
+	$(MAKE) -C tools/archive-wave run WELLE=$(WELLE) SLICE=$(SLICE) REVIEW=$(REVIEW) APPLY=$(APPLY) ROOT=$(CURDIR) \
+	    GO_VERSION=$(GO_VERSION) PROGRESS_FLAG='$(PROGRESS_FLAG)'

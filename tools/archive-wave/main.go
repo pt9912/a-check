@@ -1,0 +1,308 @@
+// archive-wave setzt Modul 6, Schritt 4 des Planning-Harness-Regelwerks um
+// ("Zeitdokumente der Welle archivieren"): sammelt die Slices und
+// Review-Reports einer geschlossenen Welle, baut ein archiv.zip, ersetzt die
+// Volltexte durch gekuerzte Stubs und zieht repo-weite Verweise nach.
+//
+// Portabel gehalten: kein Import aus einem d-check-internen Paket. Jedes
+// Repo mit demselben Planning-Layout (docs/plan/planning/, docs/reviews/,
+// **Welle:**-Feld) kann dieses Verzeichnis unveraendert uebernehmen.
+//
+// Sicherer Default: ohne -apply wird NICHTS geschrieben, nur der geplante
+// Umfang ausgegeben.
+package main
+
+import (
+	"flag"
+	"fmt"
+	"os"
+	"path/filepath"
+	"strings"
+)
+
+func main() {
+	welle := flag.String("welle", "", "Wellen-Kennung, z. B. welle-87 (mutually exclusive mit -slice/-review)")
+	sliceID := flag.String("slice", "", "Slice-Kennung eines wellenlosen Slice, z. B. slice-137 (mutually exclusive mit -welle/-review)")
+	reviewFile := flag.String("review", "", "Dateiname eines eigenstaendigen Reviews unter docs/reviews/, z. B. 2026-06-11-cr-dc-fa-code-001.md (mutually exclusive mit -welle/-slice)")
+	root := flag.String("root", ".", "Repo-Wurzel")
+	apply := flag.Bool("apply", false, "Aenderungen tatsaechlich schreiben (Default: nur anzeigen)")
+	flag.Parse()
+
+	if err := validateModeFlags(*welle, *sliceID, *reviewFile); err != nil {
+		fmt.Fprintln(os.Stderr, "archive-wave: "+err.Error())
+		os.Exit(2)
+	}
+
+	var err error
+	switch {
+	case *welle != "":
+		err = runWelle(*root, *welle, *apply)
+	case *sliceID != "":
+		err = runSlice(*root, *sliceID, *apply)
+	default:
+		err = runReview(*root, *reviewFile, *apply)
+	}
+	if err != nil {
+		fmt.Fprintln(os.Stderr, "archive-wave: "+err.Error())
+		os.Exit(1)
+	}
+}
+
+// validateModeFlags erzwingt, dass genau eines von -welle/-slice/-review
+// gesetzt ist -- weder mehrere (mehrdeutig, welcher Modus?) noch keines
+// (kein Ziel).
+func validateModeFlags(welle, sliceID, reviewFile string) error {
+	n := 0
+	for _, v := range []string{welle, sliceID, reviewFile} {
+		if v != "" {
+			n++
+		}
+	}
+	if n != 1 {
+		return fmt.Errorf("genau eines von -welle, -slice oder -review ist Pflicht (z. B. -welle=welle-87, -slice=slice-137 oder -review=2026-06-11-cr-dc-fa-code-001.md)")
+	}
+	return nil
+}
+
+func runWelle(root, welleID string, apply bool) error {
+	wellePlan, err := FindWellePlan(root, welleID)
+	if err != nil {
+		return err
+	}
+	slices, err := CollectSlices(root, welleID)
+	if err != nil {
+		return err
+	}
+	reviews, err := CollectReviews(root, slices)
+	if err != nil {
+		return err
+	}
+
+	fmt.Printf("archive-wave: %s\n", welleID)
+	if wellePlan == "" {
+		fmt.Println("  Welle-Plan: (keiner -- Welle vor der Plan-Datei-Konvention, nur -results.md)")
+	} else {
+		fmt.Printf("  Welle-Plan: %s\n", RelPath(root, wellePlan))
+	}
+	fmt.Printf("  Slices (%d):\n", len(slices))
+	for _, s := range slices {
+		fmt.Printf("    %s\n", RelPath(root, s))
+	}
+	fmt.Printf("  Review-Reports (%d):\n", len(reviews))
+	for _, r := range reviews {
+		fmt.Printf("    %s\n", RelPath(root, r))
+	}
+
+	// Fail-closed nur, wenn BEIDE Signale fehlen -- das ist der Tippfehler-
+	// Fall (Welle existiert gar nicht). Ein Welle-Plan ohne eigene Slices ist
+	// dagegen legitim (gemessen an welle-73: ihr Closure-Trigger ist ein
+	// Slice aus welle-69, sie liefert selbst keinen): dann bleibt etwas zu
+	// archivieren -- der Plan.
+	if len(slices) == 0 && wellePlan == "" {
+		return fmt.Errorf("weder Welle-Plan noch Slices fuer %s gefunden -- Abbruch, fail-closed statt leeres Archiv", welleID)
+	}
+
+	p := Plan{WelleID: welleID, WellePlan: wellePlan, Slices: slices, Reviews: reviews}
+
+	if !apply {
+		moves := previewMoves(root, p)
+		hits, err := PreviewRewrites(root, moves)
+		if err != nil {
+			return err
+		}
+		// Review-Reports bekommen bei -apply keinen Stub -- sie sind zum
+		// Zeitpunkt des Verweis-Nachzugs bereits geloescht und koennen selbst
+		// nie eine nachgezogene Referenz tragen. Ohne diesen Filter zeigte die
+		// Vorschau einen Treffer, der bei -apply nie eintritt (gemessen an
+		// welle-60: Review-Reports verweisen auf andere gesammelte Slices).
+		dropReviewSelfHits(hits, root, p.Reviews)
+		fmt.Println("  Geplante Verweis-Fixes (ohne -apply wird nichts geschrieben):")
+		if len(hits) == 0 {
+			fmt.Println("    (keine)")
+		}
+		for _, f := range SortedKeys(hits) {
+			fmt.Printf("    %s: %d\n", f, hits[f])
+		}
+		return nil
+	}
+
+	moves, err := Apply(root, p)
+	if err != nil {
+		return err
+	}
+	hits, err := RewriteRepo(root, moves)
+	if err != nil {
+		return err
+	}
+	fmt.Println("  Verweise nachgezogen:")
+	for _, f := range SortedKeys(hits) {
+		fmt.Printf("    %s: %d\n", f, hits[f])
+	}
+	fmt.Println("  Fertig -- git status pruefen, dann git mv + Commit wie im Plan vorgesehen.")
+	return nil
+}
+
+// previewMoves berechnet dieselben Move-Ziele wie Apply, ohne zu schreiben --
+// fuer die Verweis-Vorschau ohne -apply.
+func previewMoves(root string, p Plan) []Move {
+	archiveDir := "docs/plan/planning/done/" + p.WelleID
+	var moves []Move
+	if p.WellePlan != "" {
+		moves = append(moves, Move{
+			Old: RelPath(root, p.WellePlan),
+			New: archiveDir + "/" + filepath.Base(p.WellePlan),
+		})
+	}
+	for _, s := range p.Slices {
+		moves = append(moves, Move{
+			Old: RelPath(root, s),
+			New: archiveDir + "/" + filepath.Base(s),
+		})
+	}
+	return moves
+}
+
+// runSlice archiviert einen einzelnen wellenlosen Slice (Modul 6 §Wann
+// Arbeit eine Welle braucht, "Ohne Wellen tut es die Slice-Closure selbst").
+// Anders als runWelle gibt es keinen Move fuer die Slice-Datei selbst (ihr
+// Pfad bleibt, nur der Inhalt wird ersetzt) -- ein repo-weiter
+// Verweis-Nachzug ist deshalb fuer sie unnoetig. Fuer die geloeschten
+// Review-Reports (kein Stub, kein Move-Ziel) prueft runSlice stattdessen auf
+// tote Verweise: ein Fund wird gemeldet, aber nicht blockiert -- derselbe
+// Report-vs-Fund-statt-Fehler-Umgang wie beim Wellen-Modus.
+func runSlice(root, sliceID string, apply bool) error {
+	slicePath, err := FindSlice(root, sliceID)
+	if err != nil {
+		return err
+	}
+	field, err := ReadWelleField(slicePath)
+	if err != nil {
+		return err
+	}
+	// Zugehoerigkeits-Pruefung nur auf der ERSTEN Zeile (wie CollectSlices
+	// es fuer denselben Zweck tut) -- nicht auf dem vollen, mehrzeiligen
+	// Feld: ein wellenloser Absatz nennt haeufig eine FREMDE Welle als
+	// Kontext ("Anlass liegt in welle-86", "welle-66 abgeschlossen"), keine
+	// eigene Zugehoerigkeit. Jede reale Wellen-Zuordnung dieses Repos steht
+	// dagegen bereits in der ersten Zeile (gemessen, siehe slice-193..197).
+	firstLine, _, _ := strings.Cut(field, "\n")
+	if welleIDInFieldRE.MatchString(firstLine) {
+		return fmt.Errorf("%s gehoert zu einer Welle (Welle-Feld, erste Zeile: %q) -- das gehoert in den -welle-Modus, nicht -slice", sliceID, firstLine)
+	}
+	reviews, err := CollectReviews(root, []string{slicePath})
+	if err != nil {
+		return err
+	}
+
+	newAbs := filepath.Join(root, WellenlosArchiveDir, filepath.Base(slicePath))
+	previewMove := Move{Old: RelPath(root, slicePath), New: RelPath(root, newAbs)}
+
+	fmt.Printf("archive-wave: %s (wellenlos)\n", sliceID)
+	fmt.Printf("  Slice: %s -> %s\n", previewMove.Old, previewMove.New)
+	fmt.Printf("  Review-Reports (%d):\n", len(reviews))
+	for _, r := range reviews {
+		fmt.Printf("    %s\n", RelPath(root, r))
+	}
+
+	danglers, err := FindReferencesToPaths(root, reviews, append([]string{slicePath}, reviews...))
+	if err != nil {
+		return err
+	}
+	fmt.Println("  Verweise auf die geloeschten Review-Reports (werden NICHT nachgezogen, kein Move-Ziel):")
+	if len(danglers) == 0 {
+		fmt.Println("    (keine)")
+	}
+	for _, f := range SortedKeys(danglers) {
+		fmt.Printf("    %s: %d\n", f, danglers[f])
+	}
+
+	if !apply {
+		hits, err := PreviewRewrites(root, []Move{previewMove})
+		if err != nil {
+			return err
+		}
+		fmt.Println("  Geplante Verweis-Fixes fuer den Slice-Move (ohne -apply wird nichts geschrieben):")
+		if len(hits) == 0 {
+			fmt.Println("    (keine)")
+		}
+		for _, f := range SortedKeys(hits) {
+			fmt.Printf("    %s: %d\n", f, hits[f])
+		}
+		return nil
+	}
+
+	moves, err := ApplySlice(root, sliceID, slicePath, reviews)
+	if err != nil {
+		return err
+	}
+	hits, err := RewriteRepo(root, moves)
+	if err != nil {
+		return err
+	}
+	fmt.Println("  Verweise nachgezogen:")
+	for _, f := range SortedKeys(hits) {
+		fmt.Printf("    %s: %d\n", f, hits[f])
+	}
+	fmt.Println("  Fertig -- git status pruefen, dann Commit wie im Plan vorgesehen.")
+	return nil
+}
+
+// runReview archiviert einen einzelnen EIGENSTAENDIGEN Review-Report (kein
+// Slice-Partner) -- anders als ein Slice-/Wellen-Review, der beim
+// Archivieren keinen Stub bekommt (seine Identitaet kommt vom Slice/von der
+// Welle), IST ein eigenstaendiger Review selbst der abgeschlossene Vorgang
+// und bekommt deshalb, wie ein Slice, einen eigenen Stub -- sonst
+// verschwaende er spurlos ohne Zeiger auf sein Archiv.
+func runReview(root, filename string, apply bool) error {
+	reviewPath, err := FindReview(root, filename)
+	if err != nil {
+		return err
+	}
+	if SliceIDFromPath(filename) != "" {
+		return fmt.Errorf("%s traegt ein slice-<NNN>-Muster -- das gehoert in den -slice-Modus (dessen Sammel-Logik es ohnehin findet, sobald der Slice archiviert wird), nicht -review", filename)
+	}
+
+	newAbs := filepath.Join(root, ReviewArchiveDir, filepath.Base(reviewPath))
+	previewMove := Move{Old: RelPath(root, reviewPath), New: RelPath(root, newAbs)}
+
+	fmt.Printf("archive-wave: %s (eigenstaendiger Review)\n", filename)
+	fmt.Printf("  Review: %s -> %s\n", previewMove.Old, previewMove.New)
+
+	if !apply {
+		hits, err := PreviewRewrites(root, []Move{previewMove})
+		if err != nil {
+			return err
+		}
+		fmt.Println("  Geplante Verweis-Fixes fuer den Review-Move (ohne -apply wird nichts geschrieben):")
+		if len(hits) == 0 {
+			fmt.Println("    (keine)")
+		}
+		for _, f := range SortedKeys(hits) {
+			fmt.Printf("    %s: %d\n", f, hits[f])
+		}
+		return nil
+	}
+
+	moves, err := ApplyReview(root, reviewPath)
+	if err != nil {
+		return err
+	}
+	hits, err := RewriteRepo(root, moves)
+	if err != nil {
+		return err
+	}
+	fmt.Println("  Verweise nachgezogen:")
+	for _, f := range SortedKeys(hits) {
+		fmt.Printf("    %s: %d\n", f, hits[f])
+	}
+	fmt.Println("  Fertig -- git status pruefen, dann Commit wie im Plan vorgesehen.")
+	return nil
+}
+
+// dropReviewSelfHits entfernt Review-Report-Pfade aus einer Treffer-Map --
+// sie werden bei -apply ohne Stub geloescht, bevor der Verweis-Nachzug
+// laeuft, und koennen deshalb selbst nie eine nachgezogene Referenz tragen.
+func dropReviewSelfHits(hits map[string]int, root string, reviews []string) {
+	for _, r := range reviews {
+		delete(hits, RelPath(root, r))
+	}
+}
