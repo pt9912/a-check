@@ -60,7 +60,7 @@ korrekte Abweichung stehen — nicht als offener Rest.
 **Lerneintrag — Form: benannte Spec-Lücke.** *„Kein Gegenstück im Template" und „driftet gegen
 die Ziel-Form" sind zwei verschiedene Aussagen, und dieser Slice bestätigt beide Richtungen am
 selben Dokumentenpaar: die fehlenden Überschriften waren echte Form-Lücken (behoben), während die
-in [slice-150](../done/slice-150-roadmap-form-nachgezogen.md) bereits geprüften a-check-Erweiterungen
+in [slice-150](wellenlos/slice-150-roadmap-form-nachgezogen.md) bereits geprüften a-check-Erweiterungen
 (z. B. die Beleg-Spalte im Drift-Log) keine sind.* Der systematische Abgleich, den der Maintainer
 mit „sind wir mit der Umstellung durch?" anstieß, war nötig — die reaktive Prüfung einzelner
 Hinweise (Carveout-Vorlage, Roadmap) hätte diese beiden kleineren Lücken nicht gefunden, weil
