@@ -80,13 +80,16 @@ liegt vor, slice-161 ist in `done/`, WIP-Limit frei.
 
 - *Die Kürzung entfernt mechanische Details (Report-Dateiname-Muster,
   HIGH-Verifikations-Pflicht), die bislang auch in `AGENTS.md` selbst
-  standen* — **Ausgang:** gestrichen mit Begründung: dieselben Details
-  stehen bereits in
-  [`docs/reviews/README.md`](../../../reviews/README.md) und
+  standen* — **Ausgang:** gestrichen mit Begründung: das Dateiname-Muster
+  (`docs/reviews/<YYYY-MM-DD>-<slice-oder-diff-ref>.md`) steht bereits in
+  [`review-report.template.md`](../../../../.harness/baseline/v6.0.0/templates/docs/reviews/review-report.template.md)
+  (verlinkt aus
+  [`docs/reviews/README.md`](../../../reviews/README.md)), die
+  HIGH-Verifikationspflicht in
   [`.harness/skills/reviewer.md`](../../../../.harness/skills/reviewer.md)
-  (`Report-Ablage: ein Report pro Lauf…`, `HIGH-Findings werden vor
-  Übernahme adversarisch … verifiziert`) — reine Dedublizierung, kein
-  Informationsverlust, und im Einklang mit `AGENTS.md`s eigener Ziel-Form
+  (`HIGH-Findings werden vor Übernahme adversarisch … verifiziert`) —
+  reine Dedublizierung, kein Informationsverlust, und im Einklang mit
+  `AGENTS.md`s eigener Ziel-Form
   ("sie trägt Hard Rules und Pointer … sie dupliziert deren Inhalt
   nicht", §1).
 - *Ein künftiges Re-Vendoring auf `v6.1.0` (Etappe A aus slice-161 §6)
