@@ -103,7 +103,7 @@ Kennung wird zum **Pfad** `BEO-<KUERZEL>/<slug>/` mit drei Dateien (`observation
 `state.md` veränderlich, `evidence/<vorgangs-id>.md` je Beleg eine Datei); der Zähler wird
 **abgeleitet** (Anzahl Evidence-Dateien) statt **geführt** (Tabellenspalte).
 
-a-check führt [`docs/plan/planning/observations.md`](../observations.md) aktuell als **Tabelle**
+a-check führt [`docs/plan/planning/observations.md`](../../../../docs/plan/planning/observations/README.md) aktuell als **Tabelle**
 mit **33 Einträgen** (`BEO-001`…`BEO-033`, Stand vor diesem Slice — der selbst einen 34. schreibt,
 §8), gepflegtem `Zähler`-Feld und Freitext-Belegliste — das
 ist eine **echte Datenmigration**, kein Formwechsel. `d-checks` slice-194/195 haben genau das als
@@ -253,13 +253,13 @@ falsch schätzt.
 - *Die Beobachtungs-Register-Migration (33 Einträge) ist ungeschätzt im Detailaufwand* — Ausgang:
   **Folge-Slice**, Etappe C aus §6; der Umfang ist in §4.1 benannt, nicht vermessen.
 - *`|| true`-Bestand gegen die neue Gate/Beleg-Regel ist nicht vollständig geprüft* — Ausgang:
-  **Beobachtungs-Register**, [`BEO-034`](../observations.md) — unter der Schwelle, wird bei der
+  **Beobachtungs-Register**, [`BEO-034`](../../../../docs/plan/planning/observations/BEO-GATE/gate-beleg-trennung-nur-ueberflogen/observation.md) — unter der Schwelle, wird bei der
   nächsten Berührung von `modul-13` oder `tools/*.sh` erneut aufgegriffen.
 - *Ob der Sprung jetzt in Etappen kommt, ist Maintainer-Entscheidung* — Ausgang: **gestrichen mit
   Begründung**: kein Risiko im Sinn der Dreier-Menge (nichts kann hier „eintreten"), sondern die
   Kernfrage, die diese Analyse laut ihrem eigenen Kopf-Vermerk („Analyse zur Abnahme") beantwortet
   bekommt, statt sie vorwegzunehmen — dieselbe Fehlklassifikation wie bei
-  [`BEO-025`](../observations.md).
+  [`BEO-025`](../../../../docs/plan/planning/observations/BEO-PLAN/risiko-ausgang-fuer-gewollte-wirkung/observation.md).
 
 **Folge-Slices:** keine vergeben. Drei Etappen A–C sind in §6 vorgeschlagen und brauchen die
 Abnahme, bevor sie IDs bekommen.

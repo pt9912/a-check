@@ -3,7 +3,7 @@
 - **Status:** Accepted
 - **Datum:** 2026-08-29
 - **Geltungsbereich:** gesamtes Repo; betrifft das Baseline-Modul `modul-08`
-- **Ersetzt-Baseline-Regel:** [`modul-08-agentenrollen.md` §Die neun Übergaben und ihre Artefakte](../../.harness/baseline/v5.12.0/regelwerk/modul-08-agentenrollen.md#die-neun-übergaben-und-ihre-artefakte-modul-8)
+- **Ersetzt-Baseline-Regel:** [`modul-08-agentenrollen.md` §Die neun Übergaben und ihre Artefakte](../../.harness/baseline/v6.0.0/regelwerk/modul-08-agentenrollen.md#die-neun-übergaben-und-ihre-artefakte-modul-8)
 - **Adaption:** Die **Validator-Rolle ist in diesem Repo nicht besetzt**. Von den neun
   Rollen-Übergaben sind sieben mit einem Artefakt belegt; *Verifier → Validator* und
   *Validator → Planner* bleiben unverkörpert.

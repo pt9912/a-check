@@ -4,7 +4,7 @@
 - **Datum:** 2026-08-29
 - **Geltungsbereich:** [`.d-check.yml`](../../.d-check.yml) (`matrix`-Modul),
   [`docs/plan/adr/`](../../docs/plan/adr/)
-- **Ersetzt-Baseline-Regel:** [`grundlagen-referenz-richtung.md` §Referenz-Richtung (SDP)](../../.harness/baseline/v5.12.0/regelwerk/grundlagen-referenz-richtung.md#referenz-richtung-sdp-wer-darf-wen-referenzieren)
+- **Ersetzt-Baseline-Regel:** [`grundlagen-referenz-richtung.md` §Referenz-Richtung (SDP)](../../.harness/baseline/v6.0.0/regelwerk/grundlagen-referenz-richtung.md#referenz-richtung-sdp-wer-darf-wen-referenzieren)
 - **Adaption:** Die Baseline verlangt die Aufwärts-Richtung für **jede** Kante im bindenden Text.
   a-check nimmt die vor der Übernahme `Accepted`-ADRs **0001–0020** per `exempt-paths` ganz aus:
   sie nennen Slice-Kennungen im Körper als Verifikations-Zeiger.

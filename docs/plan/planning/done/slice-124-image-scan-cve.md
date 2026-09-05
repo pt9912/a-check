@@ -174,7 +174,7 @@ Digest und Tag-Kommentar. Der falsche Kommentar oben ist der Beleg.
 `Makefile`, `.claude/`), die **CI-Schicht** (`.github/workflows/`) und mit den zwei
 Deklarations-Tabellen der **Harness-Einstieg**.
 
-**Vorgelagert — offene Beobachtungen sichten:** [`BEO-023`](../observations.md) (ein Prüfer bleibt
+**Vorgelagert — offene Beobachtungen sichten:** [`BEO-023`](../../../../docs/plan/planning/observations/BEO-GATE/pruefer-ohne-gegenstand-oder-aufruf/observation.md) (ein Prüfer bleibt
 ohne Gegenstand **oder ohne Aufruf** unkalibriert) trifft hier doppelt: der Sensor bekommt einen
 `--selftest` **und** einen Workflow, der ihn fährt. Beides ist Antwort auf dieselbe Beobachtung.
 

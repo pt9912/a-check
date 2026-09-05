@@ -191,7 +191,7 @@ Web-UI setzen (die Action hat dafür keinen Input; die Entscheidung steht im `pa
 ADR), die **CI-Schicht** (`release.yml`, neuer Workflow), eine **neue Sub-Area** `packaging/` und
 die **Benutzer-Doku** (`releasing.md`).
 
-**Vorgelagert — offene Beobachtungen sichten:** [`BEO-026`](../observations.md) (die Form der
+**Vorgelagert — offene Beobachtungen sichten:** [`BEO-026`](../../../../docs/plan/planning/observations/BEO-GATE/versionsangabe-neben-digest-ungeprueft/observation.md) (die Form der
 Workflow-`uses:`-Einträge ist ungeprüft) trifft diesen Slice unmittelbar — er fügt einen Workflow
 mit einer **fremden** Action hinzu (`peter-evans/dockerhub-description`), und deren Pin prüft
 heute kein Gate.

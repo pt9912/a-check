@@ -142,17 +142,17 @@ und wäre grün geworden, ohne die Lage zu treffen.
    wäre ein Skript, das nie die Range benutzt, von einem richtigen nicht zu unterscheiden.
 3. `make gates` grün mit dem neuen Target im Aggregat — `ci-range-selftest ok: vier Faelle`.
 
-**Beobachtungs-Register (`../observations.md`):** neue [`BEO-033`](../observations.md) angelegt
+**Beobachtungs-Register (`../observations.md`):** neue [`BEO-033`](../../../../docs/plan/planning/observations/BEO-GATE/weiche-haengt-an-fremdem-event-feld/observation.md) angelegt
 (CI-Schicht, 1×, Beleg `slice-134`) — eine Weiche, deren Verhalten an der Semantik eines **fremden**
 Event-Feldes hängt, ist lokal nicht prüfbar; der Selbsttest misst das eigene Skript, nicht die
-Annahme darüber. [`BEO-030`](../observations.md) und [`BEO-023`](../observations.md) wurden
+Annahme darüber. [`BEO-030`](../../../../docs/plan/planning/observations/BEO-GATE/hebungskanal-haengt-an-repo-externen-schaltern/observation.md) und [`BEO-023`](../../../../docs/plan/planning/observations/BEO-GATE/pruefer-ohne-gegenstand-oder-aufruf/observation.md) wurden
 gesichtet und **nicht** erhöht (§8).
 
 **Folge-Slices:** keiner. Ob ein roter Branch-Lauf einen Schutz auslösen soll, ist eine
 Repository-Einstellung außerhalb des Repos (§5).
 
 **Risiken aus §6:** drei, jedes mit genau einem Ausgang — *weiter offen* → Beobachtungs-Register
-([`BEO-033`](../observations.md)); *entfallen*, gestrichen mit Begründung (der Fallback misst mehr,
+([`BEO-033`](../../../../docs/plan/planning/observations/BEO-GATE/weiche-haengt-an-fremdem-event-feld/observation.md)); *entfallen*, gestrichen mit Begründung (der Fallback misst mehr,
 nie weniger); *entfallen*, gestrichen mit Begründung (die Logik steht danach an **einem** Ort statt
 inline).
 
@@ -167,10 +167,10 @@ behauptet?*), eigener Modus-Eintrag in
 CI-Änderung gäbe es das Target nicht.
 
 **Vorgelagert — offene Beobachtungen sichten:** Ein Treffer.
-[`BEO-030`](../observations.md) (*die Wirkung des Hebungs-Kanals hängt an zwei Schaltern außerhalb
+[`BEO-030`](../../../../docs/plan/planning/observations/BEO-GATE/hebungskanal-haengt-an-repo-externen-schaltern/observation.md) (*die Wirkung des Hebungs-Kanals hängt an zwei Schaltern außerhalb
 des Repos*, **1×**) betrifft denselben Kanal, aber eine andere Frage — dort geht es um
 Schalter, die **kein Gate** sehen kann, hier um eine Weiche, die das Repo selbst schreibt. Kein
-Zähler-Anstieg. [`BEO-023`](../observations.md) (*Prüfer meldet grün ohne Gegenstand*, **2×**)
+Zähler-Anstieg. [`BEO-023`](../../../../docs/plan/planning/observations/BEO-GATE/pruefer-ohne-gegenstand-oder-aufruf/observation.md) (*Prüfer meldet grün ohne Gegenstand*, **2×**)
 trifft **nicht**: dieser Prüfer meldet **rot ohne Ursache**, die Gegenrichtung; sie als denselben
 Eintrag zu zählen hieße, zwei Fehlerbilder unter einer Kennung zu vermischen.
 

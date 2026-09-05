@@ -1,7 +1,7 @@
 # CR-Text-Reviewer-Skill — a-check
 
 * Status: Accepted
-* Bezug: [`BEO-022`](../../docs/plan/planning/observations.md) (3×, Schwelle überschritten),
+* Bezug: [`BEO-022`](../../docs/plan/planning/observations/BEO-GATE/cr-text-behauptet-statt-gemessen/observation.md) (2× bei Verkörperung — die Migration auf die Verzeichnisform korrigierte einen doppelt gezählten Vorgang, siehe dort),
   Regelwerk `modul-07-diskrepanzen.md` (Diskrepanz-Trichter), `modul-13-quality-gates.md`
   §Harness-Lüge
 * Gilt für: einen **CR-Text an ein fremdes Werkzeug**, bevor er den Slice verlässt — die vier
@@ -14,7 +14,7 @@
 > **Entstehungsweg** eines Satzes, nicht über seinen Text. Dieselbe Grenze benennt
 > [`AGENTS.md`](../../AGENTS.md) §3.7 für die Kommentar-Regel. Ein Guide ist hier zudem die
 > **erste** Antwort auf die Schwelle — anders als bei
-> [`BEO-008`](../../docs/plan/planning/observations.md), wo ein Guide schon einmal gescheitert war
+> [`BEO-008`](../../docs/plan/planning/observations/BEO-PLAN/verweis-auf-wandernden-slice/observation.md), wo ein Guide schon einmal gescheitert war
 > und darum ein Werkzeug entstand
 > ([slice-118](../../docs/plan/planning/done/slice-118-lifecycle-wechsel-werkzeug.md)).
 
@@ -55,7 +55,7 @@ eigene oder das fremde. Die drei **bisher belegten** Klassen und ihr Handgriff:
 | **fremder Vertrag** | „das Werkzeug kennt keine nicht-fatalen Befunde" | den Abschnitt im fremden Lastenheft lesen, mit Kennung zitieren |
 | **eigener Gate-Pfad** | „der Preis ist nur schwächer" | `grep` über `Makefile`, `.github/workflows/`, `.githooks/` |
 
-**Eine vierte Klasse ist möglich** — die Liste ist gemessen, nicht hergeleitet. Wer eine findet, trägt sie hier nach und erhöht `BEO-022`.
+**Eine vierte Klasse ist möglich** — die Liste ist gemessen, nicht hergeleitet. Wer eine findet, trägt sie hier nach und legt eine weitere `evidence/<vorgangs-id>.md` unter `BEO-022` an.
 
 **Ein Satz ohne Handgriff ist kein Befund** — es gibt Argumente, die keine Tatsache behaupten
 („das wäre eine Vertragsänderung, größer als dieser Antrag"). Sie bleiben stehen.

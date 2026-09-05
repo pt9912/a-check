@@ -163,7 +163,7 @@ dieses Kanals hängt an zwei Schaltern außerhalb des Repos, und kein Gate kann 
 
 **Folge-Slices:** [slice-127](../done/slice-127-dockerhub-spiegel.md) (Docker-Hub-Spiegel) — sein
 erster Trigger, das Release, ist mit **v0.18.0** eingetreten; offen bleibt der zweite (Hub-Repo und
-Token-Scope). Dazu [`BEO-026`](../observations.md): der Kanal **erzeugt** künftige
+Token-Scope). Dazu [`BEO-026`](../../../../docs/plan/planning/observations/BEO-GATE/versionsangabe-neben-digest-ungeprueft/observation.md): der Kanal **erzeugt** künftige
 `uses:`-Hebungen, deren Form heute kein Gate prüft — die Lücke wird dadurch praktisch relevanter,
 nicht kleiner.
 ## 8. Sub-Area-Modus-Begründung
@@ -171,7 +171,7 @@ nicht kleiner.
 **Vorgelagert — Sub-Area-Wahl prüfen:** berührt werden die **CI-Schicht** (`.github/`), die
 **Spec-Straten** (ADR) und die **Benutzer-Doku** (`releasing.md`).
 
-**Vorgelagert — offene Beobachtungen sichten:** [`BEO-026`](../observations.md) (die Form der
+**Vorgelagert — offene Beobachtungen sichten:** [`BEO-026`](../../../../docs/plan/planning/observations/BEO-GATE/versionsangabe-neben-digest-ungeprueft/observation.md) (die Form der
 Workflow-`uses:`-Einträge ist ungeprüft) liegt in derselben Schicht und bleibt offen — dieser
 Slice fügt keinen Workflow hinzu, sondern eine Konfiguration, die künftige `uses:`-Hebungen
 **erzeugt**. Damit wird die Beobachtung praktisch relevanter, nicht kleiner.

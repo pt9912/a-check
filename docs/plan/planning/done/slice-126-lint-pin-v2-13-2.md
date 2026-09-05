@@ -92,7 +92,7 @@ Bei den letzten drei Pin-Hebungen dieses Repos stand jeweils eine Zeile *„das 
 gemessen, nicht abgeschätzt"* im Plan, und sie trug: Digest, Fragment-Diff, Sensor-Läufe waren
 vorher bekannt. Hier ging das **nicht** — ob ein Lint-Stand über einen fremden Bestand meldet,
 sagt erst sein Lauf; jede Vorab-Aussage wäre eine Behauptung gewesen, genau die Klasse, die
-[`BEO-022`](../observations.md) zählt. Die ehrliche Form war deshalb nicht „gemessen", sondern
+[`BEO-022`](../../../../docs/plan/planning/observations/BEO-GATE/cr-text-behauptet-statt-gemessen/observation.md) zählt. Die ehrliche Form war deshalb nicht „gemessen", sondern
 eine **zweigeteilte DoD** (`grün` **oder** `behoben`) plus der ausdrückliche Satz, was ungemessen
 bleibt. *Weil* eine Ungewissheit im Plan sichtbar ist, verschiebt sie sich nicht stillschweigend
 in die Ausführung.

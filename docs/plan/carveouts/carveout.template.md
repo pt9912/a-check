@@ -3,7 +3,7 @@
 > **Vorlagen-Hinweis.** Kopieren nach `docs/plan/carveouts/CO-<NNN>-<kurztitel-kebab>.md`,
 > Platzhalter ersetzen, diesen Block löschen. Den Index in
 > [`README.md`](README.md) mitpflegen. Übersetzt aus
-> `.harness/baseline/v5.12.0/templates/docs/plan/carveouts/carveout.template.md`
+> `.harness/baseline/v6.0.0/templates/docs/plan/carveouts/carveout.template.md`
 > ([MR-006](../../../harness/conventions.md#mr-006--baseline-committet-vendored-statt-per-url-referenziert));
 > die Verweise zeigen auf a-checks Orte statt auf Kurs-Pfade. Angelegt in slice-065.
 >

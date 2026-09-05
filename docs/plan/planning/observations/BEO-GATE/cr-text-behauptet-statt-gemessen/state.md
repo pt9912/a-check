@@ -1,0 +1,3 @@
+**Stand:** verkörpert
+
+**verkörpert** im Skill `.harness/skills/cr-text-reviewer.md` (seit slice-119), verwiesen aus [`AGENTS.md`](../../../../../../AGENTS.md) §5 und dem Workflow-Skelett. Kein Sensor möglich: ob ein Satz gemessen wurde, ist ein Urteil über seinen Entstehungsweg. Ungedeckt bleibt, wer den Skill nicht aufruft **Erstmals vor dem Versand gefangen** (slice-132, CR 5): der Entwurf nannte die beantragte Regel „in eurer Codebasis billig“ — eine Tatsache über ein fremdes System ohne Handgriff. Sie steht jetzt als Aussage über die eigene Fassung da, mit der Grenze im Satz. Vierter belegter Fall der Ausprägung (B), erster, den der Skill statt des Empfängers fand.

@@ -132,20 +132,20 @@ eine Anforderung anlegt, läuft hinein.
 
 **Offene Risiken und ihr Ausgang:** beide gestrichen mit Begründung.
 
-**Beobachtungs-Register:** [`BEO-023`](../observations.md) auf **2×** erhöht (Beleg slice-123) und
+**Beobachtungs-Register:** [`BEO-023`](../../../../docs/plan/planning/observations/BEO-GATE/pruefer-ohne-gegenstand-oder-aufruf/observation.md) auf **2×** erhöht (Beleg slice-123) und
 um die zweite Form erweitert: ein Prüfer bleibt nicht nur ohne **Gegenstand** unkalibriert,
 sondern auch ohne **Aufruf**. `doc-complete` war beides nicht — es hatte einen Gegenstand und
 hätte gemeldet; es lief nur nie.
 
-**Folge-Slices:** ein Sensor für [`BEO-006`](../observations.md) (3×, Schwelle überschritten)
-bleibt der nächste; dazu [`BEO-024`](../observations.md) und die Entscheidung zu
-[`BEO-025`](../observations.md).
+**Folge-Slices:** ein Sensor für [`BEO-006`](../../../../docs/plan/planning/observations/BEO-GATE/verify-vor-git-mv-reihenfolge/observation.md) (3×, Schwelle überschritten)
+bleibt der nächste; dazu [`BEO-024`](../../../../docs/plan/planning/observations/BEO-KERN/dirvocab-portfor-auseinander/observation.md) und die Entscheidung zu
+[`BEO-025`](../../../../docs/plan/planning/observations/BEO-PLAN/risiko-ausgang-fuer-gewollte-wirkung/observation.md).
 ## 8. Sub-Area-Modus-Begründung
 
 **Vorgelagert — Sub-Area-Wahl prüfen:** berührt wird die **Gate-/Werkzeug-Schicht** (`Makefile`)
 und mit den Deklarations-Tabellen und dem Workflow-Skelett der **Harness-Einstieg**.
 
-**Vorgelagert — offene Beobachtungen sichten:** [`BEO-023`](../observations.md) (ein Prüfer ohne
+**Vorgelagert — offene Beobachtungen sichten:** [`BEO-023`](../../../../docs/plan/planning/observations/BEO-GATE/pruefer-ohne-gegenstand-oder-aufruf/observation.md) (ein Prüfer ohne
 Gegenstand bleibt unkalibriert) beschreibt dieselbe Familie — hier war der Prüfer nicht ohne
 Gegenstand, sondern **ohne Aufruf**: `doc-complete` ist advisory und lief nie.
 

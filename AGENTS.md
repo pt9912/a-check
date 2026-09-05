@@ -155,15 +155,15 @@ die CI (Badge im [`README.md`](README.md)), nicht diese Tabelle.
 
 | Target | Zweck |
 |---|---|
-| `make doc-check` | Doku-Links/Anker/Kennungen via `d-check` (Schwester-Tool, digest-gepinnt, netzlos, read-only); seit slice-080 zusätzlich die **Lifecycle-Invariante** ([`SL-002`](docs/plan/planning/observations.md)) über `links.resolve-from` — sie hat `verify-slice-links` abgelöst und liegt damit in der Gate- statt der Verifikations-Schicht; seit slice-133 zusätzlich die **Versions-Kohärenz zwischen Dokumenten** über `versions` — eine Prosa-Angabe über die Version eines *anderen* eigenen Dokuments wird gegen dessen Kopf gehalten (`version-stale`). **Nicht** Digests: der Erwartungswert kommt versions-förmig aus dem `current-from`-Span, ein `sha256:` bricht dort fail-closed ab — die Digest-Gleichheit bleibt bei `gate-consistency` |
+| `make doc-check` | Doku-Links/Anker/Kennungen via `d-check` (Schwester-Tool, digest-gepinnt, netzlos, read-only); seit slice-080 zusätzlich die **Lifecycle-Invariante** ([`SL-002`](docs/plan/planning/observations/README.md)) über `links.resolve-from` — sie hat `verify-slice-links` abgelöst und liegt damit in der Gate- statt der Verifikations-Schicht; seit slice-133 zusätzlich die **Versions-Kohärenz zwischen Dokumenten** über `versions` — eine Prosa-Angabe über die Version eines *anderen* eigenen Dokuments wird gegen dessen Kopf gehalten (`version-stale`). **Nicht** Digests: der Erwartungswert kommt versions-förmig aus dem `current-from`-Span, ein `sha256:` bricht dort fail-closed ab — die Digest-Gleichheit bleibt bei `gate-consistency` |
 | `make doc-trace` | advisory Requirements Traceability Matrix via `d-check` (DC-FA-CLI-009; `TRACE_FLAGS=--json`) |
 | `make doc-complete` | Vollständigkeits-Gate: eine Anforderung ohne referenzierenden Slice ⇒ Exit 1 (DC-FA-CLI-011). Seit slice-123 **im `verify`-Aggregat** — davor advisory und damit nie gelaufen; eine Waise fiel erst auf, als jemand das Target von Hand aufrief |
 | `make doc-doctor` | erklärende Diagnose mit Fix-Kandidaten (DC-FA-CLI-007) — **advisory** |
 | `make doc-repair` | Reparatur-Patch (unified diff) auf stdout, git-apply-rein (DC-FA-CLI-008) |
 | `make doc-immutable` | ADR-Immutabilität (§3.5) via git-Diff (Modul `vcs`; `RANGE=`/`STAGED=1`, DC-FA-VCS-001) — **CI-durchgesetzt** über die Commit-Range ([`ci.yml`](.github/workflows/ci.yml)) |
 | `make doc-commits` | Commit-Message-Traceability (Modul `commits`; `RANGE=`, DC-FA-COMMITS-001) |
-| `make doc-planning` | Planning-Lifecycle-Konsistenz Roadmap ↔ `in-progress` (Modul `planning`, DC-FA-PLAN-001): liegt ein Slice in `in-progress/`, muss die Roadmap-Sektion ihn **benennen** statt den Ruhe-Marker zu tragen. Seit slice-122 in [`.d-check.yml`](.d-check.yml) konfiguriert und **im `gates`-Aggregat** — davor lief es ohne Gegenstand und meldete grün ([`BEO-014`](docs/plan/planning/observations.md)). Die zweite und dritte Modul-Fähigkeit (`closure:`, `waves:`) bleiben bewusst unkonfiguriert: die Closure-Struktur prüft `doc-structure` |
-| `make doc-workflows` | Deklarations-Form der `uses:`-Referenzen unter `.github/workflows` (Modul `workflows`): eine **fremde** Referenz nennt einen vollen 40-stelligen SHA mit Tag-Kommentar dahinter, eine **lokale** (`./…`) braucht keinen Pin, dafür ein existierendes Ziel und einen Aufrufer-Job, der die verlangten Rechte führt. Konfiguriert und **im `gates`-Aggregat seit slice-130**; das einzige eigene `doc-*`-Target, weil [`d-check.mk`](d-check.mk) für dieses Modul keines erzeugt. Geprüft wird die **Form**, nicht die **Gültigkeit**: ob der Tag-Kommentar zum SHA passt, sagt es nicht — das wäre Netz, und der Widerspruch aus [`BEO-026`](docs/plan/planning/observations.md) bleibt damit ungedeckt |
+| `make doc-planning` | Planning-Lifecycle-Konsistenz Roadmap ↔ `in-progress` (Modul `planning`, DC-FA-PLAN-001): liegt ein Slice in `in-progress/`, muss die Roadmap-Sektion ihn **benennen** statt den Ruhe-Marker zu tragen. Seit slice-122 in [`.d-check.yml`](.d-check.yml) konfiguriert und **im `gates`-Aggregat** — davor lief es ohne Gegenstand und meldete grün ([`BEO-014`](docs/plan/planning/observations/BEO-GATE/ruhe-marker-ungewaechtert/observation.md)). Die zweite und dritte Modul-Fähigkeit (`closure:`, `waves:`) bleiben bewusst unkonfiguriert: die Closure-Struktur prüft `doc-structure` |
+| `make doc-workflows` | Deklarations-Form der `uses:`-Referenzen unter `.github/workflows` (Modul `workflows`): eine **fremde** Referenz nennt einen vollen 40-stelligen SHA mit Tag-Kommentar dahinter, eine **lokale** (`./…`) braucht keinen Pin, dafür ein existierendes Ziel und einen Aufrufer-Job, der die verlangten Rechte führt. Konfiguriert und **im `gates`-Aggregat seit slice-130**; das einzige eigene `doc-*`-Target, weil [`d-check.mk`](d-check.mk) für dieses Modul keines erzeugt. Geprüft wird die **Form**, nicht die **Gültigkeit**: ob der Tag-Kommentar zum SHA passt, sagt es nicht — das wäre Netz, und der Widerspruch aus [`BEO-026`](docs/plan/planning/observations/BEO-GATE/versionsangabe-neben-digest-ungeprueft/observation.md) bleibt damit ungedeckt |
 | `make doc-tracked` | Getrackt-Status auflösbarer Referenz-Ziele (Modul `tracked`, DC-FA-TRK-001) |
 | `make doc-targets` | Deklarations-Konsistenz Doku ↔ Build-Targets (Modul `targets`, DC-FA-TGT-001), konfiguriert in [`.d-check.yml`](.d-check.yml) seit slice-074. **Im `gates`-Aggregat seit slice-079** — es hat dort `gate-consistency` (1)+(2) abgelöst, deren Parität in beiden Richtungen gemessen ist (slice-073/079) |
 | `make doc-structure` | Struktur-Invarianten innerhalb der Dokumente (Modul `structure`, DC-FA-STRUCT-001), **fünf Regeln**: Größen-Regel, Closure-Struktur, Lerneintrag-Form, Kopffelder, **AC-Form**. Konfiguriert in [`.d-check.yml`](.d-check.yml) und **im `verify`-Aggregat** — es hat alle vier Eigenbau-Sensoren aus slice-080 abgelöst (`verify-slice-form`, die strukturelle Hälfte von `verify-closure-notes` und seit slice-120 `verify-ac-form`), Parität je Befundklasse gemessen. Braucht den Pin `v0.69.0` (`tasks-ignore-pattern`, `exempt-section-pattern`, `exempt-expect-count`) |
@@ -173,22 +173,22 @@ die CI (Badge im [`README.md`](README.md)), nicht diese Tabelle.
 | `make coverage-gate` | Gesamt-Coverage ≥ 90 % über `./internal/...` ([ADR-0006](docs/plan/adr/0006-coverage-gate.md)) |
 | `make arch-check` | Eigen-Architektur via `a-check` selbst (Dogfooding) |
 | `make gate-consistency` | Meta-Gate: `.d-check.yml`-Module (Harness-Lügen-Schutz) + Pin-Konsistenz (Digest-Gleichheit harte Pins == `version.md#aktuell`, Version == CHANGELOG, `d-check.mk`-Deklaration; slice-018) + ADR-Index-Vollständigkeit (jede ADR-Datei ist im Index verlinkt; slice-087) |
-| `make version-coherence` | Kohärenz **doppelt deklarierter** Versions-Angaben (slice-131, Antwort auf [`BEO-026`](docs/plan/planning/observations.md) bei 3×): derselbe `uses:`-SHA trägt unter `.github/workflows/` überall denselben Tag-Kommentar, und eine Versions-Variable, die [`Makefile`](Makefile) **und** [`Dockerfile`](Dockerfile) führen, hat an beiden Orten denselben Wert. Geprüft wird **Divergenz, nicht Unwahrheit** — zwei übereinstimmend falsche Angaben bleiben grün; die Registry zu fragen wäre Netz, und `gates` ist hermetisch. Der Sensor erklärt **keine** Seite zur führenden |
+| `make version-coherence` | Kohärenz **doppelt deklarierter** Versions-Angaben (slice-131, Antwort auf [`BEO-026`](docs/plan/planning/observations/BEO-GATE/versionsangabe-neben-digest-ungeprueft/observation.md) bei 3×): derselbe `uses:`-SHA trägt unter `.github/workflows/` überall denselben Tag-Kommentar, und eine Versions-Variable, die [`Makefile`](Makefile) **und** [`Dockerfile`](Dockerfile) führen, hat an beiden Orten denselben Wert. Geprüft wird **Divergenz, nicht Unwahrheit** — zwei übereinstimmend falsche Angaben bleiben grün; die Registry zu fragen wäre Netz, und `gates` ist hermetisch. Der Sensor erklärt **keine** Seite zur führenden |
 | `make record-gates` | Gate-Nachweis (Working-Tree-Hash) für den Stop-Hook |
 | `make suppression-check` | Fitness Function zum Suppression-Verbot (§3.2, [ADR-0005](docs/plan/adr/0005-lint-profil.md)): keine `//nolint`-Direktive in den Go-Quellen — `nolintlint` prüft nur Wohlgeformtheit, nicht Existenz (slice-049) |
 | `make guard-selftest` | Selbsttest des PreToolUse-Command-Guard (Tool-Call-Gate §3.1) |
 | `make ci-range-selftest` | Selbsttest der Commit-Range-Weiche der CI ([`tools/ci-commit-range.sh`](tools/ci-commit-range.sh), slice-134): vier Fälle — `pull_request`, neuer Branch, **Force-Push**, normaler Push. Der dritte war der Defekt: `github.event.before` trägt nach einem Rebase einen gültig aussehenden SHA, den der Runner-Klon nicht kennt (`fetch-depth: 0` holt keine verwaisten Objekte), und die Range-Prüfungen brachen mit *„Range-Basis nicht auflösbar"* ab. Der vierte Fall ist die Gegenrichtung: eine **brauchbare** Basis wird auch benutzt. **Nicht** geprüft: welchen Wert GitHub in das Feld schreibt — das sagt nur ein echter Lauf |
 | `make image-scan` | **kein Bestandteil von `gates`** — CVE-Scan gegen das **publizierte** Image (`ghcr.io/pt9912/a-check:latest`) mit digest-gepinntem Trivy ([ADR-0037](docs/plan/adr/0037-cve-scan-gegen-das-publizierte-image.md)). Netz ist hier der **Zweck**: eine gepinnte Vuln-DB fände nur die CVEs von gestern. Über rot entscheiden **nur behebbare** CRITICAL/HIGH; der Vollbericht fällt nie. Skript-Exit 0/1/2 — über `make` sind 1 und 2 **nicht** unterscheidbar (make normalisiert auf 2), wer den Ausgang braucht, liest die Ausgabe. Selbsttest der Auswertung: `bash tools/image-scan.sh --selftest` (netzlos). Zeitgesteuert in [`image-scan.yml`](.github/workflows/image-scan.yml) |
 | `make regelwerk-check` | **kein Gate** — Wartung der vendored Baseline ([MR-006](harness/conventions.md#mr-006--baseline-committet-vendored-statt-per-url-referenziert)): Integrität gegen `SHA256SUMS` fail-closed; die Freshness-Hälfte bleibt als Netz-Operation ausdrücklich ungeprüft |
-| `make slice-mv` | **kein Gate** — ein Werkzeug: Lifecycle-Wechsel eines Slice per `git mv` **samt der Verweise auf ihn**, repo-weit und in beiden im Bestand vorkommenden Formen (`SLICE=<slice-NNN> TO=<open\|next\|in-progress\|done>`). Antwort auf [`BEO-008`](docs/plan/planning/observations.md) bei 3× (slice-118); die Gegenrichtung — Verweise **in** wandernden Dateien — trägt `doc-check` |
+| `make slice-mv` | **kein Gate** — ein Werkzeug: Lifecycle-Wechsel eines Slice per `git mv` **samt der Verweise auf ihn**, repo-weit und in beiden im Bestand vorkommenden Formen (`SLICE=<slice-NNN> TO=<open\|next\|in-progress\|done>`). Antwort auf [`BEO-008`](docs/plan/planning/observations/BEO-PLAN/verweis-auf-wandernden-slice/observation.md) bei 3× (slice-118); die Gegenrichtung — Verweise **in** wandernden Dateien — trägt `doc-check` |
 | `make gates` | alle inneren Gates (mandatory vor Handoff) |
 | `make verify-risiko-ausgaenge` | Jedes in §6 **notierte** Risiko trägt genau einen Ausgang aus der geschlossenen Dreier-Menge (§5, ab slice-102). Geprüft in `done/` **und** in `in-progress/`, sobald dort die Closure-Notiz **ausgefüllt** ist — der Auslöser ist ihr Zustand, nicht das Verzeichnis (slice-129); ein Slice mit Vorlagen-Platzhalter ist in Arbeit und wird sichtbar übersprungen. Bleibt lokal, weil die Prüfung §6 mit §7 vergleicht und `structure` abschnitts-**lokal** ist. **Nicht** geprüft: die Existenz eines Risiko-Blocks |
-| `make verify-observations` | Deckung des Beobachtungs-Registers ([`observations.md`](docs/plan/planning/observations.md)): jede in `done/` zitierte `BEO-NNN` hat eine Zeile, jede Zeile trägt formgebundene Belege (`slice-NNN`, Anzahl == Zähler). **Nicht** geprüft: Lage und Existenz der Beleg-Datei (`modul-06`) und die Umkehrung „jede Zeile ist zitiert" — die meisten stehen unter der Schwelle (slice-102) |
+| `make verify-observations` | Deckung des Beobachtungs-Registers ([`observations/`](docs/plan/planning/observations/README.md), Verzeichnisform seit slice-139): jeder in `done/` zitierte Pfad (neue Form `BEO-<KUERZEL>/<slug>` oder alte Form `BEO-NNN` über die `Ehemals:`-Zeile) hat ein Verzeichnis, jedes Verzeichnis trägt ein nicht leeres `evidence/`. Der Zähler wird nicht mehr geführt, sondern ist die Zahl der Evidence-Dateien — die alte Zähler-Prüfung entfällt strukturell. **Nicht** geprüft: Lage und Existenz der Beleg-Datei (`modul-06`) und die Umkehrung „jedes Verzeichnis ist zitiert" — die meisten stehen unter der Schwelle (slice-102, Verzeichnisform slice-139) |
 | `make verify` | **Verifikations-Schicht** (getrennt von `gates`, Regelwerk Modul 11): beantwortet DoD-/Closure-Fragen statt Code-Fragen; vor der „fertig"-Meldung auszuführen |
 | `make image-test` | [AC-FA-DIST-001](spec/lastenheft.md#ac-fa-dist-001--distribution-image---print-mk-a-checkmk) + nativ==Container-Akzeptanz + Fragment-Parität (committete [`a-check.mk`](a-check.mk) == `--print-mk`, slice-034) gegen das gebaute Image |
 | `make ci` | CI-äquivalent: `gates` + `image-test` (Workflow `.github/workflows/ci.yml`) |
 | `make trace-check` | Traceability via Modul `commits` ([ADR-0021](docs/plan/adr/0021-commits-modul-trace-check.md)): `AC-*`/`ADR-*`/`MR-*`/`slice`-ID je Commit (§5; `MSGFILE=` Hook, `RANGE=` CI) |
-| `make commit-scope-check` | Commit-Scope `(planning)` berührt nur `docs/plan/planning/` (§5, [`SL-003`](docs/plan/planning/observations.md)); misst jeden Commit an der zu seinem Zeitpunkt geltenden Fassung (`RANGE=` wie `trace-check`, slice-062) |
+| `make commit-scope-check` | Commit-Scope `(planning)` berührt nur `docs/plan/planning/` (§5, [`SL-003`](docs/plan/planning/observations/README.md)); misst jeden Commit an der zu seinem Zeitpunkt geltenden Fassung (`RANGE=` wie `trace-check`, slice-062) |
 
 ## 5. Dokumentations-Regeln
 
@@ -208,7 +208,7 @@ die CI (Badge im [`README.md`](README.md)), nicht diese Tabelle.
   Zeitpunkt galt, ältere sind damit grandfathered.
   **Warum nur dieser Scope:** über die gesamte Historie ist die Regel hier
   rauschfrei — fünf Treffer bei 74 Commits, alle fünf echte Diskrepanzen
-  ([`SL-003`](docs/plan/planning/observations.md)). Für `docs(...)` allgemein wären es 31
+  ([`SL-003`](docs/plan/planning/observations/README.md)). Für `docs(...)` allgemein wären es 31
   bei 193, weil `docs(spec)` legitim `spec/` und `docs(adr)` legitim ADRs ändert;
   eine Regel, die den Bestand massenhaft bricht, wird abgeschaltet statt befolgt.
   Ein weiterer Scope wird erst geregelt, wenn er auffällt — und dann gemessen,
@@ -263,22 +263,26 @@ die CI (Badge im [`README.md`](README.md)), nicht diese Tabelle.
   [`docs/plan/carveouts/`](docs/plan/carveouts/README.md); Trigger nie erreichbar ⇒ permanente
   ADR. Bootstrap-aware Gates gehören in keine der drei Klassen — sie stufen die Prüfung, sie
   nehmen keine Diskrepanz aus (slice-065).
-- **Beobachtungs-Register:** der Zähler des Steering Loops liegt als **stehende** Datei
-  [`docs/plan/planning/observations.md`](docs/plan/planning/observations.md) — nicht je Welle, weil
+- **Beobachtungs-Register:** der Zähler des Steering Loops liegt als **stehende** Ablage
+  [`docs/plan/planning/observations/`](docs/plan/planning/observations/README.md) — nicht je Welle, weil
   eine übernommene Sektion an einer ungebrochenen Kette hinge und eine vergessene Übernahme den
-  Zähler auf null setzte. **Eingetragen wird bei der Slice-Closure** (neue `BEO-NNN` oder Zähler
-  erhöhen und Beleg ergänzen); Belege sind formgebunden (`slice-NNN`, so viele wie der Zähler).
+  Zähler auf null setzte. Je Beobachtung ein Verzeichnis `BEO-<KUERZEL>/<slug>/` (Kürzel aus
+  [`harness/conventions.md`](harness/conventions.md#modus-deklaration-pro-sub-area), seit
+  slice-139 — davor Tabellenform, `BEO-NNN`, seit slice-101). **Eingetragen wird bei der
+  Slice-Closure**: neues Verzeichnis mit `observation.md`, oder eine weitere Datei in ein
+  vorhandenes `evidence/`. Der Zähler wird **abgeleitet** — er ist die Zahl der Evidence-Dateien;
+  es gibt kein Feld, das man erhöht.
   Er ist zugleich der dritte Ausgang, den jedes offene Risiko einer Closure nimmt: *eingetreten* ⇒
   Carveout oder Folge-Slice · *entfallen* ⇒ gestrichen **mit Begründung** · *weiter offen* ⇒
   Register (slice-101).
 - **Steering-Loop:** wiederkehrende Fehlermuster werden in
-  [`docs/plan/steering-loop.md`](docs/plan/planning/observations.md) gezählt. Ab dem
+  [`docs/plan/steering-loop.md`](docs/plan/planning/observations/README.md) gezählt. Ab dem
   **zweiten** gleichartigen Vorfall entsteht ein Eintrag, ab dem **dritten** ist
   es eine Harness-Lücke und verlangt einen Guide oder Sensor — „besser
   aufpassen" ist keine Antwort. Ein Eintrag ohne Vorfallszahl ist unzulässig:
   die Zahl ist das Einzige, was die Schwelle prüfbar macht.
 - **Slice-Form:** neue Slices entstehen aus der **vendored Ziel-Form**
-  [`.harness/baseline/v5.12.0/templates/docs/plan/planning/slice.template.md`](.harness/baseline/v5.12.0/templates/docs/plan/planning/slice.template.md) — a-check führt keine eigene Kopie, sie würde gegen die Baseline driften.
+  [`.harness/baseline/v6.0.0/templates/docs/plan/planning/slice.template.md`](.harness/baseline/v6.0.0/templates/docs/plan/planning/slice.template.md) — a-check führt keine eigene Kopie, sie würde gegen die Baseline driften.
   **Beim Kopieren anzupassen:** die Zeile `Lerneintrag — Form: <…>` ergänzen (die Ziel-Form kennt
   sie nicht als Feld, `make verify` verlangt sie) und die vier Felder streichen, die a-check nicht
   führt — `Welle:`, Reconciliation-Register, *drei Paarungen*, Herkunfts-Anker. Die Regel trägt die
@@ -295,7 +299,7 @@ die CI (Badge im [`README.md`](README.md)), nicht diese Tabelle.
   und gehen erst nach einem Prüf-Durchgang hinaus: der Skill
   [`.harness/skills/cr-text-reviewer.md`](.harness/skills/cr-text-reviewer.md) markiert jeden Satz,
   der eine **Tatsache** über ein System behauptet — das eigene oder das fremde —, und nennt den
-  Handgriff, der ihn belegt. Anlass ist [`BEO-022`](docs/plan/planning/observations.md) bei **3×**:
+  Handgriff, der ihn belegt. Anlass ist [`BEO-022`](docs/plan/planning/observations/BEO-GATE/cr-text-behauptet-statt-gemessen/observation.md) bei **3×**:
   dreimal stand eine Behauptung als Annahme da, die eine Messung zugelassen hätte. Die Prüf-Frage
   ist **nicht** „hast du gemessen?", sondern „hast du *das* gemessen, worüber du redest?" — die
   zweite Ausprägung misst die eigene Menge und sagt über die fremde aus, sieht dabei aus wie ein

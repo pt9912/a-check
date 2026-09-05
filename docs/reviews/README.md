@@ -4,7 +4,7 @@ Ein Review-Dokument je Slice mit Code- oder Vertragsänderung. Form nach Regelwe
 (Stand siehe [`harness/conventions.md` §Baseline](../../harness/conventions.md#baseline)):
 
 - **Kopf-Metadaten je Report** (aus der Vorlage
-  `.harness/baseline/v5.12.0/templates/docs/reviews/review-report.template.md`): **Review-Art**
+  `.harness/baseline/v6.0.0/templates/docs/reviews/review-report.template.md`): **Review-Art**
   (Selbst-Review oder unabhängiger Lauf), **Skill-Version** (Stand von
   [`.harness/skills/reviewer.md`](../../.harness/skills/reviewer.md)) und **Modell-ID**. Ohne
   sie ist ein Report nicht einordbar: derselbe Befund wiegt unterschiedlich, je nachdem, ob ihn

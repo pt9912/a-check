@@ -1,0 +1,3 @@
+**Stand:** verkörpert
+
+**verkörpert für die Kohärenz** (`make version-coherence`, slice-131): ein `uses:`-SHA trägt überall denselben Tag-Kommentar, und eine Variable in `Makefile` **und** `Dockerfile` denselben Wert. **Offen bleibt die Wahrheits-Frage** — zwei übereinstimmend falsche Angaben bleiben grün; sie zu prüfen hieße die Registry fragen, und `gates` ist hermetisch. Alle drei Vorfälle waren Divergenz, keiner Unwahrheit: `# v5.0.0` gegen `# v6.0.2` am selben checkout-Digest (slice-124), `# v4.2.0` gegen `# v3.6.0` am selben login-action-Digest (slice-127), `GO_VERSION 1.26.4` gegen `ARG 1.27.0` bei gemessenem `go1.27.0` (slice-130)

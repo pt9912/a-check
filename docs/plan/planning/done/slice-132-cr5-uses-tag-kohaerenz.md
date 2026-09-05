@@ -4,9 +4,9 @@
 `open/`, `next/`, `in-progress/`, `done/`. Er wechselt nur durch `make slice-mv`
 ([`AGENTS.md`](../../../../AGENTS.md) §3.3/§5).
 
-**Bezug:** [`BEO-026`](../observations.md) (3×, für die Kohärenz verkörpert in
+**Bezug:** [`BEO-026`](../../../../docs/plan/planning/observations/BEO-GATE/versionsangabe-neben-digest-ungeprueft/observation.md) (3×, für die Kohärenz verkörpert in
 [slice-131](../done/slice-131-versions-kohaerenz.md)) und
-[`BEO-022`](../observations.md) — der Prüf-Durchgang aus
+[`BEO-022`](../../../../docs/plan/planning/observations/BEO-GATE/cr-text-behauptet-statt-gemessen/observation.md) — der Prüf-Durchgang aus
 [`AGENTS.md`](../../../../AGENTS.md) §5 ist Pflicht, bevor ein CR-Text hinausgeht.
 
 **Berührte Spec-Stellen:** — *(keine)* — ein CR an ein fremdes Werkzeug ändert a-checks Verträge
@@ -157,7 +157,7 @@ fremde aussagen.
   **Ausgang:** **eingetreten** im Entwurf, im Prüf-Durchgang gefangen und behoben (§5, letzter
   Absatz): ein Satz nannte die Regel „in eurer Codebasis billig" und steht jetzt als Aussage über
   die eigene Fassung da, mit der Grenze im Satz. Kein Folge-Slice — der Skill hat genau das
-  geleistet, wofür er da ist; [`BEO-022`](../observations.md) bleibt bei 3× und verkörpert.
+  geleistet, wofür er da ist; [`BEO-022`](../../../../docs/plan/planning/observations/BEO-GATE/cr-text-behauptet-statt-gemessen/observation.md) bleibt bei 3× und verkörpert.
 
 ## 7. Closure-Notiz
 
@@ -196,9 +196,9 @@ und der erste, den der Skill vor dem Versand gefangen hat statt der Empfänger d
 **Offene Risiken und ihr Ausgang:** eines gestrichen mit Begründung, eines eingetreten und im
 Durchgang behoben.
 
-**Beobachtungs-Register:** [`BEO-022`](../observations.md) bleibt bei **3×** und verkörpert; dieser
+**Beobachtungs-Register:** [`BEO-022`](../../../../docs/plan/planning/observations/BEO-GATE/cr-text-behauptet-statt-gemessen/observation.md) bleibt bei **3×** und verkörpert; dieser
 Slice belegt den Skill zum ersten Mal an einem CR, den er **vor** dem Versand korrigiert hat, und
-der Stand nennt das jetzt. [`BEO-026`](../observations.md) bleibt unverändert — der Antrag ändert
+der Stand nennt das jetzt. [`BEO-026`](../../../../docs/plan/planning/observations/BEO-GATE/versionsangabe-neben-digest-ungeprueft/observation.md) bleibt unverändert — der Antrag ändert
 nichts an der Deckung, solange er nicht angenommen ist.
 
 **Folge-Slices:** keiner. Wird CR 5 angenommen, ist die Ablösung der lokalen Regel 1 ein eigener,

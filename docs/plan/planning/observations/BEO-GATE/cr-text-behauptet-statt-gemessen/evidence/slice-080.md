@@ -1,0 +1,2 @@
+**Vorgang:** slice-080
+**Fund:** Eine messbare Behauptung in einem CR wird behauptet statt gemessen — gegen den **eigenen Bestand** (CR 3: 19 von 19 ausgenommen, danach bleibt keiner), gegen den **fremden Vertrag** (CR 4/1: nicht-fatale Meldung vorausgesetzt, die `DC-FA-CLI-003` als Out-of-Scope führt) oder gegen den **eigenen Gate-Pfad** (CR 4/2: der Preis der `--doctor`-Wahl „schwächer" genannt, gemessen ist er null). Zweite Ausprägung, beim Empfänger aufgetreten und dort eigener Zähler: die **falsche Menge** gemessen — sieht aus wie ein Beleg und kann zutreffen

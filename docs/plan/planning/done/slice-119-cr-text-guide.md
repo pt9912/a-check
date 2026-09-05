@@ -4,7 +4,7 @@
 `open/`, `next/`, `in-progress/`, `done/`. Er wechselt nur durch `make slice-mv`
 ([`AGENTS.md`](../../../../AGENTS.md) §3.3/§5).
 
-**Bezug:** [`BEO-022`](../observations.md) — bei **3×**, Schwelle überschritten.
+**Bezug:** [`BEO-022`](../../../../docs/plan/planning/observations/BEO-GATE/cr-text-behauptet-statt-gemessen/observation.md) — bei **3×**, Schwelle überschritten.
 
 **Berührte Spec-Stellen:** — *(keine)*
 
@@ -51,7 +51,7 @@ Stelle, an der die letzten drei ihre Fehler hatten.
 
 [slice-118](../done/slice-118-lifecycle-wechsel-werkzeug.md) hat gerade das Gegenteil entschieden,
 und die Begründung trägt hier **nicht**: dort war ein Guide **schon einmal gescheitert**
-([`SL-002`](../observations.md), zwei Vorfälle nach dem Guide). Für CR-Texte gibt es noch keinen —
+([`SL-002`](../../../../docs/plan/planning/observations/README.md), zwei Vorfälle nach dem Guide). Für CR-Texte gibt es noch keinen —
 ein Guide ist die richtige **erste** Antwort, nicht die zweite.
 
 Ein Sensor ist zudem nicht baubar: *„ist diese Behauptung gemessen?"* ist ein Urteil über den
@@ -130,7 +130,7 @@ Frage hätte der vierte Fall mit **ja** beantwortet.
 **Offene Risiken und ihr Ausgang:** der erste weiter offen im Register, der zweite gestrichen mit
 Begründung.
 
-**Beobachtungs-Register:** [`BEO-022`](../observations.md) ist **verkörpert** im Skill; der Zähler
+**Beobachtungs-Register:** [`BEO-022`](../../../../docs/plan/planning/observations/BEO-GATE/cr-text-behauptet-statt-gemessen/observation.md) ist **verkörpert** im Skill; der Zähler
 bleibt bei 3×, sein Stand nennt jetzt den Ort. Die zweite Ausprägung („die falsche Menge
 gemessen") ist in der Beschreibung ergänzt — sie ist bei uns **nicht** aufgetreten und erhöht
 darum nichts; der Empfänger führt sie bei sich als eigene Klasse mit eigenem Zähler.
@@ -143,8 +143,8 @@ Werkzeug, `BEO-022` mit einem Guide.
 **Vorgelagert — Sub-Area-Wahl prüfen:** berührt wird der **Harness-Einstieg** (Skill, AGENTS §5,
 Workflow-Skelett). Kein Code, kein Gate.
 
-**Vorgelagert — offene Beobachtungen sichten:** [`BEO-022`](../observations.md) ist der Anlass
-(3×). [`BEO-009`](../observations.md) (Chronik in Dateien, die jeder Lauf liest) betrifft dieselbe
+**Vorgelagert — offene Beobachtungen sichten:** [`BEO-022`](../../../../docs/plan/planning/observations/BEO-GATE/cr-text-behauptet-statt-gemessen/observation.md) ist der Anlass
+(3×). [`BEO-009`](../../../../docs/plan/planning/observations/BEO-HARNESS/chronik-in-gelesenen-dateien/observation.md) (Chronik in Dateien, die jeder Lauf liest) betrifft dieselbe
 Schicht und bleibt offen — dieser Slice schreibt einen Skill, den nur der CR-Fall lädt.
 
 Alle berührten Sub-Areas GF.

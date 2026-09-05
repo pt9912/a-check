@@ -121,7 +121,7 @@ ein Re-Vendoring sie sonst pauschal gleich behandelt.
 - *`.harness/baseline/v5.12.0/` bleibt bis zum Form-Review vendored* — Ausgang: **gestrichen mit
   Begründung**: kein Risiko im Sinn der Dreier-Menge (nichts kann hier „eintreten"), sondern eine
   von der Baseline selbst vorgeschriebene, beabsichtigte Übergangsphase (§1) — dieselbe
-  Fehlklassifikation wie bei [`BEO-025`](../observations.md), die Etappe B/C von selbst beendet.
+  Fehlklassifikation wie bei [`BEO-025`](../../../../docs/plan/planning/observations/BEO-PLAN/risiko-ausgang-fuer-gewollte-wirkung/observation.md), die Etappe B/C von selbst beendet.
 
 **Folge-Slices:** keine vergeben. Etappe B und C sind in slice-135 §6 vorgeschlagen und brauchen
 eigene Kennungen bei ihrer eigenen Eröffnung.

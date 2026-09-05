@@ -3,7 +3,7 @@
 - **Status:** Accepted
 - **Datum:** 2026-08-29
 - **Geltungsbereich:** gesamtes Repo; betrifft das Baseline-Modul `modul-15`
-- **Ersetzt-Baseline-Regel:** [`modul-15-observability.md` §Kernidee](../../.harness/baseline/v5.12.0/regelwerk/modul-15-observability.md#kernidee-modul-15)
+- **Ersetzt-Baseline-Regel:** [`modul-15-observability.md` §Kernidee](../../.harness/baseline/v6.0.0/regelwerk/modul-15-observability.md#kernidee-modul-15)
 - **Adaption:** a-check führt **keine** Agenten-Telemetrie — keine Tool-Call-Spans, keine
   Token-Attribution pro Rolle, keine Cache-Counter. Das Modul bleibt unverkörpert.
 - **Begründung:** Span-Telemetrie über einen Prozess ohne Modellaufruf misst nichts. a-check ist

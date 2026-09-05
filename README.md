@@ -52,7 +52,7 @@ without a runnable proof (baseline rulebook `modul-09-implementierung.md`).
 
 What is *not* there yet is named where it belongs: open requirements live in
 [`spec/lastenheft.md`](spec/lastenheft.md), open observations in
-[`docs/plan/planning/observations.md`](docs/plan/planning/observations.md).
+[`docs/plan/planning/observations.md`](docs/plan/planning/observations/README.md).
 
 ## Why a-check?
 

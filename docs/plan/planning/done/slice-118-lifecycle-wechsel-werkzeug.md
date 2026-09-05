@@ -4,7 +4,7 @@
 `open/`, `next/`, `in-progress/`, `done/`. Er wechselt nur durch `git mv`
 ([`AGENTS.md`](../../../../AGENTS.md) §3.3/§5).
 
-**Bezug:** [`BEO-008`](../observations.md) — bei **3×**, Schwelle überschritten.
+**Bezug:** [`BEO-008`](../../../../docs/plan/planning/observations/BEO-PLAN/verweis-auf-wandernden-slice/observation.md) — bei **3×**, Schwelle überschritten.
 
 **Berührte Spec-Stellen:** — *(keine)*
 
@@ -49,7 +49,7 @@ selben Schritt nach, statt sie dem nächsten Gate-Lauf zu überlassen.
 
 ### Warum ein Werkzeug und nicht ein Guide
 
-**Der Guide ist hier gemessen gescheitert.** [`SL-002`](../observations.md) zählt neun Vorfälle,
+**Der Guide ist hier gemessen gescheitert.** [`SL-002`](../../../../docs/plan/planning/observations/README.md) zählt neun Vorfälle,
 **zwei davon nach** dem Guide in Schritt 9 des Workflow-Skeletts. `BEO-008` ist die
 Schwester-Klasse — Verweise **auf** einen wandernden Slice statt **in** ihm — und steht nach
 [slice-116](../done/slice-116-nullmengen-haerte-cr.md) bei 3×. Die Baseline verlangt ab dem
@@ -103,7 +103,7 @@ der Selbsttest fährt fünf Fixtures. Workflow-Skelett Schritt 9,
 **Lerneintrag — Form: geschärfte Regel.** *Wo ein Guide an einer Fehler-Familie schon einmal
 versagt hat, ist die Antwort auf den dritten Vorfall ein Werkzeug — kein zweiter Guide.* Die
 Baseline lässt bei überschrittener Schwelle beides zu („Guide **oder** Sensor"), und die Wahl
-wirkt beliebig, bis man die Trefferquote danebenlegt: [`SL-002`](../observations.md) — dieselbe
+wirkt beliebig, bis man die Trefferquote danebenlegt: [`SL-002`](../../../../docs/plan/planning/observations/README.md) — dieselbe
 Familie, nur die Gegenrichtung — zählt neun Vorfälle, **zwei davon nach** dem Guide in Schritt 9.
 Ein Guide, der einmal überlesen wurde, wird zweimal überlesen. *Weil* das so ist, ist die Frage
 bei der Schwelle nicht „Guide oder Sensor?", sondern „hat diese Familie schon einen Guide, und hat
@@ -128,20 +128,20 @@ Weg kürzer macht als den falschen**: `make slice-mv SLICE=… TO=…` ist wenig
 **Offene Risiken und ihr Ausgang:** der erste gestrichen mit Begründung, der zweite weiter offen
 im Register.
 
-**Beobachtungs-Register:** [`BEO-008`](../observations.md) ist **verkörpert** in
+**Beobachtungs-Register:** [`BEO-008`](../../../../docs/plan/planning/observations/BEO-PLAN/verweis-auf-wandernden-slice/observation.md) ist **verkörpert** in
 `make slice-mv` — die Beobachtung bleibt mit ihrem Zähler stehen, ihr Stand nennt jetzt den Ort.
 Neu ist nichts: der zweite Risiko-Ausgang („das Werkzeug ersetzt die Aufmerksamkeit nicht") ist
 dieselbe Beobachtung, nicht eine weitere.
 
 **Folge-Slices:** [slice-117](../done/slice-117-handbuch-verweis-cli.md) (Handbuch-Verweis) ist
-startbar; der Guide für CR-Texte aus [`BEO-022`](../observations.md) steht weiter aus.
+startbar; der Guide für CR-Texte aus [`BEO-022`](../../../../docs/plan/planning/observations/BEO-GATE/cr-text-behauptet-statt-gemessen/observation.md) steht weiter aus.
 ## 8. Sub-Area-Modus-Begründung
 
 **Vorgelagert — Sub-Area-Wahl prüfen:** berührt werden die **Gate-/Werkzeug-Schicht** (`tools/`,
 `Makefile`) und der **Harness-Einstieg** (zwei Deklarations-Tabellen, Workflow-Skelett).
 
-**Vorgelagert — offene Beobachtungen sichten:** [`BEO-008`](../observations.md) ist der Anlass
-(3×). [`BEO-022`](../observations.md) liegt in derselben Schicht und bleibt offen — dieser Slice
+**Vorgelagert — offene Beobachtungen sichten:** [`BEO-008`](../../../../docs/plan/planning/observations/BEO-PLAN/verweis-auf-wandernden-slice/observation.md) ist der Anlass
+(3×). [`BEO-022`](../../../../docs/plan/planning/observations/BEO-GATE/cr-text-behauptet-statt-gemessen/observation.md) liegt in derselben Schicht und bleibt offen — dieser Slice
 schreibt keinen CR.
 
 Alle berührten Sub-Areas GF.

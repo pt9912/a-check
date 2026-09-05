@@ -33,7 +33,7 @@ Eine ADR schärft die Spezifikation, **nie** das Lastenheft.
    **Baust du selbst einen Sensor über Markdown?** Dann blende Zitat-Kontexte von Anfang an aus —
    Inline-Code, Code-Blöcke, Argument-Strings. Text, der *über* ein Muster spricht, ist nicht das
    Muster. Dreimal in Folge hat ein neuer Sensor sonst im ersten Lauf sein eigenes Umfeld gemeldet
-   ([`SL-004`](../../docs/plan/planning/observations.md)). Eine Fixture mit **zitiertem** Muster gehört in
+   ([`SL-004`](../../docs/plan/planning/observations/README.md)). Eine Fixture mit **zitiertem** Muster gehört in
    den Selbsttest: sie trifft das Muster beinahe und prüft es damit wirklich.
 6. Repo-weiter Gate-Lauf vor dem Handoff:
 
@@ -75,7 +75,7 @@ Eine ADR schärft die Spezifikation, **nie** das Lastenheft.
    Beides gehört in **einen** Commit: der Rename bleibt bei 100 %, die Verweise liegen in
    *anderen* Dateien (Hard Rule §3.3).
 
-   **Von Hand ist es dreimal schiefgegangen** ([`BEO-008`](../../docs/plan/planning/observations.md)):
+   **Von Hand ist es dreimal schiefgegangen** ([`BEO-008`](../../docs/plan/planning/observations/BEO-PLAN/verweis-auf-wandernden-slice/observation.md)):
    `git mv` bewegt die Datei, die Verweise auf sie bleiben stehen. Gefangen hat es jedes Mal
    `doc-check` — **nach** dem Wechsel.
 
@@ -87,7 +87,7 @@ Eine ADR schärft die Spezifikation, **nie** das Lastenheft.
    `../`; richtig ist die zustandsunabhängige Form `../in-progress/roadmap.md`. Diese Prüfung von
    Hand nachzubauen lohnt nicht — ein naives `grep` über die Links meldet auch **zitierte**
    Verweise in Backticks, was die Regel ausdrücklich ausnimmt
-   ([`SL-002`](../../docs/plan/planning/observations.md)).
+   ([`SL-002`](../../docs/plan/planning/observations/README.md)).
 
 10. Berichten: welche Sensoren liefen, mit echter Ausgabe, und welche Risiken offen bleiben.
     **Keine Erfolgsmeldung ohne Gate-Ausgabe.**
@@ -96,7 +96,7 @@ Eine ADR schärft die Spezifikation, **nie** das Lastenheft.
     das ein eigener Commit mit dessen ID — nicht ein Anhängsel an den gerade offenen. `trace-check`
     fängt das nicht: es prüft, *ob* eine ID genannt ist, nicht ob sie die Arbeit bezeichnet.
     Dreimal ist so die Substanz eines Folge-Slice in einem `docs(planning)`-Commit des Vorgängers
-    gelandet ([`SL-003`](../../docs/plan/planning/observations.md)); die Arbeit war jedes Mal in Ordnung,
+    gelandet ([`SL-003`](../../docs/plan/planning/observations/README.md)); die Arbeit war jedes Mal in Ordnung,
     verloren ging die Auffindbarkeit.
 
 ## Hard Rules, die nie gebrochen werden

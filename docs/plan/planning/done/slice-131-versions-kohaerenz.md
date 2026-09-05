@@ -4,7 +4,7 @@
 `open/`, `next/`, `in-progress/`, `done/`. Er wechselt nur durch `make slice-mv`
 ([`AGENTS.md`](../../../../AGENTS.md) §3.3/§5).
 
-**Bezug:** [`BEO-026`](../observations.md) — bei **3×**, Schwelle überschritten. „Besser aufpassen"
+**Bezug:** [`BEO-026`](../../../../docs/plan/planning/observations/BEO-GATE/versionsangabe-neben-digest-ungeprueft/observation.md) — bei **3×**, Schwelle überschritten. „Besser aufpassen"
 ist keine Antwort ([`AGENTS.md`](../../../../AGENTS.md) §5).
 
 **Berührte Spec-Stellen:** — *(keine)* — die Build-Konfiguration ist nicht Gegenstand des
@@ -103,7 +103,7 @@ zieht diese Grenze für den einen Fall, in dem Netz der Zweck ist).
   Gegenrichtung fest (derselbe SHA mehrfach mit **gleichem** Tag schweigt), damit die Regel nicht
   auf Wiederholung, sondern auf Widerspruch anspricht.
 - *Der Sensor prüft Kohärenz, nicht Wahrheit; zwei gleich falsche Angaben bleiben grün* —
-  **Ausgang:** weiter offen, [`BEO-026`](../observations.md) im Register — der Zähler bleibt bei
+  **Ausgang:** weiter offen, [`BEO-026`](../../../../docs/plan/planning/observations/BEO-GATE/versionsangabe-neben-digest-ungeprueft/observation.md) im Register — der Zähler bleibt bei
   3×, sein Stand nennt jetzt die gedeckte und die offene Hälfte.
 
 ## 7. Closure-Notiz
@@ -114,7 +114,7 @@ beim ersten Lauf genau die zwei Divergenzen, wegen derer er gebaut wurde, und sc
 
 **Lerneintrag — Form: geschärfte Regel.** *Eine Beobachtung, die als Netz-Frage formuliert ist,
 verhindert den Sensor, den sie eigentlich verlangt — man prüfe zuerst, was die Vorfälle
-gemeinsam haben, nicht was ihre Überschrift sagt.* [`BEO-026`](../observations.md) hieß drei Slices
+gemeinsam haben, nicht was ihre Überschrift sagt.* [`BEO-026`](../../../../docs/plan/planning/observations/BEO-GATE/versionsangabe-neben-digest-ungeprueft/observation.md) hieß drei Slices
 lang „der Tag-Kommentar wird nicht gegen den Digest geprüft". Das stimmt und ist unlösbar, *weil*
 es die Registry braucht — und genau darum lag die Beobachtung so lange still: sie beschrieb ihre
 eigene Unmöglichkeit. Beim Nachzählen war **keiner** der drei Vorfälle diese Frage. Jeder war
@@ -145,7 +145,7 @@ selbst entschiede, würde raten.
 
 **Offene Risiken und ihr Ausgang:** zwei gestrichen mit Begründung, eines weiter offen.
 
-**Beobachtungs-Register:** [`BEO-026`](../observations.md) ist **verkörpert für die Kohärenz**;
+**Beobachtungs-Register:** [`BEO-026`](../../../../docs/plan/planning/observations/BEO-GATE/versionsangabe-neben-digest-ungeprueft/observation.md) ist **verkörpert für die Kohärenz**;
 der Zähler bleibt bei 3×, und der Stand nennt beide Hälften — die gedeckte und die offene.
 
 **Folge-Slices:** keiner zwingend. Regel 1 wäre ein CR-Kandidat für das `workflows`-Modul

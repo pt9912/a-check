@@ -4,7 +4,7 @@
 `open/`, `next/`, `in-progress/`, `done/`. Er wechselt nur durch `make slice-mv`
 ([`AGENTS.md`](../../../../AGENTS.md) §3.3/§5).
 
-**Bezug:** [`BEO-026`](../observations.md) — bei **3×**: zwei Vorfälle standen beim Schnitt (§3),
+**Bezug:** [`BEO-026`](../../../../docs/plan/planning/observations/BEO-GATE/versionsangabe-neben-digest-ungeprueft/observation.md) — bei **3×**: zwei Vorfälle standen beim Schnitt (§3),
 der dritte entstand während der Arbeit (§8).
 
 **Berührte Spec-Stellen:** — *(keine)* — die CI-Schicht ist nicht Gegenstand des Lastenhefts.
@@ -25,7 +25,7 @@ Modul `workflows` ist seit dem Pin `v0.67.0` verfügbar und war nie eingeschalte
 - [x] Modul `workflows` in [`.d-check.yml`](../../../../.d-check.yml) konfiguriert, als
       `make doc-workflows` aufrufbar und im `gates`-Aggregat — mit dem Aktivierungs-Schalter
       `dir:`, ohne den das Modul inert wäre (dieselbe Klasse wie
-      [`BEO-014`](../observations.md)).
+      [`BEO-014`](../../../../docs/plan/planning/observations/BEO-GATE/ruhe-marker-ungewaechtert/observation.md)).
 - [x] Der vom Modul gefundene Rechte-Defekt in
       [`release.yml`](../../../../.github/workflows/release.yml) ist behoben: der aufrufende Job
       führt die Rechte, die das lokale Ziel verlangt.
@@ -51,7 +51,7 @@ Modul `workflows` ist seit dem Pin `v0.67.0` verfügbar und war nie eingeschalte
 
 ### Der zweite Vorfall ist von mir, und er ist die schärfere Ausprägung
 
-[`BEO-026`](../observations.md) stand bei 1×: beim Schreiben von
+[`BEO-026`](../../../../docs/plan/planning/observations/BEO-GATE/versionsangabe-neben-digest-ungeprueft/observation.md) stand bei 1×: beim Schreiben von
 [`image-scan.yml`](../../../../.github/workflows/image-scan.yml) entstand `# v5.0.0` an einem
 Digest, den `ci.yml` als `# v6.0.2` führte. Der zweite Vorfall liegt in **einer** Datei:
 
@@ -62,7 +62,7 @@ release.yml:158  docker/login-action@650006c6eb7d…  # v3.6.0   (2026-08-30, sl
 
 Derselbe Digest, zwei Versionen, 83 Zeilen auseinander. Die untere Zeile ist beim Docker-Hub-Spiegel
 entstanden: der Digest wurde aus der oberen kopiert, der Kommentar **danebengeschrieben**. Das ist
-die Klasse aus [`BEO-031`](../observations.md) — kopiert statt gemessen — nur an einem Feld, das
+die Klasse aus [`BEO-031`](../../../../docs/plan/planning/observations/BEO-GATE/ungelaufene-mechanik-docker-hub-spiegel/observation.md) — kopiert statt gemessen — nur an einem Feld, das
 keinen Prüfer hat.
 
 **Gemessen** (`gh api repos/docker/login-action/…`, kein Netz-Zugriff aus dem Gate heraus):
@@ -140,7 +140,7 @@ kein Gate dorthin sah.
   gepinnt, und **eine** lokale, die genau den Befund trug.
 - *Der ungedeckte Digest↔Tag-Widerspruch bleibt ohne Sensor und wiederholt sich* —
   **Ausgang:** **eingetreten**, noch in diesem Slice, an einer dritten Stelle (§8) ⇒ Folge-Slice
-  benannt und [`BEO-026`](../observations.md) auf **3×** geschärft.
+  benannt und [`BEO-026`](../../../../docs/plan/planning/observations/BEO-GATE/versionsangabe-neben-digest-ungeprueft/observation.md) auf **3×** geschärft.
 
 ## 7. Closure-Notiz
 
@@ -155,7 +155,7 @@ und hält den Anlass für erledigt.* Der Anlass war ein Digest mit zwei Tag-Komm
 prüft, **dass** ein Tag-Kommentar dasteht, nicht **welcher**; beide Zeilen des Anlasses sind
 formgerecht. Hätte ich das nicht vor dem Schnitt nachgelesen, stünde `BEO-026` heute als
 „verkörpert" im Register — *weil* ein grünes Target wie eine Antwort aussieht, auch wenn es eine
-andere Frage beantwortet. Dieselbe Klasse wie [`BEO-023`](../observations.md), nur eine Ebene
+andere Frage beantwortet. Dieselbe Klasse wie [`BEO-023`](../../../../docs/plan/planning/observations/BEO-GATE/pruefer-ohne-gegenstand-oder-aufruf/observation.md), nur eine Ebene
 höher: dort war die Prüfmenge leer, hier ist es die Prüf**frage**.
 
 **Der Sensor hat trotzdem mehr geliefert als der Anlass verlangte.** Er deckt die *lokale*
@@ -183,7 +183,7 @@ Repo und fallen beim Ändern auf.
 
 **Offene Risiken und ihr Ausgang:** zwei gestrichen mit Begründung, eines **eingetreten** (§8).
 
-**Beobachtungs-Register:** [`BEO-026`](../observations.md) ist von **1×** auf **3×** geschärft und
+**Beobachtungs-Register:** [`BEO-026`](../../../../docs/plan/planning/observations/BEO-GATE/versionsangabe-neben-digest-ungeprueft/observation.md) ist von **1×** auf **3×** geschärft und
 neu gefasst — die Klasse ist nicht „Workflow-`uses:`", sondern **jede Versions-Angabe neben einem
 Digest**. Sie bleibt **offen**: die Form deckt dieser Slice, die Gültigkeit nicht.
 

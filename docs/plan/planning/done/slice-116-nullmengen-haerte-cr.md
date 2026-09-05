@@ -39,7 +39,7 @@ unterscheiden können.
 | Datei | Änderungs-Art | Begründung |
 |---|---|---|
 | diese Datei, §9 | neu | der CR-Text ist die Lieferung |
-| [`observations.md`](../observations.md) | update | die Kollision als Beobachtung |
+| [`observations.md`](../../../../docs/plan/planning/observations/README.md) | update | die Kollision als Beobachtung |
 
 **Auszuführende Gates:** `make gates`, `make verify`. Kein Code, kein Modul — die Prüfung ist die
 Doku-Hygiene des CR-Textes selbst.

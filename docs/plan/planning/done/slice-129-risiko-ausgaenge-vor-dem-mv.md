@@ -4,7 +4,7 @@
 `open/`, `next/`, `in-progress/`, `done/`. Er wechselt nur durch `make slice-mv`
 ([`AGENTS.md`](../../../../AGENTS.md) §3.3/§5).
 
-**Bezug:** [`BEO-006`](../observations.md) — bei **3×**, Schwelle überschritten.
+**Bezug:** [`BEO-006`](../../../../docs/plan/planning/observations/BEO-GATE/verify-vor-git-mv-reihenfolge/observation.md) — bei **3×**, Schwelle überschritten.
 
 **Berührte Spec-Stellen:** — *(keine)*
 
@@ -134,23 +134,23 @@ sondern ein Widerspruch im Regelwerk selbst.
 2. Das Überspringen ist **sichtbar**: die Schluss-Meldung nennt die Zahl der in Arbeit
    befindlichen Slices. Ein Übersprung, den niemand sieht, wäre von einer Prüfung, die nichts
    findet, nicht zu unterscheiden — dieselbe Klasse wie
-   [`BEO-023`](../observations.md).
+   [`BEO-023`](../../../../docs/plan/planning/observations/BEO-GATE/pruefer-ohne-gegenstand-oder-aufruf/observation.md).
 3. Die Grundgesamtheits-Grenze zählt **beide** Verzeichnisse: 126 geprüft, 1 übersprungen.
 
 **Was offen bleibt, und warum es nicht mitwandert:** `doc-structure` (die Closure-**Struktur**)
 prüft weiter nur `done/`. Sein `files`-Glob kann die Bedingung „nur wenn ausgefüllt" nicht
 ausdrücken — ein Glob über `in-progress/` beanstandete jeden laufenden Slice. Diese Hälfte von
-[`BEO-006`](../observations.md) bleibt bestehen; sie wäre erst mit einer Modul-Fähigkeit lösbar,
+[`BEO-006`](../../../../docs/plan/planning/observations/BEO-GATE/verify-vor-git-mv-reihenfolge/observation.md) bleibt bestehen; sie wäre erst mit einer Modul-Fähigkeit lösbar,
 die es heute nicht gibt.
 
 **Offene Risiken und ihr Ausgang:** beide gestrichen mit Begründung.
 
-**Beobachtungs-Register:** [`BEO-006`](../observations.md) ist **verkörpert** für die
+**Beobachtungs-Register:** [`BEO-006`](../../../../docs/plan/planning/observations/BEO-GATE/verify-vor-git-mv-reihenfolge/observation.md) ist **verkörpert** für die
 Risiko-Ausgänge; der Zähler bleibt bei 3×, sein Stand nennt jetzt den Ort **und** die verbliebene
 Hälfte (`doc-structure`).
 
 **Folge-Slices:** keiner zwingend. Der nächste naheliegende Schritt ist
-[`BEO-026`](../observations.md) — das Modul `workflows` ist seit `v0.67.0` im Pin verfügbar und
+[`BEO-026`](../../../../docs/plan/planning/observations/BEO-GATE/versionsangabe-neben-digest-ungeprueft/observation.md) — das Modul `workflows` ist seit `v0.67.0` im Pin verfügbar und
 nie konfiguriert; seit [slice-128](../done/slice-128-dependabot-hebungskanal.md) erzeugt der
 Hebungs-Kanal genau die `uses:`-Hebungen, deren Form dort ungeprüft bleibt.
 ## 8. Sub-Area-Modus-Begründung
@@ -158,8 +158,8 @@ Hebungs-Kanal genau die `uses:`-Hebungen, deren Form dort ungeprüft bleibt.
 **Vorgelagert — Sub-Area-Wahl prüfen:** berührt wird die **Gate-/Werkzeug-Schicht** (`tools/`) und
 mit den zwei Deklarations-Tabellen und dem Workflow-Skelett der **Harness-Einstieg**.
 
-**Vorgelagert — offene Beobachtungen sichten:** [`BEO-006`](../observations.md) ist der Anlass
-(3×). [`BEO-025`](../observations.md) (die Dreier-Menge kennt kein „eingetreten und so gewollt")
+**Vorgelagert — offene Beobachtungen sichten:** [`BEO-006`](../../../../docs/plan/planning/observations/BEO-GATE/verify-vor-git-mv-reihenfolge/observation.md) ist der Anlass
+(3×). [`BEO-025`](../../../../docs/plan/planning/observations/BEO-PLAN/risiko-ausgang-fuer-gewollte-wirkung/observation.md) (die Dreier-Menge kennt kein „eingetreten und so gewollt")
 liegt daneben und bleibt offen — dieser Slice ändert **wann** geprüft wird, nicht **was**.
 
 Alle berührten Sub-Areas GF.

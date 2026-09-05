@@ -138,6 +138,6 @@ dieser Art meldet, ohne dass jemand hinsieht.
 Code, keine Doku-Verträge.
 
 **Vorgelagert — offene Beobachtungen sichten:** keine Treffer in der berührten Sub-Area;
-[`BEO-026`](../observations.md) (Workflow-`uses:`-Form) liegt in der CI-Schicht.
+[`BEO-026`](../../../../docs/plan/planning/observations/BEO-GATE/versionsangabe-neben-digest-ungeprueft/observation.md) (Workflow-`uses:`-Form) liegt in der CI-Schicht.
 
 Alle berührten Sub-Areas GF.

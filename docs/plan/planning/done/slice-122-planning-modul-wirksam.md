@@ -4,7 +4,7 @@
 `open/`, `next/`, `in-progress/`, `done/`. Er wechselt nur durch `make slice-mv`
 ([`AGENTS.md`](../../../../AGENTS.md) §3.3/§5).
 
-**Bezug:** [`BEO-014`](../observations.md) — bei **2×**.
+**Bezug:** [`BEO-014`](../../../../docs/plan/planning/observations/BEO-GATE/ruhe-marker-ungewaechtert/observation.md) — bei **2×**.
 
 **Berührte Spec-Stellen:** — *(keine)*
 
@@ -127,12 +127,12 @@ eine gewollte Wirkung ist kein Risiko. Dass die geschlossene Dreier-Menge dafür
 Kategorie führt (*eingetreten* meint „schiefgegangen", nicht „so geplant"), ist der zweite
 Register-Eintrag dieses Slice.
 
-**Beobachtungs-Register:** drei Einträge. [`BEO-014`](../observations.md) ist **verkörpert** — der Zähler bleibt
+**Beobachtungs-Register:** drei Einträge. [`BEO-014`](../../../../docs/plan/planning/observations/BEO-GATE/ruhe-marker-ungewaechtert/observation.md) ist **verkörpert** — der Zähler bleibt
 bei 2×, sein Stand nennt jetzt den Ort. Damit ist die Beobachtung für `planning` aufgelöst; die
-allgemeinere Familie führt [`BEO-023`](../observations.md) weiter (ein Prüfer ohne Gegenstand
-bleibt unkalibriert). Neu ist [`BEO-025`](../observations.md) (2×, Belege slice-121 und slice-122): die geschlossene Dreier-Menge der Risiko-Ausgänge kennt keine Kategorie für *„eingetreten und so gewollt"* — beide Male musste eine beabsichtigte Wirkung zu `gestrichen mit Begründung` umformuliert werden.
+allgemeinere Familie führt [`BEO-023`](../../../../docs/plan/planning/observations/BEO-GATE/pruefer-ohne-gegenstand-oder-aufruf/observation.md) weiter (ein Prüfer ohne Gegenstand
+bleibt unkalibriert). Neu ist [`BEO-025`](../../../../docs/plan/planning/observations/BEO-PLAN/risiko-ausgang-fuer-gewollte-wirkung/observation.md) (2×, Belege slice-121 und slice-122): die geschlossene Dreier-Menge der Risiko-Ausgänge kennt keine Kategorie für *„eingetreten und so gewollt"* — beide Male musste eine beabsichtigte Wirkung zu `gestrichen mit Begründung` umformuliert werden.
 
-**Und einer fiel ungesucht an.** [`BEO-006`](../observations.md)
+**Und einer fiel ungesucht an.** [`BEO-006`](../../../../docs/plan/planning/observations/BEO-GATE/verify-vor-git-mv-reihenfolge/observation.md)
 geht auf **2×**: der Risiko-Ausgang von
 [slice-121](../done/slice-121-port-richtung-inbound-outbound.md) traf die geschlossene
 Dreier-Menge nicht (*„eingetreten und beabsichtigt"* ist keiner der drei) — und fiel erst
@@ -141,7 +141,7 @@ Reihenfolge-Falle, die `BEO-006` seit slice-099 beschreibt, hier zum ersten Mal 
 eingetreten. Korrigiert: es war nie ein Risiko, sondern die Absicht — also **gestrichen
 mit Begründung**.
 
-**Folge-Slices:** ein Sensor für [`BEO-006`](../observations.md) — der Zähler steht mit diesem Slice auf **3×**, die Schwelle ist überschritten. Dazu offen: [`BEO-024`](../observations.md) — die Zuordnung
+**Folge-Slices:** ein Sensor für [`BEO-006`](../../../../docs/plan/planning/observations/BEO-GATE/verify-vor-git-mv-reihenfolge/observation.md) — der Zähler steht mit diesem Slice auf **3×**, die Schwelle ist überschritten. Dazu offen: [`BEO-024`](../../../../docs/plan/planning/observations/BEO-KERN/dirvocab-portfor-auseinander/observation.md) — die Zuordnung
 in zwei Paketen aus [slice-121](../done/slice-121-port-richtung-inbound-outbound.md); sie ist
 strukturell lösbar, indem eine Seite die andere liest.
 ## 8. Sub-Area-Modus-Begründung
@@ -149,8 +149,8 @@ strukturell lösbar, indem eine Seite die andere liest.
 **Vorgelagert — Sub-Area-Wahl prüfen:** berührt wird die **Gate-/Werkzeug-Schicht**
 (`.d-check.yml`, `Makefile`) und mit den zwei Deklarations-Tabellen der **Harness-Einstieg**.
 
-**Vorgelagert — offene Beobachtungen sichten:** [`BEO-014`](../observations.md) ist der Anlass
-(2×). [`BEO-023`](../observations.md) (Prüfer mit leerer Prüfmenge) liegt in derselben Schicht und
+**Vorgelagert — offene Beobachtungen sichten:** [`BEO-014`](../../../../docs/plan/planning/observations/BEO-GATE/ruhe-marker-ungewaechtert/observation.md) ist der Anlass
+(2×). [`BEO-023`](../../../../docs/plan/planning/observations/BEO-GATE/pruefer-ohne-gegenstand-oder-aufruf/observation.md) (Prüfer mit leerer Prüfmenge) liegt in derselben Schicht und
 beschreibt dieselbe Familie — dieser Slice gibt einem Prüfer seinen Gegenstand zurück.
 
 Alle berührten Sub-Areas GF.

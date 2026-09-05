@@ -5,7 +5,7 @@ abschließbaren Vorhaben. Der Slice-Zyklus ist eine Zustandsmaschine über Verze
 (`open/` → `next/` → `in-progress/` → `done/`, [`AGENTS.md`](../../../AGENTS.md) §5); die Welle
 liegt eine Ebene darüber und schließt über eine **Prozedur**, nicht über einen Datei-Übergang.
 
-- Slice-Form: die **vendored Ziel-Form** [`slice.template.md`](../../../.harness/baseline/v5.12.0/templates/docs/plan/planning/slice.template.md) — a-check führt keine
+- Slice-Form: die **vendored Ziel-Form** [`slice.template.md`](../../../.harness/baseline/v6.0.0/templates/docs/plan/planning/slice.template.md) — a-check führt keine
   eigene Kopie. **Beim Kopieren:** Zeile `Lerneintrag — Form: <…>` ergänzen, die vier nicht
   geführten Felder streichen ([`AGENTS.md`](../../../AGENTS.md) §5). Höchstens drei **Liefer**-Punkte,
   höchstens zwei Schichten, benannte Lerneintrag-Form. Gezählt wird nur, was mit dem Umfang
@@ -43,9 +43,11 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-06-roadmap.md` §Wann Arbeit ei
   nach [`docs/plan/carveouts/done/`](../carveouts/README.md).
 
 Flach neben den Lifecycle-Verzeichnissen liegt das **Beobachtungs-Register**
-([`observations.md`](observations.md)): der Steering-Loop-Zähler, fortgeschrieben bei **jeder**
-Slice-Closure, unabhängig von Wellen. Ein `reconciliation.md` führt a-check nicht — es gehört zum
-Brownfield-Bootstrap, den dieses Repo nicht hatte.
+([`observations/`](observations/README.md), Verzeichnisform seit slice-139): je Beobachtung ein
+Verzeichnis `BEO-<KUERZEL>/<slug>/`, der Steering-Loop-Zähler abgeleitet aus der Zahl der
+Evidence-Dateien, fortgeschrieben bei **jeder** Slice-Closure, unabhängig von Wellen. Ein
+`reconciliation.md` führt a-check nicht — es gehört zum Brownfield-Bootstrap, den dieses Repo
+nicht hatte.
 
 ## Aktueller Stand
 
@@ -67,7 +69,11 @@ Wellen-Closure.
 
 Quelle: `modul-06` §Wellen-Closure. **Fünf Schritte, jeder
 mit einem Beleg — keiner mit einem Datum.** Erst wenn alle fünf Belege vorliegen, ist eine Welle
-*auditierbar* geschlossen.
+*auditierbar* geschlossen. (Die Baseline führt seit `v6.0.0` einen sechsten Schritt —
+Zeitdokumente archivieren, zwischen Welle-Schließen und Self-Close-Commit; ausdrücklich optional,
+„kein Zwang zum Nachrüsten — und kein Verbot". a-check hat ihn nicht adoptiert, mangels Trigger:
+keine offene Welle, kein Bedarf, alten Bestand loszuwerden. Diese fünf Schritte bleiben darum
+a-checks vollständige, gelebte Prozedur.)
 
 **1 — Trigger prüfen.** Alle Slices der Welle liegen in `done/`, und der Lauf ist grün. Das ist
 die beobachtbare Bedingung, nicht der Kalendertag.

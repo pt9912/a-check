@@ -63,7 +63,7 @@ Dependabot-Commit tut das — auf diese ADR. Die Ausnahme hätte behauptet, er t
   ([`docs/user/releasing.md`](../../user/releasing.md) §Vorbedingungen).
 - **Die Form aus dem Repo bleibt Pflicht.** Ein PR, der einen Tag statt eines SHA setzte, wäre ein
   Rückschritt gegenüber der digest-gepinnten Praxis. Heute prüft das **kein** Gate
-  ([`BEO-026`](../planning/observations.md)) — der Kanal macht diese Lücke praktisch relevanter,
+  ([`BEO-026`](../../../docs/plan/planning/observations/BEO-GATE/versionsangabe-neben-digest-ungeprueft/observation.md)) — der Kanal macht diese Lücke praktisch relevanter,
   weil er künftige `uses:`-Hebungen **erzeugt**.
 - **Der Zuschnitt ist klein und bleibt es vorerst:** ein direktes Modul, kein indirektes, zwei
   externe Actions. Deshalb steht hier **kein** `allow: dependency-type: all` — im Schwester-Repo

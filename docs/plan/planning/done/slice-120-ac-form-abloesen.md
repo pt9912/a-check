@@ -159,7 +159,7 @@ Stempel im Handbuch-Kopf) — unabhängig gefunden, bevor slice-117 geschnitten 
 (`.d-check.yml`, `tools/`, `Makefile`, `.claude/`) und mit der Deklarations-Tabelle der
 **Harness-Einstieg**.
 
-**Vorgelagert — offene Beobachtungen sichten:** [`BEO-014`](../observations.md) (aktiviertes Modul
+**Vorgelagert — offene Beobachtungen sichten:** [`BEO-014`](../../../../docs/plan/planning/observations/BEO-GATE/ruhe-marker-ungewaechtert/observation.md) (aktiviertes Modul
 ohne Konfigurationsblock meldet grün) betrifft dieselbe Schicht und bleibt für `planning` offen;
 dieser Slice konfiguriert eine Regel, er aktiviert kein neues Modul.
 

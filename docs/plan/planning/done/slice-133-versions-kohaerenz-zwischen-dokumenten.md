@@ -6,7 +6,7 @@
 
 **Bezug:** Prosa-Drift in [`docs/user/releasing.md`](../../../../docs/user/releasing.md)
 §Versionsquelle, gefunden bei der Release-Prep zur nächsten Version.
-[`BEO-023`](../observations.md) (*Prüfer meldet grün ohne Gegenstand*) ist die Risiko-Klasse, gegen
+[`BEO-023`](../../../../docs/plan/planning/observations/BEO-GATE/pruefer-ohne-gegenstand-oder-aufruf/observation.md) (*Prüfer meldet grün ohne Gegenstand*) ist die Risiko-Klasse, gegen
 die dieser Slice sich selbst absichern muss — nicht sein Anlass.
 
 **Berührte Spec-Stellen:** — *(keine)* — die Doku-Konfiguration ist nicht Gegenstand des
@@ -60,7 +60,7 @@ Zwei Module des Schwester-Tools kommen in Frage. Beide wurden gegen denselben Fa
 
 Die 16-Zeichen-Schwelle ist der Grund für die Wahl, nicht ein Detail: eine Direktive über
 `„0.17.0"` (sechs Zeichen) sieht wie ein Wächter aus und **schweigt** — gemessen im selben Lauf,
-in dem die Langform meldete. Das ist [`BEO-023`](../observations.md) in seiner ersten Form
+in dem die Langform meldete. Das ist [`BEO-023`](../../../../docs/plan/planning/observations/BEO-GATE/pruefer-ohne-gegenstand-oder-aufruf/observation.md) in seiner ersten Form
 (*ohne Gegenstand*), erzeugt durch die eigene Konfiguration.
 
 **Die Grenze von `versions`, ebenfalls gemessen:** der Erwartungswert kommt **versions-förmig** aus
@@ -82,7 +82,7 @@ sind je eine eigene Messung, kein Anhängsel.
 
 - **Das Muster ist an den Wortlaut des Satzes gebunden.** Wer ihn umformuliert, leert die
   Prüfmenge — und `versions` meldet dann grün, weil es nichts findet.
-  **Ausgang:** *weiter offen* → [`BEO-023`](../observations.md), Klasse *ohne Gegenstand*. Der
+  **Ausgang:** *weiter offen* → [`BEO-023`](../../../../docs/plan/planning/observations/BEO-GATE/pruefer-ohne-gegenstand-oder-aufruf/observation.md), Klasse *ohne Gegenstand*. Der
   Zähler bleibt bei **2×**: ein dritter **Vorfall** ist nicht eingetreten, dieser Slice hat die
   Leermenge im Gegenteil ausgeschlossen (§4, Lauf A und B). Einen Zähler ohne Vorfall zu erhöhen
   wäre genau die Schein-Genauigkeit, die [`AGENTS.md`](../../../../AGENTS.md) §5 verbietet.
@@ -111,7 +111,7 @@ gemessen werden, über die er aussagt — und zwar in beide Richtungen, bevor er
 Die grüne Richtung allein ist wertlos: ein Muster, das **nichts** trifft, liefert dieselben
 „0 Befund(e)" wie eines, das alles trifft und zufrieden ist. Belegt ist der Sensor erst durch den
 Lauf, in dem er **meldet** — hier durch die Rückstellung auf `0.17.0`, also auf genau den Befund,
-der ihn ausgelöst hat. *Weil* [`BEO-023`](../observations.md) diese Klasse zweimal in Folge
+der ihn ausgelöst hat. *Weil* [`BEO-023`](../../../../docs/plan/planning/observations/BEO-GATE/pruefer-ohne-gegenstand-oder-aufruf/observation.md) diese Klasse zweimal in Folge
 getroffen hat (leere Prüfmenge bei `verify-ac-form`, nie gefahrenes `doc-complete`), war die
 Zwei-Richtungs-Messung hier keine Kür, sondern die Bedingung dafür, den Sensor überhaupt
 einzuschalten.
@@ -133,9 +133,9 @@ gebaut ist, erzeugt durch seine eigene Konfiguration. Aufgefallen ist es nur, we
    (`**Version:** 0.26.0`).
 3. `make gates` grün nach der Änderung (Ausgabe in Datei, Exit-Code getrennt geprüft).
 
-**Beobachtungs-Register (`../observations.md`):** [`BEO-028`](../observations.md) auf **2×**
+**Beobachtungs-Register (`../observations.md`):** [`BEO-028`](../../../../docs/plan/planning/observations/BEO-PLAN/changelog-unreleased-ungepflegt/observation.md) auf **2×**
 erhöht, Beleg `slice-133` ergänzt — der `[Unreleased]`-Abschnitt lag bei der Release-Prep erneut
-leer, diesmal über 21 Commits seit `v0.18.0`. [`BEO-023`](../observations.md) bleibt bei **2×**:
+leer, diesmal über 21 Commits seit `v0.18.0`. [`BEO-023`](../../../../docs/plan/planning/observations/BEO-GATE/pruefer-ohne-gegenstand-oder-aufruf/observation.md) bleibt bei **2×**:
 zitiert als Risiko-Klasse (§6), aber kein dritter Vorfall — dieser Slice hat die Leermenge
 ausgeschlossen, statt in sie zu laufen.
 
@@ -143,7 +143,7 @@ ausgeschlossen, statt in sie zu laufen.
 sind je eine eigene Messung und in §5 ausdrücklich abgegrenzt.
 
 **Risiken aus §6:** drei, jedes mit genau einem Ausgang — *weiter offen* → Beobachtungs-Register
-(Wortlaut-Bindung, [`BEO-023`](../observations.md)); *entfallen*, gestrichen mit Begründung
+(Wortlaut-Bindung, [`BEO-023`](../../../../docs/plan/planning/observations/BEO-GATE/pruefer-ohne-gegenstand-oder-aufruf/observation.md)); *entfallen*, gestrichen mit Begründung
 (Anker-Bruch ist fail-closed); *entfallen*, gestrichen mit Begründung (Digest-Grenze gemessen und
 benannt).
 
@@ -158,9 +158,9 @@ Review-Frage (*deckt der Sensor, was er zu decken behauptet?*). Die berührte Do
 ohne die Konfiguration gäbe es dort nichts zu schreiben.
 
 **Vorgelagert — offene Beobachtungen sichten:** Zwei Treffer.
-[`BEO-023`](../observations.md) (*Prüfer meldet grün ohne kalibriert zu sein*, **2×**) trifft
+[`BEO-023`](../../../../docs/plan/planning/observations/BEO-GATE/pruefer-ohne-gegenstand-oder-aufruf/observation.md) (*Prüfer meldet grün ohne kalibriert zu sein*, **2×**) trifft
 diesen Slice unmittelbar und ist in §4/§6 verarbeitet — beide Richtungen sind am **echten**
-Bestand gemessen, nicht nur an einer Fixture. [`BEO-028`](../observations.md) (*CHANGELOG
+Bestand gemessen, nicht nur an einer Fixture. [`BEO-028`](../../../../docs/plan/planning/observations/BEO-PLAN/changelog-unreleased-ungepflegt/observation.md) (*CHANGELOG
 `[Unreleased]` wird nicht je Slice gepflegt*, **1×**) ist bei der Release-Prep, aus der dieser
 Slice stammt, ein **zweites** Mal eingetreten: 21 Commits seit `v0.18.0` ohne Eintrag. Der Zähler
 wird bei der Closure erhöht.
@@ -177,6 +177,6 @@ wird bei der Closure erhöht.
 - **Evidenz-/Diskrepanz-Risiko:** niedrig, **weil gemessen**. Das Muster hat genau **einen**
   Gegenstand im Bestand (`releasing.md:38`), und der `current-from`-Span trägt genau **ein**
   versions-fähiges Token. Ohne diese beiden Zählungen wäre das Risiko hoch — das ist der
-  Unterschied, den [`BEO-023`](../observations.md) benennt.
+  Unterschied, den [`BEO-023`](../../../../docs/plan/planning/observations/BEO-GATE/pruefer-ohne-gegenstand-oder-aufruf/observation.md) benennt.
 - **Reconciliation-Aufwand:** keiner. Kein Bestand wird nachgezogen; die einzige Diskrepanz, die
   der Sensor findet, ist die, die ihn ausgelöst hat, und sie wird in diesem Slice behoben.

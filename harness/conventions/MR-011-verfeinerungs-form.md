@@ -3,7 +3,7 @@
 - **Status:** Accepted
 - **Datum:** 2026-08-29
 - **Geltungsbereich:** [`spec/spezifikation.md`](../../spec/spezifikation.md)
-- **Ersetzt-Baseline-Regel:** [`grundlagen-source-precedence.md` §ID-Schema als Klammer](../../.harness/baseline/v5.12.0/regelwerk/grundlagen-source-precedence.md#id-schema-als-klammer)
+- **Ersetzt-Baseline-Regel:** [`grundlagen-source-precedence.md` §ID-Schema als Klammer](../../.harness/baseline/v6.0.0/regelwerk/grundlagen-source-precedence.md#id-schema-als-klammer)
 - **Adaption:** Die Baseline sieht für die **Verfeinerung** genau einer Anforderung im
   Technik-Stratum die Suffix-Form `<PREFIX>-FA-<NN>.<Buchstabe>` vor. a-check nutzt sie nicht:
   jede technische Festlegung — auch die, die eine Anforderung verfeinert — trägt eine eigene

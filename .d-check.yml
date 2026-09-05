@@ -161,6 +161,10 @@ structure:
       - "docs/plan/planning/**/slice-0[0-4][0-9]-*.md"
       - "docs/plan/planning/**/slice-050-*.md"
       - "docs/plan/planning/**/slice-051-*.md"
+      # Beobachtungs-Register-Belege (seit slice-139): evidence/slice-NNN.md
+      # traegt die Kennung eines VORGANGS, kein Slice-Plan-Dokument — derselbe
+      # Namensraum, andere Bedeutung, kollidiert mit diesem Glob.
+      - "docs/plan/planning/observations/**"
 
   # (2) Closure-Struktur in done/: GENAU EINER, ausgefuellt, kein Platzhalter,
   #     mindestens zwei Saetze (AGENTS §5). `exempt-section-pattern` haelt
@@ -201,6 +205,10 @@ structure:
     exempt-paths:
       - "docs/plan/planning/**/slice-0[0-8][0-9]-*.md"
       - "docs/plan/planning/**/slice-09[0-7]-*.md"
+      # Beobachtungs-Register-Belege (seit slice-139): evidence/slice-NNN.md
+      # traegt die Kennung eines VORGANGS, kein Slice-Plan-Dokument — derselbe
+      # Namensraum, andere Bedeutung, kollidiert mit diesem Glob.
+      - "docs/plan/planning/observations/**"
 
   # (5) AC-Form: jede NEUE Anforderung traegt Happy · Boundary · Negative ·
   #     Out-of-Scope (AGENTS §5). Loest tools/verify-ac-form.sh ab (slice-120).
