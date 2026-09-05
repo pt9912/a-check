@@ -37,7 +37,7 @@ sinngemäß auf einen Fremdrepo-Vergleich angewandt).
 Der Pin steht an drei deklarierenden Stellen — `harness/conventions.md` §Baseline (kanonisch),
 `AGENTS.md` §1, `harness/README.md` §Guides — plus in **jedem** Pfad-Verweis auf
 `.harness/baseline/v5.12.0/…` (108 Zeilen außerhalb des vendored Baums selbst, gemessen mit
-`grep -rn`) und in [`MR-013`](../../../../harness/conventions/MR-013-adr-vorlagen-version.md)
+`grep -rn`) und in [`MR-013`](../../../../harness/conventions/done/MR-013-adr-vorlagen-version.md)
 (ADR-Vorlagen-Version). `.d-check.yml`s `scan.ignore` ist bereits versionsagnostisch
 (`.harness/baseline/**`) — anders als bei slice-092 keine Fundstelle hier.
 
@@ -151,7 +151,7 @@ Die neue Baseline zeigt jetzt ein Beispielmuster für einen `versions`-Pin auf
 [slice-133](../done/slice-133-versions-kohaerenz-zwischen-dokumenten.md)) — aber nur mit *einem*
 Pattern für die Lastenheft-Versionskohärenz. Die drei Baseline-Pin-Stellen (`conventions.md`,
 `AGENTS.md`, `harness/README.md`) plus
-[`MR-013`](../../../../harness/conventions/MR-013-adr-vorlagen-version.md) sind bislang **nur
+[`MR-013`](../../../../harness/conventions/done/MR-013-adr-vorlagen-version.md) sind bislang **nur
 durch Disziplin**, nicht durch einen Sensor synchron gehalten. Ein zweiter `pin-pattern`-Eintrag
 wäre die naheliegende, kleine Erweiterung.
 
@@ -194,7 +194,7 @@ damaligen Etappen entfallen ersatzlos.
 
 | Etappe | Inhalt | Warum getrennt |
 |---|---|---|
-| **A — Re-Vendoring** | `.harness/baseline/v6.0.0/` **neben** `v5.12.0` anlegen (SHA256SUMS bereits vorliegend, siehe §2), Pin an den drei Stellen + [`MR-013`](../../../../harness/conventions/MR-013-adr-vorlagen-version.md), `conventions.md` §Baseline auf Ist-Stand | mechanisch, sofort prüfbar, Voraussetzung für den netzlosen Vergleich beider Formen |
+| **A — Re-Vendoring** | `.harness/baseline/v6.0.0/` **neben** `v5.12.0` anlegen (SHA256SUMS bereits vorliegend, siehe §2), Pin an den drei Stellen + [`MR-013`](../../../../harness/conventions/done/MR-013-adr-vorlagen-version.md), `conventions.md` §Baseline auf Ist-Stand | mechanisch, sofort prüfbar, Voraussetzung für den netzlosen Vergleich beider Formen |
 | **B — Adaptions-Durchgang + Kürzel-Vergabe** | die 16 aktiven `MR`-Einträge einzeln bewerten; acht Sub-Area-Kürzel vergeben (Voraussetzung für C) | berührt die Konventions-Identität; Lesearbeit, kein Diff |
 | **C — Beobachtungs-Register-Migration** | ~33 Tabellenzeilen → ~33 Verzeichnisse (`observation.md`/`state.md`/`evidence/`), Wellen-Closure-Prozedur (Modul 6/8/10) auf sechs Schritte nachziehen, optional `versions`/`vcs`-Nachzüge aus §4.5/§4.6 | eigene Datenmigration mit eigenem Nachweis (Register-Paarung bleibt grün), unabhängig von B abschließbar |
 

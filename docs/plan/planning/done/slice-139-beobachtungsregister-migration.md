@@ -89,7 +89,7 @@ setzt sie um (`Implementierung` → Kern und Regeln, `CI-/Build-Schicht`/`CI-Sch
 - **`.harness/baseline/v5.12.0/` bleibt vorerst vendored.** Der Form-Review dieser Etappe ist mit
   diesem Slice abgeschlossen; der Baum-Fall ist ein eigener, kleiner Folge-Slice (Etappe A
   hinterließ ihn ausdrücklich für „nach dem Form-Review", `modul-02` §Freshness-Audit).
-- **Kein neuer [`MR-013`](../../../../harness/conventions/MR-013-adr-vorlagen-version.md)-Nachfolger.** [slice-137](../done/slice-137-adaptions-durchgang-v600.md)
+- **Kein neuer [`MR-013`](../../../../harness/conventions/done/MR-013-adr-vorlagen-version.md)-Nachfolger.** [slice-137](../done/slice-137-adaptions-durchgang-v600.md)
   benannte ihn als eigenen Folge-Slice — reine Versions-Referenz-Korrektur, kein
   Beobachtungs-Register-Gegenstand.
 
@@ -152,7 +152,7 @@ bestätigt.
 - *`.harness/baseline/v5.12.0/` ist noch vendored* — Ausgang: **Folge-Slice** — Etappe A
   kündigte den Fall des alten Baums für „nach dem Form-Review" an; der ist mit diesem Slice
   abgeschlossen, der Fall selbst ist mechanisch und klein genug für einen eigenen Slice.
-- *[`MR-013`](../../../../harness/conventions/MR-013-adr-vorlagen-version.md) braucht seinen Nachfolge-Eintrag* — Ausgang: **Folge-Slice**, bereits in
+- *[`MR-013`](../../../../harness/conventions/done/MR-013-adr-vorlagen-version.md) braucht seinen Nachfolge-Eintrag* — Ausgang: **Folge-Slice**, bereits in
   [slice-137](../done/slice-137-adaptions-durchgang-v600.md) benannt, hier nur bestätigt.
 - *`evidence/`-Fund-Texte sind aus der alten Form rekonstruiert, nicht per Vorgang unterschieden*
   — Ausgang: **gestrichen mit Begründung**: kein Risiko im Sinn der Dreier-Menge — die alte
@@ -161,7 +161,7 @@ bestätigt.
   in seiner `state.md`), sind sie erhalten.
 
 **Folge-Slices:** keine vergeben. Zwei sind benannt (`.harness/baseline/v5.12.0/`-Fall,
-[`MR-013`](../../../../harness/conventions/MR-013-adr-vorlagen-version.md)-Nachfolger) und brauchen eigene Kennungen bei ihrer eigenen Eröffnung.
+[`MR-013`](../../../../harness/conventions/done/MR-013-adr-vorlagen-version.md)-Nachfolger) und brauchen eigene Kennungen bei ihrer eigenen Eröffnung.
 
 ## 9. Sub-Area-Modus
 

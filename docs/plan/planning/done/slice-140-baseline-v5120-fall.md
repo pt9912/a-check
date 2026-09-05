@@ -55,7 +55,7 @@ Hinweis mehr auf ungeprüfte Nachbarn), dann `make gates`. Zum Abschluss `make v
 
 - **Keine Bewertung der sechs `MR`-Dateien.** Ihr Inhalt ist unverändert korrekt; dieser Slice
   bewegt nur den Baum, nicht die Adaptionen.
-- **Kein [`MR-013`](../../../../harness/conventions/MR-013-adr-vorlagen-version.md)-Nachfolger.** Eigener, bereits benannter Folge-Slice (slice-137 §8).
+- **Kein [`MR-013`](../../../../harness/conventions/done/MR-013-adr-vorlagen-version.md)-Nachfolger.** Eigener, bereits benannter Folge-Slice (slice-137 §8).
 
 ## 6. DoD
 

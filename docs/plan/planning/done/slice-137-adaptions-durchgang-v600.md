@@ -51,7 +51,7 @@ die zitierte Sektion sich bewegt).
 |---|---|---|
 | [MR-011](../../../../harness/conventions/MR-011-verfeinerungs-form.md) | **bleibt gültig** | `grundlagen-source-precedence.md` §ID-Schema als Klammer (Zeilen 252–330): Sektion **byte-identisch** zwischen beiden Ständen |
 | [MR-012](../../../../harness/conventions/MR-012-referenzmatrix-grandfathering.md) | **bleibt gültig** | `grundlagen-referenz-richtung.md`: die ganze Datei ist **byte-identisch** bis auf den `Quelle:`-Tag-Kommentar (Link-Rewrite) |
-| [MR-013](../../../../harness/conventions/MR-013-adr-vorlagen-version.md) | **teilweise überholt** | trägt keine `Ersetzt-Baseline-Regel` (Rückbau-Kandidat, siehe eigener Text); sein eigener Auflösungs-Trigger — „die Überarbeitung der ID-Schema-Deklaration **oder die nächste Baseline-Migration**, je nachdem was zuerst eintritt" — ist mit diesem Sprung **eingetreten**. `docs/plan/adr/adr.template.md` selbst ist zwischen den Ständen **unverändert** (nicht im 26-Dateien-Delta aus slice-135 §2) — der Nachfolge-Eintrag ist eine reine Versions-Referenz-Korrektur, keine inhaltliche Änderung |
+| [MR-013](../../../../harness/conventions/done/MR-013-adr-vorlagen-version.md) | **teilweise überholt** | trägt keine `Ersetzt-Baseline-Regel` (Rückbau-Kandidat, siehe eigener Text); sein eigener Auflösungs-Trigger — „die Überarbeitung der ID-Schema-Deklaration **oder die nächste Baseline-Migration**, je nachdem was zuerst eintritt" — ist mit diesem Sprung **eingetreten**. `docs/plan/adr/adr.template.md` selbst ist zwischen den Ständen **unverändert** (nicht im 26-Dateien-Delta aus slice-135 §2) — der Nachfolge-Eintrag ist eine reine Versions-Referenz-Korrektur, keine inhaltliche Änderung |
 | [MR-014](../../../../harness/conventions/MR-014-keine-agenten-telemetrie.md) | **bleibt gültig** | `modul-15-observability.md`: die ganze Datei ist **byte-identisch** bis auf den `Quelle:`-Tag-Kommentar |
 | [MR-015](../../../../harness/conventions/MR-015-welle-closure-ohne-replay.md) | **bleibt gültig** | `modul-06-roadmap.md` §Wellen-Closure-Prozedur Schritt 1 („Trigger prüfen … `make gates` und der Replay-Lauf sind grün") — Zeile **wortgleich**, nur um 40 Zeilen verschoben (die Sektion davor wuchs um den neuen Archivierungs-Schritt); die inhaltlich große Änderung dieses Moduls (Beobachtungs-Register-Neugestaltung, sechster Closure-Schritt) berührt eine **andere** Teil-Sektion und diesen Eintrags Gegenstand nicht |
 | [MR-016](../../../../harness/conventions/MR-016-validator-unbesetzt.md) | **bleibt gültig** | `modul-08-agentenrollen.md` §Die neun Übergaben und ihre Artefakte (Zeilen 99–126): Sektion **byte-identisch**; die geänderte Sektion dieses Moduls ist §Rollen-Sequenz für eine Welle (Schritt-Umnummerierung 5→6), eine andere |
@@ -108,7 +108,7 @@ Gate hält.
 
 ## 6. Was bewusst nicht getan wird
 
-- **Kein Rückbau, keine Nachfolge-Einträge für [`MR-013`](../../../../harness/conventions/MR-013-adr-vorlagen-version.md).** Ein Eintrag wird nie überschrieben; der
+- **Kein Rückbau, keine Nachfolge-Einträge für [`MR-013`](../../../../harness/conventions/done/MR-013-adr-vorlagen-version.md).** Ein Eintrag wird nie überschrieben; der
   Nachfolger dafür ist ein eigener Folge-Slice, keine Pflicht dieser Etappe — er ist klein
   (reine Versions-Referenz, siehe §3) und kann mit Etappe C zusammenfallen oder eigenständig laufen.
 - **Kein Rückbau der fünf `bleibt-gültig`-Einträge.** Sie ändern sich nicht — es gibt nichts
@@ -157,7 +157,7 @@ notwendiges, aber kein hinreichendes Kriterium — das hinreichende ist die Sekt
 
 **Offene Risiken und ihr Ausgang.**
 
-- *[`MR-013`](../../../../harness/conventions/MR-013-adr-vorlagen-version.md) braucht einen Nachfolge-Eintrag (reine Versions-Referenz), noch ohne Kennung* —
+- *[`MR-013`](../../../../harness/conventions/done/MR-013-adr-vorlagen-version.md) braucht einen Nachfolge-Eintrag (reine Versions-Referenz), noch ohne Kennung* —
   Ausgang: **Folge-Slice** — kann mit Etappe C zusammenfallen, da beide den Adaptions-Speicher
   anfassen, oder eigenständig laufen; welche Reihenfolge, entscheidet die nächste Slice-Planung.
 - *Die fünf `bleibt-gültig`-Urteile sind nicht durch einen Sensor, sondern durch manuellen `diff`
@@ -167,7 +167,7 @@ notwendiges, aber kein hinreichendes Kriterium — das hinreichende ist die Sekt
   baubar, aber ohne einen dritten Beleg dafür, dass genau **das** wiederholt auffällt, verfrühtes
   Werkzeug.
 
-**Folge-Slices:** keine vergeben. Der [`MR-013`](../../../../harness/conventions/MR-013-adr-vorlagen-version.md)-Nachfolger und Etappe C sind benannt (§8, slice-135 §6),
+**Folge-Slices:** keine vergeben. Der [`MR-013`](../../../../harness/conventions/done/MR-013-adr-vorlagen-version.md)-Nachfolger und Etappe C sind benannt (§8, slice-135 §6),
 brauchen aber eigene Kennungen bei ihrer eigenen Eröffnung.
 
 ## 9. Sub-Area-Modus
