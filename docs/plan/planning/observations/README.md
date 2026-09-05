@@ -19,9 +19,9 @@ Datei in ein vorhandenes `evidence/`. Erhöht wird nie etwas; es wird nur angele
 **Wer liest:** die Welle-Closure, was **3×** erreicht hat — und die Slice-Planung (§8 des Plans),
 was darunter steht.
 
-**Migriert mit [slice-139](../done/slice-139-beobachtungsregister-migration.md)** von der
+**Migriert mit [slice-139](../done/wellenlos/slice-139-beobachtungsregister-migration.md)** von der
 Tabellenform (`observations.md`, angelegt mit slice-101) auf diese Verzeichnisform — Auslöser:
-[slice-135](../done/slice-135-regelwerk-v600-delta-analyse.md) (Baseline-Sprung `v5.12.0` →
+[slice-135](../done/wellenlos/slice-135-regelwerk-v600-delta-analyse.md) (Baseline-Sprung `v5.12.0` →
 `v6.0.0`). Jedes migrierte Verzeichnis trägt in `observation.md` eine `**Ehemals:**`-Zeile mit
 seiner alten `BEO-<NNN>`-Kennung — historische Zitate in `done/` verwenden weiterhin die alte
 Nummer (Prosa wird nicht umgeschrieben, [`AGENTS.md`](../../../../AGENTS.md) §3.7 sinngemäß);

@@ -177,12 +177,11 @@ func TestReadWelleField_Mehrzeilig(t *testing.T) {
 	}
 }
 
-// TestReadWelleField_FolgefeldOhneLeerzeile belegt den an slice-069/
-// slice-086 gemessenen Fund gegen a-check: das Feld **Welle:** steht dort in
-// EINEM durchgehenden Absatz mit den Folgefeldern **Deckt:**/**Bezug:** --
-// keine Leerzeile trennt sie. Ohne die Feld-Grenze schluckte der alte
-// Ein-Leerzeilen-Abbruch beide Folgefelder samt ihrer Links/Kennungen in
-// den Stub.
+// TestReadWelleField_FolgefeldOhneLeerzeile belegt: steht **Welle:** in
+// einem durchgehenden Absatz mit den Folgefeldern **Deckt:**/**Bezug:**,
+// ohne Leerzeile dazwischen, bricht die Erfassung trotzdem an der naechsten
+// **Feld:**-Zeile ab, statt beide Folgefelder samt ihrer Links/Kennungen
+// mitzunehmen.
 func TestReadWelleField_FolgefeldOhneLeerzeile(t *testing.T) {
 	root := t.TempDir()
 	path := filepath.Join(root, "slice.md")

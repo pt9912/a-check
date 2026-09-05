@@ -15,7 +15,7 @@
   überschrieben. Eine aktuell **behauptende** Versionsangabe stehenzulassen wäre dagegen eine
   stille Falschaussage. [`MR-013`](../conventions.md#mr-013) hat dasselbe für `v5.12.0` geleistet
   und ist mit diesem Stand fällig geworden; sein eigener Trigger lautete wörtlich „die nächste
-  Baseline-Migration, die ihn ihrerseits ablöst" — die ist mit [slice-135](../../docs/plan/planning/done/slice-135-regelwerk-v600-delta-analyse.md)
+  Baseline-Migration, die ihn ihrerseits ablöst" — die ist mit [slice-135](../../docs/plan/planning/done/wellenlos/slice-135-regelwerk-v600-delta-analyse.md)
   eingetreten. **Gemessen, nicht angenommen:** `docs/plan/adr/adr.template.md` ist zwischen
   `v5.12.0` und `v6.0.0` byte-identisch (`git diff v5.12.0 v6.0.0 -- lab/templates/docs/plan/adr/adr.template.md`,
   leerer Diff) — dieser Eintrag korrigiert ausschließlich die Versions-**Referenz**, keine

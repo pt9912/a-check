@@ -197,7 +197,7 @@ bündeln mehrere Sub-Areas und werden ausdifferenziert.
 Die **Kürzel**-Spalte trägt seit `v6.0.0` jedes Repo, dessen Kennungen ein Bereichssegment führen
 ([`grundlagen-harness-dateien.md` §Konventionsspeicher](../.harness/baseline/v6.0.0/regelwerk/grundlagen-harness-dateien.md#harnessconventionsmd-als-konventionsspeicher)) —
 seit die Beobachtungs-Kennung selbst der Pfad `BEO-<KUERZEL>/<slug>` ist, trifft das zu
-([slice-138](../docs/plan/planning/done/slice-138-sub-area-kuerzel.md)). Kurz, GROSS, ohne
+([slice-138](../docs/plan/planning/done/wellenlos/slice-138-sub-area-kuerzel.md)). Kurz, GROSS, ohne
 Leerzeichen, ab Vergabe unveränderlich.
 
 | Sub-Area (Pfad / Modul) | Kürzel | Achsen | Modus | Begründung | Graduation / Folge-Slice |
@@ -207,7 +207,7 @@ Leerzeichen, ab Vergabe unveränderlich.
 | **Kern und Regeln** — `internal/hexagon/` | `KERN` | 1,2,3 | Greenfield | jede Regel hat eine `AC-FA-RULE-*` als Anker; Dogfooding über `arch-check` | n/a (GF) |
 | **Adapter** — `internal/adapter/` | `ADAPT` | 2,3 | Greenfield | Ports vor Adaptern; die Schichtung ist selbst gegatet | n/a (GF) |
 | **Planungs-Harness** — `docs/plan/planning/` | `PLAN` | 1,2,3 | Greenfield | Form und Größen-Regel stehen in der Vorlage, der Sensor `doc-structure` prüft sie — **seit slice-052**; davor war die Praxis unbelegt | n/a (GF), erreicht mit slice-052 |
-| **Gate-/Werkzeug-Schicht** — `tools/`, `Makefile`, `Dockerfile`, `.claude/`, `.github/workflows/` | `GATE` | 1,2,3 | Greenfield | jedes Target ist in `AGENTS.md` §4 deklariert, bevor es zählt; `gate-consistency` erzwingt das. Pfadliste um `.github/workflows/` ergänzt mit [slice-138](../docs/plan/planning/done/slice-138-sub-area-kuerzel.md) — deckt, was zuvor lose als „CI-Schicht"/„CI-/Build-Schicht"/„Durchsetzungsschicht" firmierte | n/a (GF) |
+| **Gate-/Werkzeug-Schicht** — `tools/`, `Makefile`, `Dockerfile`, `.claude/`, `.github/workflows/` | `GATE` | 1,2,3 | Greenfield | jedes Target ist in `AGENTS.md` §4 deklariert, bevor es zählt; `gate-consistency` erzwingt das. Pfadliste um `.github/workflows/` ergänzt mit [slice-138](../docs/plan/planning/done/wellenlos/slice-138-sub-area-kuerzel.md) — deckt, was zuvor lose als „CI-Schicht"/„CI-/Build-Schicht"/„Durchsetzungsschicht" firmierte | n/a (GF) |
 | **Review-Harness** — `docs/reviews/` | `REVIEW` | 2,3 | Greenfield | Konvention und Skill vor dem Report | n/a (GF) |
 | **Harness-Einstieg** — `AGENTS.md`, `CLAUDE.md`, `harness/` | `HARNESS` | 1,2,3 | Greenfield | Briefing und Konventionen entstehen vor der Regel, die sie beschreiben; die aufgelösten Adaptionen zur Source Precedence und zum Vendoring lebten genau hier. **Nachgetragen mit slice-101**: die Lücke war seit slice-091 in vier Slices benannt (`BEO-001` im [Beobachtungs-Register](../docs/plan/planning/observations/README.md)) und hatte bis dahin keinen Ort | n/a (GF) |
 | **Vendored Baseline** — `.harness/baseline/` | *(keins)* | 1,3 | **kein Modus** | externer, unveränderter Fremdtext ([`MR-006`](#mr-006--baseline-committet-vendored-statt-per-url-referenziert)); GF/BF beschreiben das Verhältnis *eigener* Doku zu *eigenem* Code und sind hier nicht anwendbar; kein Kürzel, weil hier nie eine Beobachtung über a-checks eigene Konvergenz entstehen kann | Aktualisierung nur als Migrations-Slice |

@@ -80,12 +80,10 @@ func TestRunReview_Apply(t *testing.T) {
 	}
 }
 
-// TestRunReview_Apply_TitelMitLink belegt einen an a-check gemessenen Fund
-// (Review "Ports duerfen Domaenen-Typen referenzieren ([ADR-0008](../plan/adr/...))"):
-// die H1-Ueberschrift selbst traegt einen Markdown-Link. Ohne Rewrite bleibt
-// er von der ALTEN Position aus geschrieben und bricht am neuen, tieferen
-// ReviewArchiveDir (docs/reviews/archiv/ liegt eine Ebene tiefer als
-// docs/reviews/).
+// TestRunReview_Apply_TitelMitLink belegt: eine Review-H1-Ueberschrift kann
+// selbst einen Markdown-Link tragen. Der Link muss beim Stub-Schreiben auf
+// die neue, tiefere Position (ReviewArchiveDir liegt eine Ebene tiefer als
+// docs/reviews/) umgeschrieben werden, sonst bricht er.
 func TestRunReview_Apply_TitelMitLink(t *testing.T) {
 	root := t.TempDir()
 	writeFile(t, filepath.Join(root, "docs/reviews/2026-06-22-adr-0008.md"),

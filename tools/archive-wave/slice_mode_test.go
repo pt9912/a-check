@@ -127,6 +127,32 @@ func TestRunSlice_Apply(t *testing.T) {
 	}
 }
 
+// TestRunSlice_Apply_TitelMitLink belegt: die H1-Ueberschrift eines
+// wellenlosen Slice kann selbst einen Markdown-Link tragen. Der Link muss
+// beim Stub-Schreiben auf die neue, tiefere Position (done/wellenlos/)
+// umgeschrieben werden, sonst bricht er.
+func TestRunSlice_Apply_TitelMitLink(t *testing.T) {
+	root := t.TempDir()
+	writeFile(t, filepath.Join(root, "docs/plan/adr/0008-x.md"), "# ADR-0008\n")
+	writeFile(t, filepath.Join(root, "docs/plan/planning/done/slice-801-mit-link.md"),
+		"# Slice slice-801: [ADR-0008](../../adr/0008-x.md)s Nachfolge\n\n**Welle:** — wellenlos.\n")
+	if err := os.MkdirAll(filepath.Join(root, "docs/reviews"), 0o755); err != nil {
+		t.Fatal(err)
+	}
+
+	if err := runSlice(root, "slice-801", true); err != nil {
+		t.Fatalf("unerwarteter Fehler: %v", err)
+	}
+
+	stubB, err := os.ReadFile(filepath.Join(root, "docs/plan/planning/done/wellenlos/slice-801-mit-link.md"))
+	if err != nil {
+		t.Fatalf("Stub fehlt im Wellenlos-Archiv-Verzeichnis: %v", err)
+	}
+	if !strings.Contains(string(stubB), "](../../../adr/0008-x.md)") {
+		t.Fatalf("Titel-Link haette auf die neue, tiefere Position angepasst werden muessen: %q", string(stubB))
+	}
+}
+
 // TestRunSlice_RejectsWelleSlice belegt: ein Slice mit gesetztem, echtem
 // Welle-Feld gehoert in den -welle-Modus und wird hier abgelehnt statt
 // still falsch archiviert.

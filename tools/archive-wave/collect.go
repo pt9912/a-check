@@ -25,12 +25,11 @@ var sliceIDInNameRE = regexp.MustCompile(`slice-(\d+)`)
 // wellenlosen Slices im ersten Anwendungslauf von slice-197), nicht als
 // einzeilige Kennung. Ein Ein-Zeilen-Capture schnitt den Absatz mitten im
 // Satz ab. Ebenso bricht die naechste **Feld:**-Zeile die Erfassung ab, auch
-// ohne Leerzeile davor -- a-checks Kopf-Bloecke reihen `**Welle:**`,
-// `**Deckt:**`/`**Bezug:**`/`**Auslöser:**` als EINEN durchgehenden Absatz
-// (gemessen: slice-069/slice-086 im ersten Wellen-Anwendungslauf gegen
-// a-check, `welle-12`/`welle-13`), die alte Grenze schluckte die
-// Folgefelder mit in den Stub und riss darin verlinkte Kennungen aus ihrem
-// Kontext. Leerer String, wenn das Feld fehlt.
+// ohne Leerzeile davor -- ein Kopf-Block kann `**Welle:**` und Folgefelder
+// (`**Deckt:**`/`**Bezug:**`/`**Auslöser:**`) als EINEN durchgehenden Absatz
+// ohne Leerzeile reihen; ohne diese Grenze wandern die Folgefelder mit in
+// den Stub und reissen darin verlinkte Kennungen aus ihrem Kontext. Leerer
+// String, wenn das Feld fehlt.
 func ReadWelleField(path string) (string, error) {
 	b, err := os.ReadFile(path)
 	if err != nil {

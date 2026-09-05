@@ -1,6 +1,15 @@
 // Fuehrt die Archivierung aus: baut archiv.zip, schreibt beide Stub-Arten,
 // entfernt die alten Volltexte. Liefert die vorgenommenen Moves, damit der
 // Aufrufer anschliessend RewriteRepo darauf anwenden kann.
+//
+// INVARIANTE fuer jede Stub-Erzeugung (Apply, ApplySlice, ApplyReview): jeder
+// Text, der aus der ALTEN Position stammt und einen Markdown-Link tragen
+// kann (Welle-Feld, Titelzeile), geht vor der Uebernahme in den Stub durch
+// RewriteFieldForMove -- der Stub liegt eine Ebene tiefer als das Original.
+// Diese Umschreibung an einer der drei Stellen zu vergessen, ist an der
+// Funktion selbst nicht sichtbar; je ein Regressionstest pro Modus
+// (TestFixture_SliceTitelMitLink, TestRunSlice_Apply_TitelMitLink,
+// TestRunReview_Apply_TitelMitLink) haelt sie einzeln fest.
 package main
 
 import (
@@ -100,6 +109,10 @@ func Apply(root string, p Plan) ([]Move, error) {
 		// gemessen (welle-70): RewriteRepo laeuft erst NACH dem Schreiben und
 		// loest von der neuen, tieferen Position aus falsch auf.
 		field = RewriteFieldForMove(RelPath(root, s), RelPath(root, newAbs), field, moves)
+		// Eine Slice-Titelzeile kann selbst einen Markdown-Link tragen; ohne
+		// dieselbe Umschreibung wie beim Welle-Feld bliebe er auf die alte
+		// Position bezogen und bräche am neuen, tieferen Stub-Pfad.
+		title = RewriteFieldForMove(RelPath(root, s), RelPath(root, newAbs), title, moves)
 		stub := SliceStub(id, title, field, p.WelleID, hervorgegangen)
 		if err := os.WriteFile(newAbs, []byte(stub), 0o644); err != nil {
 			return nil, fmt.Errorf("%s schreiben: %w", newAbs, err)
@@ -167,6 +180,10 @@ func ApplySlice(root, sliceID, slicePath string, reviews []string) ([]Move, erro
 
 	newAbs := filepath.Join(archiveDir, filepath.Base(slicePath))
 	field = RewriteFieldForMove(RelPath(root, slicePath), RelPath(root, newAbs), field, nil)
+	// Eine Slice-Titelzeile kann selbst einen Markdown-Link tragen; ohne
+	// dieselbe Umschreibung wie beim Welle-Feld bliebe er auf die alte
+	// Position bezogen und bräche am neuen, tieferen Stub-Pfad.
+	title = RewriteFieldForMove(RelPath(root, slicePath), RelPath(root, newAbs), title, nil)
 	stub := SliceStubStandalone(sliceID, title, field, hervorgegangen)
 	if err := os.WriteFile(newAbs, []byte(stub), 0o644); err != nil {
 		return nil, fmt.Errorf("%s schreiben: %w", newAbs, err)
@@ -219,13 +236,12 @@ func ApplyReview(root, reviewPath string) ([]Move, error) {
 	hervorgegangen := FormatHervorgegangen(ExtractSurvivingIDs(string(raw)))
 
 	newAbs := filepath.Join(archiveDir, base)
-	// Ein Review-Titel kann selbst einen Markdown-Link tragen (gemessen:
-	// "# Review — ... ([ADR-0008](../plan/adr/0008-...))") -- ohne Rewrite
-	// bleibt der Link von der ALTEN Position aus geschrieben und bricht am
-	// neuen, tieferen ReviewArchiveDir. Dieselbe Korrektur wie beim
-	// Welle-Feld eines Slice-Stubs (RewriteFieldForMove), hier ohne
-	// Move-Ziel-Liste -- der Link zeigt aus dem Archiv nach draussen, nicht
-	// auf eine andere archivierte Datei.
+	// Ein Review-Titel kann selbst einen Markdown-Link tragen; ohne Rewrite
+	// bleibt er von der ALTEN Position aus geschrieben und bricht am neuen,
+	// tieferen ReviewArchiveDir. Dieselbe Korrektur wie beim Welle-Feld eines
+	// Slice-Stubs (RewriteFieldForMove), hier ohne Move-Ziel-Liste -- der
+	// Link zeigt aus dem Archiv nach draussen, nicht auf eine andere
+	// archivierte Datei.
 	title = RewriteFieldForMove(RelPath(root, reviewPath), RelPath(root, newAbs), title, nil)
 	stub := ReviewStub(basename, title, hervorgegangen)
 	if err := os.WriteFile(newAbs, []byte(stub), 0o644); err != nil {

@@ -6,7 +6,7 @@
 
 **Bezug:** Maintainer-Vorgabe 2026-09-05 („roadmap.md noch anpassen, siehe
 `.harness/baseline/v6.0.0/templates/docs/plan/planning/roadmap.template.md"), unmittelbar nach
-[slice-149](../done/slice-149-carveout-vorlage-lokale-kopie-entfernt.md) — dieselbe Fund-Klasse
+[slice-149](wellenlos/slice-149-carveout-vorlage-lokale-kopie-entfernt.md) — dieselbe Fund-Klasse
 (lokales Artefakt vs. vendored Ziel-Form), diesmal an `roadmap.md` selbst statt an einer Vorlage.
 [Roadmap](../in-progress/roadmap.md).
 
@@ -22,7 +22,7 @@
 
 `docs/plan/planning/in-progress/roadmap.md` strukturell gegen
 [`.harness/baseline/v6.0.0/templates/docs/plan/planning/roadmap.template.md`](../../../../.harness/baseline/v6.0.0/templates/docs/plan/planning/roadmap.template.md)
-halten — anders als bei `carveout.template.md` ([slice-149](../done/slice-149-carveout-vorlage-lokale-kopie-entfernt.md))
+halten — anders als bei `carveout.template.md` ([slice-149](wellenlos/slice-149-carveout-vorlage-lokale-kopie-entfernt.md))
 führt a-check hier **keine** lokale Kopie der Vorlage, sondern das **Instanz-Dokument** selbst; ein
 `diff` ist darum kein Werkzeug — der Vergleich ist strukturell (Abschnitte, Tabellen-Spalten),
 nicht textuell.
@@ -86,7 +86,7 @@ Verzeichnis/die Struktur, kein Feld" lautet ([`AGENTS.md`](../../../../AGENTS.md
 für Zustandsfelder), ein Fremdkörper — und dieser Slice fand ihn genau dort, wo die Disziplin ihn
 vorhergesagt hätte: bereits stale, weil kein Schritt der letzten vier Slices (`slice-147`…`149`)
 ihn anfasste, obwohl jeder von ihnen die Datei änderte.* Dieselbe Lehre wie
-[slice-149](../done/slice-149-carveout-vorlage-lokale-kopie-entfernt.md), an einem anderen
+[slice-149](wellenlos/slice-149-carveout-vorlage-lokale-kopie-entfernt.md), an einem anderen
 Artefakt-Typ: **manuell nachzuführende Metadaten sind ein Drift-Risiko unabhängig davon, ob sie in
 einer Vorlagen-Kopie oder in einem Instanz-Dokument stehen.**
 
