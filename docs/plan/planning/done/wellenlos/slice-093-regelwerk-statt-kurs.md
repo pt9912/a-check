@@ -1,0 +1,8 @@
+# slice-093 — — Das vendored Regelwerk ist die maßgebliche Fassung, nicht der Kurs
+
+> **ARCHIVIERT** — Volltext:
+> `unzip -p done/wellenlos/slice-093-archiv.zip <pfad-im-archiv>`
+
+**Welle:** 
+**Archiviert:** <manuell auszufuellen> (eigene Closure)
+**Hervorgegangen:** — keine — <!-- d-check:ignore (Kennungen aus dem archivierten Volltext, absichtlich unverlinkt) -->

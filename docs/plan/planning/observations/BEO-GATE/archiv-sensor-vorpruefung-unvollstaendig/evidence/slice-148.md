@@ -1,0 +1,2 @@
+**Vorgang:** slice-148
+**Fund:** Zwei weitere, vorher nicht auf der Liste stehende Kollisionsklassen beim vollen Etappe-D-Lauf (93 Slices + 6 Reviews): `roadmap.md`s Anker-Links (`#N-closure-notiz-nach-done`) in archivierte Slices — vorab per `grep` gefunden und gefixt, kein Gate-Bruch — und ein Code-Bug in `ApplyReview` (Review-Titel mit eingebettetem Markdown-Link wurde nicht depth-korrekt umgeschrieben) — erst am Gate sichtbar, da kein `grep` über Markdown ihn zeigen konnte. Register-Zähler jetzt 2×.

@@ -128,7 +128,7 @@ die die datei-mengen-bewusste Auflösung (Weg B) mitschließt.
 
 | Datum | Ereignis |
 |---|---|
-| 2026-07-04 | Proposed — Entwurf mit [slice-026](../planning/done/slice-026-kmp-mehr-root-phantom.md); Mechanismus reproduziert + per Gegentest belegt; Falsch-Positiv-Scan der realen Flotte (keine ≥ 2-Root-Config). |
+| 2026-07-04 | Proposed — Entwurf mit [slice-026](../planning/done/wellenlos/slice-026-kmp-mehr-root-phantom.md); Mechanismus reproduziert + per Gegentest belegt; Falsch-Positiv-Scan der realen Flotte (keine ≥ 2-Root-Config). |
 | 2026-07-04 | In der Umsetzung geschärft (Multi-Linsen-Review): das Enthaltungs-Prädikat war zunächst ein separates Vorfahr-Kriterium (`segIndex == 0`) und meldete *alle* enthaltenden Schichten — das war zugleich zu streng (verschachtelte Schichten fälschlich abgelehnt) und zu lasch (innere Segmente entgingen). Korrigiert auf die **erzwungene Schicht** = längster passender Glob-Präfix (`segIndex >= 0`), exakt wie `targetLayer`. |
 | 2026-07-04 | Proposed → Accepted (Sign-off Auftraggeber per Merge-Wort). Ab jetzt immutable; Ablösung nur via Folge-ADR mit `Supersedes`. |
 | 2026-07-05 | Accepted → Superseded by [ADR-0022](0022-datei-mengen-bewusste-mehr-wurzel-aufloesung.md): die datei-mengen-bewusste Auflösung (Stufe 2) ersetzt den statischen Guard — sie fängt den echten Bug **und** akzeptiert die legitime disjunkte Config. |

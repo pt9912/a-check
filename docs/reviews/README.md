@@ -32,9 +32,10 @@ in den Commit-Messages), wurden aber nicht als Synthese abgelegt. Entscheidung d
 **2026-07-25**: **nicht rückwirkend nachtragen** — ein nachträglich rekonstruiertes Review wäre
 kein Beleg, sondern eine Nacherzählung, und der Wert eines Review-Dokuments liegt in der
 Gleichzeitigkeit mit dem Diff. Nachgetragen wurden ausnahmsweise
-[slice-042](2026-07-25-slice-042-constructs-monopol.md) und
-[slice-044](2026-07-25-slice-044-ziel-glob-schattenwurf.md), weil ihre Reviews **am selben Tag**
-liefen und die Befunde unmittelbar vorlagen.
+[slice-042](../plan/planning/done/wellenlos/slice-042-constructs-aufruf-monopol.md) und
+[slice-044](../plan/planning/done/wellenlos/slice-044-ziel-glob-schattenwurf.md), weil ihre Reviews
+**am selben Tag** liefen und die Befunde unmittelbar vorlagen — beide Review-Reports sind seither
+mit ihrem Slice archiviert (`tools/archive-wave`, kein eigener Stub: ihre Identität kam vom Slice).
 
-Ab [slice-043](2026-07-25-slice-043-abdeckungs-diagnose.md) entsteht die Synthese wieder **vor dem
-Merge**, und der Slice-DoD führt sie als eigenen Punkt.
+Ab [slice-043](../plan/planning/done/wellenlos/slice-043-schicht-abdeckung-sichtbar.md) entsteht
+die Synthese wieder **vor dem Merge**, und der Slice-DoD führt sie als eigenen Punkt.

@@ -7,7 +7,7 @@
   Damit ist er kein Fork im Sinne der Baseline, sondern deren Gegenteil: eine Rückkehr zum Default)*
 - **Adaption:** **keine.** Das Repo folgt in allen drei Punkten dem Baseline-Default.
 - **Begründung:** je Eintrag der Beleg aus dem Durchgang der Etappe B
-  ([slice-095 §3](../../../docs/plan/planning/done/slice-095-adaptions-durchgang-v5120.md)):
+  ([slice-095 §3](../../../docs/plan/planning/done/wellenlos/slice-095-adaptions-durchgang-v5120.md)):
   - [`MR-001`](../../conventions.md#mr-001) — `grundlagen-source-precedence.md` führt `spec/spezifikation.md` **selbst**
     als Rang 2 von neun. Die Abweichung „drei statt zwei Spec-Ränge" existiert nicht mehr.
   - [`MR-002`](../../conventions.md#mr-002) — §ID-Schema als Klammer: *„`LH-FA-03` und `LH-FA-IDX-003` sind **beide**

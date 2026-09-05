@@ -3,7 +3,7 @@
 **Status:** open — **Entscheid 0 abgenommen 2026-07-25** (Maintainer-Wort, auf Basis der
 Nachmessung §2a): **Teil B (Port→Port-Richtungsregel) ist verworfen**, **Teil A (Auto-Inferenz)
 ist vertagt**. Der Slice bleibt als Entwurf für Teil A offen; die Trigger stehen in §0.
-**Bezug:** Carry-forward aus [slice-012 §7](../done/slice-012-driving-driven-layerof.md);
+**Bezug:** Carry-forward aus [slice-012 §7](../done/welle-10/slice-012-driving-driven-layerof.md);
 verfeinert [AC-FA-RULE-008](../../../../spec/lastenheft.md#ac-fa-rule-008--richtungs-dimension-regel-port-direction-mismatch);
 löst die in [ADR-0012](../../adr/0012-driving-driven-richtung-orthogonale-dimension.md)
 als *out-of-scope* gestellten Richtungs-Inkremente. [Roadmap](../in-progress/roadmap.md).

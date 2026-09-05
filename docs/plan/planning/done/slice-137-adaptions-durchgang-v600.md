@@ -6,7 +6,7 @@
 
 **Bezug:** Etappe **B** aus [slice-135 §6](../done/slice-135-regelwerk-v600-delta-analyse.md#6-vorschlag-drei-etappen),
 Vorgänger [slice-136](../done/slice-136-baseline-v600-vendoring.md) (Etappe A). Präzedenz:
-[slice-095](../done/slice-095-adaptions-durchgang-v5120.md), dieselbe Etappe B für den vorigen
+[slice-095](wellenlos/slice-095-adaptions-durchgang-v5120.md), dieselbe Etappe B für den vorigen
 Sprung. [Roadmap](../in-progress/roadmap.md).
 
 **Berührte Spec-Stellen:** — *(keine)* — Konventions-Urteil ohne Vertragsberührung.
@@ -59,7 +59,7 @@ die zitierte Sektion sich bewegt).
 **Verteilung:** 0× gegenstandslos · **5× bleibt gültig** · 1× teilweise überholt · 0× Bezug
 entfallen · 0× widerspricht.
 
-**Deutlich ruhiger als beim letzten Durchgang** ([slice-095](../done/slice-095-adaptions-durchgang-v5120.md):
+**Deutlich ruhiger als beim letzten Durchgang** ([slice-095](wellenlos/slice-095-adaptions-durchgang-v5120.md):
 3 gegenstandslos, 2 bleibt gültig, 5 teilweise überholt bei zehn Einträgen). Kein Zufall: `v6.0.0`
 ist additiv (neue Konzepte — Beobachtungs-Register-Verzeichnisform, Zeitdokumente-Archivierung,
 Docker-Hermetik-Vorschrift, Gate/Beleg-Rollentrennung), keine der sechs a-check-Adaptionen liegt in
@@ -162,7 +162,7 @@ notwendiges, aber kein hinreichendes Kriterium — das hinreichende ist die Sekt
   anfassen, oder eigenständig laufen; welche Reihenfolge, entscheidet die nächste Slice-Planung.
 - *Die fünf `bleibt-gültig`-Urteile sind nicht durch einen Sensor, sondern durch manuellen `diff`
   belegt* — Ausgang: **gestrichen mit Begründung**: kein Risiko im Sinn der Dreier-Menge, sondern
-  dieselbe Beleglage wie bei der Präzedenz [slice-095](../done/slice-095-adaptions-durchgang-v5120.md),
+  dieselbe Beleglage wie bei der Präzedenz [slice-095](wellenlos/slice-095-adaptions-durchgang-v5120.md),
   die ebenfalls manuell diffte; ein Sensor für „ändert sich eine zitierte Baseline-Sektion" wäre
   baubar, aber ohne einen dritten Beleg dafür, dass genau **das** wiederholt auffällt, verfrühtes
   Werkzeug.

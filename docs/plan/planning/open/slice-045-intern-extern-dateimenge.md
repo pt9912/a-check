@@ -4,7 +4,7 @@
 Der Slice bleibt als Entwurf stehen: Messung, Entscheide und Umsetzungs-Fallstrick sind
 festgehalten, damit ein späterer Lauf nicht bei null anfängt. Keine Spec-/Code-Änderung.
 **Auslöser:** Maintainer-Nachfrage am 2026-07-25 im Anschluss an
-[slice-043](../done/slice-043-schicht-abdeckung-sichtbar.md): „87 von 180 Include-Zielen in b-cad
+[slice-043](../done/wellenlos/slice-043-schicht-abdeckung-sichtbar.md): „87 von 180 Include-Zielen in b-cad
 lösen auf keine Schicht auf — und das können wir mit `.a-check.yml` nicht abbilden." Richtig — und
 die Prüfung dieser Aussage förderte zutage, dass a-check die nötige Information für einen Teil der
 Konsumenten **bereits hält**, sie nur nicht nutzt.
@@ -79,7 +79,7 @@ vergessenes eigenes Verzeichnis sehen damit **gleich** aus: alle drei „lösen 
 auf". Deshalb muss die Ziel-Seite fail-open bleiben, deshalb konnte
 [ADR-0029](../../adr/0029-abdeckungs-diagnose-advisory.md) nur die **Quell**-Seite melden, und
 deshalb bleibt b-cads `arch-check.sh`-Regel P2 unersetzt
-([slice-042 §3](../done/slice-042-constructs-aufruf-monopol.md)).
+([slice-042 §3](../done/wellenlos/slice-042-constructs-aufruf-monopol.md)).
 
 **Die Frage dieses Slices:** Kann a-check „repo-intern, aber schichtlos" von „repo-extern"
 unterscheiden — und wenn ja, für welche Konsumenten und zu welchem Preis?
@@ -145,7 +145,7 @@ Der Kandidat ist **halb** tragfähig:
   dieselbe Segment-Toleranz wie die Schicht-Zuordnung. Der Diskriminator wäre dann *„irgendein
   Suffix des Kandidaten entspricht einem gescannten Verzeichnis"* — und damit **wieder unscharf**:
   ein fremdes Modul, das zufällig auf `…/internal/storage` endet, träfe ebenfalls. Genau die
-  Unschärfe, die [slice-043 §3](../done/slice-043-schicht-abdeckung-sichtbar.md) als „nicht sicher
+  Unschärfe, die [slice-043 §3](../done/wellenlos/slice-043-schicht-abdeckung-sichtbar.md) als „nicht sicher
   abgrenzbar" beschrieben hat — für `fixed-root` ist diese Einschätzung **widerlegt**, für `path`
   **bestätigt**.
 
@@ -193,8 +193,8 @@ P2-Zusatz „auflösbar **oder nicht**" beschreibt damit einen Fall, der im Best
 
 **Schluss:** P2 zerfällt in drei Teile, die drei verschiedene Mechanismen abdecken — Kanten,
 Diagnose, Compiler. **Keiner davon braucht die Beweislast-Umkehr**, die Kandidat 2b vorsah. Damit
-ist dessen Begründung ([slice-042 §8.2](../done/slice-042-constructs-aufruf-monopol.md),
-[slice-025 §4](../done/slice-025-p-rest-generalisierung.md)) weitgehend **erodiert** — nicht
+ist dessen Begründung ([slice-042 §8.2](../done/wellenlos/slice-042-constructs-aufruf-monopol.md),
+[slice-025 §4](../done/wellenlos/slice-025-p-rest-generalisierung.md)) weitgehend **erodiert** — nicht
 widerlegt (ein Konsument *könnte* Default-verboten wollen), aber ohne verbleibenden Bedarf.
 
 **Der Rest, den dieser Slice adressiert:** bei Fall 2 meldet a-check die **Datei** (advisory), nicht
@@ -203,7 +203,7 @@ dessen `fixed-root`-Hälfte, in der b-cad liegt (§2.2).
 
 **Folge für den Rückbau beim Konsumenten:** b-cads `arch-check.sh` kann nach einem Release, das
 `construct-leak` ausliefert, auf **null** Regeln gehen — nicht, wie in
-[slice-042 §10.4](../done/slice-042-constructs-aufruf-monopol.md) angenommen, auf eine. Die
+[slice-042 §10.4](../done/wellenlos/slice-042-constructs-aufruf-monopol.md) angenommen, auf eine. Die
 Entscheidung liegt beim Konsumenten-Repo.
 
 ## 6. Betroffene Module (bei Umsetzung)

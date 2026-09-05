@@ -99,7 +99,7 @@ zweiten rotten alle vor slice-096 veröffentlichten Verweise.
 Die Spalte *Ersetzt-Baseline-Regel* ist das Pflichtfeld des neuen Stands. Sie steht hier überall
 auf `—`, weil sie in einen akzeptierten Eintrag **nicht nachgetragen** werden darf (Einträge
 werden nie überschrieben); sie entsteht in den Nachfolge-Einträgen der Etappe C2
-([slice-095 §4](../docs/plan/planning/done/slice-095-adaptions-durchgang-v5120.md)).
+([slice-095 §4](../docs/plan/planning/done/wellenlos/slice-095-adaptions-durchgang-v5120.md)).
 
 | MR | Titel | Geltungsbereich | Ersetzt-Baseline-Regel |
 |---|---|---|---|

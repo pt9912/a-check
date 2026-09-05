@@ -104,7 +104,7 @@ zusätzliches `../`. Bei `welle-13` waren es **21** Verweise auf einen Schlag. D
 Lifecycle-Invariante (`links.resolve-from`, seit slice-080 im Modul `links`) kann das **nicht**
 abfangen: ihre Bedingung („ein Verweis löst aus jedem Lifecycle-Verzeichnis
 auf") setzt gleiche Ebenen voraus und ist hier nachweislich unerfüllbar — die Lücke ist deshalb
-ausdrücklich ausgewiesen ([slice-089](done/slice-089-welle-datei-verweis-invariante.md)).
+ausdrücklich ausgewiesen ([slice-089](done/wellenlos/slice-089-welle-datei-verweis-invariante.md)).
 **Also: die Verweise im selben Commit nachziehen und `make gates` laufen lassen**; `doc-check` ist
 das Netz, aber erst *nach* dem `mv`.
 **Zum Steering-Loop:** die Einträge werden aus `docs/plan/steering-loop.md`

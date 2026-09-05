@@ -6,7 +6,7 @@
 
 **Bezug:** Etappe **A** aus [slice-135 §6](../done/slice-135-regelwerk-v600-delta-analyse.md#6-vorschlag-drei-etappen),
 per Maintainer-Wort gezogen 2026-09-05 („Leg los mit Etappe A"). Präzedenz:
-[slice-094](../done/slice-094-baseline-v5120-vendoring.md), dieselbe Etappe A für den vorigen
+[slice-094](wellenlos/slice-094-baseline-v5120-vendoring.md), dieselbe Etappe A für den vorigen
 Sprung. [Roadmap](../in-progress/roadmap.md).
 
 **Berührte Spec-Stellen:** — *(keine)* — Harness-/Konventions-Änderung ohne Vertragsberührung.

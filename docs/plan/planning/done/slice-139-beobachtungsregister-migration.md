@@ -41,7 +41,7 @@ Der Zähler ist danach abgeleitet (Zahl der `evidence/`-Dateien), nicht mehr gef
   `.harness/skills/reviewer.template.md`, `harness/README.template.md` — keiner davon im
   26-Dateien-Delta aus slice-135 §2), jetzt auf `v6.0.0` nachgezogen.
 - Drei Schichten (Planungs-Harness, Harness-Einstieg, Gate-/Werkzeug-Schicht) — größer als die
-  übliche Zwei-Schichten-Grenze, aber dieselbe Ausnahme wie bei slice-095/[slice-101](../done/slice-101-beobachtungs-register.md):
+  übliche Zwei-Schichten-Grenze, aber dieselbe Ausnahme wie bei slice-095/[slice-101](wellenlos/slice-101-beobachtungs-register.md):
   eine Formmigration des Registers selbst berührt zwangsläufig jede Stelle, die darauf zeigt.
 
 ## 3. Migrationsverfahren — mechanisch, kein Freihand-Edit

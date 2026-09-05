@@ -80,6 +80,33 @@ func TestRunReview_Apply(t *testing.T) {
 	}
 }
 
+// TestRunReview_Apply_TitelMitLink belegt einen an a-check gemessenen Fund
+// (Review "Ports duerfen Domaenen-Typen referenzieren ([ADR-0008](../plan/adr/...))"):
+// die H1-Ueberschrift selbst traegt einen Markdown-Link. Ohne Rewrite bleibt
+// er von der ALTEN Position aus geschrieben und bricht am neuen, tieferen
+// ReviewArchiveDir (docs/reviews/archiv/ liegt eine Ebene tiefer als
+// docs/reviews/).
+func TestRunReview_Apply_TitelMitLink(t *testing.T) {
+	root := t.TempDir()
+	writeFile(t, filepath.Join(root, "docs/reviews/2026-06-22-adr-0008.md"),
+		"# Review — Ports duerfen Domaenen-Typen referenzieren ([ADR-0008](../plan/adr/0008-x.md))\n\n"+
+			"Inhalt.\n")
+	writeFile(t, filepath.Join(root, "docs/plan/adr/0008-x.md"), "# ADR-0008\n")
+
+	if err := runReview(root, "2026-06-22-adr-0008.md", true); err != nil {
+		t.Fatalf("unerwarteter Fehler: %v", err)
+	}
+
+	stubB, err := os.ReadFile(filepath.Join(root, "docs/reviews/archiv/2026-06-22-adr-0008.md"))
+	if err != nil {
+		t.Fatalf("Stub fehlt im Archiv-Verzeichnis: %v", err)
+	}
+	stub := string(stubB)
+	if !strings.Contains(stub, "](../../plan/adr/0008-x.md)") {
+		t.Fatalf("Titel-Link haette auf die neue, tiefere Position (docs/reviews/archiv/) angepasst werden muessen: %q", stub)
+	}
+}
+
 // TestRunReview_RejectsSliceReview belegt: ein Review mit slice-<NNN> im
 // Dateinamen gehoert in den -slice-Modus (dessen Sammel-Logik ihn findet,
 // sobald der Slice archiviert wird) und wird hier abgelehnt.

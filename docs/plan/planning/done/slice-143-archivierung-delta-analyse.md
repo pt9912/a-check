@@ -7,7 +7,7 @@
 **Bezug:** Maintainer-Fund 2026-09-05: `docs/reviews/` und `docs/plan/planning/done/` sind nicht
 archiviert, obwohl `modul-06-roadmap.md` (`v6.0.0`) das jetzt als Closure-Schritt 4 führt — im
 Schwester-Repo `d-check` bereits umgesetzt. Präzedenz für die Analyse-Form:
-[slice-135](../done/slice-135-regelwerk-v600-delta-analyse.md), [slice-092](../done/slice-092-regelwerk-v5120-delta-analyse.md).
+[slice-135](../done/slice-135-regelwerk-v600-delta-analyse.md), [slice-092](wellenlos/slice-092-regelwerk-v5120-delta-analyse.md).
 [Roadmap](../in-progress/roadmap.md).
 
 > **Analyse zur Abnahme.** Wie bei slice-135/092: keine Kennungen vergeben, keine Artefakte

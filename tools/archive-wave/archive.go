@@ -219,6 +219,14 @@ func ApplyReview(root, reviewPath string) ([]Move, error) {
 	hervorgegangen := FormatHervorgegangen(ExtractSurvivingIDs(string(raw)))
 
 	newAbs := filepath.Join(archiveDir, base)
+	// Ein Review-Titel kann selbst einen Markdown-Link tragen (gemessen:
+	// "# Review — ... ([ADR-0008](../plan/adr/0008-...))") -- ohne Rewrite
+	// bleibt der Link von der ALTEN Position aus geschrieben und bricht am
+	// neuen, tieferen ReviewArchiveDir. Dieselbe Korrektur wie beim
+	// Welle-Feld eines Slice-Stubs (RewriteFieldForMove), hier ohne
+	// Move-Ziel-Liste -- der Link zeigt aus dem Archiv nach draussen, nicht
+	// auf eine andere archivierte Datei.
+	title = RewriteFieldForMove(RelPath(root, reviewPath), RelPath(root, newAbs), title, nil)
 	stub := ReviewStub(basename, title, hervorgegangen)
 	if err := os.WriteFile(newAbs, []byte(stub), 0o644); err != nil {
 		return nil, fmt.Errorf("%s schreiben: %w", newAbs, err)

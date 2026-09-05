@@ -101,7 +101,7 @@ laufende Zähl-Ort. Hier stehen nur die in dieser Welle real aufgetretenen Vorf�
 | Eintrag | in dieser Welle |
 |---|---|
 | `SL-001` — Gate-Lauf in einer Pipe verschluckt | **einmal**: der Guard blockierte `make doc-complete \| tail` bei der d-check-Recherche. Zähler **6 → 7** |
-| `SL-002` — relative Verweise brechen beim Verzeichniswechsel | **zweimal**: vier präfixlose Geschwister-Verweise in [slice-087](../done/slice-087-index-vollstaendigkeit.md) (vor dem Commit gefangen) und **21 Verweise dieser Welle-Plan-Datei** beim `git mv` in `done/` — von `doc-check` gefangen, **nicht** vom zuständigen Sensor. Zähler **9 → 11** |
+| `SL-002` — relative Verweise brechen beim Verzeichniswechsel | **zweimal**: vier präfixlose Geschwister-Verweise in [slice-087](wellenlos/slice-087-index-vollstaendigkeit.md) (vor dem Commit gefangen) und **21 Verweise dieser Welle-Plan-Datei** beim `git mv` in `done/` — von `doc-check` gefangen, **nicht** vom zuständigen Sensor. Zähler **9 → 11** |
 | `SL-003` — Commit-Betreff bezeichnet nicht die Arbeit | **nicht aufgetreten** — zweimal aktiv vermieden: der [ADR-0030](../../adr/0030-kein-digest-im-generierten-fragment.md)-Index-Nachtrag wurde als eigener Commit mit slice-083-Bezug geführt, und der Lerneintrag von [slice-081](welle-13/slice-081-heuristik-diagnose.md) vom `git mv` getrennt, damit die Lifecycle-Commits `R100` bleiben |
 | `SL-004` — neuer Sensor meldet sein eigenes Umfeld | **nicht aufgetreten** — aber als **Entscheidungsgrund** verwendet: [ADR-0031](../../adr/0031-heuristik-grenzen-diagnose.md) verwarf den Restmengen-Ansatz mit dem dreifach belegten Rauschprofil dieses Eintrags |
 | `SL-005` — Datei fehlt im handgepflegten Index | **neu, zwei Vorfälle** (siehe unten) |
@@ -131,7 +131,7 @@ dazwischenstand: **Wissen allein verhindert den Fehler nicht.**
 
 ## Folge-Slices
 
-- [slice-087](../done/slice-087-index-vollstaendigkeit.md) — Vollständigkeits-Sensor für
+- [slice-087](wellenlos/slice-087-index-vollstaendigkeit.md) — Vollständigkeits-Sensor für
   handgepflegte Indizes (`SL-005`). Trigger **sofort**, wartet auf nichts. Die Vorarbeit liegt bei:
   Bestandsmessung (genau ein Index) und d-check-Abdeckung (kein Modul deckt Ziel → Verweis, damit
   CR-fähig). Offen ist der Entscheid lokaler Sensor gegen d-check-CR.
@@ -154,8 +154,8 @@ dazwischenstand: **Wissen allein verhindert den Fehler nicht.**
   nur den Totalausfall; vier gesunde Schichten und eine kaputte bleiben still. Eigener Entscheid,
   sobald ein Teilausfall real auftritt.
 
-**Unverändert offen aus `welle-12`:** [slice-079](../done/slice-079-gate-consistency-abloesen.md),
-[slice-080](../done/slice-080-verify-abloesung-dcheck.md) (wartet auf ein d-check-Release) und
+**Unverändert offen aus `welle-12`:** [slice-079](wellenlos/slice-079-gate-consistency-abloesen.md),
+[slice-080](wellenlos/slice-080-verify-abloesung-dcheck.md) (wartet auf ein d-check-Release) und
 `F-9` (Freigabe-Belege).
 
 ## Verifikation (Schritt 1 der Prozedur)

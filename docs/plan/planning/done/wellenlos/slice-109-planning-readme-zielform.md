@@ -1,0 +1,8 @@
+# slice-109 — — `planning/README.md` auf die Ziel-Form
+
+> **ARCHIVIERT** — Volltext:
+> `unzip -p done/wellenlos/slice-109-archiv.zip <pfad-im-archiv>`
+
+**Welle:** 
+**Archiviert:** <manuell auszufuellen> (eigene Closure)
+**Hervorgegangen:** — keine — <!-- d-check:ignore (Kennungen aus dem archivierten Volltext, absichtlich unverlinkt) -->

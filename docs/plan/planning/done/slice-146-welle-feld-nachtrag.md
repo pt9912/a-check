@@ -38,8 +38,8 @@ Wellen (`slice-001`…`slice-022`, vgl. `**Welle:** welle-01-fundament.`). Eine 
 - **`welle-12`: 33 Dateien**, `**Welle:** welle-12-regelwerk-migration.` — Beleg:
   [`welle-12-results.md`](../done/welle-12-results.md) §Verifikation, zwei zusammenhängende Bereiche
   (`slice-046`…`slice-067`, `slice-068`…`slice-078`). **Nicht** dazugenommen:
-  [`slice-079`](../done/slice-079-gate-consistency-abloesen.md) und
-  [`slice-080`](../done/slice-080-verify-abloesung-dcheck.md) — dieselbe Notiz nennt sie
+  [`slice-079`](wellenlos/slice-079-gate-consistency-abloesen.md) und
+  [`slice-080`](wellenlos/slice-080-verify-abloesung-dcheck.md) — dieselbe Notiz nennt sie
   ausdrücklich **nicht** zur Welle gehörig („aus der Arbeit entstanden, haben aber einen anderen
   Gegenstand … und eigene Trigger").
 - **`welle-13`: 6 Dateien**, `**Welle:** welle-13-konsumenten-befunde.` — Beleg:

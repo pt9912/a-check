@@ -5,7 +5,7 @@
 ([`AGENTS.md`](../../../../AGENTS.md) §3.3/§5).
 
 **Bezug:** Maintainer-Anfrage 2026-09-05 („können wir schon auf das aktuelle Regelwerk (v6.0.0)
-umsteigen — d-check ist schon migriert"). Präzedenz: [slice-092](../done/slice-092-regelwerk-v5120-delta-analyse.md),
+umsteigen — d-check ist schon migriert"). Präzedenz: [slice-092](wellenlos/slice-092-regelwerk-v5120-delta-analyse.md),
 dieselbe Analyse-Form für den Sprung `v3.5.2` → `v5.12.0`. Referenz-Migration im Schwester-Repo:
 `d-check` `welle-88` (`slice-193`…`slice-195`), **nicht ungeprüft übernommen** — jeder Fund unten
 ist gegen den a-check-Bestand selbst gemessen, nicht aus dem d-check-Commit zitiert
@@ -148,7 +148,7 @@ bisher unausgesprochene Praxis jetzt zu einer **benannten** Regel; ein Verweis d
 
 Die neue Baseline zeigt jetzt ein Beispielmuster für einen `versions`-Pin auf
 `.harness/baseline/<tag>/…` selbst. a-check betreibt `versions:` bereits (seit
-[slice-133](../done/slice-133-versions-kohaerenz-zwischen-dokumenten.md)) — aber nur mit *einem*
+[slice-133](wellenlos/slice-133-versions-kohaerenz-zwischen-dokumenten.md)) — aber nur mit *einem*
 Pattern für die Lastenheft-Versionskohärenz. Die drei Baseline-Pin-Stellen (`conventions.md`,
 `AGENTS.md`, `harness/README.md`) plus
 [`MR-013`](../../../../harness/conventions/done/MR-013-adr-vorlagen-version.md) sind bislang **nur

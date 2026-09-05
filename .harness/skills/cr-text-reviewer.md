@@ -6,8 +6,8 @@
   §Harness-Lüge
 * Gilt für: einen **CR-Text an ein fremdes Werkzeug**, bevor er den Slice verlässt — die vier
   bisherigen entstanden in [slice-073](../../docs/plan/planning/done/welle-12/slice-073-dcheck-statt-eigenbau.md) §8
-  und [slice-080](../../docs/plan/planning/done/slice-080-verify-abloesung-dcheck.md) §8,
-  [slice-116](../../docs/plan/planning/done/slice-116-nullmengen-haerte-cr.md) §9
+  und [slice-080](../../docs/plan/planning/done/wellenlos/slice-080-verify-abloesung-dcheck.md) §8,
+  [slice-116](../../docs/plan/planning/done/wellenlos/slice-116-nullmengen-haerte-cr.md) §9
 * Entstanden: slice-119
 
 > **Warum ein Guide und kein Sensor.** *„Ist diese Behauptung gemessen?"* ist ein Urteil über den
@@ -16,7 +16,7 @@
 > **erste** Antwort auf die Schwelle — anders als bei
 > [`BEO-008`](../../docs/plan/planning/observations/BEO-PLAN/verweis-auf-wandernden-slice/observation.md), wo ein Guide schon einmal gescheitert war
 > und darum ein Werkzeug entstand
-> ([slice-118](../../docs/plan/planning/done/slice-118-lifecycle-wechsel-werkzeug.md)).
+> ([slice-118](../../docs/plan/planning/done/wellenlos/slice-118-lifecycle-wechsel-werkzeug.md)).
 
 ## Kontext-Eingang (Pflicht)
 

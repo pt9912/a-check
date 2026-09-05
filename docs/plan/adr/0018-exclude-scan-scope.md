@@ -11,7 +11,7 @@
 
 Der Scanner erfasst jede Datei, die einem `languages`-Glob entspricht; die Glob-Engine kennt
 **bewusst keine Negation**. Zwei reale Konsumenten zeigen, dass das ohne Ausschluss-Mechanik
-nicht trägt ([slice-023](../planning/done/slice-023-dcheck-pilot-deltas.md) §1/§3):
+nicht trägt ([slice-023](../planning/done/wellenlos/slice-023-dcheck-pilot-deltas.md) §1/§3):
 
 1. **d-check** (Go-Pilot): das abgelöste `go list`-Gate prüfte nur Nicht-Test-Imports — schon
    ein `os`-Import in einem Adapter-**Test** macht den sauberen Baum rot; `**/*_test.go` ist
@@ -44,7 +44,7 @@ Die Ausschluss-Klassen sind gemischt sprachübergreifend (`node_modules/`, `dist
    `composition_root`, das nur Regel-Ausnahmen steuert).
 3. **Fail-closed:** ein leerer Glob (`""`) ist der ungültige Fall der totalen Glob-Engine →
    Exit 2 (kein stiller No-Op, Ethos-Linie von
-   [slice-017](../planning/done/slice-017-unbekannte-sprache-exit2.md)).
+   [slice-017](../planning/done/wellenlos/slice-017-unbekannte-sprache-exit2.md)).
 4. **Rückwärtskompatibel:** ohne `exclude`-Block wird jede `languages`-Glob-Datei gescannt —
    byte-identische Ausgabe.
 5. **Ehrliche Grenze ([AC-QA-02](../../../spec/lastenheft.md#ac-qa-02--hermetik-und-ehrliche-heuristik-grenze)):**
@@ -81,5 +81,5 @@ Die Ausschluss-Klassen sind gemischt sprachübergreifend (`node_modules/`, `dist
 
 | Datum | Ereignis |
 |---|---|
-| 2026-07-03 | Proposed — Entwurf mit [slice-023](../planning/done/slice-023-dcheck-pilot-deltas.md); Evidenz d-check-Plan-Review + m-trace-Sichtung. |
-| 2026-07-03 | Proposed → Accepted (Sign-off Auftraggeber: Entscheide a–d gemäß Empfehlung inkl. fail-closed für leeren/fehlenden `tech.adapter`, [slice-023](../planning/done/slice-023-dcheck-pilot-deltas.md) §3). Ab jetzt immutable; Ablösung nur via Folge-ADR mit `Supersedes`. |
+| 2026-07-03 | Proposed — Entwurf mit [slice-023](../planning/done/wellenlos/slice-023-dcheck-pilot-deltas.md); Evidenz d-check-Plan-Review + m-trace-Sichtung. |
+| 2026-07-03 | Proposed → Accepted (Sign-off Auftraggeber: Entscheide a–d gemäß Empfehlung inkl. fail-closed für leeren/fehlenden `tech.adapter`, [slice-023](../planning/done/wellenlos/slice-023-dcheck-pilot-deltas.md) §3). Ab jetzt immutable; Ablösung nur via Folge-ADR mit `Supersedes`. |
