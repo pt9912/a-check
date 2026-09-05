@@ -101,7 +101,49 @@ liegt vor, slice-161 ist in `done/`, WIP-Limit frei.
 
 ## 7. Closure-Notiz
 
-*(wird beim Übergang nach `done/` ausgefüllt, vor dem `git mv`)*
+- **Was hat funktioniert:** die unabhängige Wortlaut-Gegenrechnung gegen
+  einen frischen Klon von `pt9912/ai-harness-course` (Tag `v6.1.0`) hat
+  den neuen `AGENTS.md`-Absatz als Satz-für-Satz-deckungsgleich mit dem
+  Baseline-Zuwachs bestätigt, plus exakt den zwei benannten a-check-Sätzen
+  — keine stillen Abweichungen.
+- **Was ging anders als geplant:** das Review (F-1) und eine direkte
+  Nachfrage des Maintainers deckten eine falsche `Ersetzt-Baseline-Regel`
+  auf — `modul-08-agentenrollen.md` ist zwischen `v6.0.0` und `v6.1.0`
+  unverändert und war nie der Wortlaut-Treiber; der ist ein **Template**
+  (`AGENTS.template.md`, `v6.1.0`, nicht vendored), kein Regelwerk-Modul.
+  [`MR-018`](../../../../harness/conventions.md#mr-018) dafür korrigiert
+  (jetzt: kein Regel-Ersatz, sondern Provenienz-Korrektur wie
+  [`MR-017`](../../../../harness/conventions.md#mr-017)).
+- **Lerneintrag — Form: geschärfte Regel.** *Ein `Ersetzt-Baseline-Regel`-Feld
+  darf nicht auf ein Regelwerk-Modul zeigen, nur weil es thematisch passt
+  und vendored ist — es muss das Modul sein, dessen Text sich zwischen den
+  beiden Baseline-Ständen tatsächlich geändert hat. Ändert sich stattdessen
+  nur ein Template (oder gar keine Regelwerk-Datei), ist der Eintrag keine
+  klassische Regel-Adaption, sondern eine Provenienz-/Wortlaut-Korrektur —
+  derselbe Fall wie [`MR-017`](../../../../harness/conventions.md#mr-017) —
+  und trägt das ehrlich als
+  `Ersetzt-Baseline-Regel: —` mit Begründung, statt einen unveränderten
+  Modul-Anker als Beleg vorzutäuschen.* *Weil* zwei unabhängige Prüfungen
+  (Review F-2, Maintainer-Nachfrage) genau diese Verwechslung fanden, bevor
+  sie in den Adaptions-Block einlief.
+- **Beobachtungs-Register (`../observations/`):**
+  [`BEO-HARNESS/adaption-korrigiert-repo-aussage`](../observations/BEO-HARNESS/adaption-korrigiert-repo-aussage/observation.md)
+  — `evidence/slice-162.md` ergänzt, Zähler steht bei 2× (neben
+  slice-097; die verwandte Kette
+  [`MR-007`](../../../../harness/conventions/done/MR-007-adr-vorlagen-version.md)→[`013`](../../../../harness/conventions/done/MR-013-adr-vorlagen-version.md)→[`017`](../../../../harness/conventions.md#mr-017)
+  steht separat unter
+  [`rueckbau-kandidat-ueberlebt-baseline-migration`](../observations/BEO-HARNESS/rueckbau-kandidat-ueberlebt-baseline-migration/observation.md)).
+  Unter der 3×-Schwelle, aber näher dran.
+- **Folge-Slices:** keine neue ID — die offene Entscheidung ist kein
+  Folge-Slice, sondern eine Etappen-Wahl für `welle-14`: Etappe A
+  (Vendoring, slice-161 §6) direkt umsetzen, oder zuerst einen
+  vollständigen Adaptions-Durchgang (Etappe B: alle 18 aktiven
+  `MR`-Einträge gegen `v6.1.0` bewerten, nicht nur die vom Diff berührten)
+  fahren — offen für den Maintainer, gestellt am Ende dieser Sitzung.
+- **Risiken aus §6:** beide mit Ausgang (beide gestrichen mit Begründung)
+  — siehe §6.
+- **Drei Paarungen:** verschoben auf die Closure von `welle-14` (Modul 8
+  §Rollen-Sequenz für eine Welle) — wie bei slice-161.
 
 ## 8. Sub-Area-Modus
 
