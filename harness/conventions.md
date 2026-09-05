@@ -20,15 +20,17 @@ die kanonische Quelle (Source Precedence, siehe
 ## Baseline
 
 - **Konvention:** AI-Harness-Kurs
-- **Stand:** [`v5.12.0`](https://github.com/pt9912/ai-harness-course/releases/tag/v5.12.0)
-  (Release-Tag) — **Kurs-Welle 98 · 2026-08-26**, wie im Kopf des vendored
-  [`regelwerk/README.md`](../.harness/baseline/v5.12.0/regelwerk/README.md) ausgewiesen.
+- **Stand:** [`v6.0.0`](https://github.com/pt9912/ai-harness-course/releases/tag/v6.0.0)
+  (Release-Tag) — **Kurs-Welle 116 · 2026-09-03**, wie im Kopf des vendored
+  [`regelwerk/README.md`](../.harness/baseline/v6.0.0/regelwerk/README.md) ausgewiesen.
 - **Ort:** **committet vendored** unter
-  [`.harness/baseline/v5.12.0/`](../.harness/baseline/v5.12.0/regelwerk/README.md), Integrität
+  [`.harness/baseline/v6.0.0/`](../.harness/baseline/v6.0.0/regelwerk/README.md), Integrität
   über `SHA256SUMS`, geprüft mit `make regelwerk-check`
   ([`MR-006`](#mr-006--baseline-committet-vendored-statt-per-url-referenziert)). Genau **ein**
   Stand liegt vendored; mehrere sind nur während einer Migration zulässig, und das Target weist
-  den ungeprüften dann namentlich aus.
+  den ungeprüften dann namentlich aus — aktuell liegt zusätzlich `v5.12.0` vendored, bis der
+  Form-Review der laufenden Migration ([slice-135](../docs/plan/planning/done/slice-135-regelwerk-v600-delta-analyse.md))
+  durch ist (Baseline-Regelwerk `modul-02` §Freshness-Audit).
 - **Adoptiert seit:** 2026-06-20.
 
 Wann welcher Stand gehoben wurde und in welchen Etappen, steht in
@@ -40,9 +42,9 @@ Ist-Zustand.
 Pointer, keine Wiederholung des Inhalts.
 
 - **Vendored Baseline (Regelwerk + Templates) — die Lese-Form:**
-  [`.harness/baseline/v5.12.0/regelwerk/README.md`](../.harness/baseline/v5.12.0/regelwerk/README.md)
+  [`.harness/baseline/v6.0.0/regelwerk/README.md`](../.harness/baseline/v6.0.0/regelwerk/README.md)
   (Index) und
-  [`.harness/baseline/v5.12.0/templates/README.md`](../.harness/baseline/v5.12.0/templates/README.md).
+  [`.harness/baseline/v6.0.0/templates/README.md`](../.harness/baseline/v6.0.0/templates/README.md).
   **Netzlos** auf jedem Checkout, pro Abschnitt eine Datei — ein Agent lädt den benötigten
   Abschnitt, nie das ganze Bundle
   ([`MR-006`](#mr-006--baseline-committet-vendored-statt-per-url-referenziert)).

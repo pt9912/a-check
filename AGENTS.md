@@ -28,15 +28,15 @@ DoD/Closure prüfen → `modul-11`; Ausnahme oder Diskrepanz einordnen →
 `modul-07`; Modus einer Sub-Area bestimmen → `modul-02` und
 `grundlagen-bootstrap`; Release → `modul-16`. Es liegt **committet
 vendored** im Repo, also netzlos verfügbar:
-[`.harness/baseline/v5.12.0/regelwerk/README.md`](.harness/baseline/v5.12.0/regelwerk/README.md)
+[`.harness/baseline/v6.0.0/regelwerk/README.md`](.harness/baseline/v6.0.0/regelwerk/README.md)
 ist der Index (17 Module + acht Grundlagen-Abschnitte, eine Datei je
 Abschnitt); die Ziel-Formen daneben unter
-[`templates/`](.harness/baseline/v5.12.0/templates/README.md). Integrität:
-`.harness/baseline/v5.12.0/SHA256SUMS`.
+[`templates/`](.harness/baseline/v6.0.0/templates/README.md). Integrität:
+`.harness/baseline/v6.0.0/SHA256SUMS`.
 
 Das vendored Regelwerk ist ein **didaktik-freier Extrakt** und trägt keine
 eigene Normativität: bei Konflikt gilt der Kurs
-([`v5.12.0`](https://github.com/pt9912/ai-harness-course/tree/v5.12.0)), über
+([`v6.0.0`](https://github.com/pt9912/ai-harness-course/tree/v6.0.0)), über
 ihm die kanonischen Quellen (Source Precedence). Der adoptierte Stand und
 die Vendoring-Begründung stehen in
 [`harness/conventions.md`](harness/conventions.md) §Baseline bzw.

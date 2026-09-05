@@ -43,7 +43,7 @@ Rang ist mit [`MR-003`](conventions.md#mr-003--source-precedence-ohne-docsuser-r
 | [`docs/plan/planning/`](../docs/plan/planning/) | Slice-Pläne und Roadmap |
 | [`AGENTS.md`](../AGENTS.md) | Hard Rules, Source Precedence, Workflow |
 | [`conventions.md`](conventions.md) | repo-lokale Strukturregeln, Adaptions-Block (`MR-*`), Modus-Deklarationen |
-| [`.harness/baseline/v5.12.0/regelwerk/`](../.harness/baseline/v5.12.0/regelwerk/README.md) | adoptiertes Betriebsregelwerk der Baseline, **committet vendored** (netzlos): 17 Module + acht Grundlagen-Abschnitte, eine Datei je Abschnitt — einmal pro Session den zur Aufgabe gehörenden Abschnitt lesen, nie das ganze Bundle. Ziel-Formen daneben unter [`templates/`](../.harness/baseline/v5.12.0/templates/README.md), Integrität via `SHA256SUMS`. Derivativ (didaktik-freier Extrakt) — Stand und Begründung: [`conventions.md` §Baseline](conventions.md#baseline) / [`MR-006`](conventions.md#mr-006--baseline-committet-vendored-statt-per-url-referenziert) |
+| [`.harness/baseline/v6.0.0/regelwerk/`](../.harness/baseline/v6.0.0/regelwerk/README.md) | adoptiertes Betriebsregelwerk der Baseline, **committet vendored** (netzlos): 17 Module + acht Grundlagen-Abschnitte, eine Datei je Abschnitt — einmal pro Session den zur Aufgabe gehörenden Abschnitt lesen, nie das ganze Bundle. Ziel-Formen daneben unter [`templates/`](../.harness/baseline/v6.0.0/templates/README.md), Integrität via `SHA256SUMS`. Derivativ (didaktik-freier Extrakt) — Stand und Begründung: [`conventions.md` §Baseline](conventions.md#baseline) / [`MR-006`](conventions.md#mr-006--baseline-committet-vendored-statt-per-url-referenziert) |
 
 ## Sensors (Feedback-Gates)
 
