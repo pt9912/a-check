@@ -1,14 +1,23 @@
 # Carveouts — temporäre Ausnahmen mit Auflösungs-Plan
 
-**Aktueller Bestand: keiner.** Das ist eine Messung, keine Nachlässigkeit — siehe
-[§Warum leer](#warum-dieses-verzeichnis-heute-leer-ist).
-
 Ein **Carveout** ist eine *temporäre* Ausnahme von einer Regel oder einem Gate, die einen
 **Auflösungs-Plan** trägt. Die Kernidee der Baseline (`modul-07`): *ein Carveout ohne
 Auflösungs-Trigger ist ein permanenter Carveout, der lügt.* Angelegt in slice-065; die ID-Reihe
 `CO-NNN` ist seit
 [MR-000](../../../harness/conventions.md#mr-000--baseline-aussage-inkl-id-schema-deklaration)
 deklariert.
+
+## Aktive Carveouts
+
+| ID | Titel | Gate | Trigger | Folge-Slice |
+|---|---|---|---|---|
+
+**Aktueller Bestand: keiner.** Das ist eine Messung, keine Nachlässigkeit — siehe
+[§Warum leer](#warum-dieses-verzeichnis-heute-leer-ist).
+
+## Aufgelöste Carveouts
+
+(noch keine — kein aktiver Carveout wurde bisher angelegt, also gibt es auch keinen aufgelösten)
 
 ## Vor dem Anlegen: der Trichter
 

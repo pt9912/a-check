@@ -1,6 +1,8 @@
 # ADR-Index
 
-Architecture Decision Records dieses Repos. Konventionen:
+Architecture Decision Records dieses Repos.
+
+## Konventionen
 
 - **Dateiname:** `<NNNN>-<kurzer-titel-kebab>.md` (vierstellig, zero-padded).
 - **Status:** `Proposed` → `Accepted`; danach immutable. Ablösung nur
