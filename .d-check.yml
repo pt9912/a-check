@@ -165,6 +165,15 @@ structure:
       # traegt die Kennung eines VORGANGS, kein Slice-Plan-Dokument — derselbe
       # Namensraum, andere Bedeutung, kollidiert mit diesem Glob.
       - "docs/plan/planning/observations/**"
+      # Archivierte Stubs (tools/archive-wave, seit slice-145): ein Stub traegt
+      # per Ziel-Form KEINE Abschnittsueberschriften mehr (archiv-stub-slice.
+      # template.md) -- ohne Ausnahme meldete jeder archivierte Slice
+      # "section-missing" statt einer erfuellten DoD. Zwei Ablageorte: `-welle=`
+      # legt done/<kurze-welle-id>/ an (die Ziffernfolge, nicht a-checks
+      # beschreibende Roadmap-Form, slice-144 §4.1), `-slice=` legt
+      # done/wellenlos/ an (WellenlosArchiveDir).
+      - "docs/plan/planning/done/welle-[0-9]*/**"
+      - "docs/plan/planning/done/wellenlos/**"
 
   # (2) Closure-Struktur in done/: GENAU EINER, ausgefuellt, kein Platzhalter,
   #     mindestens zwei Saetze (AGENTS §5). `exempt-section-pattern` haelt
@@ -205,6 +214,11 @@ structure:
     exempt-paths:
       - "docs/plan/planning/**/slice-0[0-8][0-9]-*.md"
       - "docs/plan/planning/**/slice-09[0-7]-*.md"
+      # Archivierte Stubs (tools/archive-wave, seit slice-145): ihr Kopf traegt
+      # `Welle:`/`Archiviert mit:`/`Hervorgegangen:` statt der drei hier
+      # verlangten Felder -- eine andere Ziel-Form, keine unvollstaendige.
+      - "docs/plan/planning/done/welle-[0-9]*/**"
+      - "docs/plan/planning/done/wellenlos/**"
       # Beobachtungs-Register-Belege (seit slice-139): evidence/slice-NNN.md
       # traegt die Kennung eines VORGANGS, kein Slice-Plan-Dokument — derselbe
       # Namensraum, andere Bedeutung, kollidiert mit diesem Glob.
