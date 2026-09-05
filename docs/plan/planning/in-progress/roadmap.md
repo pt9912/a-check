@@ -1,11 +1,14 @@
 # Roadmap
 
-**Status:** Aktiv. **Letzte Änderung:** 2026-08-30.
-
 **Format-Regel:** Die Roadmap ist eine Reihenfolge von **Wellen**, keine Reihenfolge von Terminen
 (Baseline-Regelwerk `modul-06-roadmap.md`). Termine werden — falls überhaupt — als Konsequenz der
 Wellen-Schätzung gezeigt, nicht als Treiber. Was ein einzelner Slice geliefert und gelernt hat,
 steht in **seiner** Closure-Notiz unter `done/`, nicht hier.
+
+> **Hinweis zur Slice-Buchführung.** Die abgeschlossenen Slices liegen als
+> Planning-Harness-Dateien unter `done/` (retroaktiv nachgezogen, Regelwerk
+> Modul 5) mit Closure-Notiz + Lerneintrag; ab `slice-004` entstehen sie
+> regulär über den Lifecycle (`open → next → in-progress → done`).
 
 ---
 
@@ -48,11 +51,11 @@ Closure-Log.)_
 
 Regeln dieser Sektion: Baseline-Regelwerk `modul-06-roadmap.md` §Welle ≠ Meilenstein ≠ Release.
 
-| Meilenstein | Welle(n) | Status |
-|---|---|---|
-| M1: Spec-Fundament steht (Lastenheft + Spezifikation + Architektur + Fundament-ADRs) | welle-01/02 | **erreicht** (2026-06-21) |
-| M2: Dogfooding — a-check prüft die eigene Architektur grün ([AC-QA-02](../../../../spec/lastenheft.md#ac-qa-02--hermetik-und-ehrliche-heuristik-grenze)) | welle-03 | **erreicht** (2026-06-21) |
-| M3: erstes GHCR-Release + Pilot-Einbindung | welle-05 | **erreicht** (2026-07-05) — v0.1.0…v0.11.0 released; **zwei reale Konsumenten**: b-cad (C++, `.a-check.yml` + `a-check.mk`@v0.9.0 + `arch-check.sh` auf 75-Zeilen-P-Rest, 2026-07-04) und belief-agent (Kotlin/KMP, v0.11.0 adoptiert + Erfolg gemeldet 2026-07-05) |
+| Meilenstein | Welle(n) | Trigger | Status |
+|---|---|---|---|
+| M1: Spec-Fundament steht | welle-01/02 | Lastenheft + Spezifikation + Architektur + Fundament-ADRs committet | **erreicht** (2026-06-21) |
+| M2: Dogfooding | welle-03 | `arch-check` gegen [AC-QA-02](../../../../spec/lastenheft.md#ac-qa-02--hermetik-und-ehrliche-heuristik-grenze) grün — a-check prüft die eigene Architektur | **erreicht** (2026-06-21) |
+| M3: erstes GHCR-Release + Pilot-Einbindung | welle-05 | erstes veröffentlichtes Image plus ein realer externer Konsument | **erreicht** (2026-07-05) — v0.1.0…v0.11.0 released; **zwei reale Konsumenten**: b-cad (C++, `.a-check.yml` + `a-check.mk`@v0.9.0 + `arch-check.sh` auf 75-Zeilen-P-Rest, 2026-07-04) und belief-agent (Kotlin/KMP, v0.11.0 adoptiert + Erfolg gemeldet 2026-07-05) |
 
 ## Abhängigkeitsgraph
 
@@ -122,16 +125,3 @@ wäre schlimmer als keines.
 | 2026-08-09 | `welle-13-konsumenten-befunde` wächst von **vier** auf **sechs** Slices | der Konsument reichte die Befunde als sechs formale Change Requests nach; `CR-2` (Schicht ohne auflösende Importe) und `CR-4` (`forbidden_constructs` still wirkungslos) waren in der ersten Meldung nicht enthalten. `CR-2` ist der schwerste: eine Konfiguration, die **vollständig grün und vollständig blind** ist | [`welle-13-konsumenten-befunde.md`](../done/welle-13/welle-13-konsumenten-befunde.md) §4, [slice-085](../done/welle-13/slice-085-schicht-ohne-aufloesung.md), [slice-086](../done/welle-13/slice-086-forbidden-constructs-fail-closed.md) |
 | 2026-08-09 | `welle-12-regelwerk-migration` **erneut geschlossen** — diesmal nach der Fünf-Schritt-Prozedur, mit [`done/welle-12-results.md`](../done/welle-12-results.md) | der zurückgezogene Abschluss (Zeile darunter) war nach Modul-6-Ausgang **(a)** erfolgt; nach Abarbeitung aller Review-Findings ist das Closure-Kriterium erstmals **erfüllt statt behauptet**. `F-7` — der übersprungene erste Prozedur-Lauf — löst sich damit durch den Durchlauf selbst | [`welle-12-results.md`](../done/welle-12-results.md), `make ci` Exit 0 |
 | 2026-08-09 | `welle-12-regelwerk-migration`: **Closure zurückgezogen**, Welle zurück nach *Aktuelle Welle*. Zugleich verlässt die Zeile „unabhängiges Review der Migration" *Nächste Wellen* — ihr Trigger ist gefeuert | Der erste Review außerhalb der Claude-Modellfamilie widerlegte das Closure-Kriterium „alle Slices in `done/`": [slice-046](../done/welle-12/slice-046-regelwerk-v352-migration-analyse.md) liegt weiterhin in `open/`. Dazu 11 HIGH — darunter fünf Sensoren, die falsch-grün melden, und die Selbst-Ausnahme von der eigenen Closure-Prozedur. Damit gilt Modul-6-Ausgang **(b)** statt des bisherigen **(a)** („der Audit fällt durch") | [Review-Report 2026-08-09](../../../reviews/archiv/2026-08-09-welle-12-unabhaengig.md) |
-
-**Format-Regel:** Die Roadmap ist eine Reihenfolge von **Wellen**, keine
-Reihenfolge von Terminen. Termine erscheinen — falls überhaupt — als
-Konsequenz der Wellen-Schätzung, nicht als Treiber. Die Roadmap steht
-außerhalb der normativen Klammer: sie *orchestriert* Slices und Wellen,
-erzeugt aber keine Spezifikation (Regelwerk Modul 6).
-
-> **Hinweis zur Slice-Buchführung.** Die abgeschlossenen Slices liegen als
-> Planning-Harness-Dateien unter `done/` (retroaktiv nachgezogen, Regelwerk
-> Modul 5) mit Closure-Notiz + Lerneintrag; ab `slice-004` entstehen sie
-> regulär über den Lifecycle (`open → next → in-progress → done`).
-
----
