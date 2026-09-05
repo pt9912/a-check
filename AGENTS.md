@@ -337,21 +337,16 @@ Pro Slice:
 8. Ausgeführte Sensors und verbleibende Risiken berichten — keine
    Erfolgsmeldung ohne Gate-Ausführung.
 
-**Vor dem Abschluss, bei jedem Slice mit Code- oder Vertragsänderung:**
-Review gegen Plan/ADR/Konventionen
-([`docs/reviews/README.md`](docs/reviews/README.md),
-[`.harness/skills/reviewer.md`](.harness/skills/reviewer.md)) — **über einen
-echten getrennten Kontext**, nicht im selben Kontextfenster, das den
-Gegenstand geschrieben hat (Modul 8 §Kontext-Trennung: ein `fork`-Subagent
-erbt den Kontext und zählt darum **nicht**; ein frischer Subagent-Typ ohne
-`fork`, briefed mit dem nötigen Kontext). Synthese als
-`docs/reviews/<YYYY-MM-DD>-<slice-oder-diff-ref>.md`
-([`review-report.template.md`](.harness/baseline/v6.0.0/templates/docs/reviews/review-report.template.md)),
-HIGH-Findings vor Übernahme gegen das Repo-Artefakt verifiziert. Diese Zeile
-ist die Korrektur eines echten, gemessenen Ausfalls (23 Slices ohne Review,
-[`BEO-HARNESS/behauptete-vollstaendigkeit-extern-gefangen`](docs/plan/planning/observations/BEO-HARNESS/behauptete-vollstaendigkeit-extern-gefangen/observation.md)) —
-sie steht hier und nicht nur in `docs/reviews/README.md`, weil genau das
-Fehlen dieser Zeile an dieser Stelle der Auslöser war.
+Dieser Workflow deckt ausschließlich die Implementer-Rolle ab. Schritt 8
+ist der Rollenwechsel, kein Abschluss: Bericht → Handoff an Reviewer
+([`.harness/skills/reviewer.md`](.harness/skills/reviewer.md), siehe
+[`harness/README.md`](harness/README.md) §Guides) → Verifier. Kein
+Self-Review — anderer Kontext findet andere Findings, derselbe Kontext
+dieselben blinden Flecken (Baseline-Regelwerk `modul-08-agentenrollen.md`);
+ein `fork`-Subagent erbt den Kontext und zählt darum **nicht** — ein
+frischer Subagent-Typ ohne `fork`, briefed mit dem nötigen Kontext, zählt
+(Modul 8 §Kontext-Trennung). Ausfallbeleg:
+[`BEO-HARNESS/behauptete-vollstaendigkeit-extern-gefangen`](docs/plan/planning/observations/BEO-HARNESS/behauptete-vollstaendigkeit-extern-gefangen/observation.md).
 
 Beim **Abschluss** eines Slice zusätzlich `make verify` (Verifikations-Schicht,
 §4): `gates` beantwortet Code-Fragen, `verify` die DoD-/Closure-Fragen. Die

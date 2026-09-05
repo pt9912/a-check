@@ -307,13 +307,13 @@ Wellen-Wahl **beantwortet, nicht offen** — siehe §7.
   — beide vor Abschluss korrigiert. Zusätzlich war die
   Beobachtungs-Register-Sichtung in §10 zunächst unvollständig (5 statt 18
   Treffer über zwei statt drei Sub-Areas).
-- **Steering-Loop-Eintrag:** geschärfte Regel — eine Provenienz-Behauptung
+- **Lerneintrag — Form: geschärfte Regel.** *Eine Provenienz-Behauptung
   über eine andere Repo-Datei ("seit slice-NNN") wird gegen
   `git log -p --follow -S"<Textfragment>"` verifiziert, bevor sie in einen
   Slice-Plan geschrieben wird, statt aus dem Gesprächskontext übernommen zu
   werden — dieselbe Disziplin, die `cr-text-behauptet-statt-gemessen`
   bereits für CR-Texte an ein fremdes Werkzeug verlangt, jetzt auch für
-  repo-eigene Historie.
+  repo-eigene Historie.*
 - **Beobachtungs-Register (`../observations/`):**
   [`BEO-PLAN/slice-provenienz-aus-gedaechtnis-statt-git-log`](../observations/BEO-PLAN/slice-provenienz-aus-gedaechtnis-statt-git-log/observation.md)
   neu angelegt, Beleg `evidence/slice-161.md` — Zähler steht bei 1×.

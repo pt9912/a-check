@@ -109,6 +109,7 @@ werden nie überschrieben); sie entsteht in den Nachfolge-Einträgen der Etappe 
 | [MR-015](conventions/MR-015-welle-closure-ohne-replay.md) <a id="mr-015"></a> | Welle-Closure ohne Replay-Lauf (`make ci` grün) | [`docs/plan/planning/`](../docs/plan/planning/README.md) | [`modul-06-roadmap.md` §Wellen-Closure-Prozedur](../.harness/baseline/v6.0.0/regelwerk/modul-06-roadmap.md#wellen-closure-prozedur-modul-6) |
 | [MR-016](conventions/MR-016-validator-unbesetzt.md) <a id="mr-016"></a> | Validator-Rolle unbesetzt | gesamtes Repo; Baseline-Modul `modul-08` | [`modul-08-agentenrollen.md` §Die neun Übergaben](../.harness/baseline/v6.0.0/regelwerk/modul-08-agentenrollen.md#die-neun-übergaben-und-ihre-artefakte-modul-8) |
 | [MR-017](conventions/MR-017-adr-vorlagen-version.md) <a id="mr-017"></a> | ADR-Vorlage ist die vendored Fassung `v6.0.0` | [`MR-000`](#mr-000) §ID-Schema, Zeile zu `ADR-NNNN` | — *(korrigiert eine Repo-Aussage; Rückbau-Kandidat, im Eintrag benannt)* |
+| [MR-018](conventions/MR-018-review-pflicht-v610-wortlaut.md) <a id="mr-018"></a> | Review-Pflicht/Rollenwechsel-Absatz in `AGENTS.md` §6 auf `v6.1.0`-Wortlaut | [`AGENTS.md`](../AGENTS.md) §6 | [`modul-08-agentenrollen.md` §Die neun Übergaben](../.harness/baseline/v6.0.0/regelwerk/modul-08-agentenrollen.md#die-neun-übergaben-und-ihre-artefakte-modul-8) |
 
 ### Aufgelöste Adaptionen
 
