@@ -190,7 +190,10 @@ die CI (Badge im [`README.md`](README.md)), nicht diese Tabelle.
 | `make trace-check` | Traceability via Modul `commits` ([ADR-0021](docs/plan/adr/0021-commits-modul-trace-check.md)): `AC-*`/`ADR-*`/`MR-*`/`slice`-ID je Commit (§5; `MSGFILE=` Hook, `RANGE=` CI) |
 | `make commit-scope-check` | Commit-Scope `(planning)` berührt nur `docs/plan/planning/` (§5, [`SL-003`](docs/plan/planning/observations/README.md)); misst jeden Commit an der zu seinem Zeitpunkt geltenden Fassung (`RANGE=` wie `trace-check`, slice-062) |
 | `make archive-wave-test` | Testsuite von `tools/archive-wave/` (eigenes `go.mod` — **nicht** Teil von `make test`, das nur das Hauptmodul deckt) |
-| `make archive-wave` | Setzt Baseline-Regelwerk `modul-06-roadmap.md` §Wellen-Closure-Prozedur Schritt 4 um (`WELLE=<id>` sammelt die Slices einer Welle über ihr `**Welle:**`-Feld und deren Review-Reports, baut `done/<welle-id>/archiv.zip`, ersetzt Volltexte durch Stubs, zieht Verweise nach; `SLICE=<id>`/`REVIEW=<datei>` für wellenlose Einzel-Fälle), `APPLY=1` optional. **`WELLE=` nennt die kurze numerische Form** (`welle-12`, nicht `welle-12-regelwerk-migration`) — das Werkzeug matcht nur die Ziffernfolge im `**Welle:**`-Feld, a-checks eigene Roadmap-IDs tragen einen beschreibenden Suffix, den es nicht kennt (slice-144, per Dry-Run gemessen). Unverändert aus `d-check` übernommen (eigenständig, `tools/archive-wave/README.md`); **kein Gate**, von Hand ausgelöster Vorgang, sicherer Default ohne `APPLY=1` (nichts wird geschrieben) |
+| `make archive-wave` | Setzt Baseline-Regelwerk `modul-06-roadmap.md` §Wellen-Closure-Prozedur Schritt 4 um (`WELLE=<id>` sammelt die Slices einer Welle über ihr `**Welle:**`-Feld und deren Review-Reports, baut `done/<welle-id>/archiv.zip`, ersetzt Volltexte durch Stubs, zieht Verweise nach; `SLICE=<id>`/`REVIEW=<datei>` für wellenlose Einzel-Fälle), `APPLY=1` optional. **`WELLE=` nennt die kurze numerische Form** (`welle-12`, nicht `welle-12-regelwerk-migration`) — das Werkzeug matcht nur die Ziffernfolge im `**Welle:**`-Feld, a-checks eigene Roadmap-IDs tragen einen beschreibenden Suffix, den es nicht kennt (slice-144, per Dry-Run gemessen). Unverändert aus `d-check` übernommen (eigenständig, `tools/archive-wave/README.md`); **kein Gate**
+(kein `make gates`/`make ci`-Bestandteil), aber seit slice-157 **Pflichtschritt beim Abschluss
+eines wellenlosen Slice** (§6) — kein von Hand ausgelöster Vorgang mehr, sondern Teil des
+Workflows. Sicherer Default ohne `APPLY=1` (nichts wird geschrieben) |
 
 ## 5. Dokumentations-Regeln
 
@@ -337,3 +340,14 @@ Beim **Abschluss** eines Slice zusätzlich `make verify` (Verifikations-Schicht,
 semantische Hälfte — trägt die Notiz ein Lernsignal oder nur eine Floskel? —
 leistet der Skill
 [`.harness/skills/closure-note-reviewer.md`](.harness/skills/closure-note-reviewer.md).
+
+**Danach, wenn der Slice wellenlos ist** (kein `**Welle:**`-Feld, keine aktive
+Welle in `in-progress/`): sofort archivieren —
+`make archive-wave SLICE=<slice-id> APPLY=1`, danach `make gates`/`make
+verify` auf dem archivierten Stand erneut grün, als **eigener Commit** direkt
+im Anschluss an den Closure-Commit (git mv + Content-Rewrite ist ein eigener
+Vorgang, §3.3). Kein Backlog, den erst ein späterer Sweep aufräumt —
+Baseline-Regelwerk `modul-06-roadmap.md` §Wann Arbeit eine Welle braucht,
+Tabelle *Träger im Repo ohne Wellen*: „Zeitdokumente archivieren … Träger:
+Slice-Closure". Ein Slice mit echtem `**Welle:**`-Feld archiviert stattdessen
+**mit seiner Welle** bei deren Closure (`WELLE=<id>`), nicht einzeln.
