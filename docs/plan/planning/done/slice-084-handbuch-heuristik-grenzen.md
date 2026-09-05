@@ -3,6 +3,7 @@
 **Status:** open — der Zustand ist das **Verzeichnis**, nicht dieses Feld
 (`open/ → next/ → in-progress/ → done/`, Wechsel nur per `git mv` als eigener Commit,
 [`AGENTS.md`](../../../../AGENTS.md) §3.3/§5).
+**Welle:** welle-13-konsumenten-befunde.
 **Deckt:** Konsumenten-Befund vom 2026-08-09 (Mehrfach-Direktiven);
 [AC-QA-02](../../../../spec/lastenheft.md#ac-qa-02--hermetik-und-ehrliche-heuristik-grenze).
 **Bezug:** [slice-081](../done/slice-081-heuristik-diagnose.md) — die Laufzeit-Diagnose löst dasselbe

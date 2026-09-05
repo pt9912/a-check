@@ -2,6 +2,7 @@
 
 **Status:** open — **Analyse zur Abnahme** (keine Spec-/Code-/Harness-Änderung; reine Ist-Messung
 + Etappen-Vorschlag).
+**Welle:** welle-12-regelwerk-migration.
 **Auslöser:** Maintainer-Frage am 2026-07-25 („welche Regelwerksversion verwenden wir?") und die
 anschließende Vorgabe: **vollständige Migration nach `v3.5.2`** — auch dort, wo ein `MR-*` heute
 etwas anderes sagt. **Erst analysieren.**

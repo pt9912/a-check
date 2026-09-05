@@ -3,6 +3,7 @@
 **Status:** *(der Zustand ist das Verzeichnis dieser Datei, nicht dieses Feld — korrigiert in slice-063)* — erster Schnitt der **Etappe C** aus
 [slice-046 §6](../done/slice-046-regelwerk-v352-migration-analyse.md) und
 [slice-048 §5](../done/slice-048-modul-delta-lesen.md).
+**Welle:** welle-12-regelwerk-migration.
 **Deckt:** die **Nummern-Kollision** aus slice-046 §4.2, Fund **B-7** (veraltete
 ADR-Vorlagen-Version) und Fund **B-19** (Replay/Telemetrie ohne deklarierte Abweichung).
 **Nicht hier:** B-2 (Modus pro Sub-Area) und die offenen LOW aus dem Etappe-A-Zweit-Review — 2/2.

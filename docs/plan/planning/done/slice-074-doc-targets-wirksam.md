@@ -3,6 +3,7 @@
 **Status:** open — der Zustand ist das **Verzeichnis**, nicht dieses Feld
 (`open/ → next/ → in-progress/ → done/`, Wechsel nur per `git mv` als eigener Commit,
 [`AGENTS.md`](../../../../AGENTS.md) §3.3/§5).
+**Welle:** welle-12-regelwerk-migration.
 **Deckt:** Befund vom 2026-08-09 bei der Messung zu
 [slice-073](../done/slice-073-dcheck-statt-eigenbau.md); Bezug zu
 [MR-006](../../../../harness/conventions.md#mr-006--baseline-committet-vendored-statt-per-url-referenziert).

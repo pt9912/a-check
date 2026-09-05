@@ -4,6 +4,7 @@
 ([`AGENTS.md`](../../../../AGENTS.md) §3.3/§5) — dieses Feld führt ihn bewusst **nicht** doppelt.
 Ein Wert hier wäre eine zweite Quelle für dieselbe Wahrheit und stünde nach jedem `git mv` falsch
 da (Review 2026-07-26, Etappe B F-5).
+**Welle:** welle-12-regelwerk-migration.
 **Deckt:** die Findings **F-3**, **F-4**, **F-5** aus
 [`docs/reviews/2026-07-26-slice-049-mechanik-sensoren.md`](../../../reviews/2026-07-26-slice-049-mechanik-sensoren.md)
 und **F-3** aus

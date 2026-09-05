@@ -2,6 +2,7 @@
 
 **Status:** der Zustand ist das **Verzeichnis** dieser Datei
 ([`AGENTS.md`](../../../../AGENTS.md) §3.3/§5) — dieses Feld führt ihn bewusst **nicht** doppelt.
+**Welle:** welle-12-regelwerk-migration.
 **Deckt:** **F-2** aus
 [`2026-07-26-etappe-d-slice-052-053-054.md`](../../../reviews/2026-07-26-etappe-d-slice-052-053-054.md)
 (Etiketten-Muster ohne Eintrag) und den in

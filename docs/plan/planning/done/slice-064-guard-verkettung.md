@@ -2,6 +2,7 @@
 
 **Status:** der Zustand ist das **Verzeichnis** dieser Datei
 ([`AGENTS.md`](../../../../AGENTS.md) §3.3/§5) — dieses Feld führt ihn bewusst **nicht** doppelt.
+**Welle:** welle-12-regelwerk-migration.
 **Deckt:** den sechsten Vorfall von `SL-001`, belegt in `1a9f270`.
 [Roadmap](../in-progress/roadmap.md).
 

@@ -2,6 +2,7 @@
 
 **Status:** *(der Zustand ist das Verzeichnis dieser Datei, nicht dieses Feld — korrigiert in slice-063)* — erster Schnitt der **Etappe F (Betriebsmodell)** aus
 [slice-048 §5](../done/slice-048-modul-delta-lesen.md).
+**Welle:** welle-12-regelwerk-migration.
 **Deckt:** Fund **B-21** (kein Steering-Loop-Kanal) und den daraus fälligen Sensor zum
 Pipe-Fehler, den [slice-051](../done/slice-051-workflow-und-freigabe.md) ausdrücklich offen ließ.
 **Nicht hier:** B-13/B-14/B-10/B-9 (Wellen-Closure, Carveouts, Rollen) — 2/3 und 3/3.

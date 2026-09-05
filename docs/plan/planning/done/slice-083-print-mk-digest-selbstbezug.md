@@ -3,6 +3,7 @@
 **Status:** open — der Zustand ist das **Verzeichnis**, nicht dieses Feld
 (`open/ → next/ → in-progress/ → done/`, Wechsel nur per `git mv` als eigener Commit,
 [`AGENTS.md`](../../../../AGENTS.md) §3.3/§5).
+**Welle:** welle-13-konsumenten-befunde.
 **Deckt:** Maintainer-Befund vom 2026-08-09, bestätigt durch einen **realen Fehlpin** im Einsatz;
 [AC-QA-03](../../../../spec/lastenheft.md#ac-qa-03--reproduzierbarkeit),
 [AC-FA-DIST-001](../../../../spec/lastenheft.md#ac-fa-dist-001--distribution-image---print-mk-a-checkmk).

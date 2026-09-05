@@ -3,6 +3,7 @@
 **Status:** *(der Zustand ist das Verzeichnis dieser Datei, nicht dieses Feld — korrigiert in slice-063)* — erster Schnitt der **Etappe E (Mechanik)** aus
 [slice-048 §5](../done/slice-048-modul-delta-lesen.md); Reihenfolge **E vor D** am 2026-07-25 per
 Maintainer-Wort abgenommen.
+**Welle:** welle-12-regelwerk-migration.
 **Deckt:** Fund **B-11** (Suppression-Verbot halb durchgesetzt) und **B-8** (kein
 Maintenance-Target für die vendored Baseline).
 **Nicht in diesem Slice:** B-3 (`verify` + `check-references`), B-4 (`closure-note-reviewer`),

@@ -3,6 +3,7 @@
 **Status:** open — der Zustand ist das **Verzeichnis**, nicht dieses Feld
 (`open/ → next/ → in-progress/ → done/`, Wechsel nur per `git mv` als eigener Commit,
 [`AGENTS.md`](../../../../AGENTS.md) §3.3/§5).
+**Welle:** welle-13-konsumenten-befunde.
 **Deckt:** `CR-4` des Konsumenten-Einsatzes (2026-08-09);
 [SPEC-CONF-001](../../../../spec/spezifikation.md#spec-conf-001--konfigurationsschema),
 [AC-FA-RULE-004](../../../../spec/lastenheft.md#ac-fa-rule-004--port-disziplin-regel-port-impurity).

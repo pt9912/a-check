@@ -3,6 +3,7 @@
 **Status:** open — der Zustand ist das **Verzeichnis**, nicht dieses Feld
 (`open/ → next/ → in-progress/ → done/`, Wechsel nur per `git mv` als eigener Commit,
 [`AGENTS.md`](../../../../AGENTS.md) §3.3/§5).
+**Welle:** welle-12-regelwerk-migration.
 **Deckt:** den Nebenbefund aus [slice-069](../done/slice-069-sensor-fehler-propagierung.md) §4 —
 dort ausdrücklich **nicht** aufgenommen, weil er ein anderer Fehlermechanismus ist.
 Bezug zu `SL-003` und [ADR-0021](../../adr/0021-commits-modul-trace-check.md).

@@ -2,6 +2,7 @@
 
 **Status:** der Zustand ist das **Verzeichnis** dieser Datei
 ([`AGENTS.md`](../../../../AGENTS.md) §3.3/§5) — dieses Feld führt ihn bewusst **nicht** doppelt.
+**Welle:** welle-12-regelwerk-migration.
 **Deckt:** Form-Verstoß der Roadmap gegen `modul-06` §Roadmap-Struktur, gemeldet vom Maintainer am
 2026-07-26.
 [Roadmap](../in-progress/roadmap.md).

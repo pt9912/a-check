@@ -3,6 +3,7 @@
 **Status:** *(der Zustand ist das Verzeichnis dieser Datei, nicht dieses Feld — korrigiert in slice-063)* — Etappe **B** aus
 [slice-046 §6](../done/slice-046-regelwerk-v352-migration-analyse.md), am 2026-07-25 per
 Maintainer-Wort gezogen. Ergebnis §2–§5.
+**Welle:** welle-12-regelwerk-migration.
 **Auslöser:** Etappe A ([slice-047](../done/slice-047-baseline-vendoring.md)) hat die Baseline
 vendored; jetzt wird sie **gelesen** — netzlos aus `.harness/baseline/v3.5.2/regelwerk/`.
 **Bezug:** liefert die Findings, aus denen die restlichen Migrations-Etappen geschnitten werden.

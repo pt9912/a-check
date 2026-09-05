@@ -2,6 +2,7 @@
 
 **Status:** der Zustand ist das **Verzeichnis** dieser Datei
 ([`AGENTS.md`](../../../../AGENTS.md) §3.3/§5) — dieses Feld führt ihn bewusst **nicht** doppelt.
+**Welle:** welle-12-regelwerk-migration.
 **Deckt:** **B-14** (Carveout-Ort fehlt) und **B-10** (Diskrepanz-Trichter ungenutzt) aus
 [slice-048 §5](../done/slice-048-modul-delta-lesen.md).
 **Bezug:** Etappe F, zweiter von drei Schnitten; 1/3 war

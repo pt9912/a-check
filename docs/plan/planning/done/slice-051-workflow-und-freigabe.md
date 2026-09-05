@@ -2,6 +2,7 @@
 
 **Status:** *(der Zustand ist das Verzeichnis dieser Datei, nicht dieses Feld — korrigiert in slice-063)* — dritter und letzter Schnitt der **Etappe E (Mechanik)** aus
 [slice-048 §5](../done/slice-048-modul-delta-lesen.md).
+**Welle:** welle-12-regelwerk-migration.
 **Deckt:** Fund **B-16** (dritter Bindepunkt der Durchsetzungsschicht fehlt) und **B-20**
 (`releasing.md` ist Prozedur ohne Freigabe-Belege).
 [Roadmap](../in-progress/roadmap.md).

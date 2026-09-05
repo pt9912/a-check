@@ -2,6 +2,7 @@
 
 **Status:** *(der Zustand ist das Verzeichnis dieser Datei, nicht dieses Feld — korrigiert in slice-063)* — erster Schnitt der **Etappe D (Form)** aus
 [slice-048 §5](../done/slice-048-modul-delta-lesen.md).
+**Welle:** welle-12-regelwerk-migration.
 **Deckt:** Fund **B-1** (Größen-Regel nirgends abgebildet) und **B-5** (Lerneintrag-Form nicht
 benannt). **Nicht hier:** B-6/B-18/B-12 (Lifecycle und Roadmap-Form) und B-15 (AC-Form) — 2/3 und
 3/3. [Roadmap](../in-progress/roadmap.md).

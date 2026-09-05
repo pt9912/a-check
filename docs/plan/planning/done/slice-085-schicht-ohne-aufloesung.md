@@ -3,6 +3,7 @@
 **Status:** open — der Zustand ist das **Verzeichnis**, nicht dieses Feld
 (`open/ → next/ → in-progress/ → done/`, Wechsel nur per `git mv` als eigener Commit,
 [`AGENTS.md`](../../../../AGENTS.md) §3.3/§5).
+**Welle:** welle-13-konsumenten-befunde.
 **Deckt:** `CR-2` des Konsumenten-Einsatzes (2026-08-09);
 [AC-QA-02](../../../../spec/lastenheft.md#ac-qa-02--hermetik-und-ehrliche-heuristik-grenze),
 [SPEC-RULE-001](../../../../spec/spezifikation.md#spec-rule-001--regel-auswertung).

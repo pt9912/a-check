@@ -3,6 +3,7 @@
 **Status:** open — der Zustand ist das **Verzeichnis**, nicht dieses Feld
 (`open/ → next/ → in-progress/ → done/`, Wechsel nur per `git mv` als eigener Commit,
 [`AGENTS.md`](../../../../AGENTS.md) §3.3/§5).
+**Welle:** welle-12-regelwerk-migration.
 **Deckt:** `F-2` und `F-14` aus dem
 [Review-Report `welle-12`](../../../reviews/2026-08-09-welle-12-unabhaengig.md), verschärft durch
 den ersten Teil von `R-068-F3` aus dem

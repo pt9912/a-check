@@ -4,6 +4,7 @@
 Code — die ist Folge-Slice). Der Zustand ist das **Verzeichnis**, nicht dieses Feld
 (`open/ → next/ → in-progress/ → done/`, Wechsel nur per `git mv` als eigener Commit,
 [`AGENTS.md`](../../../../AGENTS.md) §3.3/§5).
+**Welle:** welle-12-regelwerk-migration.
 **Deckt:** Maintainer-Frage vom 2026-08-09 — *„Warum können wir d-check nicht anstatt der
 `verify-*.sh` verwenden?"*; Bezug zu
 [MR-006](../../../../harness/conventions.md#mr-006--baseline-committet-vendored-statt-per-url-referenziert)

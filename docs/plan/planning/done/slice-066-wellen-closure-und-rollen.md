@@ -2,6 +2,7 @@
 
 **Status:** der Zustand ist das **Verzeichnis** dieser Datei
 ([`AGENTS.md`](../../../../AGENTS.md) §3.3/§5) — dieses Feld führt ihn bewusst **nicht** doppelt.
+**Welle:** welle-12-regelwerk-migration.
 **Deckt:** **B-13** (Wellen werden nie auditierbar geschlossen) und **B-9** (Rollen ohne
 Übergabe-Artefakte) aus [slice-048 §5](../done/slice-048-modul-delta-lesen.md) — die letzten
 beiden offenen Funde der `v3.5.2`-Migration.
