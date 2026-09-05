@@ -111,6 +111,44 @@ func TestFixture_SliceTitelMitLink(t *testing.T) {
 	}
 }
 
+// TestFixture_WellePlanTitelMitLink belegt: nicht nur ein Slice-Titel,
+// auch der Titel des Welle-Plans selbst kann einen Markdown-Link tragen.
+// Der Link muss beim Verschieben nach done/<welle-id>/ auf die neue,
+// tiefere Position umgeschrieben werden -- dieselbe Invariante wie bei den
+// drei Slice-/Review-Stub-Stellen, hier an einer vierten, zuvor
+// unabgedeckten Stelle.
+func TestFixture_WellePlanTitelMitLink(t *testing.T) {
+	root := t.TempDir()
+	writeFile(t, filepath.Join(root, "docs/plan/adr/0008-x.md"), "# ADR-0008\n")
+	writeFile(t, filepath.Join(root, "docs/plan/planning/done/welle-79-x.md"),
+		"# Welle welle-79: [ADR-0008](../../adr/0008-x.md)s Folgen\n\nInhalt.\n")
+	writeFile(t, filepath.Join(root, "docs/plan/planning/done/welle-79-results.md"),
+		"# Ergebnis welle-79\n")
+	writeFile(t, filepath.Join(root, "docs/plan/planning/done/slice-802-eins.md"),
+		"# Slice slice-802: Eins\n\n**Welle:** welle-79.\n")
+
+	wellePlan, err := FindWellePlan(root, "welle-79")
+	if err != nil {
+		t.Fatal(err)
+	}
+	slices, err := CollectSlices(root, "welle-79")
+	if err != nil {
+		t.Fatal(err)
+	}
+	p := Plan{WelleID: "welle-79", WellePlan: wellePlan, Slices: slices}
+	if _, err := Apply(root, p); err != nil {
+		t.Fatal(err)
+	}
+
+	stubB, err := os.ReadFile(filepath.Join(root, "docs/plan/planning/done/welle-79/welle-79-x.md"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !strings.Contains(string(stubB), "](../../../adr/0008-x.md)") {
+		t.Fatalf("Welle-Plan-Titel-Link haette auf die neue, tiefere Position angepasst werden muessen: %q", string(stubB))
+	}
+}
+
 // buildFixtureNoPlan legt eine Welle wie welle-60..66 an: nur eine
 // retroaktive `-results.md`, kein Welle-Plan (slice-191).
 func buildFixtureNoPlan(t *testing.T) string {

@@ -86,6 +86,32 @@ func TestCollectSlices(t *testing.T) {
 	}
 }
 
+// TestCollectSlices_ReadWelleField_Konsistenz belegt: CollectSlices()
+// (numerische Wellen-Zugehoerigkeit) und ReadWelleField() (voller Rohwert)
+// muessen auf denselben Feld-Wert kommen. Ein Wert, der erst in der
+// Zeile NACH "**Welle:**" beginnt, ist fuer beide Leser gleich zu
+// behandeln -- hier: von keinem der beiden als Treffer gelesen.
+func TestCollectSlices_ReadWelleField_Konsistenz(t *testing.T) {
+	root := t.TempDir()
+	path := filepath.Join(root, "docs/plan/planning/done/slice-902-b.md")
+	writeFile(t, path, "# Slice slice-902: B\n\n**Welle:**\nwelle-79.\n")
+
+	got, err := CollectSlices(root, "welle-79")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(got) != 0 {
+		t.Fatalf("CollectSlices haette den Wert in der Folgezeile NICHT lesen duerfen, got %v", got)
+	}
+	field, err := ReadWelleField(path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if field != "" {
+		t.Fatalf("ReadWelleField haette leer zurueckgeben muessen (Divergenz-Fall), got %q", field)
+	}
+}
+
 func TestFindSlice(t *testing.T) {
 	root := t.TempDir()
 	writeFile(t, filepath.Join(root, "docs/plan/planning/done/slice-137-toolchain-freshness.md"), "# Slice slice-137: X\n")

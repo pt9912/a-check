@@ -11,7 +11,17 @@ import (
 	"strings"
 )
 
-var welleFieldRE = regexp.MustCompile(`(?m)^\*\*Welle:\*\*\s*(.*)$`)
+// welleFieldRE und welleFieldStartRE muessen auf DENSELBEN Feld-Wert
+// zeigen -- beide lesen "**Welle:**", eines fuer die numerische
+// Wellen-Zugehoerigkeit (CollectSlices), eines fuer den vollen Rohwert
+// (ReadWelleField). [ \t]* statt \s* in beiden: \s schliesst \n ein und
+// haette bei "**Welle:**\nwelle-79." die Zeile ueberbrueckt, waehrend
+// ReadWelleField (das an einer Leerzeile abbricht) fuer dieselbe Datei
+// leer zurueckgegeben haette -- Divergenz zwischen zwei Lesern desselben
+// Feldes. Der etablierte Bestand schreibt den Wert ohnehin einzeilig
+// direkt hinter dem Label; ein Zeilenumbruch davor ist kein gueltiger
+// Anwendungsfall, keine Verhaltensaenderung am realen Bestand.
+var welleFieldRE = regexp.MustCompile(`(?m)^\*\*Welle:\*\*[ \t]*(.*)$`)
 var welleFieldStartRE = regexp.MustCompile(`(?m)^\*\*Welle:\*\*[ \t]*`)
 var boldFieldStartRE = regexp.MustCompile(`^\*\*[^*\n]+:\*\*`)
 var welleIDInFieldRE = regexp.MustCompile(`\bwelle-(\d+)\b`)

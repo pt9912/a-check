@@ -1,0 +1,2 @@
+**Vorgang:** slice-158
+**Fund:** slice-152/slice-153 behaupteten, den Titel-Link-Bug "an allen drei Stub-Erzeugungsfunktionen" behoben zu haben. Eine vierte Stelle (Welle-Plan-Titel in Apply()) trug denselben Bug unverändert. Erstmals nicht vom Maintainer, sondern von einem echten kontext-getrennten Review gefangen (Multi-Linsen-Review 2026-09-05, ausgelöst durch die Frage "warum ist der reviews-Ordner leer?") — Beleg, dass die Korrektur (Reviews wieder kontext-getrennt fahren) wirkt.

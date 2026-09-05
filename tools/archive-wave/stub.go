@@ -141,15 +141,16 @@ func SliceStub(id, title, welleField, welleID, hervorgegangen string) string {
 
 // SliceStubStandalone erzeugt den Slice-Stub-Text fuer den wellenlosen
 // Einzel-Slice-Modus: Stub und Archiv liegen zusammen in
-// `WellenlosArchiveDir` (archive.go), und es gibt keine einsammelnde Welle --
-// an die Stelle von "Archiviert mit: <welle-id>" tritt "Archiviert: <Datum>
-// (eigene Closure)". Dasselbe vendorte Template
-// (`archiv-stub-slice.template.md`) beschreibt beide Faelle: sein
-// "Archiviert mit"-Feld benennt die *Einsammlung*, hier eben durch die
-// eigene Closure statt durch eine Welle -- keine neue Norm, nur ein neuer
-// Feldwert. Der d-check:ignore-Marker auf der Hervorgegangen-Zeile exempt sie
-// von der Linkpflicht: die Kennungen im archivierten Original-Volltext waren
-// zum Teil verlinkt, der Stub traegt nur noch den blossen Text.
+// `WellenlosArchiveDir` (archive.go), und es gibt keine einsammelnde Welle.
+// ABWEICHUNG von der vendorten Ziel-Form (`archiv-stub-slice.template.md`),
+// die als ZWEI getrennte Felder auf einer Zeile fuehrt ("Archiviert mit:
+// <welle-id> · Geschlossen: <Datum>" -- Einsammlung und Schliessdatum sind
+// zwei verschiedene Tatsachen): hier steht nur EIN Feld ("Archiviert:
+// <Datum> (eigene Closure)"), das beide Rollen traegt, weil es keine
+// Welle gibt, die getrennt von der eigenen Closure "eingesammelt" haette.
+// Der d-check:ignore-Marker auf der Hervorgegangen-Zeile exempt sie von der
+// Linkpflicht: die Kennungen im archivierten Original-Volltext waren zum
+// Teil verlinkt, der Stub traegt nur noch den blossen Text.
 func SliceStubStandalone(id, title, welleField, hervorgegangen string) string {
 	return fmt.Sprintf(
 		"# %s — %s\n\n"+

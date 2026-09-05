@@ -2,14 +2,18 @@
 // entfernt die alten Volltexte. Liefert die vorgenommenen Moves, damit der
 // Aufrufer anschliessend RewriteRepo darauf anwenden kann.
 //
-// INVARIANTE fuer jede Stub-Erzeugung (Apply, ApplySlice, ApplyReview): jeder
-// Text, der aus der ALTEN Position stammt und einen Markdown-Link tragen
-// kann (Welle-Feld, Titelzeile), geht vor der Uebernahme in den Stub durch
+// INVARIANTE fuer jede Stub-Erzeugung -- VIER Stellen, nicht drei (der
+// Welle-Plan-Titel in Apply() blieb bei der ersten Fassung dieser Invariante
+// selbst uebersehen, unabhaengig gefunden): Slice-Titel in Apply(),
+// Welle-Plan-Titel in Apply(), ApplySlice(), ApplyReview(). Jeder Text, der
+// aus der ALTEN Position stammt und einen Markdown-Link tragen kann
+// (Welle-Feld, Titelzeile), geht vor der Uebernahme in den Stub durch
 // RewriteFieldForMove -- der Stub liegt eine Ebene tiefer als das Original.
-// Diese Umschreibung an einer der drei Stellen zu vergessen, ist an der
-// Funktion selbst nicht sichtbar; je ein Regressionstest pro Modus
-// (TestFixture_SliceTitelMitLink, TestRunSlice_Apply_TitelMitLink,
-// TestRunReview_Apply_TitelMitLink) haelt sie einzeln fest.
+// Diese Umschreibung an einer der vier Stellen zu vergessen, ist an der
+// jeweiligen Funktion selbst nicht sichtbar; je ein Regressionstest pro
+// Stelle (TestFixture_SliceTitelMitLink, TestFixture_WellePlanTitelMitLink,
+// TestRunSlice_Apply_TitelMitLink, TestRunReview_Apply_TitelMitLink) haelt
+// sie einzeln fest.
 package main
 
 import (
@@ -75,8 +79,13 @@ func Apply(root string, p Plan) ([]Move, error) {
 			return nil, err
 		}
 		resultsFile := p.WelleID + "-results.md"
-		welleStub := WelleStub(p.WelleID, welleTitle, resultsFile, len(p.Slices), len(p.Reviews))
 		welleNewAbs := filepath.Join(archiveDir, filepath.Base(p.WellePlan))
+		// Vierte Stub-Erzeugungsstelle neben Apply()s Slice-Titel,
+		// ApplySlice() und ApplyReview() -- derselbe Titel-Link-Fund gilt
+		// auch hier: ein Markdown-Link im Welle-Plan-Titel muss auf die
+		// neue, tiefere Position umgeschrieben werden.
+		welleTitle = RewriteFieldForMove(RelPath(root, p.WellePlan), RelPath(root, welleNewAbs), welleTitle, nil)
+		welleStub := WelleStub(p.WelleID, welleTitle, resultsFile, len(p.Slices), len(p.Reviews))
 		if err := os.WriteFile(welleNewAbs, []byte(welleStub), 0o644); err != nil {
 			return nil, fmt.Errorf("%s schreiben: %w", welleNewAbs, err)
 		}
@@ -99,6 +108,14 @@ func Apply(root string, p Plan) ([]Move, error) {
 		field, err := ReadWelleField(s)
 		if err != nil {
 			return nil, err
+		}
+		// Defensiv, nicht am heutigen Bestand erreichbar: CollectSlices()
+		// sammelt nur Dateien mit nicht-leer gelesenem Feld, aber Plan ist
+		// ein exportierter Typ, den auch ein Aufrufer ausserhalb von
+		// CollectSlices befuellen kann. Dieselbe Ziel-Form-Vorgabe wie in
+		// ApplySlice().
+		if field == "" {
+			field = "ohne Welle"
 		}
 		id := SliceIDFromPath(s)
 		newAbs := filepath.Join(archiveDir, filepath.Base(s))
