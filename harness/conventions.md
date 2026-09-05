@@ -28,9 +28,7 @@ die kanonische Quelle (Source Precedence, siehe
   über `SHA256SUMS`, geprüft mit `make regelwerk-check`
   ([`MR-006`](#mr-006--baseline-committet-vendored-statt-per-url-referenziert)). Genau **ein**
   Stand liegt vendored; mehrere sind nur während einer Migration zulässig, und das Target weist
-  den ungeprüften dann namentlich aus — aktuell liegt zusätzlich `v5.12.0` vendored, bis der
-  Form-Review der laufenden Migration ([slice-135](../docs/plan/planning/done/slice-135-regelwerk-v600-delta-analyse.md))
-  durch ist (Baseline-Regelwerk `modul-02` §Freshness-Audit).
+  den ungeprüften dann namentlich aus.
 - **Adoptiert seit:** 2026-06-20.
 
 Wann welcher Stand gehoben wurde und in welchen Etappen, steht in
