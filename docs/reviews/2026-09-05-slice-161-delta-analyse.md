@@ -5,7 +5,7 @@ ist eine Analyse-zur-Abnahme plus die zugehörige Welle-Eröffnung, nicht Code.
 
 **Gegenstand:** ungetagt, noch nicht committet —
 `docs/plan/planning/welle-14-regelwerk-v610-migration.md` (neu),
-`docs/plan/planning/in-progress/slice-161-regelwerk-v610-delta-analyse.md` (neu),
+`docs/plan/planning/done/slice-161-regelwerk-v610-delta-analyse.md` (neu),
 `docs/plan/planning/in-progress/roadmap.md` (§Offene Wellen geändert).
 
 **Skill:** `.harness/skills/reviewer.md` @ Stand 2026-09-05 (HEAD `9450268`).
@@ -33,7 +33,7 @@ ist eine Analyse-zur-Abnahme plus die zugehörige Welle-Eröffnung, nicht Code.
 - `kategorie`: HIGH
 - `quelle`: Reviewer-Skill „nachweislich falsche Tatsachenbehauptung, gegen ein Repo-Artefakt
   verifiziert"
-- `pfad`: `docs/plan/planning/in-progress/slice-161-regelwerk-v610-delta-analyse.md:155-156`
+- `pfad`: `docs/plan/planning/done/slice-161-regelwerk-v610-delta-analyse.md:155-156`
 - `befund`: Der Satz „a-checks eigenes `AGENTS.md` §6 trägt **seit slice-050** einen deutlich
   umfangreicheren Absatz danach ('Vor dem Abschluss, bei jedem Slice mit Code- oder
   Vertragsänderung: Review …')" ist falsch. `git log -p --follow -- AGENTS.md` zeigt genau **eine**
@@ -55,7 +55,7 @@ ist eine Analyse-zur-Abnahme plus die zugehörige Welle-Eröffnung, nicht Code.
 - `kategorie`: MEDIUM
 - `quelle`: `d-check`-Modul `structure` (`DC-FA-STRUCT-001`, Teil des `verify`-Aggregats,
   `AGENTS.md` §4)
-- `pfad`: `docs/plan/planning/in-progress/slice-161-regelwerk-v610-delta-analyse.md:134` (Kollision
+- `pfad`: `docs/plan/planning/done/slice-161-regelwerk-v610-delta-analyse.md:134` (Kollision
   mit `:231`)
 - `befund`: Die Heading-Regex des Größen-Sensors (`^#+ .*(DoD|Definition of Done)`) trifft nicht
   nur auf „## 7. DoD", sondern auch auf „### 4.3 … nicht als **DoD**-Punkt benannt …" — direkter
@@ -90,7 +90,7 @@ ist eine Analyse-zur-Abnahme plus die zugehörige Welle-Eröffnung, nicht Code.
 - `kategorie`: MEDIUM
 - `quelle`: Baseline-Regelwerk `modul-05-planning-harness.md` §Zwei Schritte vor der
   Modus-Begründung („Vorgelagert — offene Beobachtungen sichten … entfällt nie")
-- `pfad`: `docs/plan/planning/in-progress/slice-161-regelwerk-v610-delta-analyse.md:277-286`
+- `pfad`: `docs/plan/planning/done/slice-161-regelwerk-v610-delta-analyse.md:277-286`
 - `befund`: `grep -rn "Sub-Area:** Harness-Einstieg" docs/plan/planning/observations/*/*/observation.md`
   findet 7 `offen`-Einträge (2 weitere `verkörpert`, korrekt ausgeschlossen). Vier davon fehlen in
   §8: `BEO-HARNESS/adaption-korrigiert-repo-aussage`, `.../hard-rule-37-ohne-sensor`,
@@ -105,7 +105,7 @@ ist eine Analyse-zur-Abnahme plus die zugehörige Welle-Eröffnung, nicht Code.
 - `kategorie`: MEDIUM
 - `quelle`: Baseline-Regelwerk `modul-05-planning-harness.md` §Zwei Schritte vor der
   Modus-Begründung („Sub-Area-Wahl prüfen … entfällt nie")
-- `pfad`: `docs/plan/planning/in-progress/slice-161-regelwerk-v610-delta-analyse.md:270-283`
+- `pfad`: `docs/plan/planning/done/slice-161-regelwerk-v610-delta-analyse.md:270-283`
 - `befund`: §8 deklariert zwei berührte Sub-Areas (Vendored Baseline, Harness-Einstieg), zitiert im
   Sichtungs-Schritt aber `BEO-GATE/symlink-ziel-nach-baseline-bump-ungeprueft` und
   `BEO-GATE/sources-modul-asset-integritaet` — beide tragen laut eigenem `observation.md`
@@ -121,7 +121,7 @@ ist eine Analyse-zur-Abnahme plus die zugehörige Welle-Eröffnung, nicht Code.
 
 - `kategorie`: LOW
 - `quelle`: Maintainability / Konsistenz zum Präzedenzfall
-- `pfad`: `docs/plan/planning/in-progress/slice-161-regelwerk-v610-delta-analyse.md:231,246,264,268`
+- `pfad`: `docs/plan/planning/done/slice-161-regelwerk-v610-delta-analyse.md:231,246,264,268`
 - `befund`: Dateireihenfolge der Überschriften ist `1,2,3,4,5,6,7` („## 7. DoD"), dann `6a`
   („Risiken"), `7a` („Closure-Notiz"), `8` — §7 steht im Text vor §6a/§7a. Der zitierte
   Präzedenzfall `slice-135` nummeriert dieselbe Analyse-Form durchgehend `1`–`9` ohne
@@ -134,7 +134,7 @@ ist eine Analyse-zur-Abnahme plus die zugehörige Welle-Eröffnung, nicht Code.
 - `kategorie`: LOW
 - `quelle`: Baseline-Regelwerk `modul-05-planning-harness.md` §Offene Risiken werden bei Closure
   aufgelöst („bekommt beim Übergang nach `done/` genau einen Ausgang")
-- `pfad`: `docs/plan/planning/in-progress/slice-161-regelwerk-v610-delta-analyse.md:246-262` vs.
+- `pfad`: `docs/plan/planning/done/slice-161-regelwerk-v610-delta-analyse.md:246-262` vs.
   `:264-266` (§7a, explizit noch offen)
 - `befund`: §6a weist bereits Ausgänge zu (u. a. „Folge-Slice, noch keine ID"), während §7a
   (Closure-Notiz) ausdrücklich als „wird beim Übergang nach `done/` ausgefüllt" markiert ist. Die
