@@ -14,7 +14,7 @@ Anlage) · <!-- d-check:ignore -->
 
 **Eingangs-Kontext:**
 
-- `docs/plan/planning/in-progress/slice-162-review-pflicht-absatz-v610-wortlaut.md`
+- `docs/plan/planning/done/slice-162-review-pflicht-absatz-v610-wortlaut.md`
 - `docs/plan/planning/done/slice-161-regelwerk-v610-delta-analyse.md` §4.4, §6
 - `docs/reviews/2026-09-05-slice-161-delta-analyse.md`
 - `harness/conventions/MR-016-validator-unbesetzt.md`,
@@ -89,7 +89,7 @@ Anlage) · <!-- d-check:ignore -->
   Tabellenzeile in `harness/conventions.md` trägt beide Pflicht-Anker
   (`<a id="mr-018">` und Slug-Verlinkung) wie die Nachbarzeilen.
 - geprüft, ohne Befund: Relative Markdown-Links in
-  `docs/plan/planning/in-progress/slice-162-review-pflicht-absatz-v610-wortlaut.md`
+  `docs/plan/planning/done/slice-162-review-pflicht-absatz-v610-wortlaut.md`
   — `make doc-check` (0 Befunde, 408 Dateien) deckt sie ab, keine toten Anker.
 - geprüft, ohne Befund: DoD-/Risiko-Form von slice-162 gegen `.d-check.yml`-Modul
   `structure` — `make doc-structure` und `make verify` beide grün (je 0 Befunde,
