@@ -1,2 +1,3 @@
-**Stand:** geplant — verkörpert in `AGENTS.md` §6 (expliziter Reviewer-Schritt, kontext-getrennt),
-Kennung `slice-159`
+**Stand:** verkörpert in [`AGENTS.md`](../../../../../../AGENTS.md) §6 (expliziter,
+kontext-getrennter Reviewer-Schritt vor jedem Closure mit Code-/Vertragsänderung)
+`seit slice-159`
