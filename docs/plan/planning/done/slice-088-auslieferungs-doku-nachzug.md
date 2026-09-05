@@ -3,11 +3,11 @@
 **Status:** open — der Zustand ist das **Verzeichnis**, nicht dieses Feld
 (`open/ → next/ → in-progress/ → done/`, Wechsel nur per `git mv` als eigener Commit,
 [`AGENTS.md`](../../../../AGENTS.md) §3.3/§5).
-**Deckt:** den Doku-Nachzug von [slice-082](../done/slice-082-print-mk-docker-indirektion.md),
-[slice-083](../done/slice-083-print-mk-digest-selbstbezug.md),
-[slice-084](../done/slice-084-handbuch-heuristik-grenzen.md),
-[slice-085](../done/slice-085-schicht-ohne-aufloesung.md) und
-[slice-086](../done/slice-086-forbidden-constructs-fail-closed.md).
+**Deckt:** den Doku-Nachzug von [slice-082](welle-13/slice-082-print-mk-docker-indirektion.md),
+[slice-083](welle-13/slice-083-print-mk-digest-selbstbezug.md),
+[slice-084](welle-13/slice-084-handbuch-heuristik-grenzen.md),
+[slice-085](welle-13/slice-085-schicht-ohne-aufloesung.md) und
+[slice-086](welle-13/slice-086-forbidden-constructs-fail-closed.md).
 **Bezug:** blockiert das Release `v0.17.0`; verwandt mit
 `SL-005`
 (handgepflegter Ort ohne Sensor).
@@ -43,7 +43,7 @@ docker run --rm <a-check-image> --print-mk > a-check.mk   # Schritt 1
 make a-check                                              # Schritt 3
 ```
 
-Seit [slice-083](../done/slice-083-print-mk-digest-selbstbezug.md) fehlt dazwischen der **zwingende**
+Seit [slice-083](welle-13/slice-083-print-mk-digest-selbstbezug.md) fehlt dazwischen der **zwingende**
 Schritt „Digest eintragen"; das Fragment trägt bewusst einen Platzhalter und bricht ab. Der Hinweis
 darunter ist zusätzlich **falsch**: *„Das Fragment pinnt das veröffentlichte Image über
 `A_CHECK_IMAGE` (`@sha256:`-Digest)."* Genau dieser Anleitung ist der Konsument gefolgt, dessen
@@ -53,12 +53,12 @@ Fehlpin die Welle ausgelöst hat.
 
 | Ort | Fehlt | Aus |
 |---|---|---|
-| Handbuch §3.3 | Pin-Schritt + falscher „pinnt"-Satz | [slice-083](../done/slice-083-print-mk-digest-selbstbezug.md) |
-| Handbuch | `DOCKER`-Indirektion **komplett** (null Treffer), inkl. der Reihenfolge-Falle `?=` vor/nach `include` | [slice-082](../done/slice-082-print-mk-docker-indirektion.md) |
+| Handbuch §3.3 | Pin-Schritt + falscher „pinnt"-Satz | [slice-083](welle-13/slice-083-print-mk-digest-selbstbezug.md) |
+| Handbuch | `DOCKER`-Indirektion **komplett** (null Treffer), inkl. der Reihenfolge-Falle `?=` vor/nach `include` | [slice-082](welle-13/slice-082-print-mk-docker-indirektion.md) |
 | Handbuch §10 | vier Historien-Zeilen; die Historie endet bei `1.35` (2026-07-25), obwohl der Inhalt geändert wurde | 081/084/085/086 |
-| Handbuch §4 | Exit-2-Fälle von `forbidden_constructs` nur im Glossar und als Zeilenkommentar — bei `constructs` stehen sie im Fließtext | [slice-086](../done/slice-086-forbidden-constructs-fail-closed.md) |
+| Handbuch §4 | Exit-2-Fälle von `forbidden_constructs` nur im Glossar und als Zeilenkommentar — bei `constructs` stehen sie im Fließtext | [slice-086](welle-13/slice-086-forbidden-constructs-fail-closed.md) |
 | [`CHANGELOG.md`](../../../../CHANGELOG.md) | drei Einträge (082, 083, 084) | 082/083/084 |
-| [`version.md`](../../../../version.md) | nennt `internal/cli/cli.go` noch als harte Pin-Stelle | [slice-083](../done/slice-083-print-mk-digest-selbstbezug.md) |
+| [`version.md`](../../../../version.md) | nennt `internal/cli/cli.go` noch als harte Pin-Stelle | [slice-083](welle-13/slice-083-print-mk-digest-selbstbezug.md) |
 
 **Das ist eine Klasse, keine sechs Einzelfälle:** jedes Mal wurde Code oder Vertrag geändert und der
 begleitende Doku-Ort nicht mitgeführt. Der `cli.go`-Drift trat sogar **zweimal** auf — in
@@ -140,7 +140,7 @@ das: Doku-Nachzug ist keine Fleißaufgabe nach dem Bau, sondern Teil des Bauens 
 nächste Release eine Anleitung in den Fehler aus, den es gerade behoben hat.
 
 **Der schwerste Fund war zugleich der peinlichste.** §3.3 beschrieb den `--print-mk`-Weg ohne den
-seit [slice-083](../done/slice-083-print-mk-digest-selbstbezug.md) zwingenden Digest-Schritt und
+seit [slice-083](welle-13/slice-083-print-mk-digest-selbstbezug.md) zwingenden Digest-Schritt und
 behauptete obendrein, das Fragment *pinne* das Image. Das ist wörtlich die Anleitung, der der
 Konsument gefolgt ist, dessen Fehlpin diese Welle ausgelöst hat — der Fix war gebaut, die Anleitung
 dazu nicht. Zwischen „behoben" und „ausgeliefert" lag ein Handbuch-Abschnitt.
@@ -150,7 +150,7 @@ Kommandos, das im Handbuch eine Schritt-für-Schritt-Anleitung hat, ist die Anle
 Slice — nicht sein Nachlauf.* Der Workflow-Schritt 7 nennt das Benutzerhandbuch bereits, aber als
 Sammelbegriff („falls ein öffentlicher Vertrag berührt ist"). Was fehlt, ist die Schärfung: eine
 **Anleitung** ist berührt, sobald sich einer ihrer Schritte ändert — auch wenn der Vertrag
-formal gleich bleibt. Bei [slice-082](../done/slice-082-print-mk-docker-indirektion.md) blieb der
+formal gleich bleibt. Bei [slice-082](welle-13/slice-082-print-mk-docker-indirektion.md) blieb der
 Vertrag sogar unverändert, und trotzdem fehlte dem Handbuch danach ein ganzes Konzept
 (`$(DOCKER)`).
 

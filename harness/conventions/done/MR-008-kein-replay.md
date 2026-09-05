@@ -23,4 +23,4 @@
   ein Modell-gestütztes Heuristik-Modul) oder Agenten-Läufe **im Repo selbst** abrechenbar
   werden. Beides ist heute nicht absehbar; der Eintrag ist bis dahin **nicht** permanent,
   sondern begründet ausgesetzt. Gefunden als B-19 in
-  [slice-048](../../../docs/plan/planning/done/slice-048-modul-delta-lesen.md).
+  [slice-048](../../../docs/plan/planning/done/welle-12/slice-048-modul-delta-lesen.md).

@@ -16,15 +16,15 @@ unabhängigen Reviews.
 
 | Etappe | Slices |
 |---|---|
-| A — Vendoring | [slice-047](slice-047-baseline-vendoring.md) |
-| B — Modul-Delta lesen | [slice-048](slice-048-modul-delta-lesen.md) (21 Funde) |
-| E — Mechanik/Sensoren | [slice-049](slice-049-mechanik-sensoren.md) … [slice-051](slice-051-workflow-und-freigabe.md) |
-| D — Form/Templates | [slice-052](slice-052-slice-form.md) … [slice-054](slice-054-ac-form.md) |
-| C — `MR-*`-Bereinigung | [slice-055](slice-055-mr-bestand.md), [slice-056](slice-056-sub-area-modus.md) |
-| F — Steering/Closure | slice-057, [slice-065](slice-065-carveout-ort-und-trichter.md), [slice-066](slice-066-wellen-closure-und-rollen.md) |
-| Fix-Schnitte | [slice-058](slice-058-sensor-praezision.md) … [slice-064](slice-064-guard-verkettung.md), [slice-067](slice-067-roadmap-form.md) |
-| Auslösende Analyse | [slice-046](slice-046-regelwerk-v352-migration-analyse.md) |
-| **Review-Nachlauf** | [slice-068](slice-068-phony-vollstaendig.md) … [slice-078](slice-078-rollen-uebergaben.md) |
+| A — Vendoring | [slice-047](welle-12/slice-047-baseline-vendoring.md) |
+| B — Modul-Delta lesen | [slice-048](welle-12/slice-048-modul-delta-lesen.md) (21 Funde) |
+| E — Mechanik/Sensoren | [slice-049](welle-12/slice-049-mechanik-sensoren.md) … [slice-051](welle-12/slice-051-workflow-und-freigabe.md) |
+| D — Form/Templates | [slice-052](welle-12/slice-052-slice-form.md) … [slice-054](welle-12/slice-054-ac-form.md) |
+| C — `MR-*`-Bereinigung | [slice-055](welle-12/slice-055-mr-bestand.md), [slice-056](welle-12/slice-056-sub-area-modus.md) |
+| F — Steering/Closure | slice-057, [slice-065](welle-12/slice-065-carveout-ort-und-trichter.md), [slice-066](welle-12/slice-066-wellen-closure-und-rollen.md) |
+| Fix-Schnitte | [slice-058](welle-12/slice-058-sensor-praezision.md) … [slice-064](welle-12/slice-064-guard-verkettung.md), [slice-067](welle-12/slice-067-roadmap-form.md) |
+| Auslösende Analyse | [slice-046](welle-12/slice-046-regelwerk-v352-migration-analyse.md) |
+| **Review-Nachlauf** | [slice-068](welle-12/slice-068-phony-vollstaendig.md) … [slice-078](welle-12/slice-078-rollen-uebergaben.md) |
 
 **Der Review-Nachlauf gehört zur Welle**, nicht daneben: ohne ihn wäre die Migration *behauptet*,
 nicht belegt. [slice-079](../done/slice-079-gate-consistency-abloesen.md) und
@@ -57,7 +57,7 @@ Sensoren, an denen die Form-Funde hingen (Drift-Log der [Roadmap](../in-progress
 
 **Die Welle wurde einmal fälschlich geschlossen und wieder geöffnet.** Am 2026-07-26 stand sie im
 Closure-Log mit „Closure-Kriterium erfüllt: alle Slices in `done/`" — während
-[slice-046](slice-046-regelwerk-v352-migration-analyse.md) in `open/` lag. Der unabhängige Review
+[slice-046](welle-12/slice-046-regelwerk-v352-migration-analyse.md) in `open/` lag. Der unabhängige Review
 fand das als `F-8`; die Closure wurde am 2026-08-09 zurückgezogen (Modul-6-Ausgang **(b)**,
 Drift-Log-Eintrag). **Das ist der wichtigste Einzelbefund dieser Welle**: die Prozedur, die hier
 zum ersten Mal läuft, wurde beim ersten Anlauf übersprungen — und niemandem fiel es auf, weil das
@@ -77,11 +77,11 @@ laufende Zähl-Ort; hier stehen nur die in dieser Welle real aufgetretenen Vorf�
 |---|---|
 | `SL-001` — Gate-Lauf in einer Pipe verschluckt | **einmal**: der Command-Guard blockierte `make gates` + `git commit` im selben Aufruf |
 | `SL-002` — relative Verweise brechen beim `git mv` | **dreimal** durch `verify-slice-links` gefangen, dazu zweimal durch `doc-check` nach einem Lifecycle-Wechsel |
-| `SL-003` — Commit-Betreff bezeichnet nicht die Arbeit | **zweimal**: ein `git mv` rutschte in einen Report-Commit, ein `git add -A` zog eine fremde Datei mit. Beide aufgeteilt. Dazu der reale CI-Rot-Lauf, aus dem [slice-072](slice-072-scope-sensor-praeventiv.md) entstand |
+| `SL-003` — Commit-Betreff bezeichnet nicht die Arbeit | **zweimal**: ein `git mv` rutschte in einen Report-Commit, ein `git add -A` zog eine fremde Datei mit. Beide aufgeteilt. Dazu der reale CI-Rot-Lauf, aus dem [slice-072](welle-12/slice-072-scope-sensor-praeventiv.md) entstand |
 | `SL-004` — neuer Doku-Sensor meldet sein eigenes Umfeld | **nicht aufgetreten** |
 
 `SL-003` ist der einzige, der in dieser Welle eine **Mechanik** erzeugt hat: der Scope-Sensor
-greift seit [slice-072](slice-072-scope-sensor-praeventiv.md) im `commit-msg`-Hook statt erst in
+greift seit [slice-072](welle-12/slice-072-scope-sensor-praeventiv.md) im `commit-msg`-Hook statt erst in
 der CI.
 
 ## Folge-Slices
@@ -91,7 +91,7 @@ der CI.
 - [slice-080](../done/slice-080-verify-abloesung-dcheck.md) — Ablösung der vier `verify-*`.
   Trigger: ein d-check-Release trägt `structure` + `links.resolve-from` **und** der Pin ist
   gehoben. Vorbedingung: CR 1/CR 2 aus
-  [slice-073 §8](slice-073-dcheck-statt-eigenbau.md) eingereicht — **noch nicht erfolgt**.
+  [slice-073 §8](welle-12/slice-073-dcheck-statt-eigenbau.md) eingereicht — **noch nicht erfolgt**.
 
 **Offen und ausgewiesen:** `F-9` (Freigabe-Belege) sowie die zwei `--print-mk`-Defekte —
 eingebackener Vorgänger-Digest und wörtliches `docker` statt `$(DOCKER)`. Sie sind **nicht**

@@ -3,11 +3,11 @@
 **Status:** open — der Zustand ist das **Verzeichnis**, nicht dieses Feld
 (`open/ → next/ → in-progress/ → done/`, Wechsel nur per `git mv` als eigener Commit,
 [`AGENTS.md`](../../../../AGENTS.md) §3.3/§5).
-**Deckt:** den Lerneintrag aus [slice-081](../done/slice-081-heuristik-diagnose.md), bestätigt durch
-den Wiederholungsfall in [slice-085](../done/slice-085-schicht-ohne-aufloesung.md).
-**Bezug:** dieselbe Fehlerklasse, die [slice-071](../done/slice-071-sensor-scope-vollstaendig.md)
+**Deckt:** den Lerneintrag aus [slice-081](welle-13/slice-081-heuristik-diagnose.md), bestätigt durch
+den Wiederholungsfall in [slice-085](welle-13/slice-085-schicht-ohne-aufloesung.md).
+**Bezug:** dieselbe Fehlerklasse, die [slice-071](welle-12/slice-071-sensor-scope-vollstaendig.md)
 für das Regelwerk-Manifest geschlossen hat; Ablösungs-Muster nach
-[slice-073](../done/slice-073-dcheck-statt-eigenbau.md)/[slice-080](../done/slice-080-verify-abloesung-dcheck.md).
+[slice-073](welle-12/slice-073-dcheck-statt-eigenbau.md)/[slice-080](../done/slice-080-verify-abloesung-dcheck.md).
 
 ---
 
@@ -41,7 +41,7 @@ festgehalten — und trat trotzdem beim allernächsten ADR wieder auf. `make gat
 grün.
 
 **Dieselbe Klasse hat dieses Repo schon einmal getroffen.**
-[slice-071](../done/slice-071-sensor-scope-vollstaendig.md) fand sie bei `regelwerk-check`: geprüft
+[slice-071](welle-12/slice-071-sensor-scope-vollstaendig.md) fand sie bei `regelwerk-check`: geprüft
 wurde Manifest → Baum, nicht Baum → Manifest; die Lösung war ein `comm -13` über beide Mengen. Zwei
 Vorkommen derselben Asymmetrie in verschiedenen Sensoren machen sie zur **Klasse**, nicht zum
 Einzelfall.
@@ -79,16 +79,16 @@ Slices und Roadmap festgelegt. `--trace --require-complete` findet **Anforderung
 (Requirement ohne ADR/Slice), nicht Datei-Waisen; die RTM listet
 [ADR-0031](../../adr/0031-heuristik-grenzen-diagnose.md) korrekt, obwohl sie im Index fehlte.
 **Damit ist die Fähigkeit CR-fähig im Sinne von
-[slice-073](../done/slice-073-dcheck-statt-eigenbau.md)** — generisch und von keinem Modul gedeckt.
+[slice-073](welle-12/slice-073-dcheck-statt-eigenbau.md)** — generisch und von keinem Modul gedeckt.
 
 | Weg | Dafür | Dagegen |
 |---|---|---|
-| **Lokaler Sensor** (~15 Zeilen `comm -13`, Muster [slice-071](../done/slice-071-sensor-scope-vollstaendig.md)) | schützt **heute**; die Fehlerrate ist belegt | ein weiterer P-Rest, den [slice-079](../done/slice-079-gate-consistency-abloesen.md)/[slice-080](../done/slice-080-verify-abloesung-dcheck.md) später wieder abtragen |
+| **Lokaler Sensor** (~15 Zeilen `comm -13`, Muster [slice-071](welle-12/slice-071-sensor-scope-vollstaendig.md)) | schützt **heute**; die Fehlerrate ist belegt | ein weiterer P-Rest, den [slice-079](../done/slice-079-gate-consistency-abloesen.md)/[slice-080](../done/slice-080-verify-abloesung-dcheck.md) später wieder abtragen |
 | **Nur d-check-CR** | die richtige Heimat; d-check hat die Datei-Menge bereits | Einreichung ist Maintainer-Sache; bis dahin schützt **nichts**, und der Fehler wiederholt sich messbar |
 | **Beides** | Schutz jetzt, Ablösung später mit Trigger wie [slice-080](../done/slice-080-verify-abloesung-dcheck.md) | doppelte Buchführung für 15 Zeilen |
 
 **Neigung des Autors: „beides".** Die Ablösungs-Lektion aus
-[slice-073](../done/slice-073-dcheck-statt-eigenbau.md) galt 589 Zeilen in vier Sensoren; hier
+[slice-073](welle-12/slice-073-dcheck-statt-eigenbau.md) galt 589 Zeilen in vier Sensoren; hier
 stehen ~15 Zeilen gegen einen zweimal belegten Fehler. Ein Slice, der auf ein Fremdrepo wartet,
 hätte den zweiten Vorfall nicht verhindert. Der Entscheid gehört trotzdem beim Bau begründet und
 nicht hier vorweggenommen — insbesondere die Frage, **wo** der Sensor hängt: `gate-consistency`
@@ -130,7 +130,7 @@ trägt bereits Vollständigkeits-Prüfungen (`.PHONY`, Pins), ist aber selbst Ab
 überstanden, und zwar aus dem Grund, der dort schon stand: Ein Slice, der auf ein Fremdrepo wartet,
 hätte den **zweiten** Vorfall nicht verhindert. Die Kosten sind gemessen klein — 37 Zeilen inklusive
 Selbsttest gegen die 589 Zeilen, um die es in
-[slice-073](../done/slice-073-dcheck-statt-eigenbau.md) ging.
+[slice-073](welle-12/slice-073-dcheck-statt-eigenbau.md) ging.
 
 **Der Ort war die eigentliche Frage, und sie hat sich beim Nachsehen aufgelöst.** §3 hielt fest,
 `gate-consistency` sei selbst Ablöse-Kandidat. Die Lektüre von
@@ -159,14 +159,14 @@ gehört `doc-check`. Ihn hier mitzuprüfen wäre genau die Doppelung, die
 
 **Mitgenommener Doku-Drift:** [`harness/README.md`](../../../../harness/README.md) führte `cli.go`
 noch als Pin-Stelle. Die Konstante ist seit
-[slice-083](../done/slice-083-print-mk-digest-selbstbezug.md) entfernt und `cli.go` aus der
+[slice-083](welle-13/slice-083-print-mk-digest-selbstbezug.md) entfernt und `cli.go` aus der
 Pin-Prüfung genommen; die Zeile beschrieb ein Gate, das es so nicht mehr gibt — dieselbe Klasse
 Harness-Lüge, gegen die dieses Gate selbst antritt.
 
 **Lerneintrag — Form: neuer Sensor.** Als Prüfsatz: *Prüft ein Sensor eine Beziehung zwischen zwei
 Mengen, gehört die Gegenrichtung mitgeprüft — sonst ist die vollständig aussehende Menge die
 ungeprüfte.* Dritter Beleg derselben Asymmetrie:
-[slice-071](../done/slice-071-sensor-scope-vollstaendig.md) fand sie bei `regelwerk-check`
+[slice-071](welle-12/slice-071-sensor-scope-vollstaendig.md) fand sie bei `regelwerk-check`
 (Manifest → Baum), hier trifft sie den ADR-Index (Baum → Index), und
 [`welle-13`](../done/welle-13-results.md) hat einen dritten Fall an `verify-slice-links` benannt
 (prüft nur `slice-*.md`, nicht `welle-*.md`). **Zu prüfen wäre**, ob die übrigen Sensoren dieselbe
@@ -180,7 +180,7 @@ Alle berührten Sub-Areas GF.
 
 Die Ablösung des lokalen Sensors. Einreichung ist ein Akt gegenüber einem Fremdrepo und bleibt
 Maintainer-Sache — dieselbe Trennung wie bei CR 1/CR 2 in
-[slice-073 §8](../done/slice-073-dcheck-statt-eigenbau.md).
+[slice-073 §8](welle-12/slice-073-dcheck-statt-eigenbau.md).
 
 > **CR 3 — Modul `index`: Vollständigkeit handgepflegter Datei-Indizes**
 >

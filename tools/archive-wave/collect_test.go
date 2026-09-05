@@ -177,6 +177,30 @@ func TestReadWelleField_Mehrzeilig(t *testing.T) {
 	}
 }
 
+// TestReadWelleField_FolgefeldOhneLeerzeile belegt den an slice-069/
+// slice-086 gemessenen Fund gegen a-check: das Feld **Welle:** steht dort in
+// EINEM durchgehenden Absatz mit den Folgefeldern **Deckt:**/**Bezug:** --
+// keine Leerzeile trennt sie. Ohne die Feld-Grenze schluckte der alte
+// Ein-Leerzeilen-Abbruch beide Folgefelder samt ihrer Links/Kennungen in
+// den Stub.
+func TestReadWelleField_FolgefeldOhneLeerzeile(t *testing.T) {
+	root := t.TempDir()
+	path := filepath.Join(root, "slice.md")
+	writeFile(t, path,
+		"# X\n\n**Welle:** welle-12-regelwerk-migration.\n"+
+			"**Deckt:** `F-5` aus dem [Review-Report](../reviews/r.md).\n"+
+			"**Bezug:** AC-FA-CONF-001, ADR-0005.\n\n---\n")
+
+	got, err := ReadWelleField(path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	want := "welle-12-regelwerk-migration."
+	if got != want {
+		t.Fatalf("got %q, want %q", got, want)
+	}
+}
+
 func TestSliceIDFromPath(t *testing.T) {
 	if got := SliceIDFromPath("/a/b/slice-190-titel.md"); got != "slice-190" {
 		t.Fatalf("got %q", got)

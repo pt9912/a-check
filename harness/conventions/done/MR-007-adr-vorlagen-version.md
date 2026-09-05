@@ -14,6 +14,6 @@
   bei `Accepted`-ADRs ([`AGENTS.md`](../../../AGENTS.md) §3.5). Eine aktuell **behauptende**
   Versionsaussage stehenzulassen wäre allerdings eine stille Falschaussage; darum dieser
   ablösende Eintrag. Gefunden als B-7 in
-  [slice-048](../../../docs/plan/planning/done/slice-048-modul-delta-lesen.md).
+  [slice-048](../../../docs/plan/planning/done/welle-12/slice-048-modul-delta-lesen.md).
 - **Auflösungs-Trigger:** permanent — bis zur nächsten Baseline-Migration, die ihn ihrerseits
   ablöst.

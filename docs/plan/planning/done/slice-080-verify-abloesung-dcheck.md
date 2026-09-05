@@ -3,9 +3,9 @@
 **Status:** open — der Zustand ist das **Verzeichnis**, nicht dieses Feld
 (`open/ → next/ → in-progress/ → done/`, Wechsel nur per `git mv` als eigener Commit,
 [`AGENTS.md`](../../../../AGENTS.md) §3.3/§5).
-**Deckt:** den in [slice-073](../done/slice-073-dcheck-statt-eigenbau.md) als **CR-fähig**
+**Deckt:** den in [slice-073](welle-12/slice-073-dcheck-statt-eigenbau.md) als **CR-fähig**
 gemessenen Anteil — 589 der 897 Zeilen `tools/`.
-**Bezug:** CR 1 und CR 2 aus [slice-073 §8](../done/slice-073-dcheck-statt-eigenbau.md);
+**Bezug:** CR 1 und CR 2 aus [slice-073 §8](welle-12/slice-073-dcheck-statt-eigenbau.md);
 [MR-006](../../../../harness/conventions.md#mr-006--baseline-committet-vendored-statt-per-url-referenziert).
 
 ---
@@ -22,12 +22,12 @@ gemessenen Anteil — 589 der 897 Zeilen `tools/`.
 Die zweite Hälfte ist die, die man leicht wegläßt — und ihr Fehlen hat in diesem Repo schon einmal
 gekostet: das Modul `targets` stand seit `v0.38.0` bereit und lief **dreizehn Minor-Versionen**
 ins Leere, weil zwar das Target eingebunden, aber nie konfiguriert wurde
-([slice-074](../done/slice-074-doc-targets-wirksam.md)). Ein Modul in einem Release, das a-check
+([slice-074](welle-12/slice-074-doc-targets-wirksam.md)). Ein Modul in einem Release, das a-check
 nicht zieht, ändert hier nichts.
 
 **Beide Hälften sind erfüllt.** `v0.67.0` trägt das Modul `structure` **und** die Option
 `links.resolve-from`; der Pin ist mit [slice-115](../done/slice-115-dcheck-pin-v0670.md) gehoben.
-CR 1 und CR 2 aus [slice-073 §8](../done/slice-073-dcheck-statt-eigenbau.md) sind damit umgesetzt —
+CR 1 und CR 2 aus [slice-073 §8](welle-12/slice-073-dcheck-statt-eigenbau.md) sind damit umgesetzt —
 die Vorbedingung außerhalb dieses Repos ist **entfallen**, nicht offen. Beleg: `--print-config` des
 Release nennt in beiden Konfigurationsbeispielen a-checks eigene Verzeichnisse und
 Abschnittstitel.
@@ -41,7 +41,7 @@ Abschnittstitel.
 ## 1. Auslöser
 
 **Mechanismus: eine gemessene Ablösbarkeit ohne Werkzeug.**
-[slice-073](../done/slice-073-dcheck-statt-eigenbau.md) hat je Prüfung belegt, was d-check heute
+[slice-073](welle-12/slice-073-dcheck-statt-eigenbau.md) hat je Prüfung belegt, was d-check heute
 abdeckt und was nicht. Vier Sensoren fielen in die Kategorie **CR-fähig** — generisch, aber von
 keinem der 19 Module gedeckt:
 
@@ -89,9 +89,9 @@ Drei Schichten:
 
 **Paritäts-Mutations-Beleg — die Beleg-Arbeit dieses Slice.** Die Fixture-Mengen liegen bereits
 vor: jede Probe, die in
-[slice-070](../done/slice-070-grundgesamtheit-messen.md),
-[slice-075](../done/slice-075-sensor-messgroesse.md) und
-[slice-076](../done/slice-076-vertrag-und-sensor.md) einen Eigenbau-Sensor rot gemacht hat, muss
+[slice-070](welle-12/slice-070-grundgesamtheit-messen.md),
+[slice-075](welle-12/slice-075-sensor-messgroesse.md) und
+[slice-076](welle-12/slice-076-vertrag-und-sensor.md) einen Eigenbau-Sensor rot gemacht hat, muss
 auch das d-check-Modul rot machen — und jede, die ihn grün ließ, auch grün.
 
 | Probe (aus den genannten Slices) | Erwartung am Modul |
@@ -108,12 +108,12 @@ macht als der Sensor, ist genauso ein Bruch wie eines, das weniger fängt.
 ## 4. Was bewusst nicht getan wird
 
 - **CR 3 einreichen.** Fremdrepo, Maintainer-Sache — wie schon bei CR 1 und CR 2
-  ([slice-073 §4](../done/slice-073-dcheck-statt-eigenbau.md)).
+  ([slice-073 §4](welle-12/slice-073-dcheck-statt-eigenbau.md)).
 - **`gate-consistency` (1)+(2).** Das ist [slice-079](../done/slice-079-gate-consistency-abloesen.md) und
   hängt an keinem CR.
 - **Die lokal verbleibenden Prüfungen.** `.d-check.yml`-Modulliste, Pin-Konsistenz, `.PHONY`,
   `suppression-check`, `regelwerk-check` — in
-  [slice-073](../done/slice-073-dcheck-statt-eigenbau.md) als lokal belegt, zwei davon, weil sie
+  [slice-073](welle-12/slice-073-dcheck-statt-eigenbau.md) als lokal belegt, zwei davon, weil sie
   Nicht-Markdown prüfen.
 
 ## 5. DoD
@@ -201,7 +201,7 @@ Alle berührten Sub-Areas GF.
 
 Dieser Abschnitt **ist** die Lieferung aus §5 DoD 1. Er liegt im Slice, weil §4 das Einreichen
 ausdrücklich dem Maintainer überlässt — dieselbe Form wie
-[slice-073 §8](../done/slice-073-dcheck-statt-eigenbau.md).
+[slice-073 §8](welle-12/slice-073-dcheck-statt-eigenbau.md).
 
 ---
 

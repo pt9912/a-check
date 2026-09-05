@@ -185,7 +185,7 @@ einen Bootstrap-Modus" ist laut Baseline ausdrücklich ein Anti-Pattern, weil
 der Modus ein *beobachtbares Verhältnis zwischen Code und Doku* ist und nicht
 ein Etikett. Bis 2026-07-25 stand hier eine einzige `*`-Zeile; das war genau
 diese Verkürzung (Fund **B-2** aus
-[slice-048](../docs/plan/planning/done/slice-048-modul-delta-lesen.md), behoben
+[slice-048](../docs/plan/planning/done/welle-12/slice-048-modul-delta-lesen.md), behoben
 in slice-056).
 
 **Qualifikation.** Eine Sektion ist eine Sub-Area, wenn sie mindestens **zwei**

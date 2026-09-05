@@ -5,7 +5,7 @@
   Regelwerk `modul-07-diskrepanzen.md` (Diskrepanz-Trichter), `modul-13-quality-gates.md`
   §Harness-Lüge
 * Gilt für: einen **CR-Text an ein fremdes Werkzeug**, bevor er den Slice verlässt — die vier
-  bisherigen entstanden in [slice-073](../../docs/plan/planning/done/slice-073-dcheck-statt-eigenbau.md) §8
+  bisherigen entstanden in [slice-073](../../docs/plan/planning/done/welle-12/slice-073-dcheck-statt-eigenbau.md) §8
   und [slice-080](../../docs/plan/planning/done/slice-080-verify-abloesung-dcheck.md) §8,
   [slice-116](../../docs/plan/planning/done/slice-116-nullmengen-haerte-cr.md) §9
 * Entstanden: slice-119

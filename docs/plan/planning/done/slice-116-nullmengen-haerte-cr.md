@@ -56,7 +56,7 @@ Doku-Hygiene des CR-Textes selbst.
 2. **Der Pin in [`d-check.mk`](../../../../d-check.mk) ist auf dieses Release gehoben.**
 
 Die zweite Hälfte ist die, die man leicht wegläßt — `targets` lief so dreizehn Minor-Versionen ins
-Leere ([slice-074](../done/slice-074-doc-targets-wirksam.md)).
+Leere ([slice-074](welle-12/slice-074-doc-targets-wirksam.md)).
 
 **Alternativer Trigger, der denselben Zweck erfüllt:** ein **zwanzigstes** `AC-*` entsteht im
 Lastenheft. Dann ist die geprüfte Menge nicht mehr leer, die Nullmengen-Härte kollidiert nicht
@@ -74,7 +74,7 @@ offen — darum stehen beide hier.
 CR-Text steht, Trigger ist beobachtbar formuliert, Gates grün.
 
 **Was bewusst nicht getan wird:** **einreichen**. Fremdrepo, Maintainer-Sache — dieselbe Grenze
-wie bei CR 1 und CR 2 ([slice-073 §4](../done/slice-073-dcheck-statt-eigenbau.md)) und CR 3
+wie bei CR 1 und CR 2 ([slice-073 §4](welle-12/slice-073-dcheck-statt-eigenbau.md)) und CR 3
 ([slice-080 §4](../done/slice-080-verify-abloesung-dcheck.md)). Ebenso wenig wird
 `verify-ac-form` angefasst: es bleibt, bis der Trigger aus §4 eintritt.
 
@@ -160,7 +160,7 @@ Alle berührten Sub-Areas GF.
 
 Dieser Abschnitt **ist** die Lieferung aus §2. Er liegt im Slice, weil §5 das Einreichen
 ausdrücklich dem Maintainer überlässt — dieselbe Form wie
-[slice-073 §8](../done/slice-073-dcheck-statt-eigenbau.md) und
+[slice-073 §8](welle-12/slice-073-dcheck-statt-eigenbau.md) und
 [slice-080 §8](../done/slice-080-verify-abloesung-dcheck.md).
 
 ---

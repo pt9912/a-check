@@ -4,7 +4,7 @@
 (`open/ → next/ → in-progress/ → done/`, Wechsel nur per `git mv` als eigener Commit,
 [`AGENTS.md`](../../../../AGENTS.md) §3.3/§5).
 **Deckt:** keine `AC-*`/`ADR-*` — Harness-Änderung ohne Vertragsberührung, wie
-[slice-047](../done/slice-047-baseline-vendoring.md).
+[slice-047](welle-12/slice-047-baseline-vendoring.md).
 **Bezug:** Maintainer-Auftrag 2026-08-29 („CLAUDE.md ausdünnen, so dass nur noch `@AGENTS.md`
 drin steht"), aus der Prüfung „steht das nicht schon in AGENTS.md?". [Roadmap](../in-progress/roadmap.md).
 

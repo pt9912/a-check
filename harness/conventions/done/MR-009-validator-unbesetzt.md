@@ -26,5 +26,5 @@
   seinen Bedarf schriftlich bestätigt, statt sie durch Adoption stillschweigend zu zeigen.
   Beides ist heute nicht vorhanden; der Eintrag ist bis dahin **nicht** permanent, sondern
   begründet ausgesetzt. Gefunden als `B-9` in
-  [slice-048](../../../docs/plan/planning/done/slice-048-modul-delta-lesen.md), als offen belegt durch
+  [slice-048](../../../docs/plan/planning/done/welle-12/slice-048-modul-delta-lesen.md), als offen belegt durch
   den [Review-Report vom 2026-08-09](../../../docs/reviews/2026-08-09-welle-12-unabhaengig.md) (`F-11`).

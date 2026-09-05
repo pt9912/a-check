@@ -23,7 +23,7 @@ blockierter Slice ist nicht priorisierbar, solange der Blocker steht.
 Es wurde in 53 Slices genau einmal benutzt (slice-009) und danach mitsamt Ort aufgelöst, während
 [`AGENTS.md`](../../../../AGENTS.md) §5 den Zustand weiter nannte — ein deklarierter Zustand ohne
 Ort ist eine stille Setzung (Fund **B-18** aus
-[slice-048](../done/slice-048-modul-delta-lesen.md), behoben in slice-053).
+[slice-048](../done/welle-12/slice-048-modul-delta-lesen.md), behoben in slice-053).
 
 Dass ein Slice `next/` durchläuft, ist **nicht** Pflicht: der direkte Weg `open/ → in-progress/`
 bleibt zulässig. Pflicht ist, dass der Zustand einen Ort hat, wenn die Regel ihn nennt.

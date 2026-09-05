@@ -32,7 +32,7 @@ Die vier Pflichtkriterien sind damit an **BF/Hybrid** gebunden. Da alle berührt
 Repos auf Greenfield stehen (belegt in der Modus-Tabelle, geprüft im Ursprungs-Report), ist der
 Ein-Satz-Block **die vorgesehene Form** — nicht eine Verkürzung. a-checks eigene Vorlage
 (`docs/plan/planning/slice.template.md`, angelegt in slice-052) gibt die Regel korrekt wieder, und
-[slice-052 §3](../plan/planning/done/slice-052-slice-form.md) hat den Punkt bereits ausdrücklich
+[slice-052 §3](../plan/planning/done/welle-12/slice-052-slice-form.md) hat den Punkt bereits ausdrücklich
 aufgeklärt: B-2 habe insoweit zu weit gegriffen.
 
 **Verifikationsweg, der das Finding zunächst stützte und warum er zu kurz war.** Regelwerk

@@ -13,6 +13,7 @@ import (
 
 var welleFieldRE = regexp.MustCompile(`(?m)^\*\*Welle:\*\*\s*(.*)$`)
 var welleFieldStartRE = regexp.MustCompile(`(?m)^\*\*Welle:\*\*[ \t]*`)
+var boldFieldStartRE = regexp.MustCompile(`^\*\*[^*\n]+:\*\*`)
 var welleIDInFieldRE = regexp.MustCompile(`\bwelle-(\d+)\b`)
 var sliceIDInNameRE = regexp.MustCompile(`slice-(\d+)`)
 
@@ -23,7 +24,13 @@ var sliceIDInNameRE = regexp.MustCompile(`slice-(\d+)`)
 // Feld haeufig als mehrsaetziger, umgebrochener Absatz (gemessen: 44 von 45
 // wellenlosen Slices im ersten Anwendungslauf von slice-197), nicht als
 // einzeilige Kennung. Ein Ein-Zeilen-Capture schnitt den Absatz mitten im
-// Satz ab. Leerer String, wenn das Feld fehlt.
+// Satz ab. Ebenso bricht die naechste **Feld:**-Zeile die Erfassung ab, auch
+// ohne Leerzeile davor -- a-checks Kopf-Bloecke reihen `**Welle:**`,
+// `**Deckt:**`/`**Bezug:**`/`**Auslöser:**` als EINEN durchgehenden Absatz
+// (gemessen: slice-069/slice-086 im ersten Wellen-Anwendungslauf gegen
+// a-check, `welle-12`/`welle-13`), die alte Grenze schluckte die
+// Folgefelder mit in den Stub und riss darin verlinkte Kennungen aus ihrem
+// Kontext. Leerer String, wenn das Feld fehlt.
 func ReadWelleField(path string) (string, error) {
 	b, err := os.ReadFile(path)
 	if err != nil {
@@ -37,6 +44,9 @@ func ReadWelleField(path string) (string, error) {
 	var lines []string
 	for _, ln := range strings.Split(rest, "\n") {
 		if strings.TrimSpace(ln) == "" {
+			break
+		}
+		if len(lines) > 0 && boldFieldStartRE.MatchString(ln) {
 			break
 		}
 		lines = append(lines, ln)

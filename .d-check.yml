@@ -20,12 +20,26 @@ scan:
 
 modules: [links, anchors, ids, matrix, spans, hostpaths, versions]
 
+# Ein Review-Report ist selbst ein LAUF-BELEG (Modul 10) und wird nicht mehr
+# editiert, auch wenn sein zitiertes Ziel archiviert wurde — dieselbe Grenze
+# wie im Vorbild d-check (.d-check.yml dort, Abschnitt ignore-refs). Hier: der
+# Nachtrag zitiert den Etappe-C-Review, der mit welle-12 (slice-147) archiviert
+# wurde.
+ignore-refs:
+  - in: docs/reviews/2026-07-26-nachtrag-etappe-c-f2-zurueckgezogen.md
+    refs: ["docs/reviews/2026-07-26-etappe-c-slice-055-056.md"]
+
 ids:
   patterns:
+    # "docs/plan/planning/done/welle-*/*.md" ist der Archiv-Stub-Pfad
+    # (tools/archive-wave, slice-144/147): das Hervorgegangen-Feld traegt
+    # bare Kennungen aus dem archivierten Original-Volltext, absichtlich
+    # unverlinkt — dieselbe Ausnahme wie im Vorbild d-check (.d-check.yml
+    # dort, Modul ids), hier fuer AC-*/ADR-* statt DC-*.
     - regex: 'ADR-\d{4}'
       target: docs/plan/adr/
       link-policy: always
-      exempt-paths: [CHANGELOG.md, "docs/reviews/**"]
+      exempt-paths: [CHANGELOG.md, "docs/reviews/**", "docs/plan/planning/done/welle-*/*.md"]
     - regex: 'MR-\d{3}'
       target: harness/conventions.md
       link-policy: always
@@ -33,7 +47,7 @@ ids:
     - regex: 'AC-(FA-[A-Z]+|QA)-\d+'
       target: spec/lastenheft.md
       link-policy: always
-      exempt-paths: [CHANGELOG.md, "docs/reviews/**"]
+      exempt-paths: [CHANGELOG.md, "docs/reviews/**", "docs/plan/planning/done/welle-*/*.md"]
     - regex: 'SPEC-[A-Z]+-\d+'
       target: spec/spezifikation.md
       link-policy: always

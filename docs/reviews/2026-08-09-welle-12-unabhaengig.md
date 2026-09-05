@@ -92,7 +92,7 @@ Anhang ist **nicht** Teil des unabhängigen Laufs.
 ### F-6 — Zwei-Schichten-Grenze wird als maschinell geprüft ausgegeben, aber nie geprüft
 
 - `kategorie`: **HIGH**
-- `quelle`: Fund `B-1` aus [slice-048](../plan/planning/done/slice-048-modul-delta-lesen.md);
+- `quelle`: Fund `B-1` aus [slice-048](../plan/planning/done/welle-12/slice-048-modul-delta-lesen.md);
   Planning-Harness
 - `pfad`: [`docs/plan/planning/README.md:8`](../plan/planning/README.md),
   `tools/verify-slice-form.sh:22`
@@ -104,7 +104,7 @@ Anhang ist **nicht** Teil des unabhängigen Laufs.
 ### F-7 — `welle-12` überspringt den ersten nach eigener Regel fälligen Closure-Lauf
 
 - `kategorie`: **HIGH**
-- `quelle`: Fund `B-13` aus [slice-048](../plan/planning/done/slice-048-modul-delta-lesen.md);
+- `quelle`: Fund `B-13` aus [slice-048](../plan/planning/done/welle-12/slice-048-modul-delta-lesen.md);
   Wellen-Closure-Prozedur
 - `pfad`: [`docs/plan/planning/README.md:57`](../plan/planning/README.md),
   [`docs/plan/planning/in-progress/roadmap.md:75`](../plan/planning/in-progress/roadmap.md)
@@ -118,8 +118,8 @@ Anhang ist **nicht** Teil des unabhängigen Laufs.
 
 - `kategorie`: **HIGH**
 - `quelle`: Status-/Currency-Disziplin; Roadmap-Closure
-- `pfad`: [`slice-046:3`](../plan/planning/done/slice-046-regelwerk-v352-migration-analyse.md),
-  [`slice-046:134`](../plan/planning/done/slice-046-regelwerk-v352-migration-analyse.md),
+- `pfad`: [`slice-046:3`](../plan/planning/done/welle-12/slice-046-regelwerk-v352-migration-analyse.md),
+  [`slice-046:134`](../plan/planning/done/welle-12/slice-046-regelwerk-v352-migration-analyse.md),
   [`docs/plan/planning/in-progress/roadmap.md:75`](../plan/planning/in-progress/roadmap.md)
 - `befund`: Der auslösende Slice der vollständigen Migration liegt weiterhin in `open/`, nennt sich
   „Analyse zur Abnahme" und trägt eine offene Abnahme sowie Closure-Platzhalter. Das Closure-Log
@@ -129,7 +129,7 @@ Anhang ist **nicht** Teil des unabhängigen Laufs.
 ### F-9 — Mehrere Freigabe-Belege belegen ihr Item nicht
 
 - `kategorie`: **HIGH**
-- `quelle`: Fund `B-20` aus [slice-048](../plan/planning/done/slice-048-modul-delta-lesen.md);
+- `quelle`: Fund `B-20` aus [slice-048](../plan/planning/done/welle-12/slice-048-modul-delta-lesen.md);
   Regelwerk Modul 16 „Kein Häkchen ohne Beleg"
 - `pfad`: [`docs/user/releasing.md:87`](../user/releasing.md),
   [`.d-check.yml:79`](../../.d-check.yml)
@@ -145,7 +145,7 @@ Der im Auftrag vorgegebene Defekt von Item 6 wurde nicht nochmals als eigenes Fi
 ### F-10 — „Genau ein" WIP-Slice widerspricht dem zulässigen Leerlauf
 
 - `kategorie`: **HIGH**
-- `quelle`: Fund `B-6` aus [slice-048](../plan/planning/done/slice-048-modul-delta-lesen.md);
+- `quelle`: Fund `B-6` aus [slice-048](../plan/planning/done/welle-12/slice-048-modul-delta-lesen.md);
   Regelwerk Modul 5
 - `pfad`: [`AGENTS.md:194`](../../AGENTS.md),
   [`docs/plan/planning/in-progress/roadmap.md:13`](../plan/planning/in-progress/roadmap.md)
@@ -157,13 +157,13 @@ Der im Auftrag vorgegebene Defekt von Item 6 wurde nicht nochmals als eigenes Fi
 ### F-11 — Zwei Pflichtübergaben fehlen, die Migration heißt trotzdem vollständig
 
 - `kategorie`: **HIGH**
-- `quelle`: Fund `B-9` aus [slice-048](../plan/planning/done/slice-048-modul-delta-lesen.md);
+- `quelle`: Fund `B-9` aus [slice-048](../plan/planning/done/welle-12/slice-048-modul-delta-lesen.md);
   Regelwerk Modul 8
 - `pfad`: [`harness/README.md:141`](../../harness/README.md),
-  [`slice-066:80`](../plan/planning/done/slice-066-wellen-closure-und-rollen.md)
+  [`slice-066:80`](../plan/planning/done/welle-12/slice-066-wellen-closure-und-rollen.md)
 - `befund`: Verifier → Validator und Validator → Planner werden ausdrücklich als fehlend geführt;
   Modul 8 verlangt jedes der neun Artefakte. Unmittelbar danach erklärt
-  [slice-066](../plan/planning/done/slice-066-wellen-closure-und-rollen.md) dennoch alle 21 Funde
+  [slice-066](../plan/planning/done/welle-12/slice-066-wellen-closure-und-rollen.md) dennoch alle 21 Funde
   für geschlossen und die Migration für vollständig, ohne eine entsprechende Adaption.
 - `verifizierbar`: ja — Lesevergleich mit Modul 8, Zeilen 40–58.
 
@@ -214,7 +214,7 @@ Der im Auftrag vorgegebene Defekt von Item 6 wurde nicht nochmals als eigenes Fi
 
 ## Deckung der 21 Delta-Funde
 
-Bezug: [slice-048](../plan/planning/done/slice-048-modul-delta-lesen.md).
+Bezug: [slice-048](../plan/planning/done/welle-12/slice-048-modul-delta-lesen.md).
 
 **Ohne Befund geschlossen:** `B-2`, `B-4`, `B-5`, `B-7`, `B-10`, `B-12`, `B-14`, `B-16`, `B-17`,
 `B-18`, `B-19`, `B-21`.

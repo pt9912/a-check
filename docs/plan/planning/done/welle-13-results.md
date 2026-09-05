@@ -2,7 +2,7 @@
 
 **Abschluss:** 2026-08-09. **Zweiter Durchlauf der Fünf-Schritt-Prozedur**
 ([`planning/README.md`](../README.md)) — und der erste **mit** einer Welle-Plan-Datei:
-[`welle-13-konsumenten-befunde.md`](welle-13-konsumenten-befunde.md) ist per `git mv` von flach
+[`welle-13-konsumenten-befunde.md`](welle-13/welle-13-konsumenten-befunde.md) ist per `git mv` von flach
 nach `done/` gewandert, neben diese Notiz. Bei [`welle-12`](welle-12-results.md) entfiel dieser
 Schritt mangels Plan-Datei; damit ist Schritt 3 jetzt **vollständig** belegt, nicht nur zur Hälfte.
 
@@ -14,12 +14,12 @@ Schritt mangels Plan-Datei; damit ist Schritt 3 jetzt **vollständig** belegt, n
 
 | Slice | CR | Gegenstand | Vertragsarbeit |
 |---|---|---|---|
-| [slice-081](slice-081-heuristik-diagnose.md) | `CR-1` | Grenz-Diagnose: Zeilen, die zu keiner Kante führen | [ADR-0031](../../adr/0031-heuristik-grenzen-diagnose.md) |
-| [slice-082](slice-082-print-mk-docker-indirektion.md) | `CR-6` | `--print-mk`: `$(DOCKER)` statt wörtlichem `docker` | — |
-| [slice-083](slice-083-print-mk-digest-selbstbezug.md) | `CR-5` | `--print-mk` nannte den Digest des **Vorgängers** | [ADR-0030](../../adr/0030-kein-digest-im-generierten-fragment.md) |
-| [slice-084](slice-084-handbuch-heuristik-grenzen.md) | `CR-3` | Heuristik-Grenzen dort, wo Konsumenten lesen | — |
-| [slice-085](slice-085-schicht-ohne-aufloesung.md) | `CR-2` | Auflösungs-Diagnose: vollständig grün, vollständig blind | [ADR-0032](../../adr/0032-aufloesungs-diagnose-repoweit.md) |
-| [slice-086](slice-086-forbidden-constructs-fail-closed.md) | `CR-4` | `forbidden_constructs` fail-closed statt still | [ADR-0033](../../adr/0033-forbidden-constructs-fail-closed.md) |
+| [slice-081](welle-13/slice-081-heuristik-diagnose.md) | `CR-1` | Grenz-Diagnose: Zeilen, die zu keiner Kante führen | [ADR-0031](../../adr/0031-heuristik-grenzen-diagnose.md) |
+| [slice-082](welle-13/slice-082-print-mk-docker-indirektion.md) | `CR-6` | `--print-mk`: `$(DOCKER)` statt wörtlichem `docker` | — |
+| [slice-083](welle-13/slice-083-print-mk-digest-selbstbezug.md) | `CR-5` | `--print-mk` nannte den Digest des **Vorgängers** | [ADR-0030](../../adr/0030-kein-digest-im-generierten-fragment.md) |
+| [slice-084](welle-13/slice-084-handbuch-heuristik-grenzen.md) | `CR-3` | Heuristik-Grenzen dort, wo Konsumenten lesen | — |
+| [slice-085](welle-13/slice-085-schicht-ohne-aufloesung.md) | `CR-2` | Auflösungs-Diagnose: vollständig grün, vollständig blind | [ADR-0032](../../adr/0032-aufloesungs-diagnose-repoweit.md) |
+| [slice-086](welle-13/slice-086-forbidden-constructs-fail-closed.md) | `CR-4` | `forbidden_constructs` fail-closed statt still | [ADR-0033](../../adr/0033-forbidden-constructs-fail-closed.md) |
 
 **Das Welle-Ziel war: „a-check sagt selbst, wo es blind ist — statt dass ein Konsument es
 nachstellen muss."** Eingelöst durch drei Diagnosen auf **einer** Achse, grob nach fein, in fester
@@ -39,13 +39,13 @@ Wer eine vierte baut, hat ein Muster statt einer Einzelfallentscheidung.
 
 **Messen vor dem Spezifizieren — zweimal, und beide Male kippte es die Anforderung.**
 
-- [slice-085](slice-085-schicht-ohne-aufloesung.md): Die im CR **wörtlich** verlangte Regel („je
+- [slice-085](welle-13/slice-085-schicht-ohne-aufloesung.md): Die im CR **wörtlich** verlangte Regel („je
   Schicht, wenn kein Symbol auflöst") wurde zuerst gebaut und gegen den eigenen Baum gefahren. Sie
   feuerte auf `internal/hexagon/core` — die Schicht, die laut [ARC-001](../../../../spec/architecture.md) abhängigkeitsfrei sein
   *muss*. Ein reiner Domänenkern ist per Konstruktion das erste Ziel dieser Regel. Wäre sie
   ungeprüft übernommen und **danach** getestet worden, wäre sie mit grünen Tests in die
   Spezifikation gewandert und hätte jeden sauber geschichteten Konsumenten angebellt.
-- [slice-086](slice-086-forbidden-constructs-fail-closed.md): Die Aufbereitung fand **drei**
+- [slice-086](welle-13/slice-086-forbidden-constructs-fail-closed.md): Die Aufbereitung fand **drei**
   weitere stille Ausgänge derselben fehlenden Validierung, die der CR nicht kannte; beim Bau kam
   ein **vierter** dazu. Der CR beschrieb einen Fall, das Feature hatte vier.
 
@@ -54,7 +54,7 @@ Entwurf korrigiert hat.** Kosten je Fall: eine Implementierung und ein `make arc
 Vermiedener Schaden: eine `Accepted`-ADR ist immutabel.
 
 **Die Aufbereitung vor dem Bau hat getragen.** Für
-[slice-086](slice-086-forbidden-constructs-fail-closed.md) wurden drei Fragen vorab beantwortet —
+[slice-086](welle-13/slice-086-forbidden-constructs-fail-closed.md) wurden drei Fragen vorab beantwortet —
 Bestand (leer: 0 von 7 Konfigurationen), Vertragslage ([AC-FA-RULE-004](../../../../spec/lastenheft.md#ac-fa-rule-004--port-disziplin-regel-port-impurity) ist „Port-Disziplin", die
 Rollenbindung **löst ihn ein**), Ausweg (`constructs` ist Komplement, nicht Ersatz). Der Bau musste
 danach nur noch den Fehlertext entscheiden. Ohne diese Vorarbeit wäre der naheliegende Weg die
@@ -72,23 +72,23 @@ das eine Grenze **ohne Ausweg** zieht, produziert den Refactor, den man sonst ve
 sechs formale Change Requests nachreichte (`CR-2` und `CR-4` waren in der ersten Meldung nicht
 enthalten). Eingetragen im Drift-Log der [Roadmap](../in-progress/roadmap.md).
 
-**Die Verwerfungs-Bedingung von [slice-084](slice-084-handbuch-heuristik-grenzen.md) feuerte
+**Die Verwerfungs-Bedingung von [slice-084](welle-13/slice-084-handbuch-heuristik-grenzen.md) feuerte
 nicht.** Sie sah vor, den Handbuch-Nachtrag zu verwerfen, falls
-[slice-081](slice-081-heuristik-diagnose.md) zuerst käme und die Formen **vollständig** meldete.
+[slice-081](welle-13/slice-081-heuristik-diagnose.md) zuerst käme und die Formen **vollständig** meldete.
 Tatsächlich war 084 zuerst fertig, und 081 meldet **zwei** der vier Formen der Handbuch-Tabelle —
 kompaktes TypeScript und import-ähnliche Zeilen in Strings bleiben still. Beide Orte bleiben, jetzt
 verzahnt. Dass eine Welle eine solche Bedingung überhaupt trägt, war richtig: sie zwang zur
 Nachmessung statt zur Annahme.
 
 **Ein DoD-Wortlaut wurde bewusst nicht erfüllt.**
-[slice-081](slice-081-heuristik-diagnose.md) verlangte „die Diagnose steht als Vertrag im
+[slice-081](welle-13/slice-081-heuristik-diagnose.md) verlangte „die Diagnose steht als Vertrag im
 **Lastenheft**". Geliefert wurde die Spezifikations-Schärfung ohne Lastenheft-Bump — dem
 Präzedenzfall [ADR-0029](../../adr/0029-abdeckungs-diagnose-advisory.md) folgend, weil eine
 advisory stderr-Zeile ohne Exit-Code-Wechsel das *Wie* der bestehenden Ausgabe schärft und
 [AC-QA-02](../../../../spec/lastenheft.md#ac-qa-02--hermetik-und-ehrliche-heuristik-grenze) die
 Offenlegung bereits zusagt. Die Abweichung steht im DoD selbst, nicht im Kleingedruckten.
 
-**Ein Breaking Change ging heraus** ([slice-086](slice-086-forbidden-constructs-fail-closed.md)):
+**Ein Breaking Change ging heraus** ([slice-086](welle-13/slice-086-forbidden-constructs-fail-closed.md)):
 vier Konfigurationsformen enden künftig mit Exit 2 statt mit grünem Exit 0. Gemessen bricht das im
 lokalen Bestand niemanden (0 von 7); der einzige bekannte Nutzer ist der CR-Melder, dessen Einträge
 heute nicht wirken.
@@ -102,7 +102,7 @@ laufende Zähl-Ort. Hier stehen nur die in dieser Welle real aufgetretenen Vorf�
 |---|---|
 | `SL-001` — Gate-Lauf in einer Pipe verschluckt | **einmal**: der Guard blockierte `make doc-complete \| tail` bei der d-check-Recherche. Zähler **6 → 7** |
 | `SL-002` — relative Verweise brechen beim Verzeichniswechsel | **zweimal**: vier präfixlose Geschwister-Verweise in [slice-087](../done/slice-087-index-vollstaendigkeit.md) (vor dem Commit gefangen) und **21 Verweise dieser Welle-Plan-Datei** beim `git mv` in `done/` — von `doc-check` gefangen, **nicht** vom zuständigen Sensor. Zähler **9 → 11** |
-| `SL-003` — Commit-Betreff bezeichnet nicht die Arbeit | **nicht aufgetreten** — zweimal aktiv vermieden: der [ADR-0030](../../adr/0030-kein-digest-im-generierten-fragment.md)-Index-Nachtrag wurde als eigener Commit mit slice-083-Bezug geführt, und der Lerneintrag von [slice-081](slice-081-heuristik-diagnose.md) vom `git mv` getrennt, damit die Lifecycle-Commits `R100` bleiben |
+| `SL-003` — Commit-Betreff bezeichnet nicht die Arbeit | **nicht aufgetreten** — zweimal aktiv vermieden: der [ADR-0030](../../adr/0030-kein-digest-im-generierten-fragment.md)-Index-Nachtrag wurde als eigener Commit mit slice-083-Bezug geführt, und der Lerneintrag von [slice-081](welle-13/slice-081-heuristik-diagnose.md) vom `git mv` getrennt, damit die Lifecycle-Commits `R100` bleiben |
 | `SL-004` — neuer Sensor meldet sein eigenes Umfeld | **nicht aufgetreten** — aber als **Entscheidungsgrund** verwendet: [ADR-0031](../../adr/0031-heuristik-grenzen-diagnose.md) verwarf den Restmengen-Ansatz mit dem dreifach belegten Rauschprofil dieses Eintrags |
 | `SL-005` — Datei fehlt im handgepflegten Index | **neu, zwei Vorfälle** (siehe unten) |
 | `SL-006` — Dateiname/Anker geraten statt nachgesehen | **neu, vier Vorfälle in dieser Welle** (drei weitere in `welle-12`) |
@@ -145,9 +145,9 @@ dazwischenstand: **Wissen allein verhindert den Fehler nicht.**
 
 - **Schicht-Blacklist außerhalb `port`.** Für „Muster in Schicht X verboten, sonst egal" gibt es
   kein Werkzeug; `constructs` ist das Komplement, kein Ersatz. Ein **Lastenheft-CR**, sobald ein
-  Konsument den Bedarf belegt ([slice-086 §4](slice-086-forbidden-constructs-fail-closed.md)).
+  Konsument den Bedarf belegt ([slice-086 §4](welle-13/slice-086-forbidden-constructs-fail-closed.md)).
 - **Weitere Blöcke mit ungeprüfter Auswertungs-Bedingung.** Der Lerneintrag von
-  [slice-086](slice-086-forbidden-constructs-fail-closed.md) verallgemeinert: eine Bindung, die nur
+  [slice-086](welle-13/slice-086-forbidden-constructs-fail-closed.md) verallgemeinert: eine Bindung, die nur
   in [SPEC-RULE-001](../../../../spec/spezifikation.md#spec-rule-001--regel-auswertung) steht und nicht in [SPEC-CONF-001](../../../../spec/spezifikation.md#spec-conf-001--konfigurationsschema), ist ein stiller Filter statt eines
   Vertrags. `adapter_sink` und `markers.ignore_symbols` sind die Kandidaten für eine Messung.
 - **Teilausfall der Auflösung.** [ADR-0032](../../adr/0032-aufloesungs-diagnose-repoweit.md) meldet
@@ -173,7 +173,7 @@ dazwischenstand: **Wissen allein verhindert den Fehler nicht.**
 das Richtige melden. Geprüft wurden Fixtures, die den gemeldeten Fällen nachgebaut sind, und der
 eigene Baum. Der ehrliche nächste Schritt wäre eine Rückmeldung des CR-Melders gegen ein Release
 mit diesen Änderungen — `[Unreleased]` trägt sie, ein Release ist **nicht** Teil dieser Welle
-([`welle-13-konsumenten-befunde.md`](welle-13-konsumenten-befunde.md) §6).
+([`welle-13-konsumenten-befunde.md`](welle-13/welle-13-konsumenten-befunde.md) §6).
 
 **Ebenfalls nicht belegt:** ein unabhängiges Review dieser Welle. Alle Prüfungen sind Selbst-Reviews
 und Gate-Läufe; der `welle-12`-Trigger („ein Lauf außerhalb dieser Modell-Familie") gilt für die

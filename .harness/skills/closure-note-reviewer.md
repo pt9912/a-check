@@ -7,7 +7,7 @@
 * Gilt für: den *inferentiellen* Nachlauf zu `make verify` — greift dort, wo Struktur allein die
   Floskel nicht fängt
 * Entstanden: slice-050 (Etappe E der `v3.5.2`-Migration), Fund B-4 aus
-  [slice-048](../../docs/plan/planning/done/slice-048-modul-delta-lesen.md)
+  [slice-048](../../docs/plan/planning/done/welle-12/slice-048-modul-delta-lesen.md)
 
 > **Abweichung von der Baseline-Vorlage — bewusst.** Die Vorlage bindet an eine
 > Closure-Note-ADR (Nummer gilt im Kurs-Repo) und an `tools/check_closure_notes.py`. Beides

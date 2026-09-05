@@ -3,8 +3,8 @@
 **Status:** open — der Zustand ist das **Verzeichnis**, nicht dieses Feld
 (`open/ → next/ → in-progress/ → done/`, Wechsel nur per `git mv` als eigener Commit,
 [`AGENTS.md`](../../../../AGENTS.md) §3.3/§5).
-**Deckt:** den in [slice-073](../done/slice-073-dcheck-statt-eigenbau.md) als **abgelöst**
-gemessenen Anteil; hebt die in [slice-074](../done/slice-074-doc-targets-wirksam.md) bewusst
+**Deckt:** den in [slice-073](welle-12/slice-073-dcheck-statt-eigenbau.md) als **abgelöst**
+gemessenen Anteil; hebt die in [slice-074](welle-12/slice-074-doc-targets-wirksam.md) bewusst
 in Kauf genommene Doppelprüfung auf.
 **Bezug:** Roadmap-Zeile *Aktuelle Welle* in der [Roadmap](../in-progress/roadmap.md).
 
@@ -13,8 +13,8 @@ in Kauf genommene Doppelprüfung auf.
 ## 0. Trigger
 
 **Beginn:** sofort — dieser Slice wartet auf nichts. Das `targets`-Modul ist seit d-check
-`v0.38.0` released, seit [slice-074](../done/slice-074-doc-targets-wirksam.md) konfiguriert, und
-die Parität ist in [slice-073](../done/slice-073-dcheck-statt-eigenbau.md) mit zwei Fixtures
+`v0.38.0` released, seit [slice-074](welle-12/slice-074-doc-targets-wirksam.md) konfiguriert, und
+die Parität ist in [slice-073](welle-12/slice-073-dcheck-statt-eigenbau.md) mit zwei Fixtures
 gemessen. Er lag bisher nur still, weil ihn niemand geschnitten hatte.
 
 **Rückführungen** (Baseline-Vorlage §4, in a-checks Vorlage nicht abgebildet — hier bewusst
@@ -27,12 +27,12 @@ mitgeführt, weil die Startbedingung in den Slice gehört und nicht in die Roadm
 ## 1. Auslöser
 
 **Mechanismus: zwei Prüfer für dieselbe Invariante.** Seit
-[slice-074](../done/slice-074-doc-targets-wirksam.md) prüfen `make doc-targets` (d-check-Modul
+[slice-074](welle-12/slice-074-doc-targets-wirksam.md) prüfen `make doc-targets` (d-check-Modul
 `targets`) und `gate-consistency` Checks (1)+(2) beides die Deklarations-Konsistenz Doku ↔
 Build-Targets. Die Doppelung ist dort **benannt**, aber sie war als Übergang gedacht, nicht als
 Zustand.
 
-[slice-073](../done/slice-073-dcheck-statt-eigenbau.md) hat die Parität gemessen — zwei Fixtures,
+[slice-073](welle-12/slice-073-dcheck-statt-eigenbau.md) hat die Parität gemessen — zwei Fixtures,
 beide Richtungen, identische Befundmenge:
 
 ```
@@ -53,7 +53,7 @@ Zwei Schichten:
 1. **[`tools/gate-consistency.sh`](../../../../tools/gate-consistency.sh)** — `doc_targets()`,
    `check_documented_exist()`, `UTILITY_TARGETS`, der zugehörige Selbsttest-Teil und die
    Hauptteil-Blöcke (1)+(2) entfallen. Die Checks (3)(4)(5) bleiben — sie sind in
-   [slice-073](../done/slice-073-dcheck-statt-eigenbau.md) als **lokal** belegt.
+   [slice-073](welle-12/slice-073-dcheck-statt-eigenbau.md) als **lokal** belegt.
 2. **[`Makefile`](../../../../Makefile)** und [`AGENTS.md`](../../../../AGENTS.md) §4 —
    `doc-targets` wandert ins `gates`-Aggregat, die §4-Zeile verliert ihren „nicht im
    Aggregat"-Vermerk.
@@ -71,18 +71,18 @@ Zwei Schichten:
 | unveränderter Bestand | `make gates` grün, und `gate-consistency` meldet nur noch (3)(4)(5) |
 
 Die ersten beiden sind dieselben Fixtures wie in
-[slice-074](../done/slice-074-doc-targets-wirksam.md) — **jetzt aber gegen `gates`**, nicht gegen
+[slice-074](welle-12/slice-074-doc-targets-wirksam.md) — **jetzt aber gegen `gates`**, nicht gegen
 das Einzel-Target. Ohne diese Verschiebung wäre die Ablösung eine Entfernung ohne Ersatz im
 Aggregat.
 
 ## 4. Was bewusst nicht getan wird
 
 - **Die Checks (3)(4)(5) anfassen.** `.d-check.yml`-Modulliste, Pin-Konsistenz und
-  `.PHONY`-Vollständigkeit sind in [slice-073](../done/slice-073-dcheck-statt-eigenbau.md)
+  `.PHONY`-Vollständigkeit sind in [slice-073](welle-12/slice-073-dcheck-statt-eigenbau.md)
   als lokal belegt — zwei davon, weil sie Nicht-Markdown prüfen.
 - **Auf CR 1/CR 2 warten.** Diese Ablösung hängt an keinem der beiden Anträge; das `targets`-Modul
   ist seit `v0.38.0` released und seit
-  [slice-074](../done/slice-074-doc-targets-wirksam.md) konfiguriert.
+  [slice-074](welle-12/slice-074-doc-targets-wirksam.md) konfiguriert.
 - **Die vier `verify-*`-Sensoren.** Deren Ablösung hängt sehr wohl an den CRs und steht als
   Welle mit Trigger in der [Roadmap](../in-progress/roadmap.md).
 
@@ -100,7 +100,7 @@ Aggregat.
 ## 6. Closure-Notiz
 
 **Der Slice hätte als stille Verschlechterung enden können.** Die Paritäts-Messung aus
-[slice-073](../done/slice-073-dcheck-statt-eigenbau.md) galt zwei Fixtures — Phantom-Target und
+[slice-073](welle-12/slice-073-dcheck-statt-eigenbau.md) galt zwei Fixtures — Phantom-Target und
 undokumentiertes Target — und beide bestätigten sich hier erneut, in beiden Richtungen. **Sie
 deckten aber nicht den Scope ab:** der abgelöste Check (1) las `check_documented_exist AGENTS.md
 harness/README.md`, also **zwei** Dokumente; `targets` war mit `doc-tables: [AGENTS.md]`
@@ -118,7 +118,7 @@ Phantom-Target NUR in harness/README.md
 Eine Ablösung vergleicht nicht nur **ob** der Ersatz greift, sondern **worüber**. Die
 Paritäts-Fixtures beantworten die erste Frage; die zweite steht in der Konfiguration und wäre
 beinahe mit dem alten Code verschwunden — dieselbe Klasse wie
-[slice-071](../done/slice-071-sensor-scope-vollstaendig.md), nur beim Abbauen statt beim Bauen.
+[slice-071](welle-12/slice-071-sensor-scope-vollstaendig.md), nur beim Abbauen statt beim Bauen.
 
 **Die drei Proben aus §3, gegen das Aggregat:**
 
@@ -130,7 +130,7 @@ beinahe mit dem alten Code verschwunden — dieselbe Klasse wie
 
 **Beobachtbare Architektur-Aussage: der Sensor ist um seine Fremd-Aufgabe leichter geworden, nicht
 um seine eigene.** `gate-consistency` schrumpft von 391 auf 333 Zeilen und behält genau das, was
-[slice-073](../done/slice-073-dcheck-statt-eigenbau.md) als **lokal** belegt hat: `.d-check.yml`-
+[slice-073](welle-12/slice-073-dcheck-statt-eigenbau.md) als **lokal** belegt hat: `.d-check.yml`-
 Modulliste, Pin-Konsistenz, `.PHONY`-Vollständigkeit, ADR-Index — zwei davon prüfen
 Nicht-Markdown, zwei eine Gegenrichtung, die kein d-check-Modul kennt. Der Makefile-Parser bleibt
 selbstgetestet (`parser_self_test`), weil `check_phony_complete` ihn weiterhin trägt; ihn mit

@@ -5,8 +5,8 @@
 [`AGENTS.md`](../../../../AGENTS.md) §3.3/§5).
 **Deckt:** den Folge-Befund aus [`welle-13-results.md`](../done/welle-13-results.md) §Steering-Loop;
 `SL-002`.
-**Bezug:** [slice-060](../done/slice-060-slice-link-invariante.md) hat den Sensor gebaut,
-[slice-075](../done/slice-075-sensor-messgroesse.md) ihn um Referenz-Definitionen erweitert.
+**Bezug:** [slice-060](welle-12/slice-060-slice-link-invariante.md) hat den Sensor gebaut,
+[slice-075](welle-12/slice-075-sensor-messgroesse.md) ihn um Referenz-Definitionen erweitert.
 
 ---
 
@@ -45,14 +45,14 @@ Tiefenwechsel: ein relativer Pfad, der aus Tiefe *n* auflöst, braucht aus Tiefe
 zusätzliches `../`.
 
 **Der reale Vorfall:** Der `git mv` von
-[`welle-13-konsumenten-befunde.md`](../done/welle-13-konsumenten-befunde.md) brach **21** Verweise
+[`welle-13-konsumenten-befunde.md`](welle-13/welle-13-konsumenten-befunde.md) brach **21** Verweise
 auf einen Schlag — gefangen von `doc-check`, also **nach** dem `mv` statt davor. Genau der Zyklus,
 den der Sensor abschaffen sollte.
 
 **Die stille Hälfte ist das eigentliche Problem.** Dass Welle-Dateien nicht erfasst sind, steht
 **nirgends** — weder im Sensor-Kopf noch in seiner Ausgabe (*„N wandernde(r) Slice(s) …"* klingt
 vollständig). Ein Sensor, der eine Gattung nicht sieht und das nicht sagt, ist dieselbe Klasse wie
-die False-Greens aus [slice-070](../done/slice-070-grundgesamtheit-messen.md)/[slice-071](../done/slice-071-sensor-scope-vollstaendig.md).
+die False-Greens aus [slice-070](welle-12/slice-070-grundgesamtheit-messen.md)/[slice-071](welle-12/slice-071-sensor-scope-vollstaendig.md).
 
 ## 2. Betroffene Module
 
@@ -97,7 +97,7 @@ echte Lösung, falls `doc-check` repo-relative Ziele auflöst.
 - **`doc-check` ersetzen.** Ob ein Verweis **heute** auflöst, beantwortet es zuverlässig; dieser
   Slice betrifft nur die Frage, ob er den **Wechsel** überlebt.
 - **Den Sensor für `done/`-Slices scharf schalten.** `done/` ist Endzustand und ausdrücklich
-  ausgenommen ([slice-060](../done/slice-060-slice-link-invariante.md)) — daran ändert sich nichts.
+  ausgenommen ([slice-060](welle-12/slice-060-slice-link-invariante.md)) — daran ändert sich nichts.
 
 ## 5. DoD
 
@@ -160,7 +160,7 @@ ist Endzustand) jetzt die zweite, gleichrangig formuliert.
 **Lerneintrag — Form: benannte Spec-Lücke.** Als Prüfsatz: *Bevor ein Sensor auf eine neue
 Datei-Gattung erweitert wird, ist zu prüfen, ob seine Invariante für sie überhaupt **erfüllbar**
 ist — sonst entsteht ein Gate, das niemand grün bekommt.* Die Invariante von
-[slice-060](../done/slice-060-slice-link-invariante.md) trägt ihre Voraussetzung im Kommentar
+[slice-060](welle-12/slice-060-slice-link-invariante.md) trägt ihre Voraussetzung im Kommentar
 („alle vier Lifecycle-Verzeichnisse liegen auf derselben Ebene"); dass sie eine **Voraussetzung**
 ist und keine Beschreibung, fiel erst auf, als eine Gattung ohne sie auftauchte. **Zu prüfen wäre**,
 ob die übrigen `verify-*`-Sensoren ähnliche stillschweigende Voraussetzungen tragen —

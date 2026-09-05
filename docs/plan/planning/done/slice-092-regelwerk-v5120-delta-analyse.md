@@ -5,7 +5,7 @@
 [`AGENTS.md`](../../../../AGENTS.md) §3.3/§5).
 **Deckt:** keine `AC-*`/`ADR-*` — reine Ist-Messung plus Etappen-Vorschlag, keine Artefakt-Änderung.
 **Bezug:** Maintainer-Auftrag 2026-08-29 („Können wir auf die neueste Version umstellen?" — „ja
-machen wir"). Präzedenz: [slice-046](../done/slice-046-regelwerk-v352-migration-analyse.md), die
+machen wir"). Präzedenz: [slice-046](welle-12/slice-046-regelwerk-v352-migration-analyse.md), die
 dieselbe Analyse für den Sprung `v1.3.0` → `v3.5.2` geleistet hat.
 [Roadmap](../in-progress/roadmap.md).
 
