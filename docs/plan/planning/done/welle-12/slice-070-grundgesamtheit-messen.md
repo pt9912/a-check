@@ -1,4 +1,4 @@
-# slice-070 — — „nichts gefunden" ist nicht „nichts da"
+# slice-070 — „nichts gefunden" ist nicht „nichts da"
 
 > **ARCHIVIERT** — Volltext:
 > `unzip -p done/welle-12/archiv.zip <pfad-im-archiv>`

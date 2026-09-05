@@ -1,4 +1,4 @@
-# slice-049 — — Etappe E (1/3): zwei fehlende Sensoren nachrüsten
+# slice-049 — Etappe E (1/3): zwei fehlende Sensoren nachrüsten
 
 > **ARCHIVIERT** — Volltext:
 > `unzip -p done/welle-12/archiv.zip <pfad-im-archiv>`

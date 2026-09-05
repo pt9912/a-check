@@ -18,6 +18,10 @@ func TestExtractTitle(t *testing.T) {
 	cases := []struct{ content, want string }{
 		{"# Slice slice-190: Das Werkzeug bauen\n\nRest", "Das Werkzeug bauen"},
 		{"# Welle welle-87: Wellen-Archivierung nachruesten\n", "Wellen-Archivierung nachruesten"},
+		// Em-Dash-Trenner statt Doppelpunkt: der Trenner selbst darf nicht
+		// im Titel landen, sonst haengt SliceStub/SliceStubStandalone ihren
+		// eigenen " — "-Trenner davor (doppelter Gedankenstrich im Stub).
+		{"# slice-135 — Regelwerk-Migration `v5.12.0` → `v6.0.0`: Delta-Analyse\n", "Regelwerk-Migration `v5.12.0` → `v6.0.0`: Delta-Analyse"},
 	}
 	for _, c := range cases {
 		if got := ExtractTitle(c.content); got != c.want {

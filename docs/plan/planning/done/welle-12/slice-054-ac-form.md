@@ -1,4 +1,4 @@
-# slice-054 — — Etappe D (3/3): AC-Form für neue Anforderungen
+# slice-054 — Etappe D (3/3): AC-Form für neue Anforderungen
 
 > **ARCHIVIERT** — Volltext:
 > `unzip -p done/welle-12/archiv.zip <pfad-im-archiv>`

@@ -1,4 +1,4 @@
-# slice-006 — — CI: GitHub-Actions-Workflow (gates + image-test + traceability)
+# slice-006 — CI: GitHub-Actions-Workflow (gates + image-test + traceability)
 
 > **ARCHIVIERT** — Volltext:
 > `unzip -p done/welle-08/archiv.zip <pfad-im-archiv>`

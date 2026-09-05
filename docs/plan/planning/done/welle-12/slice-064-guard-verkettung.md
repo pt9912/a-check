@@ -1,4 +1,4 @@
-# slice-064 — — SL-001: der Commit hing an `;` statt an `&&`
+# slice-064 — SL-001: der Commit hing an `;` statt an `&&`
 
 > **ARCHIVIERT** — Volltext:
 > `unzip -p done/welle-12/archiv.zip <pfad-im-archiv>`

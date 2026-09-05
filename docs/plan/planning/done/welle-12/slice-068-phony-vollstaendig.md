@@ -1,4 +1,4 @@
-# slice-068 — — `.PHONY` vollständig, mit Sensor gegen Rückfall
+# slice-068 — `.PHONY` vollständig, mit Sensor gegen Rückfall
 
 > **ARCHIVIERT** — Volltext:
 > `unzip -p done/welle-12/archiv.zip <pfad-im-archiv>`

@@ -1,4 +1,4 @@
-# slice-011 — — `app`-Rolle + strenge `domain` (welle-10b / b2a)
+# slice-011 — `app`-Rolle + strenge `domain` (welle-10b / b2a)
 
 > **ARCHIVIERT** — Volltext:
 > `unzip -p done/welle-10/archiv.zip <pfad-im-archiv>`

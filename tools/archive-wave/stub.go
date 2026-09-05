@@ -11,13 +11,17 @@ import (
 	"strings"
 )
 
-var h1RE = regexp.MustCompile(`(?m)^#\s+(?:Slice\s+|Welle\s+)?[\w-]+:?\s*(.*)$`)
+var h1RE = regexp.MustCompile(`(?m)^#\s+(?:Slice\s+|Welle\s+)?[\w-]+:?\s*—?\s*(.*)$`)
 var fullH1RE = regexp.MustCompile(`(?m)^#\s+(.*)$`)
 
 // ExtractTitle liest den Titel aus der ersten Ueberschrift eines Slice- oder
-// Welle-Plans ("# Slice slice-190: Titel" bzw. "# Welle welle-87: Titel").
-// Liefert einen leeren String, wenn keine passende Ueberschrift gefunden
-// wird -- der Aufrufer entscheidet, ob das ein Fehler ist.
+// Welle-Plans ("# Slice slice-190: Titel" bzw. "# Welle welle-87: Titel" --
+// oder, im Em-Dash-Stil dieses Repos, "# slice-135 — Titel"). Der optionale
+// Trenner (Doppelpunkt ODER Gedankenstrich) wird aus dem Titel entfernt,
+// sonst haengt SliceStub/SliceStubStandalone ihren eigenen " — "-Trenner
+// davor und der Stub traegt einen doppelten Gedankenstrich. Liefert einen
+// leeren String, wenn keine passende Ueberschrift gefunden wird -- der
+// Aufrufer entscheidet, ob das ein Fehler ist.
 func ExtractTitle(content string) string {
 	m := h1RE.FindStringSubmatch(content)
 	if m == nil {

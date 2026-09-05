@@ -1,4 +1,4 @@
-# slice-007 — — Release-Pipeline: release.yml + `:latest`-Politik-ADR
+# slice-007 — Release-Pipeline: release.yml + `:latest`-Politik-ADR
 
 > **ARCHIVIERT** — Volltext:
 > `unzip -p done/welle-05/archiv.zip <pfad-im-archiv>`

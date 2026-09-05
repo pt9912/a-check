@@ -1,4 +1,4 @@
-# slice-052 — — Etappe D (1/3): Slice-Form als Vorlage und Sensor
+# slice-052 — Etappe D (1/3): Slice-Form als Vorlage und Sensor
 
 > **ARCHIVIERT** — Volltext:
 > `unzip -p done/welle-12/archiv.zip <pfad-im-archiv>`

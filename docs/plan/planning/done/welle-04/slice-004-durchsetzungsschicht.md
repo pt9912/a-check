@@ -1,4 +1,4 @@
-# slice-004 — — Durchsetzungsschicht: gate-consistency + record-gates
+# slice-004 — Durchsetzungsschicht: gate-consistency + record-gates
 
 > **ARCHIVIERT** — Volltext:
 > `unzip -p done/welle-04/archiv.zip <pfad-im-archiv>`

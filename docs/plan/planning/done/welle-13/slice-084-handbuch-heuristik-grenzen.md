@@ -1,4 +1,4 @@
-# slice-084 — — Heuristik-Grenzen dort, wo Konsumenten lesen
+# slice-084 — Heuristik-Grenzen dort, wo Konsumenten lesen
 
 > **ARCHIVIERT** — Volltext:
 > `unzip -p done/welle-13/archiv.zip <pfad-im-archiv>`

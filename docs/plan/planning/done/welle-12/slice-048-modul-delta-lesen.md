@@ -1,4 +1,4 @@
-# slice-048 — — Etappe B: Modul-Delta gegen `v3.5.2` lesen
+# slice-048 — Etappe B: Modul-Delta gegen `v3.5.2` lesen
 
 > **ARCHIVIERT** — Volltext:
 > `unzip -p done/welle-12/archiv.zip <pfad-im-archiv>`

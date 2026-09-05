@@ -1,4 +1,4 @@
-# slice-069 — — Sensoren verschlucken keinen Fehler mehr
+# slice-069 — Sensoren verschlucken keinen Fehler mehr
 
 > **ARCHIVIERT** — Volltext:
 > `unzip -p done/welle-12/archiv.zip <pfad-im-archiv>`

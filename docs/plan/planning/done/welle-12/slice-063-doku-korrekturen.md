@@ -1,4 +1,4 @@
-# slice-063 — — Vier Falschaussagen in slice-048 und ein Feld, das lügt
+# slice-063 — Vier Falschaussagen in slice-048 und ein Feld, das lügt
 
 > **ARCHIVIERT** — Volltext:
 > `unzip -p done/welle-12/archiv.zip <pfad-im-archiv>`

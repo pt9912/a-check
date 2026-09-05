@@ -1,4 +1,4 @@
-# slice-086 — — `forbidden_constructs` ohne `port`-Rolle: fail-closed statt still
+# slice-086 — `forbidden_constructs` ohne `port`-Rolle: fail-closed statt still
 
 > **ARCHIVIERT** — Volltext:
 > `unzip -p done/welle-13/archiv.zip <pfad-im-archiv>`

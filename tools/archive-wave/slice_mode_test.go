@@ -153,6 +153,30 @@ func TestRunSlice_Apply_TitelMitLink(t *testing.T) {
 	}
 }
 
+// TestRunSlice_Apply_OhneWelleFeld belegt: fehlt das **Welle:**-Feld ganz
+// (statt eines expliziten "— wellenlos"-Textes), traegt der Stub den in der
+// Ziel-Form verlangten Text "ohne Welle" statt eines leeren Feldes.
+func TestRunSlice_Apply_OhneWelleFeld(t *testing.T) {
+	root := t.TempDir()
+	writeFile(t, filepath.Join(root, "docs/plan/planning/done/slice-804-kein-feld.md"),
+		"# Slice slice-804: Kein Welle-Feld\n\nInhalt.\n")
+	if err := os.MkdirAll(filepath.Join(root, "docs/reviews"), 0o755); err != nil {
+		t.Fatal(err)
+	}
+
+	if err := runSlice(root, "slice-804", true); err != nil {
+		t.Fatalf("unerwarteter Fehler: %v", err)
+	}
+
+	stubB, err := os.ReadFile(filepath.Join(root, "docs/plan/planning/done/wellenlos/slice-804-kein-feld.md"))
+	if err != nil {
+		t.Fatalf("Stub fehlt im Wellenlos-Archiv-Verzeichnis: %v", err)
+	}
+	if !strings.Contains(string(stubB), "**Welle:** ohne Welle\n") {
+		t.Fatalf("Stub haette 'ohne Welle' statt eines leeren Feldes tragen muessen: %q", string(stubB))
+	}
+}
+
 // TestRunSlice_RejectsWelleSlice belegt: ein Slice mit gesetztem, echtem
 // Welle-Feld gehoert in den -welle-Modus und wird hier abgelehnt statt
 // still falsch archiviert.

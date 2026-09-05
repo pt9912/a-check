@@ -1,4 +1,4 @@
-# slice-009 — — Rollen-Dispatch (welle-10a)
+# slice-009 — Rollen-Dispatch (welle-10a)
 
 > **ARCHIVIERT** — Volltext:
 > `unzip -p done/welle-10/archiv.zip <pfad-im-archiv>`

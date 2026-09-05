@@ -1,4 +1,4 @@
-# slice-085 — — Diagnose: Schicht ohne auflösende Importe
+# slice-085 — Diagnose: Schicht ohne auflösende Importe
 
 > **ARCHIVIERT** — Volltext:
 > `unzip -p done/welle-13/archiv.zip <pfad-im-archiv>`

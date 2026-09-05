@@ -1,4 +1,4 @@
-# slice-012 — — Driving/Driven-Richtung + `LayerOf` längster-Präfix (welle-10b / b2b)
+# slice-012 — Driving/Driven-Richtung + `LayerOf` längster-Präfix (welle-10b / b2b)
 
 > **ARCHIVIERT** — Volltext:
 > `unzip -p done/welle-10/archiv.zip <pfad-im-archiv>`

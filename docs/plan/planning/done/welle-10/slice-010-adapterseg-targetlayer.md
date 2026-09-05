@@ -1,4 +1,4 @@
-# slice-010 — — Layer-relativer `adapterSeg` + längster-Präfix (welle-10b/b1)
+# slice-010 — Layer-relativer `adapterSeg` + längster-Präfix (welle-10b/b1)
 
 > **ARCHIVIERT** — Volltext:
 > `unzip -p done/welle-10/archiv.zip <pfad-im-archiv>`

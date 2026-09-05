@@ -1,4 +1,4 @@
-# slice-021 — — C#-Sprach-Backend (welle-06-sprach-backends)
+# slice-021 — C#-Sprach-Backend (welle-06-sprach-backends)
 
 > **ARCHIVIERT** — Volltext:
 > `unzip -p done/welle-06/archiv.zip <pfad-im-archiv>`

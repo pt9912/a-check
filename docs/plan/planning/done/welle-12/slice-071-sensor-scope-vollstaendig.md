@@ -1,4 +1,4 @@
-# slice-071 — — Sensoren messen den ganzen Bestand, den sie behaupten
+# slice-071 — Sensoren messen den ganzen Bestand, den sie behaupten
 
 > **ARCHIVIERT** — Volltext:
 > `unzip -p done/welle-12/archiv.zip <pfad-im-archiv>`

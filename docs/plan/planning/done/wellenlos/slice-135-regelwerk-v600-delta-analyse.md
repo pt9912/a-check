@@ -1,8 +1,8 @@
-# slice-135 — — Regelwerk-Migration `v5.12.0` → `v6.0.0`: Delta-Analyse
+# slice-135 — Regelwerk-Migration `v5.12.0` → `v6.0.0`: Delta-Analyse
 
 > **ARCHIVIERT** — Volltext:
 > `unzip -p done/wellenlos/slice-135-archiv.zip <pfad-im-archiv>`
 
-**Welle:** 
+**Welle:** ohne Welle
 **Archiviert:** <manuell auszufuellen> (eigene Closure)
 **Hervorgegangen:** — keine — <!-- d-check:ignore (Kennungen aus dem archivierten Volltext, absichtlich unverlinkt) -->

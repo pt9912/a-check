@@ -1,4 +1,4 @@
-# slice-081 — — Laufzeit-Diagnose für nicht extrahierte Import-Formen
+# slice-081 — Laufzeit-Diagnose für nicht extrahierte Import-Formen
 
 > **ARCHIVIERT** — Volltext:
 > `unzip -p done/welle-13/archiv.zip <pfad-im-archiv>`

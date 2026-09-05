@@ -1,4 +1,4 @@
-# slice-053 — — Etappe D (2/3): Lifecycle vervollständigen, Roadmap-Drift sichtbar machen
+# slice-053 — Etappe D (2/3): Lifecycle vervollständigen, Roadmap-Drift sichtbar machen
 
 > **ARCHIVIERT** — Volltext:
 > `unzip -p done/welle-12/archiv.zip <pfad-im-archiv>`

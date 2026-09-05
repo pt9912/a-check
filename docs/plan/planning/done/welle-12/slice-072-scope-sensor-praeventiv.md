@@ -1,4 +1,4 @@
-# slice-072 — — der Scope-Sensor greift, bevor der Fehler veröffentlicht ist
+# slice-072 — der Scope-Sensor greift, bevor der Fehler veröffentlicht ist
 
 > **ARCHIVIERT** — Volltext:
 > `unzip -p done/welle-12/archiv.zip <pfad-im-archiv>`

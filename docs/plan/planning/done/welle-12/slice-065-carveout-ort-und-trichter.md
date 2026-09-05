@@ -1,4 +1,4 @@
-# slice-065 — — Etappe F (2/3): Carveout-Ort und Diskrepanz-Trichter
+# slice-065 — Etappe F (2/3): Carveout-Ort und Diskrepanz-Trichter
 
 > **ARCHIVIERT** — Volltext:
 > `unzip -p done/welle-12/archiv.zip <pfad-im-archiv>`

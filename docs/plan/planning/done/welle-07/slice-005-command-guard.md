@@ -1,4 +1,4 @@
-# slice-005 — — Durchsetzungsschicht: PreToolUse-Command-Guard
+# slice-005 — Durchsetzungsschicht: PreToolUse-Command-Guard
 
 > **ARCHIVIERT** — Volltext:
 > `unzip -p done/welle-07/archiv.zip <pfad-im-archiv>`

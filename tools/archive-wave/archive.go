@@ -177,6 +177,12 @@ func ApplySlice(root, sliceID, slicePath string, reviews []string) ([]Move, erro
 	if err != nil {
 		return nil, err
 	}
+	// Ein Slice ohne eigenes **Welle:**-Feld liest als leerer String
+	// zurueck; die Ziel-Form (archiv-stub-slice.template.md) verlangt hier
+	// ausdruecklich den Text "ohne Welle" statt eines leeren Feldes.
+	if field == "" {
+		field = "ohne Welle"
+	}
 
 	newAbs := filepath.Join(archiveDir, filepath.Base(slicePath))
 	field = RewriteFieldForMove(RelPath(root, slicePath), RelPath(root, newAbs), field, nil)

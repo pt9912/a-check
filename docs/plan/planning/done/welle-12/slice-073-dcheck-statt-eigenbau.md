@@ -1,4 +1,4 @@
-# slice-073 — — d-check statt Eigenbau: Analyse und CR (zur Abnahme)
+# slice-073 — d-check statt Eigenbau: Analyse und CR (zur Abnahme)
 
 > **ARCHIVIERT** — Volltext:
 > `unzip -p done/welle-12/archiv.zip <pfad-im-archiv>`

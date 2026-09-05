@@ -1,4 +1,4 @@
-# slice-008 — — Lokaler commit-msg-Hook (Traceability opt-in)
+# slice-008 — Lokaler commit-msg-Hook (Traceability opt-in)
 
 > **ARCHIVIERT** — Volltext:
 > `unzip -p done/welle-09/archiv.zip <pfad-im-archiv>`

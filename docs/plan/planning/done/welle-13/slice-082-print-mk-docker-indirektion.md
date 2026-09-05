@@ -1,4 +1,4 @@
-# slice-082 — — `--print-mk`: `$(DOCKER)` statt wörtlichem `docker`
+# slice-082 — `--print-mk`: `$(DOCKER)` statt wörtlichem `docker`
 
 > **ARCHIVIERT** — Volltext:
 > `unzip -p done/welle-13/archiv.zip <pfad-im-archiv>`

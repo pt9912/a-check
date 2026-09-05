@@ -1,4 +1,4 @@
-# slice-059 — — Durchsetzungs-Lücken: Gate-Liste, Befund-Maskierung, Schritt 9
+# slice-059 — Durchsetzungs-Lücken: Gate-Liste, Befund-Maskierung, Schritt 9
 
 > **ARCHIVIERT** — Volltext:
 > `unzip -p done/welle-12/archiv.zip <pfad-im-archiv>`

@@ -1,4 +1,4 @@
-# slice-078 — — Zwei fehlende Rollen-Übergaben: schließen oder deklarieren
+# slice-078 — Zwei fehlende Rollen-Übergaben: schließen oder deklarieren
 
 > **ARCHIVIERT** — Volltext:
 > `unzip -p done/welle-12/archiv.zip <pfad-im-archiv>`

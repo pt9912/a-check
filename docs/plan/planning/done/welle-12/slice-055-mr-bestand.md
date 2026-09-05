@@ -1,4 +1,4 @@
-# slice-055 — — Etappe C (1/2): `MR`-Bestand gegen `v3.5.2` klären
+# slice-055 — Etappe C (1/2): `MR`-Bestand gegen `v3.5.2` klären
 
 > **ARCHIVIERT** — Volltext:
 > `unzip -p done/welle-12/archiv.zip <pfad-im-archiv>`

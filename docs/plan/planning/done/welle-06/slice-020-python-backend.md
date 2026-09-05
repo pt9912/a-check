@@ -1,4 +1,4 @@
-# slice-020 — — Python-Sprach-Backend (welle-06-sprach-backends)
+# slice-020 — Python-Sprach-Backend (welle-06-sprach-backends)
 
 > **ARCHIVIERT** — Volltext:
 > `unzip -p done/welle-06/archiv.zip <pfad-im-archiv>`

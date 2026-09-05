@@ -1,4 +1,4 @@
-# slice-083 — — `--print-mk` nennt den Digest des Vorgängers
+# slice-083 — `--print-mk` nennt den Digest des Vorgängers
 
 > **ARCHIVIERT** — Volltext:
 > `unzip -p done/welle-13/archiv.zip <pfad-im-archiv>`

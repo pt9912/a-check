@@ -1,4 +1,4 @@
-# slice-060 — — SL-002: Verweise, die den Lifecycle überleben
+# slice-060 — SL-002: Verweise, die den Lifecycle überleben
 
 > **ARCHIVIERT** — Volltext:
 > `unzip -p done/welle-12/archiv.zip <pfad-im-archiv>`

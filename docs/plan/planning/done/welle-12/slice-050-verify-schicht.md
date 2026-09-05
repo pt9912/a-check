@@ -1,4 +1,4 @@
-# slice-050 — — Etappe E (2/3): Verifikations-Schicht einziehen
+# slice-050 — Etappe E (2/3): Verifikations-Schicht einziehen
 
 > **ARCHIVIERT** — Volltext:
 > `unzip -p done/welle-12/archiv.zip <pfad-im-archiv>`

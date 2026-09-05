@@ -1,4 +1,4 @@
-# slice-058 — — Sensor-Präzision: drei belegte Ungenauigkeiten in `tools/`
+# slice-058 — Sensor-Präzision: drei belegte Ungenauigkeiten in `tools/`
 
 > **ARCHIVIERT** — Volltext:
 > `unzip -p done/welle-12/archiv.zip <pfad-im-archiv>`
