@@ -18,7 +18,7 @@ Welle-Datei, nicht hier.
 
 - *(keine offene Welle-Datei)*
 
-Nichts in Arbeit.
+[slice-135](../in-progress/slice-135-regelwerk-v600-delta-analyse.md) ist in Arbeit — kein Welle-Bezug, siehe seinen eigenen `Bezug`-Kopf.
 
 **Offene Slices ohne Welle** — sie brauchen keine, ihre Trigger stehen in ihrem eigenen `§0`:
 
