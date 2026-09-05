@@ -51,7 +51,7 @@ NO_CACHE_FILTER_COV  := --no-cache-filter coverage
         gate-consistency guard-selftest ci-range-selftest record-gates gates image-test ci \
         trace-check hooks suppression-check regelwerk-check commit-scope-check \
         verify verify-risiko-ausgaenge verify-observations slice-mv image-scan \
-        doc-workflows version-coherence archive-wave-test archive-wave
+        doc-workflows doc-reviews version-coherence archive-wave-test archive-wave
 
 # Gates seriell: unter `make -j` liefen die Sub-Gates sonst parallel und die
 # Reihenfolge/der Abbruch bei rotem Gate wären nicht garantiert.
@@ -107,19 +107,30 @@ verify-observations: ## Deckung des Beobachtungs-Registers: zitierte BEO-Kennung
 commit-scope-check: ## Commit-Scope (planning) beruehrt nur docs/plan/planning/ (AGENTS §5, SL-003). MSGFILE=<datei> (Hook, prueft den Index VOR dem Commit), RANGE=a..b (CI), sonst HEAD~1..HEAD.
 	@MSGFILE="$(MSGFILE)" RANGE="$(RANGE)" bash tools/commit-scope-check.sh
 
-# Das EINZIGE eigene doc-*-Target: das erzeugte Fragment d-check.mk fuehrt fuer
-# dieses Modul keines, obwohl der Pin es kennt (es steht in seinen
-# --disable-Listen). Das Fragment bleibt darum unberuehrt (slice-130).
+# Eigene doc-*-Targets: das erzeugte Fragment d-check.mk fuehrt fuer diese
+# Module keines, obwohl der Pin sie kennt (sie stehen in seinen
+# --disable-Listen). Das Fragment bleibt darum unberuehrt (slice-130, slice-160).
 #
 # DISABLED WIRD DIE modules:-LISTE, NICHT DIE MODUL-MENGE: die Fragment-Targets
 # zaehlen alle Module auf, weil sie generisch erzeugt sind und die Konfiguration
 # nicht kennen. Hier waere das eine geschlossene Liste gegen eine offene Menge —
-# genau die Falle aus slice-115. Die sechs Namen unten sind die aktive
+# genau die Falle aus slice-115. Die Namen unten sind die aktive
 # modules:-Liste der .d-check.yml; sie steht im selben Repo und faellt beim
 # Aendern auf.
 doc-workflows: ## Deklarations-Form der uses:-Referenzen unter .github/workflows (Modul workflows).
 	$(DOCKER) run --rm --network none -v "$(CURDIR):/repo:ro" $(DCHECK_REF) \
 	  --enable workflows \
+	  --disable links --disable anchors --disable ids \
+	  --disable matrix --disable spans --disable hostpaths --disable reviews
+
+# Review-Report-Deckung (DC-FA-RVW-001, Modul reviews, seit slice-160): eine
+# DoD-Zeile mit der Phrase "unabhaengiger Review" braucht mindestens einen
+# Report unter docs/reviews/ mit derselben slice-<NNN>-Kennung im Dateinamen.
+# Opt-in PRO SLICE ueber die DoD-Phrase selbst — ohne sie ist die
+# Kandidatenmenge fuer diesen Slice leer, kein Fehlalarm.
+doc-reviews: ## Review-Report-Deckung fuer Slices mit DoD-Zusage "unabhaengiger Review" (Modul reviews).
+	$(DOCKER) run --rm --network none -v "$(CURDIR):/repo:ro" $(DCHECK_REF) \
+	  --enable reviews \
 	  --disable links --disable anchors --disable ids \
 	  --disable matrix --disable spans --disable hostpaths
 
@@ -174,7 +185,7 @@ verify: ## Verifikations-Schicht: DoD-/Closure-Fragen (vor der "fertig"-Meldung;
 record-gates: ## Gate-Nachweis (Working-Tree-Hash) für den Stop-Hook schreiben.
 	@bash tools/harness/record-gates.sh
 
-gates: lint test coverage-gate arch-check doc-check doc-targets doc-planning doc-workflows gate-consistency version-coherence suppression-check guard-selftest ci-range-selftest record-gates ## alle inneren Gates (mandatory vor Handoff).
+gates: lint test coverage-gate arch-check doc-check doc-targets doc-planning doc-workflows doc-reviews gate-consistency version-coherence suppression-check guard-selftest ci-range-selftest record-gates ## alle inneren Gates (mandatory vor Handoff).
 
 image-test: build ## AC-FA-DIST-001 + nativ==Container-Akzeptanz gegen das gebaute Image.
 	@IMAGE=$(IMAGE) bash tools/image-test.sh

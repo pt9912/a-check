@@ -18,7 +18,19 @@ scan:
   # a-checks Doku, darum nicht gegen a-checks Kennungs-/Linkregeln pruefen.
   ignore: [".harness/baseline/**"]
 
-modules: [links, anchors, ids, matrix, spans, hostpaths, versions]
+modules: [links, anchors, ids, matrix, spans, hostpaths, versions, reviews]
+
+# Review-Report-Deckung (DC-FA-RVW-001, seit d-check v0.74.1): ein done/-Slice
+# mit einer Review-ZUSAGE (ein DoD-Haken, dessen Zeile die Phrase
+# "unabhaengiger Review" traegt) braucht mindestens einen Report unter
+# reviews-dir mit derselben slice-<NNN>-Kennung im Dateinamen. Kein
+# rekursiver Scan (archivierte Stubs unter done/welle-*/, done/wellenlos/
+# tragen keine DoD mehr und fallen natuerlich aus der Kandidatenmenge). Opt-in
+# PRO SLICE ueber die DoD-Phrase selbst -- ohne sie prueft das Modul nichts
+# (kein Fehlalarm), verkoerpert seit slice-160 in AGENTS.md SS6.
+reviews:
+  done-dir: docs/plan/planning/done
+  reviews-dir: docs/reviews
 
 # Ein Review-Report ist selbst ein LAUF-BELEG (Modul 10) und wird nicht mehr
 # editiert, auch wenn sein zitiertes Ziel archiviert wurde — dieselbe Grenze

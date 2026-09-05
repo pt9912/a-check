@@ -76,6 +76,7 @@ guard_verdict() {
       "gate-consistency","verify-risiko-ausgaenge",
       "verify-observations","commit-scope-check","guard-selftest","doc-complete","doc-immutable",
       "doc-commits","doc-planning","doc-tracked","doc-targets","doc-structure","doc-workflows",
+      "doc-reviews",
       "version-coherence","ci-range-selftest",
       "regelwerk-check","archive-wave-test"]);
 
@@ -229,7 +230,7 @@ if [ "${1:-}" = "--selftest" ]; then
   # in Ordnung" — kein Befund, den ein Pipe-Verbot schuetzen koennte (slice-144).
   # `archive-wave-test` (seine eigene Testsuite) ist dagegen ein echtes Pruef-Target
   # und steht in GATES, nicht hier.
-  NICHT_PRUEFEND="help doc-help doc-doctor doc-repair doc-trace compile build arch-graph a-check a-check-graph record-gates hooks slice-mv image-scan archive-wave"
+  NICHT_PRUEFEND="help doc-help doc-doctor doc-repair doc-trace doc-usage compile build arch-graph a-check a-check-graph record-gates hooks slice-mv image-scan archive-wave"
   gates_liste="$(sed -n '/const GATES = new Set(\[/,/\]);/p' "$0" | grep -oE '"[a-z][a-z0-9-]*"' | tr -d '"' | tr '\n' ' ')"
   alle_targets="$(grep -hoE '^[a-z][a-z0-9-]*:' Makefile d-check.mk 2>/dev/null | tr -d ':' | sort -u)"
   for t in $alle_targets; do
