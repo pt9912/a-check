@@ -45,11 +45,13 @@ generisch auf den jeweils aktuell vendorten Stand umstellen.
 - [x] Alle Repo-Referenzen auf
       [`MR-017`](../../../../harness/conventions/done/MR-017-adr-vorlagen-version.md)s
       alten Pfad (Datei direkt unter `harness/conventions/`) auf den neuen
-      `done/`-Pfad nachgezogen (repo-weit, analog zum `slice-mv`-Nachzug
-      bei Slices).
-- [x] `BEO-HARNESS/rueckbau-kandidat-ueberlebt-baseline-migration` auf
-      `verkörpert` gesetzt (der dritte Durchlauf des Versions-Bump-Musters
-      ist damit ausgeblieben).
+      `done/`-Pfad nachgezogen (repo-weit, analog zum `slice-mv`-Nachzug bei
+      Slices); `BEO-HARNESS/rueckbau-kandidat-ueberlebt-baseline-migration`
+      auf `verkörpert` gesetzt (der dritte Durchlauf des
+      Versions-Bump-Musters ist damit ausgeblieben).
+- [x] Unabhängiger Review über getrennten Kontext durchgeführt (Report
+      unter `docs/reviews/`); der dabei gefundene Zählfehler (zehn statt
+      zwölf betroffene Dateien) vor Abnahme korrigiert.
 - [x] `make gates` grün.
 - [x] `make verify` grün.
 - [x] Jedes Risiko aus §6 trägt einen Ausgang.
@@ -66,7 +68,7 @@ ablöst — derselbe Mechanismus, mit dem
 [`MR-014`](../../../../harness/conventions/MR-014-keine-agenten-telemetrie.md)/[`MR-015`](../../../../harness/conventions/MR-015-welle-closure-ohne-replay.md)/[`MR-016`](../../../../harness/conventions/MR-016-validator-unbesetzt.md)
 ihre Vorgänger abgelöst haben.
 
-**Repo-weiter Referenz-Nachzug:** zwölf Dateien verwiesen direkt auf den
+**Repo-weiter Referenz-Nachzug:** zehn Dateien verwiesen direkt auf den
 alten Dateipfad von
 [`MR-017`](../../../../harness/conventions/done/MR-017-adr-vorlagen-version.md)
 (nicht nur über den stabilen `harness/conventions.md#mr-017`-Anker, der
@@ -104,7 +106,7 @@ DoD vollständig, `make gates`/`make verify` grün, Closure-Notiz geschrieben.
   nennt versehentlich wieder den alten, aktiven Pfad statt `conventions/done/`*
   — **Ausgang:** gestrichen mit Begründung: `doc-check`s
   `id-unlinked`/`target-missing` fängt einen falschen Pfad sofort ab
-  (gemessen: alle zwölf betroffenen Referenzen mussten für ein grünes
+  (gemessen: alle zehn betroffenen Referenzen mussten für ein grünes
   `make gates` korrigiert werden, s. §3).
 - *Die generische Formulierung „die jeweils aktuell vendorte Fassung" in
   [MR-020](../../../../harness/conventions/MR-020-adr-vorlage-generisch.md)
@@ -118,15 +120,24 @@ DoD vollständig, `make gates`/`make verify` grün, Closure-Notiz geschrieben.
 ## 7. Closure-Notiz
 
 - **Was hat funktioniert:** der repo-weite `grep` auf den exakten alten
-  Pfad-String vor dem `git mv` hat alle zwölf Referrer zuverlässig
+  Pfad-String vor dem `git mv` hat alle zehn Referrer zuverlässig
   gefunden — dieselbe Technik, die `make slice-mv` intern für
   Slice-Dateien automatisiert, hier von Hand für eine `MR`-Datei
   angewendet, weil es dafür kein eigenes Werkzeug gibt.
 - **Was ging anders als geplant:** ursprünglich war nur an den
   `harness/conventions.md#mr-017`-Anker gedacht (der bleibt stabil); dass
-  daneben zwölf Dateien den **Datei-Pfad** direkt verlinken und beim `git
+  daneben zehn Dateien den **Datei-Pfad** direkt verlinken und beim `git
   mv` mitgezogen werden müssen, wurde erst durch den `grep`-Befund
-  sichtbar.
+  sichtbar. Das unabhängige Review fand zusätzlich einen eigenen
+  Zählfehler: die erste Fassung dieses Slice (und der bereits erstellte
+  Commit `c201058`) behaupteten „zwölf Dateien" — die tatsächliche,
+  nachgezählte Zahl ist zehn. Im Slice-Text vor Abnahme korrigiert; die
+  Commit-Message von `c201058` trägt die falsche Zahl weiter fort (keine
+  Amend-Praxis in diesem Repo für bereits erstellte, unveröffentlichte
+  Commits) — dieselbe Fehlerklasse wie
+  [`BEO-GATE/cr-text-behauptet-statt-gemessen`](../observations/BEO-GATE/cr-text-behauptet-statt-gemessen/observation.md),
+  hier bei einer repo-eigenen Zählung statt einer CR an ein fremdes
+  Werkzeug.
 - **Lerneintrag — Form: benannte Spec-Lücke.** *a-check hat kein Werkzeug
   analog zu `make slice-mv` für Adaptions-Dateien (`harness/conventions/MR-*.md`)
   — die Umbenennungs-Referenz-Pflege lief hier manuell per `grep`+`sed`.
