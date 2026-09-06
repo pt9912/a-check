@@ -82,7 +82,7 @@ durchgeführten Reviews rekonstruiert.
 
 - **`BEO-GATE/pruefer-ohne-gegenstand-oder-aufruf`** erreichte **3×** (`slice-120`, `slice-123`,
   `slice-165`) — Ausgang: **geplant** in
-  [`slice-168`](../done/slice-168-pruefer-kalibrierungs-selbsttest.md) (Kalibrierungs-Selbsttest für
+  [`slice-168`](wellenlos/slice-168-pruefer-kalibrierungs-selbsttest.md) (Kalibrierungs-Selbsttest für
   phrasen-/muster-basierte Prüfer; noch keine automatisierte Lösung, die Analyse-Fragen sind offen).
 - **`BEO-HARNESS/rueckbau-kandidat-ueberlebt-baseline-migration`** — **verkörpert** in
   [`MR-020`](../../../../harness/conventions/MR-020-adr-vorlage-generisch.md) `seit slice-166`: die
@@ -95,7 +95,7 @@ durchgeführten Reviews rekonstruiert.
 
 ## Folge-Slices
 
-- [slice-168](../done/slice-168-pruefer-kalibrierungs-selbsttest.md) — Kalibrierungs-Selbsttest für
+- [slice-168](wellenlos/slice-168-pruefer-kalibrierungs-selbsttest.md) — Kalibrierungs-Selbsttest für
   phrasen-/muster-basierte Prüfer (`BEO-GATE/pruefer-ohne-gegenstand-oder-aufruf`, 3×). Trigger:
   Priorisierung durch den Maintainer, kein akuter Zwang.
 

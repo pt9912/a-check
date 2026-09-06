@@ -6,7 +6,7 @@ wechselt nur durch `make slice-mv` ([`AGENTS.md`](../../../../AGENTS.md)
 §3.3/§5).
 
 **Welle:** ohne Welle (Trigger: Review-Findings F-1/F-2 aus
-[`slice-168`](../done/slice-168-pruefer-kalibrierungs-selbsttest.md) —
+[`slice-168`](../done/wellenlos/slice-168-pruefer-kalibrierungs-selbsttest.md) —
 kein Mehr über die eigene DoD hinaus).
 
 **Bezug:** [`BEO-GATE/pruefer-ohne-gegenstand-oder-aufruf`](../observations/BEO-GATE/pruefer-ohne-gegenstand-oder-aufruf/observation.md)
@@ -31,8 +31,9 @@ mehr (slice-120, slice-165). Dieser Slice deckt sie nach.
 
 ## 2. Analyse (vor der Umsetzung)
 
-Zwei Befunde des unabhängigen Reviews zu `slice-168`
-([Report](../../../reviews/2026-09-06-slice-168-pruefer-kalibrierungs-selbsttest.md)):
+Zwei Befunde des unabhängigen Reviews zu `slice-168` (Report mit dem Slice
+archiviert:
+`unzip -p done/wellenlos/slice-168-archiv.zip docs/reviews/2026-09-06-slice-168-pruefer-kalibrierungs-selbsttest.md`):
 
 - **F-1 (HIGH):** Der Selbsttest hardcodet die richtige Fixture-Zeile und
   liest den echten Korpus nie an. Gemessen: die Kandidatenmenge des
