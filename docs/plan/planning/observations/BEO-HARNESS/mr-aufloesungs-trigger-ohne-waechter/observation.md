@@ -24,5 +24,5 @@ genannten Klassen ungeprüft blieben.
 **Abgrenzung zu [`rueckbau-kandidat-ueberlebt-baseline-migration`](../rueckbau-kandidat-ueberlebt-baseline-migration/observation.md):**
 dort wird ein Trigger *gewählt* — der billigere Ersatz statt der sauberen Auflösung; hier wird
 keiner gewählt, weil niemand hinsieht. Andere Ursache, anderes Gegenmittel: ein generischer
-Verweis ([`MR-020`](../../../../../../harness/conventions/MR-020-adr-vorlage-generisch.md)) hilft
+Verweis ([`MR-020`](../../../../../../harness/conventions.md#mr-020)) hilft
 gegen diese Ausprägung nicht.

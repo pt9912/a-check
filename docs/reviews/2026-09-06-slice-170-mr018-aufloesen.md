@@ -187,10 +187,14 @@ gepusht, ein Nachfolge-Eintrag also nicht nötig.
 benannt), F-2 (Trigger-Tabelle trennt die zwei Bedingungen; die Auflösung
 trägt allein aus der ersten), F-4 (Beobachtung und Lerneintrag zeigen jetzt
 auf die eigene Lücke), F-5/F-6/F-9 (Text). F-7 als eigene Beobachtung
-registriert (`BEO-GATE/trace-check-lokal-nicht-befragbar`). **Offen:** F-3 —
-die Umstellung auf die Index-Form betrifft **168** Pfad-Links in 16 Dateien
-und ist damit ein eigener Slice, keine Nebenkorrektur; F-8 ist vorbestehend
-und fremd.
+registriert (`BEO-GATE/trace-check-lokal-nicht-befragbar`). **F-3 ebenfalls
+eingearbeitet** — auf ausdrückliche Maintainer-Entscheidung wurde die
+Verweis-Form repo-weit umgestellt: **129** Pfad-Links in 19 Dateien tragen
+jetzt die Index-Form `harness/conventions.md#mr-<NNN>`; ausgenommen bleiben
+`conventions.md` selbst (es *ist* der Index) und die akzeptierten
+Eintrags-Dateien. Die Klasse dahinter ist als
+`BEO-HARNESS/baseline-regel-nie-erwogen-weil-bestand-sie-verletzt`
+registriert. **Offen:** nur F-8 — vorbestehend und fremd.
 
 **Übergabe:** Dieser Report ist Lauf-Beleg, keine Verifikation —
 DoD-/Spec-Konformität prüft der Verifier separat (Modul 11).

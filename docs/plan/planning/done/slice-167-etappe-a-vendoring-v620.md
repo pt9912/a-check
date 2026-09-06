@@ -76,7 +76,7 @@ Klassen von `.harness/baseline/v6.0.0/…`-Referenzen im Repo:
 | Klasse | Beispiele | Verhalten |
 |---|---|---|
 | **Strukturell** — verweist auf „den aktuell vendorten Stand", nicht auf einen historischen Zeitpunkt | `AGENTS.md` §1 (Index/Templates/`SHA256SUMS`/Kurs-Tag-Link), `AGENTS.md` §5 (`slice.template.md`-Pointer), `harness/conventions.md` §Baseline „Stand:", `harness/README.md` (Sensors-Kommentar), `docs/reviews/README.md`, `.harness/skills/reviewer.md`, `docs/plan/carveouts/README.md` | **gehoben auf `v6.2.0`** |
-| **`Ersetzt-Baseline-Regel`-Anker akzeptierter `MR`-Dateien** — dokumentiert, welcher Baseline-Abschnitt zum Zeitpunkt **dieser** Adaption galt | [MR-011](../../../../harness/conventions/MR-011-verfeinerungs-form.md)/[MR-012](../../../../harness/conventions/MR-012-referenzmatrix-grandfathering.md)/[MR-014](../../../../harness/conventions/MR-014-keine-agenten-telemetrie.md)/[MR-015](../../../../harness/conventions/MR-015-welle-closure-ohne-replay.md)/[MR-016](../../../../harness/conventions/MR-016-validator-unbesetzt.md)/[MR-018](../../../../harness/conventions/done/MR-018-review-pflicht-v610-wortlaut.md) (aktiv), [MR-017](../../../../harness/conventions/done/MR-017-adr-vorlagen-version.md) (aufgelöst, `conventions/done/`) | **unverändert** — Adaptions-Block-Disziplin: „an einem akzeptierten Eintrag wird nichts nachträglich inhaltlich geändert" |
+| **`Ersetzt-Baseline-Regel`-Anker akzeptierter `MR`-Dateien** — dokumentiert, welcher Baseline-Abschnitt zum Zeitpunkt **dieser** Adaption galt | [MR-011](../../../../harness/conventions.md#mr-011)/[MR-012](../../../../harness/conventions.md#mr-012)/[MR-014](../../../../harness/conventions.md#mr-014)/[MR-015](../../../../harness/conventions.md#mr-015)/[MR-016](../../../../harness/conventions.md#mr-016)/[MR-018](../../../../harness/conventions.md#mr-018) (aktiv), [MR-017](../../../../harness/conventions.md#mr-017) (aufgelöst, `conventions/done/`) | **unverändert** — Adaptions-Block-Disziplin: „an einem akzeptierten Eintrag wird nichts nachträglich inhaltlich geändert" |
 
 **Dritte Klasse, zunächst übersehen:** die vier `.claude/rules/`-Symlinks
 auf einzelne Regelwerk-Module (`modul-01/05/06/08`) sind ebenfalls
@@ -97,7 +97,7 @@ das als Hinweis, nicht als Fehler, und prüft den höchsten. Der
 Unterschied zur vorigen Migration (`slice-136`, sechs bewusst
 zurückgehaltene Zeiger wegen **ungelöster** Feature-Lücken): hier ist die
 einzige inhaltliche Lücke (Review-DoD-Zeile, `slice.template.md`) bereits
-durch [MR-019](../../../../harness/conventions/MR-019-review-dod-opt-in.md)/`slice-165`
+durch [MR-019](../../../../harness/conventions.md#mr-019)/`slice-165`
 **entschieden und verankert** (fünfter
 Kopier-Hinweis in `AGENTS.md` §5) — die Nachbildung ist damit *aktiv*,
 nicht *vertagt*, und der Pointer kann trotzdem auf `v6.2.0` zeigen.
@@ -156,7 +156,7 @@ eine Welle, Träger Planner).
   („blinder Bump lässt Agenten einen nicht-existenten Pfad kopieren",
   `slice-136`) diesmal vermieden, ohne sechs Zeiger vertagen zu müssen —
   weil die einzige echte Lücke (Review-DoD-Zeile) bereits vorab entschieden
-  war ([MR-019](../../../../harness/conventions/MR-019-review-dod-opt-in.md)).
+  war ([MR-019](../../../../harness/conventions.md#mr-019)).
 - **Was ging anders als geplant:** `slice-161` §6 hatte die Etappe für
   `v6.1.0` vorgeschlagen; durch den Retarget (`welle-14`) lief sie
   stattdessen gegen `v6.2.0` — inhaltlich identisches Verfahren, nur das

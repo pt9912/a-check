@@ -14,18 +14,18 @@ Praxis wie bei Slice-Dateinamen).
 | Slice | Gegenstand | Ergebnis |
 |---|---|---|
 | [slice-161](slice-161-regelwerk-v610-delta-analyse.md) | Delta-Analyse `v6.0.0`→`v6.1.0` | 6 Dateien, `+38/−1`; ein echter Nachzug identifiziert |
-| [slice-162](slice-162-review-pflicht-absatz-v610-wortlaut.md) | Review-Pflicht-Absatz auf `v6.1.0`-Wortlaut zurückgeschnitten | [MR-018](../../../../harness/conventions/done/MR-018-review-pflicht-v610-wortlaut.md) |
-| [slice-163](slice-163-adaptions-durchgang-v610.md) | Etappe B: alle 18 `MR`-Dateien gegen `v6.1.0` geprüft | [MR-017](../../../../harness/conventions/done/MR-017-adr-vorlagen-version.md)s Auflösungs-Trigger erkannt, Folge-Slice vorgeschlagen |
+| [slice-162](slice-162-review-pflicht-absatz-v610-wortlaut.md) | Review-Pflicht-Absatz auf `v6.1.0`-Wortlaut zurückgeschnitten | [MR-018](../../../../harness/conventions.md#mr-018) |
+| [slice-163](slice-163-adaptions-durchgang-v610.md) | Etappe B: alle 18 `MR`-Dateien gegen `v6.1.0` geprüft | [MR-017](../../../../harness/conventions.md#mr-017)s Auflösungs-Trigger erkannt, Folge-Slice vorgeschlagen |
 | [slice-164](slice-164-regelwerk-v620-delta-analyse.md) | Delta-Analyse `v6.1.0`→`v6.2.0` (Increment) | 4 Dateien, `+16/−5`; Review-Report-Konvergenz gefunden |
-| [slice-165](slice-165-review-dod-punkt-opt-in-beibehalten.md) | Review-Checkbox-Punkt: Opt-in beibehalten | [MR-019](../../../../harness/conventions/MR-019-review-dod-opt-in.md); empirisch: eigene DoD-Phrase löste `make doc-reviews` nie aus |
-| [slice-166](slice-166-mr020-adr-vorlage-generisch.md) | [MR-017](../../../../harness/conventions/done/MR-017-adr-vorlagen-version.md) durch generischen Verweis abgelöst | [MR-020](../../../../harness/conventions/MR-020-adr-vorlage-generisch.md); dritter Versions-Bump-Durchlauf vermieden |
+| [slice-165](slice-165-review-dod-punkt-opt-in-beibehalten.md) | Review-Checkbox-Punkt: Opt-in beibehalten | [MR-019](../../../../harness/conventions.md#mr-019); empirisch: eigene DoD-Phrase löste `make doc-reviews` nie aus |
+| [slice-166](slice-166-mr020-adr-vorlage-generisch.md) | [MR-017](../../../../harness/conventions.md#mr-017) durch generischen Verweis abgelöst | [MR-020](../../../../harness/conventions.md#mr-020); dritter Versions-Bump-Durchlauf vermieden |
 | [slice-167](slice-167-etappe-a-vendoring-v620.md) | Etappe A: `.harness/baseline/v6.2.0/` vendored | Stand-Deklaration an allen strukturellen Pointern gehoben |
 
 **Das Welle-Ziel war:** a-check auf den aktuellen Kurs-Stand heben, ohne einen blinden
 Pointer-Bump zu fahren, der einen Agenten einen Pfad kopieren lässt, den es hier noch nicht gibt
 (dieselbe Sorge wie bei `slice-136`, dem `v6.0.0`-Vorbild). Eingelöst: der einzige echte
 Feature-Sprung im gesamten `v6.0.0`→`v6.2.0`-Bereich (Review-Report als konstanter/verpflichtender
-DoD-Punkt) wurde **vor** dem Pointer-Bump entschieden ([MR-019](../../../../harness/conventions/MR-019-review-dod-opt-in.md)), nicht danach vertagt.
+DoD-Punkt) wurde **vor** dem Pointer-Bump entschieden ([MR-019](../../../../harness/conventions.md#mr-019)), nicht danach vertagt.
 
 ## Was funktionierte
 
@@ -85,7 +85,7 @@ durchgeführten Reviews rekonstruiert.
   [`slice-168`](wellenlos/slice-168-pruefer-kalibrierungs-selbsttest.md) (Kalibrierungs-Selbsttest für
   phrasen-/muster-basierte Prüfer; noch keine automatisierte Lösung, die Analyse-Fragen sind offen).
 - **`BEO-HARNESS/rueckbau-kandidat-ueberlebt-baseline-migration`** — **verkörpert** in
-  [`MR-020`](../../../../harness/conventions/MR-020-adr-vorlage-generisch.md) `seit slice-166`: die
+  [`MR-020`](../../../../harness/conventions.md#mr-020) `seit slice-166`: die
   saubere Auflösung (generischer Baseline-Verweis statt einer dritten Versions-`MR`) wurde gefahren,
   bevor das Muster ein drittes Mal auftrat.
 - **`BEO-GATE/symlink-ziel-nach-baseline-bump-ungeprueft`** — weiterhin **offen**, jetzt 2× (nicht
@@ -101,12 +101,12 @@ durchgeführten Reviews rekonstruiert.
 
 **Benannt, aber ausdrücklich nicht geschnitten:**
 
-- **[MR-017](../../../../harness/conventions/done/MR-017-adr-vorlagen-version.md)/[MR-018](../../../../harness/conventions/done/MR-018-review-pflicht-v610-wortlaut.md)/[MR-019](../../../../harness/conventions/MR-019-review-dod-opt-in.md)/[MR-020](../../../../harness/conventions/MR-020-adr-vorlage-generisch.md)-Klasse
+- **[MR-017](../../../../harness/conventions.md#mr-017)/[MR-018](../../../../harness/conventions.md#mr-018)/[MR-019](../../../../harness/conventions.md#mr-019)/[MR-020](../../../../harness/conventions.md#mr-020)-Klasse
   „Ersetzt-Baseline-Regel: keine"** (Repo-Aussage-Korrektur statt
   Baseline-Regel-Ersatz) bleibt ein Rückbau-Kandidat nach dem Fork-Test —
-  [MR-020](../../../../harness/conventions/MR-020-adr-vorlage-generisch.md) ist die einzige
+  [MR-020](../../../../harness/conventions.md#mr-020) ist die einzige
   davon mit **permanentem** Trigger, die anderen drei lösen sich erst mit der jeweils nächsten
-  Baseline-Migration ([MR-018](../../../../harness/conventions/done/MR-018-review-pflicht-v610-wortlaut.md)) oder gar nicht bis zur ID-Schema-Überarbeitung. Kein eigener
+  Baseline-Migration ([MR-018](../../../../harness/conventions.md#mr-018)) oder gar nicht bis zur ID-Schema-Überarbeitung. Kein eigener
   Slice, solange keine dieser Adaptionen selbst wieder fällig wird.
 - **`.harness/baseline/v6.0.0/` löschen**, sobald keine `Ersetzt-Baseline-Regel`-Anker mehr darauf
   zeigen (alle sechs betroffenen `MR`-Dateien müssten dafür selbst abgelöst werden — kein
@@ -120,7 +120,7 @@ durchgeführten Reviews rekonstruiert.
 | Stand-Deklaration an den drei kanonischen Stellen | ✅ `harness/conventions.md` §Baseline, `AGENTS.md` §1, `harness/README.md` §Guides — alle `v6.2.0` |
 | `make gates` auf dem finalen Stand | ✅ Exit 0 |
 | `make verify` auf dem finalen Stand | ✅ Exit 0 |
-| `make ci` (Replay-Ersatz, [`MR-015`](../../../../harness/conventions/MR-015-welle-closure-ohne-replay.md)) | ✅ Exit 0 |
+| `make ci` (Replay-Ersatz, [`MR-015`](../../../../harness/conventions.md#mr-015)) | ✅ Exit 0 |
 | Carveout-Audit | ✅ Bestand **null** — [`carveouts/README.md`](../../carveouts/README.md) |
 | Bootstrap-aware-Gate-Audit | ✅ keine Berührung dieser Welle |
 | ADR-Re-Evaluierungs-Audit | ✅ keine ADR berührt |

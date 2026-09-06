@@ -8,7 +8,7 @@ wechselt nur durch `make slice-mv` ([`AGENTS.md`](../../../../AGENTS.md)
 **Welle:** ohne Welle (der Closure-Trigger wäre die eigene DoD — kein
 repo-weites Mehr).
 
-**Bezug:** [`MR-018`](../../../../harness/conventions/done/MR-018-review-pflicht-v610-wortlaut.md)
+**Bezug:** [`MR-018`](../../../../harness/conventions.md#mr-018)
 nennt seinen eigenen Rückbau-Trigger; dieser Slice vollzieht ihn.
 Beobachtung:
 [`BEO-HARNESS/rueckbau-kandidat-ueberlebt-baseline-migration`](../observations/BEO-HARNESS/rueckbau-kandidat-ueberlebt-baseline-migration/observation.md).
@@ -26,7 +26,7 @@ Maintainer.
 
 ## 1. Ziel
 
-[`MR-018`](../../../../harness/conventions/done/MR-018-review-pflicht-v610-wortlaut.md) auflösen. Die Adaption war eine **Provenienz-Korrektur**: der
+[`MR-018`](../../../../harness/conventions.md#mr-018) auflösen. Die Adaption war eine **Provenienz-Korrektur**: der
 Wortlaut des Rollenwechsel-Absatzes in [`AGENTS.md`](../../../../AGENTS.md)
 §6 stammte aus einem Kurs-Template, das a-check nicht vendored hatte —
 also gab es keinen netzlos auflösbaren Anker, auf den das Feld
@@ -93,7 +93,7 @@ aktiven Einträge.
 
 ## 3. Umsetzung
 
-1. [`MR-018`](../../../../harness/conventions/done/MR-018-review-pflicht-v610-wortlaut.md) per `git mv` nach
+1. [`MR-018`](../../../../harness/conventions.md#mr-018) per `git mv` nach
    [`harness/conventions/done/`](../../../../harness/conventions/done/) —
    Datei-Inhalt **unverändert** (Adaptions-Block-Disziplin: an einem
    akzeptierten Eintrag wird nichts nachträglich geändert).
@@ -105,13 +105,27 @@ aktiven Einträge.
    angefasst: die Review-Reports — sie nennen den Pfad als Inline-Code in
    ihrer Eingangs-Kontext-Liste, nicht als Link, und sind Lauf-Belege eines
    vergangenen Standes.
+4. **Verweis-Form repo-weit auf die Index-Form umgestellt** (Maintainer-
+   Entscheidung, nachdem der unabhängige Review die Baseline-Regel
+   gefunden hatte): `grundlagen-harness-dateien.md` verlangt für Verweise
+   aus `AGENTS.md`, einem Slice oder einer ADR
+   `harness/conventions.md#mr-<NNN>` statt des Pfads auf die
+   Eintrags-Datei — weil ein Pfad-Link genau bei der Auflösung bricht.
+   **129** Links in 19 Dateien umgestellt; vorher geprüft, dass alle 14
+   referenzierten Kennungen einen expliziten Anker im Index tragen.
+   **Ausgenommen:** [`conventions.md`](../../../../harness/conventions.md)
+   selbst (es *ist* der Index und muss auf die Dateien zeigen) und die
+   `MR`-Eintrags-Dateien (akzeptiert und damit inhaltlich unantastbar).
 
 ## 4. Definition of Done
 
-- [x] [`MR-018`](../../../../harness/conventions/done/MR-018-review-pflicht-v610-wortlaut.md) liegt in `conventions/done/`, Inhalt unverändert; beide
+- [x] [`MR-018`](../../../../harness/conventions.md#mr-018) liegt in `conventions/done/`, Inhalt unverändert; beide
       Tabellen in `conventions.md` nachgezogen, Anker `mr-018` erhalten.
 - [x] Jeder **verlinkende** Verweis auf den alten Pfad zeigt auf den neuen;
       `make doc-check` belegt es.
+- [x] Verweis-Form repo-weit auf die Index-Form
+      `harness/conventions.md#mr-<NNN>` umgestellt (129 Links, 19 Dateien);
+      Index und akzeptierte Eintrags-Dateien ausgenommen.
 - [x] Unabhängiger Review durchgeführt (Report unter `docs/reviews/`).
 - [x] `make gates` grün.
 - [x] `make verify` grün.
@@ -132,7 +146,7 @@ geschrieben.
 ## 7. Risiken und offene Punkte
 
 - *Der Anker `mr-018` wird beim Umzug in die zweite Tabelle vergessen —
-  dann brechen die Verweise aus [`MR-019`](../../../../harness/conventions/MR-019-review-dod-opt-in.md) und `slice-162`, die auf
+  dann brechen die Verweise aus [`MR-019`](../../../../harness/conventions.md#mr-019) und `slice-162`, die auf
   `conventions.md#mr-018` zeigen* — **Ausgang:** gestrichen mit Begründung:
   der Anker ist mit umgezogen und beide Verweise lösen auf, belegt durch
   `make doc-check` Exit 0 (das Risiko kann in dieser Form nicht mehr
@@ -165,14 +179,25 @@ geschrieben.
   zählt schon die Baseline nicht mit, obwohl sie dasselbe Pflichtfeld
   führen. Belegt an diesem Slice: der Rückbau-Trigger von [`MR-018`](../../../../harness/conventions.md#mr-018) war seit
   slice-167 eingetreten und wurde erst beim Durchgang von Hand gefunden.*
-- **Beobachtungs-Register (`../observations/`):** **zwei** neue Einträge, je
+- **Was der Review zusätzlich ausgelöst hat:** er las die Baseline statt den
+  Bestand und fand eine Regel, die a-check nie erwogen hatte — Verweise auf
+  eine Adaption nehmen die **Index-Form**, weil ein Pfad-Link genau bei der
+  Auflösung bricht. Der Slice hatte den Bruch gerade erlebt (acht Dateien
+  nachgezogen) und ihn trotzdem nicht als Regelverstoß erkannt, weil der
+  Bestand 129 solcher Links führte und `slice-166` denselben Nachzug schon
+  einmal so gefahren hatte. Auf Maintainer-Entscheidung repo-weit
+  umgestellt (§3, Punkt 4).
+- **Beobachtungs-Register (`../observations/`):** **drei** neue Einträge, je
   1× mit Beleg `slice-170` —
   [`BEO-HARNESS/mr-aufloesungs-trigger-ohne-waechter`](../observations/BEO-HARNESS/mr-aufloesungs-trigger-ohne-waechter/observation.md)
   (der Prozess-Befund; **nicht** in
   [`rueckbau-kandidat-ueberlebt-baseline-migration`](../observations/BEO-HARNESS/rueckbau-kandidat-ueberlebt-baseline-migration/observation.md)
   eingetragen, Begründung in §9) und
   [`BEO-HARNESS/zwei-baseline-staende-nach-migrationsende`](../observations/BEO-HARNESS/zwei-baseline-staende-nach-migrationsende/observation.md)
-  (der Ausgang des zweiten Risikos).
+  (der Ausgang des zweiten Risikos) und
+  [`BEO-HARNESS/baseline-regel-nie-erwogen-weil-bestand-sie-verletzt`](../observations/BEO-HARNESS/baseline-regel-nie-erwogen-weil-bestand-sie-verletzt/observation.md)
+  (die Klasse hinter der Verweis-Form: der konkrete Fall ist behoben, die
+  Klasse trifft jede Baseline-Regel ohne Adaptions-Eintrag und ohne Gate).
 - **Folge-Slices:** keine. Die Querschnitts-Frage zu den fünf verbliebenen
   `v6.0.0`-Ankern hängt jetzt am Register statt an einem Satz in einer
   Closure-Notiz.
@@ -192,7 +217,7 @@ Verzeichnisliste geprüft. Naheliegend war
 *gewählt* (der billigere Ersatz statt der sauberen Auflösung), hier wird
 keiner gewählt, weil niemand hinsieht. Das Gegenmittel dieses Eintrags
 (generischer Verweis statt Versionsnummer,
-[`MR-020`](../../../../harness/conventions/MR-020-adr-vorlage-generisch.md))
+[`MR-020`](../../../../harness/conventions.md#mr-020))
 greift für den vorliegenden Fall nicht. Darum ein **eigener** Eintrag
 [`mr-aufloesungs-trigger-ohne-waechter`](../observations/BEO-HARNESS/mr-aufloesungs-trigger-ohne-waechter/observation.md)
 (1×) statt einer verdünnten Zählung. Kein weiterer Eintrag unter

@@ -39,8 +39,8 @@ Baseline-Wortlaut nicht trägt — und die verbleibende Differenz als neuen
       `BEO-HARNESS/behauptete-vollstaendigkeit-extern-gefangen` (ohne die
       bisherige Chronik-Prosa, die `git` bereits hält, §3.7).
 - [x] Neuer [`MR-018`](../../../../harness/conventions.md#mr-018) in
-      `harness/conventions.md` (Adaptions-Block + eigene Datei
-      [eigene Eintrags-Datei](../../../../harness/conventions/done/MR-018-review-pflicht-v610-wortlaut.md))
+      `harness/conventions.md` (Adaptions-Block-Zeile plus eigene
+      Eintrags-Datei unter `harness/conventions/`)
       dokumentiert die verbleibende Differenz zum Baseline-Wortlaut, mit
       `Ersetzt-Baseline-Regel` → `.harness/baseline/v6.0.0/regelwerk/modul-08-agentenrollen.md#die-neun-übergaben-und-ihre-artefakte-modul-8`.
 - [x] `make gates` grün.
@@ -130,7 +130,7 @@ liegt vor, slice-161 ist in `done/`, WIP-Limit frei.
   [`BEO-HARNESS/adaption-korrigiert-repo-aussage`](../observations/BEO-HARNESS/adaption-korrigiert-repo-aussage/observation.md)
   — `evidence/slice-162.md` ergänzt, Zähler steht bei 2× (neben
   slice-097; die verwandte Kette
-  [`MR-007`](../../../../harness/conventions/done/MR-007-adr-vorlagen-version.md)→[`013`](../../../../harness/conventions/done/MR-013-adr-vorlagen-version.md)→[`017`](../../../../harness/conventions.md#mr-017)
+  [`MR-007`](../../../../harness/conventions.md#mr-007)→[`013`](../../../../harness/conventions.md#mr-013)→[`017`](../../../../harness/conventions.md#mr-017)
   steht separat unter
   [`rueckbau-kandidat-ueberlebt-baseline-migration`](../observations/BEO-HARNESS/rueckbau-kandidat-ueberlebt-baseline-migration/observation.md)).
   Unter der 3×-Schwelle, aber näher dran.

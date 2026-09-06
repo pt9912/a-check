@@ -65,16 +65,16 @@ slice-161 §2 geänderten Regelwerk-Dateien (`modul-07`, `modul-10`,
 
 | MR | Ersetzt-Baseline-Regel (Datei) | `git diff v6.0.0 v6.1.0` auf diese Datei | Befund |
 |---|---|---|---|
-| [MR-011](../../../../harness/conventions/MR-011-verfeinerungs-form.md) | `grundlagen-source-precedence.md` | 0 Zeilen | unberührt |
-| [MR-012](../../../../harness/conventions/MR-012-referenzmatrix-grandfathering.md) | `grundlagen-referenz-richtung.md` | 0 Zeilen | unberührt |
-| [MR-014](../../../../harness/conventions/MR-014-keine-agenten-telemetrie.md) | `modul-15-observability.md` | 0 Zeilen | unberührt |
-| [MR-015](../../../../harness/conventions/MR-015-welle-closure-ohne-replay.md) | `modul-06-roadmap.md` | 0 Zeilen | unberührt |
-| [MR-016](../../../../harness/conventions/MR-016-validator-unbesetzt.md) | `modul-08-agentenrollen.md` | 0 Zeilen | unberührt |
-| [MR-017](../../../../harness/conventions/done/MR-017-adr-vorlagen-version.md) | — *(Repo-Aussage-Korrektur, kein Baseline-Regel-Ersatz)* | `adr.template.md`: 0 Zeilen | **Auflösungs-Trigger ausgelöst** — §4 |
-| [MR-018](../../../../harness/conventions/done/MR-018-review-pflicht-v610-wortlaut.md) | — *(dito, Template statt Regelwerk)* | — bereits als Rückbau-Kandidat ausgewiesen | unverändert: bleibt bis Etappe A vendored ist (slice-161 §4.4) |
+| [MR-011](../../../../harness/conventions.md#mr-011) | `grundlagen-source-precedence.md` | 0 Zeilen | unberührt |
+| [MR-012](../../../../harness/conventions.md#mr-012) | `grundlagen-referenz-richtung.md` | 0 Zeilen | unberührt |
+| [MR-014](../../../../harness/conventions.md#mr-014) | `modul-15-observability.md` | 0 Zeilen | unberührt |
+| [MR-015](../../../../harness/conventions.md#mr-015) | `modul-06-roadmap.md` | 0 Zeilen | unberührt |
+| [MR-016](../../../../harness/conventions.md#mr-016) | `modul-08-agentenrollen.md` | 0 Zeilen | unberührt |
+| [MR-017](../../../../harness/conventions.md#mr-017) | — *(Repo-Aussage-Korrektur, kein Baseline-Regel-Ersatz)* | `adr.template.md`: 0 Zeilen | **Auflösungs-Trigger ausgelöst** — §4 |
+| [MR-018](../../../../harness/conventions.md#mr-018) | — *(dito, Template statt Regelwerk)* | — bereits als Rückbau-Kandidat ausgewiesen | unverändert: bleibt bis Etappe A vendored ist (slice-161 §4.4) |
 
 Fünf der sieben aktiven Adaptionen
-([MR-011](../../../../harness/conventions/MR-011-verfeinerungs-form.md)/[MR-012](../../../../harness/conventions/MR-012-referenzmatrix-grandfathering.md)/[MR-014](../../../../harness/conventions/MR-014-keine-agenten-telemetrie.md)/[MR-015](../../../../harness/conventions/MR-015-welle-closure-ohne-replay.md)/[MR-016](../../../../harness/conventions/MR-016-validator-unbesetzt.md))
+([MR-011](../../../../harness/conventions.md#mr-011)/[MR-012](../../../../harness/conventions.md#mr-012)/[MR-014](../../../../harness/conventions.md#mr-014)/[MR-015](../../../../harness/conventions.md#mr-015)/[MR-016](../../../../harness/conventions.md#mr-016))
 referenzieren
 Regelwerk-Dateien, die zwischen `v6.0.0` und `v6.1.0` **byte-identisch**
 sind (jede einzeln mit `git diff <tag1> <tag2> -- <pfad>` gemessen, nicht
@@ -84,7 +84,7 @@ einer aktiven Adaption referenziert. Kein Handlungsbedarf für diese fünf.
 
 ## 4. Der eine echte Brocken: MR-017s Auflösungs-Trigger ist eingetreten
 
-[`MR-017`](../../../../harness/conventions/done/MR-017-adr-vorlagen-version.md)
+[`MR-017`](../../../../harness/conventions.md#mr-017)
 nennt als Auflösungs-Trigger *"die Überarbeitung der ID-Schema-Deklaration
 — oder die nächste Baseline-Migration, je nachdem was zuerst eintritt"*.
 Mit `welle-14` ist Zweiteres eingetreten. Inhaltlich hat sich nichts
@@ -95,13 +95,13 @@ Wortlaut-Bruch.
 **Der naheliegende Move — eine neue `MR`-Kennung anlegen, die denselben
 Text mit `v6.1.0` statt `v6.0.0` wiederholt — wäre der dritte Durchlauf
 desselben Musters:**
-[MR-007](../../../../harness/conventions/done/MR-007-adr-vorlagen-version.md)→[MR-013](../../../../harness/conventions/done/MR-013-adr-vorlagen-version.md)
+[MR-007](../../../../harness/conventions.md#mr-007)→[MR-013](../../../../harness/conventions.md#mr-013)
 (erster Durchlauf, vor der Verzeichnisform des Registers),
-[MR-013](../../../../harness/conventions/done/MR-013-adr-vorlagen-version.md)→[MR-017](../../../../harness/conventions/done/MR-017-adr-vorlagen-version.md)
+[MR-013](../../../../harness/conventions.md#mr-013)→[MR-017](../../../../harness/conventions.md#mr-017)
 (zweiter, belegt in
 [`BEO-HARNESS/rueckbau-kandidat-ueberlebt-baseline-migration`](../observations/BEO-HARNESS/rueckbau-kandidat-ueberlebt-baseline-migration/observation.md),
 `evidence/slice-141.md`).
-[MR-017](../../../../harness/conventions/done/MR-017-adr-vorlagen-version.md)
+[MR-017](../../../../harness/conventions.md#mr-017)
 selbst benennt diesen genauen Fall: *"ein Muster, das für sich genommen
 ein Beobachtungs-Register-Eintrag wäre, träte es ein drittes Mal auf"*.
 Einen Eintrag zu verkörpern, der die eigene Wiederholung schon
@@ -110,7 +110,7 @@ vorhergesagt hat, wäre die Harness-Lüge, gegen die `AGENTS.md` §3.7 und
 
 **Vorschlag statt einer weiteren Versions-`MR`:** die **saubere**
 Auflösung fahren, die
-[MR-017](../../../../harness/conventions/done/MR-017-adr-vorlagen-version.md)
+[MR-017](../../../../harness/conventions.md#mr-017)
 als Alternative nennt —
 [MR-000](../../../../harness/conventions.md#mr-000)s
 ID-Schema-Deklaration so umformulieren, dass die ADR-Vorlagen-Zeile nicht
@@ -126,9 +126,9 @@ selbst wird dabei **nicht** verändert (§Adaptions-Block: "an einem
 akzeptierten Eintrag wird nichts nachträglich inhaltlich geändert") —
 die Umformulierung braucht einen neuen `MR`-Eintrag (Kennung wird bei
 dessen eigener Anlage vergeben, nicht hier), der
-[MR-017](../../../../harness/conventions/done/MR-017-adr-vorlagen-version.md)
+[MR-017](../../../../harness/conventions.md#mr-017)
 mit permanentem Auflösungs-Trigger ablöst, analog zur Form, in der
-[MR-014](../../../../harness/conventions/MR-014-keine-agenten-telemetrie.md)/[MR-015](../../../../harness/conventions/MR-015-welle-closure-ohne-replay.md)/[MR-016](../../../../harness/conventions/MR-016-validator-unbesetzt.md)
+[MR-014](../../../../harness/conventions.md#mr-014)/[MR-015](../../../../harness/conventions.md#mr-015)/[MR-016](../../../../harness/conventions.md#mr-016)
 ihre Vorgänger abgelöst haben. Das ist ein eigener Folge-Slice (§6) — die
 Formulierung einer neuen Adaption ist eine inhaltliche Entscheidung
 (Architect-Rolle, [Modul 8](../../../../.harness/baseline/v6.0.0/regelwerk/modul-08-agentenrollen.md#rollen-sequenz-für-eine-welle)),
@@ -137,13 +137,13 @@ keine reine Analyse.
 ## 5. Ergebnis der aufgelösten (`done/`) MR-Dateien
 
 Keine der elf aufgelösten Dateien
-([MR-001](../../../../harness/conventions/done/MR-001-spezifikations-schicht.md)
-… [MR-010](../../../../harness/conventions/done/MR-010-rueckbau-drei-adaptionen.md),
-[MR-013](../../../../harness/conventions/done/MR-013-adr-vorlagen-version.md))
+([MR-001](../../../../harness/conventions.md#mr-001)
+… [MR-010](../../../../harness/conventions.md#mr-010),
+[MR-013](../../../../harness/conventions.md#mr-013))
 referenziert `modul-07`, `modul-10` oder `modul-13` in ihrem
 `Ersetzt-Baseline-Regel`-Feld (`grep` über alle elf Dateien, ein
 Zufallstreffer auf "modul-13" in
-[MR-009](../../../../harness/conventions/done/MR-009-validator-unbesetzt.md)s
+[MR-009](../../../../harness/conventions.md#mr-009)s
 Fließtext betrifft eine andere Aussage, keinen Baseline-Bezug). Aufgelöste Einträge werden nicht neu
 bewertet — hier nur bestätigt, dass keine Überschneidung mit dem
 `v6.1.0`-Diff besteht, die eine Neubewertung nahelegen würde.
@@ -152,7 +152,7 @@ bewertet — hier nur bestätigt, dass keine Überschneidung mit dem
 
 - **Folge-Slice** (noch keine ID): einen neuen `MR`-Eintrag formulieren
   (Kennung wird bei Anlage vergeben) — löst
-  [MR-017](../../../../harness/conventions/done/MR-017-adr-vorlagen-version.md)
+  [MR-017](../../../../harness/conventions.md#mr-017)
   permanent ab, ADR-Vorlagen-Referenz zeigt generisch auf
   `conventions.md` §Baseline statt auf eine feste Versionsnummer. Klein
   (ein Eintrag, ein Feld in
@@ -161,13 +161,13 @@ bewertet — hier nur bestätigt, dass keine Überschneidung mit dem
   Drei-Liefer-Punkte-Grenze.
 - **Danach Etappe A** (Vendoring, slice-161 §6) — unverändert durch diesen
   Durchgang: keiner der drei Liefer-Punkte dort hängt an
-  [MR-017](../../../../harness/conventions/done/MR-017-adr-vorlagen-version.md)
+  [MR-017](../../../../harness/conventions.md#mr-017)
   oder dem hier vorgeschlagenen Folge-Eintrag.
 
 ## 7. Risiken und offene Punkte
 
 - *Der vorgeschlagene Folge-Slice wird nicht gezogen,
-  [MR-017](../../../../harness/conventions/done/MR-017-adr-vorlagen-version.md)
+  [MR-017](../../../../harness/conventions.md#mr-017)
   bleibt aktiv liegen* — **Ausgang:** weiter offen → Beobachtungs-Register
   ([`BEO-HARNESS/rueckbau-kandidat-ueberlebt-baseline-migration`](../observations/BEO-HARNESS/rueckbau-kandidat-ueberlebt-baseline-migration/observation.md)
   bleibt `offen`); ein drittes `MR-<NNN>`-Duplikat bei der übernächsten
@@ -184,7 +184,7 @@ bewertet — hier nur bestätigt, dass keine Überschneidung mit dem
       einzeln mit `git diff <tag1> <tag2> -- <pfad>` gemessen (§2/§3),
       nicht aus dem 6-Datei-Diff-Stat aus slice-161 übernommen.
 - [x] Der eine echte Fund
-      ([MR-017](../../../../harness/conventions/done/MR-017-adr-vorlagen-version.md)-Trigger)
+      ([MR-017](../../../../harness/conventions.md#mr-017)-Trigger)
       benannt, gegen sein eigenes
       Vorhersage-Zitat gehalten, Folge-Slice vorgeschlagen statt eine
       dritte Musterwiederholung stillschweigend zu fahren (§4/§6).
@@ -215,7 +215,7 @@ bewertet — hier nur bestätigt, dass keine Überschneidung mit dem
   Adaption verschoben hat); tatsächlich lag der einzige Fund in einem
   **Trigger**, der nicht am Wortlaut, sondern am Migrations-*Ereignis*
   selbst hängt
-  ([MR-017](../../../../harness/conventions/done/MR-017-adr-vorlagen-version.md))
+  ([MR-017](../../../../harness/conventions.md#mr-017))
   — eine Klasse von Fund, die ein reiner
   Wortlaut-Diff nie zeigen kann, weil es keinen Wortlaut-Unterschied gibt.
 - **Lerneintrag — Form: geschärfte Regel.** *Ein Adaptions-Durchgang nach

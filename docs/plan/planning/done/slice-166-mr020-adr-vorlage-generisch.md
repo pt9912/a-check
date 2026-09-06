@@ -9,7 +9,7 @@ wechselt nur durch `make slice-mv` ([`AGENTS.md`](../../../../AGENTS.md)
 
 **Bezug:** [slice-163](../done/slice-163-adaptions-durchgang-v610.md)
 §4/§6 (Folge-Slice-Vorschlag), Maintainer-Wort 2026-09-06 ("Danach
-[MR-017](../../../../harness/conventions/done/MR-017-adr-vorlagen-version.md)/[MR-000](../../../../harness/conventions.md#mr-000)
+[MR-017](../../../../harness/conventions.md#mr-017)/[MR-000](../../../../harness/conventions.md#mr-000)
 und Etappe A").
 
 **Berührte Spec-Stellen:** — *(keine)* — Harness-/Konventions-Änderung
@@ -24,26 +24,26 @@ Maintainer.
 
 ## 1. Ziel
 
-[`MR-017`](../../../../harness/conventions/done/MR-017-adr-vorlagen-version.md)s
+[`MR-017`](../../../../harness/conventions.md#mr-017)s
 ausgelösten Auflösungs-Trigger ("die nächste Baseline-Migration") nicht
 durch eine weitere Versions-`MR` bedienen (dritter Durchlauf desselben
 Musters), sondern
 [`MR-000`](../../../../harness/conventions.md#mr-000)s ADR-Vorlagen-Referenz
 über eine neue, **permanent** auflösende Adaption
-([`MR-020`](../../../../harness/conventions/MR-020-adr-vorlage-generisch.md))
+([`MR-020`](../../../../harness/conventions.md#mr-020))
 generisch auf den jeweils aktuell vendorten Stand umstellen.
 
 ## 2. Definition of Done
 
-- [x] [`MR-020`](../../../../harness/conventions/MR-020-adr-vorlage-generisch.md)
+- [x] [`MR-020`](../../../../harness/conventions.md#mr-020)
       angelegt (generischer Verweis auf `conventions.md` §Baseline statt
       fester Versionsnummer, `Auflösungs-Trigger: permanent`);
-      [`MR-017`](../../../../harness/conventions/done/MR-017-adr-vorlagen-version.md)
+      [`MR-017`](../../../../harness/conventions.md#mr-017)
       nach `harness/conventions/done/` verschoben (reiner `git mv`, Inhalt
       unverändert), Adaptions-Tabellen in `harness/conventions.md`
       nachgezogen.
 - [x] Alle Repo-Referenzen auf
-      [`MR-017`](../../../../harness/conventions/done/MR-017-adr-vorlagen-version.md)s
+      [`MR-017`](../../../../harness/conventions.md#mr-017)s
       alten Pfad (Datei direkt unter `harness/conventions/`) auf den neuen
       `done/`-Pfad nachgezogen (repo-weit, analog zum `slice-mv`-Nachzug bei
       Slices); `BEO-HARNESS/rueckbau-kandidat-ueberlebt-baseline-migration`
@@ -62,24 +62,24 @@ generisch auf den jeweils aktuell vendorten Stand umstellen.
 verändert (Adaptions-Block-Disziplin: „an einem akzeptierten Eintrag wird
 nichts nachträglich inhaltlich geändert"). Die Umformulierung lebt
 vollständig in der neuen Adaption
-[`MR-020`](../../../../harness/conventions/MR-020-adr-vorlage-generisch.md),
-die [`MR-017`](../../../../harness/conventions/done/MR-017-adr-vorlagen-version.md)
+[`MR-020`](../../../../harness/conventions.md#mr-020),
+die [`MR-017`](../../../../harness/conventions.md#mr-017)
 ablöst — derselbe Mechanismus, mit dem
-[`MR-014`](../../../../harness/conventions/MR-014-keine-agenten-telemetrie.md)/[`MR-015`](../../../../harness/conventions/MR-015-welle-closure-ohne-replay.md)/[`MR-016`](../../../../harness/conventions/MR-016-validator-unbesetzt.md)
+[`MR-014`](../../../../harness/conventions.md#mr-014)/[`MR-015`](../../../../harness/conventions.md#mr-015)/[`MR-016`](../../../../harness/conventions.md#mr-016)
 ihre Vorgänger abgelöst haben.
 
 **Repo-weiter Referenz-Nachzug:** zehn Dateien verwiesen direkt auf den
 alten Dateipfad von
-[`MR-017`](../../../../harness/conventions/done/MR-017-adr-vorlagen-version.md)
+[`MR-017`](../../../../harness/conventions.md#mr-017)
 (nicht nur über den stabilen `harness/conventions.md#mr-017`-Anker, der
 unverändert auflöst) — darunter mehrere bereits geschlossene `done/`-Slices
 (`slice-141`, `slice-162`, `slice-163`, `slice-164`, `slice-165`) und
 Beobachtungs-Belege. Alle wurden auf den neuen `done/`-Pfad umgeschrieben —
 **nur der Verweis**, nicht der historische Inhalt: derselbe Umgang, den
 `slice-141` bereits für den analogen
-[`MR-013`](../../../../harness/conventions/done/MR-013-adr-vorlagen-version.md)→[`MR-017`](../../../../harness/conventions/done/MR-017-adr-vorlagen-version.md)-Übergang
+[`MR-013`](../../../../harness/conventions.md#mr-013)→[`MR-017`](../../../../harness/conventions.md#mr-017)-Übergang
 vorgemacht hat („Vier `done/`-Slices bekamen ihre Linkziele auf
-[`MR-013`](../../../../harness/conventions/done/MR-013-adr-vorlagen-version.md)
+[`MR-013`](../../../../harness/conventions.md#mr-013)
 nachgezogen").
 
 ## 4. Trigger
@@ -101,7 +101,7 @@ DoD vollständig, `make gates`/`make verify` grün, Closure-Notiz geschrieben.
 ## 6. Risiken und offene Punkte
 
 - *Ein künftiger Verweis auf
-  [MR-017](../../../../harness/conventions/done/MR-017-adr-vorlagen-version.md)
+  [MR-017](../../../../harness/conventions.md#mr-017)
   (z. B. in einer neuen Beobachtung)
   nennt versehentlich wieder den alten, aktiven Pfad statt `conventions/done/`*
   — **Ausgang:** gestrichen mit Begründung: `doc-check`s
@@ -109,7 +109,7 @@ DoD vollständig, `make gates`/`make verify` grün, Closure-Notiz geschrieben.
   (gemessen: alle zehn betroffenen Referenzen mussten für ein grünes
   `make gates` korrigiert werden, s. §3).
 - *Die generische Formulierung „die jeweils aktuell vendorte Fassung" in
-  [MR-020](../../../../harness/conventions/MR-020-adr-vorlage-generisch.md)
+  [MR-020](../../../../harness/conventions.md#mr-020)
   wird bei einer künftigen Migration nicht konsequent
   eingehalten (jemand vendort einen neuen Stand, vergisst aber
   `conventions.md` §Baseline zu aktualisieren)* — **Ausgang:** weiter
@@ -142,9 +142,9 @@ DoD vollständig, `make gates`/`make verify` grün, Closure-Notiz geschrieben.
   analog zu `make slice-mv` für Adaptions-Dateien (`harness/conventions/MR-*.md`)
   — die Umbenennungs-Referenz-Pflege lief hier manuell per `grep`+`sed`.
   Bisher dreimal aufgetreten
-  ([MR-007](../../../../harness/conventions/done/MR-007-adr-vorlagen-version.md)→[MR-013](../../../../harness/conventions/done/MR-013-adr-vorlagen-version.md),
-  [MR-013](../../../../harness/conventions/done/MR-013-adr-vorlagen-version.md)→[MR-017](../../../../harness/conventions/done/MR-017-adr-vorlagen-version.md),
-  jetzt [MR-017](../../../../harness/conventions/done/MR-017-adr-vorlagen-version.md)→[MR-020](../../../../harness/conventions/MR-020-adr-vorlage-generisch.md)),
+  ([MR-007](../../../../harness/conventions.md#mr-007)→[MR-013](../../../../harness/conventions.md#mr-013),
+  [MR-013](../../../../harness/conventions.md#mr-013)→[MR-017](../../../../harness/conventions.md#mr-017),
+  jetzt [MR-017](../../../../harness/conventions.md#mr-017)→[MR-020](../../../../harness/conventions.md#mr-020)),
   aber jedes Mal manuell und ohne
   Selbsttest-Absicherung wie bei `tools/slice-mv.sh`. Kein akuter
   Sensor-Bedarf (die Fehlerklasse ist über `make doc-check` ohnehin
@@ -155,7 +155,7 @@ DoD vollständig, `make gates`/`make verify` grün, Closure-Notiz geschrieben.
   auf `verkörpert` gesetzt (`seit slice-166`) — der Eintrag hatte bei 1×
   gestanden (die Verzeichnisform des Registers existierte beim ersten
   Durchlauf
-  [MR-007](../../../../harness/conventions/done/MR-007-adr-vorlagen-version.md)→[MR-013](../../../../harness/conventions/done/MR-013-adr-vorlagen-version.md)
+  [MR-007](../../../../harness/conventions.md#mr-007)→[MR-013](../../../../harness/conventions.md#mr-013)
   noch nicht) und ist mit dieser Auflösung erledigt, ohne einen dritten
   Durchlauf zu benötigen.
 - **Folge-Slices:** keine.

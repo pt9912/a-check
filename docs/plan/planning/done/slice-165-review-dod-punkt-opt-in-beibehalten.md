@@ -142,7 +142,7 @@ Drei Liefer-Punkte:
    formulierte Review-Zeile nicht als Liefer-Punkt zählt.
 3. **Neuer `MR`-Eintrag** in `harness/conventions.md` — dokumentiert die
    Opt-in-vs-verpflichtend-Divergenz ggü. dem `v6.2.0`-Baseline-Default,
-   analog zu [`MR-017`](../../../../harness/conventions/done/MR-017-adr-vorlagen-version.md)/[`MR-018`](../../../../harness/conventions/done/MR-018-review-pflicht-v610-wortlaut.md):
+   analog zu [`MR-017`](../../../../harness/conventions.md#mr-017)/[`MR-018`](../../../../harness/conventions.md#mr-018):
    kein vendorter Anker verfügbar (Treiber ist das noch nicht vendorte
    `v6.2.0`-Template), Rückbau-Kandidat, sobald `v6.2.0` vendored ist.
 
@@ -197,7 +197,7 @@ Drei Liefer-Punkte:
 - **Folge-Slices:** noch keine ID vergeben — abhängig vom Ausgang des
   3×-Treffers oben; zusätzlich bleibt der aus `slice-163` offene
   Folge-Slice
-  ([MR-017](../../../../harness/conventions/done/MR-017-adr-vorlagen-version.md)/[MR-000](../../../../harness/conventions.md#mr-000))
+  ([MR-017](../../../../harness/conventions.md#mr-017)/[MR-000](../../../../harness/conventions.md#mr-000))
   unverändert offen.
 - **Risiken aus §6:** beide mit Ausgang — siehe §6.
 - **Drei Paarungen:** verschoben auf die Closure von `welle-14` (dieser
