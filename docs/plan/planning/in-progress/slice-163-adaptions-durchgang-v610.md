@@ -73,7 +73,9 @@ slice-161 §2 geänderten Regelwerk-Dateien (`modul-07`, `modul-10`,
 | [MR-017](../../../../harness/conventions/MR-017-adr-vorlagen-version.md) | — *(Repo-Aussage-Korrektur, kein Baseline-Regel-Ersatz)* | `adr.template.md`: 0 Zeilen | **Auflösungs-Trigger ausgelöst** — §4 |
 | [MR-018](../../../../harness/conventions/MR-018-review-pflicht-v610-wortlaut.md) | — *(dito, Template statt Regelwerk)* | — bereits als Rückbau-Kandidat ausgewiesen | unverändert: bleibt bis Etappe A vendored ist (slice-161 §4.4) |
 
-Fünf der sieben aktiven Adaptionen (`MR-011/012/014/015/016`) referenzieren
+Fünf der sieben aktiven Adaptionen
+([MR-011](../../../../harness/conventions/MR-011-verfeinerungs-form.md)/[MR-012](../../../../harness/conventions/MR-012-referenzmatrix-grandfathering.md)/[MR-014](../../../../harness/conventions/MR-014-keine-agenten-telemetrie.md)/[MR-015](../../../../harness/conventions/MR-015-welle-closure-ohne-replay.md)/[MR-016](../../../../harness/conventions/MR-016-validator-unbesetzt.md))
+referenzieren
 Regelwerk-Dateien, die zwischen `v6.0.0` und `v6.1.0` **byte-identisch**
 sind (jede einzeln mit `git diff <tag1> <tag2> -- <pfad>` gemessen, nicht
 nur aus dem 6-Datei-Diff-Stat übernommen) — keiner der drei tatsächlich
@@ -90,79 +92,105 @@ verschoben (`adr.template.md` bleibt byte-identisch, s. Tabelle) — der
 Trigger feuert rein durch das Ereignis "Migration", nicht durch einen
 Wortlaut-Bruch.
 
-**Der naheliegende Move — `MR-019` anlegen, die denselben Text mit
-`v6.1.0` statt `v6.0.0` wiederholt — wäre der dritte Durchlauf desselben
-Musters:** `MR-007`→`MR-013` (erster Durchlauf, vor der Verzeichnisform
-des Registers), `MR-013`→`MR-017` (zweiter, belegt in
+**Der naheliegende Move — eine neue `MR`-Kennung anlegen, die denselben
+Text mit `v6.1.0` statt `v6.0.0` wiederholt — wäre der dritte Durchlauf
+desselben Musters:**
+[MR-007](../../../../harness/conventions/done/MR-007-adr-vorlagen-version.md)→[MR-013](../../../../harness/conventions/done/MR-013-adr-vorlagen-version.md)
+(erster Durchlauf, vor der Verzeichnisform des Registers),
+[MR-013](../../../../harness/conventions/done/MR-013-adr-vorlagen-version.md)→[MR-017](../../../../harness/conventions/MR-017-adr-vorlagen-version.md)
+(zweiter, belegt in
 [`BEO-HARNESS/rueckbau-kandidat-ueberlebt-baseline-migration`](../observations/BEO-HARNESS/rueckbau-kandidat-ueberlebt-baseline-migration/observation.md),
-`evidence/slice-141.md`). `MR-017` selbst benennt diesen genauen Fall:
-*"ein Muster, das für sich genommen ein Beobachtungs-Register-Eintrag
-wäre, träte es ein drittes Mal auf"*. Einen Eintrag zu verkörpern, der die
-eigene Wiederholung schon vorhergesagt hat, wäre die Harness-Lüge, gegen
-die `AGENTS.md` §3.7 und `modul-13` stehen — ein Sensor, den man kennt,
-aber nicht anwendet.
+`evidence/slice-141.md`).
+[MR-017](../../../../harness/conventions/MR-017-adr-vorlagen-version.md)
+selbst benennt diesen genauen Fall: *"ein Muster, das für sich genommen
+ein Beobachtungs-Register-Eintrag wäre, träte es ein drittes Mal auf"*.
+Einen Eintrag zu verkörpern, der die eigene Wiederholung schon
+vorhergesagt hat, wäre die Harness-Lüge, gegen die `AGENTS.md` §3.7 und
+`modul-13` stehen — ein Sensor, den man kennt, aber nicht anwendet.
 
-**Vorschlag statt `MR-019`:** die **saubere** Auflösung fahren, die
-`MR-017` als Alternative nennt — `MR-000`s ID-Schema-Deklaration
-(`harness/conventions.md` §MR-000) so umformulieren, dass die
-ADR-Vorlagen-Zeile nicht mehr eine Versionsnummer trägt, die bei jeder
-Baseline-Migration erneut veraltet, sondern generisch auf *"die jeweils
-aktuell vendorte Fassung, siehe [`harness/conventions.md`
+**Vorschlag statt einer weiteren Versions-`MR`:** die **saubere**
+Auflösung fahren, die
+[MR-017](../../../../harness/conventions/MR-017-adr-vorlagen-version.md)
+als Alternative nennt —
+[MR-000](../../../../harness/conventions.md#mr-000)s
+ID-Schema-Deklaration so umformulieren, dass die ADR-Vorlagen-Zeile nicht
+mehr eine Versionsnummer trägt, die bei jeder Baseline-Migration erneut
+veraltet, sondern generisch auf *"die jeweils aktuell vendorte Fassung,
+siehe [`harness/conventions.md`
 §Baseline](../../../../harness/conventions.md#baseline)"* verweist — der
 Baseline-Stand ist dort bereits die einzige Quelle, die bei jeder
 Migration ohnehin aktualisiert wird (Liefer-Punkt 2 von Etappe A,
-slice-161 §6). `MR-000` selbst wird dabei **nicht** verändert (§Adaptions-Block:
-"an einem akzeptierten Eintrag wird nichts nachträglich inhaltlich
-geändert") — die Umformulierung braucht einen neuen `MR`-Eintrag, der
-`MR-017` mit permanentem Auflösungs-Trigger ablöst, analog zur Form, in
-der `MR-014`/`MR-015`/`MR-016` ihre Vorgänger abgelöst haben. Das ist ein
-eigener Folge-Slice (§6) — die Formulierung einer neuen Adaption ist eine
-inhaltliche Entscheidung (Architect-Rolle, [Modul 8](../../../../.harness/baseline/v6.0.0/regelwerk/modul-08-agentenrollen.md#rollen-sequenz-für-eine-welle)),
+slice-161 §6).
+[MR-000](../../../../harness/conventions.md#mr-000)
+selbst wird dabei **nicht** verändert (§Adaptions-Block: "an einem
+akzeptierten Eintrag wird nichts nachträglich inhaltlich geändert") —
+die Umformulierung braucht einen neuen `MR`-Eintrag (Kennung wird bei
+dessen eigener Anlage vergeben, nicht hier), der
+[MR-017](../../../../harness/conventions/MR-017-adr-vorlagen-version.md)
+mit permanentem Auflösungs-Trigger ablöst, analog zur Form, in der
+[MR-014](../../../../harness/conventions/MR-014-keine-agenten-telemetrie.md)/[MR-015](../../../../harness/conventions/MR-015-welle-closure-ohne-replay.md)/[MR-016](../../../../harness/conventions/MR-016-validator-unbesetzt.md)
+ihre Vorgänger abgelöst haben. Das ist ein eigener Folge-Slice (§6) — die
+Formulierung einer neuen Adaption ist eine inhaltliche Entscheidung
+(Architect-Rolle, [Modul 8](../../../../.harness/baseline/v6.0.0/regelwerk/modul-08-agentenrollen.md#rollen-sequenz-für-eine-welle)),
 keine reine Analyse.
 
 ## 5. Ergebnis der aufgelösten (`done/`) MR-Dateien
 
-Keine der elf aufgelösten Dateien (`MR-001` … `MR-010`, `MR-013`)
+Keine der elf aufgelösten Dateien
+([MR-001](../../../../harness/conventions/done/MR-001-spezifikations-schicht.md)
+… [MR-010](../../../../harness/conventions/done/MR-010-rueckbau-drei-adaptionen.md),
+[MR-013](../../../../harness/conventions/done/MR-013-adr-vorlagen-version.md))
 referenziert `modul-07`, `modul-10` oder `modul-13` in ihrem
 `Ersetzt-Baseline-Regel`-Feld (`grep` über alle elf Dateien, ein
-Zufallstreffer auf "modul-13" in `MR-009`s Fließtext betrifft eine andere
-Aussage, keinen Baseline-Bezug). Aufgelöste Einträge werden nicht neu
+Zufallstreffer auf "modul-13" in
+[MR-009](../../../../harness/conventions/done/MR-009-validator-unbesetzt.md)s
+Fließtext betrifft eine andere Aussage, keinen Baseline-Bezug). Aufgelöste Einträge werden nicht neu
 bewertet — hier nur bestätigt, dass keine Überschneidung mit dem
 `v6.1.0`-Diff besteht, die eine Neubewertung nahelegen würde.
 
 ## 6. Vorschlag: ein Folge-Slice, dann Etappe A
 
-- **Folge-Slice** (noch keine ID): `MR-019` formulieren — löst
-  [`MR-017`](../../../../harness/conventions/MR-017-adr-vorlagen-version.md)
+- **Folge-Slice** (noch keine ID): einen neuen `MR`-Eintrag formulieren
+  (Kennung wird bei Anlage vergeben) — löst
+  [MR-017](../../../../harness/conventions/MR-017-adr-vorlagen-version.md)
   permanent ab, ADR-Vorlagen-Referenz zeigt generisch auf
   `conventions.md` §Baseline statt auf eine feste Versionsnummer. Klein
-  (ein Eintrag, ein Feld in `MR-000` unverändert, Adaptions-Block-Tabelle
-  aktualisiert) — passt in die Drei-Liefer-Punkte-Grenze.
+  (ein Eintrag, ein Feld in
+  [MR-000](../../../../harness/conventions.md#mr-000) unverändert,
+  Adaptions-Block-Tabelle aktualisiert) — passt in die
+  Drei-Liefer-Punkte-Grenze.
 - **Danach Etappe A** (Vendoring, slice-161 §6) — unverändert durch diesen
-  Durchgang: keiner der drei Liefer-Punkte dort hängt an MR-017/019.
+  Durchgang: keiner der drei Liefer-Punkte dort hängt an
+  [MR-017](../../../../harness/conventions/MR-017-adr-vorlagen-version.md)
+  oder dem hier vorgeschlagenen Folge-Eintrag.
 
 ## 7. Risiken und offene Punkte
 
-- *Der Folge-Slice (`MR-019`) wird nicht gezogen, `MR-017` bleibt aktiv
-  liegen* — **Ausgang:** weiter offen →
-  [`BEO-HARNESS/rueckbau-kandidat-ueberlebt-baseline-migration`](../observations/BEO-HARNESS/rueckbau-kandidat-ueberlebt-baseline-migration/observation.md)
-  bleibt `offen`; ein drittes `MR-0NN`-Duplikat bei der übernächsten
+- *Der vorgeschlagene Folge-Slice wird nicht gezogen,
+  [MR-017](../../../../harness/conventions/MR-017-adr-vorlagen-version.md)
+  bleibt aktiv liegen* — **Ausgang:** weiter offen → Beobachtungs-Register
+  ([`BEO-HARNESS/rueckbau-kandidat-ueberlebt-baseline-migration`](../observations/BEO-HARNESS/rueckbau-kandidat-ueberlebt-baseline-migration/observation.md)
+  bleibt `offen`); ein drittes `MR-<NNN>`-Duplikat bei der übernächsten
   Migration wäre dann der tatsächliche dritte Durchlauf.
-- *Ob die vorgeschlagene `MR-019`-Formulierung so trägt, ist
-  Maintainer-Entscheidung* — **Ausgang:** gestrichen mit Begründung: kein
+- *Ob die vorgeschlagene Formulierung des neuen `MR`-Eintrags so trägt,
+  ist Maintainer-Entscheidung* — **Ausgang:** gestrichen mit Begründung: kein
   Risiko im Sinn der Dreier-Menge, sondern die Kernfrage, die dieser
   Analyse laut Kopf-Vermerk zur Abnahme vorgelegt wird.
 
 ## 8. DoD
 
 - [x] Alle 18 MR-Dateien (7 aktiv, 11 aufgelöst) einzeln gegen den vollen
-      `v6.0.0`↔`v6.1.0`-Tag-Vergleich geprüft, nicht nur gegen das
-      6-Datei-Diff-Stat aus slice-161.
-- [x] Jede Referenz-Datei einzeln mit `git diff <tag1> <tag2> -- <pfad>`
-      gemessen (§3), nicht aus der Diff-Stat-Liste angenommen.
-- [x] Der eine echte Fund (MR-017-Trigger) benannt, gegen sein eigenes
+      `v6.0.0`↔`v6.1.0`-Tag-Vergleich geprüft — jede Referenz-Datei
+      einzeln mit `git diff <tag1> <tag2> -- <pfad>` gemessen (§2/§3),
+      nicht aus dem 6-Datei-Diff-Stat aus slice-161 übernommen.
+- [x] Der eine echte Fund
+      ([MR-017](../../../../harness/conventions/MR-017-adr-vorlagen-version.md)-Trigger)
+      benannt, gegen sein eigenes
       Vorhersage-Zitat gehalten, Folge-Slice vorgeschlagen statt eine
       dritte Musterwiederholung stillschweigend zu fahren (§4/§6).
+- [x] Unabhängiges Plan-Review über getrennten Kontext durchgeführt; der
+      dabei gefundene Zählfehler in §10 (7 statt 8 offene
+      `BEO-HARNESS`-Einträge) vor Abnahme korrigiert.
 - [x] `make gates` grün.
 - [x] `make verify` grün.
 - [x] Beobachtungs-Register gesichtet (§10); kein neuer Eintrag — der
@@ -176,12 +204,19 @@ bewertet — hier nur bestätigt, dass keine Überschneidung mit dem
   <pfad>`-Verfahren statt der Diff-Stat-Liste aus slice-161 zu fahren, hat
   den blinden Fleck strukturell geschlossen, den slice-162 nur zufällig
   fing — jede der sieben aktiven Referenzen wurde einzeln gemessen, nicht
-  aus der Sechs-Datei-Liste abgeleitet.
+  aus der Sechs-Datei-Liste abgeleitet. Das unabhängige Review (getrennter
+  Kontext) fand zusätzlich einen Zählfehler in der eigenen ersten
+  Fassung von §10 (7 statt 8 offene `BEO-HARNESS`-Einträge, Ursache: eine
+  vorbestehende, bereits in
+  [F-8](../../../reviews/2026-09-05-slice-161-delta-analyse.md) benannte
+  Sub-Area-Feld-Inkonsistenz) — vor Abnahme korrigiert.
 - **Was ging anders als geplant:** erwartet war ein Fund *innerhalb* des
   MR-Wortlauts (ein Baseline-Abschnitt, der sich unter einer aktiven
   Adaption verschoben hat); tatsächlich lag der einzige Fund in einem
   **Trigger**, der nicht am Wortlaut, sondern am Migrations-*Ereignis*
-  selbst hängt (`MR-017`) — eine Klasse von Fund, die ein reiner
+  selbst hängt
+  ([MR-017](../../../../harness/conventions/MR-017-adr-vorlagen-version.md))
+  — eine Klasse von Fund, die ein reiner
   Wortlaut-Diff nie zeigen kann, weil es keinen Wortlaut-Unterschied gibt.
 - **Lerneintrag — Form: geschärfte Regel.** *Ein Adaptions-Durchgang nach
   einer Baseline-Migration prüft nicht nur, ob referenzierte
@@ -196,8 +231,9 @@ bewertet — hier nur bestätigt, dass keine Überschneidung mit dem
   trägt den Fund bereits (1×); dieser Slice bestätigt ihn erneut, ohne den
   dritten Durchlauf tatsächlich zu erzeugen — kein neues Auftreten im Sinn
   der Zählregel (§Ein Vorgang zählt einmal).
-- **Folge-Slices:** noch keine ID vergeben — vorgeschlagen: `MR-019`
-  formulieren (§6), danach Etappe A (Vendoring, slice-161 §6).
+- **Folge-Slices:** noch keine ID vergeben — vorgeschlagen: einen neuen
+  `MR`-Eintrag formulieren (§6), danach Etappe A (Vendoring, slice-161
+  §6).
 - **Risiken aus §7:** beide mit Ausgang — siehe §7.
 - **Drei Paarungen:** verschoben auf die Closure von `welle-14` (dieser
   Slice trägt ein `**Welle:**`-Feld, [Modul 8](../../../../.harness/baseline/v6.0.0/regelwerk/modul-08-agentenrollen.md#rollen-sequenz-für-eine-welle)).
@@ -210,17 +246,36 @@ bewertet — hier nur bestätigt, dass keine Überschneidung mit dem
 (`harness/conventions.md` §Modus-Deklaration pro Sub-Area).
 
 **Vorgelagert — offene Beobachtungen sichten:** Register für
-**Harness-Einstieg** durchgegangen (`grep` über alle `state.md` unter
-`BEO-HARNESS/`) — 7 `offen` (unverändert seit slice-161 §10, keine neue
-seit der letzten Sichtung angelegt):
+**Harness-Einstieg** durchgegangen — direkt über die Verzeichnisliste unter
+`BEO-HARNESS/` geprüft (`state.md` je Verzeichnis gelesen), nicht per
+`grep`-Musterabgleich auf den Sub-Area-Namen: **8** `offen` (2 weitere
+`verkörpert`, korrekt ausgeschlossen). **Korrektur ggü. slice-161 §10:**
+jene Sichtung fand nur 7 — das achte Verzeichnis,
+[`sensor-ohne-dod-phrase-wirkungslos`](../observations/BEO-HARNESS/sensor-ohne-dod-phrase-wirkungslos/observation.md)
+(von slice-160 angelegt, vor slice-161), trägt im eigenen Feld
+`**Sub-Area:**` den Wert *„Harness-Tooling"* — eine Bezeichnung, die
+`harness/conventions.md` §Modus-Deklaration nirgends führt, obwohl das
+Verzeichnis selbst unter dem `BEO-HARNESS`-Präfix liegt. Bereits als
+[F-8](../../../reviews/2026-09-05-slice-161-delta-analyse.md) im
+Plan-Review von slice-161 benannt (INFO, „Hinweis für einen künftigen
+Register-Aufräum-Slice", dort ohne Handlungsbedarf) — slice-161 §10 selbst
+zog daraus aber nicht die Konsequenz für die eigene Sichtungs-Zählung: ein
+Namensabgleich auf den Sub-Area-Freitext übersieht dieses Verzeichnis, ein
+Abgleich auf den Verzeichnis-Pfad nicht. Das unabhängige Review dieses
+Slice (s. §9) fand den Zählfehler unabhängig erneut. Die acht:
 [`adaption-korrigiert-repo-aussage`](../observations/BEO-HARNESS/adaption-korrigiert-repo-aussage/observation.md),
 [`baseline-normtext-nachgeschrieben`](../observations/BEO-HARNESS/baseline-normtext-nachgeschrieben/observation.md),
 [`chronik-in-gelesenen-dateien`](../observations/BEO-HARNESS/chronik-in-gelesenen-dateien/observation.md),
 [`hard-rule-37-ohne-sensor`](../observations/BEO-HARNESS/hard-rule-37-ohne-sensor/observation.md),
 [`rueckbau-eintrag-ablage-auslegung`](../observations/BEO-HARNESS/rueckbau-eintrag-ablage-auslegung/observation.md),
 [`rueckbau-kandidat-ueberlebt-baseline-migration`](../observations/BEO-HARNESS/rueckbau-kandidat-ueberlebt-baseline-migration/observation.md)
-(dieser Slice bestätigt den Fund erneut, s. §9), 
-[`selbst-archivierung-verdoppelt-abschluss-aufwand`](../observations/BEO-HARNESS/selbst-archivierung-verdoppelt-abschluss-aufwand/observation.md)
-— alle bei 1×, keiner erreicht mit diesem Slice 3×.
+(dieser Slice bestätigt den Fund erneut, s. §9),
+[`selbst-archivierung-verdoppelt-abschluss-aufwand`](../observations/BEO-HARNESS/selbst-archivierung-verdoppelt-abschluss-aufwand/observation.md),
+[`sensor-ohne-dod-phrase-wirkungslos`](../observations/BEO-HARNESS/sensor-ohne-dod-phrase-wirkungslos/observation.md)
+— alle bei 1×, keiner erreicht mit diesem Slice 3×. Die
+Sub-Area-Feld-Diskrepanz selbst (`Harness-Tooling` statt eines
+deklarierten Kürzel-Namens) ist kein Gegenstand dieses Slice — sie
+berührt nicht `v6.1.0`, sondern eine bereits vorher bestehende
+Repo-interne Unschärfe.
 
 **Alle berührten Sub-Areas GF** — kein Begründungsblock nötig.
