@@ -65,10 +65,13 @@ Drei bisherige Fälle, unterschiedlicher Natur:
    wiederholbares Skript.
 3. **Repo-weite Lösung oder Workflow-Checkliste?** Eine **automatisierte**
    Lösung ist für die beiden real betroffenen Muster (`reviews`-Modul,
-   `structure` `tasks-ignore-pattern`) machbar und wurde umgesetzt (§3).
-   Eine Workflow-Checkliste bliebe nötig für **künftige neue** Muster, die
-   noch keine Fixture haben — das ist keine Lücke dieses Slice, sondern
-   dieselbe Grenze, die jeder Selbsttest hat (er deckt, was er kennt).
+   `structure` `tasks-ignore-pattern`) machbar und wurde umgesetzt (§3) —
+   für deren **Werkzeug-Seite**. Ungedeckt bleiben weitere heute schon
+   konfigurierte phrasen-basierte Muster (`versions.pin-pattern`,
+   `commits.exempt-pattern`, `vcs.immutable-when`,
+   `matrix.exclude-sections`); das ist keine künftige, sondern eine
+   **bestehende** Lücke und geht an
+   [`slice-169`](../open/slice-169-korpus-seitige-kalibrierung.md).
 
 ## 3. Umsetzung
 
@@ -90,9 +93,18 @@ korrekt fehl, wenn die Trigger-Phrase auf die falsche Wortform
 zwischen `suppression-check` und `guard-selftest`. Dokumentiert in
 `AGENTS.md` §4 und `harness/README.md` §Sensors.
 
-**Nicht umgesetzt:** eine generische, für **beliebige künftige** Muster
-vorausschauende Lösung — das bliebe Handarbeit beim nächsten neuen
-phrasen-basierten Modul (dieselbe Grenze, die jeder Fixture-Test hat).
+**Nicht umgesetzt — die Korpus-Seite.** Der Selbsttest prüft, ob
+*`d-check`* auf die gewählte Phrase reagiert. Ausgefallen ist zweimal die
+Gegenrichtung: a-checks **eigener Korpus** traf das Muster nicht mehr
+(slice-120, slice-165). Das Skript liest den echten Korpus nie an, es
+hardcodet die richtige Fixture-Zeile. Gemessen: die Kandidatenmenge des
+`reviews`-Moduls ist heute **nicht leer** (slice-164, -165, -166, -167) —
+der Ausfall ist also nicht live, aber jederzeit wieder erreichbar; drei
+geschlossene Slices mit vorhandenem Report (slice-161, -162, -163) tragen
+bereits eine nicht-auslösende Wortform. Ebenfalls offen: das
+`tasks-ignore-pattern` steht hier als **Kopie** neben dem Original in
+`.d-check.yml`, ohne Kopplung. Beides geht an
+[`slice-169`](../open/slice-169-korpus-seitige-kalibrierung.md).
 
 ## 4. Definition of Done
 
@@ -131,10 +143,12 @@ geschrieben.
   sich reproduzierbar dagegen fahren; die anfängliche Sorge war unbegründet.
 - *Das neue Skript testet nur die zwei heute bekannten Muster — ein
   drittes, künftiges phrasen-basiertes Modul bleibt ungedeckt, bis jemand
-  eine Fixture dafür schreibt* — **Ausgang:** weiter offen →
-  Beobachtungs-Register (kein neuer Eintrag jetzt — erst wenn ein drittes
-  Muster tatsächlich auftritt, ist es ein Vorgang, kein vorsorglicher
-  Eintrag).
+  eine Fixture dafür schreibt* — **Ausgang:** eingetreten → Folge-Slice
+  [`slice-169`](../open/slice-169-korpus-seitige-kalibrierung.md). Der
+  unabhängige Review hat das Risiko als bereits realisiert nachgewiesen:
+  `versions.pin-pattern`, `commits.exempt-pattern`, `vcs.immutable-when`
+  und `matrix.exclude-sections` sind heute konfiguriert und ungedeckt —
+  kein künftiger Fall, sondern ein bestehender.
 
 ## 8. Closure-Notiz
 
@@ -151,18 +165,32 @@ geschrieben.
   a-checks volle, auf den eigenen Baum zugeschnittene Konfiguration zu
   kopieren (die in einem leeren Fixture-Repo mit Konfigurationsfehlern
   anderer Module abgebrochen wäre).
+- **Was der unabhängige Review korrigiert hat:** die Zusage war zu breit
+  formuliert. Gedeckt ist die **Werkzeug-Seite** der beiden Muster (feuert
+  `d-check` noch auf die gewählte Phrase?), nicht die **Korpus-Seite**
+  (benutzt a-check die Phrase noch?) — und genau die ist zweimal
+  ausgefallen. Der Review hat außerdem die Zusage stärker belegt als der
+  Slice selbst: **vier** Mutationen, eine je Kontrolle, alle vier korrekt
+  rot (der Slice hatte eine geprüft). Report:
+  [`2026-09-06-slice-168-…`](../../../reviews/2026-09-06-slice-168-pruefer-kalibrierungs-selbsttest.md).
 - **Lerneintrag — Form: neuer Sensor.** *`make dcheck-phrase-selftest`
-  (`tools/dcheck-phrase-selftest.sh`) kalibriert phrasen-basierte
-  `d-check`-Modul-Konfigurationen gegen den gepinnten Digest — vier
-  Kontrollen (`reviews`-Trigger-Phrase, `structure`
+  (`tools/dcheck-phrase-selftest.sh`) kalibriert die **Werkzeug-Seite**
+  phrasen-basierter `d-check`-Modul-Konfigurationen gegen den gepinnten
+  Digest — vier Kontrollen (`reviews`-Trigger-Phrase, `structure`
   `tasks-ignore-pattern`, je Positiv/Negativ). Liegt in
   `Makefile:dcheck-phrase-selftest`, im `gates`-Aggregat. Auslöser:
   `BEO-GATE/pruefer-ohne-gegenstand-oder-aufruf` (slice-120, slice-123,
-  slice-165 — 3×).*
+  slice-165 — 3×). Die Korpus-Seite derselben Beobachtung trägt der Sensor
+  **nicht**; sie geht an
+  [`slice-169`](../open/slice-169-korpus-seitige-kalibrierung.md).*
 - **Beobachtungs-Register (`../observations/`):**
-  `BEO-GATE/pruefer-ohne-gegenstand-oder-aufruf` auf `verkörpert` gesetzt
-  (`seit slice-168`).
-- **Folge-Slices:** keine.
+  `BEO-GATE/pruefer-ohne-gegenstand-oder-aufruf` auf `geplant` gesetzt mit
+  der Kennung [`slice-169`](../open/slice-169-korpus-seitige-kalibrierung.md)
+  — die Regel ist beschlossen, aber erst zur Hälfte geschrieben; was
+  bereits steht, ist im Eintrag mit Zielort benannt.
+- **Folge-Slices:** [`slice-169`](../open/slice-169-korpus-seitige-kalibrierung.md)
+  (Korpus-seitige Kontrolle der Kandidatenmenge, Kopplung des
+  `tasks-ignore-pattern` an `.d-check.yml`).
 - **Risiken aus §7:** beide mit Ausgang — siehe §7.
 - **Drei Paarungen:** entfällt — dieser Slice ist wellenlos (`**Welle:**
   ohne Welle`).
