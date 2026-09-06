@@ -19,7 +19,8 @@ ist **derivativ**: Der Zustand sind die flachen Welle-Dateien; woran gearbeitet 
 `Welle:`-Feld der Slices in `in-progress/`. Ziel, Trigger und Closure-Kriterien stehen in der
 Welle-Datei, nicht hier.
 
-Nichts in Arbeit.
+*(Keine offene Welle. Was gerade läuft, ist wellenlos und steht deshalb nicht hier — der Zustand
+ist die Verzeichnis-Position: `ls docs/plan/planning/in-progress/`.)*
 
 ## Nächste Wellen
 
