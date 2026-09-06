@@ -16,7 +16,7 @@ seit Anlage) · <!-- d-check:ignore -->
 
 **Eingangs-Kontext:**
 
-- `docs/plan/planning/in-progress/slice-170-mr018-aufloesen.md`
+- `docs/plan/planning/done/slice-170-mr018-aufloesen.md`
 - `harness/conventions/done/MR-018-review-pflicht-v610-wortlaut.md`,
   `harness/conventions.md`
 - `.harness/baseline/v6.2.0/regelwerk/` (`modul-05`, `modul-06`, `modul-08`,
@@ -150,8 +150,10 @@ erhalten, alle drei Verweise darauf lösen auf · kein Link zeigt mehr auf den
 alten Pfad · Rename bei **100 %**, `git log --follow` reicht darüber hinweg ·
 §3.3 eingehalten (die verschobene Datei mit 0 Zeilen Änderung im
 Rename-Commit, der Link-Tiefen-Fix als eigener) · `doc-immutable` Exit 0,
-keine ADR berührt, `MR-018`s Felder unangetastet · Slice-Form: **2**
-zählende Liefer-Punkte, eine Schicht, Kopffelder vollständig · Closure-Notiz
+keine ADR berührt, `MR-018`s Felder unangetastet · Slice-Form zum Review-Zeitpunkt: **2**
+zählende Liefer-Punkte, eine Schicht, Kopffelder vollständig (mit der
+F-3-Einarbeitung sind es **3** — die Größen-Regel bleibt gewahrt, ohne
+Reserve) · Closure-Notiz
 mit Ursache statt Floskel · beide Risiko-Ausgänge aus der geschlossenen
 Dreier-Menge (die zuerst vorgefundene Fassung „eingetreten →
 Maintainer-Entscheidung" wäre **unzulässig** gewesen) · Register-Form beider
