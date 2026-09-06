@@ -21,8 +21,6 @@ Welle-Datei, nicht hier.
 
 - [welle-14](../welle-14-regelwerk-v610-migration.md) — Regelwerk-Migration `v6.0.0` → `v6.1.0`.
 
-Nichts in Arbeit.
-
 ## Nächste Wellen
 
 Regeln dieser Sektion: Baseline-Regelwerk `modul-06-roadmap.md` §Roadmap-Struktur, Bullet
