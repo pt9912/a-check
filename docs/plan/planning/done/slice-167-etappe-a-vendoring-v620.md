@@ -186,7 +186,7 @@ eine Welle, Träger Planner).
 - **Folge-Slices:** keine.
 - **Risiken aus §6:** beide mit Ausgang — siehe §6.
 - **Drei Paarungen:** verschoben auf die Closure von `welle-14` (dieser
-  Slice trägt ein `**Welle:**`-Feld, [Modul 8](../../../../.harness/baseline/v6.0.0/regelwerk/modul-08-agentenrollen.md#rollen-sequenz-für-eine-welle)).
+  Slice trägt ein `**Welle:**`-Feld, [Modul 8](../../../../.harness/baseline/v6.2.0/regelwerk/modul-08-agentenrollen.md#rollen-sequenz-für-eine-welle)).
 
 ## 8. Sub-Area-Modus
 

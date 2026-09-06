@@ -82,7 +82,7 @@ liegt vor, slice-161 ist in `done/`, WIP-Limit frei.
   HIGH-Verifikations-Pflicht), die bislang auch in `AGENTS.md` selbst
   standen* — **Ausgang:** gestrichen mit Begründung: das Dateiname-Muster
   (`docs/reviews/<YYYY-MM-DD>-<slice-oder-diff-ref>.md`) steht bereits in
-  [`review-report.template.md`](../../../../.harness/baseline/v6.0.0/templates/docs/reviews/review-report.template.md)
+  [`review-report.template.md`](../../../../.harness/baseline/v6.2.0/templates/docs/reviews/review-report.template.md)
   (verlinkt aus
   [`docs/reviews/README.md`](../../../reviews/README.md)), die
   HIGH-Verifikationspflicht in

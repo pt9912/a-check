@@ -151,9 +151,19 @@ ist oder wie §4.2 aufschiebbar. **Grenze der Analyse, nicht Entwarnung.**
 
 Bei der Nachfrage zu §3 (Entwarnung `AGENTS.template.md`) aufgefallen, nicht
 Gegenstand des ursprünglichen Diffs: die vendored `v6.0.0`-Vorlage
-[`AGENTS.template.md`](../../../../.harness/baseline/v6.0.0/templates/AGENTS.template.md)
+[`AGENTS.template.md`](../../../../.harness/baseline/v6.2.0/templates/AGENTS.template.md)
 endet nach Schritt 8 des Minimal Agent Workflow (Zeile 236) — kein
-Rollenwechsel-Absatz, keine Review-Pflicht-Formulierung. a-checks eigenes
+Rollenwechsel-Absatz, keine Review-Pflicht-Formulierung.
+
+> **Zeiger nachgezogen (slice-172, 2026-09-06).** Gemessen wurde die
+> `v6.0.0`-Fassung; sie liegt nicht mehr vendored, seit nur noch ein Stand
+> im Baum steht. Der Link oben zeigt darum auf `v6.2.0` — und **die** trägt
+> den Rollenwechsel-Absatz bereits
+> ([`MR-018`](../../../../harness/conventions.md#mr-018)). Der Befund dieses
+> Abschnitts gilt für die gemessene Fassung, nicht für die verlinkte; die
+> gemessene ist über den Kurs-Tag `v6.0.0` und über `git` erreichbar.
+
+a-checks eigenes
 [`AGENTS.md`](../../../../AGENTS.md) §6 trägt **seit heute** (Commit
 `7de8569`, slice-159, 2026-09-05 — `git log -p --follow -- AGENTS.md`
 zeigt genau diese eine Einführung) einen deutlich umfangreicheren Absatz

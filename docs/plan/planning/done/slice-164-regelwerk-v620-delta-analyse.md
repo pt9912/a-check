@@ -225,7 +225,7 @@ Reihenfolge der drei offenen Folge-Slices (dieser, plus die zwei aus
   s. `welle-14` §„Stand").
 - **Risiken aus §6:** beide mit Ausgang — siehe §6.
 - **Drei Paarungen:** verschoben auf die Closure von `welle-14` (dieser
-  Slice trägt ein `**Welle:**`-Feld, [Modul 8](../../../../.harness/baseline/v6.0.0/regelwerk/modul-08-agentenrollen.md#rollen-sequenz-für-eine-welle)).
+  Slice trägt ein `**Welle:**`-Feld, [Modul 8](../../../../.harness/baseline/v6.2.0/regelwerk/modul-08-agentenrollen.md#rollen-sequenz-für-eine-welle)).
 
 ## 9. Sub-Area-Modus
 

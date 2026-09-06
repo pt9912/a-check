@@ -30,7 +30,7 @@
   Messen des `v6.1.0`-Sprungs aufdeckte. Zweitens Umfang: die bisherige a-check-Fassung
   duplizierte mechanische Details, die bereits an ihrem eigentlichen Ort stehen: das
   Report-Dateiname-Muster (`docs/reviews/<YYYY-MM-DD>-<slice-oder-diff-ref>.md`) in
-  [`review-report.template.md`](../../../.harness/baseline/v6.0.0/templates/docs/reviews/review-report.template.md)
+  [`review-report.template.md`](../../../.harness/baseline/v6.2.0/templates/docs/reviews/review-report.template.md)
   (verlinkt aus [`docs/reviews/README.md`](../../../docs/reviews/README.md)), die
   HIGH-Verifikationspflicht in [`.harness/skills/reviewer.md`](../../../.harness/skills/reviewer.md) —
   sowie eine

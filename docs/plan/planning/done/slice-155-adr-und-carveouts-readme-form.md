@@ -23,14 +23,14 @@ a-check-Inhalt zu verlieren.
 ## 2. `docs/plan/adr/README.md` — fehlende `## Konventionen`-Überschrift
 
 Der Konventions-Absatz stand unbetitelt direkt nach dem Dokument-Titel, während die Ziel-Form
-([`adr/README.template.md`](../../../../.harness/baseline/v6.0.0/templates/docs/plan/adr/README.template.md))
+([`adr/README.template.md`](../../../../.harness/baseline/v6.2.0/templates/docs/plan/adr/README.template.md))
 ihn unter `## Konventionen` führt. Überschrift ergänzt, Inhalt und Position unverändert — kein
 neuer Fakt.
 
 ## 3. `docs/plan/carveouts/README.md` — fehlende `## Aktive/Aufgelöste Carveouts`-Container
 
 Die Ziel-Form
-([`carveouts/README.template.md`](../../../../.harness/baseline/v6.0.0/templates/docs/plan/carveouts/README.template.md))
+([`carveouts/README.template.md`](../../../../.harness/baseline/v6.2.0/templates/docs/plan/carveouts/README.template.md))
 führt zwei stehende Container-Abschnitte (Tabelle + „noch keine"), die den aktuellen Bestand
 zeigen — a-check hatte stattdessen nur die tiefere Prosa-Begründung „Warum dieses Verzeichnis
 heute leer ist". Beide Container ergänzt (`## Aktive Carveouts` mit leerer Tabelle,
