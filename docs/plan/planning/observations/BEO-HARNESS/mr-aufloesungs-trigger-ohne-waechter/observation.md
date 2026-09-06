@@ -6,10 +6,20 @@ Jeder Adaptions-Eintrag trägt ein Pflichtfeld `Auflösungs-Trigger`. Prüft ihn
 Absichtserklärung ohne Verfallsdatum: der Eintrag bleibt aktiv, obwohl seine Bedingung eingetreten
 ist, und wird nur gefunden, wenn jemand die Einträge von Hand durchgeht.
 
-Der **Trigger-Audit** der Wellen-Closure
-([`modul-06`](../../../../../../.harness/baseline/v6.2.0/regelwerk/modul-06-roadmap.md#wellen-closure-prozedur-modul-6),
-Schritt 2) prüft drei Artefaktklassen — Carveout, bootstrap-aware Gate, ADR. `MR`-Einträge stehen
-nicht darin, und die Slice-Closure kennt den Schritt in dieser Form ebenfalls nicht.
+Zwei Lücken übereinander, und die zweite ist die nähere:
+
+1. Der **Trigger-Audit** der Baseline
+   ([`modul-06`](../../../../../../.harness/baseline/v6.2.0/regelwerk/modul-06-roadmap.md#wellen-closure-prozedur-modul-6),
+   Closure-Schritt 2, im wellenlosen Betrieb getragen von der **Slice**-Closure) zählt drei
+   Artefaktklassen auf — Carveout, bootstrap-aware Gate, ADR. Die vierte Klasse, die im selben
+   Regelwerk ein Pflichtfeld `Auflösungs-Trigger` führt, steht nicht darin: der `MR`-Eintrag.
+2. a-check hat den Schritt **für keine** der drei genannten Klassen verkörpert: `Trigger-Audit`
+   kommt in [`AGENTS.md`](../../../../../../AGENTS.md),
+   [`harness/README.md`](../../../../../../harness/README.md) und
+   [`docs/plan/planning/README.md`](../../../README.md) null Mal vor.
+
+Die erste Lücke erklärt, warum niemand an `MR`-Einträge denkt; die zweite, warum auch die drei
+genannten Klassen ungeprüft blieben.
 
 **Abgrenzung zu [`rueckbau-kandidat-ueberlebt-baseline-migration`](../rueckbau-kandidat-ueberlebt-baseline-migration/observation.md):**
 dort wird ein Trigger *gewählt* — der billigere Ersatz statt der sauberen Auflösung; hier wird

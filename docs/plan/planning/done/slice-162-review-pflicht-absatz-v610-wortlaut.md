@@ -40,7 +40,7 @@ Baseline-Wortlaut nicht trägt — und die verbleibende Differenz als neuen
       bisherige Chronik-Prosa, die `git` bereits hält, §3.7).
 - [x] Neuer [`MR-018`](../../../../harness/conventions.md#mr-018) in
       `harness/conventions.md` (Adaptions-Block + eigene Datei
-      [`harness/conventions/MR-018-review-pflicht-v610-wortlaut.md`](../../../../harness/conventions/done/MR-018-review-pflicht-v610-wortlaut.md))
+      [eigene Eintrags-Datei](../../../../harness/conventions/done/MR-018-review-pflicht-v610-wortlaut.md))
       dokumentiert die verbleibende Differenz zum Baseline-Wortlaut, mit
       `Ersetzt-Baseline-Regel` → `.harness/baseline/v6.0.0/regelwerk/modul-08-agentenrollen.md#die-neun-übergaben-und-ihre-artefakte-modul-8`.
 - [x] `make gates` grün.

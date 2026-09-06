@@ -46,12 +46,20 @@ diff .harness/baseline/v6.0.0/templates/AGENTS.template.md \
 
 Der Absatz, um den es geht, liegt seit
 [`slice-167`](../done/slice-167-etappe-a-vendoring-v620.md) **netzlos im
-Repo**. Damit sind beide im Eintrag genannten Trigger eingetreten:
+Repo**. Der Eintrag nennt **zwei** Bedingungen; eingetreten ist genau eine —
+und es ist die, die den Rückbau trägt:
 
-| Trigger aus dem Eintrag | Zustand |
+| Bedingung aus dem Eintrag | Zustand |
 |---|---|
-| „Rückbau-Kandidat, sobald der Stand vendored ist und auf das dann vendorte Template gezeigt werden kann" | eingetreten (slice-167) |
-| Auflösungs-Trigger: „die nächste Baseline-Migration, die `modul-08` oder den Rollenwechsel-Absatz in `AGENTS.template.md` inhaltlich ändert" | eingetreten — die Migration hat den Absatz **hinzugefügt** |
+| **Rückbau-Kandidat**: „sobald der Stand vendored ist und auf das dann vendorte Template gezeigt werden kann" | **eingetreten** (slice-167) — die Bedingung ist a-check-lokal und beschreibt genau das Vendoring |
+| **Auflösungs-Trigger**: „die nächste Baseline-Migration, die `modul-08` oder den Rollenwechsel-Absatz in `AGENTS.template.md` **inhaltlich ändert**" | **nicht** eingetreten — der Absatz stammt aus dem `v6.1.0`-Zuwachs und steht in `v6.2.0` unverändert; `modul-08` unterscheidet sich nur in der `<!-- Quelle: … -->`-Zeile. Upstream hat am Gegenstand nichts geändert; a-check hat ihn nur **nachvollzogen** |
+
+**Die Auflösung trägt allein aus der ersten Bedingung** — der Eintrag hat
+sie selbst als seinen Rückbau-Weg benannt. Der zweite Trigger bleibt
+unerfüllt und ist es auch nach der Auflösung: er wäre der Weg für eine
+Adaption, die aus einer Baseline-**Änderung** entstanden wäre. Diese
+entstand aus einer Baseline-**Lücke** im vendorten Stand, und die hat das
+Vendoring geschlossen.
 
 **Warum kein Nachfolge-Eintrag.** Was nach dem Rückbau von der Abweichung
 bliebe, sind zwei a-check-eigene Sätze (`fork`-Ausschluss, `BEO`-Anker).
@@ -60,6 +68,18 @@ eine ausgefüllte Ziel-Form, die mehr sagt als ihre Vorlage, ist keine
 Adaption — sonst bräuchte jede gefüllte Vorlage einen Eintrag. Präzedenz
 für eine Auflösung **durch Ereignis** statt durch Nachfolger ist
 [`MR-003`](../../../../harness/conventions.md#mr-003).
+
+**Was die Auflösung *nicht* bewirkt.** Gemessen über das Feld
+`Ersetzt-Baseline-Regel` aller 20 `MR`-Dateien: genau **fünf** tragen dort
+einen `v6.0.0`-Anker ([`MR-011`](../../../../harness/conventions.md#mr-011), [`MR-012`](../../../../harness/conventions.md#mr-012), [`MR-014`](../../../../harness/conventions.md#mr-014), [`MR-015`](../../../../harness/conventions.md#mr-015), [`MR-016`](../../../../harness/conventions.md#mr-016)) —
+vor wie nach diesem Slice dieselben fünf. [`MR-018`](../../../../harness/conventions.md#mr-018) trug dort seit
+`541581f` ein „—" und war nie Teil der Menge; sein einziger
+`v6.0.0`-Verweis steht im Begründungsfeld und zieht mit nach
+`conventions/done/` um. Die erste Fassung dieses Plans behauptete „einen
+von sechs entfernt" — die Zahl stammt ungeprüft aus
+[`slice-167`](../done/slice-167-etappe-a-vendoring-v620.md) §3 und
+`welle-14-results.md`, die [`MR-018`](../../../../harness/conventions.md#mr-018) mitzählen, obwohl sein Feld schon damals
+leer war. Der unabhängige Review hat das gefangen.
 
 **Was der Fund über den Prozess sagt.** `welle-14-results.md` schreibt,
 der Eintrag löse sich „erst mit der jeweils nächsten Baseline-Migration" —
@@ -92,9 +112,9 @@ aktiven Einträge.
       Tabellen in `conventions.md` nachgezogen, Anker `mr-018` erhalten.
 - [x] Jeder **verlinkende** Verweis auf den alten Pfad zeigt auf den neuen;
       `make doc-check` belegt es.
-- [ ] Unabhängiger Review durchgeführt (Report unter `docs/reviews/`).
+- [x] Unabhängiger Review durchgeführt (Report unter `docs/reviews/`).
 - [x] `make gates` grün.
-- [ ] `make verify` grün.
+- [x] `make verify` grün.
 - [x] Jedes Risiko trägt einen Ausgang.
 
 ## 5. Trigger
@@ -117,10 +137,9 @@ geschrieben.
   der Anker ist mit umgezogen und beide Verweise lösen auf, belegt durch
   `make doc-check` Exit 0 (das Risiko kann in dieser Form nicht mehr
   eintreten, die Bewegung ist vollzogen).
-- *Die Auflösung entfernt einen von sechs `v6.0.0`-Ankern, löst
-  `.harness/baseline/v6.0.0/` aber nicht ab — fünf bleiben stehen; wer die
-  Zahl für den Fortschritt hält, verwechselt einen Schritt mit dem Ziel* —
-  **Ausgang:** weiter offen → Beobachtungs-Register, neuer Eintrag
+- *Die Auflösung bringt `.harness/baseline/v6.0.0/` seiner Ablösung nicht
+  näher; wer einen Schritt für Fortschritt hält, verwechselt ihn mit dem
+  Ziel* — **Ausgang:** weiter offen → Beobachtungs-Register, neuer Eintrag
   [`BEO-HARNESS/zwei-baseline-staende-nach-migrationsende`](../observations/BEO-HARNESS/zwei-baseline-staende-nach-migrationsende/observation.md).
   Die Auflösung verlangt eine Entscheidung über alle fünf verbliebenen
   Einträge zugleich; sie in diesem Slice zu treffen hieße, sie nebenbei zu
@@ -137,13 +156,15 @@ geschrieben.
   Migration eingetreten, die den Eintrag geschrieben hat; die Closure-Notiz
   derselben Welle behauptet das Gegenteil. Nicht Unaufmerksamkeit, sondern
   ein fehlender Wächter.
-- **Lerneintrag — Form: benannte Spec-Lücke.** *Der Trigger-Audit der
-  Wellen-Closure (`modul-06`, Schritt 2) zählt drei Artefaktklassen auf —
-  Carveout, bootstrap-aware Gate, ADR. Die vierte Klasse, die im selben Repo
-  ein Pflichtfeld `Auflösungs-Trigger` führt, fehlt darin: der
-  `MR`-Eintrag. Damit hat ein eingetretener `MR`-Trigger keinen Wächter, und
-  die einzige Kraft, die ihn findet, ist ein Mensch, der die aktiven
-  Einträge von Hand durchgeht. Belegt an diesem Slice.*
+- **Lerneintrag — Form: benannte Spec-Lücke.** *Der Trigger-Audit — in
+  `modul-06` Closure-Schritt 2, im wellenlosen Betrieb getragen von der
+  Slice-Closure — kommt in a-checks eigenem Harness **null Mal** vor:
+  `AGENTS.md`, `harness/README.md` und `docs/plan/planning/README.md` nennen
+  ihn nicht. Damit ist kein Trigger gewächtert, weder der eines Carveouts
+  noch der eines bootstrap-aware Gate noch der einer ADR — und `MR`-Einträge
+  zählt schon die Baseline nicht mit, obwohl sie dasselbe Pflichtfeld
+  führen. Belegt an diesem Slice: der Rückbau-Trigger von [`MR-018`](../../../../harness/conventions.md#mr-018) war seit
+  slice-167 eingetreten und wurde erst beim Durchgang von Hand gefunden.*
 - **Beobachtungs-Register (`../observations/`):** **zwei** neue Einträge, je
   1× mit Beleg `slice-170` —
   [`BEO-HARNESS/mr-aufloesungs-trigger-ohne-waechter`](../observations/BEO-HARNESS/mr-aufloesungs-trigger-ohne-waechter/observation.md)
