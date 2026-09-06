@@ -155,8 +155,8 @@ geschrieben. Danach Archivierung als wellenloser Slice
 
 ## 8. Closure-Notiz
 
-*(wird beim Übergang nach `done/` geschrieben; Lerneintrag — Form: wird
-dort benannt.)*
+_(beim Abschluss ausfüllen — genau **ein** solcher Abschnitt je Slice;
+Lerneintrag — Form: wird dort benannt.)_
 
 ## 9. Sub-Area-Modus
 
