@@ -9,7 +9,7 @@ wechselt nur durch `make slice-mv` ([`AGENTS.md`](../../../../AGENTS.md)
 repo-weites Mehr).
 
 **Bezug:** Fund des unabhängigen Reviews zu
-[slice-172](../in-progress/slice-172-baseline-v600-entfernen.md) (F-3,
+[slice-172](../done/slice-172-baseline-v600-entfernen.md) (F-3,
 MEDIUM). Dort §7, Risiko 3: der Wächter für Baseline-Pins ist nicht zu
 erfinden, sondern **unkonfiguriert**.
 
@@ -55,7 +55,7 @@ Klasse wie
 **Zu klären ist eine Frage, die der Bestand aufwirft, nicht die Ziel-Form:**
 `exempt-paths` nimmt `harness/conventions/done/**` aus, weil aufgelöste
 Einträge eingefroren sind.
-[slice-172](../in-progress/slice-172-baseline-v600-entfernen.md) hat den Pin
+[slice-172](../done/slice-172-baseline-v600-entfernen.md) hat den Pin
 in [`MR-018`](../../../../harness/conventions.md#mr-018) dort trotzdem
 gebumpt — er musste, sonst wäre der Link ins Leere gezeigt. Die Ausnahme
 setzt also voraus, dass alte Stände liegenbleiben; wer löscht, bricht sie.

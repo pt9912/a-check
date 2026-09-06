@@ -19,7 +19,7 @@ nicht der implementierende Kontext; Zugang nur über Repo-Artefakte und `git`.
 
 **Eingangs-Kontext:**
 
-- `docs/plan/planning/in-progress/slice-172-baseline-v600-entfernen.md`
+- `docs/plan/planning/done/slice-172-baseline-v600-entfernen.md`
 - `docs/plan/planning/done/slice-167-etappe-a-vendoring-v620.md` §3/§6,
   `docs/plan/planning/done/slice-161-regelwerk-v610-delta-analyse.md` §4.4,
   `docs/plan/planning/done/welle-14-results.md`
@@ -64,7 +64,7 @@ nicht der implementierende Kontext; Zugang nur über Repo-Artefakte und `git`.
   `target-missing`, keine weitere Befundklasse") gegen §5 des eigenen Plans
   („etwa eine Prosa-Angabe, die ohne Link falsch wird"); Muster
   `BEO-GATE/cr-text-behauptet-statt-gemessen`
-- `pfad`: `docs/plan/planning/in-progress/slice-172-baseline-v600-entfernen.md:38–42`
+- `pfad`: `docs/plan/planning/done/slice-172-baseline-v600-entfernen.md:38–42`
   · Befund-Beleg: `docs/plan/planning/done/slice-167-etappe-a-vendoring-v620.md:91–96`
 - `befund`: Der Löschtest lief über `make doc-check`, das per Konstruktion nur
   Markdown-Links sieht; die Klasse, die §5 als Rückführungs-Trigger benennt
@@ -88,7 +88,7 @@ nicht der implementierende Kontext; Zugang nur über Repo-Artefakte und `git`.
 - `quelle`: vendored Ziel-Form
   `.harness/baseline/v6.2.0/templates/harness/conventions/MR-NNN-titel.template.md:18–24`
   und `.harness/baseline/v6.2.0/templates/.d-check.yml:49–52`
-- `pfad`: `docs/plan/planning/in-progress/slice-172-baseline-v600-entfernen.md:74–98`
+- `pfad`: `docs/plan/planning/done/slice-172-baseline-v600-entfernen.md:74–98`
   (§2.2) und `:150–153` (§7, drittes Risiko)
 - `befund`: Die Ziel-Form des angefassten Feldes sagt selbst: *„Dieser Link trägt
   zwei Dinge, die sich bewegen, und für beide gibt es einen **Wächter** statt
@@ -171,7 +171,7 @@ nicht der implementierende Kontext; Zugang nur über Repo-Artefakte und `git`.
 - `quelle`: Baseline-Regelwerk `modul-05-planning-harness.md` §Lifecycle als
   State Machine („den Rolleninhaber der Implementer-Rolle, der die Arbeit hält;
   bis zur Priorisierung steht dort `—`"); `AGENTS.md` §3.7 (Zustandsfelder)
-- `pfad`: `docs/plan/planning/in-progress/slice-172-baseline-v600-entfernen.md:20`
+- `pfad`: `docs/plan/planning/done/slice-172-baseline-v600-entfernen.md:20`
 - `befund`: Der Kopf trägt `**Verantwortlich:** — *(noch nicht priorisiert)*`,
   während die Datei in `in-progress/` liegt und drei Commits Arbeit an ihr hängen;
   die sechs zuletzt geschlossenen Slices (`slice-161` … `slice-167`) tragen an
