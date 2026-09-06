@@ -37,7 +37,9 @@ umsetzen — der letzte Schritt vor der Closure von `welle-14`.
       bereits vermessenen Zeilen bestätigt). `make regelwerk-check` grün.
 - [x] Stand-Deklaration an den **strukturellen** Pointern (nicht an den
       inhaltlich unveränderlichen `Ersetzt-Baseline-Regel`-Ankern
-      akzeptierter `MR`-Dateien, s. §3) auf `v6.2.0` gehoben.
+      akzeptierter `MR`-Dateien, s. §3) auf `v6.2.0` gehoben — inklusive
+      der vier `.claude/rules/`-Symlinks (zunächst übersehen, vom
+      Maintainer bemerkt, s. §3).
 - [x] `harness/README.md` §Guides: Zeile für `.harness/skills/reviewer.md`
       ergänzt (slice-161 §4.1, bisher unterlassen).
 - [x] Unabhängiger Review über getrennten Kontext durchgeführt (Report
@@ -68,6 +70,16 @@ Klassen von `.harness/baseline/v6.0.0/…`-Referenzen im Repo:
 |---|---|---|
 | **Strukturell** — verweist auf „den aktuell vendorten Stand", nicht auf einen historischen Zeitpunkt | `AGENTS.md` §1 (Index/Templates/`SHA256SUMS`/Kurs-Tag-Link), `AGENTS.md` §5 (`slice.template.md`-Pointer), `harness/conventions.md` §Baseline „Stand:", `harness/README.md` (Sensors-Kommentar), `docs/reviews/README.md`, `.harness/skills/reviewer.md`, `docs/plan/carveouts/README.md` | **gehoben auf `v6.2.0`** |
 | **`Ersetzt-Baseline-Regel`-Anker akzeptierter `MR`-Dateien** — dokumentiert, welcher Baseline-Abschnitt zum Zeitpunkt **dieser** Adaption galt | [MR-011](../../../../harness/conventions/MR-011-verfeinerungs-form.md)/[MR-012](../../../../harness/conventions/MR-012-referenzmatrix-grandfathering.md)/[MR-014](../../../../harness/conventions/MR-014-keine-agenten-telemetrie.md)/[MR-015](../../../../harness/conventions/MR-015-welle-closure-ohne-replay.md)/[MR-016](../../../../harness/conventions/MR-016-validator-unbesetzt.md)/[MR-018](../../../../harness/conventions/MR-018-review-pflicht-v610-wortlaut.md) (aktiv), [MR-017](../../../../harness/conventions/done/MR-017-adr-vorlagen-version.md) (aufgelöst, `conventions/done/`) | **unverändert** — Adaptions-Block-Disziplin: „an einem akzeptierten Eintrag wird nichts nachträglich inhaltlich geändert" |
+
+**Dritte Klasse, zunächst übersehen:** die vier `.claude/rules/`-Symlinks
+auf einzelne Regelwerk-Module (`modul-01/05/06/08`) sind ebenfalls
+strukturell, standen aber nicht in der ursprünglichen Liefer-Punkt-2-Liste
+— derselbe Fehler, den
+[`BEO-GATE/symlink-ziel-nach-baseline-bump-ungeprueft`](../observations/BEO-GATE/symlink-ziel-nach-baseline-bump-ungeprueft/observation.md)
+bereits bei `slice-142` registriert hatte (dort: „kein Schritt der
+Migration prüfte sie, und kein Gate hätte den Bruch gefangen"). Vom
+Maintainer bemerkt, nicht vom Agenten — zweite Evidenz für denselben
+Eintrag (jetzt 2×, noch nicht 3×). Nachträglich auf `v6.2.0` korrigiert.
 
 Die zweite Klasse hält `.harness/baseline/v6.0.0/` weiterhin für
 netzlose Auflösung nötig — deshalb bleibt `v6.0.0` **vendored liegen**,
