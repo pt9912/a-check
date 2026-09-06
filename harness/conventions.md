@@ -28,10 +28,12 @@ die kanonische Quelle (Source Precedence, siehe
   über `SHA256SUMS`, geprüft mit `make regelwerk-check`
   ([`MR-006`](#mr-006--baseline-committet-vendored-statt-per-url-referenziert)). Genau **ein**
   Stand liegt vendored; mehrere sind nur während einer Migration zulässig, und das Target weist
-  den ungeprüften dann namentlich aus. `v6.0.0` bleibt zusätzlich vendored, weil die
-  `Ersetzt-Baseline-Regel`-Anker mehrerer bereits akzeptierter `MR`-Einträge
-  (`harness/conventions/MR-*.md`) inhaltlich unveränderlich darauf zeigen (Adaptions-Block-Disziplin) —
-  siehe [slice-167](../docs/plan/planning/done/slice-167-etappe-a-vendoring-v620.md) §3.
+  den ungeprüften dann namentlich aus. Die Zusage gilt **ohne Ausnahme**, auch für das Feld
+  `Ersetzt-Baseline-Regel` akzeptierter `MR`-Einträge: es nennt eine **Regel**, keine
+  Datei-Kopie. Sein Zeiger wandert darum beim Baseline-Wechsel mit — Bedingung ist, dass der
+  referenzierte Abschnitt im neuen Stand wortgleich ist, und das ist zu **messen**, nicht
+  anzunehmen ([slice-172](../docs/plan/planning/in-progress/slice-172-baseline-v600-entfernen.md)
+  §2.2). Ist er es nicht, trägt die Stelle die Abweichung sichtbar, statt still umzuziehen.
 - **Adoptiert seit:** 2026-06-20.
 
 Wann welcher Stand gehoben wurde und in welchen Etappen, steht in
