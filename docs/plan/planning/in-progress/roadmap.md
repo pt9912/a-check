@@ -19,7 +19,7 @@ ist **derivativ**: Der Zustand sind die flachen Welle-Dateien; woran gearbeitet 
 `Welle:`-Feld der Slices in `in-progress/`. Ziel, Trigger und Closure-Kriterien stehen in der
 Welle-Datei, nicht hier.
 
-- [welle-14](../welle-14-regelwerk-v610-migration.md) — Regelwerk-Migration `v6.0.0` → `v6.2.0`.
+- [welle-14](../done/welle-14-regelwerk-v610-migration.md) — Regelwerk-Migration `v6.0.0` → `v6.2.0`.
 
 Nichts in Arbeit.
 

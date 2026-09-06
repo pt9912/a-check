@@ -5,7 +5,7 @@ Datei liegt — eines von `open/`, `next/`, `in-progress/`, `done/`. Er
 wechselt nur durch `make slice-mv` ([`AGENTS.md`](../../../../AGENTS.md)
 §3.3/§5).
 
-**Welle:** [welle-14](../welle-14-regelwerk-v610-migration.md).
+**Welle:** [welle-14](welle-14-regelwerk-v610-migration.md).
 
 **Bezug:** [slice-163](../done/slice-163-adaptions-durchgang-v610.md)
 §4/§6 (Folge-Slice-Vorschlag), Maintainer-Wort 2026-09-06 ("Danach

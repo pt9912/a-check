@@ -5,7 +5,7 @@ Datei liegt — eines von `open/`, `next/`, `in-progress/`, `done/`. Er
 wechselt nur durch `make slice-mv` ([`AGENTS.md`](../../../../AGENTS.md)
 §3.3/§5).
 
-**Welle:** [welle-14](../welle-14-regelwerk-v610-migration.md) (auf
+**Welle:** [welle-14](welle-14-regelwerk-v610-migration.md) (auf
 `v6.2.0` retargeted, s. Retarget-Hinweis dort).
 
 **Bezug:** [slice-161](../done/slice-161-regelwerk-v610-delta-analyse.md)

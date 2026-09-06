@@ -5,7 +5,7 @@ Datei liegt — eines von `open/`, `next/`, `in-progress/`, `done/`. Er
 wechselt nur durch `make slice-mv` ([`AGENTS.md`](../../../../AGENTS.md)
 §3.3/§5).
 
-**Welle:** [welle-14](../welle-14-regelwerk-v610-migration.md).
+**Welle:** [welle-14](welle-14-regelwerk-v610-migration.md).
 
 **Bezug:** Maintainer-Anfrage 2026-09-05 ("Es gibt ein neues Regelwerk
 v6.1.0"). Präzedenz: [slice-135](../done/wellenlos/slice-135-regelwerk-v600-delta-analyse.md),
