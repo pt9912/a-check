@@ -134,16 +134,16 @@ das Wort des Slice zu verweisen. Es ist eine inhaltliche Ergänzung an einem
 
 ## 4. Definition of Done
 
-- [ ] Alle 22 Zeiger lösen gegen `v6.2.0` auf; der Beleg in
+- [x] Alle 22 Zeiger lösen gegen `v6.2.0` auf; der Beleg in
       [slice-161](../done/slice-161-regelwerk-v610-delta-analyse.md) §4.4 nennt die gemessene Fassung weiterhin korrekt.
-- [ ] `.harness/baseline/v6.0.0/` ist entfernt, `make regelwerk-check`
+- [x] `.harness/baseline/v6.0.0/` ist entfernt, `make regelwerk-check`
       meldet **einen** vendorten Stand ohne „ungeprüft"-Hinweis, und
       [`conventions.md`](../../../../harness/conventions.md#baseline)
       §Baseline beschreibt diesen Zustand statt des alten.
-- [ ] Unabhängiger Review durchgeführt (Report unter [`docs/reviews/`](../../../reviews/README.md)).
-- [ ] `make gates` grün.
-- [ ] `make verify` grün.
-- [ ] Jedes Risiko trägt einen Ausgang.
+- [x] Unabhängiger Review durchgeführt (Report unter [`docs/reviews/`](../../../reviews/README.md)).
+- [x] `make gates` grün.
+- [x] `make verify` grün.
+- [x] Jedes Risiko trägt einen Ausgang.
 
 ## 5. Trigger
 
@@ -167,12 +167,22 @@ geschrieben. Danach Archivierung als wellenloser Slice
 
 - *Der Bump an akzeptierten Einträgen etabliert eine Präzedenz, die beim
   nächsten Baseline-Sprung ohne die Messung aus §2.2 angewandt wird —
-  „Zeiger darf man ja bumpen"* — Ausgang bei Closure.
+  „Zeiger darf man ja bumpen"* — **Ausgang:** gestrichen mit Begründung. Es
+  ist keine Präzedenz: die vendored Ziel-Form schreibt den mitwandernden
+  Zeiger vor (§2.2), und sie nennt die Bedingung gleich mit — ein
+  Versions-Sensor, der jeden Pin gegen den einen deklarierten Stand hält. Was
+  bliebe, wäre ein Bump *ohne* Wortgleichheits-Nachweis; den fängt der Sensor
+  aus [slice-173](../open/slice-173-versions-sensor-baseline-pins.md), nicht
+  die Erinnerung an diesen Slice.
 - *Nach dem Löschen ist die `v6.0.0`-Fassung nur noch über `git` und den
   Kurs-Tag erreichbar; ein künftiger Leser von
   [slice-161](../done/slice-161-regelwerk-v610-delta-analyse.md) §4.4 kann
-  den Messbeleg nicht mehr im Arbeitsbaum nachschlagen* — Ausgang bei
-  Closure.
+  den Messbeleg nicht mehr im Arbeitsbaum nachschlagen* — **Ausgang:**
+  gestrichen mit Begründung. Beide betroffenen Stellen (§4.4 dort,
+  [slice-167](../done/slice-167-etappe-a-vendoring-v620.md) §6) tragen jetzt
+  eine Fußnote, die den Weg nennt. Die Historie hält `git`
+  ([`AGENTS.md`](../../../../AGENTS.md) §3.7) — sie in den Arbeitsbaum zu
+  kopieren, wäre die zweite Quelle, die dieser Slice gerade beseitigt hat.
 - *Die beobachtete Lücke ist mit diesem Slice nicht geschlossen: er trifft
   die Entscheidung einmal, er schafft keinen Wächter, der sie beim nächsten
   Mal einfordert* — Ausgang bei Closure; verwandt
@@ -187,12 +197,70 @@ geschrieben. Danach Archivierung als wellenloser Slice
   vorhandener Prüfer ohne Gegenstand — dieselbe Klasse wie
   [`BEO-GATE/pruefer-ohne-gegenstand-oder-aufruf`](../observations/BEO-GATE/pruefer-ohne-gegenstand-oder-aufruf/observation.md).
   **Nicht in diesem Slice:** es wäre der dritte Liefer-Punkt und mit
-  `GATE` die dritte Schicht — über der Größen-Regel. Folge-Slice.
+  `GATE` die dritte Schicht — über der Größen-Regel. **Ausgang:**
+  eingetreten, Folge-Slice
+  [slice-173](../open/slice-173-versions-sensor-baseline-pins.md).
 
 ## 8. Closure-Notiz
 
-_(beim Abschluss ausfüllen — genau **ein** solcher Abschnitt je Slice;
-Lerneintrag — Form: wird dort benannt.)_
+**Lerneintrag — Form: benannte Spec-Lücke** (in der Baseline, nicht in a-checks Spec).
+
+- **Was hat funktioniert:** Der Löschtest **vor** dem Plan. `v6.0.0` entfernen,
+  `make doc-check` fahren, wiederherstellen — das kostete drei Minuten und
+  ersetzte die Frage „was könnte brechen?" durch eine Liste von 22 Zeilen mit
+  Datei und Zeilennummer. Der Plan konnte danach eine Klassen-Tabelle tragen
+  statt einer Vermutung, und der Review hat beide unabhängig nachgerechnet und
+  bestätigt gefunden. Ein Vorhaben, dessen Machbarkeit an einer Messung hängt,
+  misst zuerst.
+
+- **Was ging anders als geplant:** §2.2 begründete den Bump an akzeptierten
+  `MR`-Einträgen aus **eigenen Prämissen** — Feld nennt eine Regel, nicht eine
+  Datei-Kopie, also ist der Bump eine Pfad-Reparatur. Das Ergebnis war richtig,
+  der Weg dorthin nicht: die vendored Ziel-Form
+  ([`MR-NNN-titel.template.md`](../../../../.harness/baseline/v6.2.0/templates/harness/conventions/MR-NNN-titel.template.md))
+  schreibt den mitwandernden Zeiger ausdrücklich vor und nennt den Wächter
+  gleich mit. Gefunden hat das der unabhängige Review, nicht ich. Zwei Sätze
+  Lektüre hätten die halbe Argumentation erspart — und die Frage, ob ein
+  `MR`-Eintrag nötig ist, gar nicht erst entstehen lassen: wer der Baseline
+  *folgt*, adaptiert nichts.
+
+- **Steering-Loop-Eintrag — benannte Spec-Lücke:** Die Baseline regelt den
+  Baseline-**Wechsel**, nicht das **Verschwinden** eines Standes. Ihr
+  Versions-Sensor-Muster nimmt `harness/conventions/done/**` aus, weil
+  aufgelöste Einträge eingefroren sind — diese Ausnahme setzt stillschweigend
+  voraus, dass der alte Stand liegenbleibt und ihre Links weiter auflösen.
+  Wer ihn löscht, **muss** die eingefrorenen Einträge anfassen; dieser Slice
+  hat es bei [`MR-018`](../../../../harness/conventions.md#mr-018) getan, weil
+  der Link sonst ins Leere gezeigt hätte. Die Lücke ist damit benannt, nicht
+  geschlossen: welche der beiden Regeln gilt, entscheidet
+  [slice-173](../open/slice-173-versions-sensor-baseline-pins.md) §2, wenn er
+  das Muster übernimmt. *(Kein `liegt in`-Feld — mit diesem Slice wurde nichts
+  verkörpert; der Eintrag ist gezählt, nicht verkörpert.)*
+
+- **Beobachtungs-Register (`../observations/`):**
+  `evidence/slice-172.md` in
+  [`BEO-GATE/trace-check-lokal-nicht-befragbar`](../observations/BEO-GATE/trace-check-lokal-nicht-befragbar/observation.md)
+  ergänzt — Zähler steht damit bei 2×; und in
+  [`BEO-PLAN/review-geltungsbereich-zu-eng`](../observations/BEO-PLAN/review-geltungsbereich-zu-eng/observation.md)
+  ergänzt — ebenfalls 2×. Bei
+  [`BEO-HARNESS/zwei-baseline-staende-nach-migrationsende`](../observations/BEO-HARNESS/zwei-baseline-staende-nach-migrationsende/observation.md)
+  wurde **kein** Beleg angelegt und der Zähler bleibt bei 1×: dieser Slice hat
+  die Beobachtung aufgelöst, und ein auflösender Vorgang ist kein Auftreten.
+  Ihr `state.md` sagt jetzt, welcher Teil beseitigt ist und welcher nicht.
+
+- **Folge-Slices:**
+  [slice-173](../open/slice-173-versions-sensor-baseline-pins.md) (Baseline-Pins
+  vom `versions`-Modul wächtern lassen) — ist eine Datei in `open/`.
+
+- **Risiken aus §7:** drei, jedes mit genau einem Ausgang — zweimal *gestrichen
+  mit Begründung*, einmal *eingetreten* mit Folge-Slice. Siehe §7.
+
+- **Drei Paarungen** (Repo ohne Wellen-Betrieb, nach dem `git mv` geprüft):
+  **Anker** — kein `liegt in`-Feld vergeben, also kein Gegenstand.
+  **Folge-Slice** — `slice-173` liegt in `open/`.
+  **Register** — beide zitierten Beobachtungen existieren als Verzeichnis und
+  tragen ein nicht leeres `evidence/`; `make verify` prüft die maschinelle
+  Hälfte.
 
 ## 9. Sub-Area-Modus
 
