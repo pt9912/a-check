@@ -18,7 +18,7 @@ kein `fork` — er hat den Implementierungs-Kontext nicht geerbt) ·
 
 **Eingangs-Kontext:**
 
-- `docs/plan/planning/in-progress/slice-168-pruefer-kalibrierungs-selbsttest.md`
+- `docs/plan/planning/done/slice-168-pruefer-kalibrierungs-selbsttest.md`
 - `tools/dcheck-phrase-selftest.sh`, `tools/verify-risiko-ausgaenge.sh`
   (Vorbild-Muster), `Makefile`, `.d-check.yml`
 - `docs/plan/planning/observations/BEO-GATE/pruefer-ohne-gegenstand-oder-aufruf/`

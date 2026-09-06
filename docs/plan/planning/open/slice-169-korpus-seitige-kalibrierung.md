@@ -6,7 +6,7 @@ wechselt nur durch `make slice-mv` ([`AGENTS.md`](../../../../AGENTS.md)
 §3.3/§5).
 
 **Welle:** ohne Welle (Trigger: Review-Findings F-1/F-2 aus
-[`slice-168`](../in-progress/slice-168-pruefer-kalibrierungs-selbsttest.md) —
+[`slice-168`](../done/slice-168-pruefer-kalibrierungs-selbsttest.md) —
 kein Mehr über die eigene DoD hinaus).
 
 **Bezug:** [`BEO-GATE/pruefer-ohne-gegenstand-oder-aufruf`](../observations/BEO-GATE/pruefer-ohne-gegenstand-oder-aufruf/observation.md)
