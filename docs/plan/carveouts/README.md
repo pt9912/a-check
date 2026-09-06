@@ -54,7 +54,7 @@ BF-Markierung ist verschleierte Sub-Area-Brownfield.
 ## Form eines Carveouts
 
 Datei: `docs/plan/carveouts/CO-<NNN>-<kurztitel>.md`, aus der vendored Ziel-Form
-[`.harness/baseline/v6.0.0/templates/docs/plan/carveouts/carveout.template.md`](../../../.harness/baseline/v6.0.0/templates/docs/plan/carveouts/carveout.template.md)
+[`.harness/baseline/v6.2.0/templates/docs/plan/carveouts/carveout.template.md`](../../../.harness/baseline/v6.2.0/templates/docs/plan/carveouts/carveout.template.md)
 — a-check führt keine eigene Kopie, sie würde gegen die Baseline driften (dieselbe Begründung wie
 bei der Slice-Vorlage, [`AGENTS.md`](../../../AGENTS.md) §5, „Slice-Form"; a-checks frühere lokale
 Kopie hatte genau das getan — ein Provenienz-Zeiger auf `v6.0.0` bumpte, während der Aufbau noch
