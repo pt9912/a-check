@@ -56,14 +56,14 @@ Nachzüge umsetzen, und die Stand-Deklaration an ihren drei Stellen
 | slice-162 | Review-Pflicht/Rollenwechsel-Absatz in `AGENTS.md` §6 auf `v6.1.0`-Wortlaut zurückschneiden | slice-161 §4.4/§6 |
 | slice-163 | Adaptions-Durchgang (Etappe B): alle 18 MR-Dateien gegen `v6.1.0` geprüft | Maintainer-Entscheidung 2026-09-06 ("Etappe B zuerst") |
 | slice-164 | Delta-Analyse `v6.1.0` → `v6.2.0` (Increment) | Maintainer-Hinweis 2026-09-06 ("neues Release v6.2.0") |
-| slice-165 | Review-Checkbox-Punkt bleibt Opt-in, [MR-019](../../../harness/conventions/MR-019-review-dod-opt-in.md) | slice-164 §4.2/§5 (Folge-Slice-Vorschlag), Maintainer-Wort 2026-09-06 |
-| slice-166 | [MR-017](../../../harness/conventions/done/MR-017-adr-vorlagen-version.md) durch generische ADR-Vorlagen-Referenz abgelöst, [MR-020](../../../harness/conventions/MR-020-adr-vorlage-generisch.md) | slice-163 §4/§6 (Folge-Slice-Vorschlag), Maintainer-Wort 2026-09-06 |
+| slice-165 | Review-Checkbox-Punkt bleibt Opt-in, [MR-019](../../../../harness/conventions/MR-019-review-dod-opt-in.md) | slice-164 §4.2/§5 (Folge-Slice-Vorschlag), Maintainer-Wort 2026-09-06 |
+| slice-166 | [MR-017](../../../../harness/conventions/done/MR-017-adr-vorlagen-version.md) durch generische ADR-Vorlagen-Referenz abgelöst, [MR-020](../../../../harness/conventions/MR-020-adr-vorlage-generisch.md) | slice-163 §4/§6 (Folge-Slice-Vorschlag), Maintainer-Wort 2026-09-06 |
 
 **Stand (alle sechs Slices in `done/`, Welle auf `v6.2.0` retargeted) —
 keine offenen Folge-Slices mehr:** beide aus `slice-163`/`slice-164`
 vorgeschlagenen Folge-Slices sind erledigt
-([MR-020](../../../harness/conventions/MR-020-adr-vorlage-generisch.md)
-bzw. [MR-019](../../../harness/conventions/MR-019-review-dod-opt-in.md)).
+([MR-020](../../../../harness/conventions/MR-020-adr-vorlage-generisch.md)
+bzw. [MR-019](../../../../harness/conventions/MR-019-review-dod-opt-in.md)).
 Nächster und letzter Schritt vor der Welle-Closure: **Etappe A**
 (Vendoring `.harness/baseline/v6.2.0/` + 3-Stellen-Pin-Bump +
 Reviewer-Skill-Zeile in `harness/README.md`, slice-161 §6, Ziel-Version auf

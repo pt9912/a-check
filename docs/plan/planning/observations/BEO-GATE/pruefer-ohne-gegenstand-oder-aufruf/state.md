@@ -1,3 +1,5 @@
-**Stand:** offen
+**Stand:** geplant in [`slice-168`](../../../open/slice-168-pruefer-kalibrierungs-selbsttest.md)
 
-die Leermenge auszuweisen (slice-070, F-12) schützt vor Bestandsverlust, **nicht** vor falscher Zusage; und ein Target zu deklarieren schützt nicht davor, dass es niemand fährt. Beide Male fiel es nur auf, weil jemand den Prüfer gezielt gegen einen echten Fall hielt
+3× erreicht (slice-120, slice-123, slice-165) — Lese-Schritt bei der `welle-14`-Closure. Ein
+genereller Kalibrierungs-Selbsttest für phrasen-/muster-basierte Prüfer ist noch nicht
+geschrieben; `slice-168` klärt zunächst, ob eine automatisierte oder eine Workflow-Lösung trägt.
