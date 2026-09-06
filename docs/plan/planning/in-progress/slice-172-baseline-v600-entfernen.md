@@ -18,7 +18,7 @@ Referenz-Klassen aufstellte und `v6.0.0` bewusst liegen ließ.
 **Berührte Spec-Stellen:** — *(keine)* — Harness-Konventionen ohne
 Vertragsberührung.
 
-**Verantwortlich:** — *(noch nicht priorisiert)*
+**Verantwortlich:** Claude (Opus 5), im Auftrag des Maintainers.
 
 **Autor:** Claude (Opus 5), im Auftrag des Maintainers. **Datum:**
 2026-09-06.
@@ -38,7 +38,16 @@ auf — ohne dass eine Aussage unwahr wird.
 
 Löschtest am 2026-09-06: Verzeichnis entfernt, `make doc-check` gelaufen,
 Verzeichnis wiederhergestellt. Ergebnis **Exit 2, 22 Befunde**, alle
-`target-missing`, keine weitere Befundklasse. Die vier `.claude/rules/`-
+`target-missing`.
+
+**Grenze des Instruments, nicht Entwarnung.** `doc-check` sieht Markdown-Links.
+Eine **Prosa-Aussage über den vendorten Bestand** sieht es nicht — und genau die
+Klasse benennt §5 als Rückführungs-Trigger. Sie ist eingetreten:
+[slice-167](../done/slice-167-etappe-a-vendoring-v620.md) §6 sagt im Präsens,
+`v6.0.0` bleibe vendored liegen und mehrere Stände seien vorgesehen; beide
+Hälften sind nach dem Löschen falsch. Gefunden hat das der unabhängige Review,
+nicht der Sensor. Behandelt wie der andere Prosa-Fall (§2.3): Fußnote am Ort,
+Text unangetastet. Die vier `.claude/rules/`-
 Symlinks zeigen bereits auf `v6.2.0` und fallen nicht an — anders als bei
 [slice-167](../done/slice-167-etappe-a-vendoring-v620.md), wo genau sie
 übersehen wurden.
@@ -66,17 +75,33 @@ diesen Stempel als Ursache der „31 verschiedenen Dateien" identifiziert):
 | `adr/README.template.md` · `carveouts/README.template.md` · `review-report.template.md` | 0 · 0 · 0 |
 | `templates/AGENTS.template.md` | **9** |
 
-Das Feld `Ersetzt-Baseline-Regel` dokumentiert, **welche Regel** ersetzt
-wird — nicht, welche Datei-Kopie sie trägt. Steht der Regeltext wortgleich
-im verbliebenen Stand, hält der gebumpte Zeiger dieselbe Regel fest; die
-Änderung ist eine Pfad-Reparatur nach einem Umzug, wie `make slice-mv` sie
-für wandernde Slices fährt, und keine inhaltliche
-([`AGENTS.md`](../../../../AGENTS.md) §3.5 analog). **Kein eigener
-`MR`-Eintrag** — Maintainer-Entscheidung vom 2026-09-06: die Begründung
-trägt diese Sektion, ein Adaptions-Eintrag dafür wäre die vierte Instanz
-der Klasse, die
+**Die Baseline schreibt den mitwandernden Zeiger selbst vor.** Die Ziel-Form des
+Adaptions-Eintrags
+([`MR-NNN-titel.template.md`](../../../../.harness/baseline/v6.2.0/templates/harness/conventions/MR-NNN-titel.template.md))
+sagt zum Feld `Ersetzt-Baseline-Regel`, es trage *„zwei Dinge, die sich bewegen,
+und für beide gibt es einen Wächter statt einer Formregel"* — die **Tiefe** (nach
+einem `git mv` zeigt der relative Pfad eine Ebene zu hoch) und die **Version**:
+*„jeder Baseline-Bump entwertet `<tag>` — der adoptierte Stand steht einmal im
+Adaptions-Block, ein Versions-Sensor prüft jeden Pin dagegen; Muster in
+`.d-check.yml`"*. Der Zeiger ist damit **Mechanik, keine Adaption**, und die
+Immutabilitäts-Disziplin trifft ihn nicht: sie schützt den **Inhalt** eines
+akzeptierten Eintrags, nicht die Tiefe und nicht die Versionskomponente seines
+Links.
+
+Das Feld nennt eine **Regel**, keine Datei-Kopie — **Bedingung** ist deshalb die
+Wortgleichheit des Zielabschnitts, und die ist zu *messen*, nicht anzunehmen. Die
+Tabelle oben ist genau dieser Nachweis.
+
+**Kein eigener `MR`-Eintrag**, und das folgt aus dem Obigen statt aus Sparsamkeit:
+wer der Baseline *folgt*, adaptiert nichts. Ein Eintrag, der keine Baseline-Regel
+ersetzt, ist nach derselben Ziel-Form ein **Fork** statt einer Adaption — und wäre
+die vierte Instanz der Klasse, die
 [`BEO-HARNESS/adaption-korrigiert-repo-aussage`](../observations/BEO-HARNESS/adaption-korrigiert-repo-aussage/observation.md)
-(2×) bereits als Rückbau-Kandidat führt.
+(2×) als Rückbau-Kandidat führt.
+
+**Diese Sektion stand zuerst ohne die Zitate da** und argumentierte aus eigenen
+Prämissen — der Befund kam aus dem unabhängigen Review. Der Regelwerk-Abschnitt
+gehört *vor* die Begründung gelesen, nicht danach.
 
 ### 2.3 Der eine Zeiger, den der Bump falsch machen würde
 
@@ -152,6 +177,17 @@ geschrieben. Danach Archivierung als wellenloser Slice
   die Entscheidung einmal, er schafft keinen Wächter, der sie beim nächsten
   Mal einfordert* — Ausgang bei Closure; verwandt
   [`BEO-HARNESS/mr-aufloesungs-trigger-ohne-waechter`](../observations/BEO-HARNESS/mr-aufloesungs-trigger-ohne-waechter/observation.md).
+  **Präzisiert durch den Review:** der Wächter ist nicht zu erfinden, er ist
+  **unkonfiguriert**. Das `versions`-Modul läuft in `doc-check`, deckt in
+  [`.d-check.yml`](../../../../.d-check.yml) aber nur die Lastenheft-Version;
+  das Baseline-Pin-Muster liefert die vendored Ziel-Form
+  ([`templates/.d-check.yml`](../../../../.harness/baseline/v6.2.0/templates/.d-check.yml))
+  fertig aus, samt `exempt-paths` für die eingefrorenen aufgelösten Einträge.
+  **35** Dateien tragen heute Baseline-Pins, ungewächtert. Das ist ein
+  vorhandener Prüfer ohne Gegenstand — dieselbe Klasse wie
+  [`BEO-GATE/pruefer-ohne-gegenstand-oder-aufruf`](../observations/BEO-GATE/pruefer-ohne-gegenstand-oder-aufruf/observation.md).
+  **Nicht in diesem Slice:** es wäre der dritte Liefer-Punkt und mit
+  `GATE` die dritte Schicht — über der Größen-Regel. Folge-Slice.
 
 ## 8. Closure-Notiz
 
