@@ -66,7 +66,7 @@ slice-136/139/141/… setzten um)._
 offener Folge-Slice:**
 
 Der in `slice-163` §4/§6 vorgeschlagene Folge-Slice:
-[MR-017](../../../harness/conventions/MR-017-adr-vorlagen-version.md)s
+[MR-017](../../../harness/conventions/done/MR-017-adr-vorlagen-version.md)s
 ausgelösten Auflösungs-Trigger nicht durch eine weitere Versions-`MR`
 bedienen, sondern
 [MR-000](../../../harness/conventions.md#mr-000)s

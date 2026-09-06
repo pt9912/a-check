@@ -108,9 +108,9 @@ werden nie überschrieben); sie entsteht in den Nachfolge-Einträgen der Etappe 
 | [MR-014](conventions/MR-014-keine-agenten-telemetrie.md) <a id="mr-014"></a> | Keine Agenten-Telemetrie | gesamtes Repo; Baseline-Modul `modul-15` | [`modul-15-observability.md` §Kernidee](../.harness/baseline/v6.0.0/regelwerk/modul-15-observability.md#kernidee-modul-15) |
 | [MR-015](conventions/MR-015-welle-closure-ohne-replay.md) <a id="mr-015"></a> | Welle-Closure ohne Replay-Lauf (`make ci` grün) | [`docs/plan/planning/`](../docs/plan/planning/README.md) | [`modul-06-roadmap.md` §Wellen-Closure-Prozedur](../.harness/baseline/v6.0.0/regelwerk/modul-06-roadmap.md#wellen-closure-prozedur-modul-6) |
 | [MR-016](conventions/MR-016-validator-unbesetzt.md) <a id="mr-016"></a> | Validator-Rolle unbesetzt | gesamtes Repo; Baseline-Modul `modul-08` | [`modul-08-agentenrollen.md` §Die neun Übergaben](../.harness/baseline/v6.0.0/regelwerk/modul-08-agentenrollen.md#die-neun-übergaben-und-ihre-artefakte-modul-8) |
-| [MR-017](conventions/MR-017-adr-vorlagen-version.md) <a id="mr-017"></a> | ADR-Vorlage ist die vendored Fassung `v6.0.0` | [`MR-000`](#mr-000) §ID-Schema, Zeile zu `ADR-NNNN` | — *(korrigiert eine Repo-Aussage; Rückbau-Kandidat, im Eintrag benannt)* |
 | [MR-018](conventions/MR-018-review-pflicht-v610-wortlaut.md) <a id="mr-018"></a> | Review-Pflicht/Rollenwechsel-Absatz in `AGENTS.md` §6 auf `v6.1.0`-Wortlaut | [`AGENTS.md`](../AGENTS.md) §6 | — *(Wortlaut-Treiber ist ein noch nicht vendortes Template, keine Regel; Rückbau-Kandidat, im Eintrag benannt)* |
 | [MR-019](conventions/MR-019-review-dod-opt-in.md) <a id="mr-019"></a> | Review-DoD-Punkt bleibt Opt-in statt verpflichtend | [`AGENTS.md`](../AGENTS.md) §5, [`.d-check.yml`](../.d-check.yml) | — *(Treiber ist ein noch nicht vendortes Template, keine Regel; Rückbau-Kandidat, im Eintrag benannt)* |
+| [MR-020](conventions/MR-020-adr-vorlage-generisch.md) <a id="mr-020"></a> | ADR-Vorlagen-Referenz zeigt generisch auf den vendorten Stand | [`MR-000`](#mr-000) §ID-Schema, Zeile zu `ADR-NNNN` | — *(korrigiert eine Repo-Aussage, kein Baseline-Regel-Ersatz; permanent, kein Rückbau-Kandidat)* |
 
 ### Aufgelöste Adaptionen
 
@@ -131,7 +131,8 @@ bricht.
 | [MR-008](conventions/done/MR-008-kein-replay.md) <a id="mr-008"></a><a id="mr-008--kein-replay-keine-agenten-telemetrie"></a> | [MR-014](conventions/MR-014-keine-agenten-telemetrie.md) |
 | [MR-009](conventions/done/MR-009-validator-unbesetzt.md) <a id="mr-009"></a><a id="mr-009--validator-rolle-unbesetzt-zwei-übergaben-ohne-artefakt"></a> | [MR-016](conventions/MR-016-validator-unbesetzt.md) |
 | [MR-010](conventions/done/MR-010-rueckbau-drei-adaptionen.md) <a id="mr-010"></a> | — *(Rückbau-Eintrag; mit seiner Entstehung erledigt, siehe Datei)* |
-| [MR-013](conventions/done/MR-013-adr-vorlagen-version.md) <a id="mr-013"></a> | [MR-017](conventions/MR-017-adr-vorlagen-version.md) |
+| [MR-013](conventions/done/MR-013-adr-vorlagen-version.md) <a id="mr-013"></a> | [MR-017](conventions/done/MR-017-adr-vorlagen-version.md) |
+| [MR-017](conventions/done/MR-017-adr-vorlagen-version.md) <a id="mr-017"></a> | [MR-020](conventions/MR-020-adr-vorlage-generisch.md) |
 
 ## Anforderungs-Anlege-Prozess
 

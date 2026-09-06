@@ -71,7 +71,7 @@ in beiden Diffs, aber nur einmal im kombinierten).
   `modul-06-roadmap.md`, `modul-08-agentenrollen.md`,
   `modul-15-observability.md` — s. slice-163 §3) — keines davon liegt im
   4-Datei-Diff dieses Increments. Der `slice-163`-Befund
-  ([MR-017](../../../../harness/conventions/MR-017-adr-vorlagen-version.md)s
+  ([MR-017](../../../../harness/conventions/done/MR-017-adr-vorlagen-version.md)s
   Auflösungs-Trigger) bleibt unverändert: die Trigger-Analyse hängt am
   Migrations-*Ereignis*, nicht am Wortlaut, und `v6.2.0` ändert daran
   nichts zusätzlich (kein neues Trigger-Ereignis über das bereits
@@ -221,7 +221,7 @@ Reihenfolge der drei offenen Folge-Slices (dieser, plus die zwei aus
   neu angelegt, Beleg `evidence/slice-164.md` — Zähler steht bei 1×.
 - **Folge-Slices:** noch keine ID vergeben — ein gebündelter Folge-Slice
   für §4/§5, zusätzlich zu dem bereits aus `slice-163` offenen
-  ([MR-017](../../../../harness/conventions/MR-017-adr-vorlagen-version.md)/[MR-000](../../../../harness/conventions.md#mr-000),
+  ([MR-017](../../../../harness/conventions/done/MR-017-adr-vorlagen-version.md)/[MR-000](../../../../harness/conventions.md#mr-000),
   s. `welle-14` §„Stand").
 - **Risiken aus §6:** beide mit Ausgang — siehe §6.
 - **Drei Paarungen:** verschoben auf die Closure von `welle-14` (dieser

@@ -25,7 +25,7 @@ Anlage) · <!-- d-check:ignore -->
 - `docs/plan/planning/done/slice-163-adaptions-durchgang-v610.md`
 - `docs/plan/planning/done/slice-161-regelwerk-v610-delta-analyse.md`
 - `docs/plan/planning/observations/BEO-HARNESS/rueckbau-kandidat-ueberlebt-baseline-migration/`
-- `harness/conventions/MR-017-adr-vorlagen-version.md`
+- `harness/conventions/done/MR-017-adr-vorlagen-version.md`
 - Kurs-Repo `pt9912/ai-harness-course`, Tags `v6.0.0`/`v6.1.0` (extern
   geklont zur unabhängigen Nachprüfung)
 
