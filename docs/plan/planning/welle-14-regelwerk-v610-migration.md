@@ -3,7 +3,7 @@
 > **Retarget 2026-09-06:** ursprünglich auf `v6.1.0` eröffnet (Dateiname
 > trägt das noch — stabile Kennung, kein Nachzug nötig, dieselbe Praxis wie
 > bei Slice-Dateinamen). Noch bevor Etappe A vendorte, erschien `v6.2.0`
-> (Kurs-Welle 119, 2026-09-05, zwei Stunden nach `v6.1.0`) — Vendoring von
+> (Kurs-Welle 119, 2026-09-05, 2h06m nach `v6.1.0`) — Vendoring von
 > `v6.1.0` jetzt hätte es Stunden später durch `v6.2.0` ersetzen müssen.
 > Ziel und Trigger unten auf `v6.2.0` gehoben, bevor Etappe A beginnt.
 
@@ -36,7 +36,7 @@ Nachzüge umsetzen, und die Stand-Deklaration an ihren drei Stellen
   Kurs-Welle 118).
 - `v6.2.0`-Release im Kurs-Repo veröffentlicht — bestätigt:
   `gh release view v6.2.0 --repo pt9912/ai-harness-course` (2026-09-05,
-  Kurs-Welle 119, zwei Stunden nach `v6.1.0`).
+  Kurs-Welle 119, 2h06m nach `v6.1.0`).
 - Maintainer hat die Migration angewiesen (dieses Gespräch, 2026-09-05);
   Retarget auf `v6.2.0` ebenso vom Maintainer angewiesen (2026-09-06).
 
@@ -61,8 +61,9 @@ _Weitere Zeilen kommen hinzu, sobald die nächste Etappe eröffnet wird —
 dieselbe Reihenfolge wie beim vorigen Sprung (slice-135 schlug vor,
 slice-136/139/141/… setzten um)._
 
-**Stand (drei Slices in `done/`, Welle auf `v6.2.0` retargeted) — zwei
-offene Folge-Slices, Reihenfolge noch nicht festgelegt:**
+**Stand (drei Slices in `done/`, `slice-164` abschlussbereit in
+`in-progress/`, Welle auf `v6.2.0` retargeted) — zwei offene Folge-Slices,
+Reihenfolge noch nicht festgelegt:**
 
 1. Der in `slice-163` §4/§6 vorgeschlagene Folge-Slice:
    [MR-017](../../../harness/conventions/MR-017-adr-vorlagen-version.md)s
@@ -71,10 +72,13 @@ offene Folge-Slices, Reihenfolge noch nicht festgelegt:**
    [MR-000](../../../harness/conventions.md#mr-000)s
    ADR-Vorlagen-Referenz einmal generisch auf `conventions.md` §Baseline
    umstellen.
-2. Ein Delta-Analyse-Slice für das Increment `v6.1.0` → `v6.2.0` (analog
-   `slice-161`, kleinerer Umfang: 4 Dateien laut
-   `git diff v6.1.0 v6.2.0 -- lab/regelwerk lab/templates`) — noch keine
-   Slice-ID vergeben.
+2. Der in `slice-164` §4/§5 vorgeschlagene gebündelte Folge-Slice:
+   entscheiden, ob a-check den Review-Report als DoD-Punkt verpflichtend
+   macht (wie `v6.2.0`) oder beim bisherigen Opt-in
+   (`make doc-reviews`/`DC-FA-RVW-001`, slice-159/160) bleibt, und je nach
+   Entscheidung `AGENTS.md` §5 sowie die `tasks-ignore-pattern`-Regex in
+   `.d-check.yml` nachziehen oder die Abweichung als `MR-<NNN>`
+   dokumentieren.
 
 Danach Etappe A (Vendoring `.harness/baseline/v6.2.0/` + 3-Stellen-Pin-Bump
 + Reviewer-Skill-Zeile in `harness/README.md`, slice-161 §6, Ziel-Version

@@ -36,7 +36,7 @@ einem frischen Klon von `pt9912/ai-harness-course`, Tags `v6.1.0` und
 Der Maintainer meldete `v6.2.0`, während `welle-14` noch bei `v6.1.0`
 stand und Etappe A (Vendoring) noch nicht gelaufen war. Unabhängig
 bestätigt: `gh release view v6.2.0 --repo pt9912/ai-harness-course` — Tag
-`v6.2.0`, veröffentlicht 2026-09-05T18:42:24Z, **zwei Stunden nach**
+`v6.2.0`, veröffentlicht 2026-09-05T18:42:24Z, **2h06m nach**
 `v6.1.0` (2026-09-05T16:36:01Z), Assets `lab-regelwerk.zip` +
 `SHA256SUMS` vorhanden. Kurs-Welle laut `lab/regelwerk/README.md`: 119
 (vorher 118). Ergebnis: `welle-14` wurde auf `v6.2.0` retargeted, bevor
@@ -184,13 +184,14 @@ Reihenfolge der drei offenen Folge-Slices (dieser, plus die zwei aus
 
 ## 7. DoD
 
-- [x] Increment `v6.1.0`→`v6.2.0` gemessen (4 Dateien, `+16/−5`),
-      Provenienz unabhängig bestätigt (`gh release view`), gegen den
-      slice-161-Präzedenzfall eingeordnet (§1/§2).
-- [x] Jede geänderte Datei einzeln geprüft, gegen den bestehenden
-      a-check-Bestand (`AGENTS.md`, `.d-check.yml`) gehalten (§3/§4).
+- [x] Increment `v6.1.0`→`v6.2.0` gemessen (4 Dateien, `+16/−5`), jede
+      Datei einzeln geprüft, Provenienz unabhängig bestätigt (`gh release
+      view`), gegen den slice-161-Präzedenzfall eingeordnet (§1–§3).
 - [x] Beide echten Funde benannt, ihre Kopplung erklärt, ein gebündelter
       Folge-Slice statt zwei unabhängiger vorgeschlagen (§4/§5).
+- [x] Unabhängiges Plan-Review über getrennten Kontext durchgeführt; die
+      dabei gefundene fehlende zweite Sub-Area (§9, Gate-/Werkzeug-Schicht)
+      vor Abnahme ergänzt.
 - [x] `make gates` grün.
 - [x] `make verify` grün.
 - [x] Beobachtungs-Register fortgeschrieben (§9).
@@ -227,15 +228,21 @@ Reihenfolge der drei offenen Folge-Slices (dieser, plus die zwei aus
 
 ## 9. Sub-Area-Modus
 
-**Vorgelagert — Sub-Area-Wahl prüfen:** eine Sub-Area berührt —
-**Harness-Einstieg** (`AGENTS.md`, `.d-check.yml`-Bezug über
-`tasks-ignore-pattern`), Greenfield, Schwelle ≥ 2/3 erfüllt
-(`harness/conventions.md` §Modus-Deklaration pro Sub-Area).
+**Vorgelagert — Sub-Area-Wahl prüfen:** zwei Sub-Areas berührt —
+**Harness-Einstieg** (`AGENTS.md` §5) und **Gate-/Werkzeug-Schicht**
+(`.d-check.yml`s `tasks-ignore-pattern` — Präzedenz für diese Zuordnung:
+`BEO-GATE/archiv-sensor-vorpruefung-unvollstaendig` klassifiziert einen
+`.d-check.yml`-Fund ebenso unter Gate-/Werkzeug-Schicht, nicht
+Harness-Einstieg). Unabhängiges Review fand diese zweite Sub-Area in der
+ersten Fassung fehlend (nur eine deklariert). Beide Greenfield, Schwelle ≥
+2/3 erfüllt (`harness/conventions.md` §Modus-Deklaration pro Sub-Area).
 
-**Vorgelagert — offene Beobachtungen sichten:** Register für
-**Harness-Einstieg** über die Verzeichnisliste unter `BEO-HARNESS/`
-geprüft (nicht per Namensabgleich, s. slice-163 §10-Korrektur) — 8 `offen`
+**Vorgelagert — offene Beobachtungen sichten:** Register für **beide**
+Sub-Areas über die Verzeichnisliste geprüft (nicht per Namensabgleich, s.
+slice-163 §10-Korrektur). **Harness-Einstieg** (`BEO-HARNESS/`): 8 `offen`
 vor diesem Slice, keiner erreicht 3×; mit dem neuen Eintrag dieses Slice
-(s. §8) jetzt 9 `offen`, weiterhin keiner bei 3×.
+(s. §8) jetzt 9 `offen`, weiterhin keiner bei 3×. **Gate-/Werkzeug-Schicht**
+(`BEO-GATE/`): 11 `offen` (5 weitere `verkörpert`), keiner davon trifft
+denselben Fund wie dieser Slice (kein Duplikat), keiner erreicht 3×.
 
 **Alle berührten Sub-Areas GF** — kein Begründungsblock nötig.
