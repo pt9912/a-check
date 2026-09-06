@@ -41,24 +41,25 @@ Nachzüge umsetzen, und die Stand-Deklaration an ihren drei Stellen
 |---|---|---|
 | slice-161 | Delta-Analyse `v6.0.0` → `v6.1.0` | — (reine Ist-Messung, keine Vertragsberührung) |
 | slice-162 | Review-Pflicht/Rollenwechsel-Absatz in `AGENTS.md` §6 auf `v6.1.0`-Wortlaut zurückschneiden | slice-161 §4.4/§6 |
+| slice-163 | Adaptions-Durchgang (Etappe B): alle 18 MR-Dateien gegen `v6.1.0` geprüft | Maintainer-Entscheidung 2026-09-06 ("Etappe B zuerst") |
 
 _Weitere Zeilen kommen hinzu, sobald die nächste Etappe eröffnet wird —
 dieselbe Reihenfolge wie beim vorigen Sprung (slice-135 schlug vor,
 slice-136/139/141/… setzten um)._
 
-**Stand (beide Slices in `done/`) — offene Entscheidung für den nächsten
-Schritt, dem Maintainer am Ende der Sitzung vom 2026-09-05 gestellt:**
-Etappe A (Vendoring `.harness/baseline/v6.1.0/` + 3-Stellen-Pin-Bump +
-Reviewer-Skill-Zeile in `harness/README.md`, slice-161 §6) direkt
-eröffnen, oder zuerst einen vollständigen **Adaptions-Durchgang** (Etappe
-B: alle 18 aktiven `MR`-Einträge einzeln gegen `v6.1.0` bewerten, nicht
-nur die vom Diff berührten) fahren. Anlass: `slice-162` deckte auf, dass
-ein diff-only-Vorgehen bestehende Adaptions-Einträge nicht gegen den
-neuen Stand prüft — siehe
-[`BEO-HARNESS/adaption-korrigiert-repo-aussage`](observations/BEO-HARNESS/adaption-korrigiert-repo-aussage/observation.md)
-(2×) und
-[`rueckbau-kandidat-ueberlebt-baseline-migration`](observations/BEO-HARNESS/rueckbau-kandidat-ueberlebt-baseline-migration/observation.md)
-(1×).
+**Stand (alle drei Slices in `done/`) — offene Entscheidung für den
+nächsten Schritt:** `slice-163` (Etappe B) fand, dass fünf der sieben
+aktiven Adaptionen von `v6.1.0` unberührt bleiben und schlägt als
+Folge-Slice vor,
+[MR-017](../../../harness/conventions/MR-017-adr-vorlagen-version.md)s
+ausgelösten Auflösungs-Trigger nicht durch eine weitere Versions-`MR` zu
+bedienen, sondern
+[MR-000](../../../harness/conventions.md#mr-000)s
+ADR-Vorlagen-Referenz einmal generisch auf `conventions.md` §Baseline
+umzustellen (`slice-163`
+§4/§6). Nächster Schritt: diesen Folge-Slice ziehen, danach Etappe A
+(Vendoring `.harness/baseline/v6.1.0/` + 3-Stellen-Pin-Bump +
+Reviewer-Skill-Zeile in `harness/README.md`, slice-161 §6).
 
 ## 5. Abhängigkeiten
 
