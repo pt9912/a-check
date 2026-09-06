@@ -31,7 +31,7 @@ die kanonische Quelle (Source Precedence, siehe
   den ungeprüften dann namentlich aus. `v6.0.0` bleibt zusätzlich vendored, weil die
   `Ersetzt-Baseline-Regel`-Anker mehrerer bereits akzeptierter `MR`-Einträge
   (`harness/conventions/MR-*.md`) inhaltlich unveränderlich darauf zeigen (Adaptions-Block-Disziplin) —
-  siehe [slice-167](../docs/plan/planning/in-progress/slice-167-etappe-a-vendoring-v620.md) §3.
+  siehe [slice-167](../docs/plan/planning/done/slice-167-etappe-a-vendoring-v620.md) §3.
 - **Adoptiert seit:** 2026-06-20.
 
 Wann welcher Stand gehoben wurde und in welchen Etappen, steht in
