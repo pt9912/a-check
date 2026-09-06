@@ -179,10 +179,17 @@ structure:
   #     Gate-Lauf steht als `make gates` in Inline-Code, und der ist beim
   #     Zaehlen zu Leerzeichen bereinigt — ein Muster auf die Wendung selbst
   #     traefe null Items (d-check ADR-0075, hier nachgemessen).
+  #     "Unabhaengiger Review" (slice-165, MR-019): dieselbe exakte
+  #     Wortform, die das Modul `reviews` als Trigger-Phrase erwartet
+  #     (empirisch geprueft, nicht nur dokumentiert) — ein Item mit einer
+  #     anderen Formulierung ("Unabhaengiges Plan-Review", …) zaehlt hier
+  #     absichtlich NICHT als konstant: es hat dann auch `make doc-reviews`
+  #     nie ausgeloest (slice-165 §4), und ein Ignore-Treffer ohne
+  #     Sensor-Wirkung waere Camouflage.
   - files: "docs/plan/planning/**/slice-*.md"
     section-pattern: '^#+ .*(DoD|Definition of Done)'
     max-tasks: 3
-    tasks-ignore-pattern: '^( *grün|Closure-Notiz|Beobachtungs-Register|Jedes Risiko|Reconciliation)'
+    tasks-ignore-pattern: '^( *grün|Unabhängiger Review|Closure-Notiz|Beobachtungs-Register|Jedes Risiko|Reconciliation)'
     exempt-paths:
       - "docs/plan/planning/**/slice-0[0-4][0-9]-*.md"
       - "docs/plan/planning/**/slice-050-*.md"

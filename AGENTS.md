@@ -292,14 +292,19 @@ Workflows. Sicherer Default ohne `APPLY=1` (nichts wird geschrieben) |
   [`.harness/baseline/v6.0.0/templates/docs/plan/planning/slice.template.md`](.harness/baseline/v6.0.0/templates/docs/plan/planning/slice.template.md) — a-check führt keine eigene Kopie, sie würde gegen die Baseline driften.
   **Beim Kopieren anzupassen:** die Zeile `Lerneintrag — Form: <…>` ergänzen (die Ziel-Form kennt
   sie nicht als Feld, `make verify` verlangt sie) und die vier Felder streichen, die a-check nicht
-  führt — `Welle:`, Reconciliation-Register, *drei Paarungen*, Herkunfts-Anker. Die Regel trägt die
+  führt — `Welle:`, Reconciliation-Register, *drei Paarungen*, Herkunfts-Anker. **Fünftens:** führt
+  die vendored Ziel-Form ab einem künftigen Stand eine Review-DoD-Zeile (seit Kurs-Welle 119,
+  `v6.2.0`, noch nicht vendored — [`MR-019`](harness/conventions.md#mr-019)), wird ihr Wortlaut auf
+  die exakte Trigger-Phrase „unabhängiger Review" umgeschrieben, statt den Baseline-Wortlaut
+  unverändert zu übernehmen — sonst prüft `make doc-reviews` sie nie (empirisch geprüft,
+  slice-165 §3/§4). Die Regel trägt die
   Größen-Regel — **höchstens drei Liefer-Punkte und höchstens zwei Schichten**; passt der Slice
   nicht hinein, wird er **zerlegt, nicht gedehnt** — und verlangt den Lerneintrag in einer von drei
   **benannten** Formen (geschärfte Regel · neuer Sensor · benannte Spec-Lücke). `make verify`
   prüft beides ab slice-052; ältere Slices sind grandfathered.
-  **Gezählt wird nur, was mit dem Umfang wächst.** Gate-Läufe, Closure-Notiz, Register und
-  Risiko-Ausgänge zählen **nicht** — sie sind pro Slice konstant (Baseline `modul-05`
-  §Ziel-Form: Slice). Der Gate-Lauf steht darum als feste Zeile unter dem DoD; als Checkbox ist er
+  **Gezählt wird nur, was mit dem Umfang wächst.** Gate-Läufe, Review-Report, Closure-Notiz,
+  Register und Risiko-Ausgänge zählen **nicht** — sie sind pro Slice konstant (Baseline `modul-05`
+  §Ziel-Form: Slice, Review-Report seit `v6.2.0`). Der Gate-Lauf steht darum als feste Zeile unter dem DoD; als Checkbox ist er
   ab slice-098 ein Befund. Ab demselben Stichtag trägt der Kopf `Verantwortlich:`, `Autor:` und
   die berührten Spec-Stellen — `—` ist eine gültige Antwort, Schweigen nicht.
 - **CR-Texte an ein fremdes Werkzeug** (bisher vier an `d-check`) leben im Slice, der sie erzeugt,
