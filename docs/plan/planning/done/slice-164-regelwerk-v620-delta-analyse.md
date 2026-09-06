@@ -210,7 +210,7 @@ Reihenfolge der drei offenen Folge-Slices (dieser, plus die zwei aus
   vorab geplant, sondern eine Ad-hoc-Entscheidung des Maintainers
   (bestätigt vor diesem Slice).
 - **Lerneintrag — Form: geschärfte Regel.** *Erscheint ein neues
-  Baseline-Release, während eine Migrations-Welle noch offen ist und ihre
+  Baseline-Release, während eine Migrations-Welle offensteht und ihre
   Vendoring-Etappe (Etappe A) noch nicht gelaufen ist, wird die Welle auf
   den neuen Stand retargeted, statt das ältere Release zu vendoren und
   sofort erneut migrieren zu müssen. Ist die Vendoring-Etappe bereits
@@ -220,8 +220,9 @@ Reihenfolge der drei offenen Folge-Slices (dieser, plus die zwei aus
   [`BEO-HARNESS/agents-md-hinkt-baseline-dod-item-hinterher`](../observations/BEO-HARNESS/agents-md-hinkt-baseline-dod-item-hinterher/observation.md)
   neu angelegt, Beleg `evidence/slice-164.md` — Zähler steht bei 1×.
 - **Folge-Slices:** noch keine ID vergeben — ein gebündelter Folge-Slice
-  für §4/§5 zusätzlich zu den zwei bereits aus `slice-163` offenen
-  (s. `welle-14` §„Stand").
+  für §4/§5, zusätzlich zu dem bereits aus `slice-163` offenen
+  ([MR-017](../../../../harness/conventions/MR-017-adr-vorlagen-version.md)/[MR-000](../../../../harness/conventions.md#mr-000),
+  s. `welle-14` §„Stand").
 - **Risiken aus §6:** beide mit Ausgang — siehe §6.
 - **Drei Paarungen:** verschoben auf die Closure von `welle-14` (dieser
   Slice trägt ein `**Welle:**`-Feld, [Modul 8](../../../../.harness/baseline/v6.0.0/regelwerk/modul-08-agentenrollen.md#rollen-sequenz-für-eine-welle)).
