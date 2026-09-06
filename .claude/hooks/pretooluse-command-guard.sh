@@ -77,7 +77,7 @@ guard_verdict() {
       "verify-observations","commit-scope-check","guard-selftest","doc-complete","doc-immutable",
       "doc-commits","doc-planning","doc-tracked","doc-targets","doc-structure","doc-workflows",
       "doc-reviews",
-      "version-coherence","ci-range-selftest",
+      "version-coherence","ci-range-selftest","dcheck-phrase-selftest",
       "regelwerk-check","archive-wave-test"]);
 
     function hasGateMake(seg) {

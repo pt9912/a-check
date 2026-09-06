@@ -1,5 +1,8 @@
-**Stand:** geplant in [`slice-168`](../../../open/slice-168-pruefer-kalibrierungs-selbsttest.md)
+**Stand:** verkörpert in [`make dcheck-phrase-selftest`](../../../../../../Makefile) (`tools/dcheck-phrase-selftest.sh`,
+im `gates`-Aggregat) `seit slice-168`
 
-3× erreicht (slice-120, slice-123, slice-165) — Lese-Schritt bei der `welle-14`-Closure. Ein
-genereller Kalibrierungs-Selbsttest für phrasen-/muster-basierte Prüfer ist noch nicht
-geschrieben; `slice-168` klärt zunächst, ob eine automatisierte oder eine Workflow-Lösung trägt.
+Deckt die beiden real aufgetretenen phrasen-basierten Fälle (`reviews`-Trigger-Phrase, `structure`
+`tasks-ignore-pattern`) mit je einer Positiv-/Negativ-Kontrolle gegen eigene Fixtures ab. **Nicht**
+gedeckt: der `doc-complete`-Fall (Prüfer ohne Aufruf, nicht ohne Gegenstand) — der ist bereits seit
+slice-123 durch die Aufnahme ins `verify`-Aggregat strukturell behoben, keine gesonderte Prüfung
+nötig.
