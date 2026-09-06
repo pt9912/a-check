@@ -55,6 +55,7 @@ Nachzüge umsetzen, und die Stand-Deklaration an ihren drei Stellen
 | slice-161 | Delta-Analyse `v6.0.0` → `v6.1.0` | — (reine Ist-Messung, keine Vertragsberührung) |
 | slice-162 | Review-Pflicht/Rollenwechsel-Absatz in `AGENTS.md` §6 auf `v6.1.0`-Wortlaut zurückschneiden | slice-161 §4.4/§6 |
 | slice-163 | Adaptions-Durchgang (Etappe B): alle 18 MR-Dateien gegen `v6.1.0` geprüft | Maintainer-Entscheidung 2026-09-06 ("Etappe B zuerst") |
+| slice-164 | Delta-Analyse `v6.1.0` → `v6.2.0` (Increment) | Maintainer-Hinweis 2026-09-06 ("neues Release v6.2.0") |
 
 _Weitere Zeilen kommen hinzu, sobald die nächste Etappe eröffnet wird —
 dieselbe Reihenfolge wie beim vorigen Sprung (slice-135 schlug vor,
