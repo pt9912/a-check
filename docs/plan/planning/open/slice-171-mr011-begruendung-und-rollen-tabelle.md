@@ -92,6 +92,36 @@ Report aus getrenntem Kontext). Der Satz beschreibt seine Serie korrekt,
 liest sich aber als Gegenwart — zu entscheiden ist, ob er bleibt,
 umformuliert wird oder um den neuen Stand ergänzt.
 
+### 2.3 Was der Durchgang **nicht** erfasst hat — hier notiert, damit es nicht verloren geht
+
+Keiner der beiden Punkte gehört in die DoD dieses Slice; beide brauchen eine
+eigene Entscheidung, und beide standen bis hierher nur im Gesprächsprotokoll.
+
+- **Der Durchgang deckte sechs von acht aktiven Einträgen.** Geprüft wurden
+  [`MR-011`](../../../../harness/conventions.md#mr-011),
+  [`MR-012`](../../../../harness/conventions.md#mr-012),
+  [`MR-014`](../../../../harness/conventions.md#mr-014),
+  [`MR-015`](../../../../harness/conventions.md#mr-015),
+  [`MR-016`](../../../../harness/conventions.md#mr-016) und
+  [`MR-018`](../../../../harness/conventions.md#mr-018).
+  **Nicht geprüft:** [`MR-019`](../../../../harness/conventions.md#mr-019) und
+  [`MR-020`](../../../../harness/conventions.md#mr-020) — beide entstanden
+  erst während `welle-14` und wirkten darum frisch.
+  [`MR-019`](../../../../harness/conventions.md#mr-019) nennt in seinem
+  Text [`MR-017`](../../../../harness/conventions.md#mr-017) und
+  [`MR-018`](../../../../harness/conventions.md#mr-018) als
+  Rückbau-Kandidaten; **beide sind inzwischen aufgelöst**, der Eintrag
+  beschreibt insoweit einen Stand, den es nicht mehr gibt.
+- **Ein Beobachtungs-Eintrag trägt einen nicht deklarierten Sub-Area-Namen.**
+  [`BEO-HARNESS/sensor-ohne-dod-phrase-wirkungslos`](../observations/BEO-HARNESS/sensor-ohne-dod-phrase-wirkungslos/observation.md)
+  führt „Sub-Area: **Harness-Tooling**" — gemessen der einzige von 48
+  Einträgen mit einem Namen, den die
+  [Modus-Deklaration](../../../../harness/conventions.md#modus-deklaration-pro-sub-area)
+  nicht kennt. `modul-06` sagt dazu: dann ist *„entweder die Zuordnung falsch
+  oder die Deklaration unvollständig"* — welches von beidem, ist die
+  Entscheidung. Der Eintrag selbst ist ab Anlage unveränderlich, eine
+  Korrektur an Ort und Stelle also nicht der Weg.
+
 ## 3. Umsetzung
 
 *(offen — entsteht mit der Umsetzung)*
