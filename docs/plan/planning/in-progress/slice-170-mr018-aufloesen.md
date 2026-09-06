@@ -88,14 +88,14 @@ aktiven Einträge.
 
 ## 4. Definition of Done
 
-- [ ] [`MR-018`](../../../../harness/conventions/done/MR-018-review-pflicht-v610-wortlaut.md) liegt in `conventions/done/`, Inhalt unverändert; beide
+- [x] [`MR-018`](../../../../harness/conventions/done/MR-018-review-pflicht-v610-wortlaut.md) liegt in `conventions/done/`, Inhalt unverändert; beide
       Tabellen in `conventions.md` nachgezogen, Anker `mr-018` erhalten.
-- [ ] Jeder **verlinkende** Verweis auf den alten Pfad zeigt auf den neuen;
+- [x] Jeder **verlinkende** Verweis auf den alten Pfad zeigt auf den neuen;
       `make doc-check` belegt es.
 - [ ] Unabhängiger Review durchgeführt (Report unter `docs/reviews/`).
-- [ ] `make gates` grün.
+- [x] `make gates` grün.
 - [ ] `make verify` grün.
-- [ ] Jedes Risiko trägt einen Ausgang.
+- [x] Jedes Risiko trägt einen Ausgang.
 
 ## 5. Trigger
 
@@ -113,16 +113,51 @@ geschrieben.
 
 - *Der Anker `mr-018` wird beim Umzug in die zweite Tabelle vergessen —
   dann brechen die Verweise aus [`MR-019`](../../../../harness/conventions/MR-019-review-dod-opt-in.md) und `slice-162`, die auf
-  `conventions.md#mr-018` zeigen* — Ausgang bei Closure.
+  `conventions.md#mr-018` zeigen* — **Ausgang:** gestrichen mit Begründung:
+  der Anker ist mit umgezogen und beide Verweise lösen auf, belegt durch
+  `make doc-check` Exit 0 (das Risiko kann in dieser Form nicht mehr
+  eintreten, die Bewegung ist vollzogen).
 - *Die Auflösung entfernt einen von sechs `v6.0.0`-Ankern, löst
   `.harness/baseline/v6.0.0/` aber nicht ab — fünf bleiben stehen; wer die
   Zahl für den Fortschritt hält, verwechselt einen Schritt mit dem Ziel* —
-  Ausgang bei Closure.
+  **Ausgang:** weiter offen → Beobachtungs-Register, neuer Eintrag
+  [`BEO-HARNESS/zwei-baseline-staende-nach-migrationsende`](../observations/BEO-HARNESS/zwei-baseline-staende-nach-migrationsende/observation.md).
+  Die Auflösung verlangt eine Entscheidung über alle fünf verbliebenen
+  Einträge zugleich; sie in diesem Slice zu treffen hieße, sie nebenbei zu
+  treffen.
 
 ## 8. Closure-Notiz
 
-*(wird beim Übergang nach `done/` geschrieben; Lerneintrag — Form: wird
-dort benannt.)*
+- **Was hat funktioniert:** die Auflösung stand als Frage im Eintrag selbst
+  („Rückbau-Kandidat, sobald …") — sie musste nicht erfunden, nur gemessen
+  werden. Der `diff` der beiden vendorten `AGENTS.template.md` beantwortet
+  sie in vier Zeilen.
+- **Was ging anders als geplant:** der Slice war als Aufräumarbeit gedacht
+  und hat einen Prozess-Befund geliefert. Der Trigger war **innerhalb** der
+  Migration eingetreten, die den Eintrag geschrieben hat; die Closure-Notiz
+  derselben Welle behauptet das Gegenteil. Nicht Unaufmerksamkeit, sondern
+  ein fehlender Wächter.
+- **Lerneintrag — Form: benannte Spec-Lücke.** *Der Trigger-Audit der
+  Wellen-Closure (`modul-06`, Schritt 2) zählt drei Artefaktklassen auf —
+  Carveout, bootstrap-aware Gate, ADR. Die vierte Klasse, die im selben Repo
+  ein Pflichtfeld `Auflösungs-Trigger` führt, fehlt darin: der
+  `MR`-Eintrag. Damit hat ein eingetretener `MR`-Trigger keinen Wächter, und
+  die einzige Kraft, die ihn findet, ist ein Mensch, der die aktiven
+  Einträge von Hand durchgeht. Belegt an diesem Slice.*
+- **Beobachtungs-Register (`../observations/`):** **zwei** neue Einträge, je
+  1× mit Beleg `slice-170` —
+  [`BEO-HARNESS/mr-aufloesungs-trigger-ohne-waechter`](../observations/BEO-HARNESS/mr-aufloesungs-trigger-ohne-waechter/observation.md)
+  (der Prozess-Befund; **nicht** in
+  [`rueckbau-kandidat-ueberlebt-baseline-migration`](../observations/BEO-HARNESS/rueckbau-kandidat-ueberlebt-baseline-migration/observation.md)
+  eingetragen, Begründung in §9) und
+  [`BEO-HARNESS/zwei-baseline-staende-nach-migrationsende`](../observations/BEO-HARNESS/zwei-baseline-staende-nach-migrationsende/observation.md)
+  (der Ausgang des zweiten Risikos).
+- **Folge-Slices:** keine. Die Querschnitts-Frage zu den fünf verbliebenen
+  `v6.0.0`-Ankern hängt jetzt am Register statt an einem Satz in einer
+  Closure-Notiz.
+- **Risiken aus §7:** beide mit Ausgang — siehe §7.
+- **Drei Paarungen:** entfällt — dieser Slice ist wellenlos (`**Welle:**
+  ohne Welle`).
 
 ## 9. Sub-Area-Modus
 
@@ -130,10 +165,16 @@ dort benannt.)*
 **Harness-Einstieg** (`harness/`), Greenfield, Schwelle ≥ 2/3 erfüllt.
 
 **Vorgelagert — offene Beobachtungen sichten:** `BEO-HARNESS/` über die
-Verzeichnisliste geprüft.
-`rueckbau-kandidat-ueberlebt-baseline-migration` ist einschlägig und
-bekommt mit diesem Slice sein **zweites** Auftreten (bisher 1×,
-slice-141); die Schwelle 3× ist damit nicht erreicht. Kein weiterer
-Eintrag unter `BEO-HARNESS/` betrifft diesen Slice.
+Verzeichnisliste geprüft. Naheliegend war
+[`rueckbau-kandidat-ueberlebt-baseline-migration`](../observations/BEO-HARNESS/rueckbau-kandidat-ueberlebt-baseline-migration/observation.md)
+— die Überschrift passt, die **Ursache nicht**: dort wird ein Trigger
+*gewählt* (der billigere Ersatz statt der sauberen Auflösung), hier wird
+keiner gewählt, weil niemand hinsieht. Das Gegenmittel dieses Eintrags
+(generischer Verweis statt Versionsnummer,
+[`MR-020`](../../../../harness/conventions/MR-020-adr-vorlage-generisch.md))
+greift für den vorliegenden Fall nicht. Darum ein **eigener** Eintrag
+[`mr-aufloesungs-trigger-ohne-waechter`](../observations/BEO-HARNESS/mr-aufloesungs-trigger-ohne-waechter/observation.md)
+(1×) statt einer verdünnten Zählung. Kein weiterer Eintrag unter
+`BEO-HARNESS/` betrifft diesen Slice.
 
 **Alle berührten Sub-Areas GF** — kein Begründungsblock nötig.
