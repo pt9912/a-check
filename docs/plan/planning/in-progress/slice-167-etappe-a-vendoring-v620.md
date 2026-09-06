@@ -58,10 +58,17 @@ repos/pt9912/ai-harness-course/releases/tags/v6.2.0 --jq
 GitHub-API (zweiter Kanal, nicht dieselbe Quelle wie der Download).
 Entpackt nach `.harness/baseline/v6.2.0/`, eigenes `SHA256SUMS` per
 `sha256sum` über alle 53 Dateien generiert (`regelwerk-check.sh` prüft
-dagegen). Datei-Baum ist mit `v6.0.0` identisch (`diff <(find
-v6.0.0 -type f | sort) <(find v6.2.0 -type f | sort)` leer) — nur Inhalt
-der neun bereits in `slice-161`/`slice-164` vermessenen Dateien
-unterscheidet sich.
+dagegen). Datei-**Pfad**-Baum ist mit `v6.0.0` identisch (`diff <(find
+v6.0.0 -type f | sort) <(find v6.2.0 -type f | sort)` leer). **Präzisiert
+durch Review:** ein naiver `diff -rq` gegen `v6.0.0` zeigt **31**
+inhaltlich verschiedene Dateien, nicht neun — jede `regelwerk/*.md`-Datei
+trägt eine `<!-- Quelle: …/blob/<tag>/… -->`-Kommentarzeile, die bei
+jedem Versionssprung zwangsläufig mitläuft, unabhängig von echten
+Regeländerungen. Nach Herausfiltern dieses mechanischen Tag-Stempels
+bleiben exakt die neun bereits in `slice-161`/`slice-164` vermessenen
+Dateien mit substanziellen Änderungen übrig — die Zahl bezog sich von
+Anfang an auf den *upstream*-`git diff --stat` (slice-164 §2), nicht auf
+einen naiven lokalen Verzeichnis-Diff.
 
 **Stand-Deklaration (Liefer-Punkt 2) — was bumpt, was nicht.** Zwei
 Klassen von `.harness/baseline/v6.0.0/…`-Referenzen im Repo:
@@ -153,7 +160,17 @@ eine Welle, Träger Planner).
 - **Was ging anders als geplant:** `slice-161` §6 hatte die Etappe für
   `v6.1.0` vorgeschlagen; durch den Retarget (`welle-14`) lief sie
   stattdessen gegen `v6.2.0` — inhaltlich identisches Verfahren, nur das
-  Ziel verschoben.
+  Ziel verschoben. Zwei Korrekturen aus dem unabhängigen Review vor
+  Abschluss eingearbeitet: `harness/conventions.md` §Adoptierte
+  Konventions-Quellen zeigte trotz der eigenen §Baseline-Angabe direkt
+  darüber weiterhin auf `v6.0.0` (Selbstwiderspruch im selben Dokument,
+  von keinem Gate gefangen, da der `v6.0.0`-Pfad technisch weiter
+  auflöst) — auf `v6.2.0` korrigiert; und die „neun Dateien"-Zahl in §3
+  bezog sich unausgesprochen auf den *upstream*-Diff, während ein naiver
+  lokaler `diff -rq` wegen der Tag-Stempel-Kommentarzeile in jeder
+  Regelwerk-Datei 31 Treffer zeigt — Formulierung präzisiert. Zusätzlich,
+  vom Maintainer bemerkt: die vier `.claude/rules/`-Symlinks (s. §3,
+  bereits vor diesem Review korrigiert).
 - **Lerneintrag — Form: geschärfte Regel.** *Beim Baseline-Vendoring wird
   vor dem Pointer-Bump geprüft, ob jede vom Sprung betroffene
   Template-Zeile bereits eine a-check-eigene Entscheidung (MR oder

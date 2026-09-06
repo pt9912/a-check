@@ -43,9 +43,9 @@ Ist-Zustand.
 Pointer, keine Wiederholung des Inhalts.
 
 - **Vendored Baseline (Regelwerk + Templates) — die Lese-Form:**
-  [`.harness/baseline/v6.0.0/regelwerk/README.md`](../.harness/baseline/v6.0.0/regelwerk/README.md)
+  [`.harness/baseline/v6.2.0/regelwerk/README.md`](../.harness/baseline/v6.2.0/regelwerk/README.md)
   (Index) und
-  [`.harness/baseline/v6.0.0/templates/README.md`](../.harness/baseline/v6.0.0/templates/README.md).
+  [`.harness/baseline/v6.2.0/templates/README.md`](../.harness/baseline/v6.2.0/templates/README.md).
   **Netzlos** auf jedem Checkout, pro Abschnitt eine Datei — ein Agent lädt den benötigten
   Abschnitt, nie das ganze Bundle
   ([`MR-006`](#mr-006--baseline-committet-vendored-statt-per-url-referenziert)).
