@@ -40,7 +40,7 @@ verwendet haben, löst den Sensor **nicht** aus.
       nachgezogen, neuer `MR`-Eintrag für die Divergenz (§5).
 - [x] `make gates` grün.
 - [x] `make verify` grün.
-- [x] Beobachtungs-Register fortgeschrieben (§9) — dritte Evidenz für
+- [x] Beobachtungs-Register fortgeschrieben (§7) — dritte Evidenz für
       `BEO-GATE/pruefer-ohne-gegenstand-oder-aufruf` (Schwelle 3× erreicht,
       Ausgang bei der nächsten Welle-Closure).
 - [x] Jedes Risiko aus §6 trägt einen Ausgang.
@@ -87,7 +87,7 @@ Das ist dieselbe Fund-Klasse wie
 [`BEO-GATE/pruefer-ohne-gegenstand-oder-aufruf`](../observations/BEO-GATE/pruefer-ohne-gegenstand-oder-aufruf/observation.md)
 (bisher 2×: `verify-ac-form`/slice-120, `doc-complete`/slice-123) — ein
 Prüfer meldet grün, weil seine Prüfmenge leer ist, nicht weil geprüft wurde.
-Mit diesem Fund erreicht der Eintrag **3×** (§9) — die Schwelle, ab der es
+Mit diesem Fund erreicht der Eintrag **3×** (§7) — die Schwelle, ab der es
 laut `AGENTS.md` §5 „eine Harness-Lücke [ist und] einen Guide oder Sensor
 verlangt". Die Zuweisung des Ausgangs (verkörpert/geplant/gestrichen) ist
 Aufgabe des **Lese-Schritts bei der nächsten Welle-Closure** (`welle-14`,
@@ -103,12 +103,30 @@ wenn Slices dort nicht explizit genannt sind). Der Fund wirkt nur nach vorn.
 
 **Entscheidung:** a-check bleibt beim **Opt-in** (`make doc-reviews`,
 Phrase-getriggert) statt den `v6.2.0`-Baseline-Checkbox unbedingt zu
-übernehmen. Begründung: `AGENTS.md` §6 verlangt Review bereits präzise
-*„bei jedem Slice mit Code- oder Vertragsänderung"* — nicht bei jedem
-Slice. Ein unbedingter Checkbox-Punkt (wie `v6.2.0`) würde entweder bei
-reinen Analyse-Slices (wie diesem hier) unnötig auslösen oder, wenn generisch
-formuliert, wie in §3 gezeigt **gar nicht** auslösen — beides schlechter
-als der bestehende, aber korrekt formulierte Opt-in.
+übernehmen.
+
+**Korrektur ggü. der ersten Fassung dieses Abschnitts** (Review-Finding):
+Die erste Fassung begründete das mit einem Zitat aus `AGENTS.md` §6 —
+*„bei jedem Slice mit Code- oder Vertragsänderung"* —, das zum Zeitpunkt
+dieses Slice **nicht mehr** in `AGENTS.md` steht: `slice-162` hat §6 exakt
+an diesem Tag auf den `v6.1.0`-Baseline-Wortlaut zurückgeschnitten, der
+diese Bedingung nicht mehr trägt (generischer Rollenwechsel-Absatz ohne
+Einschränkung auf Änderungsart). Das Zitat kam aus dem Gesprächskontext,
+nicht aus einer `git log`/Datei-Prüfung — derselbe Fehlschlag, den
+[`BEO-PLAN/slice-provenienz-aus-gedaechtnis-statt-git-log`](../observations/BEO-PLAN/slice-provenienz-aus-gedaechtnis-statt-git-log/observation.md)
+bereits für Slice-Provenienz-Behauptungen registriert (dort erstmals bei
+`slice-161`).
+
+**Tragfähige Begründung:** `.d-check.yml`s eigener Kommentar zum
+`reviews`-Modul (Zeilen 26–30) nennt den Zweck des Opt-in bereits explizit:
+*„Opt-in PRO SLICE über die DoD-Phrase selbst — ohne sie prüft das Modul
+nichts (kein Fehlalarm)"*. Ein unbedingter Checkbox-Punkt (wie `v6.2.0`)
+zwänge **jeden** künftigen Slice — auch einen Ein-Zeilen-Tippfehler-Fix —
+durch dieselbe mechanische Report-Pflicht wie einen substantiellen
+Architektur-Slice; das Opt-in lässt zu, dass die mechanische Prüfung genau
+dann greift, wenn ein Slice sie selbst verspricht, ohne pauschal jeden
+Slice zu belasten. Diese Begründung ist unabhängig vom exakten Wortlaut von
+`AGENTS.md` §6 und übersteht damit auch dessen künftige Änderungen.
 
 Drei Liefer-Punkte:
 
@@ -153,7 +171,14 @@ Drei Liefer-Punkte:
 - **Was ging anders als geplant:** der Auftrag war „Review-DoD-Punkt"
   (v6.2.0-Konvergenz einordnen); tatsächlich lag der größere Fund nicht im
   Baseline-Vergleich, sondern in einem repo-eigenen, vier Slices alten
-  Bestandsfehler, der erst durch den empirischen Test sichtbar wurde.
+  Bestandsfehler, der erst durch den empirischen Test sichtbar wurde. Das
+  unabhängige Review fand zusätzlich zwei eigene Fehler dieses Slice: ein
+  veraltetes `AGENTS.md`-§6-Zitat aus dem Gesprächskontext (§5 korrigiert,
+  s. u.) und die fehlenden Review-Reports für `slice-163`/`slice-164`
+  selbst — die zweite Baseline-Konvergenz-Halbwahrheit, die dieses Slice
+  eigentlich gerade diagnostiziert (§4): Beide fehlenden Reports sind
+  nachträglich unter `docs/reviews/` ergänzt (aus den bereits real
+  durchgeführten, aber nie persistierten Subagent-Reviews).
 - **Lerneintrag — Form: geschärfte Regel.** *Eine dokumentierte
   Trigger-Phrase für einen phrase-basierten Sensor wird vor Verwendung in
   einem neuen Slice-DoD **empirisch gegen den gepinnten Sensor-Digest**
@@ -161,13 +186,16 @@ Drei Liefer-Punkte:
   gelesen) — ein Prüfer mit leerer Kandidatenmenge meldet grün, ohne
   irgendetwas geprüft zu haben, und eine nahe, aber falsche Formulierung
   ist von der korrekten am gemeldeten Ergebnis nicht zu unterscheiden.*
-- **Beobachtungs-Register (`../observations/`):**
+- **Beobachtungs-Register (`../observations/`):** zwei Einträge.
   `BEO-GATE/pruefer-ohne-gegenstand-oder-aufruf` um `evidence/slice-165.md`
-  ergänzt — Zähler steht jetzt bei **3×** (vorher slice-120, slice-123).
+  ergänzt — Zähler steht jetzt bei **3×** (vorher slice-120, slice-123);
   Ausgang wird beim Lese-Schritt der nächsten Welle-Closure (`welle-14`)
   zugewiesen (Modul 8 §Rollen-Sequenz für eine Welle).
+  `BEO-PLAN/dateiinhalt-aus-gedaechtnis-zitiert` neu angelegt, Beleg
+  `evidence/slice-165.md` — Zähler steht bei 1× (Fund aus dem
+  unabhängigen Review dieses Slice selbst, s. §5).
 - **Folge-Slices:** noch keine ID vergeben — abhängig vom Ausgang des
-  3×-Treffers oben (§9); zusätzlich bleibt der aus `slice-163` offene
+  3×-Treffers oben; zusätzlich bleibt der aus `slice-163` offene
   Folge-Slice
   ([MR-017](../../../../harness/conventions/MR-017-adr-vorlagen-version.md)/[MR-000](../../../../harness/conventions.md#mr-000))
   unverändert offen.
@@ -177,18 +205,24 @@ Drei Liefer-Punkte:
 
 ## 8. Sub-Area-Modus
 
-**Vorgelagert — Sub-Area-Wahl prüfen:** zwei Sub-Areas berührt —
-**Harness-Einstieg** (`AGENTS.md` §5, neuer `MR`-Eintrag) und
-**Gate-/Werkzeug-Schicht** (`.d-check.yml`s `tasks-ignore-pattern`), beide
-Greenfield, Schwelle ≥ 2/3 erfüllt.
+**Vorgelagert — Sub-Area-Wahl prüfen:** drei Sub-Areas berührt —
+**Harness-Einstieg** (`AGENTS.md` §5, neuer `MR`-Eintrag),
+**Gate-/Werkzeug-Schicht** (`.d-check.yml`s `tasks-ignore-pattern`) und
+**Planungs-Harness** (neue Beobachtung über einen Zitat-Fehler im
+Slice-Plan selbst, s. u.), alle drei Greenfield, Schwelle ≥ 2/3 erfüllt.
+Die dritte kam erst durchs unabhängige Review hinzu — die erste Fassung
+dieses Abschnitts kannte sie noch nicht.
 
-**Vorgelagert — offene Beobachtungen sichten:** beide Register über die
+**Vorgelagert — offene Beobachtungen sichten:** alle drei Register über die
 Verzeichnisliste geprüft. **Harness-Einstieg** (`BEO-HARNESS/`): 9 `offen`
 (unverändert seit slice-164), keiner erreicht 3×. **Gate-/Werkzeug-Schicht**
 (`BEO-GATE/`): 11 `offen` vor diesem Slice — darunter
 `pruefer-ohne-gegenstand-oder-aufruf` bei 2×, mit diesem Slice auf 3×
-(s. §4/§9-Closure-Notiz); die anderen zehn unverändert, keiner sonst
-erreicht 3×.
+(s. §4/§7 Closure-Notiz); die anderen zehn unverändert, keiner sonst
+erreicht 3×. **Planungs-Harness** (`BEO-PLAN/`): 10 `offen` vor diesem
+Slice — darunter `slice-provenienz-aus-gedaechtnis-statt-git-log` bei 1×
+(verwandt, aber eigener Eintrag, s. §5), mit diesem Slice ein neuer Eintrag
+`dateiinhalt-aus-gedaechtnis-zitiert` bei 1×; keiner erreicht 3×.
 
 ### Sub-Area: Harness-Einstieg
 
@@ -214,4 +248,17 @@ erreicht 3×.
   kann (§3/§4); das Risiko wird durch den empirischen Test in diesem Slice
   selbst gemindert, nicht eliminiert (künftige Änderungen könnten denselben
   Fehler wiederholen).
+- **Reconciliation-Aufwand:** keiner; kein Brownfield-Bestand betroffen.
+
+### Sub-Area: Planungs-Harness
+
+- **Modus:** Greenfield
+- **Konventionen-Dichte:** die Slice-Form (`AGENTS.md` §5) und das
+  Beobachtungs-Register sind etablierte Konventionsträger; die neue
+  Beobachtung folgt exakt deren Form.
+- **Phase-Reife:** Phase 5.
+- **Evidenz-/Diskrepanz-Risiko:** dieser Slice selbst **ist** der Beleg —
+  seine erste Fassung zitierte einen bereits überholten `AGENTS.md`-Satz
+  aus dem Gesprächskontext statt aus der aktuellen Datei (§5); das
+  unabhängige Review fing es vor Abschluss ab.
 - **Reconciliation-Aufwand:** keiner; kein Brownfield-Bestand betroffen.
