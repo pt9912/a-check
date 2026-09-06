@@ -1,4 +1,11 @@
-# Welle welle-14: Regelwerk-Migration `v6.0.0` → `v6.1.0`
+# Welle welle-14: Regelwerk-Migration `v6.0.0` → `v6.2.0`
+
+> **Retarget 2026-09-06:** ursprünglich auf `v6.1.0` eröffnet (Dateiname
+> trägt das noch — stabile Kennung, kein Nachzug nötig, dieselbe Praxis wie
+> bei Slice-Dateinamen). Noch bevor Etappe A vendorte, erschien `v6.2.0`
+> (Kurs-Welle 119, 2026-09-05, zwei Stunden nach `v6.1.0`) — Vendoring von
+> `v6.1.0` jetzt hätte es Stunden später durch `v6.2.0` ersetzen müssen.
+> Ziel und Trigger unten auf `v6.2.0` gehoben, bevor Etappe A beginnt.
 
 **Lifecycle:** Diese Datei entsteht bei der **Eröffnung** der Welle und liegt
 flach unter `docs/plan/planning/`; bei Closure wandert sie per `git mv` nach
@@ -14,23 +21,29 @@ Verzeichnis-Position — kein Status-Feld.
 
 ## 1. Welle-Ziel
 
-a-check auf den aktuellen Kurs-Stand `v6.1.0` heben: den Sprung `v6.0.0` →
-`v6.1.0` messen und bewerten (slice-161), die dabei gefundenen echten
+a-check auf den aktuellen Kurs-Stand `v6.2.0` heben: den Sprung `v6.0.0` →
+`v6.1.0` messen und bewerten (slice-161), den Adaptions-Bestand gegen
+`v6.1.0` durchgehen (slice-163), das Increment `v6.1.0` → `v6.2.0`
+zusätzlich messen (Folge-Slice, s. §4), die dabei gefundenen echten
 Nachzüge umsetzen, und die Stand-Deklaration an ihren drei Stellen
 (`harness/conventions.md` §Baseline, `AGENTS.md` §1, `harness/README.md`
-§Guides) auf `v6.1.0` bringen.
+§Guides) auf `v6.2.0` bringen.
 
 ## 2. Trigger (Welle startet)
 
 - `v6.1.0`-Release im Kurs-Repo veröffentlicht — bestätigt:
   `gh release view v6.1.0 --repo pt9912/ai-harness-course` (2026-09-05,
   Kurs-Welle 118).
-- Maintainer hat die Migration angewiesen (dieses Gespräch, 2026-09-05).
+- `v6.2.0`-Release im Kurs-Repo veröffentlicht — bestätigt:
+  `gh release view v6.2.0 --repo pt9912/ai-harness-course` (2026-09-05,
+  Kurs-Welle 119, zwei Stunden nach `v6.1.0`).
+- Maintainer hat die Migration angewiesen (dieses Gespräch, 2026-09-05);
+  Retarget auf `v6.2.0` ebenso vom Maintainer angewiesen (2026-09-06).
 
 ## 3. Closure-Trigger (Welle schließt)
 
 - Alle Etappen-Slices dieser Welle liegen in `done/`.
-- Die Stand-Deklaration nennt an allen drei Stellen `v6.1.0`.
+- Die Stand-Deklaration nennt an allen drei Stellen `v6.2.0`.
 - `make gates` und `make verify` je Exit 0 auf dem finalen Stand — Ausgabe in
   eine Datei, Exit-Code getrennt geprüft, nie in eine Pipe.
 - Ergebnis-Notiz `done/welle-14-results.md` geschrieben.
@@ -47,19 +60,24 @@ _Weitere Zeilen kommen hinzu, sobald die nächste Etappe eröffnet wird —
 dieselbe Reihenfolge wie beim vorigen Sprung (slice-135 schlug vor,
 slice-136/139/141/… setzten um)._
 
-**Stand (alle drei Slices in `done/`) — offene Entscheidung für den
-nächsten Schritt:** `slice-163` (Etappe B) fand, dass fünf der sieben
-aktiven Adaptionen von `v6.1.0` unberührt bleiben und schlägt als
-Folge-Slice vor,
-[MR-017](../../../harness/conventions/MR-017-adr-vorlagen-version.md)s
-ausgelösten Auflösungs-Trigger nicht durch eine weitere Versions-`MR` zu
-bedienen, sondern
-[MR-000](../../../harness/conventions.md#mr-000)s
-ADR-Vorlagen-Referenz einmal generisch auf `conventions.md` §Baseline
-umzustellen (`slice-163`
-§4/§6). Nächster Schritt: diesen Folge-Slice ziehen, danach Etappe A
-(Vendoring `.harness/baseline/v6.1.0/` + 3-Stellen-Pin-Bump +
-Reviewer-Skill-Zeile in `harness/README.md`, slice-161 §6).
+**Stand (drei Slices in `done/`, Welle auf `v6.2.0` retargeted) — zwei
+offene Folge-Slices, Reihenfolge noch nicht festgelegt:**
+
+1. Der in `slice-163` §4/§6 vorgeschlagene Folge-Slice:
+   [MR-017](../../../harness/conventions/MR-017-adr-vorlagen-version.md)s
+   ausgelösten Auflösungs-Trigger nicht durch eine weitere Versions-`MR`
+   bedienen, sondern
+   [MR-000](../../../harness/conventions.md#mr-000)s
+   ADR-Vorlagen-Referenz einmal generisch auf `conventions.md` §Baseline
+   umstellen.
+2. Ein Delta-Analyse-Slice für das Increment `v6.1.0` → `v6.2.0` (analog
+   `slice-161`, kleinerer Umfang: 4 Dateien laut
+   `git diff v6.1.0 v6.2.0 -- lab/regelwerk lab/templates`) — noch keine
+   Slice-ID vergeben.
+
+Danach Etappe A (Vendoring `.harness/baseline/v6.2.0/` + 3-Stellen-Pin-Bump
++ Reviewer-Skill-Zeile in `harness/README.md`, slice-161 §6, Ziel-Version
+auf `v6.2.0` gehoben).
 
 ## 5. Abhängigkeiten
 
