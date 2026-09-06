@@ -32,7 +32,7 @@ die kanonische Quelle (Source Precedence, siehe
   `Ersetzt-Baseline-Regel` akzeptierter `MR`-Einträge: es nennt eine **Regel**, keine
   Datei-Kopie. Sein Zeiger wandert darum beim Baseline-Wechsel mit — Bedingung ist, dass der
   referenzierte Abschnitt im neuen Stand wortgleich ist, und das ist zu **messen**, nicht
-  anzunehmen ([slice-172](../docs/plan/planning/done/slice-172-baseline-v600-entfernen.md)
+  anzunehmen ([slice-172](../docs/plan/planning/done/wellenlos/slice-172-baseline-v600-entfernen.md)
   §2.2). Ist er es nicht, trägt die Stelle die Abweichung sichtbar, statt still umzuziehen.
 - **Adoptiert seit:** 2026-06-20.
 

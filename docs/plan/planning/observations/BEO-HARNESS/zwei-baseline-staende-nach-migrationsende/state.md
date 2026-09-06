@@ -1,6 +1,6 @@
 **Stand:** offen (1×)
 
-Unterhalb der Schwelle — der Zähler bleibt, wo er war: [slice-172](../../../done/slice-172-baseline-v600-entfernen.md)
+Unterhalb der Schwelle — der Zähler bleibt, wo er war: [slice-172](../../../done/wellenlos/slice-172-baseline-v600-entfernen.md)
 hat die Beobachtung *aufgelöst*, nicht wiederholt, und ein auflösender Vorgang ist kein Auftreten.
 
 Der beobachtete **Zustand** ist beseitigt: genau ein Stand liegt vendored, `make regelwerk-check`

@@ -107,7 +107,7 @@ nicht *vertagt*, und der Pointer kann trotzdem auf `v6.2.0` zeigen.
 > `.harness/baseline/v6.0.0/` ist entfernt — die „zweite Klasse" brauchte den
 > alten Stand nur, solange ihre Zeiger dorthin zeigten, und sie zeigen jetzt
 > auf `v6.2.0`, weil jeder referenzierte Abschnitt dort wortgleich steht
-> (gemessen, [slice-172](../done/slice-172-baseline-v600-entfernen.md)
+> (gemessen, [slice-172](wellenlos/slice-172-baseline-v600-entfernen.md)
 > §2.2). Und
 > [`conventions.md`](../../../../harness/conventions.md#baseline) §Baseline
 > sagt seither nicht mehr, mehrere Stände seien vorgesehen: genau **ein** Stand
