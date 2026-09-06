@@ -15,11 +15,14 @@
   zweite Hälfte (Review-Report zählt nicht zu den drei Liefer-Punkten, `AGENTS.md` §5), aber **nicht**
   die erste: der Review-Report bleibt **Opt-in** über `make doc-reviews`/`DC-FA-RVW-001`, ausgelöst
   durch die exakte Phrase „unabhängiger Review" in einer DoD-Zeile.
-- **Begründung:** `AGENTS.md` §6 verlangt Review bereits präziser als die Baseline-Vorlage — *„bei
-  jedem Slice mit Code- oder Vertragsänderung"*, nicht bei jedem Slice. Ein unbedingter Checkbox-Punkt
-  triggerte entweder auch reine Analyse-Slices unnötig, oder er müsste selbst wieder bedingt formuliert
-  werden — dann ist er kein Baseline-Import mehr, sondern a-checks bestehender Opt-in-Mechanismus.
-  **Zusätzlicher, empirisch gemessener Befund** ([slice-165](../../docs/plan/planning/in-progress/slice-165-review-dod-punkt-opt-in-beibehalten.md)
+- **Begründung:** [`.d-check.yml`](../../.d-check.yml)s eigener Kommentar zum `reviews`-Modul nennt
+  den Zweck bereits explizit: *„Opt-in PRO SLICE über die DoD-Phrase selbst — ohne sie prüft das
+  Modul nichts (kein Fehlalarm)"*. Ein unbedingter Checkbox-Punkt (wie `v6.2.0`) zwänge jeden
+  künftigen Slice — auch einen Ein-Zeilen-Tippfehler-Fix — durch dieselbe mechanische
+  Report-Pflicht wie einen substantiellen Architektur-Slice; das Opt-in lässt die mechanische
+  Prüfung genau dann greifen, wenn ein Slice sie selbst verspricht, ohne pauschal jeden Slice zu
+  belasten.
+  **Zusätzlicher, empirisch gemessener Befund** ([slice-165](../../docs/plan/planning/done/slice-165-review-dod-punkt-opt-in-beibehalten.md)
   §3/§4): weder der `v6.2.0`-Baseline-Wortlaut noch a-checks eigene, tatsächlich in `slice-161`–`164`
   verwendete Formulierung („Unabhängiges Plan-Review …") lösen die Trigger-Phrase aus — nur die exakte
   Form „unabhängig**er** Review" (isoliert gegen den gepinnten `d-check`-Digest getestet, nicht nur

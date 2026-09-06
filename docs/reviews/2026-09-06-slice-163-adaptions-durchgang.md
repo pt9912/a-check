@@ -13,7 +13,7 @@ Adaptions-Durchgang v6.1.0 (Etappe B)"), Endstand nach `e2260dd`
 `docs/reviews/` abgelegt — die eigentliche Review-Sitzung lief bereits am
 2026-09-06, unmittelbar nach `slice-163`s Closure-Commit, über einen
 getrennten Subagenten-Kontext; nur die Persistierung als Datei fehlte
-zunächst ([`slice-165`](../plan/planning/in-progress/slice-165-review-dod-punkt-opt-in-beibehalten.md)
+zunächst ([`slice-165`](../plan/planning/done/slice-165-review-dod-punkt-opt-in-beibehalten.md)
 §4 deckte die Lücke auf).
 
 **Skill:** `.harness/skills/reviewer.md` @ Stand `1c024e9` (unverändert seit

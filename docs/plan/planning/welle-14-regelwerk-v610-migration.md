@@ -56,28 +56,24 @@ Nachzüge umsetzen, und die Stand-Deklaration an ihren drei Stellen
 | slice-162 | Review-Pflicht/Rollenwechsel-Absatz in `AGENTS.md` §6 auf `v6.1.0`-Wortlaut zurückschneiden | slice-161 §4.4/§6 |
 | slice-163 | Adaptions-Durchgang (Etappe B): alle 18 MR-Dateien gegen `v6.1.0` geprüft | Maintainer-Entscheidung 2026-09-06 ("Etappe B zuerst") |
 | slice-164 | Delta-Analyse `v6.1.0` → `v6.2.0` (Increment) | Maintainer-Hinweis 2026-09-06 ("neues Release v6.2.0") |
+| slice-165 | Review-Checkbox-Punkt bleibt Opt-in, [MR-019](../../../harness/conventions/MR-019-review-dod-opt-in.md) | slice-164 §4.2/§5 (Folge-Slice-Vorschlag), Maintainer-Wort 2026-09-06 |
 
 _Weitere Zeilen kommen hinzu, sobald die nächste Etappe eröffnet wird —
 dieselbe Reihenfolge wie beim vorigen Sprung (slice-135 schlug vor,
 slice-136/139/141/… setzten um)._
 
-**Stand (alle vier Slices in `done/`, Welle auf `v6.2.0` retargeted) —
-zwei offene Folge-Slices, Reihenfolge noch nicht festgelegt:**
+**Stand (alle fünf Slices in `done/`, Welle auf `v6.2.0` retargeted) — ein
+offener Folge-Slice:**
 
-1. Der in `slice-163` §4/§6 vorgeschlagene Folge-Slice:
-   [MR-017](../../../harness/conventions/MR-017-adr-vorlagen-version.md)s
-   ausgelösten Auflösungs-Trigger nicht durch eine weitere Versions-`MR`
-   bedienen, sondern
-   [MR-000](../../../harness/conventions.md#mr-000)s
-   ADR-Vorlagen-Referenz einmal generisch auf `conventions.md` §Baseline
-   umstellen.
-2. Der in `slice-164` §4/§5 vorgeschlagene gebündelte Folge-Slice:
-   entscheiden, ob a-check den Review-Report als DoD-Punkt verpflichtend
-   macht (wie `v6.2.0`) oder beim bisherigen Opt-in
-   (`make doc-reviews`/`DC-FA-RVW-001`, slice-159/160) bleibt, und je nach
-   Entscheidung `AGENTS.md` §5 sowie die `tasks-ignore-pattern`-Regex in
-   `.d-check.yml` nachziehen oder die Abweichung als `MR-<NNN>`
-   dokumentieren.
+Der in `slice-163` §4/§6 vorgeschlagene Folge-Slice:
+[MR-017](../../../harness/conventions/MR-017-adr-vorlagen-version.md)s
+ausgelösten Auflösungs-Trigger nicht durch eine weitere Versions-`MR`
+bedienen, sondern
+[MR-000](../../../harness/conventions.md#mr-000)s
+ADR-Vorlagen-Referenz einmal generisch auf `conventions.md` §Baseline
+umstellen. (Der zweite, aus `slice-164` offene Folge-Slice ist mit
+`slice-165`/[MR-019](../../../harness/conventions/MR-019-review-dod-opt-in.md)
+erledigt: a-check bleibt beim Opt-in.)
 
 Danach Etappe A (Vendoring `.harness/baseline/v6.2.0/` + 3-Stellen-Pin-Bump
 + Reviewer-Skill-Zeile in `harness/README.md`, slice-161 §6, Ziel-Version
