@@ -61,9 +61,8 @@ _Weitere Zeilen kommen hinzu, sobald die nächste Etappe eröffnet wird —
 dieselbe Reihenfolge wie beim vorigen Sprung (slice-135 schlug vor,
 slice-136/139/141/… setzten um)._
 
-**Stand (drei Slices in `done/`, `slice-164` abschlussbereit in
-`in-progress/`, Welle auf `v6.2.0` retargeted) — zwei offene Folge-Slices,
-Reihenfolge noch nicht festgelegt:**
+**Stand (alle vier Slices in `done/`, Welle auf `v6.2.0` retargeted) —
+zwei offene Folge-Slices, Reihenfolge noch nicht festgelegt:**
 
 1. Der in `slice-163` §4/§6 vorgeschlagene Folge-Slice:
    [MR-017](../../../harness/conventions/MR-017-adr-vorlagen-version.md)s
