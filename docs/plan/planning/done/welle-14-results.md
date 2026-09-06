@@ -14,7 +14,7 @@ Praxis wie bei Slice-Dateinamen).
 | Slice | Gegenstand | Ergebnis |
 |---|---|---|
 | [slice-161](slice-161-regelwerk-v610-delta-analyse.md) | Delta-Analyse `v6.0.0`→`v6.1.0` | 6 Dateien, `+38/−1`; ein echter Nachzug identifiziert |
-| [slice-162](slice-162-review-pflicht-absatz-v610-wortlaut.md) | Review-Pflicht-Absatz auf `v6.1.0`-Wortlaut zurückgeschnitten | [MR-018](../../../../harness/conventions/MR-018-review-pflicht-v610-wortlaut.md) |
+| [slice-162](slice-162-review-pflicht-absatz-v610-wortlaut.md) | Review-Pflicht-Absatz auf `v6.1.0`-Wortlaut zurückgeschnitten | [MR-018](../../../../harness/conventions/done/MR-018-review-pflicht-v610-wortlaut.md) |
 | [slice-163](slice-163-adaptions-durchgang-v610.md) | Etappe B: alle 18 `MR`-Dateien gegen `v6.1.0` geprüft | [MR-017](../../../../harness/conventions/done/MR-017-adr-vorlagen-version.md)s Auflösungs-Trigger erkannt, Folge-Slice vorgeschlagen |
 | [slice-164](slice-164-regelwerk-v620-delta-analyse.md) | Delta-Analyse `v6.1.0`→`v6.2.0` (Increment) | 4 Dateien, `+16/−5`; Review-Report-Konvergenz gefunden |
 | [slice-165](slice-165-review-dod-punkt-opt-in-beibehalten.md) | Review-Checkbox-Punkt: Opt-in beibehalten | [MR-019](../../../../harness/conventions/MR-019-review-dod-opt-in.md); empirisch: eigene DoD-Phrase löste `make doc-reviews` nie aus |
@@ -101,12 +101,12 @@ durchgeführten Reviews rekonstruiert.
 
 **Benannt, aber ausdrücklich nicht geschnitten:**
 
-- **[MR-017](../../../../harness/conventions/done/MR-017-adr-vorlagen-version.md)/[MR-018](../../../../harness/conventions/MR-018-review-pflicht-v610-wortlaut.md)/[MR-019](../../../../harness/conventions/MR-019-review-dod-opt-in.md)/[MR-020](../../../../harness/conventions/MR-020-adr-vorlage-generisch.md)-Klasse
+- **[MR-017](../../../../harness/conventions/done/MR-017-adr-vorlagen-version.md)/[MR-018](../../../../harness/conventions/done/MR-018-review-pflicht-v610-wortlaut.md)/[MR-019](../../../../harness/conventions/MR-019-review-dod-opt-in.md)/[MR-020](../../../../harness/conventions/MR-020-adr-vorlage-generisch.md)-Klasse
   „Ersetzt-Baseline-Regel: keine"** (Repo-Aussage-Korrektur statt
   Baseline-Regel-Ersatz) bleibt ein Rückbau-Kandidat nach dem Fork-Test —
   [MR-020](../../../../harness/conventions/MR-020-adr-vorlage-generisch.md) ist die einzige
   davon mit **permanentem** Trigger, die anderen drei lösen sich erst mit der jeweils nächsten
-  Baseline-Migration ([MR-018](../../../../harness/conventions/MR-018-review-pflicht-v610-wortlaut.md)) oder gar nicht bis zur ID-Schema-Überarbeitung. Kein eigener
+  Baseline-Migration ([MR-018](../../../../harness/conventions/done/MR-018-review-pflicht-v610-wortlaut.md)) oder gar nicht bis zur ID-Schema-Überarbeitung. Kein eigener
   Slice, solange keine dieser Adaptionen selbst wieder fällig wird.
 - **`.harness/baseline/v6.0.0/` löschen**, sobald keine `Ersetzt-Baseline-Regel`-Anker mehr darauf
   zeigen (alle sechs betroffenen `MR`-Dateien müssten dafür selbst abgelöst werden — kein

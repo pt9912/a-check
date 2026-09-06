@@ -8,7 +8,7 @@ wechselt nur durch `make slice-mv` ([`AGENTS.md`](../../../../AGENTS.md)
 **Welle:** ohne Welle (der Closure-Trigger wäre die eigene DoD — kein
 repo-weites Mehr).
 
-**Bezug:** [`MR-018`](../../../../harness/conventions/MR-018-review-pflicht-v610-wortlaut.md)
+**Bezug:** [`MR-018`](../../../../harness/conventions/done/MR-018-review-pflicht-v610-wortlaut.md)
 nennt seinen eigenen Rückbau-Trigger; dieser Slice vollzieht ihn.
 Beobachtung:
 [`BEO-HARNESS/rueckbau-kandidat-ueberlebt-baseline-migration`](../observations/BEO-HARNESS/rueckbau-kandidat-ueberlebt-baseline-migration/observation.md).
@@ -26,7 +26,7 @@ Maintainer.
 
 ## 1. Ziel
 
-[`MR-018`](../../../../harness/conventions/MR-018-review-pflicht-v610-wortlaut.md) auflösen. Die Adaption war eine **Provenienz-Korrektur**: der
+[`MR-018`](../../../../harness/conventions/done/MR-018-review-pflicht-v610-wortlaut.md) auflösen. Die Adaption war eine **Provenienz-Korrektur**: der
 Wortlaut des Rollenwechsel-Absatzes in [`AGENTS.md`](../../../../AGENTS.md)
 §6 stammte aus einem Kurs-Template, das a-check nicht vendored hatte —
 also gab es keinen netzlos auflösbaren Anker, auf den das Feld
@@ -73,7 +73,7 @@ aktiven Einträge.
 
 ## 3. Umsetzung
 
-1. [`MR-018`](../../../../harness/conventions/MR-018-review-pflicht-v610-wortlaut.md) per `git mv` nach
+1. [`MR-018`](../../../../harness/conventions/done/MR-018-review-pflicht-v610-wortlaut.md) per `git mv` nach
    [`harness/conventions/done/`](../../../../harness/conventions/done/) —
    Datei-Inhalt **unverändert** (Adaptions-Block-Disziplin: an einem
    akzeptierten Eintrag wird nichts nachträglich geändert).
@@ -88,7 +88,7 @@ aktiven Einträge.
 
 ## 4. Definition of Done
 
-- [ ] [`MR-018`](../../../../harness/conventions/MR-018-review-pflicht-v610-wortlaut.md) liegt in `conventions/done/`, Inhalt unverändert; beide
+- [ ] [`MR-018`](../../../../harness/conventions/done/MR-018-review-pflicht-v610-wortlaut.md) liegt in `conventions/done/`, Inhalt unverändert; beide
       Tabellen in `conventions.md` nachgezogen, Anker `mr-018` erhalten.
 - [ ] Jeder **verlinkende** Verweis auf den alten Pfad zeigt auf den neuen;
       `make doc-check` belegt es.

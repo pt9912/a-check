@@ -142,7 +142,7 @@ Drei Liefer-Punkte:
    formulierte Review-Zeile nicht als Liefer-Punkt zählt.
 3. **Neuer `MR`-Eintrag** in `harness/conventions.md` — dokumentiert die
    Opt-in-vs-verpflichtend-Divergenz ggü. dem `v6.2.0`-Baseline-Default,
-   analog zu [`MR-017`](../../../../harness/conventions/done/MR-017-adr-vorlagen-version.md)/[`MR-018`](../../../../harness/conventions/MR-018-review-pflicht-v610-wortlaut.md):
+   analog zu [`MR-017`](../../../../harness/conventions/done/MR-017-adr-vorlagen-version.md)/[`MR-018`](../../../../harness/conventions/done/MR-018-review-pflicht-v610-wortlaut.md):
    kein vendorter Anker verfügbar (Treiber ist das noch nicht vendorte
    `v6.2.0`-Template), Rückbau-Kandidat, sobald `v6.2.0` vendored ist.
 

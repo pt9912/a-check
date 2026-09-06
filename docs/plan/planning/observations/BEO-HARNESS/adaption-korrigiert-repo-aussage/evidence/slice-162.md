@@ -1,5 +1,5 @@
 **Vorgang:** slice-162
-**Fund:** [`MR-018`](../../../../../../../harness/conventions/MR-018-review-pflicht-v610-wortlaut.md)
+**Fund:** [`MR-018`](../../../../../../../harness/conventions/done/MR-018-review-pflicht-v610-wortlaut.md)
 korrigiert den Wortlaut von `AGENTS.md` §6 auf ein Template (`AGENTS.template.md`, `v6.1.0`,
 nicht vendored) statt eine vendored Regelwerk-Regel zu ersetzen — unter dem Fork-Test damit
 selbst ein Rückbau-Kandidat, wie im Eintrag benannt. Zweiter Beleg neben slice-097; die zuvor

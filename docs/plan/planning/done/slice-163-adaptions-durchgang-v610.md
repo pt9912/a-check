@@ -71,7 +71,7 @@ slice-161 §2 geänderten Regelwerk-Dateien (`modul-07`, `modul-10`,
 | [MR-015](../../../../harness/conventions/MR-015-welle-closure-ohne-replay.md) | `modul-06-roadmap.md` | 0 Zeilen | unberührt |
 | [MR-016](../../../../harness/conventions/MR-016-validator-unbesetzt.md) | `modul-08-agentenrollen.md` | 0 Zeilen | unberührt |
 | [MR-017](../../../../harness/conventions/done/MR-017-adr-vorlagen-version.md) | — *(Repo-Aussage-Korrektur, kein Baseline-Regel-Ersatz)* | `adr.template.md`: 0 Zeilen | **Auflösungs-Trigger ausgelöst** — §4 |
-| [MR-018](../../../../harness/conventions/MR-018-review-pflicht-v610-wortlaut.md) | — *(dito, Template statt Regelwerk)* | — bereits als Rückbau-Kandidat ausgewiesen | unverändert: bleibt bis Etappe A vendored ist (slice-161 §4.4) |
+| [MR-018](../../../../harness/conventions/done/MR-018-review-pflicht-v610-wortlaut.md) | — *(dito, Template statt Regelwerk)* | — bereits als Rückbau-Kandidat ausgewiesen | unverändert: bleibt bis Etappe A vendored ist (slice-161 §4.4) |
 
 Fünf der sieben aktiven Adaptionen
 ([MR-011](../../../../harness/conventions/MR-011-verfeinerungs-form.md)/[MR-012](../../../../harness/conventions/MR-012-referenzmatrix-grandfathering.md)/[MR-014](../../../../harness/conventions/MR-014-keine-agenten-telemetrie.md)/[MR-015](../../../../harness/conventions/MR-015-welle-closure-ohne-replay.md)/[MR-016](../../../../harness/conventions/MR-016-validator-unbesetzt.md))
