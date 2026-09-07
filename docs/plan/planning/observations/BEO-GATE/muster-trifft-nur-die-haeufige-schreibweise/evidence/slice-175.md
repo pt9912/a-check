@@ -4,7 +4,7 @@
 `../baseline/<tag>/`, die eine Datei *innerhalb* von `.harness/` benutzt.
 
 Genau ein Vorkommen im Repo: `.harness/skills/reviewer.md` Zeile 7 verweist als
-``v6.2.0` · `regelwerk/modul-10-review-harness.md``. Beim Vendoring von `v6.5.0` blieb
+`[…](../baseline/v6.2.0/regelwerk/modul-10-review-harness.md)`. Beim Vendoring von `v6.5.0` blieb
 die Zeile stehen — **zweifach unbemerkt**: das `sed`, mit dem der Bestand umgestellt wurde, suchte
 dieselbe zu enge Zeichenfolge, und der Sensor, der den vergessenen Nachzug melden soll, sah sie
 ebenso wenig. Dieselbe Verengung an beiden Stellen, weil dieselbe Vorstellung dahinterstand.
@@ -21,3 +21,11 @@ gesetztem Fehler, 0 Befunde nach Rücknahme).
 Prüfmenge von 14 Dateien belegt und in beide Richtungen mutations-kalibriert — trotzdem hatte er
 eine Form-Lücke. Kalibrierung an vorhandenen Vorkommen prüft, ob der Sensor *diese* findet, nicht
 ob er *alle* Schreibweisen kennt.
+
+**Nachtrag (slice-176, Review-Befund F-1):** Die Umstellung auf die Zitier-Form hat dieses
+Belegstück zunächst *mit* umgestellt — und damit den Fund unkenntlich gemacht, um den es hier geht.
+Die Zeichenfolge oben steht in einem **Code-Span**: Sie ist ein **Zitat** eines Links, kein Link.
+Ein Massen-`sed` unterscheidet das nicht, und der Satz behauptete danach, `reviewer.md`:7 habe als
+Kennung verwiesen — was falsch ist, sie verwies als Link. Zurückgestellt; gegengemessen ist der
+Span nie ein auflösbarer Verweis gewesen und musste für das Löschen des vorigen Stands auch nie
+angefasst werden.

@@ -38,11 +38,14 @@ die kanonische Quelle (Source Precedence, siehe
   durch das `versions`-Muster in [`.d-check.yml`](../.d-check.yml).
 - **Aufgelöste Einträge sind davon ausgenommen** ([`conventions/done/`](conventions/done/)): sie
   sind eingefroren, ihr Zeiger bleibt auf dem Stand, gegen den sie damals formuliert wurden. Der
-  Sensor nimmt sie aus. **Eine Kollision bleibt und ist keine Ausnahme, sondern eine Klemme:**
-  verschwindet ein vendorter Stand, bricht ihr Link, und die Link-Prüfung erzwingt einen Edit an
-  einer Datei, die als unveränderlich geführt wird — bei
-  [`MR-018`](#mr-018) mit slice-172 geschehen. Wer löscht, editiert Eingefrorenes; das ist der
-  Preis des Löschens, nicht ein Fehler der Regel.
+  Sensor nimmt sie aus. **Die Kollision, die hier stand, ist bezahlt:** Solange ein eingefrorenes
+  Artefakt die Baseline als **Link** zitierte, erzwang das Entfernen eines Stands einen Edit an
+  ihm — bei [`MR-018`](#mr-018) mit slice-172 geschehen, 22 Nachzüge insgesamt. Seit slice-176
+  zitieren einfrierende Artefakte als **Kennung** statt als Adresse
+  ([`AGENTS.md`](../AGENTS.md) §5), und derselbe Vorgang kostete **null** Nachzüge — gemessen, nicht
+  angenommen. Was bleibt, ist die *Versions*-Frage: Ein Zeitdokument nennt den alten Stand
+  weiterhin im Text, weil damals er galt, und dafür ist `exempt-paths` da. Zwei Fragen, zwei
+  Antworten.
 - **Adoptiert seit:** 2026-06-20.
 
 Wann welcher Stand gehoben wurde und in welchen Etappen, steht in

@@ -122,9 +122,22 @@ ersetzt die andere.
 | [`AGENTS.md`](../../../../AGENTS.md) §5 | update | die Regel für alle vier Artefaktklassen, mit dem gemessenen Beleg statt einer Behauptung |
 | vorheriger vendorter Stand | löschen | Abschluss von Etappe A; der Beweis in §2.3 ist der Zweck dieses Slice |
 
-**Nicht angefasst:** `tools/archive-wave/`. Es erzeugt Archiv-Stubs, und deren
-Zitier-Form ist damit Code-Sache statt Doku-Sache — ein eigener Vorgang, kein
-Teil dieses Slice (§1).
+**Nicht angefasst:** `tools/archive-wave/`. Der Grund dafür stand zuerst falsch
+da — Review-Befund F-3, und der Befund ist präziser als meine Behauptung.
+
+Gemessen: `grep -rn "baseline" tools/archive-wave/*.go` ist **leer**. Das
+Werkzeug zitiert nie eine Baseline-Stelle, der von mir benannte Spalt existiert
+nicht. Was es **sehr wohl** erzeugt, ist ein Markdown-**Link** im
+`**Welle:**`-Feld des Stubs, samt eigener Nachzieh-Mechanik
+(`RewriteFieldForMove` in `tools/archive-wave/archive.go`) — und genau das
+verbietet die Zitier-Form mit *„`slice-NNN` statt seines Lifecycle-Pfads"*.
+Die Mechanik ist die Antwort auf ein Problem, das die Form gar nicht erst
+entstehen lässt.
+
+Das bleibt außerhalb dieses Slice, aber aus einem anderen Grund als dem
+zuerst genannten: Es ist **Code**, nicht Doku, und die Umstellung zöge einen
+Test-Umbau nach sich (`archive_test.go` prüft die Nachzieh-Mechanik). Ein
+eigener Vorgang — mit einem realen Gegenstand statt eines erfundenen.
 
 ## 4. Definition of Done
 
@@ -166,14 +179,18 @@ Der Slice trägt ein `**Welle:**`-Feld und archiviert **mit seiner Welle**
   [`BEO-HARNESS/baseline-regel-nie-erwogen-weil-bestand-sie-verletzt`](../observations/BEO-HARNESS/baseline-regel-nie-erwogen-weil-bestand-sie-verletzt/observation.md)
   — hier bewusst in der Gegenrichtung gefahren.
 - *Die Umstellung ändert Zeitdokumente, die als unveränderlich geführt werden* —
-  **Ausgang:** eingetreten, im Slice aufgefangen und begründet (§2.2): Es ist
-  eine **Form**-Änderung, keine Inhalts-Änderung, und sie macht die Aussage
-  präziser statt schwächer — der Tag steht danach im Text statt im Pfad. Kein
-  Folge-Slice; die Alternative wäre gewesen, den alten Stand nie zu löschen.
+  **Ausgang:** gestrichen mit Begründung. Es ist eine **Form**-Änderung, keine
+  Inhalts-Änderung (§2.2), und sie macht die Aussage präziser statt schwächer:
+  der Tag steht danach im Text statt im Pfad. **Einmal traf das nicht zu** und
+  der Review hat es gefangen (F-1): In einem Beleg stand das Zitat eines Links
+  in einem Code-Span — dort war die Umstellung sehr wohl eine Inhalts-Änderung
+  und machte den Satz falsch. Zurückgestellt. Das Risiko ist damit nicht
+  theoretisch geblieben, aber sein Anlass ist beseitigt.
 - *`exempt-paths` bleibt trotz Zitier-Form nötig, und niemand weiß es* —
-  **Ausgang:** eingetreten, gemessen (§2.4: 28 Befunde ohne die Ausnahmen) —
-  **kein Folge-Slice**, weil die Antwort im Slice steht und beim nächsten Sprung
-  nachlesbar ist, statt erneut ausprobiert zu werden.
+  **Ausgang:** gestrichen mit Begründung — die Sorge war, niemand wisse es;
+  gemessen (§2.4: 28 Befunde ohne die Ausnahmen) und im Slice aufgeschrieben,
+  ist sie gegenstandslos. Beim nächsten Sprung ist die Antwort nachlesbar,
+  statt erneut ausprobiert zu werden.
 
 ## 8. Closure-Notiz
 
@@ -204,8 +221,12 @@ verankert).
   Auslöser: [`BEO-HARNESS/zwei-baseline-staende-nach-migrationsende`](../observations/BEO-HARNESS/zwei-baseline-staende-nach-migrationsende/observation.md),
   aufgelöst statt weitergezählt.
 
-- **Beobachtungs-Register (`../observations/`):** kein neuer Eintrag, kein neuer
-  Beleg. `state.md` von
+- **Beobachtungs-Register (`../observations/`):** kein neuer *Eintrag*; ein
+  Beleg, den der Review nachtragen musste — `evidence/slice-176.md` in
+  [`BEO-PLAN/verweis-auf-wandernden-slice`](../observations/BEO-PLAN/verweis-auf-wandernden-slice/observation.md)
+  (F-4). Die Form-Lücke von `slice-mv` trat zum dritten Mal in Folge auf, der
+  Eintrag hatte genau diese Etappe vorhergesagt, und ich habe sie beim Sichten
+  übersehen, obwohl die eigene Commit-Message sie nennt. `state.md` von
   [`zwei-baseline-staende-nach-migrationsende`](../observations/BEO-HARNESS/zwei-baseline-staende-nach-migrationsende/observation.md)
   auf *verkörpert* gesetzt — der Doppelstand ist beendet, und diesmal nicht nur
   der Zustand, sondern auch die Ursache: Es gibt jetzt eine Form, die das
@@ -243,5 +264,6 @@ durchgegangen. Drei einschlägig:
 | [`zwei-baseline-staende-nach-migrationsende`](../observations/BEO-HARNESS/zwei-baseline-staende-nach-migrationsende/observation.md) | offen, 1× | **aufgelöst** — dieser Slice beendet den Doppelstand, und zwar mit der Entscheidung, die der Eintrag vermisste. `state.md` nachgezogen |
 | [`versions-sensor-trifft-planungs-vorgriff`](../observations/BEO-GATE/versions-sensor-trifft-planungs-vorgriff/observation.md) | offen, 2× | **dritter Fund, kein neuer Beleg** — derselbe Vorgang; der bestehende Beleg ist geschärft (§2.3 nannte den Pfad, den der Slice gerade löschen lehrt) |
 | [`baseline-regel-nie-erwogen-weil-bestand-sie-verletzt`](../observations/BEO-HARNESS/baseline-regel-nie-erwogen-weil-bestand-sie-verletzt/observation.md) | offen, 2× | **nicht erhöht** — hier bewusst in der Gegenrichtung gefahren: erst der Bestand, dann die Regel (§7) |
+| [`verweis-auf-wandernden-slice`](../observations/BEO-PLAN/verweis-auf-wandernden-slice/observation.md) | verkörpert | **erneut aufgetreten**, Beleg `evidence/slice-176.md` — dritter Vorgang in Folge, fünf Vorkommen. Der Eintrag hatte Etappe C vorhergesagt. Beim Sichten übersehen und vom Review nachgetragen (F-4) |
 
 **Alle berührten Sub-Areas GF** — kein Begründungsblock nötig.
