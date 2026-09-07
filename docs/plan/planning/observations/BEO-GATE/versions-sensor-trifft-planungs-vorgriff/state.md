@@ -8,6 +8,6 @@ den adoptierten Stand aus planerischer Absicht — einmal den **kommenden** (sli
 **gehenden** (slice-176). Der Titel nennt nur den Vorgriff.
 
 Bei 3× ist zu entscheiden, ob Planungsdokumente die **Zitier-Form** aus
-[T-1](../../../done/slice-174-regelwerk-v650-delta-analyse.md) §3.2 übernehmen — Kennung statt
+[T-1](../../../done/welle-15/slice-174-regelwerk-v650-delta-analyse.md) §3.2 übernehmen — Kennung statt
 Adresse, also `v<X.Y.Z>` als Text statt als Pfad. Dann wäre der Umweg keine Umgehung mehr, sondern
 die Regel, und die Präzision käme zurück.

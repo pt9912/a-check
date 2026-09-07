@@ -1,6 +1,6 @@
 **Stand:** verkörpert in [`AGENTS.md`](../../../../../../AGENTS.md) §5 (Regel *Geltungsbereich einer
 Messung*) `seit slice-179` — zugewiesen im Lese-Schritt der Closure von
-[welle-15](../../../done/welle-15-regelwerk-v650-migration.md).
+[welle-15](../../../done/welle-15/welle-15-regelwerk-v650-migration.md).
 
 Drei Instanzen, dieselbe Form, verschiedene Gegenstände: ein Review-Geltungsbereich (slice-105),
 eine Sensor-Messung (slice-172), eine Diff-Bereinigung (slice-174). Jedes Mal war die Begrenzung

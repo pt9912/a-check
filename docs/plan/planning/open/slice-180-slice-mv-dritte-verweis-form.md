@@ -9,7 +9,7 @@ wechselt nur durch `make slice-mv` ([`AGENTS.md`](../../../../AGENTS.md)
 repo-weites Mehr).
 
 **Bezug:** Lese-Schritt der Closure von
-[welle-15](../done/welle-15-regelwerk-v650-migration.md) —
+[welle-15](../done/welle-15/welle-15-regelwerk-v650-migration.md) —
 [`BEO-PLAN/verweis-auf-wandernden-slice`](../observations/BEO-PLAN/verweis-auf-wandernden-slice/observation.md)
 steht bei **7×**, und die Verkörperung hat eine Lücke, die allein in dieser
 Welle **zehnmal** aufgetreten ist.

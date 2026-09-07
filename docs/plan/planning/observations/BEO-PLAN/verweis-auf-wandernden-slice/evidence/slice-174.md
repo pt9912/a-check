@@ -17,5 +17,5 @@ Lücke im ersten nicht kleiner.
 
 **Für den Ausgang:** Der Eintrag steht auf *verkörpert*. Diese Instanz widerlegt das nicht, sie
 begrenzt es — die Verkörperung deckt zwei von drei Formen. Ob das Werkzeug die dritte lernt, ist
-eine Entscheidung für die Closure von [`welle-15`](../../../../done/welle-15-regelwerk-v650-migration.md),
+eine Entscheidung für die Closure von [`welle-15`](../../../../done/welle-15/welle-15-regelwerk-v650-migration.md),
 die noch drei weitere Slice-Übergänge fahren wird und die Form damit dreimal wiedersieht.

@@ -1,6 +1,6 @@
 # welle-15 — Ergebnis: Regelwerk-Migration `v6.2.0` → `v6.5.0`
 
-**Geschlossen:** 2026-09-07. **Plan:** [welle-15](welle-15-regelwerk-v650-migration.md).
+**Geschlossen:** 2026-09-07. **Plan:** [welle-15](welle-15/welle-15-regelwerk-v650-migration.md).
 
 ---
 
@@ -8,12 +8,12 @@
 
 | Slice | Etappe | Ergebnis |
 |---|---|---|
-| [slice-174](slice-174-regelwerk-v650-delta-analyse.md) | — | Delta-Analyse: 30 Dateien roh, **16 mit Inhalt**, 14 nur Formatierung |
-| [slice-175](slice-175-etappe-a-vendoring-v650.md) | **A** | `v6.5.0` vendored, über vier Kanäle verifiziert; Stand an drei Stellen, vier Symlinks, 13 lebende Zeiger |
-| [slice-179](slice-179-etappe-b-adaptions-durchgang-v650.md) | **B** | alle sieben aktiven Adaptionen bewertet — keine löst auf; `exempt-paths` eingeordnet |
-| [slice-176](slice-176-zitier-form-einfrierende-artefakte.md) | **C** | Zitier-Form übernommen, 16 Links umgestellt, voriger Stand entfernt |
-| [slice-177](slice-177-sensors-struktur-zwei-tabellen.md) | **D** | 14 Sensor-Dateien, zwei Tabellen; Zellen über 250 Zeichen **16 → 4** |
-| [slice-178](slice-178-slice-form-ziel-und-abgrenzung.md) | **E** | Slice-Form §1/§9 und Workflow-Schritt 4; Kopieranleitung gegen den Bestand geprüft |
+| [slice-174](welle-15/slice-174-regelwerk-v650-delta-analyse.md) | — | Delta-Analyse: 30 Dateien roh, **16 mit Inhalt**, 14 nur Formatierung |
+| [slice-175](welle-15/slice-175-etappe-a-vendoring-v650.md) | **A** | `v6.5.0` vendored, über vier Kanäle verifiziert; Stand an drei Stellen, vier Symlinks, 13 lebende Zeiger |
+| [slice-179](welle-15/slice-179-etappe-b-adaptions-durchgang-v650.md) | **B** | alle sieben aktiven Adaptionen bewertet — keine löst auf; `exempt-paths` eingeordnet |
+| [slice-176](welle-15/slice-176-zitier-form-einfrierende-artefakte.md) | **C** | Zitier-Form übernommen, 16 Links umgestellt, voriger Stand entfernt |
+| [slice-177](welle-15/slice-177-sensors-struktur-zwei-tabellen.md) | **D** | 14 Sensor-Dateien, zwei Tabellen; Zellen über 250 Zeichen **16 → 4** |
+| [slice-178](welle-15/slice-178-slice-form-ziel-und-abgrenzung.md) | **E** | Slice-Form §1/§9 und Workflow-Schritt 4; Kopieranleitung gegen den Bestand geprüft |
 
 ## 2. Was funktioniert hat
 

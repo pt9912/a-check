@@ -14,7 +14,7 @@ kostet Präzision — die DoD nennt jetzt keinen prüfbaren Pfad mehr, sondern e
 
 **Zweiter Vorgang, zweiter Beleg** (slice-174 · slice-176). Bei 3× wäre zu entscheiden, ob
 Planungsdokumente eine eigene Schreibweise für Stände bekommen — etwa die Zitier-Form aus
-[T-1](../../../../done/slice-174-regelwerk-v650-delta-analyse.md), die genau dafür gebaut ist:
+[T-1](../../../../done/welle-15/slice-174-regelwerk-v650-delta-analyse.md), die genau dafür gebaut ist:
 Kennung statt Adresse. Dann wäre der Umweg keine Umgehung mehr, sondern die Regel.
 
 **Nachtrag, dritter Fund im selben Vorgang** (zählt nicht erneut): Auch die *Umsetzung* stolperte
