@@ -1,4 +1,4 @@
-**Stand:** geplant — [`slice-169`](../../../open/slice-169-korpus-seitige-kalibrierung.md)
+**Stand:** geplant — [`slice-169`](../../../in-progress/slice-169-korpus-seitige-kalibrierung.md)
 schreibt die fehlende Hälfte.
 
 Bereits verkörpert ist die **Werkzeug-Seite**:
