@@ -68,8 +68,12 @@ den **neuen** Stand — das prüft keine einzelne DoD.
 | Slice | Titel | Bezug |
 |---|---|---|
 | slice-174 | Delta-Analyse `v6.2.0` → `v6.5.0` | — (reine Ist-Messung, keine Vertragsberührung) |
+| [slice-175](open/slice-175-etappe-a-vendoring-v650.md) | Etappe A: Baseline vendoren | slice-174 §3.4 |
+| [slice-176](open/slice-176-zitier-form-einfrierende-artefakte.md) | Etappe C: Zitier-Form für einfrierende Artefakte | slice-174 §3.2 T-1 |
+| [slice-177](open/slice-177-sensors-struktur-zwei-tabellen.md) | Etappe D: Sensors-Struktur, zwei Tabellen | slice-174 §3.2 T-2/T-4 |
 
-Weitere Slices entstehen aus §5 der Delta-Analyse; die Zeile wächst mit. Der
+**Etappe B** (Adaptions-Durchgang) bekommt ihren Slice, sobald Etappe A den
+Stand gehoben hat — sie misst gegen ihn und wäre vorher gegenstandslos. Der
 Zustand eines Slice ist sein Lifecycle-Verzeichnis und wird hier **nicht**
 gespiegelt.
 
