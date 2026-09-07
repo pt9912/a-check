@@ -14,7 +14,7 @@ Etappe A) · <!-- d-check:ignore -->
 
 **Eingangs-Kontext:**
 
-- `docs/plan/planning/in-progress/slice-173-versions-sensor-baseline-pins.md`
+- `docs/plan/planning/done/slice-173-versions-sensor-baseline-pins.md`
 - `AGENTS.md` §3 (Hard Rules), §4 (Quality Gates), §5 (Dokumentations-Regeln)
 - `harness/README.md` §Sensors, `harness/conventions.md` §Baseline und
   §Aktive Adaptionen
@@ -52,7 +52,7 @@ leer — Nachweis am Ende):
 - `quelle`: `AGENTS.md` §5 (Closure-/Lerneintrag-Disziplin), Reviewer-Skill
   §Klassifikation („nachweislich falsche Tatsachenbehauptung, gegen ein
   Repo-Artefakt verifiziert"); `harness/conventions.md` §Aktive Adaptionen
-- `pfad`: `docs/plan/planning/in-progress/slice-173-versions-sensor-baseline-pins.md`
+- `pfad`: `docs/plan/planning/done/slice-173-versions-sensor-baseline-pins.md`
   §2.1 (Zeilen 88–90) sowie Commit-Message `c9ee5d8`, Absatz 1
 - `befund`: Der Satz „Gemessene Wirkung: 18 → **0** Befunde, Prüfmenge danach
   **15** lebende Dateien (darunter alle fünf aktiven `MR`-Einträge …)" nennt

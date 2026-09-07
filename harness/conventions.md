@@ -34,7 +34,7 @@ die kanonische Quelle (Source Precedence, siehe
   referenzierte Abschnitt im neuen Stand wortgleich ist, und das ist zu **messen**, nicht
   anzunehmen ([slice-172](../docs/plan/planning/done/wellenlos/slice-172-baseline-v600-entfernen.md)
   §2.2). Ist er es nicht, trägt die Stelle die Abweichung sichtbar, statt still umzuziehen.
-  Durchgesetzt seit [slice-173](../docs/plan/planning/in-progress/slice-173-versions-sensor-baseline-pins.md)
+  Durchgesetzt seit [slice-173](../docs/plan/planning/done/slice-173-versions-sensor-baseline-pins.md)
   durch das `versions`-Muster in [`.d-check.yml`](../.d-check.yml).
 - **Aufgelöste Einträge sind davon ausgenommen** ([`conventions/done/`](conventions/done/)): sie
   sind eingefroren, ihr Zeiger bleibt auf dem Stand, gegen den sie damals formuliert wurden. Der

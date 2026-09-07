@@ -12,4 +12,4 @@ Nachfolge-Eintrag je `MR` noch eine deklarierte Ausnahme nötig war.
 Was **nicht** beseitigt ist, ist der Teil, den die Anlage als das Eigentliche benennt — die Dauer
 ohne Entscheidung, weil niemand die Frage stellt. Dieser Slice hat die Frage einmal beantwortet,
 nicht ihre Wiederkehr geregelt. Der Wächter dafür ist konfigurierbar und noch nicht konfiguriert:
-[slice-173](../../../in-progress/slice-173-versions-sensor-baseline-pins.md).
+[slice-173](../../../done/slice-173-versions-sensor-baseline-pins.md).
