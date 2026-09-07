@@ -21,7 +21,8 @@ Welle-Datei, nicht hier.
 
 - [welle-15](../welle-15-regelwerk-v650-migration.md) — Regelwerk-Migration `v6.2.0` → `v6.5.0`.
 
-Nichts in Arbeit.
+In Arbeit: [slice-174](../in-progress/slice-174-regelwerk-v650-delta-analyse.md) — Delta-Analyse,
+erster Slice von [welle-15](../welle-15-regelwerk-v650-migration.md).
 
 ## Nächste Wellen
 
