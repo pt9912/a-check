@@ -4,7 +4,7 @@ Unterhalb der Schwelle — der Zähler bleibt, wo er war: [slice-172](../../../d
 hat die Beobachtung *aufgelöst*, nicht wiederholt, und ein auflösender Vorgang ist kein Auftreten.
 
 Der beobachtete **Zustand** war mit slice-172 beseitigt und ist seit
-[slice-175](../../../in-progress/slice-175-etappe-a-vendoring-v650.md) wieder eingetreten — diesmal
+[slice-175](../../../done/slice-175-etappe-a-vendoring-v650.md) wieder eingetreten — diesmal
 **innerhalb** einer laufenden Migration ([welle-15](../../../welle-15-regelwerk-v650-migration.md)),
 und damit in dem Fenster, das [`conventions.md`](../../../../../../harness/conventions.md#baseline)
 §Baseline ausdrücklich zulässt: „mehrere sind nur während einer Migration zulässig, und das Target

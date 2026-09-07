@@ -382,7 +382,7 @@ Substanz, bevor sie den Umfang beurteilt).
   — **Zähler 3×, Schwelle erreicht**: die Bereinigung dieses Slice sah eine
   Formatierungs-Klasse und suchte die zweite nicht (§3.1).
 
-- **Folge-Slices:** [slice-175](../in-progress/slice-175-etappe-a-vendoring-v650.md)
+- **Folge-Slices:** [slice-175](../done/slice-175-etappe-a-vendoring-v650.md)
   (A, Vendoring),
   [slice-176](../open/slice-176-zitier-form-einfrierende-artefakte.md) (C,
   Zitier-Form),

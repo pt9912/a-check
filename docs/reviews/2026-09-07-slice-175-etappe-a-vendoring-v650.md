@@ -22,7 +22,7 @@ Angabe ist dem Slice oder der Commit-Message entnommen.
 
 **Eingangs-Kontext:**
 
-- `docs/plan/planning/in-progress/slice-175-etappe-a-vendoring-v650.md`
+- `docs/plan/planning/done/slice-175-etappe-a-vendoring-v650.md`
 - `docs/plan/planning/welle-15-regelwerk-v650-migration.md`
 - `AGENTS.md` §3 (Hard Rules), §4 (Quality Gates), §5 (Dokumentations-Regeln), §6 (Workflow)
 - `harness/conventions.md` §Baseline, §Adaptions-Block, §Modus-Deklaration
@@ -132,7 +132,7 @@ danach entfernt; `git status --porcelain` vor und nach dem Review leer, siehe F-
 - `kategorie`: MEDIUM
 - `quelle`: `AGENTS.md` §5 (Slice-Form, Liefer-Punkte); `v6.5.0` ·
   `regelwerk/modul-05-planning-harness.md` §Ziel-Form: Slice
-- `pfad`: `docs/plan/planning/in-progress/slice-175-etappe-a-vendoring-v650.md` §1 und §4;
+- `pfad`: `docs/plan/planning/done/slice-175-etappe-a-vendoring-v650.md` §1 und §4;
   `.d-check.yml`:115-118
 - `befund`: §1 sagt zu: *„Der Stand `v6.5.0` liegt vendored, die Stand-Deklaration nennt ihn an
   ihren drei Stellen, und die vier Baseline-Symlinks … zeigen darauf."* Die DoD nennt dieselben
@@ -150,7 +150,7 @@ danach entfernt; `git status --porcelain` vor und nach dem Review leer, siehe F-
 - `kategorie`: LOW
 - `quelle`: `v6.5.0` · `regelwerk/modul-08-agentenrollen.md` §Die neun Übergaben
   (Implementer→Reviewer: „PR mit Diff + Plan-Verweis")
-- `pfad`: `docs/plan/planning/in-progress/slice-175-etappe-a-vendoring-v650.md` §2, §3
+- `pfad`: `docs/plan/planning/done/slice-175-etappe-a-vendoring-v650.md` §2, §3
 - `befund`: Beide Abschnitte tragen unverändert den Vorlagen-Platzhalter. Sämtliche Messungen des
   Slice (Herkunft des Vendorings, 13 lebende Dateien, 16 Zeitdokumente, Mutations-Probe) stehen
   nur in der Commit-Message und in der Evidence-Datei. Die Vergleichs-Slices derselben Bauart
