@@ -21,8 +21,7 @@ Welle-Datei, nicht hier.
 
 - [welle-15](../welle-15-regelwerk-v650-migration.md) — Regelwerk-Migration `v6.2.0` → `v6.5.0`.
 
-In Arbeit: [slice-178](../in-progress/slice-178-slice-form-ziel-und-abgrenzung.md) — Etappe E von
-[welle-15](../welle-15-regelwerk-v650-migration.md), die letzte.
+Nichts in Arbeit.
 
 ## Nächste Wellen
 

@@ -73,7 +73,7 @@ führt" — der Slice selbst führt es vier Absätze weiter unten**
   `templates/docs/plan/planning/slice.template.md` §7 (Feld `liegt in`)
 - **pfad:** `AGENTS.md:296–301` („**Zwei** Felder streichen, die a-check nicht
   führt: Reconciliation-Register … und *Herkunfts-Anker*") gegen
-  `docs/plan/planning/in-progress/slice-178-slice-form-ziel-und-abgrenzung.md:153`
+  `docs/plan/planning/done/slice-178-slice-form-ziel-und-abgrenzung.md:153`
 - **befund:** Der Herkunfts-Anker ist im Slice-Template das Feld
   `— liegt in <Zielort>` in §7 plus der `seit slice-<NNN>`-Marker am Zielort.
   slice-178 schreibt in seiner eigenen Closure-Notiz
@@ -106,7 +106,7 @@ abhängig; die Baseline sagt ausdrücklich das Gegenteil**
 - **pfad:** `AGENTS.md:297–299` („die *drei Paarungen* auch: bei wellenlosen
   Slices trägt die Closure sie, bei Slices mit `**Welle:**`-Feld die
   Welle-Closure"); angewandt in
-  `docs/plan/planning/in-progress/slice-178-slice-form-ziel-und-abgrenzung.md:168`
+  `docs/plan/planning/done/slice-178-slice-form-ziel-und-abgrenzung.md:168`
 - **befund:** Die Regel wird als *pro Slice* entscheidbar formuliert. Baseline
   und Ziel-Form binden sie an das Repo: a-check hat mit `welle-15` eine offene
   Welle, also trägt die Welle-Closure die Paarungen für **jeden** seit der
@@ -169,7 +169,7 @@ auch slice-178 nicht**
 
 - **quelle:** `v6.5.0` · `templates/docs/plan/planning/slice.template.md` §8
 - **pfad:** `AGENTS.md:314–317` gegen
-  `docs/plan/planning/in-progress/slice-178-slice-form-ziel-und-abgrenzung.md:171`
+  `docs/plan/planning/done/slice-178-slice-form-ziel-und-abgrenzung.md:171`
   (`## 9. Sub-Area-Modus`)
 - **befund:** Über alle 20 nicht-archivierten Pläne lautet der Titel ausnahmslos
   „Sub-Area-Modus". §2.2 Nr. 3 des Plans formuliert im Präteritum („§9 **trug**
@@ -190,7 +190,7 @@ auch slice-178 nicht**
   → Beobachtungs-Register); `v6.5.0` · `regelwerk/modul-06-roadmap.md`
   §Das Beobachtungs-Register (Zähler = Zahl der Evidence-Dateien)
 - **pfad:**
-  `docs/plan/planning/in-progress/slice-178-slice-form-ziel-und-abgrenzung.md:123–131`
+  `docs/plan/planning/done/slice-178-slice-form-ziel-und-abgrenzung.md:123–131`
   und `:156–161`
 - **befund:** Die Zeile deklariert „**Ausgang:** weiter offen → Register" und
   sagt vier Zeilen später „Das Risiko ist **eingetreten**". Die drei Ausgänge
@@ -211,7 +211,7 @@ Abschnitt benennen**
 - **quelle:** `v6.5.0` · `regelwerk/modul-05-planning-harness.md`
   §Zwei Schritte vor der Modus-Begründung (Sichtungs-Schritt, Sub-Area-bezogen)
 - **pfad:**
-  `docs/plan/planning/in-progress/slice-178-slice-form-ziel-und-abgrenzung.md:180–183`
+  `docs/plan/planning/done/slice-178-slice-form-ziel-und-abgrenzung.md:180–183`
 - **befund:** Gesichtet und als „einschlägig" benannt ist genau ein Eintrag
   (`BEO-HARNESS/baseline-regel-nie-erwogen-weil-bestand-sie-verletzt`, 2×).
   Unter derselben Sub-Area *Harness-Einstieg* stehen offen: (a)
@@ -251,7 +251,7 @@ unwahr**
   die DoD-Erfüllung selbst gehört dem Verifier, geprüft ist hier nur der
   Wahrheitswert der Aussage zum Commit-Zeitpunkt
 - **pfad:**
-  `docs/plan/planning/in-progress/slice-178-slice-form-ziel-und-abgrenzung.md:101`
+  `docs/plan/planning/done/slice-178-slice-form-ziel-und-abgrenzung.md:101`
 - **befund:** Das Häkchen wurde im selben Commit gesetzt wie die Umsetzung;
   unter `docs/reviews/` existierte zu diesem Zeitpunkt kein Report für
   slice-178 (dieser hier ist der erste). `make doc-reviews` kann das nicht
@@ -270,7 +270,7 @@ und das Etikett ist falsch**
   („je Punkt eine Begründung, nicht nur eine Nennung: ein Ausschluss ohne Grund
   ist eine Behauptung"), vier Klassen als Suchraster
 - **pfad:**
-  `docs/plan/planning/in-progress/slice-178-slice-form-ziel-und-abgrenzung.md:40–41`
+  `docs/plan/planning/done/slice-178-slice-form-ziel-und-abgrenzung.md:40–41`
 - **befund:** „**Andere Etappen von welle-15** — Schicht-Abgrenzung." nennt eine
   Klasse statt eines Grundes; die ersten beiden Ausschlüsse zeigen im selben
   Abschnitt, wie es gemeint ist. Zudem trifft die Klasse nicht: Etappe B, C und
@@ -300,7 +300,7 @@ Abschnitt verschieden**
 
 - **quelle:** interne Konsistenz
 - **pfad:**
-  `docs/plan/planning/in-progress/slice-178-slice-form-ziel-und-abgrenzung.md:95–97`
+  `docs/plan/planning/done/slice-178-slice-form-ziel-und-abgrenzung.md:95–97`
   („dem neuen §8-Titel") gegen `AGENTS.md:314` („**§9 heißt** …")
 - **befund:** Beide Zahlen sind unter Punkt 3 erklärbar (§8 in der Ziel-Form,
   §9 in a-checks Fassung), aber der DoD-Punkt prüft `AGENTS.md` und nennt dort
@@ -326,7 +326,7 @@ Abschnitt verschieden**
 `in-progress/`**
 
 - **pfad:**
-  `docs/plan/planning/in-progress/slice-178-slice-form-ziel-und-abgrenzung.md:16`
+  `docs/plan/planning/done/slice-178-slice-form-ziel-und-abgrenzung.md:16`
 - **befund:** Nach `v6.5.0` · `regelwerk/modul-05-planning-harness.md`
   §Lifecycle als State Machine hält das Feld den Rolleninhaber, der die Arbeit
   *hält*; `—` gilt „bis zur Priorisierung". Der Slice wird bearbeitet. Der
