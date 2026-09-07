@@ -112,6 +112,21 @@ versions:
   patterns:
     - pin-pattern: 'Lastenheft steht bei \*\*(\d+\.\d+\.\d+)\*\*'
       current-from: spec/lastenheft.md#lastenheft--a-check
+    - pin-pattern: '\.harness/baseline/(v\d+\.\d+\.\d+)/'
+      current-from: harness/conventions.md#baseline
+      # Ausgenommen sind die Zeitdokument-Klassen: dort ist der GENANNTE Stand
+      # wahr, weil damals gegen ihn gemessen wurde. Dass ihre Pfade trotzdem
+      # aufloesen, traegt die Link-Pruefung, nicht dieses Muster (slice-173 §2.1).
+      # Im Beobachtungs-Register sind es genau die zwei unveraenderlichen
+      # Datei-Rollen (Baseline modul-06 §Das Beobachtungs-Register: observation.md
+      # "einmal geschrieben", evidence/<vorgang> "unveraenderlich ab Merge");
+      # state.md bleibt geprueft, es ist der veraenderliche Stand.
+      exempt-paths:
+        - "harness/conventions/done/**"
+        - "docs/plan/planning/done/**"
+        - "docs/reviews/**"
+        - "docs/plan/planning/observations/**/observation.md"
+        - "docs/plan/planning/observations/**/evidence/**"
 
 vcs:
   paths: ["docs/plan/adr/[0-9]*.md"]

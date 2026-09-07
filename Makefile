@@ -49,7 +49,7 @@ NO_CACHE_FILTER_COV  := --no-cache-filter coverage
 # Fund F-1 des unabhaengigen Reviews).
 .PHONY: help compile lint test coverage-gate build arch-check arch-graph \
         gate-consistency guard-selftest ci-range-selftest record-gates gates image-test ci \
-        trace-check hooks suppression-check dcheck-phrase-selftest regelwerk-check commit-scope-check \
+        trace-check hooks suppression-check symlink-check dcheck-phrase-selftest regelwerk-check commit-scope-check \
         verify verify-risiko-ausgaenge verify-observations slice-mv image-scan \
         doc-workflows doc-reviews version-coherence archive-wave-test archive-wave
 
@@ -94,6 +94,9 @@ guard-selftest: ## Selbsttest des PreToolUse-Command-Guard (Denylist greift, Hos
 
 suppression-check: ## Hard Rule AGENTS §3.2: keine Inline-Suppression (//nolint) in den Go-Quellen.
 	@bash tools/suppression-check.sh
+
+symlink-check: ## Jeder getrackte Symlink loest auf (BEO-GATE/symlink-ziel-nach-baseline-bump-ungeprueft, slice-173).
+	@bash tools/symlink-check.sh
 
 dcheck-phrase-selftest: ## Kalibrierung phrasen-basierter d-check-Module (reviews-Trigger-Phrase, structure tasks-ignore-pattern) gegen Fixtures (BEO-GATE/pruefer-ohne-gegenstand-oder-aufruf, slice-168).
 	@DCHECK_REF="$(DCHECK_REF)" DOCKER="$(DOCKER)" bash tools/dcheck-phrase-selftest.sh
@@ -188,7 +191,7 @@ verify: ## Verifikations-Schicht: DoD-/Closure-Fragen (vor der "fertig"-Meldung;
 record-gates: ## Gate-Nachweis (Working-Tree-Hash) für den Stop-Hook schreiben.
 	@bash tools/harness/record-gates.sh
 
-gates: lint test coverage-gate arch-check doc-check doc-targets doc-planning doc-workflows doc-reviews gate-consistency version-coherence suppression-check dcheck-phrase-selftest guard-selftest ci-range-selftest record-gates ## alle inneren Gates (mandatory vor Handoff).
+gates: lint test coverage-gate arch-check doc-check doc-targets doc-planning doc-workflows doc-reviews gate-consistency version-coherence suppression-check symlink-check dcheck-phrase-selftest guard-selftest ci-range-selftest record-gates ## alle inneren Gates (mandatory vor Handoff).
 
 image-test: build ## AC-FA-DIST-001 + nativ==Container-Akzeptanz gegen das gebaute Image.
 	@IMAGE=$(IMAGE) bash tools/image-test.sh
