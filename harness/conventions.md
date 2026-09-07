@@ -29,11 +29,20 @@ die kanonische Quelle (Source Precedence, siehe
   ([`MR-006`](#mr-006--baseline-committet-vendored-statt-per-url-referenziert)). Genau **ein**
   Stand liegt vendored; mehrere sind nur während einer Migration zulässig, und das Target weist
   den ungeprüften dann namentlich aus. Die Zusage gilt **ohne Ausnahme**, auch für das Feld
-  `Ersetzt-Baseline-Regel` akzeptierter `MR`-Einträge: es nennt eine **Regel**, keine
+  `Ersetzt-Baseline-Regel` **aktiver** Einträge: es nennt eine **Regel**, keine
   Datei-Kopie. Sein Zeiger wandert darum beim Baseline-Wechsel mit — Bedingung ist, dass der
   referenzierte Abschnitt im neuen Stand wortgleich ist, und das ist zu **messen**, nicht
   anzunehmen ([slice-172](../docs/plan/planning/done/wellenlos/slice-172-baseline-v600-entfernen.md)
   §2.2). Ist er es nicht, trägt die Stelle die Abweichung sichtbar, statt still umzuziehen.
+  Durchgesetzt seit [slice-173](../docs/plan/planning/in-progress/slice-173-versions-sensor-baseline-pins.md)
+  durch das `versions`-Muster in [`.d-check.yml`](../.d-check.yml).
+- **Aufgelöste Einträge sind davon ausgenommen** ([`conventions/done/`](conventions/done/)): sie
+  sind eingefroren, ihr Zeiger bleibt auf dem Stand, gegen den sie damals formuliert wurden. Der
+  Sensor nimmt sie aus. **Eine Kollision bleibt und ist keine Ausnahme, sondern eine Klemme:**
+  verschwindet ein vendorter Stand, bricht ihr Link, und die Link-Prüfung erzwingt einen Edit an
+  einer Datei, die als unveränderlich geführt wird — bei
+  [`MR-018`](#mr-018) mit slice-172 geschehen. Wer löscht, editiert Eingefrorenes; das ist der
+  Preis des Löschens, nicht ein Fehler der Regel.
 - **Adoptiert seit:** 2026-06-20.
 
 Wann welcher Stand gehoben wurde und in welchen Etappen, steht in

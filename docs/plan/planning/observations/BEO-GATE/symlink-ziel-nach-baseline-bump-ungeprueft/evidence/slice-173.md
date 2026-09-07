@@ -14,3 +14,10 @@ das neue Muster liest **Dateiinhalt**; ein Symlink hat für `d-check` keinen Lin
 **Dritte Instanz** (slice-142 · slice-167 · dieser Slice) — Schwelle erreicht, und damit keine
 Notiz mehr. Verkörpert im selben Slice, weil dieselbe Schicht und derselbe Gegenstand betroffen
 sind: `make symlink-check`, im `gates`-Aggregat.
+
+**Nachtrag aus dem unabhängigen Review dieses Slice:** Die hier gemessene Form ist **nicht** die
+von slice-167. Dort zeigten die Symlinks auf `v6.0.0`, das während der Migration daneben vendored
+blieb — sie lösten auf. Ein Sensor, der nur *„Ziel existiert nicht"* prüft (die erste Fassung),
+hätte jene Instanz grün gemeldet. Der Sensor prüft darum zusätzlich, ob ein Baseline-Ziel den
+**adoptierten** Stand trägt. Ohne diesen Nachtrag hätte der Eintrag als verkörpert gegolten,
+während eine der drei gezählten Instanzen weiter durchgefallen wäre.

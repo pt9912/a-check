@@ -1,9 +1,18 @@
 **Stand:** verkörpert in [`make symlink-check`](../../../../../../Makefile)
 (`tools/symlink-check.sh`, im `gates`-Aggregat) `seit slice-173`.
 
-Jeder von git getrackte Symlink muss auflösen; ein Ziel, das nicht existiert, ist Exit 1. Der
-Geltungsbereich ist bewusst weiter als der Anlass — die Fehler-Familie ist *„Symlink zeigt ins
-Leere"*, nicht *„Baseline-Symlink zeigt ins Leere"*.
+**Zwei** Prüfungen, weil die drei gezählten Instanzen zwei Formen haben — der Sensor prüfte
+zunächst nur die erste, und der unabhängige Review hat das gefangen (F-2):
 
-**Nicht** geprüft und damit offen geblieben: ob das Ziel das **richtige** ist. Ein Symlink auf ein
-existierendes, aber veraltetes Modul bleibt grün — das wäre ein Urteil über Absicht, kein Match.
+| Prüfung | Form | Instanz |
+|---|---|---|
+| Ziel existiert | der Stand wurde entfernt, der Symlink zeigt ins Leere | slice-173 |
+| Baseline-Ziel trägt den adoptierten Stand | der alte Stand liegt noch daneben — der Symlink löst auf und ist trotzdem falsch | slice-167 |
+
+Die zweite ist die wichtigere: `harness/conventions.md` §Baseline erlaubt zwei parallele Stände
+**während einer Migration**, also genau im Fenster, das diese Beobachtung beschreibt. Ein Sensor
+mit nur der ersten Prüfung hätte slice-167 grün gemeldet und diesen Eintrag fälschlich als
+verkörpert ausgewiesen.
+
+**Nicht** geprüft und damit offen geblieben: ob ein Symlink **außerhalb** der vendored Baseline auf
+das inhaltlich richtige Ziel zeigt. Das wäre ein Urteil über Absicht, kein Match.

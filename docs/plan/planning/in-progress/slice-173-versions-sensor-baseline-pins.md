@@ -85,9 +85,47 @@ Der Bump von [`MR-018`](../../../../harness/conventions.md#mr-018) war also
 richtig, aber nicht aus Versions-Gründen: sein Link hätte ins Leere gezeigt.
 Die Ziel-Form ist konsistent; slice-172 hat die Ursache falsch benannt.
 **Entscheidung:** `exempt-paths` deckt alle drei Zeitdokument-Klassen, nicht
-nur die eine der Vorlage. Gemessene Wirkung: 18 → **0** Befunde, Prüfmenge
-danach **15** lebende Dateien (darunter alle fünf aktiven `MR`-Einträge,
-[`AGENTS.md`](../../../../AGENTS.md), [`harness/README.md`](../../../../harness/README.md)).
+nur die eine der Vorlage. Gemessene Wirkung: 18 → **0** Befunde.
+
+**Die Prüfmenge ist gemessen, nicht gerechnet** — Korrektur aus dem Review
+(F-1). Zuerst stand hier „15 Dateien", per Hand aus *35 minus drei Klassen*
+abgeleitet: eine Schätzung im Gewand einer Messung, ausgerechnet in einem
+Slice, der sein Verfahren zur Ablesung erklärt. Verfahren jetzt: **alle**
+`v6.2.0`-Pins auf einen Phantom-Stand setzen, `make doc-check` fahren, die
+meldenden Dateien zählen, zurücksetzen. Ergebnis **14** —
+[`AGENTS.md`](../../../../AGENTS.md),
+[`harness/README.md`](../../../../harness/README.md),
+[`.harness/skills/reviewer.md`](../../../../.harness/skills/reviewer.md),
+[`docs/plan/carveouts/README.md`](../../carveouts/README.md),
+[`planning/README.md`](../README.md), dieser Plan, die drei Symlinks unter
+`.claude/rules/` und die **fünf aktiven `MR`-Einträge, die einen Pin tragen**.
+Aktiv sind **sieben**; [`MR-019`](../../../../harness/conventions.md#mr-019) und [`MR-020`](../../../../harness/conventions.md#mr-020) führen keinen — auch das stand
+vorher falsch da.
+
+**Zwei lebende Zeiger fallen still unter die Ausnahmen** (Review, F-5):
+[`docs/reviews/README.md`](../../../reviews/README.md) ist ein
+**Konventions**-Dokument, kein Report, und zeigt auf die *aktuelle*
+Report-Vorlage; ebenso der Vorlagen-Link in
+[`MR-018`](../../../../harness/conventions.md#mr-018), den slice-172
+nachweislich nachgezogen hat. Beide werden vom Muster nicht mehr gesehen, weil
+der Glob ihr Verzeichnis nimmt, nicht ihre Rolle. Hingenommen statt behoben:
+eine Regel je Datei-Rolle statt je Verzeichnis wäre die saubere Form, kostet
+aber mehr Konfigurations-Fläche, als die zwei Zeiger wert sind. **Benannt,
+nicht verschwiegen** — und wenn ein dritter dazukommt, ist es die Klasse und
+nicht mehr der Einzelfall.
+
+**Zwei Grenzen, die erst die Messung zeigte:**
+
+1. **Die `current-from`-Trägerdatei prüft sich nicht selbst.** Ein Phantom-Pin
+   in [`conventions.md`](../../../../harness/conventions.md) erzeugt nur
+   `target-missing`, kein `version-stale` — `d-check` nimmt die Datei aus, aus
+   der es den Erwartungswert liest. Betroffen sind dort **10** Pins, darunter
+   alle `Ersetzt-Baseline-Regel`-Zeiger.
+2. **Gedeckt sind sie trotzdem — durch einen Zufall.** `.claude/rules/conventions.md`
+   ist ein Symlink auf dieselbe Datei, und unter *diesem* Pfad prüft `d-check`
+   den Inhalt sehr wohl. Das ist ein Nebeneffekt der Kontext-Symlinks, keine
+   Zusage: verschwindet der Symlink, verschwindet die Deckung, und kein Sensor
+   sagt es.
 
 **Zwei weitere Klassen fand der Sensor selbst** — beim ersten Lauf gegen die
 Belege dieses Slice. Das Beobachtungs-Register trägt drei Datei-Rollen mit
@@ -95,8 +133,15 @@ Belege dieses Slice. Das Beobachtungs-Register trägt drei Datei-Rollen mit
 `observation.md` ist *einmal geschrieben*, `evidence/<vorgang>.md` ist
 *unveränderlich ab Merge* — beide also Zeitdokumente —, `state.md` dagegen ist
 der *veränderliche* Stand. Ausgenommen werden darum genau die ersten zwei;
-`state.md` bleibt geprüft. Dass die Klassenliste unvollständig war, hat kein
-Argument gezeigt, sondern der Lauf.
+`state.md` bleibt geprüft.
+
+**Halb gemessen, halb argumentiert** — Präzisierung aus dem Review (F-6): Einen
+Befund erzeugt hat nur die `evidence/**`-Klasse (die Beleg-Datei dieses Slice,
+die eine Mutation zitiert). Die `observation.md`-Klasse ist **abgeleitet**:
+beide betroffenen Dateien pinnen heute `v6.2.0` und melden nichts; ausgenommen
+sind sie, weil die Baseline sie als *einmal geschrieben* führt. Und
+„`state.md` bleibt geprüft" hat derzeit **null** Gegenstände — keine trägt
+einen Pin. Beides ist Vorsorge, und sie ist als solche zu lesen.
 
 ### 2.2 Was der Sensor nicht sieht — und was daraus folgt
 
@@ -112,11 +157,37 @@ die einen Sensor verlangt. Sie fällt in dieselbe Schicht und denselben
 Gegenstand, also in diesen Slice — dritter Liefer-Punkt, eine Schicht, die
 Größen-Regel hält.
 
+**Die drei Instanzen haben zwei verschiedene Formen** — Fund des Reviews (F-2),
+und er hat den Sensor verändert. Die erste Fassung prüfte nur *„Ziel existiert
+nicht"*. Damit hätte sie **slice-167 grün gemeldet**: dort zeigten die Symlinks
+auf `v6.0.0`, das während der Migration daneben vendored blieb — sie lösten auf
+und waren trotzdem falsch. Ein Sensor, der nur die eine Form fängt, hätte die
+Beobachtung als verkörpert ausgewiesen und eine der gezählten Instanzen
+durchgelassen. Der Sensor prüft darum **zwei** Dinge:
+
+| Prüfung | Form | Instanz |
+|---|---|---|
+| Ziel existiert | der Stand wurde entfernt | slice-173 (hier gemessen) |
+| Baseline-Ziel trägt den adoptierten Stand | der alte Stand liegt noch daneben | slice-167 |
+
+Den adoptierten Stand liest das Skript aus derselben Prosa-Zeile wie
+`versions.current-from` — fail-closed, ohne lesbaren Stand bricht es ab statt
+zu raten. Diese Kopplung ist dieselbe, die §7 als Risiko führt.
+
+**Ein zweiter Review-Fund steckte in der Extraktion** (F-3): `git ls-files -s`
+plus awk-Feldzuweisung kollabierte mehrfache Leerzeichen im Dateinamen
+(`a  b.md` → `a b.md`) und stolperte über C-quotierte Nicht-ASCII-Pfade. Der
+Defekt lag **vor** der geteilten Prüf-Funktion, also genau außerhalb des
+Codepfads, den die Design-Begründung als geteilt auswies — der Selbsttest
+konnte ihn nicht sehen. Ersetzt durch `git ls-files -z` (rohe Pfade,
+NUL-getrennt); der Selbsttest führt seither einen Namen mit zwei Leerzeichen
+mit.
+
 ## 3. Umsetzung
 
 | Datei / Komponente | Änderungs-Art | Begründung |
 |---|---|---|
-| [`.d-check.yml`](../../../../.d-check.yml) | update | zweites `versions`-Muster samt `exempt-paths` für die drei Zeitdokument-Klassen (§2.1) |
+| [`.d-check.yml`](../../../../.d-check.yml) | update | zweites `versions`-Muster samt `exempt-paths` für **fünf** Zeitdokument-Klassen (§2.1) |
 | `tools/symlink-check.sh` | neu | Sensor für §2.2; **eine** Prüf-Funktion für Gate-Lauf und Selbsttest, damit der Test den Codepfad prüft, der im Gate läuft |
 | [`Makefile`](../../../../Makefile) | update | Target `symlink-check`, im `gates`-Aggregat, in `.PHONY` |
 | `.claude/hooks/pretooluse-command-guard.sh` | update | `symlink-check` in die `GATES`-Liste — sonst liefe `make symlink-check \| tail` ungehindert durch; sein Selbsttest fängt das Fehlen |
@@ -129,12 +200,15 @@ Größen-Regel hält.
       veralteter Pin erzeugt nachweislich einen `version-stale`-Befund, ein
       korrekter nicht — beide Richtungen gemessen (`AGENTS.md:31`
       `v6.1.0 version-stale` bzw. 0 Befunde nach Rücknahme).
-- [x] Die `exempt-paths`-Frage aus §2.1 ist entschieden — drei
+- [x] Die `exempt-paths`-Frage aus §2.1 ist entschieden — **fünf**
       Zeitdokument-Klassen statt der einen der Vorlage —, die Begründung ist
       gemessen und steht in [`AGENTS.md`](../../../../AGENTS.md) §4, wo sie
       beim nächsten Baseline-Sprung gelesen wird.
 - [x] `make symlink-check` existiert, hängt im `gates`-Aggregat und feuert
-      nachweislich bei einem ins Leere zeigenden Symlink (§2.2).
+      nachweislich in **beiden** Formen der Beobachtung (§2.2): Ziel fehlt,
+      und Baseline-Ziel trägt einen anderen als den adoptierten Stand. Beide
+      Prüfungen sind mutations-kalibriert — je eine Mutation im Skript lässt
+      den Selbsttest fehlschlagen.
 - [x] Unabhängiger Review durchgeführt (Report unter [`docs/reviews/`](../../../reviews/README.md)).
 - [x] `make gates` grün.
 - [x] `make verify` grün.
@@ -194,14 +268,26 @@ geschrieben. Danach Archivierung als wellenloser Slice
 - **Was ging anders als geplant:** Der Slice sollte eine Lücke der Baseline
   schließen, die
   [slice-172](../done/wellenlos/slice-172-baseline-v600-entfernen.md) benannt
-  hatte. **Es gab keine.** Die Ziel-Form nimmt Zeitdokumente aus, weil dort der
-  *damalige* Stand wahr ist — nicht, weil sie das Fortbestehen alter Stände
-  voraussetzt. Dass Pfade auch in Zeitdokumenten auflösen müssen, trägt die
-  **Link**-Prüfung, und genau die hat bei slice-172 gemeldet (22 ×
-  `target-missing`). Zwei Sensoren, zwei Fragen; slice-172 hat sie in einen
-  geworfen und daraus eine Lücke gefolgert, die keine ist. Die Aussage steht
-  unveränderlich in dessen Archiv — korrigiert wird sie hier, im Nachfolger,
-  nicht dort.
+  hatte. Die **Zuschreibung** war falsch: die Ziel-Form nimmt Zeitdokumente
+  aus, weil dort der *damalige* Stand wahr ist — nicht, weil sie das
+  Fortbestehen alter Stände voraussetzt. Dass Pfade auch in Zeitdokumenten
+  auflösen müssen, trägt die **Link**-Prüfung, und genau die hat bei slice-172
+  gemeldet (22 × `target-missing`). Zwei Sensoren, zwei Fragen.
+
+  **Die Widerlegung trägt aber nur die halbe Strecke** — Korrektur aus dem
+  Review (F-7), und zuerst stand hier das zu bequeme *„es gab keine"*. Was
+  slice-172 **beobachtet** hatte, bleibt wahr: verschwindet ein vendorter
+  Stand, erzwingt die Link-Prüfung einen Edit an Dateien, die das Repo als
+  unveränderlich führt — bei
+  [`MR-018`](../../../../harness/conventions.md#mr-018) genau so geschehen.
+  Falsch war nur die Ursache: nicht `exempt-paths` setzt liegenbleibende
+  Stände voraus, sondern **Link-Auflösbarkeit und Unveränderlichkeit
+  kollidieren**, sobald ein Stand geht. Das ist eine Klemme, keine Lücke, und
+  sie steht jetzt als solche in
+  [`conventions.md`](../../../../harness/conventions.md#baseline) §Baseline —
+  zusammen mit der Unterscheidung *aktiver* Eintrag (Zeiger wandert mit,
+  maschinell durchgesetzt) gegen *aufgelöster* (eingefroren, vom Sensor
+  ausgenommen), die slice-172 dort unausgesprochen gelassen hatte.
 
 - **Steering-Loop-Eintrag — neuer Sensor:** `make symlink-check` — jeder
   getrackte Symlink löst auf — liegt in `Makefile:symlink-check`
