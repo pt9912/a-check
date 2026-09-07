@@ -80,9 +80,9 @@ den **neuen** Stand — das prüft keine einzelne DoD.
 | [slice-176](done/slice-176-zitier-form-einfrierende-artefakte.md) | Etappe C: Zitier-Form für einfrierende Artefakte | slice-174 §3.2 T-1 |
 | [slice-177](open/slice-177-sensors-struktur-zwei-tabellen.md) | Etappe D: Sensors-Struktur, zwei Tabellen | slice-174 §3.2 T-2/T-4 |
 | [slice-178](open/slice-178-slice-form-ziel-und-abgrenzung.md) | Etappe E: Slice-Form §1/§8 und Schritt 4 | slice-174 §3.2 T-3 |
+| [slice-179](open/slice-179-etappe-b-adaptions-durchgang-v650.md) | Etappe B: Adaptions-Durchgang gegen `v6.5.0` | slice-174 §3.4 |
 
-**Etappe B** (Adaptions-Durchgang) bekommt ihren Slice, sobald Etappe A den
-Stand gehoben hat — sie misst gegen ihn und wäre vorher gegenstandslos. Der
+Der
 Zustand eines Slice ist sein Lifecycle-Verzeichnis und wird hier **nicht**
 gespiegelt.
 
