@@ -67,24 +67,78 @@ eine *„Gate-Senkung mit eigener Begründungslast"*;
 39 nennt `exempt-paths` oder `version-stale`
 ([slice-174](../done/slice-174-regelwerk-v650-delta-analyse.md) §3.4).
 
-## 3. Umsetzung
+## 3. Durchgang
 
-*(offen)*
+### 3.1 Die sieben aktiven Einträge gegen `v6.5.0`
+
+Zwei Ebenen, getrennt geprüft. Die **Datei**-Ebene (ist der Zielabschnitt
+wortgleich?) liegt aus
+[slice-175](../done/slice-175-etappe-a-vendoring-v650.md) §2.2 vor. Diese Tabelle
+prüft die **Aussagen**-Ebene: Steht die *ersetzte Regel* in `v6.5.0` noch, und
+verlangt sie noch dasselbe?
+
+| Eintrag | Ersetzte Regel | Steht sie noch? | Trigger eingetreten? |
+|---|---|---|---|
+| [`MR-011`](../../../../harness/conventions.md#mr-011) | Suffix-Form `<PREFIX>-FA-<NN>.<Buchstabe>` für Verfeinerungen | **ja** — Wortlaut unverändert in `grundlagen-source-precedence.md` §ID-Schema als Klammer | nein (Trigger: eigene Erfahrung, dass ein Feld teurer ist) |
+| [`MR-012`](../../../../harness/conventions.md#mr-012) | Aufwärts-Richtung für **jede** Kante im bindenden Text | **ja** — die Decken-Regel steht unverändert | nein (löst erst auf, wenn keine der 20 ADRs mehr `Accepted` ist) |
+| [`MR-014`](../../../../harness/conventions.md#mr-014) | Span-Telemetrie je Tool-Call, Token-Bilanz je Rolle | **ja** — `modul-15` verlangt sie unverändert | nein (permanent: a-check ruft kein Modell auf) |
+| [`MR-015`](../../../../harness/conventions.md#mr-015) | Replay-Lauf als Teil des Welle-Closure-Triggers | **ja** — Zeile 33 und 319 in `modul-06-roadmap.md`, beide unverändert | nein (bräuchte ein Golden Set) |
+| [`MR-016`](../../../../harness/conventions.md#mr-016) | neun Rollen-Übergaben, jede mit Artefakt | **ja** — §Die neun Übergaben unverändert | nein (bräuchte einen repo-externen Abnehmer) |
+| [`MR-019`](../../../../harness/conventions.md#mr-019) | Review-Report als unbedingter DoD-Checkbox-Punkt | **ja** — die Zeile in `slice.template.md` ist unverändert, obwohl die Datei sich um `+36/−10` geändert hat | **nein**, und das war der einzige Kandidat (§2) |
+| [`MR-020`](../../../../harness/conventions.md#mr-020) | — *(korrigiert eine Repo-Aussage, kein Baseline-Regel-Ersatz)* | n/a | nein (permanent) |
+
+**Alle sieben bleiben.** Kein Eintrag ist gegenstandslos geworden, keiner
+löst auf. Der Durchgang hat damit nichts zu ändern — und das ist ein Ergebnis,
+kein Leerlauf: Es ist die erste Migration, bei der das vorab gemessen wurde
+statt angenommen.
+
+**Ein Befund über die Methode:** [`MR-015`](../../../../harness/conventions.md#mr-015)s Zielabschnitt hat sich geändert
+(`+3/−1`, [slice-175](../done/slice-175-etappe-a-vendoring-v650.md) §2.2), seine
+ersetzte Regel nicht. Wer nur die Datei vergleicht, meldet hier falsch — in
+beide Richtungen: Eine unveränderte Datei kann die Regel woanders verloren
+haben, eine geänderte sie behalten. Die zwei Ebenen sind nicht ineinander
+überführbar.
+
+### 3.2 `exempt-paths` — Geltungsbereich, keine Gate-Senkung
+
+Die Frage kam aus
+[slice-174](../done/slice-174-regelwerk-v650-delta-analyse.md) §3.4: Der Kurs
+nenne ein Ausnahme-Ventil eine *„Gate-Senkung mit eigener Begründungslast"*,
+`AGENTS.md` §3.6 verlange dafür eine ADR, und keine der 39 nenne `exempt-paths`.
+
+**Die Prämisse trägt nicht.** Am Ort nachgelesen (`v6.5.0` ·
+`regelwerk/grundlagen-harness-dateien.md`) meint der Satz ein Ventil im
+Prüfbereich der **Link**-Prüfung, wenn eine Adresse bereits im eingefrorenen
+Artefakt steht — und derselbe Absatz nennt die Alternative: *„die Reparatur ist
+teurer als die Vermeidung."* Genau die hat
+[slice-176](../done/slice-176-zitier-form-einfrierende-artefakte.md) gewählt.
+
+Für `versions` gilt etwas anderes, und der Kurs sagt es zwei Absätze vorher:
+*„Die Grenze: Sie gilt für einfrierende Artefakte … Der Unterschied ist nicht die
+Wichtigkeit des Ziels, sondern ob der Zeiger nachgezogen werden **darf**."* Ein
+Zeiger im Zeitdokument darf nicht nachgezogen werden; eine Prüfung, die ihn
+trotzdem einfordert, verlangt einen Regelbruch. `exempt-paths` bildet ab,
+worüber die Regel spricht — **Geltungsbereich, keine Schwellensenkung**.
+`AGENTS.md` §3.6 greift nicht, eine ADR entsteht nicht.
+
+**Aufgeschrieben ist die Einordnung dort, wo sie beim nächsten Gate-Streit
+gelesen wird:** `harness/sensors/doc-check.md` §Grenze, Punkt 3 — neben der
+Ausnahme selbst, nicht in einem Slice, den niemand mehr öffnet.
 
 ## 4. Definition of Done
 
-- [ ] Alle **sieben** aktiven Adaptionen sind bewertet — je Eintrag: steht die
+- [x] Alle **sieben** aktiven Adaptionen sind bewertet — je Eintrag: steht die
       ersetzte Regel in `v6.5.0` noch, und ist der Auflösungs-Trigger
       eingetreten? Mit Beleg je Zeile, nicht als Sammelurteil.
-- [ ] Jeder Eintrag, dessen Trigger eingetreten ist, ist aufgelöst (Nachfolge-
+- [x] Jeder Eintrag, dessen Trigger eingetreten ist, ist aufgelöst (Nachfolge-
       Eintrag oder Streichung mit Begründung); jeder andere trägt den Befund.
-- [ ] Die `exempt-paths`-Frage ist entschieden: ADR, deklarierte Ausnahme oder
+- [x] Die `exempt-paths`-Frage ist entschieden: ADR, deklarierte Ausnahme oder
       begründete Nicht-Handlung — und die Entscheidung steht dort, wo sie beim
       nächsten Gate-Streit gelesen wird.
-- [ ] Unabhängiger Review durchgeführt (Report unter [`docs/reviews/`](../../../reviews/README.md)).
-- [ ] `make gates` grün.
-- [ ] `make verify` grün.
-- [ ] Jedes Risiko trägt einen Ausgang.
+- [x] Unabhängiger Review durchgeführt (Report unter [`docs/reviews/`](../../../reviews/README.md)).
+- [x] `make gates` grün.
+- [x] `make verify` grün.
+- [x] Jedes Risiko trägt einen Ausgang.
 
 ## 5. Trigger
 
@@ -105,24 +159,79 @@ Der Slice trägt ein `**Welle:**`-Feld und archiviert **mit seiner Welle**.
 ## 7. Risiken und offene Punkte
 
 - *Der Durchgang prüft die Einträge, die es gibt — eine Baseline-Regel ohne
-  Eintrag hat keinen Aufhänger und fällt wieder durch* — Ausgang bei Closure;
-  genau das ist bei `AGENTS.md` §4 vier Stände lang passiert
-  ([`BEO-HARNESS/baseline-regel-nie-erwogen-weil-bestand-sie-verletzt`](../observations/BEO-HARNESS/baseline-regel-nie-erwogen-weil-bestand-sie-verletzt/observation.md), 2×).
+  Eintrag hat keinen Aufhänger und fällt wieder durch* — **Ausgang:** weiter
+  offen → Beobachtungs-Register,
+  [`BEO-HARNESS/baseline-regel-nie-erwogen-weil-bestand-sie-verletzt`](../observations/BEO-HARNESS/baseline-regel-nie-erwogen-weil-bestand-sie-verletzt/observation.md)
+  (2×). Das Risiko ist **nicht** eingetreten und auch nicht entfallen: Dieser
+  Durchgang hat wieder nur die sieben Einträge geprüft, und eine Regel ohne
+  Eintrag hätte er wieder nicht gesehen. Dass diesmal keine durchfiel, weiß
+  niemand — es hat sie nur niemand gesucht. Der Eintrag bleibt der einzige Ort,
+  an dem das steht.
 - *Die `exempt-paths`-Entscheidung wird zur vierten Repo-Aussage-Korrektur und
-  reißt damit eine Schwelle* — Ausgang bei Closure; Klasse
-  [`BEO-HARNESS/adaption-korrigiert-repo-aussage`](../observations/BEO-HARNESS/adaption-korrigiert-repo-aussage/observation.md) (2×).
+  reißt damit eine Schwelle* — **Ausgang:** entfallen, gestrichen mit
+  Begründung. Es entsteht **kein** `MR`-Eintrag: Die Prüfung ergab, dass
+  `exempt-paths` ein Geltungsbereich ist und keine Gate-Senkung (§3.2), also
+  gibt es nichts zu adaptieren und nichts zu korrigieren. Klasse
+  [`BEO-HARNESS/adaption-korrigiert-repo-aussage`](../observations/BEO-HARNESS/adaption-korrigiert-repo-aussage/observation.md)
+  (2×) bleibt bei zwei.
 
 ## 8. Closure-Notiz
 
-_(beim Abschluss ausfüllen — genau **ein** solcher Abschnitt je Slice;
-Lerneintrag — Form: wird dort benannt.)_
+**Lerneintrag — Form: geschärfte Regel** (Datei-Ebene und Aussagen-Ebene eines
+Adaptions-Zeigers sind nicht ineinander überführbar).
+
+- **Was hat funktioniert:** Der Durchgang hat **nichts geändert**, und das ist
+  das Ergebnis. Sieben Einträge, sieben Befunde, kein Trigger eingetreten — zum
+  ersten Mal vorab gemessen statt angenommen. Ein Adaptions-Durchgang, der
+  nichts findet, ist kein Leerlauf; er ist der Beleg, dass der Bestand den
+  Sprung überstanden hat.
+
+- **Was ging anders als geplant:** Die `exempt-paths`-Frage, die
+  [slice-174](../done/slice-174-regelwerk-v650-delta-analyse.md) §3.4 als
+  offene ADR-Pflicht notiert hatte, **löste sich beim Nachlesen auf**. Das
+  Zitat *„Gate-Senkung mit eigener Begründungslast"* stammt aus einem Absatz
+  über die **Link**-Prüfung; zwei Absätze vorher zieht derselbe Text die Linie,
+  die `exempt-paths` bei `versions` rechtfertigt — *„ob der Zeiger nachgezogen
+  werden **darf**"*. Ein Zitat ohne seinen Absatz trug hier eine Pflicht, die
+  es nicht gibt.
+
+- **Steering-Loop-Eintrag — geschärfte Regel:** Der `Ersetzt-Baseline-Regel`-Zeiger
+  einer Adaption wird auf **zwei** Ebenen geprüft, und sie sind nicht ineinander
+  überführbar: ob der Zielabschnitt wortgleich ist (Datei), und ob die *ersetzte
+  Regel* dort noch dasselbe verlangt (Aussage). Eine unveränderte Datei kann die
+  Regel woanders verloren haben; eine geänderte sie behalten —
+  [`MR-015`](../../../../harness/conventions.md#mr-015) ist der zweite Fall
+  (`+3/−1` am Abschnitt, Replay-Zusage unberührt). — liegt in
+  `docs/plan/planning/done/slice-179-…md` §3.1 als Muster für den nächsten
+  Durchgang.
+
+- **Beobachtungs-Register (`../observations/`):** keine Beobachtung angefallen,
+  kein Beleg. Die zwei in §7 genannten Einträge bleiben bei 2× — der erste, weil
+  das Risiko weder eintrat noch entfiel, der zweite, weil die befürchtete
+  Korrektur gar nicht entstand.
+
+- **Folge-Slices:** keine.
+
+- **Risiken aus §7:** zwei, jedes mit genau einem Ausgang — einmal *weiter
+  offen* → Register, einmal *gestrichen mit Begründung*.
+
+- **Drei Paarungen:** trägt die Welle-Closure — der Slice hat ein
+  `**Welle:**`-Feld.
 
 ## 9. Sub-Area-Modus
 
-**Vorgelagert — Sub-Area-Wahl prüfen:** entsteht mit dem Übergang nach
-`in-progress/`.
+**Vorgelagert — Sub-Area-Wahl prüfen:** eine Sub-Area berührt —
+**Harness-Einstieg** (`harness/conventions/`, `harness/sensors/`), Achsen 1,2,3,
+deklariert in
+[`conventions.md`](../../../../harness/conventions.md#modus-deklaration-pro-sub-area).
+Die **Vendored Baseline** ist Gegenstand der Messung, aber nicht geändert; sie
+führt ohnehin keinen Modus.
 
-**Vorgelagert — offene Beobachtungen sichten:** entsteht mit dem Übergang nach
-`in-progress/`; zwei Einträge sind in §7 bereits als einschlägig benannt.
+**Vorgelagert — offene Beobachtungen sichten:** Register am 2026-09-07
+durchgegangen. Zwei einschlägig, beide in §7 mit Ausgang:
+[`baseline-regel-nie-erwogen-weil-bestand-sie-verletzt`](../observations/BEO-HARNESS/baseline-regel-nie-erwogen-weil-bestand-sie-verletzt/observation.md)
+(2×) und
+[`adaption-korrigiert-repo-aussage`](../observations/BEO-HARNESS/adaption-korrigiert-repo-aussage/observation.md)
+(2×). Keiner erreicht mit diesem Slice die Schwelle.
 
 **Alle berührten Sub-Areas GF** — kein Begründungsblock nötig.

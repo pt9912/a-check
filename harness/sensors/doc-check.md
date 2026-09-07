@@ -30,6 +30,23 @@ Läuft digest-gepinnt, `--network none`, read-only.
    wahr, weil damals gegen ihn gemessen wurde. Zwei *lebende* Zeiger fallen
    dabei mit heraus (`docs/reviews/README.md`, der Vorlagen-Link in [`MR-018`](../conventions.md#mr-018)) —
    heilbar durch eine Regel je Datei-Rolle statt je Verzeichnis.
+
+   **Das ist ein Geltungsbereich, keine Gate-Senkung** — geprüft an der
+   Baseline, nicht angenommen. `v6.5.0` ·
+   `regelwerk/grundlagen-harness-dateien.md` §Was ein Kommentar trägt zieht die
+   Linie selbst: *„Die Grenze: Sie gilt für einfrierende Artefakte … Der
+   Unterschied ist nicht die Wichtigkeit des Ziels, sondern ob der Zeiger
+   nachgezogen werden **darf**."* Ein Zeiger in einem Zeitdokument darf es
+   nicht; eine Prüfung, die ihn trotzdem einfordert, verlangt einen Regelbruch.
+   Die Ausnahme bildet also ab, worüber die Regel spricht — sie senkt keine
+   Schwelle, und `AGENTS.md` §3.6 (Gates nur per ADR lockern) greift nicht.
+
+   **Die Stelle, an der der Kurs von einer „Gate-Senkung mit eigener
+   Begründungslast" spricht, meint etwas anderes:** ein Ventil im Prüfbereich
+   der **Link**-Prüfung, wenn eine Adresse bereits im eingefrorenen Artefakt
+   steht. Diesen Fall hat a-check nicht mit einem Ventil gelöst, sondern durch
+   **Vermeidung** — die Zitier-Form (`AGENTS.md` §5, slice-176) —, und genau das
+   empfiehlt derselbe Absatz: *„die Reparatur ist teurer als die Vermeidung"*.
 4. **Digests** — der Erwartungswert kommt versions-förmig aus dem
    `current-from`-Span; ein `sha256:` bricht dort fail-closed ab. Die
    Digest-Gleichheit trägt `make gate-consistency`. Permanent.
