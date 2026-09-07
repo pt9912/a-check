@@ -179,7 +179,7 @@ die CI (Badge im [`README.md`](README.md)), nicht diese Tabelle.
 | `make record-gates` | Gate-Nachweis (Working-Tree-Hash) für den Stop-Hook |
 | `make suppression-check` | Fitness Function zum Suppression-Verbot (§3.2, [ADR-0005](docs/plan/adr/0005-lint-profil.md)): keine `//nolint`-Direktive in den Go-Quellen — `nolintlint` prüft nur Wohlgeformtheit, nicht Existenz (slice-049) |
 | [`make symlink-check`](harness/sensors/symlink-check.md) | Zwei Prüfungen je getracktem Symlink: das Ziel existiert, und ein Ziel unter `.harness/baseline/` trägt den adoptierten Stand |
-| [`make dcheck-phrase-selftest`](harness/sensors/dcheck-phrase-selftest.md) | Kalibrierung der phrasen-basierten Modul-Konfigurationen: vier Kontrollen gegen eigene Fixtures, damit eine getroffene Formulierungs-Wahl nicht still wegdriftet |
+| [`make dcheck-phrase-selftest`](harness/sensors/dcheck-phrase-selftest.md) | Kalibrierung der phrasen-basierten Modul-Konfigurationen, **beide Hälften**: vier Werkzeug-Kontrollen gegen eigene Fixtures (reagiert `d-check` noch?) und zwei **Korpus**-Kontrollen gegen den `done/`-Bestand (trägt er die Phrase noch?) |
 | `make guard-selftest` | Selbsttest des PreToolUse-Command-Guard (Tool-Call-Gate §3.1) |
 | [`make ci-range-selftest`](harness/sensors/ci-range-selftest.md) | Selbsttest der Commit-Range-Weiche der CI: vier Fälle, darunter der **Force-Push**, bei dem eine im Runner-Klon unerreichbare Basis auf den Default-Branch fällt statt abzubrechen |
 | [`make image-scan`](harness/sensors/image-scan.md) | **kein Bestandteil von `gates`** (nicht hermetisch) — CVE-Scan gegen das **publizierte** Image; über rot entscheiden nur **behebbare** CRITICAL/HIGH. Exit-Codes und Sperren: siehe Sensor-Datei |

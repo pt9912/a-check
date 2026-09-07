@@ -1,16 +1,21 @@
-**Stand:** geplant — [`slice-169`](../../../in-progress/slice-169-korpus-seitige-kalibrierung.md)
-schreibt die fehlende Hälfte.
+**Stand:** verkörpert in [`make dcheck-phrase-selftest`](../../../../../../Makefile)
+(`tools/dcheck-phrase-selftest.sh`, im `gates`-Aggregat) — die **Werkzeug**-Hälfte
+`seit slice-168`, die **Korpus**-Hälfte `seit slice-169`.
 
-Bereits verkörpert ist die **Werkzeug-Seite**:
-[`make dcheck-phrase-selftest`](../../../../../../Makefile)
-(`tools/dcheck-phrase-selftest.sh`, im `gates`-Aggregat) `seit slice-168` — vier Kontrollen gegen
-eigene Fixtures, die belegen, dass `d-check` auf die gewählten Phrasen (`reviews`-Trigger-Phrase,
-`structure` `tasks-ignore-pattern`) noch reagiert.
+Beide Ausfallarten sind damit gedeckt: dass `d-check` auf die gewählte Formulierung nicht mehr
+reagiert (Fixtures, vier Kontrollen), und dass a-checks eigener Bestand sie nicht mehr trägt
+(Nichtleerheit gegen `done/`, zwei Kontrollen). Die zweite ist zweimal ausgefallen — slice-120 und
+slice-165 — und war bis slice-169 ungedeckt.
 
-**Nicht** verkörpert ist die **Korpus-Seite** — ob a-checks eigene Dokumente die Phrase noch
-tragen. Genau die ist zweimal ausgefallen (slice-120, slice-165); die Kandidatenmenge des
-`reviews`-Moduls ist heute nicht leer, kann es aber jederzeit wieder werden, ohne dass ein Sensor
-es sagt.
+Die Korpus-Hälfte liest das Muster **aus `.d-check.yml`** statt aus einer Kopie, fail-closed. Das
+schließt die zweite Hälfte des Review-Befunds zu slice-168: Eine Kopie neben dem Original blieb
+grün, nachdem das Original gebrochen wurde.
 
-Der `doc-complete`-Fall (Prüfer ohne **Aufruf**, nicht ohne Gegenstand) ist seit slice-123 durch
-die Aufnahme ins `verify`-Aggregat strukturell behoben; eine gesonderte Prüfung braucht er nicht.
+**Der Eintrag bleibt stehen, nicht gestrichen** — die Klasse ist breiter als die zwei gedeckten
+Muster. `.d-check.yml` führt **vierzehn** phrasen-basierte Felder; gedeckt sind die zwei mit
+belegtem Ausfall. Für die übrigen zwölf gibt es keinen Vorfall, und ein Sensor ohne Anlass ist
+selbst eine Behauptung. Fällt eines davon aus, ist es ein neuer Beleg hier — kein neuer Eintrag.
+
+`versions.current-from` ist der nächstliegende Kandidat (Beleg `evidence/slice-173.md`), fällt aber
+**laut** aus: `d-check` bricht bei nicht auflösbarem Anker ab, statt grün zu melden. Ihm fehlt
+genau die Gefährlichkeit, die diesen Eintrag ausmacht.

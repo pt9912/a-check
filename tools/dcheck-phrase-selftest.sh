@@ -18,11 +18,24 @@
 # loest NICHT aus) -- ohne die zweite waere ein Muster, das alles durchlaesst,
 # von einem korrekten nicht zu unterscheiden.
 #
-# NICHT GEPRUEFT (ehrliche Grenze): ob HERUNTERGENOMMENE Formulierungen (die
-# der Kurs kuenftig einfuehrt) ebenfalls greifen wuerden -- nur die AKTUELL
-# empfohlene. Ein neuer Nachzug bei jeder Formulierungs-Aenderung bleibt
-# Handarbeit (slice-165/166/167-Praxis), dieses Skript verhindert nur das
-# stille Wegdriften der bereits getroffenen Wahl.
+# ZWEI HAELFTEN, seit slice-169. Die WERKZEUG-Seite oben fragt: reagiert
+# d-check noch auf die Phrase? Die KORPUS-Seite unten fragt das Gegenstueck:
+# traegt a-checks eigener Bestand sie noch? Genau die ist zweimal ausgefallen
+# (slice-120, slice-165) -- ein Muster kann tadellos funktionieren und trotzdem
+# nichts pruefen, weil die Kandidatenmenge leer geworden ist.
+#
+# Die Korpus-Seite liest das Muster AUS .d-check.yml, nicht aus einer Kopie
+# hier (Review slice-168, F-2: eine Kopie neben dem Original bleibt gruen,
+# nachdem das Original gebrochen wurde). Der Auszug ist fail-closed: findet er
+# das Feld nicht, bricht der Lauf ab, statt mit leerem Muster durchzulaufen.
+#
+# NICHT GEPRUEFT (ehrliche Grenzen):
+#  - ob HERUNTERGENOMMENE Formulierungen (die der Kurs kuenftig einfuehrt)
+#    ebenfalls greifen wuerden -- nur die AKTUELL empfohlene. Ein neuer Nachzug
+#    bei jeder Formulierungs-Aenderung bleibt Handarbeit.
+#  - die uebrigen ZWOELF phrasen-basierten Felder in .d-check.yml. Geprueft
+#    sind die zwei, deren Ausfall BELEGT ist; fuer die anderen gibt es keinen
+#    Vorfall, und ein Sensor ohne Anlass ist selbst eine Behauptung.
 set -euo pipefail
 
 DCHECK_REF="${DCHECK_REF:?DCHECK_REF muss gesetzt sein (Makefile uebergibt es)}"
@@ -134,9 +147,56 @@ if ! printf '%s' "$out" | grep -q "section-oversized"; then
   fail=1
 fi
 
+# --- KORPUS-SEITE: traegt der echte Bestand die Muster noch? ---------------
+#
+# Gefragt ist NICHTLEERHEIT, keine Erwartungszahl. Die belegte Ausfallart ist
+# "die Menge wird leer"; eine feste Zahl braeche zusaetzlich bei jedem neuen
+# Slice, und eine Regel, die den Bestand massenhaft bricht, wird abgeschaltet
+# statt befolgt (AGENTS.md §5, Begruendung zum Commit-Scope).
+
+# Muster aus der ECHTEN Konfiguration ziehen -- fail-closed.
+feld_aus_dcheck_yml() {  # $1 = Feldname
+  local wert
+  wert="$(sed -n "s/^ *$1: *'\(.*\)' *\$/\1/p; s/^ *$1: *\"\(.*\)\" *\$/\1/p" .d-check.yml | head -1)"
+  if [ -z "$wert" ]; then
+    echo "dcheck-phrase-selftest: FAIL — Feld '$1' in .d-check.yml nicht lesbar." >&2
+    echo "  Der Auszug ist fail-closed: ohne Muster wird nicht geprueft, sondern abgebrochen." >&2
+    return 1
+  fi
+  printf '%s' "$wert"
+}
+
+# (1) reviews-Trigger-Phrase im done/-Bestand
+REVIEW_PHRASE="unabhängiger Review"
+korpus_reviews="$(grep -rli "$REVIEW_PHRASE" docs/plan/planning/done/ 2>/dev/null | wc -l)"
+if [ "$korpus_reviews" -eq 0 ]; then
+  echo "dcheck-phrase-selftest: FAIL — Kandidatenmenge des reviews-Moduls ist LEER." >&2
+  echo "  Kein Slice in done/ traegt die Trigger-Phrase \"$REVIEW_PHRASE\"; make doc-reviews" >&2
+  echo "  meldet damit gruen, ohne etwas zu pruefen. Die Phrase gehoert in die DoD neuer Slices" >&2
+  echo "  (AGENTS.md §5, Kopieranleitung Punkt 7)." >&2
+  fail=1
+fi
+
+# (2) tasks-ignore-pattern gegen den done/-Bestand
+if TASKS_PAT="$(feld_aus_dcheck_yml tasks-ignore-pattern)"; then
+  korpus_tasks="$(grep -rhoE '^- \[[ x]\] .*' docs/plan/planning/done/ 2>/dev/null \
+                  | sed 's/^- \[[ x]\] //' | grep -cE "$TASKS_PAT" || true)"
+  if [ "${korpus_tasks:-0}" -eq 0 ]; then
+    echo "dcheck-phrase-selftest: FAIL — tasks-ignore-pattern trifft im done/-Bestand NICHTS." >&2
+    echo "  Muster: $TASKS_PAT" >&2
+    echo "  Die Groessen-Regel zaehlt damit konstante DoD-Posten mit; doc-structure meldet" >&2
+    echo "  entweder falsch rot oder gar nicht mehr, was es soll." >&2
+    fail=1
+  fi
+else
+  fail=1
+fi
+
 if [ "$fail" -ne 0 ]; then
   echo "dcheck-phrase-selftest: FAIL — mindestens eine Kalibrierungs-Kontrolle ist rot." >&2
   exit 1
 fi
 
-echo "dcheck-phrase-selftest ok: reviews-Trigger-Phrase und tasks-ignore-pattern lösen je positiv wie negativ korrekt (4 Kontrollen: 2 Muster × 2 Richtungen)."
+echo "dcheck-phrase-selftest ok: 4 Werkzeug-Kontrollen (2 Muster × 2 Richtungen) und 2 Korpus-Kontrollen"
+echo "  (reviews-Phrase: ${korpus_reviews} Slice(s) in done/ · tasks-ignore-pattern: ${korpus_tasks:-?} DoD-Zeile(n))."
+echo "  NICHT geprueft: die uebrigen zwoelf phrasen-basierten Felder — kein belegter Ausfall."
