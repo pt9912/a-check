@@ -204,25 +204,34 @@ ist nicht die Länge einer Zelle, sondern was über den Vertrag hinaus zu sagen
 ist).
 
 - **Was hat funktioniert:** Die 16 Kandidaten **nicht** nach Zeichenzahl
-  abgearbeitet. Die Messung aus §2 lieferte eine Rangliste, die Ziel-Form aber
-  ein anderes Kriterium — *Deckungsgrenze, Ausgabe-Bedeutung, Exit-Codes,
-  Abbruch-Bedingungen*. Danach sortiert zerfielen die 16 sauber in vier mit
-  echten Ausgängen und zwölf, deren Überhang **Historie** ist. Zwei Probleme,
-  zwei Antworten — und nur eines davon gehört in diesen Slice.
+  abgearbeitet, sondern nach dem Kriterium der Ziel-Form — *Deckungsgrenze,
+  Ausgabe-Bedeutung, Exit-Codes, Abbruch-Bedingungen*. Der Gedanke war richtig;
+  die Ausführung nicht (siehe unten). Was am Ende trägt, ist die Trennung
+  zweier Überhang-**Ursachen**: ein Vertrag mit Grenzen und Ausgängen gehört in
+  eine Datei, angesammelte Herkunfts-Geschichte gehört gelöscht. Das sind zwei
+  Probleme mit zwei Antworten, und nur eines davon war dieser Slice.
 
-- **Was ging anders als geplant:** §2 des Plans nannte die Zellen-Doppelung als
-  eigentlichen Fund und die Spalten-Frage (`AGENTS.md` §4 führt kein
-  `Bindung`) als offene Adaptions-Frage. Beim Umbau löste sie sich auf: Die
+- **Was ging anders als geplant:** Zwei Dinge, und das zweite wiegt schwerer.
+
+  Erstens löste sich eine offene Frage beim Bauen auf: §2 führte die
+  Spalten-Frage (`AGENTS.md` §4 hat kein `Bindung`) als Adaptions-Frage. Die
   zweite Tabelle gehört nach `harness/README.md`, wo die Spalte existiert, und
-  `AGENTS.md` §4 *listet* nach der Ziel-Form ohnehin nur auf. Die Frage stellte
-  sich nur, solange ich beide Tabellen für gleichwertig hielt.
+  §4 *listet* nach der Ziel-Form ohnehin nur auf. Die Frage stellte sich nur,
+  solange ich beide Tabellen für gleichwertig hielt.
 
-- **Steering-Loop-Eintrag — geschärfte Regel:** Eine Zelle, die zum Absatz
-  geworden ist, hat **zwei** mögliche Ursachen, und sie brauchen
-  verschiedene Antworten: ein Vertrag mit Ausgängen und Sperren gehört in eine
-  Sensor-Datei, angesammelte Herkunfts-Geschichte gehört gelöscht
-  ([`AGENTS.md`](../../../../AGENTS.md) §3.7). Wer nur die Länge misst, wählt
-  die falsche. — liegt in `harness/sensors/` (die vier Dateien als Muster) und
+  Zweitens — und das ist der Befund des Reviews (F-2): **Ich habe das richtige
+  Kriterium genannt und dann nicht angewandt.** §3.1 behauptete, zwölf der
+  sechzehn Zellen trügen „Vertrag plus Historie". Nachgemessen tragen **zehn**
+  eine Deckungsgrenze oder Vorbedingung — und die Deckungsgrenze steht in der
+  Ziel-Form an *erster* Stelle. Die Einteilung war keine Messung, sondern eine
+  Rechtfertigung dafür, bei vier Dateien aufzuhören. Sie stand in einem Slice,
+  dessen ganzer Zweck es ist, Verträge sichtbar zu machen.
+
+- **Steering-Loop-Eintrag — geschärfte Regel:** Wer ein Kriterium **nennt**, hat
+  es noch nicht **angewandt**; die Anwendung ist ein eigener Handgriff und
+  hinterlässt eine Liste, keinen Absatz. Ein Satz der Form „danach zerfallen die
+  N in X und Y" ist eine Behauptung, solange die Zuordnung je Element nicht
+  dasteht. — liegt in `harness/sensors/` (vierzehn Dateien als Muster) und
   `harness/README.md §Sensors`.
 
 - **Beobachtungs-Register (`../observations/`):** **kein neuer Eintrag**, aber
@@ -240,10 +249,10 @@ ist).
   diese wurde erwogen, gemessen und teilweise umgesetzt. Ein Beleg dort wäre
   eine Verwässerung der Klasse.
 
-- **Folge-Slices:** zwei benannt, beide noch ohne Datei — die zwölf
-  Historie-Zellen und die Zitier-Form im `**Welle:**`-Feld der Archiv-Stubs
-  (§1). Sie entstehen, wenn der Maintainer sie priorisiert; dieser Slice
-  erfindet sie nicht als Adresse, die niemand annimmt.
+- **Folge-Slices:** zwei benannt, beide noch ohne Datei — die **zwei**
+  verbliebenen Historie-Zellen und die Zitier-Form im `**Welle:**`-Feld der
+  Archiv-Stubs (§1). Sie entstehen, wenn der Maintainer sie priorisiert; dieser
+  Slice erfindet sie nicht als Adresse, die niemand annimmt.
 
 - **Risiken aus §7:** zwei, jedes mit genau einem Ausgang — einmal
   *eingetreten, teilweise aufgelöst*, einmal *gestrichen mit Begründung*.
