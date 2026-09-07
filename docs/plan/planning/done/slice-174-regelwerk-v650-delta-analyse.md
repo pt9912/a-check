@@ -194,7 +194,7 @@ Workflow und nennt `modul-09` als Regelquelle — die Dokument-Hälfte (§1 des
 Plans) und die Schritt-Hälfte (Schritt 4 des Laufs) gehören zusammen und in
 **denselben** Folge-Slice.
 
-**Etappe E, [slice-178](../open/slice-178-slice-form-ziel-und-abgrenzung.md):**
+**Etappe E, [slice-178](../in-progress/slice-178-slice-form-ziel-und-abgrenzung.md):**
 Kopieranleitung in [`AGENTS.md`](../../../../AGENTS.md) §5 **und** §6 nachziehen.
 Ob der Bestand nachgerüstet wird, ist eine eigene Frage — die Ziel-Form gilt für
 **neue** Slices.
@@ -388,7 +388,7 @@ Substanz, bevor sie den Umfang beurteilt).
   Zitier-Form),
   [slice-177](../done/slice-177-sensors-struktur-zwei-tabellen.md) (D,
   Sensors-Struktur),
-  [slice-178](../open/slice-178-slice-form-ziel-und-abgrenzung.md) (E,
+  [slice-178](../in-progress/slice-178-slice-form-ziel-und-abgrenzung.md) (E,
   Slice-Form) — alle vier sind Dateien in `open/`. Der vierte entstand erst
   durch den Review (F-3/F-4): T-3 hatte keine Etappe, und die Schritt-Hälfte
   der Regel lag fälschlich unter §3.3. Etappe **B** (Adaptions-Durchgang)

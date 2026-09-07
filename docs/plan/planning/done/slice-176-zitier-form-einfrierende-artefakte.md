@@ -237,7 +237,7 @@ verankert).
 
 - **Folge-Slices:** keine neuen. Offen bleiben
   [slice-177](../done/slice-177-sensors-struktur-zwei-tabellen.md) (Etappe D)
-  und [slice-178](../open/slice-178-slice-form-ziel-und-abgrenzung.md) (E);
+  und [slice-178](../in-progress/slice-178-slice-form-ziel-und-abgrenzung.md) (E);
   Etappe B braucht noch ihren Slice.
 
 - **Risiken aus §7:** drei, jedes mit genau einem Ausgang — einmal *entfallen*,
