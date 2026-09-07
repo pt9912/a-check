@@ -35,8 +35,30 @@ Die Sensors-Tabelle wird Index: Nicht-Gates stehen in einer zweiten Tabelle mit 
 
 ## 2. Analyse (vor der Umsetzung)
 
-*(offen — die Messung entsteht mit der Arbeit; Ausgangslage in
-[slice-174](../done/slice-174-regelwerk-v650-delta-analyse.md) §3.2)*
+**Ausgangsmessung 2026-09-07** (Zeichen je Vertrags-/Zweck-Zelle, Schwelle 250
+als Näherung für „mehr als einen Satz"):
+
+| Ort | über der Schwelle | Spitzenwerte |
+|---|---|---|
+| [`AGENTS.md`](../../../../AGENTS.md) §4 | **16 von 40** | `doc-check` 1871 · `symlink-check` 1106 · `doc-workflows` 729 |
+| [`harness/README.md`](../../../../harness/README.md) §Sensors | **6 von 24** | `doc-check` 639 · `symlink-check` 369 · `gate-consistency` 356 |
+
+**Der eigentliche Fund ist nicht der Überhang, sondern die Doppelung.**
+Dieselben Verträge stehen an **zwei** Orten, in AGENTS.md ausführlicher — bei
+`doc-check` 1871 gegen 639 Zeichen, bei `symlink-check` 1106 gegen 369. Zwei
+Fassungen desselben Vertrags sind zwei Quellen, und Kopien driften.
+
+Die Ziel-Form löst genau das mit: *„Von außen — aus `AGENTS.md`, einer ADR,
+einem Slice — wird **diese Datei direkt** adressiert, nicht der Index: sie
+wandert nie."* Steht der Vertrag unter `harness/sensors/<target>.md`, tragen
+**beide** Tabellen nur noch ihre Index-Zeile, und AGENTS.md §4 verweist auf
+dieselbe Datei statt eine zweite Fassung zu führen.
+
+**Zu klären, bevor umgebaut wird:** AGENTS.md §4 führt `| Target | Zweck |` —
+die Spalte, in der die Ziel-Form `kein Gate` verlangt, existiert dort nicht
+(`harness/README.md` hat sie als *Bindung*). Ob a-check die Spalte ergänzt oder
+die Abweichung deklariert, ist die Adaptions-Frage aus
+[slice-174](../done/slice-174-regelwerk-v650-delta-analyse.md) §7.
 
 ## 3. Umsetzung
 
