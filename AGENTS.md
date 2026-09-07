@@ -289,21 +289,28 @@ die CI (Badge im [`README.md`](README.md)), nicht diese Tabelle.
   die Zahl ist das Einzige, was die Schwelle prüfbar macht.
 - **Slice-Form:** neue Slices entstehen aus der **vendored Ziel-Form**
   [`.harness/baseline/v6.5.0/templates/docs/plan/planning/slice.template.md`](.harness/baseline/v6.5.0/templates/docs/plan/planning/slice.template.md) — a-check führt keine eigene Kopie, sie würde gegen die Baseline driften.
-  **Beim Kopieren anzupassen** — fünf Punkte, gemessen am Bestand (slice-178):
+  **Beim Kopieren anzupassen** — sieben Punkte, jeder gegen den Bestand gemessen (slice-178):
 
   1. Die Zeile `Lerneintrag — Form: <…>` **ergänzen** — die Ziel-Form kennt sie nicht als Feld,
      `make verify` verlangt sie.
-  2. **Zwei** Felder streichen, die a-check nicht führt: Reconciliation-Register (kein
-     Brownfield-Bootstrap) und *Herkunfts-Anker*. **`Welle:` bleibt** — a-check führt es, und die
-     *drei Paarungen* auch: bei wellenlosen Slices trägt die Closure sie, bei Slices mit
-     `**Welle:**`-Feld die Welle-Closure. Bis slice-178 stand hier „vier Felder streichen"
-     einschließlich `Welle:`; acht Slices im Bestand widerlegen das.
-  3. **Die Nummerierung verschiebt sich**, weil a-check zwischen Ziel und DoD einen
-     **Analyse-Abschnitt** führt (*Ausgangslage* / *Analyse (vor der Umsetzung)*) — er hält die
-     Messung, auf der die DoD steht. Dadurch: DoD `§2 → §4`, Sub-Area `§8 → §9`. Die Ziel-Form
-     kennt ihn nicht; er ist a-checks Antwort darauf, dass eine Behauptung im Plan später als
-     Messung gelesen wird.
-  4. **§1 heißt *Ziel und Abgrenzung*** und trägt beides: das Ziel in einem Satz und die
+  2. **Ein** Feld streichen: das *Reconciliation-Register* — a-check hat keinen
+     Brownfield-Bootstrap, `reconciliation.md` existiert nicht. **Alles andere bleibt**, auch was
+     frühere Fassungen dieser Liste zum Streichen empfahlen: `**Welle:**` führen **174** Dateien,
+     den **Herkunfts-Anker** (`— liegt in <Zielort>` plus `seit slice-<NNN>` dort) führt das Repo
+     an **58** Stellen, und die *drei Paarungen* stehen in jeder Closure-Notiz.
+  3. **Wer die drei Paarungen trägt, entscheidet der Repo-Zustand — nicht das `Welle:`-Feld des
+     Slice.** Baseline `modul-06-roadmap.md` §Wann Arbeit eine Welle braucht: *„Wellenlos ist eine
+     Eigenschaft des **Repos** … das Kopf-Feld `**Welle:**` sagt nur, ob dieser Slice in ein Bündel
+     gehört; daraus folgt für die Vorgänge unten nichts."* Liegt eine **offene Welle** vor, trägt
+     ihre Closure die Paarungen — **auch für Slices ohne Wellen-Zugehörigkeit**. Erst ohne
+     Wellen-Betrieb trägt die Slice-Closure sie selbst.
+  4. **Die Abschnitts-Nummern der Ziel-Form gelten nicht unverändert.** a-check schiebt zwischen
+     Ziel und DoD einen **Analyse-Abschnitt** ein (er hält die Messung, auf der die DoD steht) und
+     stellt die DoD hinter den Umsetzungs-Abschnitt. Wieviel sich dadurch verschiebt, hängt vom
+     Slice ab — der Bestand führt den Sub-Area-Abschnitt als §7 bis §10. **Nicht die Nummer
+     kopieren, sondern die Reihenfolge der Ziel-Form einhalten und den Analyse-Abschnitt
+     einfügen, wo er gebraucht wird.**
+  5. **§1 heißt *Ziel und Abgrenzung*** und trägt beides: das Ziel in einem Satz und die
      Ausschlüsse **je Punkt mit Begründung** — *ein Ausschluss ohne Grund ist eine Behauptung,
      keine Grenze*. **Keine Mindestzahl**; die vier Klassen sind ein **Suchraster**, keine
      Ausfüll-Liste: Was übernimmt ein **Folge-Slice** (mit Kennung, und die Kennung muss den Punkt
@@ -311,11 +318,11 @@ die CI (Badge im [`README.md`](README.md)), nicht diese Tabelle.
      Welche **Schicht** rührt der Slice nicht an? Der Abschnitt ist die Grenze, an der ein
      wachsender Slice sich messen lässt: Wer später etwas mitnimmt, das hier ausgeschlossen war,
      hat den Plan **geändert**, nicht ergänzt.
-  5. **§9 heißt *Sub-Area-Prüfungen und Modus-Begründung*** — der Titel trägt beide Hälften, weil
+  6. **Der Sub-Area-Abschnitt heißt *Sub-Area-Prüfungen und Modus-Begründung*** — der Titel trägt beide Hälften, weil
      nur die zweite bedingt ist. Die zwei *Vorgelagert*-Blöcke (Sub-Area-Wahl prüfen · offene
      Beobachtungen sichten) laufen in **jedem** Slice-Plan, unabhängig von Modus und Slice-Typ;
      **der Abschnitt entfällt nie**.
-  6. Die Ziel-Form führt eine **Review-DoD-Zeile**
+  7. Die Ziel-Form führt eine **Review-DoD-Zeile**
      ([`MR-019`](harness/conventions.md#mr-019)) — ihr Wortlaut wird beim Kopieren auf die exakte
      Trigger-Phrase „unabhängiger Review" umgeschrieben, statt den Baseline-Wortlaut unverändert
      zu übernehmen; sonst prüft `make doc-reviews` sie nie (empirisch geprüft, slice-165 §3/§4).

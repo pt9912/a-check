@@ -38,7 +38,11 @@ eine Plan-Änderung vor dem Code.
   (Gate-Schicht statt Planungs-Form) und braucht erst einen Bestand, an dem
   er kalibriert werden kann.
 - **Andere Etappen von [welle-15](../welle-15-regelwerk-v650-migration.md)** —
-  Schicht-Abgrenzung.
+  es wäre ein **anderer Vorgang**, nicht eine andere Schicht: Sie berühren
+  dieselbe Sub-Area (Harness-Einstieg), messen aber gegen andere Ziel-Formen
+  und sind einzeln lieferbar. *(Die Klasse „Schicht-Abgrenzung" stand hier
+  zuerst und traf nicht — ein Etikett statt einer Begründung, Review-Befund
+  M-8.)*
 
 ## 2. Analyse
 
@@ -59,19 +63,27 @@ mit vier erfundenen."*
 Die Kopieranleitung in [`AGENTS.md`](../../../../AGENTS.md) §5 stimmte an drei
 Stellen nicht mehr mit dem überein, was a-check tut:
 
-1. **„die vier Felder streichen … `Welle:`"** — falsch. **Acht** Slices im
-   Bestand tragen ein `**Welle:**`-Feld, fünf davon mit
-   [welle-15](../welle-15-regelwerk-v650-migration.md), drei mit *„ohne Welle"*.
-   Ebenso die *drei Paarungen*: bei wellenlosen Slices trägt die Closure sie,
-   bei Slices mit Welle die Welle-Closure — gestrichen ist keines von beiden.
-   Zu streichen sind **zwei** Felder, nicht vier.
-2. **Die Nummerierung verschiebt sich** — a-check führt zwischen Ziel und DoD
-   einen **Analyse-Abschnitt**, den die Ziel-Form nicht kennt. Dadurch DoD
-   `§2 → §4` und Sub-Area `§8 → §9`. Stand nirgends; wer die Anleitung wörtlich
-   nahm, kopierte falsch.
-3. **§9 trug den alten Titel** *Sub-Area-Modus* statt *Sub-Area-Prüfungen und
-   Modus-Begründung* — die Verkürzung, gegen die die neue Fassung ausdrücklich
-   argumentiert.
+1. **„die vier Felder streichen"** — falsch, und zwar bei **drei** der vier.
+   `**Welle:**` führen **174** Dateien im Repo. Den **Herkunfts-Anker**
+   (`— liegt in <Zielort>` plus `seit slice-<NNN>` dort) führt das Repo an
+   **58** Stellen — dieser Slice schreibt ihn in §8 selbst. Und die *drei
+   Paarungen* stehen in jeder Closure-Notiz. Zu streichen ist **ein** Feld: das
+   Reconciliation-Register (`reconciliation.md` existiert nicht).
+   *(Die erste Fassung dieses Slice maß nur `Welle:` und die Paarungen nach und
+   trug den Herkunfts-Anker ungeprüft weiter — Review-Befund H-2. Wer eine Liste
+   korrigiert, prüft **jeden** Punkt, nicht die auffälligen.)*
+2. **Die Abschnitts-Nummern gelten nicht unverändert** — a-check schiebt
+   zwischen Ziel und DoD einen **Analyse-Abschnitt** ein und stellt die DoD
+   hinter den Umsetzungs-Abschnitt. Stand nirgends; wer die Anleitung wörtlich
+   nahm, kopierte falsch. **Eine feste Verschiebung gibt es nicht:** Der Bestand
+   führt den Sub-Area-Abschnitt als §7 bis §10. Die erste Fassung schrieb
+   „DoD §2 → §4, Sub-Area §8 → §9" — eine Regel, die der Bestand nicht durchhält
+   (Review M-2). Die Anleitung nennt jetzt die **Reihenfolge**, nicht die Nummer.
+3. **Der Sub-Area-Abschnitt trug den alten Titel** *Sub-Area-Modus* statt
+   *Sub-Area-Prüfungen und Modus-Begründung* — die Verkürzung, gegen die die neue
+   Fassung ausdrücklich argumentiert. **Dieser Slice trägt den neuen Titel als
+   erster**; der Bestand behält den alten (§1). Die erste Fassung schrieb die
+   Regel vor, ohne sie selbst zu erfüllen (Review M-3).
 
 **Der Analyse-Abschnitt ist keine Abweichung, die wegzuräumen wäre.** Er hält
 die Messung, auf der die DoD steht — dieselbe Sitzung hat viermal gezeigt, was
@@ -124,11 +136,14 @@ Der Slice trägt ein `**Welle:**`-Feld und archiviert **mit seiner Welle**
   `AGENTS.md` §5, und die Ziel-Form liegt vendored daneben* — **Ausgang:**
   weiter offen → Beobachtungs-Register,
   [`BEO-HARNESS/baseline-regel-nie-erwogen-weil-bestand-sie-verletzt`](../observations/BEO-HARNESS/baseline-regel-nie-erwogen-weil-bestand-sie-verletzt/observation.md)
-  (2×). Das Risiko ist **eingetreten**, nur nicht bei der Anleitung selbst,
-  sondern an dem, was sie beschreibt: Drei ihrer Aussagen stimmten nicht mehr
-  mit dem Bestand überein (§2.2), und aufgefallen ist das erst, als jemand sie
-  gegen den Bestand hielt. Kein Sensor sieht das — eine Anleitung, die falsch
-  beschreibt, was ohnehin gemacht wird, bricht kein Gate.
+  (2×). **Es ist eingetreten** — dreimal vor diesem Slice (§2.2) und noch
+  einmal *in* ihm: Die neue Fassung strich den Herkunfts-Anker, den das Repo an
+  58 Stellen führt, und machte den Träger der drei Paarungen am Slice-Feld statt
+  am Repo-Zustand fest (Review H-2/H-3). Beides ist korrigiert, die Klasse nicht.
+  Der Ausgang bleibt **weiter offen → Register**, weil hier kein Folge-Slice
+  hilft: Kein Sensor sieht eine Anleitung, die falsch beschreibt, was ohnehin
+  gemacht wird; was hilft, ist die Prüfung Punkt für Punkt — und die ist jetzt
+  als Lerneintrag festgehalten, nicht als Werkzeug.
 
 ## 8. Closure-Notiz
 
@@ -168,7 +183,7 @@ was a-check *tut*, nicht was es einmal vorhatte).
 - **Drei Paarungen:** trägt die Welle-Closure — der Slice hat ein
   `**Welle:**`-Feld.
 
-## 9. Sub-Area-Modus
+## 9. Sub-Area-Prüfungen und Modus-Begründung
 
 **Vorgelagert — Sub-Area-Wahl prüfen:** eine Sub-Area berührt —
 **Harness-Einstieg** (`AGENTS.md`, `harness/README.md`), Achsen 1,2,3,
@@ -178,8 +193,13 @@ Das **Planungs-Harness** ist Gegenstand der Anleitung, aber nicht geändert:
 kein Slice-Plan wurde angefasst.
 
 **Vorgelagert — offene Beobachtungen sichten:** Register am 2026-09-07
-durchgegangen. Einer einschlägig:
-[`baseline-regel-nie-erwogen-weil-bestand-sie-verletzt`](../observations/BEO-HARNESS/baseline-regel-nie-erwogen-weil-bestand-sie-verletzt/observation.md)
-(2×) — mit Ausgang in §7, ohne Beleg (Begründung in §8).
+durchgegangen. **Drei** einschlägig — zwei davon hatte die erste Fassung dieses
+Blocks übergangen, obwohl ihr Text `AGENTS.md` §5 wörtlich nennt (Review M-5):
+
+| Eintrag | Stand | Bezug |
+|---|---|---|
+| [`baseline-regel-nie-erwogen-weil-bestand-sie-verletzt`](../observations/BEO-HARNESS/baseline-regel-nie-erwogen-weil-bestand-sie-verletzt/observation.md) | offen, 2× | Ausgang in §7; kein Beleg, Begründung in §8 |
+| [`agents-md-hinkt-baseline-dod-item-hinterher`](../observations/BEO-HARNESS/agents-md-hinkt-baseline-dod-item-hinterher/observation.md) | offen | benennt wörtlich, dass `AGENTS.md` §5 die Liste **in eigenen Worten** führt — genau die Stelle, die dieser Slice umschreibt. **Nicht erhöht**: Die Beobachtung betrifft das Auseinanderlaufen von Liste und Ziel-Form, und der Slice zieht es zusammen |
+| [`chronik-in-gelesenen-dateien`](../observations/BEO-HARNESS/chronik-in-gelesenen-dateien/observation.md) | offen | führt `AGENTS.md` §5 als Reststelle. Die erste Fassung dieses Slice fügte dort **neue** Chronik ein („Bis slice-178 stand hier …"); mit der Neuschreibung nach H-2/H-3 ist sie entfallen. **Nicht erhöht**, weil im selben Vorgang behoben |
 
 **Alle berührten Sub-Areas GF** — kein Begründungsblock nötig.
