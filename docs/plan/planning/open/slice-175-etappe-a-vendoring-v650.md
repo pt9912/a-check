@@ -53,8 +53,9 @@ Der Stand `v6.5.0` liegt vendored, die Stand-Deklaration nennt ihn an ihren drei
 
 ## 5. Trigger
 
-**Start** (`open` → `in-progress`): Etappe A (Vendoring) liegt in `done/`,
-Maintainer-Freigabe, WIP-Limit frei.
+**Start** (`open` → `in-progress`): [slice-174](../in-progress/slice-174-regelwerk-v650-delta-analyse.md)
+liegt in `done/` (die Analyse benennt, was zu vendoren ist), Maintainer-Freigabe,
+WIP-Limit frei.
 
 **Rückführungen:** wächst der Umfang über die DoD hinaus, zurück nach `next/`
 zur Zerlegung. Ändert sich der adoptierte Stand erneut, zurück nach `open/`.

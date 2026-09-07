@@ -20,21 +20,29 @@ größer** als der vorige: **30 Dateien, +572/−149** gegen `v6.0.0`→`v6.2.0`
 9 Dateien, `+53/−5` (gemessen 2026-09-07, `git diff --stat v6.2.0 v6.5.0 --
 lab/regelwerk lab/templates` im frischen Klon).
 
-Vier Etappen, deren Zuschnitt die Delta-Analyse schärft:
+Die Delta-Analyse ([slice-174](in-progress/slice-174-regelwerk-v650-delta-analyse.md))
+schneidet die Etappen; ihre Buchstaben sind hier und in §4/§6 dieselben:
 
-1. **Messen** — was hat sich geändert, was davon berührt a-check.
-2. **Vendoring** — der neue Stand unter `.harness/baseline/`, Stand-Deklaration
-   an ihren drei Stellen, Symlinks unter `.claude/rules/`. *(Der Zielpfad steht
-   hier bewusst nicht als Literal: er existiert erst nach dieser Etappe, und
-   `versions` meldete ihn zu Recht als `version-stale` — erster echter Treffer
-   des Sensors aus slice-173, drei Minuten nach seiner Inbetriebnahme.)*
-3. **Adaptions-Durchgang** — die **sieben** aktiven `MR`-Einträge gegen
-   `v6.5.0`, nicht nur die vom Diff berührten.
-4. **Neue Ziel-Form `harness/sensors/<target>.md`** — je Sensor eine Datei,
-   sobald sein Vertrag mehr als einen Satz braucht. Trifft a-check hart: die
-   Tabellenzellen in [`AGENTS.md`](../../../AGENTS.md) §4 und
-   [`harness/README.md`](../../../harness/README.md) §Sensors sind genau der
-   Überhang, den die Vorlage benennt.
+- **A — Vendoring:** der neue Stand unter `.harness/baseline/`,
+  Stand-Deklaration an ihren drei Stellen, Symlinks unter `.claude/rules/`,
+  Kurs-Wellen-Stempel. *(Der Zielpfad steht bewusst nicht als Literal: er
+  existiert erst nach dieser Etappe, und `versions` meldete ihn zu Recht als
+  `version-stale` — erster echter Treffer des Sensors aus slice-173, drei
+  Minuten nach seiner Inbetriebnahme.)*
+- **B — Adaptions-Durchgang:** die **sieben** aktiven `MR`-Einträge gegen den
+  neuen Stand, nicht nur die vom Diff berührten; dazu die offene ADR-Frage zu
+  den `exempt-paths` aus slice-173.
+- **C — Zitier-Form:** einfrierende Artefakte zitieren die Baseline als
+  Kennung statt als Adresse.
+- **D — Sensors-Struktur:** je Sensor eine Datei, sobald sein Vertrag mehr als
+  einen Satz braucht, plus die zweite Tabelle für Nicht-Gates. Trifft a-check
+  hart: **16 von 40** Gate-Zeilen in [`AGENTS.md`](../../../AGENTS.md) §4 sind
+  länger als 250 Zeichen.
+- **E — Slice-Form:** §1 *Ziel und Abgrenzung*, neuer §8-Titel, und die
+  Schritt-Hälfte im Minimal Agent Workflow.
+
+Die Messung selbst (slice-174) trägt keinen Buchstaben — sie ist die
+Voraussetzung, nicht eine der Etappen.
 
 ## 2. Trigger (Welle startet)
 
@@ -71,6 +79,7 @@ den **neuen** Stand — das prüft keine einzelne DoD.
 | [slice-175](open/slice-175-etappe-a-vendoring-v650.md) | Etappe A: Baseline vendoren | slice-174 §3.4 |
 | [slice-176](open/slice-176-zitier-form-einfrierende-artefakte.md) | Etappe C: Zitier-Form für einfrierende Artefakte | slice-174 §3.2 T-1 |
 | [slice-177](open/slice-177-sensors-struktur-zwei-tabellen.md) | Etappe D: Sensors-Struktur, zwei Tabellen | slice-174 §3.2 T-2/T-4 |
+| [slice-178](open/slice-178-slice-form-ziel-und-abgrenzung.md) | Etappe E: Slice-Form §1/§8 und Schritt 4 | slice-174 §3.2 T-3 |
 
 **Etappe B** (Adaptions-Durchgang) bekommt ihren Slice, sobald Etappe A den
 Stand gehoben hat — sie misst gegen ihn und wäre vorher gegenstandslos. Der

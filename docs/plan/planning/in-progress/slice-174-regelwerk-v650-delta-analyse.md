@@ -65,23 +65,49 @@ Datei fehlte in der Liste** — der erste `--stat`-Aufruf war abgeschnitten):
 
 ## 3. Analyse
 
-### 3.1 Die Größe täuscht: 8 von 30 Dateien tragen die Substanz
+### 3.1 Die Größe täuscht: 16 von 30 Dateien tragen überhaupt Inhalt
 
-Der Roh-Diff nennt 30 Dateien und `+572`. Davon sind **36 hinzugefügte Zeilen
-reine Markdown-Tabellen-Trennzeilen** (`| --- | --- |`) — eine Formatierungs-
-Korrektur im Kurs, die keine Regel ändert. Gemessen je Datei
-(`git diff … | grep -cE '^\+\| *-{2,}[ |-]*\|? *$'`):
+Der Roh-Diff nennt 30 Dateien und `+572`. Der Kurs hat in `v6.5.0` zwei
+**Formatierungs**-Klassen mitgeführt, die keine Regel ändern: Tabellen-Trennzeilen
+(`| --- | --- |`) und normalisierte **Zell-Innenabstände** ganzer Tabellen. Beides
+fällt weg, wenn man den Diff whitespace-bereinigt liest:
 
-| Klasse | Dateien | substanzielle `+`-Zeilen |
+| Messung | Dateien | `+`/`−` |
 |---|---|---|
-| **Substanz** (≥ 18) | **8** | 436 von 536 |
-| Wenig (1–11) | 13 | 100 |
-| **Null** — nur Trennzeilen | **9** | 0 |
+| roh (`git diff --numstat`) | 30 | +572 / −149 |
+| **inhaltlich (`--numstat -w`)** | **16** | **+452 / −29** |
 
-Die neun ohne jede Substanz: `modul-07`, `modul-08`, `modul-10`, `modul-11`,
-`modul-12`, `modul-14`, `modul-15`, `grundlagen-klassifikation`,
-`grundlagen-durchsetzungsschicht`. **Sie berühren a-check nicht** — nicht weil
-sie unwichtig wären, sondern weil sich ihr Normtext nicht geändert hat.
+**14 Dateien haben null Inhaltsänderung** — `modul-02`, `modul-04`, `modul-07`,
+`modul-08`, `modul-10`, `modul-11`, `modul-12`, `modul-14`, `modul-15`,
+`grundlagen-bootstrap`, `grundlagen-durchsetzungsschicht`,
+`grundlagen-klassifikation`, `grundlagen-referenz-richtung`,
+`grundlagen-source-precedence`. Sie berühren a-check nicht.
+
+**Korrektur aus dem Review (F-1), und sie trifft die Methode dieses Slice.**
+Zuerst stand hier eine Bereinigung, die **nur** die 36 Trennzeilen abzog und
+daraus „8 Dateien tragen 436 von 536 substanziellen Zeilen, 9 tragen null"
+ableitete. Beide Zahlen waren zu hoch, die Klassifikation zu grob: 84 weitere
+`+`-Zeilen sind inhaltsgleich, und **fünf** Dateien, die dieser Slice unter
+§3.3 als *„Tabellen-Ausbau und Verweise, zu prüfen im Adaptions-Durchgang"*
+führte, haben in Wahrheit **gar keine** Inhaltsänderung. Der Lerneintrag dieses
+Slice — *den Diff vor der Umfangs-Beurteilung um formatierende Anteile
+bereinigen* — war richtig formuliert und **halb ausgeführt**: eine
+Formatierungs-Klasse gesehen, die zweite nicht gesucht. Das ist die Klasse
+[`BEO-PLAN/review-geltungsbereich-zu-eng`](../observations/BEO-PLAN/review-geltungsbereich-zu-eng/observation.md),
+und sie hat mit diesem Slice ihr drittes Auftreten.
+
+**Besonders folgenreich war der Irrtum bei zwei Dateien:**
+`grundlagen-referenz-richtung.md` und `grundlagen-source-precedence.md` tragen
+die `Ersetzt-Baseline-Regel`-Anker von
+[`MR-011`](../../../../harness/conventions.md#mr-011) und
+[`MR-012`](../../../../harness/conventions.md#mr-012). Der Slice schrieb, sie
+seien im Adaptions-Durchgang zu prüfen — sie sind **unverändert**, und beide
+Adaptionen bleiben damit ungebrochen. Und `grundlagen-begriffe.md` steht mit
+`+42/−40` im Roh-Diff, trägt aber genau **zwei** neue Zeilen: die Begriffe
+*RTM* und `harness/sensors/<target>.md`. Die in einer früheren Fassung dieses
+Abschnitts als „neu benannt" geführten *Pfad* und
+*Vertrag › Technik › Sicht › ADR › Slice* gibt es dort nicht bzw. schon seit
+`v6.2.0` — eine Behauptung aus einem `grep` über den unbereinigten Diff.
 
 ### 3.2 Fünf Themen, nach Wirkung auf a-check geordnet
 
@@ -97,14 +123,25 @@ auf die Sensor-Datei, eine Baseline-Stelle als `v<X.Y.Z>` ·
 Link darauf färbt beim nächsten Bump ein Artefakt rot, das niemand mehr
 anfassen darf."*
 
-**Das ist genau die Klemme aus slice-172/173** — dort gefunden, hier an der
-Wurzel gelöst. a-check hat sie mit `exempt-paths` behandelt: fünf
-Verzeichnis-Klassen, die der Versions-Sensor überspringt. Der Kurs geht anders
-vor: In einem einfrierenden Artefakt entsteht der Link gar nicht erst, dann
-braucht es auch keine Ausnahme. **Die beiden Antworten schließen sich nicht
-aus** — `exempt-paths` deckt den Bestand, die Zitier-Form den Zuwachs —, aber
-sie überschneiden sich, und welche a-check führt, ist eine Entscheidung, keine
-Ableitung.
+**Das trifft die Klemme aus slice-172 — aber nicht die, die `exempt-paths`
+behandelt.** Präzisierung aus dem Review (F-2); zuerst stand hier, der Kurs
+löse „dieselbe" Klemme an der Wurzel, und das zog zwei Fragen zusammen, die
+[slice-173](../done/wellenlos/slice-173-versions-sensor-baseline-pins.md) §2.1
+gerade auseinandergehalten hatte:
+
+| Frage | Wer antwortet heute |
+|---|---|
+| Nennt ein Dokument den **veralteten** Stand? | `versions` — und `exempt-paths` nimmt Zeitdokumente aus |
+| **Löst** ein Pfad auf, nachdem ein Stand entfernt wurde? | die Link-Prüfung — und sie erzwingt den Edit an eingefrorenen Dateien |
+
+Die Zitier-Form beantwortet die **zweite**: kein Link, kein Bruch, kein Edit.
+`exempt-paths` beantwortet die **erste** und bleibt davon unberührt. Genau die
+zweite ist in
+[`conventions.md`](../../../../harness/conventions.md#baseline) §Baseline
+ausdrücklich als **unbehandelt** deklariert — *„Eine Kollision bleibt und ist
+keine Ausnahme, sondern eine Klemme … der Preis des Löschens"*. Die Zitier-Form
+ist die erste Antwort darauf, die a-check bekommen könnte; ob `exempt-paths`
+danach schrumpft, ist eine **eigene** Messung und keine Folge.
 
 **Folge-Slice:** Zitier-Form übernehmen und gegen den Bestand halten; dabei
 prüfen, ob `exempt-paths` danach schrumpfen kann.
@@ -147,8 +184,20 @@ a-check führt Out-of-Scope heute auf **Welle**-Ebene
 Kopieranleitung in [`AGENTS.md`](../../../../AGENTS.md) §5 nennt §1 noch
 schlicht *Ziel*.
 
-**Folge-Slice:** Kopieranleitung nachziehen; ob der Bestand nachgerüstet wird,
-ist eine eigene Frage — die Ziel-Form gilt für **neue** Slices.
+**Und die Regel hat eine zweite Hälfte im Lauf** — Nachtrag aus dem Review
+(F-3), zuerst falsch unter §3.3 abgelegt: `modul-09` (+9, inhaltlich) trägt
+keinen Tabellen-Ausbau, sondern einen **Normabsatz** zum 8-Schritt-Workflow.
+*„Die Plan-Ausgabe in Schritt 4 nennt Out-of-Scope … Nimmt der Lauf etwas mit,
+das §1 ausschließt, ist das eine Plan-Änderung und gehört vor den Code, nicht
+in den Bericht danach."* [`AGENTS.md`](../../../../AGENTS.md) §6 führt denselben
+Workflow und nennt `modul-09` als Regelquelle — die Dokument-Hälfte (§1 des
+Plans) und die Schritt-Hälfte (Schritt 4 des Laufs) gehören zusammen und in
+**denselben** Folge-Slice.
+
+**Etappe E, [slice-178](../open/slice-178-slice-form-ziel-und-abgrenzung.md):**
+Kopieranleitung in [`AGENTS.md`](../../../../AGENTS.md) §5 **und** §6 nachziehen.
+Ob der Bestand nachgerüstet wird, ist eine eigene Frage — die Ziel-Form gilt für
+**neue** Slices.
 
 #### T-4 — Nicht-Gates gehören in eine **zweite Tabelle**
 
@@ -180,21 +229,32 @@ a-check deklariert nirgends, welche Verweis-Quellen als entlastend gelten.
 
 **Folge-Slice:** klein, eventuell in den Adaptions-Durchgang gefaltet.
 
-### 3.3 Was nicht berührt
+### 3.3 Was nicht berührt — und die zwei Nachzüge, die fast durchgerutscht wären
 
-- Die neun Null-Substanz-Dateien (§3.1).
-- `grundlagen-begriffe.md` (+42/−40): Umbau der Begriffs-Tabelle; neu benannt
-  sind *Auslesestand, kein Artefakt* · *Waisen* · *Pfad* ·
-  *Vertrag › Technik › Sicht › ADR › Slice*. Sie schärfen T-5 und die
-  Referenz-Richtung begrifflich, ändern aber keine Regel, an der a-check hängt.
-- `modul-09` (+9), `modul-02` (+1), `modul-04` (+6), `modul-06` (+3),
-  `grundlagen-source-precedence` (+3), `grundlagen-referenz-richtung` (+6),
-  `grundlagen-bootstrap` (+18): Tabellen-Ausbau und Verweise auf die neuen
-  Abschnitte. **Zu prüfen im Adaptions-Durchgang**, nicht als eigener Slice —
-  `grundlagen-referenz-richtung` und `grundlagen-source-precedence` tragen die
-  `Ersetzt-Baseline-Regel`-Anker von
-  [`MR-011`](../../../../harness/conventions.md#mr-011) und
-  [`MR-012`](../../../../harness/conventions.md#mr-012).
+- **Die 14 Null-Inhalt-Dateien** (§3.1). Nichts zu prüfen, auch nicht im
+  Adaptions-Durchgang: `grundlagen-referenz-richtung` und
+  `grundlagen-source-precedence` tragen zwar die Anker von
+  [`MR-011`](../../../../harness/conventions.md#mr-011)/[`MR-012`](../../../../harness/conventions.md#mr-012),
+  sind aber **unverändert**.
+- `grundlagen-begriffe.md`: zwei neue Begriffe (*RTM*,
+  `harness/sensors/<target>.md`), die T-5 und T-2 begrifflich schärfen. Keine
+  eigene Handlung.
+- `modul-06` (+3): Verweis auf die neue §1-Form. Fällt mit T-3.
+- `archiv-stub-slice`, `archiv-stub-welle`, `welle-results` (je +8): die
+  Zitier-Form aus T-1. Keine eigene Klasse.
+
+**Zwei Dateien standen in keiner Einordnung** — Review-Befund (F-5), und beide
+tragen echte Nachzüge:
+
+| Datei | `+`/`−` (`-w`) | Nachzug |
+|---|---|---|
+| `regelwerk/README.md` | +1/−1 | Der Kurs-Wellen-Stempel wandert **119 → 128** (2026-09-05 → 2026-09-06). [`conventions.md`](../../../../harness/conventions.md#baseline) §Baseline zitiert ihn **wörtlich** — gehört in Etappe A, sonst steht dort nach dem Vendoring eine falsche Welle-Nummer neben dem richtigen Tag |
+| `templates/README.md` | +11/−6 | Index-Zeile für `harness/sensors/gate.template.md` (T-2) und die Beschreibung der neuen `slice.template.md`-Abschnitte §1/§8 (T-3). Kein eigenes Thema, aber der Ort, an dem beide Ziel-Formen erklärt werden |
+
+**§8 der Slice-Ziel-Form heißt neu *Sub-Area-Prüfungen und Modus-Begründung*** —
+der Titel trägt jetzt beide Hälften: die zwei *Vorgelagert*-Blöcke sind immer
+auszufüllen, der Modus-Begründungsblock bleibt bedingt. a-checks Slices führen
+§9 unter dem alten Titel *Sub-Area-Modus*; das fällt mit T-3.
 
 ### 3.4 Vorgeschlagener Etappen-Schnitt
 
@@ -204,10 +264,23 @@ a-check deklariert nirgends, welche Verweis-Quellen als entlastend gelten.
 | **B** — Adaptions-Durchgang | sieben aktive `MR` gegen `v6.5.0`, dabei §3.3-Restposten und T-5 | M |
 | **C** — Zitier-Form (T-1) | vier Artefaktklassen; danach `exempt-paths` prüfen | M |
 | **D** — Sensors-Struktur (T-2 + T-4) | zwei Tabellen, `harness/sensors/` für den Überhang | **L** |
+| **E** — Slice-Form (T-3) | §1 *Ziel und Abgrenzung* und §8-Titel in der Kopieranleitung `AGENTS.md` §5, dazu die Schritt-Hälfte in §6 | S |
 
-**A vor allem anderen** — B, C und D messen gegen den vendorten Stand. C vor D
-ist keine Pflicht, aber sinnvoll: die Zitier-Form betrifft Verweise auf
+**A vor allem anderen** — B, C, D und E messen gegen den vendorten Stand. C vor
+D ist keine Pflicht, aber sinnvoll: die Zitier-Form betrifft Verweise auf
 Sensor-Dateien, die D erst anlegt.
+
+**Nicht als Etappe geschnitten, aber offen** (Review-Befund F-10): Der
+Kurs-Absatz zu `exempt-paths` endet mit *„ein Ausnahme-Ventil … also eine
+**Gate-Senkung mit eigener Begründungslast**"*.
+[`AGENTS.md`](../../../../AGENTS.md) §3.6 verlangt für eine Prüfregel-Senkung
+eine ADR; a-check hat mit
+[slice-173](../done/wellenlos/slice-173-versions-sensor-baseline-pins.md) fünf
+`exempt-paths`-Klassen gesetzt und **keine** ADR dazu — keine der 39 nennt
+`exempt-paths` oder `version-stale`. Das ist kein Nachzug aus `v6.5.0`, sondern
+eine offene Frage **an den eigenen Bestand**, die dieser Sprung sichtbar macht.
+Sie gehört in Etappe B, wo die Adaptions- und Ausnahme-Lage ohnehin geprüft
+wird.
 
 ## 4. Definition of Done
 
@@ -255,12 +328,19 @@ nicht einzeln ([`AGENTS.md`](../../../../AGENTS.md) §6).
   formuliert, nicht auf eine Etappen-Kette.
 - *Die neue `sensors/`-Ziel-Form könnte a-checks Tabellen-Praxis nicht nur
   ergänzen, sondern ihr widersprechen — dann ist es keine Nachzugs-, sondern
-  eine Adaptions-Frage* — **Ausgang:** entfallen, gestrichen mit Begründung.
-  Gemessen: die Vorlage nennt die Tabellenzeile ausdrücklich als **Default**
-  und die Datei als Antwort auf den *Überhang*. a-checks Praxis wird damit
-  nicht abgelöst, sondern begrenzt — 16 von 40 Zeilen liegen über der Grenze,
-  24 darunter und bleiben, wie sie sind. Kein Widerspruch, also keine
-  Adaption; Etappe D ist ein Nachzug.
+  eine Adaptions-Frage* — **Ausgang:** eingetreten, Folge-Slice
+  [slice-177](../open/slice-177-sensors-struktur-zwei-tabellen.md) (§7 dort
+  führt die Frage bereits offen). **Korrektur aus dem Review (F-7):** zuerst
+  stand hier *entfallen*, gestützt auf die Default-Frage — die Vorlage nennt
+  die Tabellenzeile als Default, also werde a-checks Praxis begrenzt statt
+  abgelöst. Das beantwortet aber nicht die **Widerspruchs**-Frage. Gemessen:
+  [`AGENTS.md`](../../../../AGENTS.md) §4 führt `| Target | Zweck |` — die
+  Spalte, in der die Ziel-Form `kein Gate` verlangt, **existiert dort nicht**;
+  [`harness/README.md`](../../../../harness/README.md) hat sie
+  (`| Target | Vertrag | Bindung |`), a-checks zweite Sensor-Tabelle also nicht.
+  Ob daraus ein Spaltenzuwachs folgt oder eine deklarierte Abweichung, ist
+  offen — und damit genau die Adaptions-Frage, die der Ausgang *entfallen*
+  verneint hätte.
 
 ## 8. Closure-Notiz
 
@@ -283,8 +363,11 @@ Substanz, bevor sie den Umfang beurteilt).
   danach `--numstat` je Datei verwendet, nicht eine Übersicht mit `head`/`tail`.
 
 - **Steering-Loop-Eintrag — geschärfte Regel:** Ein Roh-Diff wird **vor** der
-  Umfangs-Beurteilung um seine formatierenden Anteile bereinigt; die Bereinigung
-  ist zu messen, nicht zu schätzen. *(Kein `liegt in`-Feld: mit diesem Slice
+  Umfangs-Beurteilung um seine formatierenden Anteile bereinigt — **Plural**,
+  und die Vollständigkeit der Klassen ist selbst zu prüfen: `git diff -w` ist
+  der billigste Test darauf, und er stand von Anfang an zur Verfügung. Dieser
+  Slice hat die Regel formuliert und **halb ausgeführt** (§3.1); der Review hat
+  es gefangen. *(Kein `liegt in`-Feld: mit diesem Slice
   wurde nichts verkörpert — der Eintrag ist gezählt, nicht verkörpert. Der Ort
   wäre die Delta-Analyse-Form, und die hat a-check nicht als Ziel-Form, sondern
   als Präzedenz in drei Slices.)*
@@ -294,15 +377,23 @@ Substanz, bevor sie den Umfang beurteilt).
   **neu angelegt**, Beleg `evidence/slice-174.md`, Stand `offen (1×)` — der
   Sensor aus slice-173 traf zweimal ein Planungsdokument, das den *Ziel*-Stand
   nennt. Zwei Funde, **ein** Vorgang, also ein Beleg.
+  Dazu `evidence/slice-174.md` in
+  [`BEO-PLAN/review-geltungsbereich-zu-eng`](../observations/BEO-PLAN/review-geltungsbereich-zu-eng/observation.md)
+  — **Zähler 3×, Schwelle erreicht**: die Bereinigung dieses Slice sah eine
+  Formatierungs-Klasse und suchte die zweite nicht (§3.1).
 
 - **Folge-Slices:** [slice-175](../open/slice-175-etappe-a-vendoring-v650.md)
-  (Etappe A, Vendoring),
-  [slice-176](../open/slice-176-zitier-form-einfrierende-artefakte.md) (Etappe C,
+  (A, Vendoring),
+  [slice-176](../open/slice-176-zitier-form-einfrierende-artefakte.md) (C,
   Zitier-Form),
-  [slice-177](../open/slice-177-sensors-struktur-zwei-tabellen.md) (Etappe D,
-  Sensors-Struktur) — alle drei sind Dateien in `open/`. Etappe B
-  (Adaptions-Durchgang) bekommt ihren Slice, wenn Etappe A den Stand gehoben
-  hat: sie misst gegen ihn und wäre vorher gegenstandslos.
+  [slice-177](../open/slice-177-sensors-struktur-zwei-tabellen.md) (D,
+  Sensors-Struktur),
+  [slice-178](../open/slice-178-slice-form-ziel-und-abgrenzung.md) (E,
+  Slice-Form) — alle vier sind Dateien in `open/`. Der vierte entstand erst
+  durch den Review (F-3/F-4): T-3 hatte keine Etappe, und die Schritt-Hälfte
+  der Regel lag fälschlich unter §3.3. Etappe **B** (Adaptions-Durchgang)
+  bekommt ihren Slice, wenn A den Stand gehoben hat: sie misst gegen ihn und
+  wäre vorher gegenstandslos.
 
 - **Risiken aus §7:** drei, jedes mit genau einem Ausgang — eingetreten
   (aufgefangen) · weiter offen → Register · gestrichen mit Begründung. Siehe §7.
@@ -320,8 +411,9 @@ Fremdtext), und dieser Slice ändert dort nichts. Gemessen und bewertet wird
 (`HARNESS`, `GATE`, `PLAN`), gehören in deren §9, nicht hierher.
 
 **Vorgelagert — offene Beobachtungen sichten:** Register am 2026-09-07
-durchgegangen, **31** offene Einträge in `BEO-HARNESS`/`BEO-GATE`/`BEO-PLAN`,
-keiner an der Schwelle. Vier einschlägig:
+durchgegangen, **34** offene Einträge in `BEO-HARNESS`/`BEO-GATE`/`BEO-PLAN`,
+keiner an der Schwelle (die Zahl stand zuerst auf 31 — geschätzt statt gezählt,
+Review-Befund F-6). Vier einschlägig:
 
 | Eintrag | Stand | Bezug |
 |---|---|---|
