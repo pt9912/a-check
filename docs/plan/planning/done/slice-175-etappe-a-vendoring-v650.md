@@ -32,7 +32,7 @@ Behauptung. Die Korrektur gehört darum hierher und nicht in einen Folge-Slice.
 **Nicht in diesem Slice**, je Punkt mit Grund:
 
 - **Den vorigen vendorten Stand entfernen** — ein Folge-Slice übernimmt es:
-  [slice-176](../in-progress/slice-176-zitier-form-einfrierende-artefakte.md), und
+  [slice-176](../done/slice-176-zitier-form-einfrierende-artefakte.md), und
   zwar mit Kennung und als DoD-Punkt dort. **16 Zeitdokumente** verweisen noch
   auf ihn; ihre Links brächen beim Löschen, und die Reparatur wäre Handarbeit an
   Dateien, die das Repo als unveränderlich führt — genau die Klemme, die
@@ -211,7 +211,7 @@ Bedingungs-Prüfung, die das Repo selbst vorschreibt).
   nachgezogen (Review F-1: es behauptete im Präsens das Gegenteil).
 
 - **Folge-Slices:** keine neuen.
-  [slice-176](../in-progress/slice-176-zitier-form-einfrierende-artefakte.md) trägt
+  [slice-176](../done/slice-176-zitier-form-einfrierende-artefakte.md) trägt
   seit heute den Lösch-Schritt für den vorigen Stand,
   [slice-177](../open/slice-177-sensors-struktur-zwei-tabellen.md) den
   `AGENTS.md`-§4-Befund. Beide bestanden bereits.

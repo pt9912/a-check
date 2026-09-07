@@ -384,7 +384,7 @@ Substanz, bevor sie den Umfang beurteilt).
 
 - **Folge-Slices:** [slice-175](../done/slice-175-etappe-a-vendoring-v650.md)
   (A, Vendoring),
-  [slice-176](../in-progress/slice-176-zitier-form-einfrierende-artefakte.md) (C,
+  [slice-176](../done/slice-176-zitier-form-einfrierende-artefakte.md) (C,
   Zitier-Form),
   [slice-177](../open/slice-177-sensors-struktur-zwei-tabellen.md) (D,
   Sensors-Struktur),

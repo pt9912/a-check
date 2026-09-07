@@ -21,8 +21,7 @@ Welle-Datei, nicht hier.
 
 - [welle-15](../welle-15-regelwerk-v650-migration.md) — Regelwerk-Migration `v6.2.0` → `v6.5.0`.
 
-In Arbeit: [slice-176](../in-progress/slice-176-zitier-form-einfrierende-artefakte.md) — Etappe C von
-[welle-15](../welle-15-regelwerk-v650-migration.md).
+Nichts in Arbeit.
 
 ## Nächste Wellen
 
