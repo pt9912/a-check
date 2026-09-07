@@ -147,7 +147,7 @@ Der Slice trägt ein `**Welle:**`-Feld und archiviert **mit seiner Welle**
   steht eine Regel da, die der eigene Bestand bricht* — **Ausgang:** eingetreten,
   und zwar sofort: `AGENTS.md` §4 bricht die Vorlagen-Regel *„diese Tabelle
   listet auf"* seit `v5.12.0`, gefunden auf Maintainer-Nachfrage am selben Tag.
-  Folge-Slice [slice-177](../open/slice-177-sensors-struktur-zwei-tabellen.md),
+  Folge-Slice [slice-177](../in-progress/slice-177-sensors-struktur-zwei-tabellen.md),
   Beleg in
   [`BEO-HARNESS/baseline-regel-nie-erwogen-weil-bestand-sie-verletzt`](../observations/BEO-HARNESS/baseline-regel-nie-erwogen-weil-bestand-sie-verletzt/observation.md)
   (2×).
@@ -213,7 +213,7 @@ Bedingungs-Prüfung, die das Repo selbst vorschreibt).
 - **Folge-Slices:** keine neuen.
   [slice-176](../done/slice-176-zitier-form-einfrierende-artefakte.md) trägt
   seit heute den Lösch-Schritt für den vorigen Stand,
-  [slice-177](../open/slice-177-sensors-struktur-zwei-tabellen.md) den
+  [slice-177](../in-progress/slice-177-sensors-struktur-zwei-tabellen.md) den
   `AGENTS.md`-§4-Befund. Beide bestanden bereits.
 
 - **Risiken aus §7:** drei, jedes mit genau einem Ausgang — zweimal

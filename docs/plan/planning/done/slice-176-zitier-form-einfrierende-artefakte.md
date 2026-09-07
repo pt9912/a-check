@@ -236,7 +236,7 @@ verankert).
   Vorgang).
 
 - **Folge-Slices:** keine neuen. Offen bleiben
-  [slice-177](../open/slice-177-sensors-struktur-zwei-tabellen.md) (Etappe D)
+  [slice-177](../in-progress/slice-177-sensors-struktur-zwei-tabellen.md) (Etappe D)
   und [slice-178](../open/slice-178-slice-form-ziel-und-abgrenzung.md) (E);
   Etappe B braucht noch ihren Slice.
 

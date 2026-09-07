@@ -329,7 +329,7 @@ nicht einzeln ([`AGENTS.md`](../../../../AGENTS.md) §6).
 - *Die neue `sensors/`-Ziel-Form könnte a-checks Tabellen-Praxis nicht nur
   ergänzen, sondern ihr widersprechen — dann ist es keine Nachzugs-, sondern
   eine Adaptions-Frage* — **Ausgang:** eingetreten, Folge-Slice
-  [slice-177](../open/slice-177-sensors-struktur-zwei-tabellen.md) (§7 dort
+  [slice-177](../in-progress/slice-177-sensors-struktur-zwei-tabellen.md) (§7 dort
   führt die Frage bereits offen). **Korrektur aus dem Review (F-7):** zuerst
   stand hier *entfallen*, gestützt auf die Default-Frage — die Vorlage nennt
   die Tabellenzeile als Default, also werde a-checks Praxis begrenzt statt
@@ -386,7 +386,7 @@ Substanz, bevor sie den Umfang beurteilt).
   (A, Vendoring),
   [slice-176](../done/slice-176-zitier-form-einfrierende-artefakte.md) (C,
   Zitier-Form),
-  [slice-177](../open/slice-177-sensors-struktur-zwei-tabellen.md) (D,
+  [slice-177](../in-progress/slice-177-sensors-struktur-zwei-tabellen.md) (D,
   Sensors-Struktur),
   [slice-178](../open/slice-178-slice-form-ziel-und-abgrenzung.md) (E,
   Slice-Form) — alle vier sind Dateien in `open/`. Der vierte entstand erst

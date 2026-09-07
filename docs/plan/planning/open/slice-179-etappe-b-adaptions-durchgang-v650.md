@@ -37,7 +37,7 @@ Kopieranleitung in [`AGENTS.md`](../../../../AGENTS.md) §5 zieht Etappe E nach.
   Bestand bleibt bewusst stehen: sie sind eingefroren und gegen den Stand
   formuliert, der damals galt. Ein Durchgang durch sie prüfte nichts.
 - **Neue Adaptionen für Regeln, die a-check bricht** — wäre ein anderer
-  Vorgang. Etappe D ([slice-177](../open/slice-177-sensors-struktur-zwei-tabellen.md))
+  Vorgang. Etappe D ([slice-177](../in-progress/slice-177-sensors-struktur-zwei-tabellen.md))
   trägt den bekannten Fall (`AGENTS.md` §4 gegen die Ziel-Form); weitere Funde
   bekommen einen eigenen Slice, keinen Schnellschuss hier.
 - **Rückbau eines Eintrags ohne eingetretenen Trigger** — der Durchgang
