@@ -112,10 +112,13 @@ versions:
   patterns:
     - pin-pattern: 'Lastenheft steht bei \*\*(\d+\.\d+\.\d+)\*\*'
       current-from: spec/lastenheft.md#lastenheft--a-check
-    # Ohne fuehrendes `.harness/`: eine Datei INNERHALB von .harness/ verweist
-    # relativ (`../baseline/<tag>/`), und die Form uebersah das Muster bis
-    # slice-175 — gefunden im ersten echten Migrations-Lauf des Sensors.
-    - pin-pattern: '(?:^|[^-a-zA-Z0-9_.])baseline/(v\d+\.\d+\.\d+)/'
+    # Zwei Schreibweisen desselben Gegenstands, beide verankert: `.harness/`
+    # fuer den Pfad von der Repo-Wurzel aus, `..` fuer eine Datei INNERHALB von
+    # .harness/, die relativ verweist (`../baseline/<tag>/`). Die zweite uebersah
+    # das Muster bis slice-175 — gefunden im ersten echten Migrations-Lauf.
+    # Die Verankerung ist noetig: ein blosses `baseline/<tag>/` traefe auch
+    # fremde URLs wie `https://example.org/baseline/v1.0.0/` (Review slice-175).
+    - pin-pattern: '(?:\.harness|\.\.)/baseline/(v\d+\.\d+\.\d+)/'
       current-from: harness/conventions.md#baseline
       # Ausgenommen sind die Zeitdokument-Klassen: dort ist der GENANNTE Stand
       # wahr, weil damals gegen ihn gemessen wurde. Dass ihre Pfade trotzdem
