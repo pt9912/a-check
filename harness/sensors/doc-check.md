@@ -29,17 +29,26 @@ Läuft digest-gepinnt, `--network none`, read-only.
    ausgenommen (`exempt-paths` in `.d-check.yml`): dort ist der genannte Stand
    wahr, weil damals gegen ihn gemessen wurde. Zwei *lebende* Zeiger fallen
    dabei mit heraus (`docs/reviews/README.md`, der Vorlagen-Link in [`MR-018`](../conventions.md#mr-018)) —
-   heilbar durch eine Regel je Datei-Rolle statt je Verzeichnis.
+   **Einer davon ist behoben** (Review slice-179, F-1): `docs/reviews/**` war zu
+   grob und nahm die README mit — ein Konventions-Dokument, das bei jeder
+   Migration nachgezogen wird. Der Glob nennt jetzt nur die datierten Reports
+   und das Archiv; die README ist wieder gedeckt, mutations-belegt. Der zweite
+   ([`MR-018`](../conventions.md#mr-018)) bleibt: `harness/conventions/done/**` ist als Klasse eingefroren,
+   und die eine lebende Ausnahme darin wäre eine Regel je Datei.
 
-   **Das ist ein Geltungsbereich, keine Gate-Senkung** — geprüft an der
-   Baseline, nicht angenommen. `v6.5.0` ·
-   `regelwerk/grundlagen-harness-dateien.md` §Was ein Kommentar trägt zieht die
-   Linie selbst: *„Die Grenze: Sie gilt für einfrierende Artefakte … Der
+   **Für die eingefrorenen Klassen ist das ein Geltungsbereich, keine
+   Gate-Senkung** — geprüft an der Baseline, nicht angenommen.
+   [`grundlagen-harness-dateien.md` §harness/README.md als Einstiegspunkt](../../.harness/baseline/v6.5.0/regelwerk/grundlagen-harness-dateien.md#harnessreadmemd-als-einstiegspunkt)
+   zieht die Linie selbst: *„Die Grenze: Sie gilt für einfrierende Artefakte … Der
    Unterschied ist nicht die Wichtigkeit des Ziels, sondern ob der Zeiger
    nachgezogen werden **darf**."* Ein Zeiger in einem Zeitdokument darf es
    nicht; eine Prüfung, die ihn trotzdem einfordert, verlangt einen Regelbruch.
    Die Ausnahme bildet also ab, worüber die Regel spricht — sie senkt keine
    Schwelle, und `AGENTS.md` §3.6 (Gates nur per ADR lockern) greift nicht.
+   **Das gilt je Glob, nicht pauschal:** Nimmt ein Glob einen *lebenden* Zeiger
+   mit heraus, ist es sehr wohl eine Senkung — genau der Fall, den F-1 oben
+   behoben hat. Der Unterschied ist derselbe wie in der zitierten Stelle: ob der
+   Zeiger nachgezogen wird.
 
    **Die Stelle, an der der Kurs von einer „Gate-Senkung mit eigener
    Begründungslast" spricht, meint etwas anderes:** ein Ventil im Prüfbereich

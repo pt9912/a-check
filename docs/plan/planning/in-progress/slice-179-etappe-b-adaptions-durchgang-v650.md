@@ -81,10 +81,10 @@ verlangt sie noch dasselbe?
 |---|---|---|---|
 | [`MR-011`](../../../../harness/conventions.md#mr-011) | Suffix-Form `<PREFIX>-FA-<NN>.<Buchstabe>` für Verfeinerungen | **ja** — Wortlaut unverändert in `grundlagen-source-precedence.md` §ID-Schema als Klammer | nein (Trigger: eigene Erfahrung, dass ein Feld teurer ist) |
 | [`MR-012`](../../../../harness/conventions.md#mr-012) | Aufwärts-Richtung für **jede** Kante im bindenden Text | **ja** — die Decken-Regel steht unverändert | nein (löst erst auf, wenn keine der 20 ADRs mehr `Accepted` ist) |
-| [`MR-014`](../../../../harness/conventions.md#mr-014) | Span-Telemetrie je Tool-Call, Token-Bilanz je Rolle | **ja** — `modul-15` verlangt sie unverändert | nein (permanent: a-check ruft kein Modell auf) |
+| [`MR-014`](../../../../harness/conventions.md#mr-014) | Span-Telemetrie je Tool-Call, Token-Bilanz je Rolle | **ja** — `modul-15` verlangt sie unverändert | nein — aber **erreichbar**, nicht permanent: *„sobald Agenten-Läufe im Repo selbst abrechenbar werden“*. Heute nicht der Fall (a-check ruft kein Modell auf), morgen möglich |
 | [`MR-015`](../../../../harness/conventions.md#mr-015) | Replay-Lauf als Teil des Welle-Closure-Triggers | **ja** — Zeile 33 und 319 in `modul-06-roadmap.md`, beide unverändert | nein (bräuchte ein Golden Set) |
 | [`MR-016`](../../../../harness/conventions.md#mr-016) | neun Rollen-Übergaben, jede mit Artefakt | **ja** — §Die neun Übergaben unverändert | nein (bräuchte einen repo-externen Abnehmer) |
-| [`MR-019`](../../../../harness/conventions.md#mr-019) | Review-Report als unbedingter DoD-Checkbox-Punkt | **ja** — die Zeile in `slice.template.md` ist unverändert, obwohl die Datei sich um `+36/−10` geändert hat | **nein**, und das war der einzige Kandidat (§2) |
+| [`MR-019`](../../../../harness/conventions.md#mr-019) | Review-Report als unbedingter DoD-Checkbox-Punkt | **ja** — die Zeile in `slice.template.md` ist unverändert, obwohl die Datei sich um `+36/−10` geändert hat | **Auflösungs-Trigger: nein**, und das war der einzige Kandidat (§2). Die separat genannte **Rückbau-Bedingung** ist dagegen **erfüllt** — das vendorte Template trägt die Zeile; die Index-Zeile in `conventions.md` sagte weiter „noch nicht vendored“ und ist nachgezogen |
 | [`MR-020`](../../../../harness/conventions.md#mr-020) | — *(korrigiert eine Repo-Aussage, kein Baseline-Regel-Ersatz)* | n/a | nein (permanent) |
 
 **Alle sieben bleiben.** Kein Eintrag ist gegenstandslos geworden, keiner
@@ -195,20 +195,47 @@ Adaptions-Zeigers sind nicht ineinander überführbar).
   werden **darf**"*. Ein Zitat ohne seinen Absatz trug hier eine Pflicht, die
   es nicht gibt.
 
+  **Und dann derselbe Fehler in der Widerlegung** — Review-Befund F-1/F-2, und
+  er wiegt schwerer als der Anlass. Das Verdikt *„Geltungsbereich, keine
+  Gate-Senkung"* stand **unbedingt** da, obwohl es je Glob zu prüfen ist: Vier
+  der fünf nehmen nur eingefrorene Zeiger heraus, `docs/reviews/**` nahm einen
+  **lebenden** mit — die README, die bei jeder Migration nachgezogen wird. Für
+  sie war es sehr wohl eine Senkung. Zwei Zeilen darüber stand das sogar in
+  derselben Datei (*„Zwei lebende Zeiger fallen dabei mit heraus"*) — und das
+  Verdikt daneben ignorierte es. Behoben, nicht nur benannt: Der Glob nennt
+  jetzt die datierten Reports statt des Verzeichnisses, die README ist wieder
+  gedeckt, mutations-belegt in beide Richtungen. Dazu wies der Beleg auf den
+  falschen §-Abschnitt — in einem Absatz, der mit *„geprüft an der Baseline"*
+  wirbt.
+
 - **Steering-Loop-Eintrag — geschärfte Regel:** Der `Ersetzt-Baseline-Regel`-Zeiger
   einer Adaption wird auf **zwei** Ebenen geprüft, und sie sind nicht ineinander
   überführbar: ob der Zielabschnitt wortgleich ist (Datei), und ob die *ersetzte
   Regel* dort noch dasselbe verlangt (Aussage). Eine unveränderte Datei kann die
   Regel woanders verloren haben; eine geänderte sie behalten —
   [`MR-015`](../../../../harness/conventions.md#mr-015) ist der zweite Fall
-  (`+3/−1` am Abschnitt, Replay-Zusage unberührt). — liegt in
-  `docs/plan/planning/done/slice-179-…md` §3.1 als Muster für den nächsten
-  Durchgang.
+  (`+3/−1` am Abschnitt, Replay-Zusage unberührt). Die Einordnung liegt in
+  `harness/sensors/doc-check.md` §Grenze, das Verfahren als Muster in §3.1
+  dieses Slice. *(Kein `liegt in`-Feld mit `seit slice-179`-Anker: In einer
+  Regel-Datei ist das Verfahren nicht verkörpert — gezählt, nicht verkörpert.)*
 
 - **Beobachtungs-Register (`../observations/`):** keine Beobachtung angefallen,
   kein Beleg. Die zwei in §7 genannten Einträge bleiben bei 2× — der erste, weil
   das Risiko weder eintrat noch entfiel, der zweite, weil die befürchtete
   Korrektur gar nicht entstand.
+
+- **Drei weitere Review-Befunde, alle bestätigt und behoben:**
+  [`MR-014`](../../../../harness/conventions.md#mr-014) stand als *permanent*
+  in der Tabelle, sein Trigger ist aber erreichbar (*„sobald Agenten-Läufe im
+  Repo selbst abrechenbar werden"*) — für den Diskrepanz-Trichter ist das der
+  Unterschied zwischen Carveout und permanenter ADR.
+  [`MR-019`](../../../../harness/conventions.md#mr-019)s **Rückbau-Bedingung**
+  ist seit dem Vendoring erfüllt, während die Index-Zeile weiter *„noch nicht
+  vendored"* behauptete; nachgezogen, der Eintrag selbst bleibt unberührt.
+  Und die neue Passage nutzte in einer **lebenden** Datei die
+  Einfrier-Zitierform und entzog den Pin damit der `versions`-Deckung — in der
+  Datei, die diese Deckung beschreibt. Jetzt verlinkt; gegengemessen fällt der
+  Pin wieder in die Prüfmenge.
 
 - **Folge-Slices:** keine.
 

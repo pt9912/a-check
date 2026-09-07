@@ -130,7 +130,11 @@ versions:
       exempt-paths:
         - "harness/conventions/done/**"
         - "docs/plan/planning/done/**"
-        - "docs/reviews/**"
+        # Nur die datierten Reports: sie frieren ein. Die README ist ein
+        # KONVENTIONS-Dokument, wird bei jeder Migration nachgezogen und
+        # bleibt darum in der Deckung (Review slice-179, F-1).
+        - "docs/reviews/2*.md"
+        - "docs/reviews/archiv/**"
         - "docs/plan/planning/observations/**/observation.md"
         - "docs/plan/planning/observations/**/evidence/**"
 
