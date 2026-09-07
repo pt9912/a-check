@@ -20,7 +20,7 @@ größer** als der vorige: **30 Dateien, +572/−149** gegen `v6.0.0`→`v6.2.0`
 9 Dateien, `+53/−5` (gemessen 2026-09-07, `git diff --stat v6.2.0 v6.5.0 --
 lab/regelwerk lab/templates` im frischen Klon).
 
-Die Delta-Analyse ([slice-174](in-progress/slice-174-regelwerk-v650-delta-analyse.md))
+Die Delta-Analyse ([slice-174](done/slice-174-regelwerk-v650-delta-analyse.md))
 schneidet die Etappen; ihre Buchstaben sind hier und in §4/§6 dieselben:
 
 - **A — Vendoring:** der neue Stand unter `.harness/baseline/`,

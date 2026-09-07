@@ -7,7 +7,7 @@ wechselt nur durch `make slice-mv` ([`AGENTS.md`](../../../../AGENTS.md)
 
 **Welle:** [welle-15](../welle-15-regelwerk-v650-migration.md)
 
-**Bezug:** [slice-174](../in-progress/slice-174-regelwerk-v650-delta-analyse.md)
+**Bezug:** [slice-174](../done/slice-174-regelwerk-v650-delta-analyse.md)
 §3.2, Etappen-Schnitt — Etappe **A** des Schnitts in §3.4.
 
 **Berührte Spec-Stellen:** — *(keine)* — Harness-Struktur ohne
@@ -36,7 +36,7 @@ Der Stand `v6.5.0` liegt vendored, die Stand-Deklaration nennt ihn an ihren drei
 ## 2. Analyse (vor der Umsetzung)
 
 *(offen — die Messung entsteht mit der Arbeit; Ausgangslage in
-[slice-174](../in-progress/slice-174-regelwerk-v650-delta-analyse.md) §3.2)*
+[slice-174](../done/slice-174-regelwerk-v650-delta-analyse.md) §3.2)*
 
 ## 3. Umsetzung
 
@@ -53,7 +53,7 @@ Der Stand `v6.5.0` liegt vendored, die Stand-Deklaration nennt ihn an ihren drei
 
 ## 5. Trigger
 
-**Start** (`open` → `in-progress`): [slice-174](../in-progress/slice-174-regelwerk-v650-delta-analyse.md)
+**Start** (`open` → `in-progress`): [slice-174](../done/slice-174-regelwerk-v650-delta-analyse.md)
 liegt in `done/` (die Analyse benennt, was zu vendoren ist), Maintainer-Freigabe,
 WIP-Limit frei.
 

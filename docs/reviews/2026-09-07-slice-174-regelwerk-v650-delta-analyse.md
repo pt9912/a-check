@@ -22,7 +22,7 @@ selbst gemessen, nicht dem Slice-Zitat entnommen.
 
 **Eingangs-Kontext:**
 
-- `docs/plan/planning/in-progress/slice-174-regelwerk-v650-delta-analyse.md`
+- `docs/plan/planning/done/slice-174-regelwerk-v650-delta-analyse.md`
 - `docs/plan/planning/welle-15-regelwerk-v650-migration.md`
 - `docs/plan/planning/open/slice-175-…`, `…/slice-176-…`, `…/slice-177-…`
 - `docs/plan/planning/observations/BEO-GATE/versions-sensor-trifft-planungs-vorgriff/`

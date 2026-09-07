@@ -7,7 +7,7 @@ wechselt nur durch `make slice-mv` ([`AGENTS.md`](../../../../AGENTS.md)
 
 **Welle:** [welle-15](../welle-15-regelwerk-v650-migration.md)
 
-**Bezug:** [slice-174](../in-progress/slice-174-regelwerk-v650-delta-analyse.md)
+**Bezug:** [slice-174](../done/slice-174-regelwerk-v650-delta-analyse.md)
 §3.2, T-1 — Etappe **C** des Schnitts in §3.4.
 
 **Berührte Spec-Stellen:** — *(keine)* — Harness-Struktur ohne
@@ -36,7 +36,7 @@ Die vier einfrierenden Artefaktklassen zitieren die Baseline als Kennung statt a
 ## 2. Analyse (vor der Umsetzung)
 
 *(offen — die Messung entsteht mit der Arbeit; Ausgangslage in
-[slice-174](../in-progress/slice-174-regelwerk-v650-delta-analyse.md) §3.2)*
+[slice-174](../done/slice-174-regelwerk-v650-delta-analyse.md) §3.2)*
 
 ## 3. Umsetzung
 

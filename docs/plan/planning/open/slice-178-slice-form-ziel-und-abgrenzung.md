@@ -7,7 +7,7 @@ wechselt nur durch `make slice-mv` ([`AGENTS.md`](../../../../AGENTS.md)
 
 **Welle:** [welle-15](../welle-15-regelwerk-v650-migration.md)
 
-**Bezug:** [slice-174](../in-progress/slice-174-regelwerk-v650-delta-analyse.md)
+**Bezug:** [slice-174](../done/slice-174-regelwerk-v650-delta-analyse.md)
 §3.2 T-3 — Etappe **E** des Schnitts in §3.4.
 
 **Berührte Spec-Stellen:** — *(keine)* — Planungs-Form ohne
@@ -43,7 +43,7 @@ eine Plan-Änderung vor dem Code.
 ## 2. Analyse (vor der Umsetzung)
 
 *(offen — Ausgangslage in
-[slice-174](../in-progress/slice-174-regelwerk-v650-delta-analyse.md) §3.2 T-3)*
+[slice-174](../done/slice-174-regelwerk-v650-delta-analyse.md) §3.2 T-3)*
 
 ## 3. Umsetzung
 
