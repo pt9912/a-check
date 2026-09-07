@@ -5,7 +5,7 @@ Datei liegt — eines von `open/`, `next/`, `in-progress/`, `done/`. Er
 wechselt nur durch `make slice-mv` ([`AGENTS.md`](../../../../AGENTS.md)
 §3.3/§5).
 
-**Welle:** [welle-15](../welle-15-regelwerk-v650-migration.md)
+**Welle:** [welle-15](welle-15-regelwerk-v650-migration.md)
 
 **Bezug:** [slice-174](../done/slice-174-regelwerk-v650-delta-analyse.md) §3.4 —
 Etappe **B** des Schnitts. Vorbild derselben Form: der Durchgang gegen `v6.1.0`

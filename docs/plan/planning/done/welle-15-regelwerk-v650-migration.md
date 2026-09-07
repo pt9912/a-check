@@ -20,7 +20,7 @@ größer** als der vorige: **30 Dateien, +572/−149** gegen `v6.0.0`→`v6.2.0`
 9 Dateien, `+53/−5` (gemessen 2026-09-07, `git diff --stat v6.2.0 v6.5.0 --
 lab/regelwerk lab/templates` im frischen Klon).
 
-Die Delta-Analyse ([slice-174](done/slice-174-regelwerk-v650-delta-analyse.md))
+Die Delta-Analyse ([slice-174](slice-174-regelwerk-v650-delta-analyse.md))
 schneidet die Etappen; ihre Buchstaben sind hier und in §4/§6 dieselben:
 
 - **A — Vendoring:** der neue Stand unter `.harness/baseline/`,
@@ -36,7 +36,7 @@ schneidet die Etappen; ihre Buchstaben sind hier und in §4/§6 dieselben:
   Kennung statt als Adresse.
 - **D — Sensors-Struktur:** je Sensor eine Datei, sobald sein Vertrag mehr als
   einen Satz braucht, plus die zweite Tabelle für Nicht-Gates. Trifft a-check
-  hart: **16 von 40** Gate-Zeilen in [`AGENTS.md`](../../../AGENTS.md) §4 sind
+  hart: **16 von 40** Gate-Zeilen in [`AGENTS.md`](../../../../AGENTS.md) §4 sind
   länger als 250 Zeichen.
 - **E — Slice-Form:** §1 *Ziel und Abgrenzung*, neuer §8-Titel, und die
   Schritt-Hälfte im Minimal Agent Workflow.
@@ -60,9 +60,9 @@ den **neuen** Stand — das prüft keine einzelne DoD.
 
 - Alle Slices dieser Welle liegen in `done/`.
 - Die Stand-Deklaration nennt an allen drei Stellen `v6.5.0`
-  ([`conventions.md`](../../../harness/conventions.md#baseline) §Baseline,
-  [`AGENTS.md`](../../../AGENTS.md) §1,
-  [`harness/README.md`](../../../harness/README.md) §Guides), und
+  ([`conventions.md`](../../../../harness/conventions.md#baseline) §Baseline,
+  [`AGENTS.md`](../../../../AGENTS.md) §1,
+  [`harness/README.md`](../../../../harness/README.md) §Guides), und
   `make doc-check` meldet **keinen** `version-stale` — der Wächter aus
   slice-173 fährt hier seinen ersten echten Migrations-Lauf.
 - `make symlink-check` grün: die vier Baseline-Symlinks unter `.claude/rules/`
@@ -76,11 +76,11 @@ den **neuen** Stand — das prüft keine einzelne DoD.
 | Slice | Titel | Bezug |
 |---|---|---|
 | slice-174 | Delta-Analyse `v6.2.0` → `v6.5.0` | — (reine Ist-Messung, keine Vertragsberührung) |
-| [slice-175](done/slice-175-etappe-a-vendoring-v650.md) | Etappe A: Baseline vendoren | slice-174 §3.4 |
-| [slice-176](done/slice-176-zitier-form-einfrierende-artefakte.md) | Etappe C: Zitier-Form für einfrierende Artefakte | slice-174 §3.2 T-1 |
-| [slice-177](done/slice-177-sensors-struktur-zwei-tabellen.md) | Etappe D: Sensors-Struktur, zwei Tabellen | slice-174 §3.2 T-2/T-4 |
-| [slice-178](done/slice-178-slice-form-ziel-und-abgrenzung.md) | Etappe E: Slice-Form §1/§8 und Schritt 4 | slice-174 §3.2 T-3 |
-| [slice-179](done/slice-179-etappe-b-adaptions-durchgang-v650.md) | Etappe B: Adaptions-Durchgang gegen `v6.5.0` | slice-174 §3.4 |
+| [slice-175](slice-175-etappe-a-vendoring-v650.md) | Etappe A: Baseline vendoren | slice-174 §3.4 |
+| [slice-176](slice-176-zitier-form-einfrierende-artefakte.md) | Etappe C: Zitier-Form für einfrierende Artefakte | slice-174 §3.2 T-1 |
+| [slice-177](slice-177-sensors-struktur-zwei-tabellen.md) | Etappe D: Sensors-Struktur, zwei Tabellen | slice-174 §3.2 T-2/T-4 |
+| [slice-178](slice-178-slice-form-ziel-und-abgrenzung.md) | Etappe E: Slice-Form §1/§8 und Schritt 4 | slice-174 §3.2 T-3 |
+| [slice-179](slice-179-etappe-b-adaptions-durchgang-v650.md) | Etappe B: Adaptions-Durchgang gegen `v6.5.0` | slice-174 §3.4 |
 
 Der
 Zustand eines Slice ist sein Lifecycle-Verzeichnis und wird hier **nicht**
@@ -90,7 +90,7 @@ gespiegelt.
 
 - Wird blockiert von: nichts. `welle-14` ist geschlossen, `in-progress/` war
   bei Eröffnung leer.
-- Blockiert: [slice-169](open/slice-169-korpus-seitige-kalibrierung.md) nicht
+- Blockiert: [slice-169](../open/slice-169-korpus-seitige-kalibrierung.md) nicht
   formal, aber inhaltlich berührt — die Korpus-seitige Kalibrierung prüft
   Phrasen, die diese Welle in den betroffenen Dokumenten verschiebt. Reihenfolge
   ist eine Planungs-Frage, keine Sperre.
@@ -114,4 +114,4 @@ gespiegelt.
 *(nach Welle-Abschluss ausfüllen.)*
 
 Ergebnis: `welle-15-results.md`
-Zähler: [`observations/`](observations/README.md)
+Zähler: [`observations/`](../observations/README.md)

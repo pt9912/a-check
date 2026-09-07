@@ -5,7 +5,7 @@ Datei liegt — eines von `open/`, `next/`, `in-progress/`, `done/`. Er
 wechselt nur durch `make slice-mv` ([`AGENTS.md`](../../../../AGENTS.md)
 §3.3/§5).
 
-**Welle:** [welle-15](../welle-15-regelwerk-v650-migration.md)
+**Welle:** [welle-15](welle-15-regelwerk-v650-migration.md)
 
 **Bezug:** [slice-174](../done/slice-174-regelwerk-v650-delta-analyse.md)
 §3.2, T-2 und T-4 — Etappe **D** des Schnitts in §3.4.
@@ -37,7 +37,7 @@ Die Sensors-Tabelle wird Index: Nicht-Gates stehen in einer zweiten Tabelle mit 
   [slice-176](../done/slice-176-zitier-form-einfrierende-artefakte.md) §3 und
   in `harness/sensors/archive-wave.md` §Grenze.
 
-- **Andere Etappen von [welle-15](../welle-15-regelwerk-v650-migration.md)** —
+- **Andere Etappen von [welle-15](welle-15-regelwerk-v650-migration.md)** —
   Schicht-Abgrenzung: jede Etappe misst gegen den vendorten Stand und ist
   einzeln lieferbar.
 - **Nachrüsten des Altbestands**, wo die Ziel-Form nur für Neues gilt —

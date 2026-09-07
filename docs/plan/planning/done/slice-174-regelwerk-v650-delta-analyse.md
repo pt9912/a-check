@@ -5,7 +5,7 @@ Datei liegt — eines von `open/`, `next/`, `in-progress/`, `done/`. Er
 wechselt nur durch `make slice-mv` ([`AGENTS.md`](../../../../AGENTS.md)
 §3.3/§5).
 
-**Welle:** [welle-15](../welle-15-regelwerk-v650-migration.md)
+**Welle:** [welle-15](welle-15-regelwerk-v650-migration.md)
 
 **Bezug:** Maintainer-Hinweis 2026-09-07 („Neues Regelwerk-Release
 `v6.5.0`"). Vorbilder derselben Form:
@@ -27,7 +27,7 @@ Vertragsberührung.
 Das Delta `v6.2.0` → `v6.5.0` ist vermessen und je Änderung beantwortet, ob
 sie a-check berührt — und wenn ja, mit welchem Folge-Slice. Kein Vendoring,
 kein Nachzug: dieser Slice liefert die Grundlage, auf der die übrigen Etappen
-von [welle-15](../welle-15-regelwerk-v650-migration.md) geschnitten werden.
+von [welle-15](welle-15-regelwerk-v650-migration.md) geschnitten werden.
 
 ## 2. Ausgangsmessung (vor der Analyse)
 
@@ -180,7 +180,7 @@ wäre ein anderer Vorgang · Schicht-Abgrenzung). Dazu die Regel, dass ein
 genannter Folge-Slice die Sendung auch *annehmen* muss.
 
 a-check führt Out-of-Scope heute auf **Welle**-Ebene
-([welle-15](../welle-15-regelwerk-v650-migration.md) §6), nicht je Slice. Die
+([welle-15](welle-15-regelwerk-v650-migration.md) §6), nicht je Slice. Die
 Kopieranleitung in [`AGENTS.md`](../../../../AGENTS.md) §5 nennt §1 noch
 schlicht *Ziel*.
 

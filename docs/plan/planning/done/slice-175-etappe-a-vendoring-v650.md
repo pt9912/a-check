@@ -5,7 +5,7 @@ Datei liegt — eines von `open/`, `next/`, `in-progress/`, `done/`. Er
 wechselt nur durch `make slice-mv` ([`AGENTS.md`](../../../../AGENTS.md)
 §3.3/§5).
 
-**Welle:** [welle-15](../welle-15-regelwerk-v650-migration.md)
+**Welle:** [welle-15](welle-15-regelwerk-v650-migration.md)
 
 **Bezug:** [slice-174](../done/slice-174-regelwerk-v650-delta-analyse.md)
 §3.2, Etappen-Schnitt — Etappe **A** des Schnitts in §3.4.
@@ -44,7 +44,7 @@ Behauptung. Die Korrektur gehört darum hierher und nicht in einen Folge-Slice.
   *(Entschieden vom Maintainer am 2026-09-07. Bei der Umsetzung war es zunächst
   eine ungefragte Implementer-Entscheidung — hier steht sie, weil ein Ausschluss
   ohne Begründung eine Behauptung ist und keine Grenze.)*
-- **Andere Etappen von [welle-15](../welle-15-regelwerk-v650-migration.md)** —
+- **Andere Etappen von [welle-15](welle-15-regelwerk-v650-migration.md)** —
   Schicht-Abgrenzung: jede Etappe misst gegen den vendorten Stand und ist
   einzeln lieferbar.
 - **Nachrüsten des Altbestands**, wo die Ziel-Form nur für Neues gilt —

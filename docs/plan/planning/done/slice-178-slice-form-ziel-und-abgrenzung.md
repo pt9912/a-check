@@ -5,7 +5,7 @@ Datei liegt — eines von `open/`, `next/`, `in-progress/`, `done/`. Er
 wechselt nur durch `make slice-mv` ([`AGENTS.md`](../../../../AGENTS.md)
 §3.3/§5).
 
-**Welle:** [welle-15](../welle-15-regelwerk-v650-migration.md)
+**Welle:** [welle-15](welle-15-regelwerk-v650-migration.md)
 
 **Bezug:** [slice-174](../done/slice-174-regelwerk-v650-delta-analyse.md)
 §3.2 T-3 — Etappe **E** des Schnitts in §3.4.
@@ -37,7 +37,7 @@ eine Plan-Änderung vor dem Code.
 - **Ein Sensor auf die Out-of-Scope-Form** — wäre ein anderer Vorgang
   (Gate-Schicht statt Planungs-Form) und braucht erst einen Bestand, an dem
   er kalibriert werden kann.
-- **Andere Etappen von [welle-15](../welle-15-regelwerk-v650-migration.md)** —
+- **Andere Etappen von [welle-15](welle-15-regelwerk-v650-migration.md)** —
   es wäre ein **anderer Vorgang**, nicht eine andere Schicht: Sie berühren
   dieselbe Sub-Area (Harness-Einstieg), messen aber gegen andere Ziel-Formen
   und sind einzeln lieferbar. *(Die Klasse „Schicht-Abgrenzung" stand hier

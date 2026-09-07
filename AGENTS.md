@@ -352,6 +352,19 @@ die CI (Badge im [`README.md`](README.md)), nicht diese Tabelle.
   die Ergebnisnotiz gilt sie beim Schreiben.
   **Nicht** betroffen: lebende Dokumente — dort ist der Link richtig, und
   `versions` hält ihn aktuell.
+- **Geltungsbereich einer Messung** (`seit slice-179`, Lese-Schritt der
+  welle-15-Closure): Wer eine Messung als **Beleg** schreibt — in einem
+  Slice-Plan, einer Closure-Notiz, einem Review-Report —, nennt ihren
+  **Geltungsbereich** und sagt, ob er den Gegenstand deckt. Nicht *„22 Befunde,
+  keine weitere Klasse"*, sondern *„22 Befunde über Markdown-Links; Prosa sieht
+  das Instrument nicht"*.
+  **Anlass:** [`BEO-PLAN/review-geltungsbereich-zu-eng`](docs/plan/planning/observations/BEO-PLAN/review-geltungsbereich-zu-eng/observation.md)
+  bei 3× — dreimal war die Begrenzung begründet und trotzdem zu eng, und
+  dreimal fand es jemand anderes als der Messende. **Kein Sensor:** ob ein
+  Geltungsbereich weit genug ist, ist ein Urteil über eine Absicht (§3.7); ein
+  zweites Muster, das nach übersehenen Klassen sucht, kann dieselbe Verengung
+  haben wie das erste. Was greift, ist die Frage beim **Schreiben** — sie kostet
+  einen Halbsatz und hätte alle drei Fälle gefangen.
 - **CR-Texte an ein fremdes Werkzeug** (bisher vier an `d-check`) leben im Slice, der sie erzeugt,
   und gehen erst nach einem Prüf-Durchgang hinaus: der Skill
   [`.harness/skills/cr-text-reviewer.md`](.harness/skills/cr-text-reviewer.md) markiert jeden Satz,
