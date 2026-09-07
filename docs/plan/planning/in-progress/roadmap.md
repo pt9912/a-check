@@ -21,7 +21,10 @@ Welle-Datei, nicht hier.
 
 *(Keine offene Welle.)*
 
-Nichts in Arbeit.
+In Arbeit: [slice-173](../in-progress/slice-173-versions-sensor-baseline-pins.md) — **wellenlos**.
+Er erscheint hier nicht als Welle-Zeile, weil wellenlose Arbeit keine ist (Baseline-Regelwerk
+`modul-06-roadmap.md` §Wann Arbeit eine Welle braucht); genannt wird er, weil der
+Ruhe-Marker nur bei leerem `in-progress/` gilt und sonst eine Unwahrheit wäre.
 
 ## Nächste Wellen
 
