@@ -131,7 +131,7 @@ mit permanentem Auflösungs-Trigger ablöst, analog zur Form, in der
 [MR-014](../../../../harness/conventions.md#mr-014)/[MR-015](../../../../harness/conventions.md#mr-015)/[MR-016](../../../../harness/conventions.md#mr-016)
 ihre Vorgänger abgelöst haben. Das ist ein eigener Folge-Slice (§6) — die
 Formulierung einer neuen Adaption ist eine inhaltliche Entscheidung
-(Architect-Rolle, [Modul 8](../../../../.harness/baseline/v6.2.0/regelwerk/modul-08-agentenrollen.md#rollen-sequenz-für-eine-welle)),
+(Architect-Rolle, Modul 8 (`v6.2.0` · `regelwerk/modul-08-agentenrollen.md` §Rollen-Sequenz für eine Welle)),
 keine reine Analyse.
 
 ## 5. Ergebnis der aufgelösten (`done/`) MR-Dateien
@@ -236,7 +236,7 @@ bewertet — hier nur bestätigt, dass keine Überschneidung mit dem
   §6).
 - **Risiken aus §7:** beide mit Ausgang — siehe §7.
 - **Drei Paarungen:** verschoben auf die Closure von `welle-14` (dieser
-  Slice trägt ein `**Welle:**`-Feld, [Modul 8](../../../../.harness/baseline/v6.2.0/regelwerk/modul-08-agentenrollen.md#rollen-sequenz-für-eine-welle)).
+  Slice trägt ein `**Welle:**`-Feld, Modul 8 (`v6.2.0` · `regelwerk/modul-08-agentenrollen.md` §Rollen-Sequenz für eine Welle)).
 
 ## 10. Sub-Area-Modus
 

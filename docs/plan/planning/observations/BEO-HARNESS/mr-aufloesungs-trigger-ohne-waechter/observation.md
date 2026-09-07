@@ -9,7 +9,7 @@ ist, und wird nur gefunden, wenn jemand die Einträge von Hand durchgeht.
 Zwei Lücken übereinander, und die zweite ist die nähere:
 
 1. Der **Trigger-Audit** der Baseline
-   ([`modul-06`](../../../../../../.harness/baseline/v6.2.0/regelwerk/modul-06-roadmap.md#wellen-closure-prozedur-modul-6),
+   (`modul-06` (`v6.2.0` · `regelwerk/modul-06-roadmap.md` §Wellen-Closure-Prozedur),
    Closure-Schritt 2, im wellenlosen Betrieb getragen von der **Slice**-Closure) zählt drei
    Artefaktklassen auf — Carveout, bootstrap-aware Gate, ADR. Die vierte Klasse, die im selben
    Regelwerk ein Pflichtfeld `Auflösungs-Trigger` führt, steht nicht darin: der `MR`-Eintrag.

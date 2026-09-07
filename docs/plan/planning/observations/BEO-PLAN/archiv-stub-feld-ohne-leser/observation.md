@@ -5,7 +5,7 @@
 Die Baseline verlangt: *„Wer dem Harness ein Artefakt hinzufügt — eine Sektion, eine Liste, eine
 Notiz —, benennt, **wer es liest und wann**. Findet sich kein Leser, ist es Ablage, keine
 Steuerung, und gehört nicht angelegt"*
-([`grundlagen-harness-dateien.md` §Jedes Artefakt hat einen Konsumenten](../../../../../../.harness/baseline/v6.2.0/regelwerk/grundlagen-harness-dateien.md#jedes-artefakt-hat-einen-konsumenten)).
+(`v6.2.0` · `regelwerk/grundlagen-harness-dateien.md` §Jedes Artefakt hat einen Konsumenten).
 
 Der Archiv-Stub trägt ein Feld, das diese Bedingung nicht erfüllt: `**Archiviert:**` bekommt vom
 Werkzeug einen Platzhalter, und den füllt niemand nach. Ein Leser ist nicht benannt, und ein

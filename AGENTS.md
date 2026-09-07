@@ -309,6 +309,21 @@ Workflows. Sicherer Default ohne `APPLY=1` (nichts wird geschrieben) |
   §Ziel-Form: Slice, Review-Report seit `v6.2.0`). Der Gate-Lauf steht darum als feste Zeile unter dem DoD; als Checkbox ist er
   ab slice-098 ein Befund. Ab demselben Stichtag trägt der Kopf `Verantwortlich:`, `Autor:` und
   die berührten Spec-Stellen — `—` ist eine gültige Antwort, Schweigen nicht.
+- **Zitier-Form in einfrierenden Artefakten** (`v6.5.0`, vier Ziel-Formen:
+  Review-Report, Welle-Ergebnisnotiz, beide Archiv-Stubs): Was einfriert,
+  zitiert **Kennung statt Adresse** — `slice-NNN` statt seines Lifecycle-Pfads,
+  `make <target>` statt eines Links auf die Sensor-Datei, eine Baseline-Stelle
+  als **Tag + Pfad in Inline-Code** statt als Link
+  (`` `v<X.Y.Z>` · `regelwerk/<datei>.md` §<Abschnitt> ``). Grund: Der vendored
+  Baum trägt genau einen Tag, der nächste Sprung löscht den alten, und ein Link
+  darauf färbt ein Artefakt rot, das niemand mehr anfassen darf. **Gemessen
+  statt behauptet** (slice-176): Nach der Umstellung von 16 Links ließ sich der
+  vorige Stand entfernen, ohne ein einziges eingefrorenes Artefakt anzufassen —
+  slice-172 hatte an derselben Stelle 22 Nachzüge gebraucht. Verankert im
+  Reviewer-Skill; für Archiv-Stubs erzeugt `tools/archive-wave/` den Text, für
+  die Ergebnisnotiz gilt sie beim Schreiben.
+  **Nicht** betroffen: lebende Dokumente — dort ist der Link richtig, und
+  `versions` hält ihn aktuell.
 - **CR-Texte an ein fremdes Werkzeug** (bisher vier an `d-check`) leben im Slice, der sie erzeugt,
   und gehen erst nach einem Prüf-Durchgang hinaus: der Skill
   [`.harness/skills/cr-text-reviewer.md`](.harness/skills/cr-text-reviewer.md) markiert jeden Satz,

@@ -1,5 +1,5 @@
 **Vorgang:** slice-170
-**Fund:** [`grundlagen-harness-dateien.md`](../../../../../../../.harness/baseline/v6.2.0/regelwerk/grundlagen-harness-dateien.md)
+**Fund:** `v6.2.0` · `regelwerk/grundlagen-harness-dateien.md`
 verlangt, dass ein Verweis aus `AGENTS.md`, einem Slice oder einer ADR auf eine Adaption die
 **Index-Form** `harness/conventions.md#mr-<NNN>` nimmt — ausdrücklich **nicht** den Pfad auf die
 Eintrags-Datei, weil ein Pfad-Link „genau in dem Moment bricht, in dem die Adaption sich auflöst".

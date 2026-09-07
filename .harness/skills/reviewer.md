@@ -55,6 +55,16 @@ Pro Finding: `kategorie` · `quelle` (AC-/ADR-ID, Hard-Rule, Konvention) ·
 Lösungsvorschlag**) · `verifizierbar` (ja/nein — gäbe es einen Gate-/Tool-Lauf,
 der es bestätigt?).
 
+**Zitier-Form** (Norm, `v6.5.0` · `templates/docs/reviews/review-report.template.md`):
+Der Report friert ein; was er zitiert, bewegt sich weiter. Deshalb **Kennung,
+nicht Adresse** — `slice-NNN` statt seines Lifecycle-Pfads, `make <target>`
+statt eines Links auf die Sensor-Datei, eine Baseline-Stelle als **Tag + Pfad
+in Inline-Code** statt als Link: `` `v<X.Y.Z>` · `regelwerk/<datei>.md` §<Abschnitt> ``.
+Der vendored Baum trägt genau einen Tag; der nächste Sprung löscht den alten,
+und ein Link darauf färbt einen Report rot, den niemand mehr anfassen darf.
+Das `pfad`-Feld auf den **geprüften Gegenstand** ist davon nicht betroffen — es
+hält den Stand des Laufs fest und darf das.
+
 Zusätzlich: pro geprüftem Bereich eine **Negativbefund-Zeile** („geprüft, ohne
 Befund"), eine **Kategorie-Summary** und ein **Verdikt**. **HIGH-Findings
 werden vor Übernahme adversarisch gegen das Repo-Artefakt verifiziert**

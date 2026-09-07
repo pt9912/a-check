@@ -161,7 +161,7 @@ DoD vollständig, `make gates`/`make verify` grün, Closure-Notiz geschrieben.
 - **Folge-Slices:** keine.
 - **Risiken aus §6:** beide mit Ausgang — siehe §6.
 - **Drei Paarungen:** verschoben auf die Closure von `welle-14` (dieser
-  Slice trägt ein `**Welle:**`-Feld, [Modul 8](../../../../.harness/baseline/v6.2.0/regelwerk/modul-08-agentenrollen.md#rollen-sequenz-für-eine-welle)).
+  Slice trägt ein `**Welle:**`-Feld, Modul 8 (`v6.2.0` · `regelwerk/modul-08-agentenrollen.md` §Rollen-Sequenz für eine Welle)).
 
 ## 8. Sub-Area-Modus
 

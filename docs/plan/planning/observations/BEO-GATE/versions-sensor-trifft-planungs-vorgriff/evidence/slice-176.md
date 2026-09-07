@@ -16,3 +16,13 @@ kostet Präzision — die DoD nennt jetzt keinen prüfbaren Pfad mehr, sondern e
 Planungsdokumente eine eigene Schreibweise für Stände bekommen — etwa die Zitier-Form aus
 [T-1](../../../../done/slice-174-regelwerk-v650-delta-analyse.md), die genau dafür gebaut ist:
 Kennung statt Adresse. Dann wäre der Umweg keine Umgehung mehr, sondern die Regel.
+
+**Nachtrag, dritter Fund im selben Vorgang** (zählt nicht erneut): Auch die *Umsetzung* stolperte
+darüber. §2.3 des Slice beschreibt den Beweis — „der vorige Stand entfernt, `make gates` danach
+Exit 0" — und nannte den Pfad dabei als Literal. Der Sensor meldete ihn.
+
+Das schärft die Klasse ein drittes Mal: Es trifft nicht nur die *Planung*, sondern jeden Text, der
+**über** einen Stand spricht statt **auf** ihn zu verweisen. Ein Slice, der das Löschen eines
+Standes dokumentiert, muss ihn benennen können — und genau dafür gibt es seit diesem Slice die
+Zitier-Form. Sie wäre hier die richtige Antwort: `` `v6.2.0` `` als Kennung statt als Pfad. Dass
+der Slice sie einführt und im eigenen Text nicht anwendet, ist der Befund.

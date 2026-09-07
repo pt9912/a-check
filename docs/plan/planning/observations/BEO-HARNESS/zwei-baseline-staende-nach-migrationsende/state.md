@@ -1,22 +1,17 @@
-**Stand:** offen (1×)
+**Stand:** verkörpert in [`AGENTS.md`](../../../../../../AGENTS.md) §5 (Zitier-Form für
+einfrierende Artefakte) und [`.harness/skills/reviewer.md`](../../../../../../.harness/skills/reviewer.md)
+§Output-Schema `seit slice-176`.
 
-Unterhalb der Schwelle — der Zähler bleibt, wo er war: [slice-172](../../../done/wellenlos/slice-172-baseline-v600-entfernen.md)
-hat die Beobachtung *aufgelöst*, nicht wiederholt, und ein auflösender Vorgang ist kein Auftreten.
+Der Eintrag beobachtete nicht den Doppelstand selbst — der ist während einer Migration zulässig —,
+sondern seine **Dauer ohne Entscheidung**: kein Mechanismus, der die Frage stellt, keine Frist.
+Beides ist jetzt beantwortet, und zwar an der Ursache:
 
-Der beobachtete **Zustand** war mit slice-172 beseitigt und ist seit
-[slice-175](../../../done/slice-175-etappe-a-vendoring-v650.md) wieder eingetreten — diesmal
-**innerhalb** einer laufenden Migration ([welle-15](../../../welle-15-regelwerk-v650-migration.md)),
-und damit in dem Fenster, das [`conventions.md`](../../../../../../harness/conventions.md#baseline)
-§Baseline ausdrücklich zulässt: „mehrere sind nur während einer Migration zulässig, und das Target
-weist den ungeprüften dann namentlich aus". Beide Hälften sind erfüllt. Der Abbau hängt an
-[slice-176](../../../open/slice-176-zitier-form-einfrierende-artefakte.md) und ist dort als
-DoD-Punkt geführt — **kein neuer Beleg**, weil dieser Eintrag die *Dauer ohne Entscheidung*
-beobachtet und die Entscheidung diesmal vorliegt (Maintainer, 2026-09-07). Die drei in der Anlage genannten Auflösungswege sind damit
-gegenstandslos — gewählt wurde ein vierter, den der Eintrag nicht kannte: die vendored Ziel-Form
-des Adaptions-Eintrags schreibt den **mitwandernden Zeiger** selbst vor, weshalb weder ein
-Nachfolge-Eintrag je `MR` noch eine deklarierte Ausnahme nötig war.
+- **Die Frage wird gestellt**, weil das Löschen des vorigen Stands als DoD-Punkt an einer Etappe
+  hängt statt an gutem Willen (slice-176).
+- **Die Antwort ist billig geworden.** Der Doppelstand blieb bisher liegen, weil das Löschen
+  Handarbeit an eingefrorenen Artefakten erzwang — 22 Nachzüge bei slice-172. Nach der Umstellung
+  auf Kennung statt Adresse waren es **null**: vorigen Stand entfernt, `make gates` Exit 0.
 
-Was **nicht** beseitigt ist, ist der Teil, den die Anlage als das Eigentliche benennt — die Dauer
-ohne Entscheidung, weil niemand die Frage stellt. Dieser Slice hat die Frage einmal beantwortet,
-nicht ihre Wiederkehr geregelt. Der Wächter dafür ist konfigurierbar und noch nicht konfiguriert:
-[slice-173](../../../done/wellenlos/slice-173-versions-sensor-baseline-pins.md).
+**Was nicht gelöst ist:** Für einen künftigen Sprung gilt die Form nur, soweit die neuen Artefakte
+sie tragen. `tools/archive-wave/` erzeugt Archiv-Stubs im Code und kennt sie nicht — benannt in
+slice-176 §3 als eigener Vorgang, nicht als Versäumnis.

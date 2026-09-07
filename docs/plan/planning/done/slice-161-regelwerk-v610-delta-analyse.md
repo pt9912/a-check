@@ -151,7 +151,7 @@ ist oder wie §4.2 aufschiebbar. **Grenze der Analyse, nicht Entwarnung.**
 
 Bei der Nachfrage zu §3 (Entwarnung `AGENTS.template.md`) aufgefallen, nicht
 Gegenstand des ursprünglichen Diffs: die damals vendored `v6.0.0`-Vorlage
-[`AGENTS.template.md`](../../../../.harness/baseline/v6.2.0/templates/AGENTS.template.md)
+`v6.2.0` · `templates/AGENTS.template.md`
 endet nach Schritt 8 des Minimal Agent Workflow (Zeile 236) — kein
 Rollenwechsel-Absatz, keine Review-Pflicht-Formulierung.
 

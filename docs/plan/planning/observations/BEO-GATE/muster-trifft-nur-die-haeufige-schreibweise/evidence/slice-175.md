@@ -4,7 +4,7 @@
 `../baseline/<tag>/`, die eine Datei *innerhalb* von `.harness/` benutzt.
 
 Genau ein Vorkommen im Repo: `.harness/skills/reviewer.md` Zeile 7 verweist als
-`[…](../baseline/v6.2.0/regelwerk/modul-10-review-harness.md)`. Beim Vendoring von `v6.5.0` blieb
+``v6.2.0` · `regelwerk/modul-10-review-harness.md``. Beim Vendoring von `v6.5.0` blieb
 die Zeile stehen — **zweifach unbemerkt**: das `sed`, mit dem der Bestand umgestellt wurde, suchte
 dieselbe zu enge Zeichenfolge, und der Sensor, der den vergessenen Nachzug melden soll, sah sie
 ebenso wenig. Dieselbe Verengung an beiden Stellen, weil dieselbe Vorstellung dahinterstand.

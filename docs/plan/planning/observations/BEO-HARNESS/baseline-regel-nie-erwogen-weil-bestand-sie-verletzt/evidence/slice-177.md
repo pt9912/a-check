@@ -1,6 +1,6 @@
 **Vorgang:** slice-177 (Planung; Fund beim Maintainer-Einwand am 2026-09-07)
 
-**Fund:** Die Ziel-Form [`AGENTS.template.md`](../../../../../../../.harness/baseline/v6.2.0/templates/AGENTS.template.md)
+**Fund:** Die Ziel-Form `v6.2.0` · `templates/AGENTS.template.md`
 §4 sagt zur Gate-Tabelle: *„Diese Tabelle **listet auf**; definiert wird hier nichts. Die
 **Bindung** eines Targets — welche Anforderung oder Entscheidung es durchsetzt — steht in
 `harness/README.md` §Sensors."* Ihre Beispielzellen sind `<…>`.
