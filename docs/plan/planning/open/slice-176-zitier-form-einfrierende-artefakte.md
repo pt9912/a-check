@@ -24,6 +24,14 @@ Vertragsberührung.
 
 Die vier einfrierenden Artefaktklassen zitieren die Baseline als Kennung statt als Adresse — `v<X.Y.Z>` · `regelwerk/<datei>.md` §Abschnitt statt als Link.
 
+**Der Slice trägt zusätzlich den Abschluss von Etappe A.** Der neue und der vorige Stand liegen seit [slice-175](../in-progress/slice-175-etappe-a-vendoring-v650.md)
+nebeneinander — zulässig während einer Migration
+([`conventions.md`](../../../../harness/conventions.md#baseline) §Baseline),
+aber nur bis hierher. Das Löschen hängt an **diesem** Slice und an keinem
+anderen, weil die Zitier-Form die Bedingung dafür schafft: Erst wenn die
+16 Zeitdokumente die Baseline als Kennung statt als Link zitieren, bricht beim
+Entfernen nichts.
+
 **Nicht in diesem Slice**, je Punkt mit Grund:
 
 - **Andere Etappen von [welle-15](../welle-15-regelwerk-v650-migration.md)** —
@@ -46,6 +54,13 @@ Die vier einfrierenden Artefaktklassen zitieren die Baseline als Kennung statt a
 
 - [ ] Die Zitier-Form steht dort, wo a-check sie beim Schreiben liest (Kopier-Hinweise, Skills), und der Bestand ist daran gemessen.
 - [ ] Geprüft, ob `exempt-paths` in [`.d-check.yml`](../../../../.d-check.yml) danach schrumpfen kann — mit Messung, nicht als Vermutung.
+- [ ] **Der vorige vendorte Stand ist entfernt** (Verzeichnis-Literal hier
+      vermieden — `versions` meldete es sonst als `version-stale`), und zwar *ohne* dass ein
+      eingefrorenes Artefakt dafür editiert werden musste — das ist der
+      Nachweis, dass die Zitier-Form trägt. `make regelwerk-check` meldet
+      danach **einen** Stand ohne „ungeprüft"-Hinweis.
+      Übernommen aus [slice-175](../in-progress/slice-175-etappe-a-vendoring-v650.md) §1
+      (Maintainer-Entscheidung 2026-09-07).
 - [ ] Unabhängiger Review durchgeführt (Report unter [`docs/reviews/`](../../../reviews/README.md)).
 - [ ] `make gates` grün.
 - [ ] `make verify` grün.
