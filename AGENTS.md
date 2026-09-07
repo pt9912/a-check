@@ -289,14 +289,38 @@ die CI (Badge im [`README.md`](README.md)), nicht diese Tabelle.
   die Zahl ist das Einzige, was die Schwelle prüfbar macht.
 - **Slice-Form:** neue Slices entstehen aus der **vendored Ziel-Form**
   [`.harness/baseline/v6.5.0/templates/docs/plan/planning/slice.template.md`](.harness/baseline/v6.5.0/templates/docs/plan/planning/slice.template.md) — a-check führt keine eigene Kopie, sie würde gegen die Baseline driften.
-  **Beim Kopieren anzupassen:** die Zeile `Lerneintrag — Form: <…>` ergänzen (die Ziel-Form kennt
-  sie nicht als Feld, `make verify` verlangt sie) und die vier Felder streichen, die a-check nicht
-  führt — `Welle:`, Reconciliation-Register, *drei Paarungen*, Herkunfts-Anker. **Fünftens:** die
-  Ziel-Form führt seit Kurs-Welle 119 (`v6.2.0`) eine Review-DoD-Zeile
-  ([`MR-019`](harness/conventions.md#mr-019)) — ihr Wortlaut wird beim Kopieren auf die exakte
-  Trigger-Phrase „unabhängiger Review" umgeschrieben, statt den Baseline-Wortlaut unverändert zu
-  übernehmen — sonst prüft `make doc-reviews` sie nie (empirisch geprüft, slice-165 §3/§4). Die
-  Regel trägt die
+  **Beim Kopieren anzupassen** — fünf Punkte, gemessen am Bestand (slice-178):
+
+  1. Die Zeile `Lerneintrag — Form: <…>` **ergänzen** — die Ziel-Form kennt sie nicht als Feld,
+     `make verify` verlangt sie.
+  2. **Zwei** Felder streichen, die a-check nicht führt: Reconciliation-Register (kein
+     Brownfield-Bootstrap) und *Herkunfts-Anker*. **`Welle:` bleibt** — a-check führt es, und die
+     *drei Paarungen* auch: bei wellenlosen Slices trägt die Closure sie, bei Slices mit
+     `**Welle:**`-Feld die Welle-Closure. Bis slice-178 stand hier „vier Felder streichen"
+     einschließlich `Welle:`; acht Slices im Bestand widerlegen das.
+  3. **Die Nummerierung verschiebt sich**, weil a-check zwischen Ziel und DoD einen
+     **Analyse-Abschnitt** führt (*Ausgangslage* / *Analyse (vor der Umsetzung)*) — er hält die
+     Messung, auf der die DoD steht. Dadurch: DoD `§2 → §4`, Sub-Area `§8 → §9`. Die Ziel-Form
+     kennt ihn nicht; er ist a-checks Antwort darauf, dass eine Behauptung im Plan später als
+     Messung gelesen wird.
+  4. **§1 heißt *Ziel und Abgrenzung*** und trägt beides: das Ziel in einem Satz und die
+     Ausschlüsse **je Punkt mit Begründung** — *ein Ausschluss ohne Grund ist eine Behauptung,
+     keine Grenze*. **Keine Mindestzahl**; die vier Klassen sind ein **Suchraster**, keine
+     Ausfüll-Liste: Was übernimmt ein **Folge-Slice** (mit Kennung, und die Kennung muss den Punkt
+     annehmen)? Was bleibt als **Bestand** bewusst stehen? Was wäre ein **anderer Vorgang**?
+     Welche **Schicht** rührt der Slice nicht an? Der Abschnitt ist die Grenze, an der ein
+     wachsender Slice sich messen lässt: Wer später etwas mitnimmt, das hier ausgeschlossen war,
+     hat den Plan **geändert**, nicht ergänzt.
+  5. **§9 heißt *Sub-Area-Prüfungen und Modus-Begründung*** — der Titel trägt beide Hälften, weil
+     nur die zweite bedingt ist. Die zwei *Vorgelagert*-Blöcke (Sub-Area-Wahl prüfen · offene
+     Beobachtungen sichten) laufen in **jedem** Slice-Plan, unabhängig von Modus und Slice-Typ;
+     **der Abschnitt entfällt nie**.
+  6. Die Ziel-Form führt eine **Review-DoD-Zeile**
+     ([`MR-019`](harness/conventions.md#mr-019)) — ihr Wortlaut wird beim Kopieren auf die exakte
+     Trigger-Phrase „unabhängiger Review" umgeschrieben, statt den Baseline-Wortlaut unverändert
+     zu übernehmen; sonst prüft `make doc-reviews` sie nie (empirisch geprüft, slice-165 §3/§4).
+
+  Die Regel trägt die
   Größen-Regel — **höchstens drei Liefer-Punkte und höchstens zwei Schichten**; passt der Slice
   nicht hinein, wird er **zerlegt, nicht gedehnt** — und verlangt den Lerneintrag in einer von drei
   **benannten** Formen (geschärfte Regel · neuer Sensor · benannte Spec-Lücke). `make verify`
@@ -349,7 +373,13 @@ Pro Slice:
 2. Relevante kanonische Quelle lesen (Source Precedence beachten).
 3. Betroffene IDs benennen: Slice-ID, `AC-*`, `ADR-*`, betroffene Module,
    auszuführende Gates.
-4. Kleinste sinnvolle Änderung planen.
+4. Kleinste sinnvolle Änderung planen — **und die Plan-Ausgabe nennt
+   Out-of-Scope.** Das ist die Schritt-Hälfte derselben Regel, deren
+   Dokument-Hälfte §1 *Ziel und Abgrenzung* des Slice-Plans ist (§5). Der Lauf
+   schreibt fort, was der Plan schon ausschließt; er erfindet die Abgrenzung
+   nicht neu und **darf sie nicht stillschweigend weiten**: Nimmt der Lauf etwas
+   mit, das §1 ausschließt, ist das eine **Plan-Änderung** und gehört vor den
+   Code, nicht in den Bericht danach.
 5. Engsten nützlichen Sensor laufen lassen.
 6. Repo-weiten Gate-Lauf vor Handoff (`make gates`, sobald slice-003 ihn anlegt).
 7. Doku/Indizes aktualisieren, falls ein öffentlicher Vertrag berührt.

@@ -200,7 +200,7 @@ unabhängiger Lauf bleibt eine eigene Übergabe.
 1. Diese Datei lesen.
 2. Relevante kanonische Quelle lesen.
 3. Betroffene IDs identifizieren.
-4. Kleinste Änderung planen.
+4. Kleinste Änderung planen — die Plan-Ausgabe nennt Out-of-Scope (siehe [`AGENTS.md`](../AGENTS.md) §6).
 5. Engsten nützlichen Sensor laufen lassen (sobald Gates existieren).
 6. Repo-weiten Gate-Lauf vor Handoff (`make gates`, sobald slice-003 ihn anlegt).
 7. Doku/Indizes aktualisieren, falls ein öffentlicher Vertrag berührt.
