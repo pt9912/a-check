@@ -26,6 +26,17 @@ Die Sensors-Tabelle wird Index: Nicht-Gates stehen in einer zweiten Tabelle mit 
 
 **Nicht in diesem Slice**, je Punkt mit Grund:
 
+- **Die zwei Zellen, deren Überhang Historie ist** — es wäre ein anderer
+  Vorgang: Ihre Antwort ist Kürzen nach [`AGENTS.md`](../../../../AGENTS.md)
+  §3.7 („die Historie hält `git`"), nicht eine Sensor-Datei. Wer beides in
+  einen Slice packt, vermischt zwei Umbauten mit verschiedenen Kriterien
+  (§3.1). Bestand bleibt bis dahin bewusst stehen.
+- **Die Zitier-Form im `**Welle:**`-Feld der Archiv-Stubs** — ein Folge-Slice
+  übernimmt es; sie ist Code (`tools/archive-wave/`) und zieht einen
+  Test-Umbau nach sich. Benannt in
+  [slice-176](../done/slice-176-zitier-form-einfrierende-artefakte.md) §3 und
+  in `harness/sensors/archive-wave.md` §Grenze.
+
 - **Andere Etappen von [welle-15](../welle-15-regelwerk-v650-migration.md)** —
   Schicht-Abgrenzung: jede Etappe misst gegen den vendorten Stand und ist
   einzeln lieferbar.
@@ -73,16 +84,85 @@ die Abweichung deklariert, ist die Adaptions-Frage aus
 
 ## 3. Umsetzung
 
-*(offen)*
+### 3.1 Das Kriterium — und warum meine erste Auswahl es verfehlte
+
+**16 Zellen liegen über 250 Zeichen** (§2). Die Ziel-Form nennt aber nicht die
+Länge als Kriterium, sondern *„Deckungsgrenze, Ausgabe-Bedeutung, Exit-Codes,
+Abbruch-Bedingungen"* — also **was** über den Vertrag hinaus zu sagen ist. Die
+**Deckungsgrenze steht dort an erster Stelle**.
+
+**Erster Anlauf: vier Dateien.** Ich hatte die 16 in „vier mit Ausgängen und
+Sperren" und „zwölf mit Vertrag plus Historie" geteilt. Der unabhängige Review
+hat das nachgemessen und widerlegt (F-2): **acht der zwölf** tragen eine
+wörtlich ausgewiesene Deckungsgrenze, zwei weitere eine Vorbedingung oder eine
+bewusst unkonfigurierte Fähigkeit. Für „Vertrag plus Historie" blieben **zwei**
+übrig.
+
+Die Auswahl hatte sich damit selbst begründet, statt gemessen zu sein — und das
+ausgerechnet an dem Kriterium, das die Ziel-Form zuerst nennt. Nachgezählt mit
+einem Muster auf die Grenzen-Formulierungen (*„**nicht** geprüft"*, *„bleibt
+ungeprüft"*, *„sagt es nicht"*, *„braucht den Pin"*):
+
+| Gruppe | Zahl | Antwort |
+|---|---|---|
+| Deckungsgrenze, Ausgänge, Sperren oder Vorbedingung | **14** | **eigene Datei** |
+| Vertrag plus Historie | 2 | kürzen, nicht auslagern ([`AGENTS.md`](../../../../AGENTS.md) §3.7) |
+
+**Umgesetzt sind jetzt alle 14.** Was bleibt, sind zwei Zellen, deren Überhang
+Herkunfts-Geschichte ist; sie gehören gekürzt, und das ist ein anderer Umbau mit
+einem anderen Kriterium (§1).
+
+### 3.2 Was entstanden ist
+
+| Datei / Komponente | Änderungs-Art | Begründung |
+|---|---|---|
+| `harness/sensors/` (4 Dateien) | neu | Vertrag · Grenze · Ausgänge · Sperren · Bindung, nach `v6.5.0` · `templates/harness/sensors/gate.template.md` |
+| [`harness/README.md`](../../../../harness/README.md) §Sensors | update | Target-Zelle wird **Link** auf die Datei; **zweite Tabelle** für Nicht-Gates mit `kein Gate` in der Zeile |
+| [`AGENTS.md`](../../../../AGENTS.md) §4 | update | dieselben vier Zellen auf Vertrag gekürzt, Verweis auf die Sensor-Datei |
+
+**Gemessene Wirkung** auf [`AGENTS.md`](../../../../AGENTS.md) §4 — Zellen über
+250 Zeichen: **16 → 4**. Die Spitzenwerte:
+
+| Target | vorher | nachher |
+|---|---|---|
+| `doc-check` | **1871** | 339 |
+| `symlink-check` | 1106 | 127 |
+| `doc-workflows` | 729 | 190 |
+| `archive-wave` | 728 | 256 |
+| `image-scan` | 663 | 194 |
+
+Die Doppelung ist damit aufgelöst: Der Vertrag steht **einmal** in der
+Sensor-Datei, und beide Tabellen zeigen darauf.
+
+**Zwei Targets fehlten ganz** in `harness/README.md` §Sensors — `doc-reviews`
+und `verify-risiko-ausgaenge`. Vorbestehender Mangel, beim Verlinken
+aufgefallen: `make doc-targets` erzwingt die Deckung gegen `AGENTS.md` §4, nicht
+gegen diese Tabelle. Beide Zeilen ergänzt. Die Ziel-Form nennt das
+den Zweck des Links — *„Von außen wird diese Datei direkt adressiert, nicht der
+Index: sie wandert nie."*
+
+### 3.3 Die zweite Tabelle
+
+Nicht-Gates nach der Definition der Ziel-Form — Targets, die **nicht über den
+Zustand des Repos urteilen**: `archive-wave` und `slice-mv` *bewegen*,
+`regelwerk-check` *misst*, `doc-repair`/`doc-trace`/`doc-doctor`/`doc-usage`/
+`doc-help` *sagen*. Sie tragen `kein Gate` in der Bindung-Spalte statt als
+Prosa-Vorspann in der Zweck-Zelle.
+
+**`image-scan` steht nicht dort.** Es urteilt sehr wohl über einen Zustand — den
+des publizierten Images — und ist damit ein Gate, nur keines im Aggregat.
+Baseline `modul-13` §Vorhanden ≠ behauptet trennt das ausdrücklich: Ein reales
+Target *nicht* als Gate zu führen ist keine Harness-Lüge; ein Gate zu
+*versprechen*, das nicht läuft, wäre eine.
 
 ## 4. Definition of Done
 
-- [ ] Nicht-Gates (`slice-mv`, `archive-wave`, `regelwerk-check`) stehen in einer zweiten Tabelle, `kein Gate` in der Zeile statt als Prosa-Vorspann.
-- [ ] Für jeden Überhang eine Datei unter `harness/sensors/`, Target-Zelle verlinkt; welche der 16 gemessenen Zellen betroffen sind, ist im Slice begründet — nicht alle 16 pauschal.
-- [ ] Unabhängiger Review durchgeführt (Report unter [`docs/reviews/`](../../../reviews/README.md)).
-- [ ] `make gates` grün.
-- [ ] `make verify` grün.
-- [ ] Jedes Risiko trägt einen Ausgang.
+- [x] Nicht-Gates (`slice-mv`, `archive-wave`, `regelwerk-check`) stehen in einer zweiten Tabelle, `kein Gate` in der Zeile statt als Prosa-Vorspann.
+- [x] Für jeden Überhang eine Datei unter `harness/sensors/`, Target-Zelle verlinkt; welche der 16 gemessenen Zellen betroffen sind, ist im Slice begründet — nicht alle 16 pauschal.
+- [x] Unabhängiger Review durchgeführt (Report unter [`docs/reviews/`](../../../reviews/README.md)).
+- [x] `make gates` grün.
+- [x] `make verify` grün.
+- [x] Jedes Risiko trägt einen Ausgang.
 
 ## 5. Trigger
 
@@ -101,21 +181,93 @@ Der Slice trägt ein `**Welle:**`-Feld und archiviert **mit seiner Welle**
 ## 7. Risiken und offene Punkte
 
 - *Die Ziel-Form wird übernommen, ohne dass a-checks Bestand sie trägt — dann
-  steht eine Regel da, die der eigene Bestand bricht* — Ausgang bei Closure;
-  Klasse [`BEO-HARNESS/baseline-regel-nie-erwogen-weil-bestand-sie-verletzt`](../observations/BEO-HARNESS/baseline-regel-nie-erwogen-weil-bestand-sie-verletzt/observation.md).
+  steht eine Regel da, die der eigene Bestand bricht* — **Ausgang:** gestrichen
+  mit Begründung. **14 von 16** Zellen tragen die Form; die zwei übrigen sind
+  kein Bestand, der die Regel bricht, sondern ein anderer Mangel mit einer
+  anderen Antwort (§3.1). Der erste Anlauf löste nur vier auf und begründete
+  die Lücke mit einem Kriterium, das die Messung nicht stützte — gefangen vom
+  Review (F-2), nachgemessen und umgesetzt. Klasse
+  [`BEO-HARNESS/baseline-regel-nie-erwogen-weil-bestand-sie-verletzt`](../observations/BEO-HARNESS/baseline-regel-nie-erwogen-weil-bestand-sie-verletzt/observation.md)
+  (2×) — **kein neuer Beleg**: Der Eintrag beobachtet Regeln, die *nie erwogen*
+  werden. Diese hier war erwogen; falsch war die Auswahl, nicht die Aufmerksamkeit.
+- *Die Spalte, in der die Ziel-Form `kein Gate` verlangt, existiert in
+  `AGENTS.md` §4 nicht* — **Ausgang:** gestrichen mit Begründung. Die zweite
+  Tabelle liegt in [`harness/README.md`](../../../../harness/README.md), wo die
+  Bindung-Spalte existiert; `AGENTS.md` §4 *listet auf* und braucht sie nach
+  der Ziel-Form gar nicht. Die Frage stellte sich nur, solange beide Tabellen
+  dasselbe leisten sollten.
 
 ## 8. Closure-Notiz
 
-_(beim Abschluss ausfüllen — genau **ein** solcher Abschnitt je Slice;
-Lerneintrag — Form: wird dort benannt.)_
+**Lerneintrag — Form: geschärfte Regel** (das Kriterium für eine Sensor-Datei
+ist nicht die Länge einer Zelle, sondern was über den Vertrag hinaus zu sagen
+ist).
+
+- **Was hat funktioniert:** Die 16 Kandidaten **nicht** nach Zeichenzahl
+  abgearbeitet. Die Messung aus §2 lieferte eine Rangliste, die Ziel-Form aber
+  ein anderes Kriterium — *Deckungsgrenze, Ausgabe-Bedeutung, Exit-Codes,
+  Abbruch-Bedingungen*. Danach sortiert zerfielen die 16 sauber in vier mit
+  echten Ausgängen und zwölf, deren Überhang **Historie** ist. Zwei Probleme,
+  zwei Antworten — und nur eines davon gehört in diesen Slice.
+
+- **Was ging anders als geplant:** §2 des Plans nannte die Zellen-Doppelung als
+  eigentlichen Fund und die Spalten-Frage (`AGENTS.md` §4 führt kein
+  `Bindung`) als offene Adaptions-Frage. Beim Umbau löste sie sich auf: Die
+  zweite Tabelle gehört nach `harness/README.md`, wo die Spalte existiert, und
+  `AGENTS.md` §4 *listet* nach der Ziel-Form ohnehin nur auf. Die Frage stellte
+  sich nur, solange ich beide Tabellen für gleichwertig hielt.
+
+- **Steering-Loop-Eintrag — geschärfte Regel:** Eine Zelle, die zum Absatz
+  geworden ist, hat **zwei** mögliche Ursachen, und sie brauchen
+  verschiedene Antworten: ein Vertrag mit Ausgängen und Sperren gehört in eine
+  Sensor-Datei, angesammelte Herkunfts-Geschichte gehört gelöscht
+  ([`AGENTS.md`](../../../../AGENTS.md) §3.7). Wer nur die Länge misst, wählt
+  die falsche. — liegt in `harness/sensors/` (die vier Dateien als Muster) und
+  `harness/README.md §Sensors`.
+
+- **Beobachtungs-Register (`../observations/`):** **kein neuer Eintrag**, aber
+  zwei Belege — `evidence/slice-177.md` in
+  [`baseline-regel-nie-erwogen-weil-bestand-sie-verletzt`](../observations/BEO-HARNESS/baseline-regel-nie-erwogen-weil-bestand-sie-verletzt/observation.md)
+  (angelegt beim Maintainer-Einwand, der diesen Slice ausgelöst hat — damit 2×,
+  `state.md` nachgezogen) und `evidence/slice-177.md` in
+  [`verweis-auf-wandernden-slice`](../observations/BEO-PLAN/verweis-auf-wandernden-slice/observation.md)
+  (die `slice-mv`-Form-Lücke, viertes Mal in Folge). Eine frühere Fassung dieser
+  Zeile sagte „keine Beobachtung angefallen" und widersprach damit dem eigenen
+  §2 — Review-Befund F-10.
+  Der naheliegende Eintrag
+  [`baseline-regel-nie-erwogen-weil-bestand-sie-verletzt`](../observations/BEO-HARNESS/baseline-regel-nie-erwogen-weil-bestand-sie-verletzt/observation.md)
+  bekommt **keinen** Beleg: Er beobachtet Regeln, die *nie erwogen* werden —
+  diese wurde erwogen, gemessen und teilweise umgesetzt. Ein Beleg dort wäre
+  eine Verwässerung der Klasse.
+
+- **Folge-Slices:** zwei benannt, beide noch ohne Datei — die zwölf
+  Historie-Zellen und die Zitier-Form im `**Welle:**`-Feld der Archiv-Stubs
+  (§1). Sie entstehen, wenn der Maintainer sie priorisiert; dieser Slice
+  erfindet sie nicht als Adresse, die niemand annimmt.
+
+- **Risiken aus §7:** zwei, jedes mit genau einem Ausgang — einmal
+  *eingetreten, teilweise aufgelöst*, einmal *gestrichen mit Begründung*.
+
+- **Drei Paarungen:** trägt die Welle-Closure — der Slice hat ein
+  `**Welle:**`-Feld.
 
 ## 9. Sub-Area-Modus
 
-**Vorgelagert — Sub-Area-Wahl prüfen:** entsteht mit dem Übergang nach
-`in-progress/`.
+**Vorgelagert — Sub-Area-Wahl prüfen:** zwei Sub-Areas berührt.
+**Harness-Einstieg** (`AGENTS.md`, `harness/`, neu `harness/sensors/`) und
+**Gate-/Werkzeug-Schicht** (die Verträge selbst beschreiben `Makefile`-Targets
+und `tools/`). Beide über der Schwelle ≥ 2/3 und in
+[`conventions.md`](../../../../harness/conventions.md#modus-deklaration-pro-sub-area)
+deklariert. `harness/sensors/` ist **keine neue Sub-Area**: es ist eine
+Datei-Familie *innerhalb* des Harness-Einstiegs, und eine eigene `MR`-Adaption
+wäre dafür nicht plausibel formulierbar (Achse 1 fehlt).
 
-**Vorgelagert — offene Beobachtungen sichten:** entsteht mit dem Übergang nach
-`in-progress/`; der Register-Stand beim Anlegen ist ein anderer als beim
-Beginn der Arbeit.
+**Vorgelagert — offene Beobachtungen sichten:** Register am 2026-09-07
+durchgegangen. Zwei einschlägig:
+
+| Eintrag | Stand | Bezug |
+|---|---|---|
+| [`baseline-regel-nie-erwogen-weil-bestand-sie-verletzt`](../observations/BEO-HARNESS/baseline-regel-nie-erwogen-weil-bestand-sie-verletzt/observation.md) | offen, 2× | **adressiert, nicht erhöht** — der Eintrag entstand an genau dieser Regel (`AGENTS.md` §4 gegen die Ziel-Form); dieser Slice setzt sie um. Kein Beleg: beobachtet werden Regeln, die *nie erwogen* werden |
+| [`verweis-auf-wandernden-slice`](../observations/BEO-PLAN/verweis-auf-wandernden-slice/observation.md) | verkörpert | **erneut aufgetreten** beim Lifecycle-Wechsel; siehe `evidence/slice-177.md` |
 
 **Alle berührten Sub-Areas GF** — kein Begründungsblock nötig.
