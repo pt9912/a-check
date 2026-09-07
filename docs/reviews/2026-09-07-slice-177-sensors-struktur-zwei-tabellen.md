@@ -77,7 +77,7 @@ Lifecycle-Wechsel **und** die Umsetzung trägt (siehe F-1)
   Ausgabe-Bedeutung, Exit-Codes, Abbruch-Bedingungen"*; **Deckungsgrenze zuerst
   genannt**) · slice-177 §3.1 und §1 · Reviewer-Skill §Klassifikation, *nachweislich
   falsche Tatsachenbehauptung*
-- **pfad:** `docs/plan/planning/in-progress/slice-177-sensors-struktur-zwei-tabellen.md`:94–101
+- **pfad:** `docs/plan/planning/done/slice-177-sensors-struktur-zwei-tabellen.md`:94–101
   (Tabelle §3.1) und :29–33 (§1, erster „Nicht in diesem Slice"-Punkt)
 - **befund:** §3.1 teilt die 16 überlangen Zellen in zwei Gruppen und behauptet für die
   zweite: *„**Vertrag plus Historie** … *woher* die Regel kam, *seit wann* sie im
@@ -195,7 +195,7 @@ Lifecycle-Wechsel **und** die Umsetzung trägt (siehe F-1)
   Modus-Begründung (*„Sie hängen weder am Modus noch am Slice-Typ und stehen deshalb in
   **jedem** Slice-Plan — auch bei reinem Refactor, auch wenn am Ende ‚alles GF‘
   dasteht"*)
-- **pfad:** `docs/plan/planning/in-progress/slice-177-sensors-struktur-zwei-tabellen.md`:225–234
+- **pfad:** `docs/plan/planning/done/slice-177-sensors-struktur-zwei-tabellen.md`:225–234
 - **befund:** §9 trägt für *Sub-Area-Wahl prüfen* und für *offene Beobachtungen sichten*
   je einen Vorwärtsverweis auf einen Zeitpunkt, der mit demselben Commit eingetreten
   ist; ausgefüllt ist keiner der beiden. Der Plan ist im selben Commit vollständig
@@ -213,7 +213,7 @@ Lifecycle-Wechsel **und** die Umsetzung trägt (siehe F-1)
 - **quelle:** `v6.5.0` · `regelwerk/modul-05-planning-harness.md` §Offene Risiken werden
   bei Closure aufgelöst (*„*eingetreten* → Carveout … **oder Folge-Slice mit ID**"*;
   *„**Urteil** bleibt, ob der eingetragene Ausgang *trägt*"*)
-- **pfad:** `docs/plan/planning/in-progress/slice-177-sensors-struktur-zwei-tabellen.md`:164–171
+- **pfad:** `docs/plan/planning/done/slice-177-sensors-struktur-zwei-tabellen.md`:164–171
   und :214–217
 - **befund:** Risiko 1 (*„eine Regel steht da, die der eigene Bestand bricht"*) trägt den
   Ausgang *„eingetreten und **nur zum Teil aufgelöst**, Folge-Slice steht aus"*. Ein
@@ -250,7 +250,7 @@ Lifecycle-Wechsel **und** die Umsetzung trägt (siehe F-1)
 - **quelle:** `v6.5.0` · `regelwerk/modul-06-roadmap.md` §Das Beobachtungs-Register
   (*„Der Zähler wird abgeleitet … es gibt kein Feld, in das man ihn schreibt"*) ·
   Reviewer-Skill §Klassifikation
-- **pfad:** `docs/plan/planning/in-progress/slice-177-sensors-struktur-zwei-tabellen.md`:207–212
+- **pfad:** `docs/plan/planning/done/slice-177-sensors-struktur-zwei-tabellen.md`:207–212
   gegen :57–58 und
   `docs/plan/planning/observations/BEO-HARNESS/baseline-regel-nie-erwogen-weil-bestand-sie-verletzt/`
 - **befund:** §8 führt *„**Beobachtungs-Register:** keine Beobachtung angefallen"*. §2
@@ -333,7 +333,7 @@ Lifecycle-Wechsel **und** die Umsetzung trägt (siehe F-1)
 - **kategorie:** LOW
 - **quelle:** `v6.5.0` · `regelwerk/modul-05-planning-harness.md` §Lifecycle als State
   Machine (*„`open → next` setzt den Verantwortlichen"*)
-- **pfad:** `docs/plan/planning/in-progress/slice-177-sensors-struktur-zwei-tabellen.md`:16
+- **pfad:** `docs/plan/planning/done/slice-177-sensors-struktur-zwei-tabellen.md`:16
 - **befund:** Der Kopf führt `**Verantwortlich:** — *(noch nicht priorisiert)*`. Der
   Slice ist priorisiert, in Arbeit und bis zur Closure-Notiz geschrieben; das Feld sagt
   das Gegenteil. Die Baseline weist es ausdrücklich als Deklaration ohne Sensor aus.
@@ -370,7 +370,7 @@ Lifecycle-Wechsel **und** die Umsetzung trägt (siehe F-1)
 ### F-18 — Das DoD-Häkchen „Unabhängiger Review durchgeführt" war zum Commit-Zeitpunkt gesetzt, ohne dass ein Report existierte
 
 - **kategorie:** INFO
-- **pfad:** `docs/plan/planning/in-progress/slice-177-sensors-struktur-zwei-tabellen.md`:143
+- **pfad:** `docs/plan/planning/done/slice-177-sensors-struktur-zwei-tabellen.md`:143
 - **befund:** Zum Stand `9e42685` trägt `docs/reviews/` Reports zu slice-174, slice-175
   und slice-176, keinen zu slice-177 — dieser hier ist der erste. Gehört zur
   Verifikation (`docs/reviews/README.md` §Abgrenzung zur Verifikation), nicht zum
@@ -381,7 +381,7 @@ Lifecycle-Wechsel **und** die Umsetzung trägt (siehe F-1)
 ### F-19 — „steht seit `v5.12.0` unverändert" ist in diesem Repo nicht nachprüfbar
 
 - **kategorie:** INFO
-- **pfad:** `docs/plan/planning/in-progress/slice-177-sensors-struktur-zwei-tabellen.md`:49–56
+- **pfad:** `docs/plan/planning/done/slice-177-sensors-struktur-zwei-tabellen.md`:49–56
 - **befund:** Der Satz stützt die Kernaussage von §2. Nachprüfbar ist im Repo nur der
   vendorte Stand `v6.5.0` — dort steht der Absatz wortgleich, geprüft. Die Aussage über
   `v5.12.0`, `v6.0.0` und `v6.2.0` beruht auf einer im Evidence-Beleg dokumentierten
