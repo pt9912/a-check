@@ -28,15 +28,15 @@ DoD/Closure prüfen → `modul-11`; Ausnahme oder Diskrepanz einordnen →
 `modul-07`; Modus einer Sub-Area bestimmen → `modul-02` und
 `grundlagen-bootstrap`; Release → `modul-16`. Es liegt **committet
 vendored** im Repo, also netzlos verfügbar:
-[`.harness/baseline/v6.2.0/regelwerk/README.md`](.harness/baseline/v6.2.0/regelwerk/README.md)
+[`.harness/baseline/v6.5.0/regelwerk/README.md`](.harness/baseline/v6.5.0/regelwerk/README.md)
 ist der Index (17 Module + acht Grundlagen-Abschnitte, eine Datei je
 Abschnitt); die Ziel-Formen daneben unter
-[`templates/`](.harness/baseline/v6.2.0/templates/README.md). Integrität:
-`.harness/baseline/v6.2.0/SHA256SUMS`.
+[`templates/`](.harness/baseline/v6.5.0/templates/README.md). Integrität:
+`.harness/baseline/v6.5.0/SHA256SUMS`.
 
 Das vendored Regelwerk ist ein **didaktik-freier Extrakt** und trägt keine
 eigene Normativität: bei Konflikt gilt der Kurs
-([`v6.2.0`](https://github.com/pt9912/ai-harness-course/tree/v6.2.0)), über
+([`v6.5.0`](https://github.com/pt9912/ai-harness-course/tree/v6.5.0)), über
 ihm die kanonischen Quellen (Source Precedence). Der adoptierte Stand und
 die Vendoring-Begründung stehen in
 [`harness/conventions.md`](harness/conventions.md) §Baseline bzw.
@@ -291,7 +291,7 @@ Workflows. Sicherer Default ohne `APPLY=1` (nichts wird geschrieben) |
   aufpassen" ist keine Antwort. Ein Eintrag ohne Vorfallszahl ist unzulässig:
   die Zahl ist das Einzige, was die Schwelle prüfbar macht.
 - **Slice-Form:** neue Slices entstehen aus der **vendored Ziel-Form**
-  [`.harness/baseline/v6.2.0/templates/docs/plan/planning/slice.template.md`](.harness/baseline/v6.2.0/templates/docs/plan/planning/slice.template.md) — a-check führt keine eigene Kopie, sie würde gegen die Baseline driften.
+  [`.harness/baseline/v6.5.0/templates/docs/plan/planning/slice.template.md`](.harness/baseline/v6.5.0/templates/docs/plan/planning/slice.template.md) — a-check führt keine eigene Kopie, sie würde gegen die Baseline driften.
   **Beim Kopieren anzupassen:** die Zeile `Lerneintrag — Form: <…>` ergänzen (die Ziel-Form kennt
   sie nicht als Feld, `make verify` verlangt sie) und die vier Felder streichen, die a-check nicht
   führt — `Welle:`, Reconciliation-Register, *drei Paarungen*, Herkunfts-Anker. **Fünftens:** die

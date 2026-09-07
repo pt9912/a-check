@@ -37,7 +37,7 @@ Die Sensors-Tabelle wird Index: Nicht-Gates stehen in einer zweiten Tabelle mit 
 
 **Der Slice ist kein reiner `v6.5.0`-Nachzug.** Die Regel, die a-checks §4-Tabelle
 bricht, steht **seit `v5.12.0` unverändert** in
-[`AGENTS.template.md`](../../../../.harness/baseline/v6.2.0/templates/AGENTS.template.md)
+[`AGENTS.template.md`](../../../../.harness/baseline/v6.5.0/templates/AGENTS.template.md)
 §4: *„Diese Tabelle **listet auf**; definiert wird hier nichts. Die **Bindung**
 eines Targets … steht in `harness/README.md` §Sensors."* Über vier
 Baseline-Stände und zwei Adaptions-Durchgänge hinweg nie befolgt, und **keine**
