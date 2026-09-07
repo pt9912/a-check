@@ -65,7 +65,7 @@ eine Plan-Änderung vor dem Code.
 ## 5. Trigger
 
 **Start** (`open` → `in-progress`): der neue Stand liegt vendored
-([slice-175](../open/slice-175-etappe-a-vendoring-v650.md) in `done/`),
+([slice-175](../in-progress/slice-175-etappe-a-vendoring-v650.md) in `done/`),
 Maintainer-Freigabe, WIP-Limit frei.
 
 **Rückführungen:** wächst der Umfang über die zwei Punkte hinaus, zurück nach

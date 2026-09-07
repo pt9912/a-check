@@ -21,7 +21,8 @@ Welle-Datei, nicht hier.
 
 - [welle-15](../welle-15-regelwerk-v650-migration.md) — Regelwerk-Migration `v6.2.0` → `v6.5.0`.
 
-Nichts in Arbeit.
+In Arbeit: [slice-175](../in-progress/slice-175-etappe-a-vendoring-v650.md) — Etappe A von
+[welle-15](../welle-15-regelwerk-v650-migration.md).
 
 ## Nächste Wellen
 
