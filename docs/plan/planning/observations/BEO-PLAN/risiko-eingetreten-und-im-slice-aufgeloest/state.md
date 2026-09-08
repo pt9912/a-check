@@ -1,4 +1,4 @@
-**Stand:** offen (1×)
+**Stand:** offen (2×)
 
 Unterhalb der Schwelle. Ein Ausgang ist nicht offensichtlich: Die Dreier-Menge ist eine
 **Baseline**-Setzung (`modul-05` §Offene Risiken werden bei Closure aufgelöst), und a-check
@@ -14,3 +14,14 @@ Beim zweiten Vorkommen ist zu prüfen, ob dieser Eintrag und
 (2×) dieselbe Klasse sind — sie enden am selben Symptom. Zusammengelegt stünde die Schwelle
 sofort; getrennt zählen beide weiter. **Die Entscheidung gehört in den Lese-Schritt, nicht in die
 Anlage**, und sie ist hier ausdrücklich offen gelassen statt vorweggenommen.
+
+**Zweites Vorkommen mit slice-192 — und es schärft die Klasse.** Dort hinterließ das eingetretene
+Risiko eine **fortbestehende Klasse**, und für die gibt es einen passenden Ausgang: *weiter offen*
+→ Register, mit eigener Kennung für die Klasse. Der Ausgang trägt also **dann**, wenn etwas
+übrigbleibt.
+
+**Die Lücke ist damit enger, nicht kleiner:** Sie betrifft den Fall, in dem ein Risiko eintritt,
+im Slice **restlos** aufgelöst wird und **nichts** hinterlässt — slice-187s Fall. Dort bleibt
+*gestrichen mit Begründung* der einzige gangbare Ausgang, und er sagt das Falsche. Beim dritten
+Mal ist zu entscheiden, ob das eine Baseline-Frage ist (`MR` auf die Dreier-Menge) oder eine
+Schreibregel: *entfallen* schreiben **und** im selben Satz sagen, dass es eintrat.

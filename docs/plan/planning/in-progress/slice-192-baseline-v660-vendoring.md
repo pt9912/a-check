@@ -19,11 +19,10 @@
 ## 1. Ziel und Abgrenzung
 
 **Ziel:** Der adoptierte Stand ist `v6.6.0`. Das Bundle liegt vendored im
-Baseline-Verzeichnis unter seinem Tag, `v6.6.0` ist entfernt, alle **46**
-Pin-Vorkommen in
-den **14** lebenden Dateien zeigen auf den neuen Stand, und für jeden aktiven
-`MR`-Eintrag ist **gemessen**, ob sein `Ersetzt-Baseline-Regel`-Zeiger mitwandern
-darf.
+Baseline-Verzeichnis unter seinem Tag, `v6.5.0` ist entfernt, **jede** Nennung
+des alten Standes außerhalb der eingefrorenen Artefakte ist behandelt (§3.2), und
+für jeden aktiven `MR`-Eintrag ist **gemessen**, ob sein
+`Ersetzt-Baseline-Regel`-Zeiger mitwandern darf.
 
 **Ausdrücklich NICHT in diesem Slice** — je Punkt mit Begründung:
 
@@ -44,9 +43,9 @@ darf.
   stehen:* §Baseline sagt, genau **ein** Stand liegt vendored; mehrere sind nur
   während einer Migration zulässig. Der alte geht mit diesem Slice.
 
-## 2. Delta-Analyse `v6.6.0` → `v6.6.0` (2026-09-08)
+## 2. Delta-Analyse `v6.5.0` → `v6.6.0` (2026-09-08)
 
-**Gemessen** gegen den lokalen Kurs-Checkout, `git diff v6.6.0 v6.6.0 --
+**Gemessen** gegen den lokalen Kurs-Checkout, `git diff v6.5.0 v6.6.0 --
 lab/regelwerk lab/templates`: **10 Dateien, +87/−32**. Kurs-Welle 129,
 2026-09-08. Thema: *„Der Gate-Index steht einmal"*.
 
@@ -67,7 +66,7 @@ lab/regelwerk lab/templates`: **10 Dateien, +87/−32**. Kurs-Welle 129,
 Gate-Index. Alles andere ist Pin-Arbeit. **Die Ironie gehört benannt:**
 [slice-187](../done/wellenlos/slice-187-voll-abgleich-erstdurchgang-rest.md)
 hat gerade den Satz *„Diese Tabelle listet auf; die Bindung steht in
-`harness/README.md` §Sensors"* nach §4 übernommen — aus der `v6.6.0`-Ziel-Form,
+`harness/README.md` §Sensors"* nach §4 übernommen — aus der `v6.5.0`-Ziel-Form,
 in der er seit `v5.12.0` stand. `v6.6.0` löscht ihn zusammen mit der Tabelle.
 Die Übernahme war **richtig gegen den adoptierten Stand** und ist mit dem
 nächsten überholt; das ist kein Fehler des Abgleichs, sondern der Normalfall
@@ -95,12 +94,17 @@ prüft (`find … | sort | xargs sha256sum`, `SHA256SUMS` ausgenommen) — auch 
 
 ### 3.2 Pins, Symlinks, und was *nicht* mitgezogen wurde
 
-| Gegenstand | Zahl | Behandlung |
-|---|---|---|
-| Lebende Dateien mit Pin | **16** | gebumpt |
-| Baseline-Symlinks unter `.claude/rules/` | **4** | umgehängt; `make symlink-check` grün |
-| Stand-Zeile in [`harness/conventions.md`](../../../../harness/conventions.md) §Baseline | 1 | Kurs-Welle **129 · 2026-09-08**, aus dem Kopf des vendorten `regelwerk/README.md` übernommen |
-| Eingefrorene Artefakte, die den alten Stand **nennen** | viele | **unangetastet** — sie beschreiben, was damals galt; `versions` nimmt sie über `exempt-paths` aus |
+**Gemessen gegen den Stand vor dem Swap** (`git show <swap>^:<datei> | grep -c`
+über die im Swap-Commit berührten Nicht-Baseline-Dateien), nicht geschätzt:
+
+| Gegenstand | Dateien | Nennungen | Behandlung |
+|---|---|---|---|
+| trugen den alten Pin | **17** | **51** | — |
+| davon **gebumpt** | 15 | 48 | auf den neuen Stand |
+| davon auf **Kennung** umgestellt | 2 | 3 | eingefroren, §3.3 |
+| Baseline-Symlinks unter `.claude/rules/` | 4 | 4 | umgehängt; `make symlink-check` grün |
+| Stand-Zeile in [`harness/conventions.md`](../../../../harness/conventions.md) §Baseline | 1 | 1 | Kurs-Welle **129 · 2026-09-08**, aus dem Kopf des vendorten `regelwerk/README.md` |
+| eingefrorene Artefakte, die den alten Stand **nennen** | viele | — | **unangetastet** — sie beschreiben, was damals galt; `versions` nimmt sie über `exempt-paths` aus |
 
 **Zwei eingefrorene Einträge trugen einen *Link*, keine Kennung** — und das ist
 der Fund dieses Slice (§3.3).
@@ -151,26 +155,73 @@ in §Doku-Konsistenz-Drift-Regeln, nicht in
 §Kernidee — genau die Unterscheidung, die die Regel verlangt und die eine
 Datei-Ebenen-Messung verfehlt hätte.
 
-### 3.5 Die Delta-Zahl präzisiert
+### 3.5 Die Delta-Zahl präzisiert — und was sie für slice-188 bedeutet
 
 §2 nennt **10** geänderte Dateien nach `git diff`. Normalisiert (ohne die
-Tag-Zeile) sind es **neun echte** plus eine, die sich **nur** im gepinnten
-Release-Asset-Link unterscheidet: `templates/harness/conventions.template.md`.
-Für slice-188/189 ist das relevant — sie messen gegen die Vorlagen, und eine
-Vorlage, die sich nur im Tag unterscheidet, ist kein Abgleich-Gegenstand.
+Tag-Zeile) sind es **neun echte**; die zehnte,
+`templates/harness/conventions.template.md`, unterscheidet sich **nur** im
+gepinnten Release-Asset-Link.
+
+**Folge für die laufende Abgleich-Kette, und sie ist konkret:** Von den neun
+echten Änderungen liegen **drei in Vorlagen, die slice-188/189 als Paar
+führen** — `templates/.d-check.yml` (+24 Zeilen: der `targets`-Block mit
+*einem* Gate-Index und der Hinweis *„Aktivieren heißt zwei Schritte"*),
+`templates/AGENTS.template.md` und `templates/harness/README.template.md`.
+Damit ist **slice-188s Ausgangsmessung überholt**: Die dort genannten *42
+Kandidaten* für `.d-check.yml` sind gegen den alten Stand gemessen. Der Slice
+muss neu messen, bevor er liest; sein §2 zitiert das Instrument aus slice-187,
+also ist das ein Aufruf, kein Umbau.
+
+### 3.6 Was der unabhängige Review verändert hat
+
+Der Report
+([`2026-09-08-slice-192-…`](../../../reviews/2026-09-08-slice-192-baseline-v660-vendoring.md))
+trug **3 HIGH · 5 MEDIUM · 2 LOW · 2 INFO**. Er hat den **Bau-Weg vollständig
+nachgefahren** — beide Bundles neu gebaut, beide byte-gleich, beide Manifeste
+reproduziert — und die zweistufige Zeiger-Messung bestätigt. Gefunden hat er
+drei Dinge, die kein Lauf fängt:
+
+| Befund | Kern | Behebung |
+|---|---|---|
+| **F-1** Historische Nennungen mitgehoben | Der Massen-`sed` traf **sieben** Stellen im Plan, an denen der alte Stand eine **Tatsache** ist: §1 behauptete *„`v6.6.0` ist entfernt"*, §2 hieß *„Delta-Analyse `v6.6.0` → `v6.6.0`"*, und das dort genannte Instrument `git diff v6.6.0 v6.6.0` liefert leere Ausgabe | alle sieben zurückgesetzt; neu im Register: [`BEO-HARNESS/massen-ersetzung-trifft-die-historische-aussage`](../observations/BEO-HARNESS/massen-ersetzung-trifft-die-historische-aussage/observation.md) |
+| **F-2** Das Closure-Log verfälscht | Dieselbe Ersetzung machte aus `welle-15`s Migration `v6.2.0`→`v6.5.0` eine `v6.2.0`→`v6.6.0` — im Widerspruch zur Ergebnisnotiz, auf die die Zeile zeigt | zurückgesetzt |
+| **F-3** §9 erklärte `PLAN` und `REVIEW` für unberührt | ...obwohl der Diff in beiden Verzeichnissen arbeitet und §9 zwölf Zeilen höher selbst eine offene `BEO-PLAN`-Klasse als eingebaut führt — **die Wiederholung von slice-187 F-2**, aus dem dieser Slice gelernt haben wollte | §9 korrigiert |
+
+**F-1 und F-2 sind derselbe Handgriff, und er ist die Lehre dieses Slice:** Ein
+Versions-Wechsel ist eine Ersetzung von **Zeigern**, nicht von **Kennungen**.
+Wer mit der nackten Kennung ersetzt, trifft jeden Satz, in dem der alte Stand
+eine Tatsache ist — und am dichtesten stehen solche Sätze in dem Dokument, das
+den Wechsel beschreibt. **Die billige Vorbeugung stand die ganze Zeit da:**
+Ersetzt man mit dem **Muster des Versions-Sensors** (nur `<baseline>/<tag>/`),
+ist keine der sieben Stellen betroffen.
+
+**F-3 ist die unbequemste.** Der Slice hat die Lehre aus slice-187 in §9
+**zitiert** — *„das Register nach allen berührten Kürzeln"* — und beim Ziehen der
+Konsequenz dieselbe Grenze gezogen wie sein Vorgänger: nach Sub-Area-Deklaration
+statt nach dem, was der Diff anfasst. **Eine Regel zu zitieren ist nicht,
+sie anzuwenden**; das ist der zweite Lerneintrag (§8).
+
+**Die übrigen neun** in Kürze: drei widersprüchliche Pin-Zahlen (46/14, 16,
+gemessen 17/51 — §3.2 trägt jetzt die Messung samt Aufruf) · §3.5 rechnete die
+Delta-Dateien falsch auf und übersah, dass `templates/.d-check.yml` slice-188s
+erstes Paar ist (oben behoben) · der Rest ist LOW/INFO, darunter der Hinweis,
+dass der Kurs-Checkout inzwischen sauber ist und Risiko 4 damit retrospektiv
+nicht mehr an seiner Prämisse hängt — der **Ausgang** hängt nicht daran, weil er
+über die Gegenprobe belegt ist, nicht über den Zustand des fremden Baums.
 
 ## 4. Definition of Done
 
 - [x] Das Bundle (`regelwerk/` + `templates/`) liegt vendored unter dem Tag
-      `v6.6.0` mit `SHA256SUMS`; `v6.6.0` ist entfernt; `make regelwerk-check`
+      `v6.6.0` mit `SHA256SUMS`; `v6.5.0` ist entfernt; `make regelwerk-check`
       grün.
-- [x] Alle **46** Pin-Vorkommen in den **14** lebenden Dateien und die vier
-      Baseline-Symlinks unter `.claude/rules/` zeigen auf `v6.6.0`;
-      `make symlink-check` und `make doc-check` grün.
+- [x] **Jede** Nennung des alten Standes außerhalb der eingefrorenen Artefakte
+      ist behandelt — 17 Dateien, 51 Nennungen, davon 15/48 gebumpt und 2/3 auf
+      Kennung umgestellt (§3.2) — und die vier Baseline-Symlinks zeigen auf
+      `v6.6.0`; `make symlink-check` und `make doc-check` grün.
 - [x] Für **jeden** aktiven `MR`-Eintrag mit Baseline-Zeiger ist **gemessen**,
       ob der referenzierte Abschnitt im neuen Stand wortgleich ist — nicht
       angenommen. Wo nicht, trägt die Stelle die Abweichung sichtbar.
-- [ ] Unabhängiger Review durchgeführt (Report unter [`docs/reviews/`](../../../reviews/README.md)).
+- [x] Unabhängiger Review durchgeführt (Report unter [`docs/reviews/`](../../../reviews/README.md)) — 12 Findings, alle abgearbeitet (§3.6).
 - [x] Closure-Notiz mit Steering-Loop-Lerneintrag.
 - [x] Beobachtungs-Register fortgeschrieben.
 - [x] Jedes Risiko aus §7 trägt einen Ausgang.
@@ -206,16 +257,23 @@ Lerneintrag.
   steht hier, in §1 als Abgrenzung und in slice-193 §1 als Ziel. Eine gestaffelte
   Migration erzeugt ihn zwangsläufig — die Alternative wäre ein Diff, den keine
   Review-Sitzung prüfen kann.
-- **Der Pin-Bump ist mechanisch und trifft 46 Stellen.** Ein übersehener Pin
+- **Der Pin-Bump ist mechanisch und trifft 51 Stellen.** Ein übersehener Pin
   zeigt ins Leere, sobald der alte Stand weg ist; `make doc-check` fängt tote
   Links, aber ein Pin **im Fließtext** ohne Link bleibt stehen.
-  — **Ausgang:** *entfallen*, gestrichen mit Begründung: Beide Richtungen sind
-  gemessen. Vorwärts: `grep` auf den alten Stand liefert außerhalb der
-  eingefrorenen Artefakte **null** Treffer. Rückwärts: `make doc-check`,
-  `make symlink-check` und `make regelwerk-check` sind grün, und der alte Baum
-  ist entfernt — ein übersehener Link hätte kein Ziel mehr und wäre rot. Der
-  Fließtext-Fall ist damit ebenfalls abgedeckt, weil der `grep` nicht nach Links
-  sucht, sondern nach der Zeichenfolge.
+  — **Ausgang:** *weiter offen* → **Beobachtungs-Register**,
+  [`BEO-HARNESS/massen-ersetzung-trifft-die-historische-aussage`](../observations/BEO-HARNESS/massen-ersetzung-trifft-die-historische-aussage/observation.md)
+  (neu, 1×). Der **Einzelfall** ist behoben (§3.6), die **Klasse** nicht: Jeder
+  künftige Versions-Wechsel trifft dieselbe Falle, solange mit der nackten
+  Kennung statt mit dem Pfad-Muster ersetzt wird. Das Risiko traf **die andere Richtung** als erwartet: Nicht ein
+  übersehener Pin blieb stehen, sondern eine Massen-Ersetzung hob **historische**
+  Nennungen mit, die stehenbleiben mussten — im Plan selbst und im Closure-Log
+  der Roadmap. Kein Lauf fängt das: `versions` bindet an Pfad-Pins, eine nackte
+  Kennung im Fließtext sieht es nicht. Gefunden hat es der unabhängige Review.
+  **Nach der Behebung gemessen:** Außerhalb der eingefrorenen Artefakte nennt den
+  alten Stand nur noch, was ihn nennen **muss** — die sieben historischen Stellen
+  im Plan und die zwei Kennung-Zeiger in `conventions/done/`. `make doc-check`,
+  `make symlink-check` und `make regelwerk-check` sind grün, und der alte Baum ist
+  entfernt: Ein übersehener **Link** hätte kein Ziel mehr und wäre rot.
 - **Die MR-Zeiger dürfen nur wandern, wenn der Zielabschnitt wortgleich ist.**
   — **Ausgang:** *entfallen*, gestrichen mit Begründung: Für alle fünf gemessen
   (§3.4), alle fünf wortgleich. Die Messung lief **zweistufig** — Datei im Delta,
@@ -278,6 +336,23 @@ neuer erscheint. Wer daraus schließt, man solle mit dem Abgleich warten, hat di
 Reihenfolge falsch herum: slice-187s Übernahme hat den Bestand für **diesen**
 Sprung erst lesbar gemacht.
 
+**Der zweite Lerneintrag kommt vom Review, und er ist unbequem: *Eine Regel zu
+zitieren ist nicht, sie anzuwenden.*** §9 dieses Slice trägt die Lehre aus
+slice-187 im Wortlaut — *„das Register nach **allen** berührten Kürzeln lesen"* —
+und zog beim Ziehen der Konsequenz **dieselbe** Grenze wie sein Vorgänger: nach
+der Sub-Area-Deklaration statt nach dem, was der Diff anfasst. Die Regel stand
+zwölf Zeilen über der Stelle, an der sie verletzt wurde. **Was daraus folgt:**
+Eine Lehre, die als Satz in den nächsten Plan wandert, ist noch kein Handgriff.
+Der Handgriff wäre `git diff --name-only` gegen die Kürzel-Tabelle — mechanisch,
+nicht als Erinnerung.
+
+**Und der erste Lerneintrag hat eine Schwester, die ihn erklärt:** Beide Fehler
+dieses Slice — die mitgehobenen historischen Nennungen und die zu enge Sichtung —
+sind Fälle, in denen **das richtige Werkzeug danebenlag**. Für die Ersetzung war
+es das Muster des Versions-Sensors, für die Sichtung `git diff --name-only`.
+Gegriffen wurde beide Male zum Naheliegenden: der nackten Kennung und der
+Deklaration.
+
 **Beobachtungs-Register.** Erhöht:
 [`BEO-GATE/versions-sensor-trifft-planungs-vorgriff`](../observations/BEO-GATE/versions-sensor-trifft-planungs-vorgriff/observation.md)
 auf **3×** — der Migrationsplan selbst nannte den kommenden Stand als Pfad, und
@@ -286,7 +361,12 @@ auf **3×** — der Migrationsplan selbst nannte den kommenden Stand als Pfad, u
 die Zitier-Form ([`AGENTS.md`](../../../../AGENTS.md) §5, `seit slice-192`).
 Neu bei 1×:
 [`BEO-HARNESS/zwei-regeln-machen-einander-unmoeglich`](../observations/BEO-HARNESS/zwei-regeln-machen-einander-unmoeglich/observation.md)
-— der Fund aus §3.3.
+(§3.3) und
+[`BEO-HARNESS/massen-ersetzung-trifft-die-historische-aussage`](../observations/BEO-HARNESS/massen-ersetzung-trifft-die-historische-aussage/observation.md)
+(§3.6). **Nicht** erhöht wurden die vier `PLAN`-Einträge bei 2×: Sie sind in
+diesem Vorgang **bedient oder behoben**, und ein Fund, den der Review findet und
+derselbe Slice schließt, ist kein zweites Auftreten in einem anderen Vorgang
+(§9).
 
 ## 9. Sub-Area-Prüfungen und Modus-Begründung
 
@@ -337,5 +417,27 @@ statt nur das Ergebnis; *Vollständigkeits-Haken ohne erschöpften Gegenstand* �
 die MR-Zeiger sind **zweistufig** gemessen (Datei, dann Abschnitt), weil die
 Datei-Ebene für [`MR-014`](../../../../harness/conventions.md#mr-014) das falsche Ergebnis geliefert hätte.
 
-**Keine Treffer sind ebenfalls eine Antwort:** Zu `SPEC`, `PLAN`, `KERN`,
-`ADAPT` und `REVIEW` steht nichts Offenes an, das dieser Slice berührt.
+**`PLAN` und `REVIEW` sind berührt — korrigiert nach dem Review (F-3).** Der
+Diff arbeitet in `docs/plan/planning/` (Plan, Roadmap, Register) und in
+`docs/reviews/` (der Report). Die erste Fassung dieses Abschnitts erklärte beide
+für unberührt, weil sie nach der **Sub-Area-Deklaration** zuschnitt statt nach
+dem, was der Diff anfasst — dieselbe Grenze, die slice-187 gezogen hatte und
+deren Lehre zwölf Zeilen weiter oben zitiert steht.
+
+| Eintrag | Kürzel | Berührung |
+|---|---|---|
+| [`zielsatz-nach-plan-aenderung-nicht-nachgezogen`](../observations/BEO-PLAN/zielsatz-nach-plan-aenderung-nicht-nachgezogen/observation.md) | `PLAN` | **berührt, nicht erhöht** — der Umfang dieses Slice hat sich nicht geändert; Titel und §1 tragen dieselbe Zusage wie die DoD |
+| [`messung-ohne-reproduzierbares-instrument`](../observations/BEO-PLAN/messung-ohne-reproduzierbares-instrument/observation.md) | `PLAN` | **bedient** — §3.1 und §3.2 nennen Bau-Weg, Gegenprobe und den Mess-Aufruf, nicht nur das Ergebnis |
+| [`vollstaendigkeits-haken-ohne-erschoepften-gegenstand`](../observations/BEO-PLAN/vollstaendigkeits-haken-ohne-erschoepften-gegenstand/observation.md) | `PLAN` | **eingetreten und behoben** — die DoD-Zeile zu den Pins nannte eine Zahl, die den Gegenstand nicht deckte; jetzt steht die Messung mit ihrem Aufruf daneben |
+| [`kandidaten-klassifikation-groeber-als-der-kandidat`](../observations/BEO-PLAN/kandidaten-klassifikation-groeber-als-der-kandidat/observation.md) | `PLAN` | **eingetreten und behoben** — *„10 geänderte Dateien"* deckte die zehnte nicht, die sich nur im Tag unterscheidet (§3.5) |
+| [`review-geltungsbereich-zu-eng`](../observations/BEO-PLAN/review-geltungsbereich-zu-eng/observation.md) | `PLAN` | **berührt** — genau die Klasse, die §8 als zweiten Lerneintrag trägt |
+
+**Keiner der fünf erreicht mit diesem Slice 3×**: Die vier `PLAN`-Einträge bei 2×
+sind hier **bedient oder behoben**, nicht neu belegt — ein Fund, den der Review
+findet und der Slice im selben Vorgang schließt, ist kein zweites Auftreten der
+Klasse in einem *anderen* Vorgang. Zu `REVIEW` steht nichts Offenes an; zu
+`SPEC`, `KERN` und `ADAPT` ebenfalls nichts.
+
+**Neu angelegt, zusätzlich zu §3.3:**
+[`BEO-HARNESS/massen-ersetzung-trifft-die-historische-aussage`](../observations/BEO-HARNESS/massen-ersetzung-trifft-die-historische-aussage/observation.md)
+bei 1× (§3.6, F-1/F-2).
