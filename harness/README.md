@@ -28,9 +28,7 @@ Diese Datei dupliziert sie nicht.
 | 8 | [`AGENTS.md`](../AGENTS.md) | Agent-Briefing |
 | 9 | diese Datei | Harness-Einstieg |
 
-Neun Ränge inkl. `docs/user`-Stratum (Benutzerhandbuch); der zuvor ausgelassene
-Rang ist mit [`MR-003`](conventions.md#mr-003--source-precedence-ohne-docsuser-rang)
-(aufgelöst) eingefügt.
+Neun Ränge inkl. `docs/user`-Stratum (Benutzerhandbuch).
 
 ## Guides (Feedforward-Quellen)
 
@@ -166,13 +164,11 @@ Namen, und diese Zuordnung steht nur hier:
 | Reviewer → Implementation | Review-Report unter [`docs/reviews/`](../docs/reviews/README.md), Findings HIGH/MEDIUM/LOW/INFO mit Kopf-Metadaten |
 | Implementation → Verifier | abgehakte DoD-Punkte plus Sensor-Belege (Gate-Ausgabe mit Exit-Code) |
 | Verifier → Planner | `make verify` (Exit-Code) plus Closure-Notiz mit zwei beobachtbaren Kriterien |
-| Verifier → Validator | **unverkörpert**, deklariert als [MR-009](conventions.md#mr-009--validator-rolle-unbesetzt-zwei-übergaben-ohne-artefakt) |
-| Validator → Planner | **unverkörpert**, deklariert als [MR-009](conventions.md#mr-009--validator-rolle-unbesetzt-zwei-übergaben-ohne-artefakt) |
+| Verifier → Validator | **unverkörpert**, deklariert als [MR-016](conventions/MR-016-validator-unbesetzt.md) |
+| Validator → Planner | **unverkörpert**, deklariert als [MR-016](conventions/MR-016-validator-unbesetzt.md) |
 
-**Die beiden Validator-Kanten sind unbesetzt, und das ist benannt statt erfunden**
-([`MR-016`](conventions/MR-016-validator-unbesetzt.md) trägt die Begründung und den
-Rückbau-Trigger). Wer sie schließen will, braucht einen Abnehmer außerhalb des Repos und ein
-Artefakt, das dessen Urteil festhält; beides gibt es hier nicht.
+**Die beiden Validator-Kanten sind unbesetzt, und das ist benannt statt erfunden:**
+[`MR-016`](conventions/MR-016-validator-unbesetzt.md) trägt Begründung und Auflösungs-Trigger.
 
 ## Minimal agent workflow
 

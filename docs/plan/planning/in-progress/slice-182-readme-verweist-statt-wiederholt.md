@@ -37,13 +37,47 @@ Workflow und wird von jedem Lauf ganz gelesen.
 - **Ein Sensor.** *„Ist dieser Satz im Regelwerk schon gesagt?"* ist ein Urteil,
   kein Match — dieselbe Grenze, die [`AGENTS.md`](../../../../AGENTS.md) §3.7 für
   sich selbst benennt. Was maschinell geht, ist die Zeichen-Obergrenze in
-  Tabellenzellen, und die trägt slice-181.
+  Tabellenzellen, und die trägt [slice-181](../open/slice-181-tabellenzellen-gewaechtert.md).
+
+**Zwei benannte Plan-Änderungen** ([`AGENTS.md`](../../../../AGENTS.md) §6: „Nimmt
+der Lauf etwas mit, das §1 ausschließt, ist das eine **Plan-Änderung**"):
+
+1. **`AGENTS.md` wird doch angefasst** — aber nur um den Zielort des
+   Lerneintrags. Der Ausschluss oben zielt auf `AGENTS.md` als *Gegenstand* des
+   Aufräumens; eine geschärfte Regel braucht dort ihren Herkunfts-Anker, sonst
+   ist der Lerneintrag *gezählt, nicht verkörpert*. Der Gegenstands-Ausschluss
+   bleibt: kein Absatz in `AGENTS.md` wurde auf Duplikate geprüft oder gekürzt.
+2. **§Source precedence kommt hinzu.** §3 listete drei Abschnitte; der Review
+   fand in einem vierten eine Chronik-Zeile derselben Klasse
+   (*„der zuvor ausgelassene Rang ist mit [`MR-003`](../../../../harness/conventions/done/MR-003-source-precedence-ohne-docs-user.md) (aufgelöst) eingefügt"*).
+   Eine Zeile in derselben Datei, dieselbe Regel — mitgenommen und hier
+   benannt, statt sie für einen Folge-Slice liegen zu lassen.
+3. **Zwei Tatsachen-Korrekturen, die die Kürzung sichtbar machte.**
+   [`harness/README.md`](../../../../harness/README.md) §Rollen nannte in zwei
+   Tabellenzeilen [`MR-009`](../../../../harness/conventions/done/MR-009-validator-unbesetzt.md)
+   — aufgelöst durch [`MR-016`](../../../../harness/conventions/MR-016-validator-unbesetzt.md), auf das der neue Absatz daneben zeigt; und
+   [`AGENTS.md`](../../../../AGENTS.md) §4 nannte `make gate-consistency` als
+   Erzwinger der Doku-↔-Makefile-Konsistenz, obwohl `doc-targets` das seit
+   slice-079 tut. Der zweite Widerspruch ist **älter** als dieser Slice; der
+   gestrichene Chronik-Halbsatz war die einzige Prosa-Stelle, die beide
+   Fassungen zusammenhielt. Beide korrigiert, statt sie als Kollateralschaden
+   der Kürzung stehen zu lassen.
 
 ## 2. Ausgangsmessung (2026-09-07)
 
-**Sichtbare Prosa** je Abschnitt — HTML-Bedienhinweise der Vorlage und
-Tabellenzeilen herausgerechnet, gemessen gegen
-`v6.5.0` · `templates/harness/README.template.md`:
+**Sichtbare Prosa** je Abschnitt, gemessen gegen
+`v6.5.0` · `templates/harness/README.template.md`.
+
+**Methode:** Abschnitt = von einer `##`-Überschrift bis zur nächsten; daraus
+HTML-Kommentare (`<!-- … -->`) und alle mit `|` beginnenden Zeilen entfernt;
+gezählt werden die verbleibenden Zeichen einschließlich Zeilenumbrüchen.
+**Geltungsbereich:** **fünf** der **neun** `##`-Abschnitte — die vier übrigen
+(§Purpose, §Guides, §Source precedence, §Minimal agent workflow) liegen bei
+±241 Zeichen gegen die Ziel-Form und wurden deshalb nicht einzeln vermessen.
+Das ist eine Auswahl nach Größe, und sie hat einen Fund verfehlt: In
+§Source precedence stand eine Chronik-Zeile, die erst der Review fand
+(§1, Plan-Änderung 2). Eine Größen-Auswahl sieht Duplikate nur, wenn sie groß
+sind.
 
 | Abschnitt | a-check | Ziel-Form | Faktor |
 |---|---|---|---|
@@ -53,7 +87,7 @@ Tabellenzeilen herausgerechnet, gemessen gegen
 | §Leseordnung | 843 | 464 | 1,8 × |
 | §Traceability rules | 753 | 385 | 2,0 × |
 
-Gesamt **21 374** gegen **10 436** Zeichen. Der Faktor allein ist **kein**
+Gesamt **21 426** gegen **10 436** Zeichen — Stand bei Slice-Beginn; die 21 374 der ersten Fassung waren der Stand zwei Commits davor (Review F-3). Der Faktor allein ist **kein**
 Befund — ein ausgefülltes Dokument ist länger als seine Vorlage. Befund ist,
 **wo derselbe Text schon woanders steht**; drei Stellen sind belegt:
 
@@ -185,11 +219,24 @@ je geänderten Abschnitts erneut gezählt, gegen §2 gehalten.
   §3 plante, §Safety, §Leseordnung und §Traceability „je Satz zu prüfen und zu
   entscheiden". Die Prüfung entschied gegen das Kürzen: §Traceability ist die
   **ausgefüllte** Ziel-Form (vier Punkte, gleiche Struktur, konkrete Targets),
-  §Safety trägt fünf AC-gebundene Zusagen, die nirgends sonst stehen, und
-  §Leseordnung **zitiert** die Regel bereits mit Verweis, statt sie
-  nachzuschreiben — die Form, die dieser Slice herstellen wollte, stand dort
-  schon. Der Faktor gegen die Ziel-Form war bei §Safety **22×** und trotzdem
-  kein Befund.
+  §Safety ebenso — dort führt die Vorlage zwei Platzhalter-Punkte und den
+  Bedienhinweis *„repo-spezifisch formulieren"* —, und §Leseordnung **zitiert**
+  die Regel bereits mit Verweis, statt sie nachzuschreiben; die Form, die dieser
+  Slice herstellen wollte, stand dort schon. Der Faktor gegen die Ziel-Form war
+  bei §Safety **22×** und trotzdem kein Befund.
+
+  **Korrigiert nach dem Review (F-1):** Die erste Fassung begründete §Safety mit
+  *„fünf AC-gebundene Zusagen, die nirgends sonst stehen"*. Das ist falsch —
+  dieselben Zusagen stehen in den beiden `AC-QA-*`, auf die sie verlinken, in
+  [`README.md`](../../../../README.md):90,
+  [`spec/architecture.md`](../../../../spec/architecture.md):106 und wörtlich im
+  [Benutzerhandbuch](../../../../docs/user/benutzerhandbuch.md):744. Der
+  Abschnitt bleibt trotzdem stehen, aber aus einem anderen Grund: Eine
+  `AC-*`-Zusammenfassung mit Link zeigt **nach oben** in der Source Precedence,
+  und das ist die Aufgabe eines Einstiegspunkts. Gegenstand dieses Slice ist
+  nachgeschriebener **Baseline**-Normtext, nicht die eigene Spec — die
+  Unterscheidung fehlte der ersten Fassung, und sie steht jetzt in der
+  geschärften Regel.
 
 - **Steering-Loop-Eintrag — geschärfte Regel:** Der Größen-*Vergleich* mit einer
   Ziel-Form ist kein Befund; Befund ist, **wo derselbe Text schon woanders
@@ -208,9 +255,27 @@ je geänderten Abschnitts erneut gezählt, gegen §2 gehalten.
   [`chronik-in-gelesenen-dateien`](../observations/BEO-HARNESS/chronik-in-gelesenen-dateien/observation.md)
   (2×, `evidence/slice-182.md`). Beide bleiben unter der Schwelle.
 
-- **Folge-Slices:** keiner neu. [`AGENTS.md`](../../../../AGENTS.md) ist
-  ausdrücklich ausgeschlossen (§1) und bekommt einen, wenn die hier belegten
-  Kriterien tragen — die Entscheidung fällt nach diesem Slice, nicht in ihm.
+- **Was der Review fand — und warum es zu diesem Slice gehört.** Der
+  unabhängige Lauf war **merge-blockierend**: 3 HIGH, 4 MEDIUM, 6 LOW, 1 INFO.
+  Sein Verdikt trennt sauber: *„Die Kürzung selbst trägt … Blockierend ist die
+  Beleg-Schicht darum herum."* Alle drei HIGH betrafen **Behauptungen über den
+  Bestand**, nicht die Arbeit am Bestand:
+  eine Alleinstellungs-Aussage, die gegen [`spec/lastenheft.md`](../../../../spec/lastenheft.md)
+  falsch war und als Beleg nach [`AGENTS.md`](../../../../AGENTS.md) §5 gewandert
+  ist (F-1); ein `state.md`, das nach dem Commit einen Zustand behauptete, den
+  derselbe Commit beseitigt hatte (F-2); ein Vorher-Wert, der zwei Commits alt
+  war (F-3). Der Reviewer benennt die Ironie: *„Befund ist, wo derselbe Text
+  schon woanders steht — das setzt voraus, dass man weiß, wo er sonst noch
+  steht."*
+
+- **Folge-Slice:** [slice-183](../open/slice-183-agents-md-verweist-statt-wiederholt.md)
+  — dieselbe Frage für [`AGENTS.md`](../../../../AGENTS.md), die §1 hier
+  ausgeschlossen hat. Die Kriterien tragen jetzt: Der Slice hat gezeigt, dass
+  der Größen-Vergleich **nicht** entscheidet (§Safety blieb bei Faktor 22×
+  stehen) und die Herkunft eines Satzes schon (§Sensors trug dasselbe Zitat
+  zweimal). Erste Messung an `AGENTS.md`: **34 690** gegen **10 885** Zeichen
+  der Ziel-Form, §5 allein **15 464** gegen **726** — und dort ist die Ziel-Form
+  **ausgeschrieben**, der Faktor also kein Platzhalter-Artefakt.
 
 - **Risiken aus §7:** drei, jedes mit genau einem Ausgang — einmal *gestrichen
   mit Begründung*, zweimal *weiter offen* → Register.
@@ -223,12 +288,13 @@ je geänderten Abschnitts erneut gezählt, gegen §2 gehalten.
 | Abschnitt | vorher | jetzt | Ziel-Form | Entscheidung |
 |---|---|---|---|---|
 | §Sensors | 1930 | **1278** | 346 | gekürzt: doppeltes `modul-13`-Zitat auf einen Verweis, Chronik-Halbsatz raus |
-| §Rollen (Prosa) | 1542 | **584** | *(kennt sie nicht)* | gekürzt: Tabelle bleibt, Prosa auf zwei Zeiger, Chronik-Absatz raus |
+| §Rollen (Prosa) | 1542 | **438** | *(kennt sie nicht)* | gekürzt: Tabelle bleibt, Prosa auf zwei Zeiger, Chronik-Absatz raus, wiederholter Trigger raus |
+| §Source precedence | 212 | **81** | 385 | gekürzt (Plan-Änderung 2): Chronik-Zeile zu [`MR-003`](../../../../harness/conventions/done/MR-003-source-precedence-ohne-docs-user.md) |
 | §Traceability rules | 753 | 753 | 385 | **unverändert** — ausgefüllte Ziel-Form |
-| §Safety and scope | 1055 | 1055 | 47 | **unverändert** — fünf AC-gebundene Zusagen, a-check-eigen |
+| §Safety and scope | 1055 | 1055 | 47 | **unverändert** — ausgefüllte Ziel-Form; die Vorlage führt dort zwei Platzhalter-Punkte |
 | §Leseordnung | 843 | 843 | 464 | **unverändert** — zitiert die Regel bereits mit Verweis |
 
-Datei gesamt **21 374 → 19 765** Zeichen. Die Ziel-Form liegt bei 10 436; der
+Datei gesamt **21 426 → 19 409** Zeichen. Die Ziel-Form liegt bei 10 436; der
 Abstand ist überwiegend die Gate-Tabelle mit 31 Zeilen, und die wächst mit der
 Zahl der Gates, nicht mit der Geschwätzigkeit.
 

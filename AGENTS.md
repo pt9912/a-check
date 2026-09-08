@@ -143,8 +143,9 @@ Regeln dieser Sektion: Nur Targets aufzählen, die im Makefile **existieren** �
 Gates sind die häufigste Form von Harness-Lüge (Baseline-Regelwerk `modul-13-quality-gates.md`).
 
 Nur hier gelistete Targets existieren im Makefile. Halluzinierte Gates
-sind die häufigste Form von Harness-Lüge; `make gate-consistency` erzwingt
-die Übereinstimmung Doku ↔ Makefile mechanisch. Die Code-Gates sind
+sind die häufigste Form von Harness-Lüge; `make doc-targets` erzwingt
+die Übereinstimmung Doku ↔ Makefile mechanisch — über diese Tabelle **und**
+[`harness/README.md`](harness/README.md) §Sensors. Die Code-Gates sind
 Dockerfile-Stages, die Meta-Gates laufen als Host-Bash. **Mandatory** ist, was in einem der
 beiden Aggregate hängt: `gates` (Code-Fragen) oder `verify` (DoD-/Closure-Fragen). Von den
 `doc-*`-Targets sind das `doc-check`, `doc-targets`, `doc-planning`, `doc-workflows` und
@@ -367,14 +368,19 @@ die CI (Badge im [`README.md`](README.md)), nicht diese Tabelle.
   einen Halbsatz und hätte alle drei Fälle gefangen.
   **Zweite Hälfte** (`seit slice-182`): Ein Größen-*Vergleich* mit einer Ziel-Form
   ist noch kein Befund. Eine Vorlage ist kürzer als jedes ausgefüllte Dokument,
-  und ihre Bedienhinweise — die beim Kopieren gelöscht werden — zählen in ihr
-  mit. Befund ist, **wo derselbe Text schon woanders steht**; das entscheidet
-  die Herkunft eines Satzes, nicht seine Länge. Gemessen an
-  [`harness/README.md`](harness/README.md): Der Abschnitt mit dem größten
-  Faktor (**22 ×** gegen die Ziel-Form) trug fünf `AC-*`-gebundene Zusagen, die
-  nirgends sonst stehen, und blieb unverändert; gekürzt wurden zwei Abschnitte
-  mit kleinerem Faktor, in denen das Regelwerk nachgeschrieben war — einer davon
-  zweimal in derselben Datei.
+  und ihre Platzhalter und Bedienhinweise — die beim Kopieren verschwinden —
+  zählen in ihr mit. Befund ist nachgeschriebener **Baseline-Normtext**; das
+  entscheidet die Herkunft eines Satzes, nicht seine Länge.
+  **Und die eigene Spec ist nicht die Baseline:** Ein Einstiegspunkt, der eine
+  `AC-*`-Zusage zusammenfasst und auf sie verlinkt, zeigt nach **oben** in der
+  Source Precedence — das ist seine Aufgabe, nicht sein Fehler. Dieselbe Zusage
+  steht dann mehrfach im Repo, und das ist richtig so.
+  Gemessen an [`harness/README.md`](harness/README.md): Der Abschnitt mit dem
+  größten Faktor (**22 ×** gegen die Ziel-Form, wo zwei Platzhalter-Punkte
+  stehen) blieb unverändert — er ist die ausgefüllte Ziel-Form und fasst zwei
+  `AC-QA-*` zusammen; gekürzt wurden zwei Abschnitte mit kleinerem Faktor, in
+  denen das **Regelwerk** nachgeschrieben war — einer davon zweimal in derselben
+  Datei.
 - **CR-Texte an ein fremdes Werkzeug** (bisher vier an `d-check`) leben im Slice, der sie erzeugt,
   und gehen erst nach einem Prüf-Durchgang hinaus: der Skill
   [`.harness/skills/cr-text-reviewer.md`](.harness/skills/cr-text-reviewer.md) markiert jeden Satz,
