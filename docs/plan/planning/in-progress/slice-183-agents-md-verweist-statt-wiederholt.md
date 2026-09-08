@@ -7,7 +7,7 @@
 
 **Berührte Spec-Stellen:** — (der Slice berührt Rang 8 der Source Precedence).
 
-**Verantwortlich:** —
+**Verantwortlich:** Claude — gesetzt beim Übergang nach `in-progress/`.
 
 **Autor:** Claude. **Datum:** 2026-09-08.
 
