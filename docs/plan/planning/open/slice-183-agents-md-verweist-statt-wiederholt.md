@@ -29,7 +29,7 @@ dupliziert deren Inhalt nicht; sonst entsteht Drift."*
   Regel, die a-check bindet, bleibt — auch wenn sie im Regelwerk steht; was
   geht, ist ihre *Begründung*, wenn die dort schon ausformuliert ist.
 - **[`harness/README.md`](../../../../harness/README.md).** Erledigt in
-  [slice-182](../done/slice-182-readme-verweist-statt-wiederholt.md);
+  [slice-182](../done/wellenlos/slice-182-readme-verweist-statt-wiederholt.md);
   ein zweiter Durchgang dort wäre Arbeit ohne Gegenstand.
 - **[`harness/conventions.md`](../../../../harness/conventions.md).** Rang und
   Zweck sind andere: Sie ist der Konventionsspeicher, nicht das Briefing. Ein
@@ -122,7 +122,7 @@ Makefile.
 
 ## 5. Trigger
 
-**Start** (`open` → `in-progress`): [slice-182](../done/slice-182-readme-verweist-statt-wiederholt.md)
+**Start** (`open` → `in-progress`): [slice-182](../done/wellenlos/slice-182-readme-verweist-statt-wiederholt.md)
 liegt in `done/` (WIP-Limit 1).
 
 **Rückführungen — vorab benannt:**

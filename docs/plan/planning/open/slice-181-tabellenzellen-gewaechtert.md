@@ -113,7 +113,7 @@ Mit `cell-max-chars` stellt sich die Frage nicht: Der Lauf zählt.
    **über** und **unter** den Tabellen, wo kein `table.column` hinreicht
    (§Sensors: 1930 Zeichen sichtbare Prosa gegen 346 der Ziel-Form). Das ist
    eine **Inhalts**-Entscheidung ohne Sensor und damit ein eigener Vorgang:
-   [slice-182](../done/slice-182-readme-verweist-statt-wiederholt.md) — dort die
+   [slice-182](../done/wellenlos/slice-182-readme-verweist-statt-wiederholt.md) — dort die
    Messung, hier nur der Zeiger. Beide Slices fassen `harness/README.md` an;
    wer zuerst läuft, gibt dem anderen den neuen Bestand vor.
 
