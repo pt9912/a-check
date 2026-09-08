@@ -330,7 +330,16 @@ verankert in `harness/conventions.md` §Baseline).
   offen* → Register, zweimal *eingetreten*, einmal davon mit Folge-Slice.
 
 - **Drei Paarungen** (Repo ohne Wellen-Betrieb) — geprüft **nach** dem `git mv`
-  nach `done/`, weil sie dort suchen; eingetragen im dritten Closure-Commit.
+  nach `done/`, weil sie dort suchen; alle drei tragen:
+  **Anker** — `liegt in harness/conventions.md §Baseline`; der Zielort führt
+  `seit slice-185`. *(Er fehlte beim ersten Prüfen — Review F-5.)*
+  **Folge-Slice** — [slice-186](../open/slice-186-voll-abgleich-restliche-paare.md)
+  existiert und **nimmt den Punkt an**: die zehn verbleibenden Paare plus die
+  dritte `architecture`-Klausel aus §3 und die drei vorab gemessenen
+  `AGENTS.md`-Befunde.
+  **Register** — drei Einträge in §9 zitiert, jeder mit nicht leerem
+  `evidence/`; keiner bekommt einen Beleg, weil der Slice sie **bedient** statt
+  auslöst.
 
 ## 9. Sub-Area-Prüfungen und Modus-Begründung
 
