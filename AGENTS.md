@@ -367,6 +367,15 @@ die CI (Badge im [`README.md`](README.md)), nicht diese Tabelle.
   `AC-QA-*` zusammen; gekürzt wurden zwei Abschnitte mit kleinerem Faktor, in
   denen das **Regelwerk** nachgeschrieben war — einer davon zweimal in derselben
   Datei.
+  **Dritte Hälfte** (`seit slice-183`, an §5 dieser Datei gemessen): *„Steht die
+  Regel im Regelwerk?"* ist ebenfalls die falsche Frage. In einem Repo, das eine
+  Baseline **adoptiert** hat, lautet die Antwort fast immer ja — sechs von sechs
+  Substanz-Stichproben fanden eine Fundstelle. Trägt nur: *„schreibt dieser
+  Absatz ihre **Begründung** nach?"* Eine Regel zu **nennen** und die repo-eigene
+  Ausprägung danebenzustellen ist die Aufgabe dieser Datei; erst die
+  nachgeschriebene Herleitung ist der Befund. Gemessen traf das auf **drei von
+  17** Blöcken in §5 zu — bei einem Größen-Faktor von 22,9 × gegen die
+  Ziel-Form.
 - **Eine Mutations-Probe belegt erst, wenn sie rot war** (`seit slice-181`,
   Register-Eintrag bei 3×): Wer einen Prüfer mit einer Probe belegt, zeigt
   **beide** Richtungen — und die **rote** ist die, die zählt. Grün beweist
