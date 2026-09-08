@@ -243,7 +243,7 @@ Kalibrierung).
   ein Prüfer ohne Gegenstand, hier eine Probe ohne Gegenstand.
 
 - **Beobachtungs-Register (`../observations/`):** ein neuer Eintrag,
-  [`BEO-GATE/review-haken-vor-dem-review`](../observations/BEO-GATE/review-haken-vor-dem-review/observation.md)
+  [`BEO-GATE/attestierung-vor-dem-vorgang`](../observations/BEO-GATE/attestierung-vor-dem-vorgang/observation.md)
   (Beleg `evidence/slice-169.md`, Zähler damit 1×) — der Review-Haken dieses
   Slice stand auf `[x]`, während kein Report existierte, und `make doc-reviews`
   deckt die Attestierung in `in-progress/` nicht ab.
