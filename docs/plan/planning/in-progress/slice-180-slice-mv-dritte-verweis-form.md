@@ -195,8 +195,59 @@ Danach Archivierung als wellenloser Slice ([`AGENTS.md`](../../../../AGENTS.md) 
 
 ## 8. Closure-Notiz
 
-_(beim Abschluss ausfüllen — genau **ein** solcher Abschnitt je Slice;
-Lerneintrag — Form: wird dort benannt.)_
+**Lerneintrag — Form: geschärfte Regel** (neuer Register-Eintrag, der die
+Prüf-Frage festhält).
+
+- **Was hat funktioniert:** Die offene Frage aus §2 — dritte Regel oder
+  Verallgemeinerung — nicht abgewogen, sondern **gemessen**: Der Selbsttest
+  führte seit slice-118 eine Gegenprobe, die den präfixlosen Pfad ausdrücklich
+  schützt. Eine Verallgemeinerung bricht sie, und das ließ sich in einer Minute
+  zeigen. Die Antwort stand im Werkzeug, nicht in der Abwägung.
+
+- **Was ging anders als geplant:** Die erste Fassung war **wirkungslos**. Sie
+  ergänzte `rewrite_file` um zwei Regeln, die die Kandidaten-Auswahl davor nie
+  erreichte — eine Datei mit ausschließlich der neuen Form wurde nicht
+  ausgewählt, das Werkzeug meldete *„0 Datei(en) nachgezogen"* mit Exit 0. Der
+  unabhängige Review fand es (F-1); er las die Auswahl, während die Probe die
+  Ersetzung vorführte.
+
+- **Steering-Loop-Eintrag — geschärfte Regel:** *Eine Mutations-Probe, die
+  ihren Gegenstand mitliefert, prüft ihn nicht.* Hier trug die Probe **alle
+  drei** Verweis-Formen; die zwei bereits gedeckten brachten die Datei in die
+  Auswahl und machten die Lücke unsichtbar. Bei slice-169 dieselbe Klasse in der
+  anderen Ausprägung: Die Probe mutierte das *Muster* statt der Kandidatenmenge.
+  — liegt in
+  [`BEO-GATE/probe-liefert-den-gegenstand-mit`](../observations/BEO-GATE/probe-liefert-den-gegenstand-mit/observation.md)
+  (`seit slice-180`).
+  **Kein Sensor:** Ob eine Probe ihren Gegenstand mitliefert, ist ein Urteil über
+  ihren Aufbau ([`AGENTS.md`](../../../../AGENTS.md) §3.7) — beide Male fand es
+  der Review, nicht der Lauf.
+
+- **Die strukturelle Antwort daneben:** Auswahl und Ersetzung teilen jetzt
+  **eine** Muster-Quelle (`match_patterns`), und der Selbsttest fährt **beide**
+  Schritte. Zwei Listen für dieselbe Frage driften — dieselbe Lehre, die
+  slice-168 für die Muster-Kopie neben `.d-check.yml` gezogen hat, eine Ebene
+  tiefer.
+
+- **Beobachtungs-Register (`../observations/`):** ein neuer Eintrag
+  [`probe-liefert-den-gegenstand-mit`](../observations/BEO-GATE/probe-liefert-den-gegenstand-mit/observation.md)
+  mit **zwei** Belegen (slice-169 nachgetragen, slice-180). Zwei bestehende
+  bekommen ihren Ausgang:
+  [`verweis-auf-wandernden-slice`](../observations/BEO-PLAN/verweis-auf-wandernden-slice/observation.md)
+  (7×) verliert seine benannte Lücke, und
+  [`slice-mv-fasst-einfrierendes-artefakt-an`](../observations/BEO-PLAN/slice-mv-fasst-einfrierendes-artefakt-an/observation.md)
+  geht bei 2× auf *verkörpert* — **vor** der Schwelle, weil derselbe Vorgang das
+  Werkzeug ohnehin offen hatte.
+
+- **Folge-Slices:** keiner neu. Die Zitier-Form auf die Welle-Ergebnisnotiz
+  anzuwenden bleibt offen (§7) und bekommt einen, wenn sie das nächste Mal
+  angefasst werden muss.
+
+- **Risiken aus §7:** drei, jedes mit genau einem Ausgang — alle drei *weiter
+  offen* → Register.
+
+- **Drei Paarungen** (Repo ohne Wellen-Betrieb) — geprüft **nach** dem `git mv`
+  nach `done/`, weil sie dort suchen; eingetragen im dritten Closure-Commit.
 
 ## 9. Sub-Area-Prüfungen und Modus-Begründung
 
