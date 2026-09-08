@@ -10,7 +10,7 @@
 **Berührte Spec-Stellen:** — *(bei Umsetzung zu füllen: `spec/lastenheft.md`
 und `spec/spezifikation.md` sind unter den Paaren.)*
 
-**Verantwortlich:** —
+**Verantwortlich:** Claude — gesetzt beim Übergang nach `in-progress/`.
 
 **Autor:** Claude. **Datum:** 2026-09-08.
 
