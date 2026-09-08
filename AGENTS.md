@@ -34,6 +34,24 @@ Abschnitt); die Ziel-Formen daneben unter
 [`templates/`](.harness/baseline/v6.5.0/templates/README.md). Integrität:
 `.harness/baseline/v6.5.0/SHA256SUMS`.
 
+**Breiterer Pflicht-Blick bleibt bei drei Anlässen** — dort genügt der eine
+Abschnitt nicht: Bootstrap · jede Änderung an
+[`harness/conventions.md`](harness/conventions.md) (Adaptionen `MR-<NNN>`,
+Source Precedence, ID-Schema) · Drift-Audit gegen die Baseline
+(`modul-02` §Freshness-Audit der vendored Baseline — darunter die Stichprobe
+gegen den Bestand, die **auch bei aktuellem Pin** läuft; `make regelwerk-check`
+deckt davon nur die Integritäts-Hälfte, siehe §4).
+
+Die vendorten **Ziel-Formen** unter
+[`templates/`](.harness/baseline/v6.5.0/templates/README.md) tragen **zwei
+Rollen**: als **Referenz-Form**, auf die das Regelwerk mit `../templates/…`
+verweist, und als **Vorlage, die beim Anlegen kopiert und ausgefüllt wird statt
+frei formuliert** — für ADR, Slice, Welle, Carveout, Review-Report und
+Beobachtung. a-check führt **keine eigenen Kopien** davon; was beim Kopieren
+anzupassen ist, steht am Ort der jeweiligen Ablage (für Slices:
+[`docs/plan/planning/README.md`](docs/plan/planning/README.md) §Beim Kopieren
+der Slice-Ziel-Form).
+
 Das vendored Regelwerk ist ein **didaktik-freier Extrakt** und trägt keine
 eigene Normativität: bei Konflikt gilt der Kurs
 ([`v6.5.0`](https://github.com/pt9912/ai-harness-course/tree/v6.5.0)), über
@@ -85,10 +103,21 @@ zentral in der Lint-Konfiguration mit Begründung (entsteht mit slice-003).
 
 ### 3.3 git mv + Inhaltsänderung = zwei Commits
 
-Datei verschoben **und** Inhalt umgeschrieben: (1) `git mv` als eigener
-Commit (Git erkennt R-Rename), (2) Inhalt umschreiben als zweiter Commit.
-Sonst fällt die Rename-Detection unter die 50 %-Schwelle und
+Datei verschoben **und** Inhalt umgeschrieben: zwei Commits, und der
+Move-Commit bleibt rein (Git erkennt R-Rename). **Welcher zuerst kommt, sagt
+der Vorgang:**
+
+1. **Regelfall:** `git mv` als eigener Commit, dann den Inhalt umschreiben.
+2. **Lifecycle-Übergang nach `done/`:** erst der Inhalt (DoD-Häkchen,
+   Closure-Notiz), dann der reine `git mv` — die Notiz ist die **Bedingung**
+   dafür, dass die Datei nach `done/` darf, nicht ihre Folge.
+
+**Begründung:** Sonst fällt die Rename-Detection unter die 50 %-Schwelle und
 `git log --follow` wird unzuverlässig.
+
+Bis slice-187 stand hier nur der Regelfall — als Reihenfolge, nicht als Wahl.
+Der zweite Fall ist die geübte Praxis (`make slice-mv` fährt genau ihn), und
+das Briefing sagte das Gegenteil.
 
 ### 3.4 Architektur sprach-/meilensteinfrei; Spec-Straten nie abwärts
 
@@ -198,6 +227,14 @@ die CI (Badge im [`README.md`](README.md)), nicht diese Tabelle.
 | `make archive-wave-test` | Testsuite von `tools/archive-wave/` (eigenes `go.mod` — **nicht** Teil von `make test`, das nur das Hauptmodul deckt) |
 | [`make archive-wave`](harness/sensors/archive-wave.md) | **kein Gate** — bewegt Zeitdokumente ins Archiv, Volltexte werden Stubs (`WELLE=`/`SLICE=`, `APPLY=1`) |
 
+Diese Tabelle **listet auf**; definiert wird hier nichts. Die *Bindung* eines
+Targets — welche Anforderung oder Entscheidung es durchsetzt — steht in
+[`harness/README.md`](harness/README.md) §Sensors; von dort führt der Weg zur
+`AC-*`-ID, zur ADR oder zum Carveout. Wo ein Target mehr braucht als seine
+Zelle — Grenze, Ausgänge, Sperren —, steht das in
+[`harness/sensors/`](harness/sensors/); `make doc-mentions` hält beide Enden
+zusammen.
+
 ## 5. Dokumentations-Regeln
 
 - Commits/PRs müssen mindestens eine `AC-*`- oder `ADR-*`-ID nennen
@@ -208,6 +245,9 @@ die CI (Badge im [`README.md`](README.md)), nicht diese Tabelle.
   beim Spec-/ADR-Schreiben nach dem deklarierten Schema vergeben (siehe
   [`harness/conventions.md`](harness/conventions.md)) — nie ad hoc im
   Commit/PR; Agenten referenzieren IDs, sie erfinden keine.
+  **Struktur-IDs zählen nicht:** `SPEC-<NNN>` adressiert *innerhalb* der
+  Spezifikation und gehört nicht in die Commit-Message — die `id-patterns` in
+  [`.d-check.yml`](.d-check.yml) führen sie folgerichtig nicht.
 - **Commit-Scope `(planning)`:** ein Commit mit diesem Scope (`docs(planning)`,
   `fix(planning)`, `chore(planning)`) berührt **ausschließlich**
   `docs/plan/planning/`. Wandert Substanz eines anderen Bereichs mit, ist das ein

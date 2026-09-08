@@ -81,6 +81,17 @@ Pointer, keine Wiederholung des Inhalts.
 
 ## Adaptions-Block
 
+Regeln dieser Sektion: Diese Datei trägt den **Index**, nicht die Einträge. Jede
+Adaption ist eine eigene Datei unter [`harness/conventions/`](conventions/),
+kopiert aus der vendorten Ziel-Form `MR-NNN-titel.template.md`; ist ihr
+Auflösungs-Trigger eingetreten, wandert sie per `git mv` nach
+[`conventions/done/`](conventions/done/). **Der Zustand ist die
+Verzeichnis-Position, kein Status-Feld** — dieselbe Regel wie beim Slice
+([`AGENTS.md`](../AGENTS.md) §5). Der Grund für den Schnitt: Was hier steht,
+liest **jeder** Agentenlauf, und aufgelöste Adaptionen gehören nicht in diesen
+Pfad (Baseline-Regelwerk `grundlagen-harness-dateien.md`
+§harness/conventions.md als Konventionsspeicher).
+
 **Disziplin** (aus dem Konventions-Template der Baseline): Einträge sind
 **chronologisch pro Repo** nummeriert und tragen die Pflichtfelder Datum,
 Geltungsbereich, Adaption, Begründung, Auflösungs-Trigger. An einem
@@ -92,6 +103,18 @@ analog zur ADR-Immutabilität ([`AGENTS.md`](../AGENTS.md) §3.5).
 ### MR-000 — Baseline-Aussage (inkl. ID-Schema-Deklaration)
 
 <a id="mr-000"></a>
+
+**Bleibt hier statt in einer eigenen Datei:** Der Eintrag ist keine Adaption,
+sondern die Adoptions-Erklärung, und er gilt für jeden Lauf.
+
+**Zwei benannte Grenzen des Schemas unten** — beide folgen aus der
+Immutabilität (§Disziplin), keine ist ein Versehen: Das Pflichtfeld
+*Ersetzt-Baseline-Regel* fehlt, weil es nach der Annahme dieses Eintrags
+entstand und nicht nachgetragen werden darf (§Aktive Adaptionen sagt dasselbe
+für die Tabellenspalte). Und die **Beobachtungs-Kennung** steht nicht in der
+Liste, weil sie keine fortlaufende Nummer mehr ist, sondern der Pfad
+`BEO-<KUERZEL>/<slug>`; deklariert ist sie dort, wo ihr Kürzel herkommt —
+§Modus-Deklaration pro Sub-Area.
 
 - **Datum:** 2026-06-20
 - **Geltungsbereich:** gesamtes Repo
