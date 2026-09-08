@@ -381,6 +381,25 @@ die CI (Badge im [`README.md`](README.md)), nicht diese Tabelle.
   `AC-QA-*` zusammen; gekürzt wurden zwei Abschnitte mit kleinerem Faktor, in
   denen das **Regelwerk** nachgeschrieben war — einer davon zweimal in derselben
   Datei.
+- **Eine Mutations-Probe belegt erst, wenn sie rot war** (`seit slice-181`,
+  Register-Eintrag bei 3×): Wer einen Prüfer mit einer Probe belegt, zeigt
+  **beide** Richtungen — und die **rote** ist die, die zählt. Grün beweist
+  nichts: Ein Prüfer, der seinen Gegenstand gar nicht erreicht, ist grün, und
+  eine Probe, die ihn verfehlt, ebenso.
+  **Zwei Ausprägungen, beide belegt:** Die Probe **liefert den Gegenstand mit**
+  — sie baut ihren Fall so, dass eine bereits gedeckte Eigenschaft ihn in die
+  Prüfmenge bringt, und die neue wird nie erreicht (slice-180: eine Datei mit
+  *allen drei* Verweis-Formen). Oder sie **trifft daneben** — die Mutation
+  landet außerhalb des Gegenstands (slice-181: Fülltext hinter dem schließenden
+  `|` einer Tabellenzelle; slice-169: das Muster mutiert statt der
+  Kandidatenmenge).
+  **Die Prüf-Frage ist nicht „hast du eine Probe?", sondern „war sie rot, und
+  woran?"** — die Meldung nennen, nicht nur den Exit-Code.
+  **Kein Sensor:** Ob eine Probe ihren Gegenstand trifft, ist ein Urteil über
+  ihren Aufbau (§3.7). Was greift, ist die Frage beim Schreiben — sie kostet
+  einen Handgriff und hätte alle drei Fälle gefangen.
+  Auslöser: [`BEO-GATE/probe-liefert-den-gegenstand-mit`](docs/plan/planning/observations/BEO-GATE/probe-liefert-den-gegenstand-mit/observation.md)
+  (slice-169, slice-180, slice-181 — 3×).
 - **CR-Texte an ein fremdes Werkzeug** (bisher vier an `d-check`) leben im Slice, der sie erzeugt,
   und gehen erst nach einem Prüf-Durchgang hinaus: der Skill
   [`.harness/skills/cr-text-reviewer.md`](.harness/skills/cr-text-reviewer.md) markiert jeden Satz,

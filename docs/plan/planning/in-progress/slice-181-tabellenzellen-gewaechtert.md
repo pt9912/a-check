@@ -47,6 +47,25 @@ statt dass jemand sie zählt. `table.column` mit `cell-max-chars` und
 - **Die `order`-Hälfte von `table`** (Chronologie-Monotonie) — es wäre ein
   anderer Vorgang mit eigenem Anlass; hier gibt es keinen.
 
+**Eine benannte Plan-Änderung** ([`AGENTS.md`](../../../../AGENTS.md) §6) —
+**nachträglich benannt, und das ist selbst der Befund:** Die Regel verlangt sie
+*vor* dem Code; hier fand sie der Review (F-7).
+
+**[`AGENTS.md`](../../../../AGENTS.md) §4 ist doch konfiguriert.** Der
+Ausschluss oben begründete sich damit, die vier überlangen Zellen dort trügen
+*„Historie statt Vertrag"*, und ihre Antwort sei Kürzen. Gemessen trifft das
+auf **eine** zu (`doc-targets`); die anderen trugen Deckungsgrenzen, die in
+Sensor-Dateien gehören — dieselbe Klasse wie in
+[`harness/README.md`](../../../../harness/README.md). Die Tabelle hat dieselbe
+Funktion, dieselbe Fehlerart und verdient dieselbe Grenze; nur heißt ihre
+Spalte `Zweck`.
+**Die zugesagte dritte Tabelle ist ebenfalls konfiguriert** —
+[`harness/conventions.md`](../../../../harness/conventions.md) §Aktive
+Adaptionen stand in §1 als Zusage und fehlte im ersten Anlauf. Beides zusammen
+heißt: Der Slice deckt jetzt drei Tabellen statt der geplanten zwei, und die
+Liefer-Punkte bleiben bei drei — die Konfiguration ist **einer**, unabhängig
+davon, wie viele Tabellen sie adressiert.
+
 ## 2. Ausgangsmessung (2026-09-07)
 
 Die Fähigkeit **existiert im Pin** und ist im Startgerüst dokumentiert
@@ -155,25 +174,114 @@ Danach Archivierung als wellenloser Slice ([`AGENTS.md`](../../../../AGENTS.md) 
 ## 7. Risiken und offene Punkte
 
 - *Eine Zeichen-Obergrenze misst Länge, nicht Prosa — eine lange Zelle aus
-  Kennungen und Links wäre ein Fehlalarm* — Ausgang bei Closure. Für die
-  Bindung-Spalte ist es entschieden (§2.2: keine Obergrenze, weil sie eine
-  Kennungs-Liste trägt); offen bleibt es für die **Vertrags**-Spalte, wo eine
-  Zeile mit vielen Links dieselbe Falle stellen kann.
+  Kennungen und Links wäre ein Fehlalarm* — **Ausgang:** *weiter offen* →
+  Beobachtungs-Register,
+  [`BEO-GATE/muster-trifft-nur-die-haeufige-schreibweise`](../observations/BEO-GATE/muster-trifft-nur-die-haeufige-schreibweise/observation.md).
+  Für die Bindung-Spalte ist es entschieden (§2.2: keine Obergrenze, weil sie
+  eine Kennungs-Liste trägt). Für die Vertrags-Spalte ist das Risiko **kleiner
+  als gedacht und größer zugleich**: Ein Fehlalarm ist bisher nicht aufgetreten
+  (alle neun Befunde waren echte Absätze), aber der umgekehrte Fall ist
+  gemessen — **16** der 66 Zellen tragen mehr als einen Satz, die meisten unter
+  der Schwelle. Der Proxy meldet zu wenig, nicht zu viel; als Grenze steht das
+  in [`.d-check.yml`](../../../../.d-check.yml) und in
+  `harness/sensors/doc-structure.md`.
 - *Die Grenze deckt zwei Tabellen; die dritte (`AGENTS.md` §4) bleibt
-  ungewächtert, und dort stehen die längsten Zellen* — Ausgang bei Closure.
+  ungewächtert, und dort stehen die längsten Zellen* — **Ausgang:** *entfallen*,
+  gestrichen mit Begründung: Es ist **eingetreten und im selben Slice
+  aufgelöst** — `AGENTS.md` §4 ist konfiguriert
+  (§1, Plan-Änderung), ebenso die in §1 zugesagte dritte Tabelle
+  [`harness/conventions.md`](../../../../harness/conventions.md) §Aktive
+  Adaptionen. Das Risiko hat sich als richtig erwiesen — nur nicht als Risiko,
+  sondern als Lücke im eigenen Ausschluss.
+  *(Die geschlossene Dreier-Menge kennt für „eingetreten" nur Carveout oder
+  Folge-Slice; ein Risiko, das im selben Slice behoben wird, besteht nicht mehr
+  und ist damit* entfallen — *die Begründung nennt beides, damit die Chronologie
+  nicht verlorengeht.)*
 
 ## 8. Closure-Notiz
 
-_(beim Abschluss ausfüllen — genau **ein** solcher Abschnitt je Slice;
-Lerneintrag — Form: wird dort benannt.)_
+**Lerneintrag — Form: geschärfte Regel** (Mutations-Proben, `AGENTS.md` §5).
+
+- **Was hat funktioniert:** Die Schwelle **am Bestand gemessen** statt gesetzt.
+  200 stand als Vorschlag im Hinweis; die Messung zeigte 18 Befunde dort und 9
+  bei 250 — und die 9 waren genau die unlesbaren. Ohne die Messung wäre 200
+  übernommen worden, und eine Regel, die den Bestand massenhaft bricht, wird
+  abgeschaltet statt befolgt.
+
+- **Was ging anders als geplant — der Review fand sieben HIGH, und alle sieben
+  betrafen Aussagen, nicht Mechanik.** Sein Verdikt trennt das ausdrücklich:
+  *„Die Mechanik trägt … blockierend ist die Aussagenschicht darum herum."*
+  Konfiguration, Schwelle, Untergrenze und alle vier Proben waren
+  reproduzierbar; falsch waren die Zahlen daneben, die Beschreibung der
+  Sensor-Datei und die Zuordnung zum Plan.
+
+- **Die eine Ursache hinter drei Findings:** Ein Split an `|` übersah **escapte**
+  Pipes. Daraus folgten (a) eine übersehene Zelle, die erst der Sensor fand,
+  (b) die falschen Kalibrierungs-Zahlen 17/8 statt 18/9, (c) die falsche
+  Behauptung, nur eine der 66 Zellen trage mehr als einen Satz — es sind 16,
+  und mein Zähler zählte Satz*zeichen* statt Sätze. **Drei Findings, ein
+  defektes Muster.**
+
+- **Steering-Loop-Eintrag — geschärfte Regel:** *Eine Mutations-Probe belegt
+  erst, wenn sie rot war — und die rote Richtung ist die, die zählt.* Grün
+  beweist nichts: Ein Prüfer, der seinen Gegenstand nicht erreicht, ist grün,
+  und eine Probe, die ihn verfehlt, ebenso. — liegt in
+  [`AGENTS.md`](../../../../AGENTS.md) §5 (`seit slice-181` dort).
+  Auslöser: [`BEO-GATE/probe-liefert-den-gegenstand-mit`](../observations/BEO-GATE/probe-liefert-den-gegenstand-mit/observation.md)
+  (slice-169, slice-180, slice-181 — **3×**, Schwelle erreicht).
+  **Der Beleg dieses Slice ist der erste, den die Sitzung selbst fand** statt
+  der Review — weil das Ergebnis nicht zur Erwartung passte. Genau das ist die
+  Frage, die die Regel festhält.
+
+- **Beobachtungs-Register (`../observations/`):** zwei Belege.
+  `probe-liefert-den-gegenstand-mit` erreicht **3×** und wechselt auf
+  *verkörpert*;
+  [`muster-trifft-nur-die-haeufige-schreibweise`](../observations/BEO-GATE/muster-trifft-nur-die-haeufige-schreibweise/observation.md)
+  steht mit dem escapten Pipe bei **2×** und bleibt offen — ein allgemeines
+  Gegenmittel ist nicht in Sicht, weil „welche Schreibweisen hat mein
+  Gegenstand?" mit einem *weiteren* Muster beantwortet würde.
+
+- **Folge-Slices:** keiner neu. Die Inhaltsspalte der Nicht-Gates-Tabelle
+  (`Was es tut`) bleibt unadressiert und ist als Grenze in
+  `harness/sensors/doc-structure.md` benannt; sie bekommt einen Slice, wenn dort
+  eine Zelle auffällt.
+
+- **Risiken aus §7:** siehe dort, jedes mit genau einem Ausgang.
+
+- **Drei Paarungen** (Repo ohne Wellen-Betrieb) — geprüft **nach** dem `git mv`
+  nach `done/`, weil sie dort suchen; eingetragen im dritten Closure-Commit.
 
 ## 9. Sub-Area-Prüfungen und Modus-Begründung
 
-**Vorgelagert — Sub-Area-Wahl prüfen:** entsteht mit dem Übergang nach
-`in-progress/`.
+**Vorgelagert — Sub-Area-Wahl prüfen:** zwei Sub-Areas berührt.
+**Gate-/Werkzeug-Schicht** `GATE` ([`.d-check.yml`](../../../../.d-check.yml))
+und **Harness-Einstieg** `HARNESS` ([`AGENTS.md`](../../../../AGENTS.md) §4,
+[`harness/README.md`](../../../../harness/README.md) §Sensors,
+[`harness/conventions.md`](../../../../harness/conventions.md),
+`harness/sensors/`) — beide Achsen 1,2,3.
 
-**Vorgelagert — offene Beobachtungen sichten:** entsteht mit dem Übergang nach
-`in-progress/`; einschlägig ist absehbar
-[`BEO-GATE/pruefer-ohne-gegenstand-oder-aufruf`](../observations/BEO-GATE/pruefer-ohne-gegenstand-oder-aufruf/observation.md).
+**Vorgelagert — offene Beobachtungen sichten:** gesichtet am 2026-09-08.
+`BEO-GATE/` führt **21** Einträge; drei sind einschlägig, und einer davon
+erreicht mit diesem Slice die Schwelle.
+
+- [`BEO-GATE/probe-liefert-den-gegenstand-mit`](../observations/BEO-GATE/probe-liefert-den-gegenstand-mit/observation.md)
+  — **erreicht 3×**. Die erste Mutations-Probe dieses Slice setzte ihren
+  Fülltext hinter das schließende `|`, traf die Zelle also nicht und meldete
+  grün. Der Eintrag entstand in slice-180; im unmittelbar folgenden Slice trat
+  er wieder auf. **Unterschied zu den ersten beiden Malen:** Diesmal fiel es in
+  der Sitzung auf, weil das Ergebnis nicht zur Erwartung passte — nicht erst im
+  Review. Bei 3× ist es eine Lücke und braucht einen Ausgang.
+- [`BEO-GATE/muster-trifft-nur-die-haeufige-schreibweise`](../observations/BEO-GATE/muster-trifft-nur-die-haeufige-schreibweise/observation.md)
+  — **zweites Vorkommen**. Die Vorab-Messung splittete Tabellenzeilen an `|` und
+  übersah **escapte** Pipes (`\|`); dieselbe Zelle erschien dadurch als mehrere
+  kurze. Der Sensor fand sie, meine Zählung nicht — und dieselbe Ursache trägt
+  die falschen Zahlen aus Review-Finding F-1.
+- [`BEO-GATE/pruefer-ohne-gegenstand-oder-aufruf`](../observations/BEO-GATE/pruefer-ohne-gegenstand-oder-aufruf/observation.md)
+  — **kein Beleg.** Der Verdacht lag nahe (eine Konfiguration, die ihre Tabelle
+  nicht trifft), und genau die Probe hat ihn ausgeschlossen: Die Regel greift
+  auf allen drei Tabellen, mutations-belegt. Keine Treffer sind auch eine
+  Antwort.
+
+**Alle berührten Sub-Areas GF** — kein Begründungsblock nötig.
 
 **Alle berührten Sub-Areas GF** — kein Begründungsblock nötig.
