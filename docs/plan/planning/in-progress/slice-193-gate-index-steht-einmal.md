@@ -9,7 +9,7 @@ inhaltliche Neuerung des Sprungs auf `v6.6.0`.
 
 **Berührte Spec-Stellen:** — · Der Slice berührt kein Spec-Stratum.
 
-**Verantwortlich:** —
+**Verantwortlich:** Claude — gesetzt beim Übergang nach `in-progress/`.
 
 **Autor:** Claude. **Datum:** 2026-09-08.
 
