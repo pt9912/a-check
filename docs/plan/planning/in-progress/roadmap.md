@@ -21,7 +21,7 @@ Welle-Datei, nicht hier.
 
 *(Keine offene Welle.)*
 
-In Arbeit: [slice-169](../in-progress/slice-169-korpus-seitige-kalibrierung.md) — **wellenlos**.
+In Arbeit: [slice-169](../done/slice-169-korpus-seitige-kalibrierung.md) — **wellenlos**.
 Er erscheint hier nicht als Welle-Zeile, weil wellenlose Arbeit keine ist (Baseline-Regelwerk
 `modul-06-roadmap.md` §Wann Arbeit eine Welle braucht); genannt wird er, weil der
 Ruhe-Marker nur bei leerem `in-progress/` gilt und sonst eine Unwahrheit wäre.

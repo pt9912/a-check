@@ -120,12 +120,12 @@ Register) trägt die Closure dieses Slice selbst — wellenloser Betrieb. Ein
 **konstanten** Posten führt. Beide stehen hier deshalb als feste Zeile statt als
 Häkchen — dieselbe Auflösung, die [`AGENTS.md`](../../../../AGENTS.md) §5 für
 den Gate-Lauf vorschreibt. Ob das Muster nachzuziehen ist, entscheidet
-[slice-169](../in-progress/slice-169-korpus-seitige-kalibrierung.md) oder ein
+[slice-169](../done/slice-169-korpus-seitige-kalibrierung.md) oder ein
 Folge-Slice, nicht dieser.
 
 ## 5. Trigger
 
-**Start** (`next` → `in-progress`): [slice-169](../in-progress/slice-169-korpus-seitige-kalibrierung.md)
+**Start** (`next` → `in-progress`): [slice-169](../done/slice-169-korpus-seitige-kalibrierung.md)
 liegt in `done/` (WIP-Limit 1).
 
 **Rückführungen — vorab benannt:**
