@@ -280,56 +280,6 @@ die CI (Badge im [`README.md`](README.md)), nicht diese Tabelle.
   es eine Harness-Lücke und verlangt einen Guide oder Sensor — „besser
   aufpassen" ist keine Antwort. Ein Eintrag ohne Vorfallszahl ist unzulässig:
   die Zahl ist das Einzige, was die Schwelle prüfbar macht.
-- **Slice-Form:** neue Slices entstehen aus der **vendored Ziel-Form**
-  [`.harness/baseline/v6.5.0/templates/docs/plan/planning/slice.template.md`](.harness/baseline/v6.5.0/templates/docs/plan/planning/slice.template.md) — a-check führt keine eigene Kopie, sie würde gegen die Baseline driften.
-  **Beim Kopieren anzupassen** — sieben Punkte, jeder gegen den Bestand gemessen (slice-178):
-
-  1. Die Zeile `Lerneintrag — Form: <…>` **ergänzen** — die Ziel-Form kennt sie nicht als Feld,
-     `make verify` verlangt sie.
-  2. **Ein** Feld streichen: das *Reconciliation-Register* — a-check hat keinen
-     Brownfield-Bootstrap, `reconciliation.md` existiert nicht. **Alles andere bleibt**, auch was
-     frühere Fassungen dieser Liste zum Streichen empfahlen: `**Welle:**` führen **174** Dateien,
-     den **Herkunfts-Anker** (`— liegt in <Zielort>` plus `seit slice-<NNN>` dort) führt das Repo
-     an **58** Stellen, und die *drei Paarungen* stehen in jeder Closure-Notiz.
-  3. **Wer die drei Paarungen trägt, entscheidet der Repo-Zustand — nicht das `Welle:`-Feld des
-     Slice.** Baseline `modul-06-roadmap.md` §Wann Arbeit eine Welle braucht: *„Wellenlos ist eine
-     Eigenschaft des **Repos** … das Kopf-Feld `**Welle:**` sagt nur, ob dieser Slice in ein Bündel
-     gehört; daraus folgt für die Vorgänge unten nichts."* Liegt eine **offene Welle** vor, trägt
-     ihre Closure die Paarungen — **auch für Slices ohne Wellen-Zugehörigkeit**. Erst ohne
-     Wellen-Betrieb trägt die Slice-Closure sie selbst.
-  4. **Die Abschnitts-Nummern der Ziel-Form gelten nicht unverändert.** a-check schiebt zwischen
-     Ziel und DoD einen **Analyse-Abschnitt** ein (er hält die Messung, auf der die DoD steht) und
-     stellt die DoD hinter den Umsetzungs-Abschnitt. Wieviel sich dadurch verschiebt, hängt vom
-     Slice ab — der Bestand führt den Sub-Area-Abschnitt als §7 bis §10. **Nicht die Nummer
-     kopieren, sondern die Reihenfolge der Ziel-Form einhalten und den Analyse-Abschnitt
-     einfügen, wo er gebraucht wird.**
-  5. **§1 heißt *Ziel und Abgrenzung*** und trägt beides: das Ziel in einem Satz und die
-     Ausschlüsse **je Punkt mit Begründung** — *ein Ausschluss ohne Grund ist eine Behauptung,
-     keine Grenze*. **Keine Mindestzahl**; die vier Klassen sind ein **Suchraster**, keine
-     Ausfüll-Liste: Was übernimmt ein **Folge-Slice** (mit Kennung, und die Kennung muss den Punkt
-     annehmen)? Was bleibt als **Bestand** bewusst stehen? Was wäre ein **anderer Vorgang**?
-     Welche **Schicht** rührt der Slice nicht an? Der Abschnitt ist die Grenze, an der ein
-     wachsender Slice sich messen lässt: Wer später etwas mitnimmt, das hier ausgeschlossen war,
-     hat den Plan **geändert**, nicht ergänzt.
-  6. **Der Sub-Area-Abschnitt heißt *Sub-Area-Prüfungen und Modus-Begründung*** — der Titel trägt beide Hälften, weil
-     nur die zweite bedingt ist. Die zwei *Vorgelagert*-Blöcke (Sub-Area-Wahl prüfen · offene
-     Beobachtungen sichten) laufen in **jedem** Slice-Plan, unabhängig von Modus und Slice-Typ;
-     **der Abschnitt entfällt nie**.
-  7. Die Ziel-Form führt eine **Review-DoD-Zeile**
-     ([`MR-019`](harness/conventions.md#mr-019)) — ihr Wortlaut wird beim Kopieren auf die exakte
-     Trigger-Phrase „unabhängiger Review" umgeschrieben, statt den Baseline-Wortlaut unverändert
-     zu übernehmen; sonst prüft `make doc-reviews` sie nie (empirisch geprüft, slice-165 §3/§4).
-
-  Die Regel trägt die
-  Größen-Regel — **höchstens drei Liefer-Punkte und höchstens zwei Schichten**; passt der Slice
-  nicht hinein, wird er **zerlegt, nicht gedehnt** — und verlangt den Lerneintrag in einer von drei
-  **benannten** Formen (geschärfte Regel · neuer Sensor · benannte Spec-Lücke). `make verify`
-  prüft beides ab slice-052; ältere Slices sind grandfathered.
-  **Gezählt wird nur, was mit dem Umfang wächst.** Gate-Läufe, Review-Report, Closure-Notiz,
-  Register und Risiko-Ausgänge zählen **nicht** — sie sind pro Slice konstant (Baseline `modul-05`
-  §Ziel-Form: Slice, Review-Report seit `v6.2.0`). Der Gate-Lauf steht darum als feste Zeile unter dem DoD; als Checkbox ist er
-  ab slice-098 ein Befund. Ab demselben Stichtag trägt der Kopf `Verantwortlich:`, `Autor:` und
-  die berührten Spec-Stellen — `—` ist eine gültige Antwort, Schweigen nicht.
 - **Zitier-Form in einfrierenden Artefakten** (`v6.5.0`, vier Ziel-Formen:
   Review-Report, Welle-Ergebnisnotiz, beide Archiv-Stubs): Was einfriert,
   zitiert **Kennung statt Adresse** — `slice-NNN` statt seines Lifecycle-Pfads,
@@ -345,62 +295,22 @@ die CI (Badge im [`README.md`](README.md)), nicht diese Tabelle.
   die Ergebnisnotiz gilt sie beim Schreiben.
   **Nicht** betroffen: lebende Dokumente — dort ist der Link richtig, und
   `versions` hält ihn aktuell.
-- **Geltungsbereich einer Messung** (`seit slice-179`, Lese-Schritt der
-  welle-15-Closure): Wer eine Messung als **Beleg** schreibt — in einem
-  Slice-Plan, einer Closure-Notiz, einem Review-Report —, nennt ihren
-  **Geltungsbereich** und sagt, ob er den Gegenstand deckt. Nicht *„22 Befunde,
-  keine weitere Klasse"*, sondern *„22 Befunde über Markdown-Links; Prosa sieht
-  das Instrument nicht"*.
-  **Anlass:** [`BEO-PLAN/review-geltungsbereich-zu-eng`](docs/plan/planning/observations/BEO-PLAN/review-geltungsbereich-zu-eng/observation.md)
-  bei 3× — dreimal war die Begrenzung begründet und trotzdem zu eng, und
-  dreimal fand es jemand anderes als der Messende. **Kein Sensor:** ob ein
-  Geltungsbereich weit genug ist, ist ein Urteil über eine Absicht (§3.7); ein
-  zweites Muster, das nach übersehenen Klassen sucht, kann dieselbe Verengung
-  haben wie das erste. Was greift, ist die Frage beim **Schreiben** — sie kostet
-  einen Halbsatz und hätte alle drei Fälle gefangen.
-  **Zweite Hälfte** (`seit slice-182`): Ein Größen-*Vergleich* mit einer Ziel-Form
-  ist noch kein Befund. Eine Vorlage ist kürzer als jedes ausgefüllte Dokument,
-  und ihre Platzhalter und Bedienhinweise — die beim Kopieren verschwinden —
-  zählen in ihr mit. Befund ist nachgeschriebener **Baseline-Normtext**; das
-  entscheidet die Herkunft eines Satzes, nicht seine Länge.
-  **Und die eigene Spec ist nicht die Baseline:** Ein Einstiegspunkt, der eine
-  `AC-*`-Zusage zusammenfasst und auf sie verlinkt, zeigt nach **oben** in der
-  Source Precedence — das ist seine Aufgabe, nicht sein Fehler. Dieselbe Zusage
-  steht dann mehrfach im Repo, und das ist richtig so.
-  Gemessen an [`harness/README.md`](harness/README.md): Der Abschnitt mit dem
-  größten Faktor (**22 ×** gegen die Ziel-Form, wo zwei Platzhalter-Punkte
-  stehen) blieb unverändert — er ist die ausgefüllte Ziel-Form und fasst zwei
-  `AC-QA-*` zusammen; gekürzt wurden zwei Abschnitte mit kleinerem Faktor, in
-  denen das **Regelwerk** nachgeschrieben war — einer davon zweimal in derselben
-  Datei.
-  **Dritte Hälfte** (`seit slice-183`, an §5 dieser Datei gemessen): *„Steht die
-  Regel im Regelwerk?"* ist ebenfalls die falsche Frage. In einem Repo, das eine
-  Baseline **adoptiert** hat, lautet die Antwort fast immer ja — sechs von sechs
-  Substanz-Stichproben fanden eine Fundstelle. Trägt nur: *„schreibt dieser
-  Absatz ihre **Begründung** nach?"* Eine Regel zu **nennen** und die repo-eigene
-  Ausprägung danebenzustellen ist die Aufgabe dieser Datei; erst die
-  nachgeschriebene Herleitung ist der Befund. Gemessen traf das auf **drei von
-  18** Blöcken in §5 zu — bei einem Größen-Faktor von **23,2 ×** gegen die
-  Ziel-Form.
-- **Eine Mutations-Probe belegt erst, wenn sie rot war** (`seit slice-181`,
-  Register-Eintrag bei 3×): Wer einen Prüfer mit einer Probe belegt, zeigt
-  **beide** Richtungen — und die **rote** ist die, die zählt. Grün beweist
-  nichts: Ein Prüfer, der seinen Gegenstand gar nicht erreicht, ist grün, und
-  eine Probe, die ihn verfehlt, ebenso.
-  **Zwei Ausprägungen, beide belegt:** Die Probe **liefert den Gegenstand mit**
-  — sie baut ihren Fall so, dass eine bereits gedeckte Eigenschaft ihn in die
-  Prüfmenge bringt, und die neue wird nie erreicht (slice-180: eine Datei mit
-  *allen drei* Verweis-Formen). Oder sie **trifft daneben** — die Mutation
-  landet außerhalb des Gegenstands (slice-181: Fülltext hinter dem schließenden
-  `|` einer Tabellenzelle; slice-169: das Muster mutiert statt der
-  Kandidatenmenge).
-  **Die Prüf-Frage ist nicht „hast du eine Probe?", sondern „war sie rot, und
-  woran?"** — die Meldung nennen, nicht nur den Exit-Code.
-  **Kein Sensor:** Ob eine Probe ihren Gegenstand trifft, ist ein Urteil über
-  ihren Aufbau (§3.7). Was greift, ist die Frage beim Schreiben — sie kostet
-  einen Handgriff und hätte alle drei Fälle gefangen.
-  Auslöser: [`BEO-GATE/probe-liefert-den-gegenstand-mit`](docs/plan/planning/observations/BEO-GATE/probe-liefert-den-gegenstand-mit/observation.md)
-  (slice-169, slice-180, slice-181 — 3×).
+- **Slice-Form:** neue Slices entstehen aus der **vendorten Ziel-Form**
+  [`slice.template.md`](.harness/baseline/v6.5.0/templates/docs/plan/planning/slice.template.md) —
+  a-check führt keine eigene Kopie, sie würde gegen die Baseline driften. **Was
+  beim Kopieren anzupassen ist**, steht in
+  [`docs/plan/planning/README.md`](docs/plan/planning/README.md) §Beim Kopieren
+  der Slice-Ziel-Form — sieben Punkte, jeder gegen den Bestand gemessen
+  (slice-178), umgezogen mit slice-186 an den Ort, an dem die Slice-Ablage
+  beschrieben ist.
+- **Zwei Mess-Regeln leben im Reviewer-Skill**, nicht hier: *Geltungsbereich
+  einer Messung* (`seit slice-179`) und *Eine Mutations-Probe belegt erst, wenn
+  sie rot war* (`seit slice-181`). Beide sind **inferentielle Urteilsregeln** —
+  sie sagen selbst „kein Sensor" —, und `modul-08` §Welche Rolle braucht welche
+  Artefaktklasse weist genau diesen Fall der **Skill-Datei** zu, nicht dem
+  Briefing. Umgezogen mit slice-186; sie gelten unverändert weiter.
+  Ort: [`.harness/skills/reviewer.md`](.harness/skills/reviewer.md)
+  §Mess-Regeln.
 - **CR-Texte an ein fremdes Werkzeug** (bisher vier an `d-check`) leben im Slice, der sie erzeugt,
   und gehen erst nach einem Prüf-Durchgang hinaus: der Skill
   [`.harness/skills/cr-text-reviewer.md`](.harness/skills/cr-text-reviewer.md) markiert jeden Satz,

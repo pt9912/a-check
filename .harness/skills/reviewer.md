@@ -109,6 +109,68 @@ werden vor Übernahme adversarisch gegen das Repo-Artefakt verifiziert**
 im selben Kontextfenster (Modul 8). Report-Ablage: ein Report pro Lauf unter
 [`docs/reviews/`](../../docs/reviews/), Folgeläufe als neue Datei.
 
+## Mess-Regeln (umgezogen aus `AGENTS.md` §5, slice-186)
+
+Zwei Urteilsregeln über **Belege**. Beide sagen selbst „kein Sensor" — sie
+hängen am Review, und `modul-08` weist genau diesen Fall der Skill-Datei zu.
+
+- **Geltungsbereich einer Messung** (`seit slice-179`, Lese-Schritt der
+  welle-15-Closure): Wer eine Messung als **Beleg** schreibt — in einem
+  Slice-Plan, einer Closure-Notiz, einem Review-Report —, nennt ihren
+  **Geltungsbereich** und sagt, ob er den Gegenstand deckt. Nicht *„22 Befunde,
+  keine weitere Klasse"*, sondern *„22 Befunde über Markdown-Links; Prosa sieht
+  das Instrument nicht"*.
+  **Anlass:** [`BEO-PLAN/review-geltungsbereich-zu-eng`](../../docs/plan/planning/observations/BEO-PLAN/review-geltungsbereich-zu-eng/observation.md)
+  bei 3× — dreimal war die Begrenzung begründet und trotzdem zu eng, und
+  dreimal fand es jemand anderes als der Messende. **Kein Sensor:** ob ein
+  Geltungsbereich weit genug ist, ist ein Urteil über eine Absicht (§3.7); ein
+  zweites Muster, das nach übersehenen Klassen sucht, kann dieselbe Verengung
+  haben wie das erste. Was greift, ist die Frage beim **Schreiben** — sie kostet
+  einen Halbsatz und hätte alle drei Fälle gefangen.
+  **Zweite Hälfte** (`seit slice-182`): Ein Größen-*Vergleich* mit einer Ziel-Form
+  ist noch kein Befund. Eine Vorlage ist kürzer als jedes ausgefüllte Dokument,
+  und ihre Platzhalter und Bedienhinweise — die beim Kopieren verschwinden —
+  zählen in ihr mit. Befund ist nachgeschriebener **Baseline-Normtext**; das
+  entscheidet die Herkunft eines Satzes, nicht seine Länge.
+  **Und die eigene Spec ist nicht die Baseline:** Ein Einstiegspunkt, der eine
+  `AC-*`-Zusage zusammenfasst und auf sie verlinkt, zeigt nach **oben** in der
+  Source Precedence — das ist seine Aufgabe, nicht sein Fehler. Dieselbe Zusage
+  steht dann mehrfach im Repo, und das ist richtig so.
+  Gemessen an [`harness/README.md`](../../harness/README.md): Der Abschnitt mit dem
+  größten Faktor (**22 ×** gegen die Ziel-Form, wo zwei Platzhalter-Punkte
+  stehen) blieb unverändert — er ist die ausgefüllte Ziel-Form und fasst zwei
+  `AC-QA-*` zusammen; gekürzt wurden zwei Abschnitte mit kleinerem Faktor, in
+  denen das **Regelwerk** nachgeschrieben war — einer davon zweimal in derselben
+  Datei.
+  **Dritte Hälfte** (`seit slice-183`, an §5 dieser Datei gemessen): *„Steht die
+  Regel im Regelwerk?"* ist ebenfalls die falsche Frage. In einem Repo, das eine
+  Baseline **adoptiert** hat, lautet die Antwort fast immer ja — sechs von sechs
+  Substanz-Stichproben fanden eine Fundstelle. Trägt nur: *„schreibt dieser
+  Absatz ihre **Begründung** nach?"* Eine Regel zu **nennen** und die repo-eigene
+  Ausprägung danebenzustellen ist die Aufgabe dieser Datei; erst die
+  nachgeschriebene Herleitung ist der Befund. Gemessen traf das auf **drei von
+  18** Blöcken in §5 zu — bei einem Größen-Faktor von **23,2 ×** gegen die
+  Ziel-Form.
+- **Eine Mutations-Probe belegt erst, wenn sie rot war** (`seit slice-181`,
+  Register-Eintrag bei 3×): Wer einen Prüfer mit einer Probe belegt, zeigt
+  **beide** Richtungen — und die **rote** ist die, die zählt. Grün beweist
+  nichts: Ein Prüfer, der seinen Gegenstand gar nicht erreicht, ist grün, und
+  eine Probe, die ihn verfehlt, ebenso.
+  **Zwei Ausprägungen, beide belegt:** Die Probe **liefert den Gegenstand mit**
+  — sie baut ihren Fall so, dass eine bereits gedeckte Eigenschaft ihn in die
+  Prüfmenge bringt, und die neue wird nie erreicht (slice-180: eine Datei mit
+  *allen drei* Verweis-Formen). Oder sie **trifft daneben** — die Mutation
+  landet außerhalb des Gegenstands (slice-181: Fülltext hinter dem schließenden
+  `|` einer Tabellenzelle; slice-169: das Muster mutiert statt der
+  Kandidatenmenge).
+  **Die Prüf-Frage ist nicht „hast du eine Probe?", sondern „war sie rot, und
+  woran?"** — die Meldung nennen, nicht nur den Exit-Code.
+  **Kein Sensor:** Ob eine Probe ihren Gegenstand trifft, ist ein Urteil über
+  ihren Aufbau (§3.7). Was greift, ist die Frage beim Schreiben — sie kostet
+  einen Handgriff und hätte alle drei Fälle gefangen.
+  Auslöser: [`BEO-GATE/probe-liefert-den-gegenstand-mit`](../../docs/plan/planning/observations/BEO-GATE/probe-liefert-den-gegenstand-mit/observation.md)
+  (slice-169, slice-180, slice-181 — 3×).
+
 ## Pflege (Steering-Loop)
 
 Bei dreimaligem gleichem Finding: Klassifikation schärfen → Folge-ADR oder

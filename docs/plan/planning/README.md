@@ -49,6 +49,53 @@ Evidence-Dateien, fortgeschrieben bei **jeder** Slice-Closure, unabhängig von W
 `reconciliation.md` führt a-check nicht — es gehört zum Brownfield-Bootstrap, den dieses Repo
 nicht hatte.
 
+## Beim Kopieren der Slice-Ziel-Form
+
+Umgezogen aus [`AGENTS.md`](../../../AGENTS.md) §5 mit slice-186 — eine
+Bedienungsanleitung für die Vorlage gehört dorthin, wo die Ablage beschrieben
+ist, nicht ins Briefing. Die Regel selbst ist unverändert.
+
+- **Slice-Form:** neue Slices entstehen aus der **vendored Ziel-Form**
+  [`.harness/baseline/v6.5.0/templates/docs/plan/planning/slice.template.md`](../../../.harness/baseline/v6.5.0/templates/docs/plan/planning/slice.template.md) — a-check führt keine eigene Kopie, sie würde gegen die Baseline driften.
+  **Beim Kopieren anzupassen** — sieben Punkte, jeder gegen den Bestand gemessen (slice-178):
+
+  1. Die Zeile `Lerneintrag — Form: <…>` **ergänzen** — die Ziel-Form kennt sie nicht als Feld,
+     `make verify` verlangt sie.
+  2. **Ein** Feld streichen: das *Reconciliation-Register* — a-check hat keinen
+     Brownfield-Bootstrap, `reconciliation.md` existiert nicht. **Alles andere bleibt**, auch was
+     frühere Fassungen dieser Liste zum Streichen empfahlen: `**Welle:**` führen **174** Dateien,
+     den **Herkunfts-Anker** (`— liegt in <Zielort>` plus `seit slice-<NNN>` dort) führt das Repo
+     an **58** Stellen, und die *drei Paarungen* stehen in jeder Closure-Notiz.
+  3. **Wer die drei Paarungen trägt, entscheidet der Repo-Zustand — nicht das `Welle:`-Feld des
+     Slice.** Baseline `modul-06-roadmap.md` §Wann Arbeit eine Welle braucht: *„Wellenlos ist eine
+     Eigenschaft des **Repos** … das Kopf-Feld `**Welle:**` sagt nur, ob dieser Slice in ein Bündel
+     gehört; daraus folgt für die Vorgänge unten nichts."* Liegt eine **offene Welle** vor, trägt
+     ihre Closure die Paarungen — **auch für Slices ohne Wellen-Zugehörigkeit**. Erst ohne
+     Wellen-Betrieb trägt die Slice-Closure sie selbst.
+  4. **Die Abschnitts-Nummern der Ziel-Form gelten nicht unverändert.** a-check schiebt zwischen
+     Ziel und DoD einen **Analyse-Abschnitt** ein (er hält die Messung, auf der die DoD steht) und
+     stellt die DoD hinter den Umsetzungs-Abschnitt. Wieviel sich dadurch verschiebt, hängt vom
+     Slice ab — der Bestand führt den Sub-Area-Abschnitt als §7 bis §10. **Nicht die Nummer
+     kopieren, sondern die Reihenfolge der Ziel-Form einhalten und den Analyse-Abschnitt
+     einfügen, wo er gebraucht wird.**
+  5. **§1 heißt *Ziel und Abgrenzung*** — die Ziel-Form nennt ihn anders. Was er trägt
+     (Begründungs-Pflicht je Punkt, die vier Ausschluss-Klassen als Suchraster, keine
+     Mindestzahl), steht in `modul-05` §Ziel-Form: Slice.
+  6. **Der Sub-Area-Abschnitt heißt *Sub-Area-Prüfungen und Modus-Begründung*** — der Titel trägt beide Hälften, weil
+     nur die zweite bedingt ist. Die zwei *Vorgelagert*-Blöcke (Sub-Area-Wahl prüfen · offene
+     Beobachtungen sichten) laufen in **jedem** Slice-Plan, unabhängig von Modus und Slice-Typ;
+     **der Abschnitt entfällt nie**.
+  7. Die Ziel-Form führt eine **Review-DoD-Zeile**
+     ([`MR-019`](../../../harness/conventions.md#mr-019)) — ihr Wortlaut wird beim Kopieren auf die exakte
+     Trigger-Phrase „unabhängiger Review" umgeschrieben, statt den Baseline-Wortlaut unverändert
+     zu übernehmen; sonst prüft `make doc-reviews` sie nie (empirisch geprüft, slice-165 §3/§4).
+
+  **Größen-Regel, Zählregel und die drei Lerneintrag-Formen stehen in `modul-05`
+  §Ziel-Form: Slice.** Repo-eigen ist ihre **Durchsetzung**: `make verify` prüft beides ab
+  slice-052, ältere Slices sind grandfathered. Der Gate-Lauf steht als feste Zeile unter dem
+  DoD — als Checkbox ist er ab slice-098 ein Befund, weil er zu den konstanten Posten zählt.
+  Ab demselben Stichtag trägt der Kopf `Verantwortlich:`, `Autor:` und die berührten
+  Spec-Stellen; `—` ist eine gültige Antwort, Schweigen nicht.
 ## Aktueller Stand
 
 Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md` §Lifecycle als State
