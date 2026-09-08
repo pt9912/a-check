@@ -3,7 +3,7 @@
 **Welle:** ohne Welle.
 
 **Bezug:** Folge-Slice aus
-[slice-186](../done/slice-186-voll-abgleich-restliche-paare.md) §7,
+[slice-186](../done/wellenlos/slice-186-voll-abgleich-restliche-paare.md) §7,
 Risiko 1 (*eingetreten*).
 [`AC-QA-02`](../../../../spec/lastenheft.md#ac-qa-02--hermetik-und-ehrliche-heuristik-grenze).
 
@@ -78,7 +78,7 @@ ist ein Change Request.
 ## 5. Trigger
 
 **Start** (`open` → `in-progress`):
-[slice-186](../done/slice-186-voll-abgleich-restliche-paare.md) liegt in
+[slice-186](../done/wellenlos/slice-186-voll-abgleich-restliche-paare.md) liegt in
 `done/` und das WIP-Limit ist frei.
 
 **Rückführungen — vorab benannt:**
