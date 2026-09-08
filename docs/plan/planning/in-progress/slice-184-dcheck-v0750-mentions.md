@@ -87,7 +87,50 @@ ihn zu finden, wenn er schon steht.
 
 ## 3. Umsetzung
 
-*(entsteht mit der Arbeit)*
+| Datei / Komponente | Änderungs-Art | Begründung |
+|---|---|---|
+| `d-check.mk` | update | verbatim aus `v0.75.0 --print-mk`, Digest gesetzt |
+| `.d-check.yml`, Block `mentions` | neu | `harness/sensors/*.md` gegen `AGENTS.md` |
+| `Makefile`, `doc-mentions` | neu | das Fragment liefert kein Target; ins `gates`-Aggregat und `.PHONY` |
+| `harness/sensors/doc-mentions.md` | neu | vier Grenzen, alle gemessen |
+| `AGENTS.md` §4, `harness/README.md` §Sensors | update | Deklaration, sonst meldet `doc-targets` |
+| `.claude/hooks/pretooluse-command-guard.sh` | update | die `GATES`-Liste des Guards |
+
+**Der `guard-selftest` fand die dritte Stelle.** Ein neues Gate muss an **drei**
+Orten bekannt sein: Aggregat, `.PHONY` — und der `GATES`-Liste des
+Command-Guards. Fehlt die dritte, greift die Pipe-Regel für dieses Target nicht,
+und `make doc-mentions | tail` liefe ungehindert durch. Der Selbsttest meldete
+das von selbst; ohne ihn wäre es eine stille Lücke gewesen.
+
+**Zwei Mutations-Proben, beide rot** — die zwei Fälle, die die Ziel-Form als
+Lücke benennt:
+
+| Mutation | Erwartet | Gemessen |
+|---|---|---|
+| Index-Zeile einer bestehenden Sensor-Datei entfernt | rot | `artifact-unmentioned` für `harness/sensors/symlink-check.md` |
+| neue Sensor-Datei ohne Index-Zeile angelegt | rot | `artifact-unmentioned` für `harness/sensors/probe-ohne-zeile.md` |
+| unverändert | grün | `16 von 16 Artefakt(en) erwähnt` |
+
+### 3.1 Liefer-Punkt 3 fällt gemessen **negativ** aus
+
+Die DoD verlangt, *entschieden und gemessen* zu haben, ob `mentions` die
+ADR-Index-Eigenbau-Prüfung in `gate-consistency` ablöst. **Sie tut es nicht**,
+und der Grund ist die Pfad-Form:
+
+| | |
+|---|---|
+| Sensor-Dateien mit vollem Pfad in `AGENTS.md` | **15 von 15** |
+| ADRs mit vollem Pfad im ADR-Index | **0 von 39** — der Index verlinkt geschwister-relativ (`](0001-….md)`) |
+
+`mentions` sucht den **vollen repo-relativen Pfad**; es meldete alle 39 ADRs als
+unerwähnt. Die Ablösung scheitert nicht am Willen, sondern an einer Eigenschaft
+des Index, die er aus gutem Grund hat — ein Markdown-Link ist dateirelativ, und
+ein voller Pfad wäre dort schlicht falsch.
+
+**Das ist der Unterschied zur Ablösung, die slice-079 für `doc-targets`
+gemacht hat:** Dort war die Parität in beiden Richtungen messbar und gegeben.
+Hier ist sie messbar und **nicht** gegeben — und genau deshalb steht die
+Eigenbau-Prüfung weiter in `tools/gate-consistency.sh`.
 
 ## 4. Definition of Done
 
@@ -131,23 +174,120 @@ Lerneintrag. Danach Archivierung als wellenloser Slice
 ## 7. Risiken und offene Punkte
 
 - **`mentions` ist undokumentiert.** Sein Verhalten ist ausprobiert, nicht
-  gelesen — was es bei Sonderfällen tut (Inline-Code statt Link, Teilpfade,
-  Groß-/Kleinschreibung), ist ungeprüft. — **Ausgang:** <offen bis Closure>
+  gelesen — was es bei Sonderfällen tut, war ungeprüft. — **Ausgang:**
+  *entfallen*, gestrichen mit Begründung: Die genannten Sonderfälle **sind**
+  jetzt geprüft. Inline-Code und nackte Prosa zählen als Erwähnung (Fixture mit
+  drei Formen), der Teilpfad **nicht** (nur der volle repo-relative Pfad
+  trifft), und beide Befunde stehen als Grenze in
+  `harness/sensors/doc-mentions.md`. Was bleibt, ist die Groß-/Kleinschreibung —
+  sie ist im Bestand gegenstandslos, weil alle Pfade klein sind.
 - **Der Sprung kann ein bestehendes Gate brechen**, ohne dass der Diff der
   Konfiguration es zeigt: Ein Modul kann sein *Verhalten* geändert haben, wo
-  seine *Optionen* gleich blieben. — **Ausgang:** <offen bis Closure>
+  seine *Optionen* gleich blieben. — **Ausgang:** *entfallen*, gestrichen mit
+  Begründung: `make gates` lief auf dem neuen Pin **vor** jeder weiteren
+  Änderung durch, Exit 0. Das ist der Nachweis, den das Risiko verlangt — und
+  er ist der Grund, warum der Pin-Sprung ein **eigener Commit** vor der
+  Konfiguration war.
 - **Die Ablösung der Eigenbau-Prüfung könnte den Geltungsbereich verkleinern** —
   dieselbe Falle, die slice-079 für `doc-targets` gemessen und vermieden hat.
-  — **Ausgang:** <offen bis Closure>
+  — **Ausgang:** *entfallen*, gestrichen mit Begründung: Die Ablösung findet
+  **nicht statt** (§3.1). Gemessen nennen **0 von 39** ADRs ihren vollen Pfad im
+  Index; `mentions` meldete jede einzelne als unerwähnt. Das Risiko war richtig
+  gestellt und hat seinen Zweck erfüllt — es hat die Messung erzwungen, die die
+  Ablösung verhindert hat.
 
 ## 8. Closure-Notiz
 
-*(bei Closure auszufüllen)*
+**Lerneintrag — Form: neuer Sensor** (`make doc-mentions`).
+
+- **Was hat funktioniert:** Den Sprung **vor** jeder Konfiguration als eigenen
+  Commit fahren und `make gates` darauf laufen lassen. Das beantwortet das
+  Risiko *„der Sprung bricht ein Gate"* mit einem Beleg statt mit einer
+  Vermutung — und es trennt zwei Fehlerquellen, die sonst in einem Diff liegen.
+
+- **Was ging anders als geplant — Liefer-Punkt 3 fällt negativ aus, und das ist
+  ein Ergebnis.** Die DoD verlangte, *gemessen* zu entscheiden, ob `mentions`
+  die ADR-Index-Eigenbau-Prüfung ablöst. Gemessen: **0 von 39** ADRs nennen
+  ihren vollen Pfad im Index — er verlinkt geschwister-relativ, und das ist
+  richtig so. Die Ablösung scheitert an einer Eigenschaft des Gegenstands, nicht
+  am Werkzeug. **Der Unterschied zu slice-079**, wo dieselbe Frage positiv
+  ausging: Dort war die Parität messbar **und** gegeben, hier messbar und
+  **nicht** gegeben.
+
+- **Dieselbe Messung hat die Konfiguration selbst geformt.** `mentions` sucht
+  den vollen repo-relativen Pfad; damit fällt auch
+  [`harness/README.md`](../../../../harness/README.md) aus der Dokument-Menge —
+  es nennt dieselben Dateien geschwister-relativ und **kann das nicht ändern**,
+  ohne seine Links zu brechen. Ohne die Vorab-Frage *„welche Schreibweisen hat
+  mein Gegenstand?"* wäre die Regel mit 39 Fehlalarmen eingeführt worden.
+
+- **Steering-Loop-Eintrag — neuer Sensor:** `make doc-mentions` wächtert die
+  **Gegenrichtung** des Link-Checks: ob eine *existierende* Datei genannt wird.
+  Die Lücke ist keine Erfindung — `v6.5.0` ·
+  `templates/harness/README.template.md` benennt sie wörtlich (*„eine Datei ohne
+  Index-Zeile … bleibt still grün"*), und
+  `harness/sensors/gate-consistency.md` führt sie seit slice-181 als eigene
+  Grenze. — liegt in `Makefile:doc-mentions` (`.d-check.yml`, Block `mentions`;
+  im `gates`-Aggregat).
+  Auslöser: die benannte Grenze der Ziel-Form, nicht ein Register-Eintrag — der
+  Bedarf stand fest, bevor das Werkzeug ihn decken konnte.
+
+- **Der `guard-selftest` fand die dritte Stelle.** Ein neues Gate muss an drei
+  Orten bekannt sein: `gates`-Aggregat, `.PHONY` und die `GATES`-Liste des
+  Command-Guards. Die dritte hatte ich vergessen; ohne den Selbsttest wäre
+  `make doc-mentions | tail` still durchgelaufen. **Ein Sensor, der einen
+  anderen Sensor vollständig hält** — das ist der Fall, für den die
+  Durchsetzungsschicht gebaut ist.
+
+- **Beobachtungs-Register (`../observations/`):** kein neuer Eintrag, kein neuer
+  Beleg. Drei `GATE`-Einträge sind einschlägig und alle drei haben den Slice
+  **geformt** statt von ihm einen Beleg zu bekommen (§9) — das ist die Wirkung,
+  die der Zähler beabsichtigt.
+
+- **Folge-Slices:** keiner. Die zwei benannten Grenzen —
+  `harness/README.md` ungewächtert, ADR-Index nicht ablösbar — sind
+  Eigenschaften des Gegenstands, keine offenen Aufgaben; sie stehen in
+  `harness/sensors/doc-mentions.md`.
+
+- **Risiken aus §7:** drei, jedes mit genau einem Ausgang — dreimal *entfallen*
+  mit Begründung, weil jedes Risiko genau die Messung erzwungen hat, die es
+  auflöst.
+
+- **Drei Paarungen** (Repo ohne Wellen-Betrieb) — geprüft **nach** dem `git mv`
+  nach `done/`, weil sie dort suchen; eingetragen im dritten Closure-Commit.
 
 ## 9. Sub-Area-Prüfungen und Modus-Begründung
 
-**Vorgelagert — Sub-Area-Wahl prüfen:** *(beim Übergang nach `in-progress/`
-auszufüllen — der Register-Stand beim Anlegen ist ein anderer als beim Beginn
-der Arbeit.)*
+**Vorgelagert — Sub-Area-Wahl prüfen:** zwei Sub-Areas berührt.
+**Gate-/Werkzeug-Schicht** `GATE` (`d-check.mk`, `.d-check.yml`, `Makefile`,
+`.claude/hooks/`) und **Harness-Einstieg** `HARNESS`
+([`AGENTS.md`](../../../../AGENTS.md) §4,
+[`harness/README.md`](../../../../harness/README.md) §Sensors,
+`harness/sensors/`) — beide Achsen 1,2,3 laut
+[Modus-Deklaration](../../../../harness/conventions.md#modus-deklaration-pro-sub-area).
 
-**Vorgelagert — offene Beobachtungen sichten:** *(ebenso.)*
+**Vorgelagert — offene Beobachtungen sichten:** gesichtet am 2026-09-08.
+`BEO-GATE/` führt 21 Einträge; drei sind einschlägig, und **alle drei haben
+diesen Slice geformt**:
+
+- [`probe-liefert-den-gegenstand-mit`](../observations/BEO-GATE/probe-liefert-den-gegenstand-mit/observation.md)
+  — **3×**, seit slice-181 *verkörpert* in
+  [`AGENTS.md`](../../../../AGENTS.md) §5. **Kein neuer Beleg**, und das ist
+  die Wirkung: Die Regel *„war sie rot, und woran?"* hat hier von Anfang an
+  gegriffen — beide Proben sind rot gefahren und mit ihrer **Meldung**
+  protokolliert, nicht nur mit dem Exit-Code.
+- [`muster-trifft-nur-die-haeufige-schreibweise`](../observations/BEO-GATE/muster-trifft-nur-die-haeufige-schreibweise/observation.md)
+  — **2×**, offen. **Kein neuer Beleg, aber knapp:** Die Frage *„welche
+  Schreibweisen hat mein Gegenstand?"* ist hier **vor** der Konfiguration
+  gestellt worden, und die Antwort hat sie geändert — `mentions` sieht nur den
+  vollen Pfad, also fällt `harness/README.md` aus der Dokument-Menge und die
+  ADR-Ablösung ganz weg. Ohne diese Frage wäre die Regel mit 39 Fehlalarmen
+  eingeführt worden.
+- [`pruefer-ohne-gegenstand-oder-aufruf`](../observations/BEO-GATE/pruefer-ohne-gegenstand-oder-aufruf/observation.md)
+  — **5×**, *verkörpert*. **Kein Beleg**: Die Kandidatenmenge ist nicht leer
+  (16 Artefakte), und der Lauf nennt sie in seiner Erfolgszeile — das Modul
+  liefert die Nichtleerheits-Aussage von selbst mit.
+
+**Keine weiteren Treffer** für `GATE` oder `HARNESS`.
+
+**Alle berührten Sub-Areas GF** — kein Begründungsblock nötig.
