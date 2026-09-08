@@ -319,21 +319,27 @@ structure:
   #     mehr als EINEN SATZ — Deckungsgrenze, Ausgabe-Bedeutung, Exit-Codes,
   #     Abbruch-Bedingungen —, wandert das nach harness/sensors/<target>.md".
   #
-  #     WARUM ZEICHEN UND NICHT SAETZE, obwohl die Ziel-Form Saetze nennt:
-  #     gemessen ueber alle 66 Zellen der zwei Spalten traegt genau EINE mehr
-  #     als einen Satz — auch die mit 354 Zeichen. Das Satz-Kriterium ist
-  #     INHALTLICH gemeint ("sagt mehr, als ein Satz sagen sollte") und als
-  #     Muster nicht greifbar. Die Zeichenzahl ist ein PROXY dafuer; sie faengt
-  #     denselben Fall aus einer anderen Richtung und ist maschinell pruefbar.
-  #     Das ist die benannte Grenze dieser Regel: eine ueberladene Zelle mit
-  #     240 Zeichen passiert gruen.
+  #     WARUM ZEICHEN UND NICHT SAETZE: Saetze WAEREN das richtige Kriterium —
+  #     table.column kann sie nicht zaehlen. Es bietet cell-max-chars und
+  #     cell-min-chars, sonst nichts; min-sentences gibt es nur fuer Abschnitte.
+  #     Die Zeichenzahl ist damit der verfuegbare PROXY, nicht die Sache selbst.
+  #
+  #     WAS DER PROXY NICHT DECKT, gemessen: 16 der 66 Zellen tragen mehr als
+  #     einen Satz, die kuerzeste davon liegt weit unter der Schwelle. Das
+  #     Satz-Kriterium der Ziel-Form bleibt also in Teilen ungedeckt — es haengt
+  #     am Review, nicht an diesem Lauf. Umgekehrt gilt dasselbe: eine
+  #     ueberladene Zelle mit 240 Zeichen passiert gruen.
   #
   #     SCHWELLE 250, am Bestand gemessen statt gesetzt: Median der zwei
-  #     Spalten 152 bzw. 158 Zeichen, 250 also rund das 1,6-fache. Bei 200
-  #     waeren es 17 Befunde gewesen, bei 250 acht — und die acht sind genau
-  #     die, die beim Ueberfliegen der Tabelle nicht mehr lesbar waren. Nach
-  #     ihrer Aufloesung liegt der Bestand bei max 242; das sind acht Zeichen
-  #     Luft, und die Enge ist Absicht.
+  #     Spalten 144 bzw. 139 Zeichen. Bei 200 waeren es 18 Befunde gewesen, bei
+  #     250 neun — und die neun sind genau die, die beim Ueberfliegen der
+  #     Tabelle nicht mehr lesbar waren. Nach ihrer Aufloesung liegt der Bestand
+  #     bei max 242; das sind acht Zeichen Luft, und die Enge ist Absicht.
+  #
+  #     DIE NEUNTE FAND DER SENSOR, NICHT DIE VORAB-MESSUNG (slice-181): Eine
+  #     Zelle enthaelt escapte Pipes (`\|`), an denen ein naives Split sie
+  #     zerlegt — die Vorab-Zaehlung sah sie als mehrere kurze Zellen. Wer diese
+  #     Zahlen nachrechnet, schuetzt die escapten Pipes vor dem Split.
   #
   #     GRENZE DES hint-FELDES: es gewinnt gegen die modul-eigene Meldung — und
   #     zwar fuer ALLE Befunde dieser Regel. Bei section-column-missing und
@@ -357,6 +363,17 @@ structure:
         - name: Bindung
           cell-min-chars: 1
     hint: "Zellengrenze der Vertrags-Spalte (max 250 Zeichen, nicht leer): was darueber hinausgeht, gehoert nach harness/sensors/<target>.md (AGENTS §4)"
+
+  - files: "harness/conventions.md"
+    section: "### Aktive Adaptionen"
+    table:
+      column:
+        - name: Ersetzt-Baseline-Regel
+          cell-max-chars: 250
+          cell-min-chars: 1
+        - name: Geltungsbereich
+          cell-min-chars: 1
+    hint: "Zellengrenze der Adaptions-Uebersicht (max 250 Zeichen, nicht leer): die Begruendung gehoert in den MR-Eintrag, die Tabelle traegt nur, was ohne Oeffnen entscheidbar sein muss"
 
   - files: "AGENTS.md"
     section: "## 4. Quality Gates"
