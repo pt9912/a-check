@@ -146,7 +146,7 @@ self_test() {
     rm -rf "$tmp"; exit 2
   fi
 
-  # --- ZWEITER SCHRITT: die AUSWAHL, nicht nur die Ersetzung. ---
+  # --- ZWEITER SCHRITT: die AUSWAHL, nicht nur die Ersetzung (seit slice-180). ---
   # Bis slice-180 endete der Selbsttest hier, und genau deshalb blieb
   # unbemerkt, dass select_files eine Form nicht kannte, die rewrite_file
   # kann: Eine Datei mit AUSSCHLIESZLICH Form 3 wurde nie ausgewaehlt

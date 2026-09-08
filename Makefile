@@ -156,7 +156,7 @@ image-scan: ## CVE-Scan gegen das PUBLIZIERTE Image (Netz, NICHT in gates, Trivy
 # KEIN Gate — ein WERKZEUG. Es prueft nichts, es bewegt: `git mv` plus den Nachzug
 # der Verweise AUF die bewegte Datei (BEO-008, slice-118). Die Gegenrichtung —
 # Verweise IN wandernden Dateien — traegt das Modul `links` (doc-check).
-slice-mv: ## Lifecycle-Wechsel eines Slice samt der Verweise auf ihn (AGENTS §5). SLICE=<slice-NNN> TO=<open|next|in-progress|done>
+slice-mv: ## Lifecycle-Wechsel eines Slice samt der Verweise auf ihn (AGENTS §5; drei Verweis-Formen, Auswahl+Ersetzung selbstgetestet seit slice-180). SLICE=<slice-NNN> TO=<open|next|in-progress|done>
 	@bash tools/slice-mv.sh "$(SLICE)" "$(TO)"
 
 # Die Teil-Sensoren laufen als Sequenz im selben Rezept, NICHT als
