@@ -287,8 +287,8 @@ geschrieben.
   im Slice.* Ein `MR`-Eintrag ist immutabel und wird Jahre später gelesen; ein
   Beleg wie *„steht ohnehin im `Schärft:`-Feld"* ist dann nicht mehr prüfbar,
   ohne die Messung neu zu erfinden. — liegt in
-  [`MR-021`](../../../../harness/conventions/done/MR-021-verfeinerungs-form.md)
-  §Begründung (`seit slice-171` dort).
+  [`MR-022`](../../../../harness/conventions/MR-022-verfeinerungs-form.md)
+  §Begründung, *Zählregel und Geltungsbereich* (`seit slice-171` dort).
   **Kein Sensor:** Ob eine Begründung gemessen ist, ist ein Urteil über ihren
   Entstehungsweg ([`AGENTS.md`](../../../../AGENTS.md) §3.7) — dieselbe Grenze,
   die §5 für CR-Texte an ein fremdes Werkzeug bereits benennt.
@@ -314,7 +314,14 @@ geschrieben.
   mit Begründung, einmal *weiter offen* → Register.
 
 - **Drei Paarungen** (Repo ohne Wellen-Betrieb) — geprüft **nach** dem `git mv`
-  nach `done/`, weil sie dort suchen; eingetragen im dritten Closure-Commit.
+  nach `done/`, weil sie dort suchen; alle drei tragen:
+  **Anker** — `liegt in` [`MR-022`](../../../../harness/conventions/MR-022-verfeinerungs-form.md) §Begründung; der Zielort führt `seit slice-171`.
+  *(Er fehlte beim ersten Prüfen und zeigte davor auf den inzwischen abgelösten
+  [`MR-021`](../../../../harness/conventions/done/MR-021-verfeinerungs-form.md) — nachgetragen, solange der Eintrag noch unveröffentlicht war.)*
+  **Folge-Slice** — keiner genannt.
+  **Register** — kein Eintrag zitiert, der einen Beleg bekäme: §9 geht alle
+  **14** `HARNESS`-Einträge durch und begründet je Zeile, warum keiner ausgelöst
+  ist. Die Paarung prüft Deckung, und ungedeckt ist nichts.
 
 ## 9. Sub-Area-Prüfungen und Modus-Begründung
 
