@@ -5,7 +5,7 @@
 **Bezug:** Ausgang von
 [`BEO-HARNESS/adaption-korrigiert-repo-aussage`](../observations/BEO-HARNESS/adaption-korrigiert-repo-aussage/observation.md)
 bei **3×** (*geplant*); ausgelöst durch
-[slice-187](../done/slice-187-voll-abgleich-erstdurchgang-rest.md) §3.6.
+[slice-187](../done/wellenlos/slice-187-voll-abgleich-erstdurchgang-rest.md) §3.6.
 [`AC-QA-02`](../../../../spec/lastenheft.md#ac-qa-02--hermetik-und-ehrliche-heuristik-grenze).
 
 **Berührte Spec-Stellen:** — · Der Slice berührt kein Spec-Stratum.

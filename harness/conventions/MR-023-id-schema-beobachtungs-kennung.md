@@ -18,7 +18,7 @@
   gelebte Praxis und an zwei Orten beschrieben ([`AGENTS.md`](../../AGENTS.md) §5 und
   [`docs/plan/planning/README.md`](../../docs/plan/planning/README.md)) — nur nicht dort, wo ein
   Leser das ID-Schema nachschlägt. Das ist dieselbe Klasse, die
-  [slice-187](../../docs/plan/planning/in-progress/slice-187-voll-abgleich-erstdurchgang-rest.md)
+  [slice-187](../../docs/plan/planning/done/wellenlos/slice-187-voll-abgleich-erstdurchgang-rest.md)
   §3.1 an drei `AGENTS.md`-Stellen gefunden hat: **die Praxis war da, der Satz fehlte.**
 
   **Warum ein `MR` und kein Absatz daneben:** §Disziplin nennt für eine Korrektur an einem
