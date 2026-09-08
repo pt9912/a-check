@@ -99,10 +99,10 @@ fi
 
 # --- Muster 2: `structure`-Modul, tasks-ignore-pattern "Unabhängiger Review" ---
 
-# Nur der eine relevante Modul-Block, nicht a-checks volle .d-check.yml —
-# eine vollstaendige Kopie zieht Config fuer andere Module mit (z. B. `ids`),
-# die auf a-check-eigene Pfade verweist und in einem Fixture-Repo ohne diese
-# Pfade mit einem Konfigurationsfehler abbricht, noch bevor `structure` laeuft.
+# Die Fixture traegt nur den structure-Block, nicht a-checks volle
+# .d-check.yml. Grenze der Fixture: Config anderer Module (z. B. `ids`) zeigt
+# auf a-check-eigene Pfade, die es hier nicht gibt — d-check bricht dann mit
+# einem Konfigurationsfehler ab, bevor `structure` laeuft.
 TASKS_IGNORE_PATTERN='^( *grün|Unabhängiger Review|Closure-Notiz|Beobachtungs-Register|Jedes Risiko|Reconciliation)'
 
 setup_structure_fixture() {  # $1 = Zielverzeichnis, $2 = vierter DoD-Punkt
@@ -149,9 +149,9 @@ fi
 
 # --- KORPUS-SEITE: traegt der echte Bestand die Trigger-Phrase noch? -------
 #
-# Gefragt ist NICHTLEERHEIT, keine Erwartungszahl. Die belegte Ausfallart ist
-# "die Kandidatenmenge wird leer"; eine feste Zahl braeche zusaetzlich bei
-# jedem neuen Slice.
+# Geprueft ist NICHTLEERHEIT: der Lauf ist rot, wenn die Kandidatenmenge des
+# Moduls leer ist, und gruen bei jeder Groesse darueber. Die Zahl in der
+# Erfolgs-Zeile wird bei jedem Lauf neu gezaehlt; sie ist Ausgabe, keine Zusage.
 #
 # GEZAEHLT WIRD DIE MENGE DES MODULS, nicht eine Obermenge davon. Das Modul
 # reviews sieht einen DoD-Haken in einem FLACHEN done/-Slice; eine Nennung in

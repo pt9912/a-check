@@ -39,8 +39,8 @@ findet er das Feld nicht oder zeigt es ins Leere, bricht der Lauf ab.
    ist nur die aktuell empfohlene. Permanent: Der Test kann nicht wissen, was
    jemand morgen schreibt.
 2. **Eine Erwartungszahl** — geprüft ist **Nichtleerheit**, nicht eine Größe.
-   Die belegte Ausfallart ist „die Menge wird leer"; eine feste Zahl bräche bei
-   jedem neuen Slice. Permanent, und Absicht.
+   Der Lauf ist rot bei leerer Menge und grün bei jeder Größe darüber; die Zahl
+   in der Erfolgs-Zeile ist Ausgabe, keine Zusage. Permanent, und Absicht.
    **Wie groß die Menge heute ist, sagt der Lauf**, nicht diese Datei — die
    Erfolgs-Zeile nennt sie.
 3. **Die übrigen phrasen-basierten Felder** in `.d-check.yml` — gedeckt ist

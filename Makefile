@@ -98,7 +98,7 @@ suppression-check: ## Hard Rule AGENTS §3.2: keine Inline-Suppression (//nolint
 symlink-check: ## Jeder getrackte Symlink loest auf (BEO-GATE/symlink-ziel-nach-baseline-bump-ungeprueft, slice-173).
 	@bash tools/symlink-check.sh
 
-dcheck-phrase-selftest: ## Kalibrierung phrasen-basierter d-check-Module (reviews-Trigger-Phrase, structure tasks-ignore-pattern) gegen Fixtures (BEO-GATE/pruefer-ohne-gegenstand-oder-aufruf, slice-168).
+dcheck-phrase-selftest: ## Kalibrierung phrasen-basierter d-check-Module (reviews-Trigger-Phrase, structure tasks-ignore-pattern) gegen Fixtures plus Korpus-Kontrolle der reviews-Kandidatenmenge (BEO-GATE/pruefer-ohne-gegenstand-oder-aufruf; Werkzeug-Haelfte seit slice-168, Korpus-Haelfte seit slice-169).
 	@DCHECK_REF="$(DCHECK_REF)" DOCKER="$(DOCKER)" bash tools/dcheck-phrase-selftest.sh
 
 regelwerk-check: ## Wartung (KEIN Gate): Integritaet der vendored Baseline gegen SHA256SUMS (MR-006); Freshness bleibt ungeprueft.
