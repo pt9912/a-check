@@ -261,9 +261,14 @@ die CI (Badge im [`README.md`](README.md)), nicht diese Tabelle.
   in `modul-07` §Werkzeug-Wahl bei Diskrepanz; die Ablageorte hier sind
   [`harness/conventions.md`](harness/conventions.md#modus-deklaration-pro-sub-area)
   bzw. [`docs/plan/carveouts/`](docs/plan/carveouts/README.md).
-- **Beobachtungs-Register:** Form, Zählregel und die drei Risiko-Ausgänge stehen
-  in `modul-06` §Das Beobachtungs-Register. **Repo-eigen ist der Ort und das
-  Kürzel:** die stehende Ablage
+- **Beobachtungs-Register:** Form und Zählregel stehen in `modul-06` §Das
+  Beobachtungs-Register; die **drei Ausgänge eines offenen Risikos**
+  — *eingetreten* ⇒ Carveout oder Folge-Slice · *entfallen* ⇒ gestrichen **mit
+  Begründung** · *weiter offen* ⇒ Register — in `modul-05` §Offene Risiken
+  werden bei Closure aufgelöst. Es sind **nicht** dieselben drei wie die
+  Register-Ausgänge (*verkörpert · geplant · gestrichen*), und
+  `make verify-risiko-ausgaenge` setzt genau die erste Menge durch.
+  **Repo-eigen ist der Ort und das Kürzel:** die stehende Ablage
   [`docs/plan/planning/observations/`](docs/plan/planning/observations/README.md),
   je Beobachtung ein Verzeichnis `BEO-<KUERZEL>/<slug>/`, und `<KUERZEL>` wird
   in [`harness/conventions.md`](harness/conventions.md#modus-deklaration-pro-sub-area)
@@ -374,7 +379,7 @@ die CI (Badge im [`README.md`](README.md)), nicht diese Tabelle.
   Absatz ihre **Begründung** nach?"* Eine Regel zu **nennen** und die repo-eigene
   Ausprägung danebenzustellen ist die Aufgabe dieser Datei; erst die
   nachgeschriebene Herleitung ist der Befund. Gemessen traf das auf **drei von
-  17** Blöcken in §5 zu — bei einem Größen-Faktor von 22,9 × gegen die
+  18** Blöcken in §5 zu — bei einem Größen-Faktor von **23,2 ×** gegen die
   Ziel-Form.
 - **Eine Mutations-Probe belegt erst, wenn sie rot war** (`seit slice-181`,
   Register-Eintrag bei 3×): Wer einen Prüfer mit einer Probe belegt, zeigt

@@ -49,7 +49,7 @@ gezählt. Gemessen gegen `v6.5.0` · `templates/AGENTS.template.md`.
 | §2 Kanonische Quellen | 782 | 718 | 1,1 × |
 | §3 Harte Regeln | 3760 | 3388 | 1,1 × |
 | §4 Quality Gates | 1051 | 458 | 2,3 × |
-| **§5 Dokumentations-Regeln** | **16 822** | **726** | **22,9 ×** |
+| **§5 Dokumentations-Regeln** | **16 822** | **726** | **23,2 ×** |
 | §6 Minimal Agent Workflow | 2889 | 874 | 3,3 × |
 
 Datei gesamt **35 384** gegen **10 885** — beim Anlegen des Plans waren es
@@ -100,16 +100,22 @@ Slice je Block gegen das Regelwerk hält.
 | `AGENTS.md` §5, drei Blöcke | refactor | **gekürzt** — Slice-Lifecycle, Beobachtungs-Register, Diskrepanz-Trichter |
 | `AGENTS.md` §5, die übrigen 14 Blöcke | *geprüft, unverändert* | a-check-eigen, jeder mit eigener Messung oder eigenem Anlass |
 | `AGENTS.md` §6 | *geprüft, unverändert* | wo er die Baseline zitiert, tut er es bereits **mit Verweis** |
-| `AGENTS.md` §4 | *geprüft, unverändert* | mit slice-181 bereits angefasst |
+| `AGENTS.md` §4 | *geprüft, unverändert* | die Gate-Tabelle nennt Targets und Zwecke; kein Absatz schreibt eine Baseline-Begründung nach. Der Kopf-Absatz zitiert `modul-13` bereits **mit Verweis** |
 | `AGENTS.md` §1–§3 | *geprüft, unverändert* | Faktor ≤ 1,1 × — die Hard Rules sind a-checks eigene |
 
 **Die drei gekürzten Blöcke, je mit dem Beleg:**
 
 | Block | vorher | jetzt | steht im Regelwerk |
 |---|---|---|---|
-| Slice-Lifecycle | 849 | 449 | `modul-05` §Trigger je Lifecycle-Übergang — die Tabelle der fünf Übergänge wortgleich |
-| Beobachtungs-Register | 1002 | 442 | `modul-06` §Das Beobachtungs-Register — Form, Zählregel, drei Ausgänge |
-| Diskrepanz-Trichter | 627 | 316 | `modul-07` §Werkzeug-Wahl bei Diskrepanz |
+| Slice-Lifecycle | 850 | **515** | `modul-05` §Trigger je Lifecycle-Übergang — dieselben fünf Übergänge mit denselben Bedingungen, dort als **Aufzählung**, nicht als Tabelle |
+| Beobachtungs-Register | 1003 | **496** | `modul-06` §Das Beobachtungs-Register — Form und Zählregel |
+| Diskrepanz-Trichter | 628 | **375** | `modul-07` §Werkzeug-Wahl bei Diskrepanz |
+
+**Beide Hälften gemessen** (Review F-1): Die erste Fassung nannte 449/442/316 —
+Werte, die nie gemessen wurden. Die Gesamtkürzung **1095** stimmt, die
+Einzelwerte stimmten nicht; ihre Differenzen ergaben 1271. *Vorher* gemessen,
+*nachher* geschätzt — genau die Asymmetrie, die dieser Slice als Lernsignal
+formuliert.
 
 **Was in jedem der drei blieb, weil es *nicht* im Regelwerk steht** — geprüft,
 nicht angenommen: `make slice-mv` als Träger des Übergangs · dass der direkte
@@ -120,7 +126,7 @@ Ablageorte für Carveout und BF-Markierung.
 
 ## 3.1 Das Ergebnis widerlegt die Vermutung des Plans
 
-§2 nannte zwei Gründe, warum der Faktor **21,3 ×** in §5 diesmal etwas heißen
+§2 nannte zwei Gründe, warum der Faktor **23,2 ×** in §5 diesmal etwas heißen
 könnte: die Ziel-Form ist dort ausgeschrieben statt platzhaltend, und sechs
 Substanz-Stichproben fanden alle sechs eine Fundstelle im Regelwerk. **Beides
 trifft zu und trägt trotzdem nicht.**
@@ -132,6 +138,9 @@ gemessen), *Geltungsbereich einer Messung* (2051), *Zitier-Form in
 einfrierenden Artefakten* (1057), *CR-Texte an ein fremdes Werkzeug* (943),
 *Commit-Scope `(planning)`* (941, mit eigener Messung: fünf Treffer bei 74
 Commits).
+
+**Gemessen sind es drei von 18 Blöcken** — die erste Fassung nannte 17, den
+Nenner des Vorzustands vor slice-181 (Review F-2).
 
 **Warum die Stichproben in die Irre führten:** Sie fragten *„steht die Regel im
 Regelwerk?"* — und das tut sie fast immer, denn a-check hat die Baseline
@@ -200,7 +209,7 @@ Lerneintrag — und die **gemessene** Gegenprobe je geänderten Abschnitts.
 - **§5 ist zu groß für einen Slice.** 15 464 Zeichen in 17 Blöcken; die
   Rückführung nach `next/` ist vorab benannt, aber sie kostet einen Durchgang.
   — **Ausgang:** *entfallen*, gestrichen mit Begründung: Das Risiko setzte
-  voraus, dass viel zu kürzen ist. Gemessen waren es **drei von 17** Blöcken und
+  voraus, dass viel zu kürzen ist. Gemessen waren es **drei von 18** Blöcken und
   1095 Zeichen — die Rückführung wurde nie fällig. **Die Annahme hinter dem
   Risiko war der eigentliche Fehler**, nicht seine Größe.
 
@@ -216,10 +225,10 @@ einer Messung*, `AGENTS.md` §5).
   und wäre bei blockweisem Kürzen mitgegangen.
 
 - **Was ging anders als geplant — die Vermutung war falsch, und das ist das
-  Ergebnis.** §2 nannte zwei Gründe, warum der Faktor 22,9 × diesmal etwas
+  Ergebnis.** §2 nannte zwei Gründe, warum der Faktor 23,2 × diesmal etwas
   heißen könnte: die Ziel-Form ist dort ausgeschrieben, und sechs von sechs
   Substanz-Stichproben fanden eine Fundstelle. Beides trifft zu. Gemessen sind
-  **drei von 17** Blöcken Doppelung, **1095** Zeichen, **6,5 %**. Die großen
+  **drei von 18** Blöcken Doppelung, **1095** Zeichen, **6,5 %**. Die großen
   Blöcke tragen je eine eigene Messung: die Kopieranleitung für Slices (4285,
   sieben Punkte gegen den Bestand gemessen), *Geltungsbereich einer Messung*
   (2051), *Zitier-Form* (1057), *CR-Texte* (943), *Commit-Scope* (941, fünf
@@ -231,6 +240,20 @@ einer Messung*, `AGENTS.md` §5).
   aufnimmt, wächst schneller als das Aufräumen ihn schrumpfen kann** — und das
   ist keine Schwäche, sondern seine Funktion. Wer §5 klein haben will, muss
   fragen, wo die Regeln sonst hin sollen, nicht wo sie doppelt stehen.
+
+- **Was der Review fand — und warum es genau hierher gehört.** 5 HIGH, 5 MEDIUM.
+  Sein Schlusssatz benennt die Klasse: *„Sieben der dreizehn Findings sind Zahl-
+  oder Deckungsaussagen, deren **Vorher**-Hälfte gemessen und deren
+  **Nachher**-Hälfte nicht gemessen wurde — dieselbe Asymmetrie, die der Slice
+  als Lernsignal formuliert."* Konkret: die drei „jetzt"-Werte (449/442/316
+  statt 515/496/375), der Nenner (17 statt 18), der Faktor (22,9 statt 23,2).
+  Die **Gesamtkürzung 1095 stimmte** — sie war gemessen; die Einzelwerte waren
+  aus ihr zurückgerechnet.
+  **Ein echter Substanz-Verlust darunter (F-4):** Der neue Zeiger schickte die
+  *Risiko*-Ausgänge nach `modul-06`, wo drei **andere** stehen
+  (*verkörpert · geplant · gestrichen*). `AGENTS.md` nannte sie danach nirgends
+  mehr — obwohl `make verify-risiko-ausgaenge` genau diese Menge durchsetzt.
+  Wieder aufgenommen, mit dem Unterschied ausdrücklich benannt.
 
 - **Steering-Loop-Eintrag — geschärfte Regel:** *„Steht die Regel im Regelwerk?"
   ist in einem Repo, das eine Baseline adoptiert hat, die falsche Frage — sie
@@ -254,9 +277,20 @@ einer Messung*, `AGENTS.md` §5).
 
 - **Folge-Slices:** keiner. Der Plan hatte
   [`harness/conventions.md`](../../../../harness/conventions.md) als möglichen
-  eigenen Vorgang genannt; nach diesem Ergebnis ist er **nicht** angezeigt —
-  dieselbe Messung dort würde denselben Anteil finden, und ein Slice mit 6,5 %
-  Ertrag rechtfertigt sich nicht von selbst.
+  eigenen Vorgang genannt. **Die erste Fassung strich ihn mit einer Prognose**
+  (*„dieselbe Messung dort würde denselben Anteil finden"*) — das ist genau die
+  Klasse, die dieser Slice bekämpft, und der Review hat sie gefangen (F-9).
+  **Gemessen** liegt `harness/conventions.md` bei **2,1 ×** gegen die Ziel-Form
+  `conventions.template.md` (20 255 gegen 9657 Zeichen) — gegen **23,2 ×** bei
+  §5. Der Faktor, der dort auf eine mögliche Doppelung hindeutete, ist hier
+  nicht vorhanden.
+  *(Auch diese Zahl stand zuerst geschätzt da — 1,05 × —, und auffiel es beim
+  Nachmessen im selben Absatz, der Messung statt Vermutung fordert. Der Reflex
+  ist zäher als die Regel; das Gegenmittel ist der Handgriff, nicht der
+  Vorsatz.)* Das ist kein Beweis für Abwesenheit —
+  slice-183 hat selbst gezeigt, dass der Faktor nichts entscheidet —, aber es
+  ist eine Messung statt einer Vermutung. Ein Slice entsteht, wenn jemand dort
+  eine nachgeschriebene Begründung **findet**, nicht auf Verdacht.
 
 - **Risiken aus §7:** drei, jedes mit genau einem Ausgang — zweimal *entfallen*
   mit Begründung, einmal *weiter offen* → Register.

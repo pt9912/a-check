@@ -1,4 +1,4 @@
-**Stand:** offen (3×)
+**Stand:** verkörpert in [`AGENTS.md`](../../../../../../AGENTS.md) §5 (*Geltungsbereich einer Messung*, dritte Hälfte) `seit slice-183` — die **Prüf-Frage**, die die Klasse findet
 
 Drei Vorkommen, drei Dateien: `conventions.md` (slice-103), `harness/README.md` (slice-182),
 `AGENTS.md` §5 (slice-183). Alle drei sind an ihrer Fundstelle behoben.
@@ -16,5 +16,15 @@ adoptierte Baseline sie fast immer bejaht. Trägt nur: *„schreibt dieser Absat
 nach?"* Diese Schärfung steht in [`AGENTS.md`](../../../../../../AGENTS.md) §5
 (*Geltungsbereich einer Messung*, `seit slice-183`).
 
-Der Eintrag bleibt **offen** statt gestrichen: Die Klasse kann wiederkehren, sobald ein neuer
+Der Eintrag bleibt **stehen** statt gestrichen: Die Klasse kann wiederkehren, sobald ein neuer
 Absatz entsteht.
+
+**Zwei Korrekturen am Beleg `evidence/slice-183.md`**, der ab Merge unveränderlich ist und darum
+hier statt dort steht (Review zu slice-183):
+
+- Er sagt, die Lifecycle-Tabelle stehe „wortgleich" in `modul-05`. Das trifft nicht zu: Dort steht
+  eine **Aufzählung** derselben fünf Übergänge mit denselben Bedingungen, aber in anderem Wortlaut.
+  Die Aussage des Belegs — der Block gibt Baseline-Normtext wieder — bleibt davon unberührt.
+- Er nennt „drei von 17 Blöcken"; gezählt sind es **18** (der Nenner stammte aus dem Stand vor
+  slice-181). Der Anteil ändert sich damit von 17,6 % auf 16,7 %.
+
