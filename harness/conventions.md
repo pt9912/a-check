@@ -47,15 +47,16 @@ die kanonische Quelle (Source Precedence, siehe
   weiterhin im Text, weil damals er galt, und dafür ist `exempt-paths` da. Zwei Fragen, zwei
   Antworten.
 - **Adoptiert seit:** 2026-06-20.
-- **Beim Heben des Stands: Delta *und* Voll-Abgleich.** Die Delta-Analyse zwischen zwei Ständen
+- **Beim Heben des Stands: Delta *und* Voll-Abgleich** (`seit slice-185`). Die Delta-Analyse zwischen zwei Ständen
   findet, was sich **ändert** — nicht, was seit der Adoption fehlt. Gemessen an einem Beispiel
   (slice-185): Der Arbeitsteilungs-Satz für [`AGENTS.md`](../AGENTS.md) §4 steht seit `v5.12.0`
   unverändert in der Ziel-Form, tauchte in **keinem** der vier Deltas auf und war nie übernommen.
   Darum gehört zu jedem Sprung ein **Voll-Abgleich** der Ziel-Formen gegen ihr Gegenstück im
-  Repo: die **14** Vorlagen mit genau einem Gegenstück, Abschnitt für Abschnitt. Er ist
+  Repo: die **15** Vorlagen mit genau einem Gegenstück, Abschnitt für Abschnitt. Er ist
   **Lese-Arbeit mit maschineller Vorauswahl**, kein Lauf — ein Wortfolgen-Vergleich meldet
   überwiegend Platzhalter und Bedienhinweise, die beim Kopieren bestimmungsgemäß verschwinden.
-  Die zwölf **Instanz**-Vorlagen (Slice, ADR, Report, …) fallen heraus; ihre Form prüft
+  Die elf **Instanz**-Vorlagen (Slice, ADR, Report, …) fallen heraus, ebenso
+  `templates/README.md` — der **Index** des Vorlagen-Verzeichnisses ist keine Ziel-Form; ihre Form prüft
   `make doc-structure` über Muster.
 
 Wann welcher Stand gehoben wurde und in welchen Etappen, steht in

@@ -45,16 +45,20 @@ Bevor der Reviewer den Gegenstand liest:
   `Stand:`-Zeile bei 3× keinen der drei Ausgänge trägt.
   *Im Bestand belegt:* [`BEO-HARNESS/chronik-in-gelesenen-dateien`](../../docs/plan/planning/observations/BEO-HARNESS/chronik-in-gelesenen-dateien/observation.md)
   (slice-103, slice-182).
-- **Norm nur im Kommentar** — eine Regel steht ausschließlich in einem
-  Kommentarblock und nirgends in einem Dokument, das der Lauf liest. In der
-  Baseline zielt das auf `<!-- -->`-Blöcke der Ziel-Formen, die beim Kopieren
-  verschwinden; **a-check kopiert die Ziel-Formen nicht** und hat dort keinen
-  Fall. Der hiesige Gegenstand ist
-  [`.d-check.yml`](../../.d-check.yml): Ihre Kommentare tragen die Begründung
-  jeder Regel, und sie sind der **einzige** Ort dafür. Das ist zulässig —
-  aber eine *Zusage* darf dort nicht allein stehen: Sie gehört in
+- **Norm nur im Template-Kommentar** — eine Regel steht im `<!-- -->`-Block
+  einer vendorten Ziel-Form und nirgends sonst. Sie ist weg, sobald jemand die
+  Vorlage kopiert und die Kommentare löscht — und **a-check kopiert sie**
+  ([`AGENTS.md`](../../AGENTS.md) §5, *„Beim Kopieren anzupassen"*; eigene
+  Vorlagen-Dateien führt das Repo nicht).
+  *Besetzter Fall:* `v6.5.0` · `templates/docs/reviews/review-report.template.md`
+  trägt im vierten Kommentarblock die Norm *„die Klassen-Bezeichnung muss über
+  Läufe hinweg stabil sein"* — sie steuert den Steering-Loop-Zähler und steht
+  **nur dort**.
+  **Zweite Ausprägung, hiesig:** [`.d-check.yml`](../../.d-check.yml) trägt die
+  Begründung jeder Regel ausschließlich in Kommentaren. Das ist zulässig — aber
+  eine *Zusage* darf dort nicht allein stehen; sie gehört in
   [`AGENTS.md`](../../AGENTS.md) §4 oder eine Sensor-Datei, die der Lauf liest.
-  **Kein Gate fängt das.**
+  **Kein Gate fängt beides.**
 
 **MEDIUM** — vor Merge/Acceptance klären:
 - unbelegte Tatsachenbehauptung (nicht gegen ein Repo-Artefakt belegbar)
@@ -80,7 +84,13 @@ Folge-Slice).
 Pro Finding: `kategorie` · `quelle` (AC-/ADR-ID, Hard-Rule, Konvention) ·
 `pfad` (Datei:Zeile) · `befund` (1–2 Sätze, beobachtbar, **ohne
 Lösungsvorschlag**) · `verifizierbar` (ja/nein — gäbe es einen Gate-/Tool-Lauf,
-der es bestätigt?).
+der es bestätigt?) · `klasse` (die Finding-Klasse in einem Halbsatz).
+
+**`klasse` speist den Steering-Loop-Zähler**, und darum gilt für sie die Norm
+aus der Ziel-Form des Reports: **die Bezeichnung muss über Läufe hinweg stabil
+sein.** Leiten zwei Läufe dieselbe Klasse unterschiedlich ab, zählt das
+Register sie getrennt, und keine erreicht je 3×. Alle bestehenden Reports
+führen das Feld; im Skill fehlte es bis slice-185.
 
 **Zitier-Form** (Norm, `v6.5.0` · `templates/docs/reviews/review-report.template.md`):
 Der Report friert ein; was er zitiert, bewegt sich weiter. Deshalb **Kennung,

@@ -46,17 +46,38 @@ als wiederkehrender Schritt beim Baseline-Sprung verankert.
 
 | | |
 |---|---|
-| Ziel-Formen unter `.harness/baseline/v6.5.0/templates/` | **26** |
-| davon mit **genau einem** Gegenstück im Repo | **14** |
-| Normtext dieser 14 (ohne Bedienhinweise und Platzhalter) | **66 741** Zeichen |
+| Dateien unter `.harness/baseline/v6.5.0/templates/` | **28** |
+| davon **Ziel-Formen** (ohne `templates/README.md`, den Verzeichnis-Index) | **27** |
+| davon mit **genau einem** Gegenstück im Repo | **15** |
+| Normtext (ohne Bedienhinweise und Platzhalter), gemessen über 14 davon | **66 741** Zeichen |
 
-**Zwei Gegenstücke sind kürzer als ihre Vorlage** — bei einem ausgefüllten
+**Korrigiert nach dem Review (F-7):** Die erste Fassung nannte 26 und 14. Die
+26 waren `find -name '*.md'` — sie zählte `Makefile` und `.d-check.yml` **nicht**
+und den Verzeichnis-Index **mit**. Und `roadmap.template.md` hat sehr wohl ein
+Gegenstück: [`docs/plan/planning/in-progress/roadmap.md`](../in-progress/roadmap.md).
+Die Paarbildung suchte es unter `docs/plan/planning/roadmap.md` und fand nichts —
+**ein Pfad-Match ist keine Zuordnung.** Die Normtext-Zahl bezieht sich weiter auf
+die 14 damals gebildeten Paare; sie ist damit eine **Untergrenze**.
+
+**Ein Gegenstück ist kürzer als seine Vorlage** — bei einem ausgefüllten
 Dokument der schärfste Einstiegspunkt:
 
 | Paar | Ziel-Form | Gegenstück |
 |---|---|---|
 | `.harness/skills/reviewer.md` | 5294 | **3835** |
-| `README.md` | 13 433 | **9230** |
+
+**Korrigiert nach dem Review (F-1):** Die erste Fassung nannte hier ein zweites
+Paar, `README.md` mit 13 433 gegen 9230. Die 13 433 gehören zu
+`v6.5.0` · `templates/README.md` — dem **Index des Vorlagen-Verzeichnisses**,
+der keine Ziel-Form ist und sich selbst als Übersicht beschreibt. Die Ziel-Form
+eines Projekt-`README.md` ist `project-readme.template.md` mit **2076** Zeichen;
+a-checks `README.md` (9274) ist ihr gegenüber **länger**.
+**Ursache:** Die automatische Paarbildung mappte jeden Vorlagen-Pfad per
+`.template`-Streichung auf ein Gegenstück — bei `templates/README.md` ergab das
+`README.md`, und zwei Dateien mit demselben Basisnamen wurden zu einem Paar.
+Ein Namens-Match ist keine Zuordnung; die richtige steht in der Übersichts-
+Tabelle von `templates/README.md` selbst (*„`project-readme.template.md` →
+Projekt-Root-`README.md`"*).
 
 ### 2.2 Der erste Treffer trägt sofort
 
@@ -102,14 +123,14 @@ mit maschineller Vorauswahl**, kein Lauf.
 
 ## 3. Umsetzung
 
-**Fünf der 14 Paare abgeglichen** — je Paar mit einem der drei Ausgänge:
+**Fünf der 15 Paare abgeglichen** — je Paar mit einem der drei Ausgänge:
 
 | Paar | Kandidaten | Ausgang |
 |---|---|---|
 | `.harness/skills/reviewer.md` | — | **übernommen:** drei HIGH-Kategorien (§2.2) |
 | `docs/plan/adr/README.md` | 2 | **übernommen:** der *Derivativ*-Hinweis |
 | `docs/plan/carveouts/README.md` | 2 | **übernommen:** derselbe Hinweis |
-| `spec/architecture.md` | 4 | **bewusst abweichend**, begründet unten |
+| `spec/architecture.md` | 4 | **teils bewusst abweichend, teils offen** — zwei von drei Klauseln eingehalten, die dritte an slice-186 |
 | `Makefile` | 6 | **ohne Befund** — alle sechs sind Bootstrap-Bedienhinweise der Vorlage |
 
 **Der `Derivativ`-Hinweis hatte null Treffer im ganzen Repo.** Er sagt, was ein
@@ -120,15 +141,38 @@ im Sensor, nicht im Index. Beide Index-Dateien tragen sie jetzt, mit dem
 Verweis auf die zwei Richtungen (`gate-consistency` für „Datei ohne Zeile",
 `doc-check` für „Zeile ohne Datei").
 
-**`spec/architecture.md` — bewusst abweichend.** Die Ziel-Form setzt die Hard
-Rule *„diese Datei enthält keine Wellen, Slices, Commit-Hashes, keine
-ADR-Bezüge"* **in die Datei**. a-check trägt sie in
-[`AGENTS.md`](../../../../AGENTS.md) §3.4 und **hält sie ein** (gemessen: null
-ADR-Verweise in der Datei). Sie zusätzlich dort zu wiederholen wäre die
-Doppelung, die [slice-183](../done/wellenlos/slice-183-agents-md-verweist-statt-wiederholt.md)
-gerade aufgelöst hat. **Die Differenz ist also keine Lücke** — und dieser Fall
-ist der Beleg dafür, dass ein Abgleich, der jede Differenz als Lücke liest,
-stillen Rückbau erzeugt (§7, Risiko 2).
+**`spec/architecture.md` — teils bewusst abweichend, teils offener Punkt.** Die
+Ziel-Form setzt dort eine Hard Rule **in die Datei**, und sie hat **drei**
+Klauseln. Der Review (F-2) hat gezeigt, dass die erste Fassung dieses Absatzes
+nur die zweite geprüft hat:
+
+| Klausel der Ziel-Form | a-check |
+|---|---|
+| keine Wellen, Slices, Commit-Hashes, Closure-Daten | **eingehalten** — je 0 Treffer, gemessen |
+| keine ADR-Bezüge | **eingehalten** — 0 Treffer |
+| **keine Historie** — *„`Letzte Änderung` oben ist ein Frische-Marker, kein Protokoll"* | **verletzt** — §8 trägt eine Versions-Tabelle mit vier Einträgen |
+
+**Die ersten zwei Klauseln:** Die Regel steht in
+[`AGENTS.md`](../../../../AGENTS.md) §3.4 und wird eingehalten; sie zusätzlich
+in die Datei zu schreiben wäre die Doppelung, die
+[slice-183](../done/wellenlos/slice-183-agents-md-verweist-statt-wiederholt.md)
+gerade aufgelöst hat. **Bewusst abweichend**, und dieser Fall bleibt der Beleg
+dafür, dass ein Abgleich, der jede Differenz als Lücke liest, stillen Rückbau
+erzeugt (§7, Risiko 2).
+
+**Die dritte ist ein offener Punkt und geht an
+[slice-186](../open/slice-186-voll-abgleich-restliche-paare.md).** Sie ist
+nicht durch §3.4 gedeckt — dort steht nichts über Historie-Abschnitte — und
+die Entscheidung ist keine dieses Slice: `lastenheft.template.md` **sieht** eine
+Historie vor (drei Nennungen), `architecture.template.md` **verbietet** sie
+(eine Nennung, im Verbot). Ob a-check den Abschnitt streicht und auf `git`
+verweist oder die Abweichung als `MR` deklariert, ist eine Entscheidung über
+ein Spec-Stratum.
+
+**Was der Review daran zeigt:** Eine Teil-Messung als Deckungs-Nachweis für eine
+**mehrteilige** Zusage auszugeben, ist derselbe Fehler wie eine Probe, die ihren
+Gegenstand verfehlt — nur auf der Lese-Seite. Die Zusage hatte drei Klauseln,
+geprüft war eine.
 
 **Verankert** ist der Abgleich in
 [`harness/conventions.md`](../../../../harness/conventions.md) §Baseline: Wer

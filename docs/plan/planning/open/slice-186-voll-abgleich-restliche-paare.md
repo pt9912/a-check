@@ -1,4 +1,4 @@
-# slice-186 — Voll-Abgleich: die neun verbleibenden Ziel-Form-Paare
+# slice-186 — Voll-Abgleich: die zehn verbleibenden Ziel-Form-Paare
 
 **Welle:** ohne Welle — die Closure-Bedingung wäre die eigene DoD.
 
@@ -20,7 +20,7 @@ und `spec/spezifikation.md` sind unter den Paaren.)*
 
 ## 1. Ziel und Abgrenzung
 
-**Ziel:** Die neun Ziel-Form-Paare, die
+**Ziel:** Die zehn Ziel-Form-Paare, die
 [slice-185](../in-progress/slice-185-ziel-form-voll-abgleich.md) nicht mehr
 getragen hat, sind abgeglichen — je Paar mit einem der drei Ausgänge:
 übernommen · bewusst abweichend (mit Begründung) · ohne Befund.
@@ -41,7 +41,7 @@ Kandidaten je Paar aus der maschinellen Vorauswahl — **überwiegend Rauschen**
 
 | Paar | Kandidaten |
 |---|---|
-| `README.md` | 32 |
+| `README.md` | *(neu zu erheben, siehe unten)* |
 | `AGENTS.md` | 22 |
 | `harness/conventions.md` | 18 |
 | `spec/lastenheft.md` | 18 |
@@ -50,10 +50,22 @@ Kandidaten je Paar aus der maschinellen Vorauswahl — **überwiegend Rauschen**
 | `docs/plan/planning/README.md` | 12 |
 | `spec/spezifikation.md` | 12 |
 | `harness/README.md` | 9 |
+| `docs/plan/planning/in-progress/roadmap.md` | *(neu, siehe unten)* |
 
-**`README.md` zuerst:** Es ist neben dem Reviewer-Skill das zweite Gegenstück,
-das **kürzer** ist als seine Ziel-Form (9230 gegen 13 433 Zeichen) — in
-slice-185 der Indikator, der beim ersten Treffer sofort trug.
+**Ein zehntes Paar** (Review zu slice-185, F-7): `roadmap.template.md` hat ein
+Gegenstück in [`docs/plan/planning/in-progress/roadmap.md`](../in-progress/roadmap.md).
+Die Paarbildung von slice-185 suchte es unter `docs/plan/planning/roadmap.md`
+und fand nichts — die Roadmap liegt im Lifecycle-Verzeichnis.
+
+**Reihenfolge:** Die Kandidaten-Zahl ist eine grobe Sortierung, kein Befund.
+Der Indikator *„Gegenstück kürzer als Vorlage"*, der in slice-185 beim ersten
+Treffer trug, greift hier bei **keinem** Paar — er hatte dort genau einen
+echten Fall (den Reviewer-Skill), und der ist erledigt.
+**`README.md` ist gegen `project-readme.template.md` zu messen** (2076 Zeichen),
+nicht gegen `templates/README.md` — das ist der Index des Vorlagen-Verzeichnisses
+und keine Ziel-Form (Review zu slice-185, F-1). a-checks `README.md` ist mit
+9274 Zeichen **länger** als seine Vorlage; die 32 Kandidaten der Vorauswahl
+stammen aus dem falschen Vergleich und sind neu zu erheben.
 
 ### 2.1 Für `AGENTS.md` stehen drei Befunde bereits fest
 
@@ -104,7 +116,7 @@ Lese-Arbeit (slice-185 §2.3).
 
 ## 4. Definition of Done
 
-- [ ] Alle neun Paare sind abgeglichen; je Paar steht der Ausgang im Plan.
+- [ ] Alle zehn Paare sind abgeglichen; je Paar steht der Ausgang im Plan.
 - [ ] Die drei für `AGENTS.md` **vorab gemessenen** Befunde (§2.1) sind
       aufgelöst — die drei `modul-05`-Sätze auf Zitat oder Zeiger, die zwei
       Urteilsregeln in den Reviewer-Skill, die Kopieranleitung nach
@@ -142,8 +154,8 @@ Lerneintrag.
 
 ## 7. Risiken und offene Punkte
 
-- **Neun Paare könnten wieder zu groß sein.** slice-185 hat vier geschafft und
-  das fünfte ohne Befund geschlossen; neun ist mehr als das Doppelte — und mit
+- **Zehn Paare könnten wieder zu groß sein.** slice-185 hat vier geschafft und
+  das fünfte ohne Befund geschlossen; zehn ist mehr als das Doppelte — und mit
   §2.1 kommt für `AGENTS.md` ein Umzug von 8930 Zeichen dazu, der für sich
   genommen ein Slice wäre. — **Ausgang:** <offen bis Closure>
 - **Ein Umzug kann eine Regel unterwegs verlieren.** (b) und (c) verschieben

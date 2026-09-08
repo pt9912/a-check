@@ -382,7 +382,7 @@ structure:
         - name: Zweck
           cell-max-chars: 150
           cell-min-chars: 1
-    hint: "Zellengrenze der Zweck-Spalte (max 250 Zeichen, nicht leer): was darueber hinausgeht, gehoert nach harness/sensors/<target>.md (AGENTS §4)"
+    hint: "Zellengrenze der Zweck-Spalte (max 150 Zeichen, nicht leer): was darueber hinausgeht, gehoert nach harness/sensors/<target>.md (AGENTS §4)"
 
 # Modul `planning` (DC-FA-PLAN-001): Lifecycle-Konsistenz Roadmap <-> in-progress/.
 # Ohne diesen Block lief `make doc-planning` WIRKUNGSLOS — d-check aktiviert das

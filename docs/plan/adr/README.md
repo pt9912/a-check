@@ -15,7 +15,10 @@ verlinkt sein. Die Gegenrichtung (ein Index-Eintrag ohne Datei) fängt
   via neue ADR mit `Supersedes ADR-NNNN` (Status der alten wird
   `Superseded by ADR-NNNN`).
 - Jede ADR deklariert im `**Schärft:**`-Feld aufwärts, welche
-  Spec-Stelle sie verbindlich macht (nie das Lastenheft).
+  Spec-Stelle sie verbindlich macht (nie das Lastenheft) — als **Kennung**
+  (`SPEC-*`, `ARC-*`), ersatzweise als Abschnitt, wo die Sektion keine
+  Kennungen vergibt. **Prozess-ADRs ohne Spec-Stratum tragen `—`**, mit
+  Begründung in derselben Zeile.
 - Neue ADRs werden in der Tabelle unten ergänzt.
 
 Die **Fundament-ADRs** (slice-001) legen die technische Basis fest, die das
