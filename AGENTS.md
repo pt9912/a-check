@@ -110,7 +110,8 @@ der Vorgang:**
 1. **Regelfall:** `git mv` als eigener Commit, dann den Inhalt umschreiben.
 2. **Lifecycle-Übergang nach `done/`:** erst der Inhalt (DoD-Häkchen,
    Closure-Notiz), dann der reine `git mv` — die Notiz ist die **Bedingung**
-   dafür, dass die Datei nach `done/` darf, nicht ihre Folge.
+   dafür, dass die Datei nach `done/` darf, nicht ihre Folge. Den Move fährt
+   `make slice-mv`; die **Reihenfolge** entscheidet der Lauf.
 
 **Begründung:** Sonst fällt die Rename-Detection unter die 50 %-Schwelle und
 `git log --follow` wird unzuverlässig.

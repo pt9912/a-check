@@ -111,10 +111,10 @@ eine ADR (kein `Status:`-Feld, an dem `immutable-when` greifen könnte).
 
 **Zu [`MR-000`](#mr-000) — Kommentar *über* den Eintrag, nicht in ihm.** Er
 **bleibt in dieser Datei** statt in einer eigenen: Er ist keine Adaption,
-sondern die Adoptions-Erklärung, und er gilt für jeden Lauf. **Sein Pflichtfeld
-*Ersetzt-Baseline-Regel* fehlt**, weil es nach seiner Annahme entstand; §Aktive
-Adaptionen sagt dasselbe für die Tabellenspalte, und Nachfolge-Einträge tragen
-es. Beides ist eine Aussage **über** den Eintrag und ändert ihn nicht.
+sondern die Adoptions-Erklärung, und er gilt für jeden Lauf. Sein Pflichtfeld
+*Ersetzt-Baseline-Regel* fehlt aus dem Grund, den §Aktive Adaptionen für die
+Tabellenspalte nennt. Beides ist eine Aussage **über** den Eintrag und ändert
+ihn nicht.
 
 **Was dagegen ein Nachfolge-Eintrag ist, ist einer:** Die **Beobachtungs-Kennung**
 fehlte in seiner ID-Liste — korrigiert durch [`MR-023`](#mr-023), mit
