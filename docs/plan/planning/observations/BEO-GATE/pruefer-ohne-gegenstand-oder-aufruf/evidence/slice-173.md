@@ -18,6 +18,6 @@ fail-closed ab, statt grün zu melden. Das nimmt dem Fall die Gefährlichkeit de
 und lässt die Diagnose-Kosten übrig: Die Ursache läge in einer Datei, die mit dem Sensor nichts zu
 tun zu haben scheint.
 
-**Konsequenz für den geplanten Ausgang:** [`slice-169`](../../../../done/slice-169-korpus-seitige-kalibrierung.md)
+**Konsequenz für den geplanten Ausgang:** [`slice-169`](../../../../done/wellenlos/slice-169-korpus-seitige-kalibrierung.md)
 trägt bereits die Korpus-Seite. Sein Gegenstand ist damit um dieses dritte Muster erweitert —
 gezählt, nicht separat verplant.
