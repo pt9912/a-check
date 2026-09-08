@@ -42,7 +42,7 @@ Neun Ränge inkl. `docs/user`-Stratum (Benutzerhandbuch).
 | [`AGENTS.md`](../AGENTS.md) | Hard Rules, Source Precedence, Workflow |
 | [`conventions.md`](conventions.md) | repo-lokale Strukturregeln, Adaptions-Block (`MR-*`), Modus-Deklarationen |
 | [`.harness/skills/reviewer.md`](../.harness/skills/reviewer.md) | Reviewer-Skill: HIGH-Liste, Kategorien-Regeln, Negativbefund-Pflicht, Output-Schema, §Mess-Regeln (Modul 10) — nächste Rolle nach Schritt 8 des Minimal Agent Workflow, nicht Teil der Implementer-Eingabe |
-| [`.harness/baseline/v6.5.0/regelwerk/`](../.harness/baseline/v6.5.0/regelwerk/README.md) | adoptiertes Betriebsregelwerk der Baseline, **committet vendored** (netzlos): 17 Module + acht Grundlagen-Abschnitte, eine Datei je Abschnitt — einmal pro Session den zur Aufgabe gehörenden Abschnitt lesen, nie das ganze Bundle. Ziel-Formen daneben unter [`templates/`](../.harness/baseline/v6.5.0/templates/README.md), Integrität via `SHA256SUMS`. Derivativ (didaktik-freier Extrakt) — Stand und Begründung: [`conventions.md` §Baseline](conventions.md#baseline) / [`MR-006`](conventions.md#mr-006--baseline-committet-vendored-statt-per-url-referenziert) |
+| [`.harness/baseline/v6.6.0/regelwerk/`](../.harness/baseline/v6.6.0/regelwerk/README.md) | adoptiertes Betriebsregelwerk der Baseline, **committet vendored** (netzlos): 17 Module + acht Grundlagen-Abschnitte, eine Datei je Abschnitt — einmal pro Session den zur Aufgabe gehörenden Abschnitt lesen, nie das ganze Bundle. Ziel-Formen daneben unter [`templates/`](../.harness/baseline/v6.6.0/templates/README.md), Integrität via `SHA256SUMS`. Derivativ (didaktik-freier Extrakt) — Stand und Begründung: [`conventions.md` §Baseline](conventions.md#baseline) / [`MR-006`](conventions.md#mr-006--baseline-committet-vendored-statt-per-url-referenziert) |
 
 ## Sensors (Feedback-Gates)
 
@@ -57,7 +57,7 @@ Stop-Hook-„frischer-Klon"-Restlücke.
 
 <!--
 Drei Spalten — KEIN Lauf-Status (Form des Baseline-Templates
-`.harness/baseline/v6.5.0/templates/harness/README.template.md` §Sensors —
+`.harness/baseline/v6.6.0/templates/harness/README.template.md` §Sensors —
 vendored und damit netzlos nachschlagbar; Stand siehe conventions.md
 §Baseline). Die Bindung-Spalte trägt STRUKTURELLE Referenzen (AC-/ADR-/CO-/
 Slice-ID, Schwelle, Image-Hash) — nicht, ob ein Gate gerade grün ist.

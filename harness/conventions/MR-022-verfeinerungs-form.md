@@ -3,7 +3,7 @@
 - **Status:** Accepted
 - **Datum:** 2026-09-08
 - **Geltungsbereich:** [`spec/spezifikation.md`](../../spec/spezifikation.md)
-- **Ersetzt-Baseline-Regel:** [`grundlagen-source-precedence.md` §ID-Schema als Klammer](../../.harness/baseline/v6.5.0/regelwerk/grundlagen-source-precedence.md#id-schema-als-klammer)
+- **Ersetzt-Baseline-Regel:** [`grundlagen-source-precedence.md` §ID-Schema als Klammer](../../.harness/baseline/v6.6.0/regelwerk/grundlagen-source-precedence.md#id-schema-als-klammer)
 - **Adaption:** unverändert seit [`MR-011`](../conventions/done/MR-011-verfeinerungs-form.md). Die
   Baseline sieht für die **Verfeinerung** genau einer Anforderung im Technik-Stratum die
   Suffix-Form `<PREFIX>-FA-<NN>.<Buchstabe>` vor. a-check nutzt sie nicht: jede technische
@@ -51,4 +51,4 @@
   soll — dann ist die Suffix-Form billiger als ein Feld. Unverändert seit
   [`MR-011`](../conventions/done/MR-011-verfeinerungs-form.md).
 - **Löst ab:** [`MR-021`](../conventions.md#mr-021)
-- **Ausgelöst durch Baseline-Stand:** `v6.5.0`
+- **Ausgelöst durch Baseline-Stand:** `v6.6.0`

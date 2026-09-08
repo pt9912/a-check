@@ -28,11 +28,11 @@ DoD/Closure prüfen → `modul-11`; Ausnahme oder Diskrepanz einordnen →
 `modul-07`; Modus einer Sub-Area bestimmen → `modul-02` und
 `grundlagen-bootstrap`; Release → `modul-16`. Es liegt **committet
 vendored** im Repo, also netzlos verfügbar:
-[`.harness/baseline/v6.5.0/regelwerk/README.md`](.harness/baseline/v6.5.0/regelwerk/README.md)
+[`.harness/baseline/v6.6.0/regelwerk/README.md`](.harness/baseline/v6.6.0/regelwerk/README.md)
 ist der Index (17 Module + acht Grundlagen-Abschnitte, eine Datei je
 Abschnitt); die Ziel-Formen daneben unter
-[`templates/`](.harness/baseline/v6.5.0/templates/README.md). Integrität:
-`.harness/baseline/v6.5.0/SHA256SUMS`.
+[`templates/`](.harness/baseline/v6.6.0/templates/README.md). Integrität:
+`.harness/baseline/v6.6.0/SHA256SUMS`.
 
 **Breiterer Pflicht-Blick bleibt bei drei Anlässen** — dort genügt der eine
 Abschnitt nicht: Bootstrap · jede Änderung an
@@ -43,7 +43,7 @@ gegen den Bestand, die **auch bei aktuellem Pin** läuft; `make regelwerk-check`
 deckt davon nur die Integritäts-Hälfte, siehe §4).
 
 Die vendorten **Ziel-Formen** unter
-[`templates/`](.harness/baseline/v6.5.0/templates/README.md) tragen **zwei
+[`templates/`](.harness/baseline/v6.6.0/templates/README.md) tragen **zwei
 Rollen**: als **Referenz-Form**, auf die das Regelwerk mit `../templates/…`
 verweist, und als **Vorlage, die beim Anlegen kopiert und ausgefüllt wird statt
 frei formuliert** — für ADR, Slice, Welle, Carveout, Review-Report und
@@ -54,7 +54,7 @@ der Slice-Ziel-Form).
 
 Das vendored Regelwerk ist ein **didaktik-freier Extrakt** und trägt keine
 eigene Normativität: bei Konflikt gilt der Kurs
-([`v6.5.0`](https://github.com/pt9912/ai-harness-course/tree/v6.5.0)), über
+([`v6.6.0`](https://github.com/pt9912/ai-harness-course/tree/v6.6.0)), über
 ihm die kanonischen Quellen (Source Precedence). Der adoptierte Stand und
 die Vendoring-Begründung stehen in
 [`harness/conventions.md`](harness/conventions.md) §Baseline bzw.
@@ -310,7 +310,7 @@ zusammen.
   es eine Harness-Lücke und verlangt einen Guide oder Sensor — „besser
   aufpassen" ist keine Antwort. Ein Eintrag ohne Vorfallszahl ist unzulässig:
   die Zahl ist das Einzige, was die Schwelle prüfbar macht.
-- **Zitier-Form in einfrierenden Artefakten** (`v6.5.0`, vier Ziel-Formen:
+- **Zitier-Form in einfrierenden Artefakten** (`v6.6.0`, vier Ziel-Formen:
   Review-Report, Welle-Ergebnisnotiz, beide Archiv-Stubs): Was einfriert,
   zitiert **Kennung statt Adresse** — `slice-NNN` statt seines Lifecycle-Pfads,
   `make <target>` statt eines Links auf die Sensor-Datei, eine Baseline-Stelle
@@ -329,7 +329,7 @@ zusammen.
   **Nicht** betroffen: lebende Dokumente, die den **adoptierten** Stand nennen —
   dort ist der Link richtig, und `versions` hält ihn aktuell.
 - **Slice-Form:** neue Slices entstehen aus der **vendorten Ziel-Form**
-  [`slice.template.md`](.harness/baseline/v6.5.0/templates/docs/plan/planning/slice.template.md) —
+  [`slice.template.md`](.harness/baseline/v6.6.0/templates/docs/plan/planning/slice.template.md) —
   a-check führt keine eigene Kopie, sie würde gegen die Baseline driften. **Was
   beim Kopieren anzupassen ist**, steht in
   [`docs/plan/planning/README.md`](docs/plan/planning/README.md) §Beim Kopieren

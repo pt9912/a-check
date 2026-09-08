@@ -7,7 +7,7 @@ Jede Datei unter `harness/sensors/` ist in [`AGENTS.md`](../../AGENTS.md) §4
 prüft, ob ein **genanntes** Ziel existiert; dieser prüft, ob eine
 **existierende** Datei genannt wird.
 
-Die Lücke ist keine Erfindung — `v6.5.0` · `templates/harness/README.template.md`
+Die Lücke ist keine Erfindung — `v6.6.0` · `templates/harness/README.template.md`
 benennt sie wörtlich: *„Seine Grenze: Er prüft EINE Richtung — ob das Ziel
 existiert; **eine Datei ohne Index-Zeile** und eine Zeile auf die falsche Datei
 bleiben still grün."*

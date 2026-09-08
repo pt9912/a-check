@@ -4,7 +4,7 @@
 - **Gilt für:** Plan-/Design-/Code-Review der Doku- und (ab slice-003)
   Code-Artefakte dieses Repos.
 - **Bezug:** [`AGENTS.md`](../../AGENTS.md) §3 (Hard Rules) + §5 (Traceability);
-  Regelwerk **v6.5.0** Modul 10 (vendored: [`.harness/baseline/v6.5.0/regelwerk/modul-10-review-harness.md`](../baseline/v6.5.0/regelwerk/modul-10-review-harness.md)). Baseline: [`harness/conventions.md`](../../harness/conventions.md) §Baseline.
+  Regelwerk **v6.6.0** Modul 10 (vendored: [`.harness/baseline/v6.6.0/regelwerk/modul-10-review-harness.md`](../baseline/v6.6.0/regelwerk/modul-10-review-harness.md)). Baseline: [`harness/conventions.md`](../../harness/conventions.md) §Baseline.
 
 Repo-spezifisches „worauf achtest du", damit ein Reviewer-Agent zwischen
 Sessions nicht driftet (Regelwerk Modul 10). Diese Datei wird versioniert,
@@ -50,7 +50,7 @@ Bevor der Reviewer den Gegenstand liest:
   Vorlage kopiert und die Kommentare löscht — und **a-check kopiert sie**
   ([`docs/plan/planning/README.md`](../../docs/plan/planning/README.md) §Beim
   Kopieren der Slice-Ziel-Form; eigene Vorlagen-Dateien führt das Repo nicht).
-  *Besetzter Fall:* `v6.5.0` · `templates/docs/reviews/review-report.template.md`
+  *Besetzter Fall:* `v6.6.0` · `templates/docs/reviews/review-report.template.md`
   trägt im vierten Kommentarblock die Norm *„die Klassen-Bezeichnung muss über
   Läufe hinweg stabil sein"* — sie steuert den Steering-Loop-Zähler und steht
   **nur dort**.
@@ -92,7 +92,7 @@ sein.** Leiten zwei Läufe dieselbe Klasse unterschiedlich ab, zählt das
 Register sie getrennt, und keine erreicht je 3×. Alle bestehenden Reports
 führen das Feld; im Skill fehlte es bis slice-185.
 
-**Zitier-Form** (Norm, `v6.5.0` · `templates/docs/reviews/review-report.template.md`):
+**Zitier-Form** (Norm, `v6.6.0` · `templates/docs/reviews/review-report.template.md`):
 Der Report friert ein; was er zitiert, bewegt sich weiter. Deshalb **Kennung,
 nicht Adresse** — `slice-NNN` statt seines Lifecycle-Pfads, `make <target>`
 statt eines Links auf die Sensor-Datei, eine Baseline-Stelle als **Tag + Pfad

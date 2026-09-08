@@ -38,7 +38,7 @@ Läuft digest-gepinnt, `--network none`, read-only.
 
    **Für die eingefrorenen Klassen ist das ein Geltungsbereich, keine
    Gate-Senkung** — geprüft an der Baseline, nicht angenommen.
-   [`grundlagen-harness-dateien.md` §harness/README.md als Einstiegspunkt](../../.harness/baseline/v6.5.0/regelwerk/grundlagen-harness-dateien.md#harnessreadmemd-als-einstiegspunkt)
+   [`grundlagen-harness-dateien.md` §harness/README.md als Einstiegspunkt](../../.harness/baseline/v6.6.0/regelwerk/grundlagen-harness-dateien.md#harnessreadmemd-als-einstiegspunkt)
    zieht die Linie selbst: *„Die Grenze: Sie gilt für einfrierende Artefakte … Der
    Unterschied ist nicht die Wichtigkeit des Ziels, sondern ob der Zeiger
    nachgezogen werden **darf**."* Ein Zeiger in einem Zeitdokument darf es
