@@ -48,10 +48,8 @@ Rang ist mit [`MR-003`](conventions.md#mr-003--source-precedence-ohne-docsuser-r
 
 ## Sensors (Feedback-Gates)
 
-Nur Targets, die im Makefile **existieren**, dürfen hier stehen — halluzinierte
-Gates sind die häufigste Form von Harness-Lüge; die Übereinstimmung Doku ↔
-Makefile erzwingt `make doc-targets` mechanisch — über **diese** Tabelle **und**
-`AGENTS.md` §4 (bis slice-079 tat das `gate-consistency`). Die Code-Gates sind
+Jedes hier gelistete Target existiert im Makefile — `make doc-targets` erzwingt
+das mechanisch, über **diese** Tabelle **und** `AGENTS.md` §4. Die Code-Gates sind
 Dockerfile-Stages (Muster d-check/u-boot, digest-gepinnte Bases); die Meta-/
 Harness-Gates laufen als Host-Bash. Die Durchsetzungsschicht deckt Tool-Call-,
 Handoff- und Meta-Gate ab; die PR-/Push-CI
@@ -99,12 +97,9 @@ Lauf-Wahrheit pro Commit liegt in der CI, nicht in diesem Rang-9-Dokument.
 
 ### Nicht-Gates
 
-Targets, die der Agent braucht, die aber **nicht über den Zustand des Repos
-urteilen** — sie *bewegen*, *messen* oder *sagen*, was ein schreibender Lauf
-täte. Sie stehen hier statt in der Gate-Tabelle, und die Bindung-Spalte trägt
-`kein Gate` in der Zeile selbst (Baseline `modul-13` §Vorhanden ≠ behauptet: ein
-reales Target *nicht* als Gate zu führen ist keine Harness-Lüge — ein Gate zu
-*versprechen*, das nicht läuft, wäre eine).
+**Werkzeuge — genannt, weil der Lauf sie braucht, aber kein Gate**
+(`modul-13` §Vorhanden ≠ behauptet). Die Bindung-Spalte trägt `kein Gate` in
+der Zeile selbst.
 
 | Target | Was es tut | Bindung |
 |---|---|---|
@@ -115,12 +110,9 @@ reales Target *nicht* als Gate zu führen ist keine Harness-Lüge — ein Gate z
 | `make doc-trace` · `make doc-doctor` · `make doc-usage` · `make doc-help` | **sagen** — Traceability-Matrix, Diagnose mit Fix-Kandidaten, Aufruf-Hilfe, Target-Liste | `kein Gate`; advisory, verfügbar aber nicht als Gate behauptet |
 
 **Nicht hier, obwohl sie in keinem Aggregat hängen:** `make doc-tracked`,
-`make doc-commits` und `make image-scan`. Sie **urteilen** über einen Zustand —
-Getrackt-Status, Commit-Traceability, CVE-Lage des publizierten Images — und
-sind damit Gates, nur eben nicht aggregierte. Baseline `modul-13` §Vorhanden ≠
-behauptet trennt das: Ein reales Target *nicht* als Gate zu führen ist keine
-Harness-Lüge; ein Gate zu *versprechen*, das nicht läuft, wäre eine. Der
-Unterschied zur Tabelle oben ist **urteilen** gegen *bewegen · messen · sagen*,
+`make doc-commits` und `make image-scan` — sie **urteilen** über einen Zustand
+(Getrackt-Status, Commit-Traceability, CVE-Lage) und sind damit Gates, nur nicht
+aggregierte. Das Kriterium ist **urteilen** gegen *bewegen · messen · sagen*,
 nicht die Aggregat-Zugehörigkeit.
 
 **Aktueller Lauf-Status:** CI-Badge im [`README.md`](../README.md) bzw. lokal
@@ -161,14 +153,9 @@ nicht die Aggregat-Zugehörigkeit.
 
 ## Rollen und ihre Übergabe-Artefakte
 
-`modul-08` nennt sechs Rollen (Planner → Architect → Implementation → Reviewer → Verifier →
-Validator) und **neun Übergaben**. Die Regel dahinter: *ohne Artefakt gibt es keinen Rollenwechsel,
-nur einen Kontext-Switch* — und Rollen-Trennung ist **Kontext**-Trennung, nicht
-Personen-Trennung. Eine Instanz darf mehrere Rollen spielen, aber nicht im selben Kontextfenster;
-sonst wiederholen sich die blinden Flecken.
-
-Sieben der neun Artefakte existieren in a-check bereits — unter eigenen Namen. Die Zuordnung
-(angelegt in slice-066, Fund **B-9**):
+Sechs Rollen, neun Übergaben und die Regel *ohne Artefakt kein Rollenwechsel*:
+`modul-08` §Die neun Übergaben. **Sieben** der neun sind in a-check verkörpert — unter eigenen
+Namen, und diese Zuordnung steht nur hier:
 
 | Übergabe | Artefakt in a-check |
 |---|---|
@@ -182,18 +169,10 @@ Sieben der neun Artefakte existieren in a-check bereits — unter eigenen Namen.
 | Verifier → Validator | **unverkörpert**, deklariert als [MR-009](conventions.md#mr-009--validator-rolle-unbesetzt-zwei-übergaben-ohne-artefakt) |
 | Validator → Planner | **unverkörpert**, deklariert als [MR-009](conventions.md#mr-009--validator-rolle-unbesetzt-zwei-übergaben-ohne-artefakt) |
 
-**Die Validator-Kante fehlt, und das ist benannt statt erfunden.** Validation fragt „bauen wir das
-Richtige?" (gegen realen Bedarf), Verifikation „bauen wir es richtig?" (gegen Plan/DoD). a-check
-verifiziert maschinell, validiert aber nicht über ein Artefakt: Rückmeldung der Konsumenten läuft
-heute über Issues und über die Adoption eines Releases, nicht über einen Validierungsbeleg. Der
-gefährlichste Fall wäre *Verifikation grün, Validation rot* — perfekt das Falsche gebaut. Wer die
-Kante schließen will, braucht einen Abnehmer außerhalb des Repos und ein Artefakt, das dessen
-Urteil festhält; beides ist heute nicht vorhanden.
-
-**Kontext-Trennung, real angewandt:** die Review-Serie vom 2026-07-26 lief in einem **anderen
-Kontextfenster** als die Implementierung — formal eine Rollen-Trennung, aber in derselben
-Modell-Familie. Die Reports weisen sich darum ausdrücklich als *Selbst-Review* aus; ein
-unabhängiger Lauf bleibt eine eigene Übergabe.
+**Die beiden Validator-Kanten sind unbesetzt, und das ist benannt statt erfunden**
+([`MR-016`](conventions/MR-016-validator-unbesetzt.md) trägt die Begründung und den
+Rückbau-Trigger). Wer sie schließen will, braucht einen Abnehmer außerhalb des Repos und ein
+Artefakt, das dessen Urteil festhält; beides gibt es hier nicht.
 
 ## Minimal agent workflow
 

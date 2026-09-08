@@ -147,16 +147,90 @@ je geänderten Abschnitts erneut gezählt, gegen §2 gehalten.
 
 - **Kürzen entfernt eine Aussage, die nur hier steht** — der Kontext-Trennungs-Absatz
   über die Review-Serie 2026-07-26 trägt eine Selbst-Einschätzung, kein Regelzitat.
-  — **Ausgang:** <offen bis Closure>
+  — **Ausgang:** *entfallen*, gestrichen mit Begründung — die Aussage geht
+  nicht verloren: Der Absatz sagte
+  selbst, *„die Reports weisen sich darum ausdrücklich als Selbst-Review aus"*.
+  Sie steht also in den Reports, die sie beschreibt, und die frieren ein. Was
+  hier stand, war ihre Wiederholung an einer Stelle, die jeder Lauf liest.
 - **Der Verweis altert anders als der Text.** Ein Zeiger auf `modul-08` §X bricht,
   wenn die nächste Baseline den Abschnitt umbenennt; ein nachgeschriebener Satz
-  nicht. — **Ausgang:** <offen bis Closure>
+  nicht. — **Ausgang:** *weiter offen* → Beobachtungs-Register,
+  [`BEO-PLAN/ziel-form-tag-gescopt`](../observations/BEO-PLAN/ziel-form-tag-gescopt/observation.md)
+  trägt dieselbe Mechanik für die Ziel-Formen. **Gemessen, nicht angenommen:**
+  Die neun in diesem Slice gesetzten Verweise nennen den Abschnitt in
+  **Inline-Code** (`` `modul-13` §Vorhanden ≠ behauptet ``), nicht als
+  Markdown-Link — `doc-check` sieht sie deshalb nicht, und der `versions`-Sensor
+  auch nicht. Der Bruch fiele beim Lesen auf, nicht beim Lauf; das ist die
+  benannte Grenze, kein stiller Ausfall.
 - **Kein Sensor hält das Ergebnis.** Nach dem Kürzen wächst die Prosa beim
-  nächsten Slice wieder — genau so ist sie entstanden. — **Ausgang:** <offen bis Closure>
+  nächsten Slice wieder — genau so ist sie entstanden. — **Ausgang:** *weiter
+  offen* → Beobachtungs-Register,
+  [`BEO-HARNESS/baseline-normtext-nachgeschrieben`](../observations/BEO-HARNESS/baseline-normtext-nachgeschrieben/observation.md)
+  (mit diesem Slice 2×). Ein Sensor dafür wäre ein Urteil über die Herkunft
+  eines Satzes und damit keiner ([`AGENTS.md`](../../../../AGENTS.md) §3.7);
+  was maschinell geht, ist die Zeichen-Obergrenze in Tabellenzellen, und die
+  trägt [slice-181](../open/slice-181-tabellenzellen-gewaechtert.md).
 
 ## 8. Closure-Notiz
 
-*(bei Closure auszufüllen)*
+**Lerneintrag — Form: geschärfte Regel.**
+
+- **Was hat funktioniert:** Die Ausgangsmessung nach **sichtbarer** Prosa zu
+  trennen — HTML-Bedienhinweise der Vorlage und Tabellenzeilen herausgerechnet.
+  Ohne diese Trennung hätte §Sensors mit +8001 Zeichen als größter Befund
+  dagestanden; tatsächlich hat a-check dort **weniger** Prosa als die Vorlage
+  Bedienhinweis, und die Tabelle wächst legitim mit der Zahl der Gates.
+
+- **Was ging anders als geplant — drei der fünf Abschnitte blieben unangetastet.**
+  §3 plante, §Safety, §Leseordnung und §Traceability „je Satz zu prüfen und zu
+  entscheiden". Die Prüfung entschied gegen das Kürzen: §Traceability ist die
+  **ausgefüllte** Ziel-Form (vier Punkte, gleiche Struktur, konkrete Targets),
+  §Safety trägt fünf AC-gebundene Zusagen, die nirgends sonst stehen, und
+  §Leseordnung **zitiert** die Regel bereits mit Verweis, statt sie
+  nachzuschreiben — die Form, die dieser Slice herstellen wollte, stand dort
+  schon. Der Faktor gegen die Ziel-Form war bei §Safety **22×** und trotzdem
+  kein Befund.
+
+- **Steering-Loop-Eintrag — geschärfte Regel:** Der Größen-*Vergleich* mit einer
+  Ziel-Form ist kein Befund; Befund ist, **wo derselbe Text schon woanders
+  steht**. Eine Vorlage ist kürzer als jedes ausgefüllte Dokument, und ein
+  Bedienhinweis, der beim Kopieren gelöscht wird, zählt in ihr mit. Wer nach
+  Zeichen misst, kürzt am Ende die ausgefüllten Stellen und lässt die
+  duplizierten stehen. — liegt in
+  [`AGENTS.md`](../../../../AGENTS.md) §5, *Geltungsbereich einer Messung*
+  (`seit slice-182` dort ergänzt).
+  Auslöser: [`BEO-HARNESS/baseline-normtext-nachgeschrieben`](../observations/BEO-HARNESS/baseline-normtext-nachgeschrieben/observation.md)
+  (slice-103, slice-182 — 2×).
+
+- **Beobachtungs-Register (`../observations/`):** zwei Belege ergänzt —
+  [`baseline-normtext-nachgeschrieben`](../observations/BEO-HARNESS/baseline-normtext-nachgeschrieben/observation.md)
+  (2×, `evidence/slice-182.md`) und
+  [`chronik-in-gelesenen-dateien`](../observations/BEO-HARNESS/chronik-in-gelesenen-dateien/observation.md)
+  (2×, `evidence/slice-182.md`). Beide bleiben unter der Schwelle.
+
+- **Folge-Slices:** keiner neu. [`AGENTS.md`](../../../../AGENTS.md) ist
+  ausdrücklich ausgeschlossen (§1) und bekommt einen, wenn die hier belegten
+  Kriterien tragen — die Entscheidung fällt nach diesem Slice, nicht in ihm.
+
+- **Risiken aus §7:** drei, jedes mit genau einem Ausgang — einmal *gestrichen
+  mit Begründung*, zweimal *weiter offen* → Register.
+
+- **Drei Paarungen** (Repo ohne Wellen-Betrieb) — geprüft nach dem `git mv`
+  nach `done/`; eingetragen im dritten Closure-Commit.
+
+### Messung nach der Umsetzung
+
+| Abschnitt | vorher | jetzt | Ziel-Form | Entscheidung |
+|---|---|---|---|---|
+| §Sensors | 1930 | **1278** | 346 | gekürzt: doppeltes `modul-13`-Zitat auf einen Verweis, Chronik-Halbsatz raus |
+| §Rollen (Prosa) | 1542 | **584** | *(kennt sie nicht)* | gekürzt: Tabelle bleibt, Prosa auf zwei Zeiger, Chronik-Absatz raus |
+| §Traceability rules | 753 | 753 | 385 | **unverändert** — ausgefüllte Ziel-Form |
+| §Safety and scope | 1055 | 1055 | 47 | **unverändert** — fünf AC-gebundene Zusagen, a-check-eigen |
+| §Leseordnung | 843 | 843 | 464 | **unverändert** — zitiert die Regel bereits mit Verweis |
+
+Datei gesamt **21 374 → 19 765** Zeichen. Die Ziel-Form liegt bei 10 436; der
+Abstand ist überwiegend die Gate-Tabelle mit 31 Zeilen, und die wächst mit der
+Zahl der Gates, nicht mit der Geschwätzigkeit.
 
 ## 9. Sub-Area-Prüfungen und Modus-Begründung
 

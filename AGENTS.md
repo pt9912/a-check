@@ -365,6 +365,16 @@ die CI (Badge im [`README.md`](README.md)), nicht diese Tabelle.
   zweites Muster, das nach übersehenen Klassen sucht, kann dieselbe Verengung
   haben wie das erste. Was greift, ist die Frage beim **Schreiben** — sie kostet
   einen Halbsatz und hätte alle drei Fälle gefangen.
+  **Zweite Hälfte** (`seit slice-182`): Ein Größen-*Vergleich* mit einer Ziel-Form
+  ist noch kein Befund. Eine Vorlage ist kürzer als jedes ausgefüllte Dokument,
+  und ihre Bedienhinweise — die beim Kopieren gelöscht werden — zählen in ihr
+  mit. Befund ist, **wo derselbe Text schon woanders steht**; das entscheidet
+  die Herkunft eines Satzes, nicht seine Länge. Gemessen an
+  [`harness/README.md`](harness/README.md): Der Abschnitt mit dem größten
+  Faktor (**22 ×** gegen die Ziel-Form) trug fünf `AC-*`-gebundene Zusagen, die
+  nirgends sonst stehen, und blieb unverändert; gekürzt wurden zwei Abschnitte
+  mit kleinerem Faktor, in denen das Regelwerk nachgeschrieben war — einer davon
+  zweimal in derselben Datei.
 - **CR-Texte an ein fremdes Werkzeug** (bisher vier an `d-check`) leben im Slice, der sie erzeugt,
   und gehen erst nach einem Prüf-Durchgang hinaus: der Skill
   [`.harness/skills/cr-text-reviewer.md`](.harness/skills/cr-text-reviewer.md) markiert jeden Satz,
