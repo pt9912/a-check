@@ -296,7 +296,13 @@ einer Messung*, `AGENTS.md` §5).
   mit Begründung, einmal *weiter offen* → Register.
 
 - **Drei Paarungen** (Repo ohne Wellen-Betrieb) — geprüft **nach** dem `git mv`
-  nach `done/`, weil sie dort suchen; eingetragen im dritten Closure-Commit.
+  nach `done/`, weil sie dort suchen; alle drei tragen:
+  **Anker** — `liegt in AGENTS.md §5`; der Zielort führt `seit slice-183`.
+  **Folge-Slice** — keiner genannt, und die Streichung ist gemessen statt
+  prognostiziert (§8).
+  **Register** — zwei zitierte Einträge:
+  `baseline-normtext-nachgeschrieben` (3, mit diesem Slice) und
+  `chronik-in-gelesenen-dateien` (2, ohne neuen Beleg — begründet in §9).
 
 ## 9. Sub-Area-Prüfungen und Modus-Begründung
 
