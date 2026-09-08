@@ -152,7 +152,7 @@ eigene Entscheidung, und beide standen bis hierher nur im Gesprächsprotokoll.
 
 | Datei / Komponente | Änderungs-Art | Begründung |
 |---|---|---|
-| [`MR-021`](../../../../harness/conventions/MR-021-verfeinerungs-form.md) | neu | löst [`MR-011`](../../../../harness/conventions/done/MR-011-verfeinerungs-form.md) ab, Begründung auf den gemessenen Stand |
+| [`MR-021`](../../../../harness/conventions/done/MR-021-verfeinerungs-form.md) | neu | löst [`MR-011`](../../../../harness/conventions/done/MR-011-verfeinerungs-form.md) ab, Begründung auf den gemessenen Stand |
 | [`MR-011`](../../../../harness/conventions/done/MR-011-verfeinerungs-form.md) nach `conventions/done/` | `git mv` | akzeptierter Eintrag wird nicht überschrieben |
 | `harness/conventions.md`, beide Tabellen | update | Zeile wandert von *Aktive* nach *Aufgelöste*, beide Anker bleiben |
 | `harness/README.md` §Rollen | — | **bereits erledigt** mit slice-182 |
@@ -163,7 +163,7 @@ tiefer, also brauchen ihre sechs relativen Links ein `../` mehr —, dann der
 ablösende Eintrag. Rename-Erkennung nach dem ersten Commit: **72 %**, also weit
 über der 50-%-Schwelle, `git log --follow` bleibt zuverlässig.
 
-**Die Messung, auf der [`MR-021`](../../../../harness/conventions/MR-021-verfeinerungs-form.md) steht** (2026-09-08):
+**Die Messung, auf der [`MR-021`](../../../../harness/conventions/done/MR-021-verfeinerungs-form.md) steht** (2026-09-08):
 
 | Frage | Ergebnis |
 |---|---|
@@ -179,7 +179,7 @@ und ist bei genauem Lesen der stärkste Beleg.
 ## 4. Definition of Done
 
 - [x] [`MR-011`](../../../../harness/conventions.md#mr-011) durch
-      [`MR-021`](../../../../harness/conventions/MR-021-verfeinerungs-form.md)
+      [`MR-021`](../../../../harness/conventions/done/MR-021-verfeinerungs-form.md)
       abgelöst, dessen Begründung den gemessenen Stand trägt;
       [`MR-011`](../../../../harness/conventions.md#mr-011) in
       `conventions/done/`, beide Tabellen nachgezogen, Anker `mr-011` erhalten.
@@ -210,7 +210,7 @@ geschrieben.
 - *Der neue Eintrag wiederholt den Fehler von [`MR-011`](../../../../harness/conventions/done/MR-011-verfeinerungs-form.md) in anderer Form —
   eine Begründung, die plausibel klingt und nicht gemessen ist* — **Ausgang:**
   *entfallen*, gestrichen mit Begründung. Beide tragenden Gründe in
-  [`MR-021`](../../../../harness/conventions/MR-021-verfeinerungs-form.md)
+  [`MR-021`](../../../../harness/conventions/done/MR-021-verfeinerungs-form.md)
   nennen ihre Zahl und ihre Quelle (7 `SPEC-*`-Abschnitte, 0 mit Feld, 40
   ADR-Dateien mit Feld), und die Gegenprobe — das eine Vorkommen des Worts in
   der Spezifikation — steht ausdrücklich dabei. Das Risiko war der Grund, die
@@ -223,7 +223,7 @@ geschrieben.
   **Gemessen und dabei korrigiert:** Der Slice-Plan sprach von `v6.0.0`-Ankern;
   im heutigen Bestand zeigt kein `Ersetzt-Baseline-Regel`-Feld mehr dorthin —
   slice-172 hat den Stand entfernt, und die Zeiger sind mit der
-  Baseline-Migration auf `v6.5.0` mitgewandert. [`MR-021`](../../../../harness/conventions/MR-021-verfeinerungs-form.md) trägt denselben Zeiger
+  Baseline-Migration auf `v6.5.0` mitgewandert. [`MR-021`](../../../../harness/conventions/done/MR-021-verfeinerungs-form.md) trägt denselben Zeiger
   wie [`MR-011`](../../../../harness/conventions/done/MR-011-verfeinerungs-form.md), nur auf den aktuellen Stand. Die Klasse bleibt trotzdem offen:
   Was beim nächsten Sprung mit ihnen geschieht, ist weiterhin nicht
   querschnittlich entschieden.
@@ -235,7 +235,7 @@ geschrieben.
 
 - **Was hat funktioniert:** Die Begründung **im Eintrag** zu messen statt im
   Slice-Plan. [`MR-011`](../../../../harness/conventions/done/MR-011-verfeinerungs-form.md) fiel auf, weil ein Leser seinen dritten Beleg nachprüfte
-  — der Eintrag selbst nannte keine Zahl. [`MR-021`](../../../../harness/conventions/MR-021-verfeinerungs-form.md) nennt vier: sieben
+  — der Eintrag selbst nannte keine Zahl. [`MR-021`](../../../../harness/conventions/done/MR-021-verfeinerungs-form.md) nennt vier: sieben
   `SPEC-*`-Abschnitte, null mit Feld, 40 ADR-Dateien mit Feld, ein Vorkommen
   des Worts in der Spezifikation. Wer ihn in einem Jahr prüft, braucht den
   Slice-Plan nicht.
@@ -252,7 +252,7 @@ geschrieben.
   im Slice.* Ein `MR`-Eintrag ist immutabel und wird Jahre später gelesen; ein
   Beleg wie *„steht ohnehin im `Schärft:`-Feld"* ist dann nicht mehr prüfbar,
   ohne die Messung neu zu erfinden. — liegt in
-  [`MR-021`](../../../../harness/conventions/MR-021-verfeinerungs-form.md)
+  [`MR-021`](../../../../harness/conventions/done/MR-021-verfeinerungs-form.md)
   §Begründung (`seit slice-171` dort).
   **Kein Sensor:** Ob eine Begründung gemessen ist, ist ein Urteil über ihren
   Entstehungsweg ([`AGENTS.md`](../../../../AGENTS.md) §3.7) — dieselbe Grenze,
@@ -286,7 +286,7 @@ den gemergten Stand. Zwei Treffer, beide vorab richtig vermutet:
 
 - [`BEO-HARNESS/adaption-korrigiert-repo-aussage`](../observations/BEO-HARNESS/adaption-korrigiert-repo-aussage/observation.md)
   — **2×**. Dieser Slice ist ein drittes Vorkommen der Klasse, aber **kein
-  neuer Beleg**: [`MR-021`](../../../../harness/conventions/MR-021-verfeinerungs-form.md) korrigiert die **eigene Begründung** eines
+  neuer Beleg**: [`MR-021`](../../../../harness/conventions/done/MR-021-verfeinerungs-form.md) korrigiert die **eigene Begründung** eines
   Konventions-Eintrags, nicht eine Repo-Aussage außerhalb davon. Der Eintrag
   beschreibt den Fall, dass eine *Adaption* eine Aussage über das Repo
   korrigiert; hier korrigiert sie sich selbst. Die Unterscheidung ist knapp —

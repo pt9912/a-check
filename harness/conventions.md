@@ -126,7 +126,7 @@ werden nie überschrieben); sie entsteht in den Nachfolge-Einträgen der Etappe 
 | [MR-016](conventions/MR-016-validator-unbesetzt.md) <a id="mr-016"></a> | Validator-Rolle unbesetzt | gesamtes Repo; Baseline-Modul `modul-08` | [`modul-08-agentenrollen.md` §Die neun Übergaben](../.harness/baseline/v6.5.0/regelwerk/modul-08-agentenrollen.md#die-neun-übergaben-und-ihre-artefakte-modul-8) |
 | [MR-019](conventions/MR-019-review-dod-opt-in.md) <a id="mr-019"></a> | Review-DoD-Punkt bleibt Opt-in statt verpflichtend | [`AGENTS.md`](../AGENTS.md) §5, [`.d-check.yml`](../.d-check.yml) | — *(Treiber ist ein Template, keine Regel; der Eintrag nennt als Rückbau-Bedingung, dass darauf gezeigt werden kann — seit slice-175 erfüllt: `v6.5.0` · `templates/docs/plan/planning/slice.template.md` trägt die Review-DoD-Zeile. Der Eintrag bleibt, weil sein **Auflösungs**-Trigger davon unberührt ist; nachgezogen mit slice-179)* |
 | [MR-020](conventions/MR-020-adr-vorlage-generisch.md) <a id="mr-020"></a> | ADR-Vorlagen-Referenz zeigt generisch auf den vendorten Stand | [`MR-000`](#mr-000) §ID-Schema, Zeile zu `ADR-NNNN` | — *(korrigiert eine Repo-Aussage, kein Baseline-Regel-Ersatz; permanent, kein Rückbau-Kandidat)* |
-| [MR-021](conventions/MR-021-verfeinerungs-form.md) <a id="mr-021"></a> | Verfeinerungen tragen `SPEC-*` statt der Suffix-Form (gemessene Begründung) | [`spec/spezifikation.md`](../spec/spezifikation.md) | [`grundlagen-source-precedence.md` §ID-Schema als Klammer](../.harness/baseline/v6.5.0/regelwerk/grundlagen-source-precedence.md#id-schema-als-klammer) |
+| [MR-022](conventions/MR-022-verfeinerungs-form.md) <a id="mr-022"></a> | Verfeinerungen tragen `SPEC-*` statt der Suffix-Form (Begründung gemessen, mit Zählregel) | [`spec/spezifikation.md`](../spec/spezifikation.md) | [`grundlagen-source-precedence.md` §ID-Schema als Klammer](../.harness/baseline/v6.5.0/regelwerk/grundlagen-source-precedence.md#id-schema-als-klammer) |
 
 ### Aufgelöste Adaptionen
 
@@ -147,7 +147,8 @@ bricht.
 | [MR-008](conventions/done/MR-008-kein-replay.md) <a id="mr-008"></a><a id="mr-008--kein-replay-keine-agenten-telemetrie"></a> | [MR-014](conventions/MR-014-keine-agenten-telemetrie.md) |
 | [MR-009](conventions/done/MR-009-validator-unbesetzt.md) <a id="mr-009"></a><a id="mr-009--validator-rolle-unbesetzt-zwei-übergaben-ohne-artefakt"></a> | [MR-016](conventions/MR-016-validator-unbesetzt.md) |
 | [MR-010](conventions/done/MR-010-rueckbau-drei-adaptionen.md) <a id="mr-010"></a> | — *(Rückbau-Eintrag; mit seiner Entstehung erledigt, siehe Datei)* |
-| [MR-011](conventions/done/MR-011-verfeinerungs-form.md) <a id="mr-011"></a> | [MR-021](conventions/MR-021-verfeinerungs-form.md) |
+| [MR-011](conventions/done/MR-011-verfeinerungs-form.md) <a id="mr-011"></a> | [MR-021](conventions/done/MR-021-verfeinerungs-form.md) |
+| [MR-021](conventions/done/MR-021-verfeinerungs-form.md) <a id="mr-021"></a> | [MR-022](conventions/MR-022-verfeinerungs-form.md) |
 | [MR-013](conventions/done/MR-013-adr-vorlagen-version.md) <a id="mr-013"></a> | [MR-017](conventions/done/MR-017-adr-vorlagen-version.md) |
 | [MR-017](conventions/done/MR-017-adr-vorlagen-version.md) <a id="mr-017"></a> | [MR-020](conventions/MR-020-adr-vorlage-generisch.md) |
 | [MR-018](conventions/done/MR-018-review-pflicht-v610-wortlaut.md) <a id="mr-018"></a> | Ereignis am 2026-09-06 (`v6.2.0` vendored — das Kurs-Template trägt den Rollenwechsel-Absatz jetzt selbst, [slice-170](../docs/plan/planning/done/wellenlos/slice-170-mr018-aufloesen.md)), **kein** Nachfolge-Eintrag |
