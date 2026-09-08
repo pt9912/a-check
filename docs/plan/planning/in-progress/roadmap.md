@@ -21,10 +21,12 @@ Welle-Datei, nicht hier.
 
 *(Keine offene Welle.)*
 
-In Arbeit: [slice-169](../done/wellenlos/slice-169-korpus-seitige-kalibrierung.md) — **wellenlos**.
-Er erscheint hier nicht als Welle-Zeile, weil wellenlose Arbeit keine ist (Baseline-Regelwerk
-`modul-06-roadmap.md` §Wann Arbeit eine Welle braucht); genannt wird er, weil der
-Ruhe-Marker nur bei leerem `in-progress/` gilt und sonst eine Unwahrheit wäre.
+**Woran gerade gearbeitet wird, sagt `ls docs/plan/planning/in-progress/` — nicht diese
+Datei.** Wellenlose Arbeit erscheint in der Roadmap nicht; ihr Zustand ist die
+Verzeichnis-Position (Baseline-Regelwerk `modul-06-roadmap.md` §Wann Arbeit eine Welle
+braucht). Der Ruhe-Marker steht genau dann, wenn das Verzeichnis leer ist, und nennt dabei
+keinen Namen: Ein Name wäre eine zweite Quelle für denselben Zustand und altert
+(`seit slice-186`).
 
 ## Nächste Wellen
 

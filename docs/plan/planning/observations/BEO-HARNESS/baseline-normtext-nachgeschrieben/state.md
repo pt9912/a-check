@@ -1,4 +1,4 @@
-**Stand:** verkörpert in [`AGENTS.md`](../../../../../../AGENTS.md) §5 (*Geltungsbereich einer Messung*, dritte Hälfte) `seit slice-183` — die **Prüf-Frage**, die die Klasse findet
+**Stand:** verkörpert in [`.harness/skills/reviewer.md`](../../../../../../.harness/skills/reviewer.md) §Mess-Regeln (*Geltungsbereich einer Messung*, dritte Hälfte) `seit slice-183` — die **Prüf-Frage**, die die Klasse findet
 
 Drei Vorkommen, drei Dateien: `conventions.md` (slice-103), `harness/README.md` (slice-182),
 `AGENTS.md` §5 (slice-183). Alle drei sind an ihrer Fundstelle behoben.
@@ -13,8 +13,11 @@ Satzes ([`AGENTS.md`](../../../../../../AGENTS.md) §3.7), kein Match.
 einer Ziel-Form findet die Klasse **nicht** — §5 hatte Faktor 22,9 × und war zu 93,5 %
 a-check-eigen. Die Frage *„steht die Regel im Regelwerk?"* führt ebenso in die Irre, weil eine
 adoptierte Baseline sie fast immer bejaht. Trägt nur: *„schreibt dieser Absatz ihre **Begründung**
-nach?"* Diese Schärfung steht in [`AGENTS.md`](../../../../../../AGENTS.md) §5
-(*Geltungsbereich einer Messung*, `seit slice-183`).
+nach?"* Diese Schärfung steht in
+[`.harness/skills/reviewer.md`](../../../../../../.harness/skills/reviewer.md) §Mess-Regeln
+(*Geltungsbereich einer Messung*, dritte Hälfte, `seit slice-183`) — mit slice-186 dorthin
+umgezogen, weil sie den **Prüfenden** anleitet; die Zusage an den Schreibenden blieb in
+[`AGENTS.md`](../../../../../../AGENTS.md) §5.
 
 Der Eintrag bleibt **stehen** statt gestrichen: Die Klasse kann wiederkehren, sobald ein neuer
 Absatz entsteht.

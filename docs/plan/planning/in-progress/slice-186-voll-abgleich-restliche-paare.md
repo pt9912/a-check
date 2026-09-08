@@ -1,4 +1,4 @@
-# slice-186 — Voll-Abgleich: die zehn verbleibenden Ziel-Form-Paare
+# slice-186 — Voll-Abgleich: `AGENTS.md` §5 und drei Ziel-Form-Paare
 
 **Welle:** ohne Welle — die Closure-Bedingung wäre die eigene DoD.
 
@@ -7,8 +7,10 @@
 (*eingetreten*: 13 Paare sprengen die Größen-Regel).
 [`AC-QA-02`](../../../../spec/lastenheft.md#ac-qa-02--hermetik-und-ehrliche-heuristik-grenze).
 
-**Berührte Spec-Stellen:** — *(bei Umsetzung zu füllen: `spec/lastenheft.md`
-und `spec/spezifikation.md` sind unter den Paaren.)*
+**Berührte Spec-Stellen:** — · Der Slice berührt kein Spec-Stratum. Die zwei
+Straten (`spec/lastenheft.md`, `spec/spezifikation.md`) stehen unter den sieben
+an [slice-187](../open/slice-187-voll-abgleich-erstdurchgang-rest.md)
+abgetretenen Paaren; §9 führt `SPEC` folgerichtig als *nicht berührt*.
 
 **Verantwortlich:** Claude — gesetzt beim Übergang nach `in-progress/`.
 
@@ -20,10 +22,16 @@ und `spec/spezifikation.md` sind unter den Paaren.)*
 
 ## 1. Ziel und Abgrenzung
 
-**Ziel:** Die zehn Ziel-Form-Paare, die
+**Ziel — geändert während der Arbeit, siehe §3.3.** Ursprünglich: *„die zehn
+Ziel-Form-Paare, die
 [slice-185](../done/wellenlos/slice-185-ziel-form-voll-abgleich.md) nicht mehr
-getragen hat, sind abgeglichen — je Paar mit einem der drei Ausgänge:
-übernommen · bewusst abweichend (mit Begründung) · ohne Befund.
+getragen hat, sind abgeglichen"*. Geliefert: die drei für `AGENTS.md` vorab
+gemessenen Befunde (§2.1) sind aufgelöst, und **drei** Paare sind abgeglichen —
+je Paar mit einem der drei Ausgänge: übernommen · bewusst abweichend (mit
+Begründung) · ohne Befund. Die sieben verbleibenden gehen an
+[slice-187](../open/slice-187-voll-abgleich-erstdurchgang-rest.md); der Titel
+und dieser Satz sind der Plan-Änderung nachgezogen, statt die alte Zusage
+stehen zu lassen.
 
 **Ausdrücklich NICHT in diesem Slice** — je Punkt mit Begründung:
 
@@ -73,8 +81,8 @@ Sie sind nach slice-185 gemessen worden und ersparen dem Paar die Suche. Alle
 drei betreffen **§5 Dokumentations-Regeln** (16 740 Zeichen, 18 Blöcke) — mit
 Abstand den größten Abschnitt der Datei.
 
-**(a) Drei nachgeschriebene `modul-05`-Sätze im Slice-Form-Block** (~600
-Zeichen). Ein Wortfolgen-Test über alle 18 Blöcke gegen das vendorte Regelwerk
+**(a) Drei nachgeschriebene `modul-05`-Sätze im Slice-Form-Block** (**834**
+Zeichen — gemessen, 4285 → 3451). Ein Wortfolgen-Test über alle 18 Blöcke gegen das vendorte Regelwerk
 findet **fünf** wörtliche Treffer, alle im selben Block; **zwei** davon sind
 legitime Zitate mit Anführungszeichen und Quelle (`modul-06` §Wann Arbeit eine
 Welle braucht), **drei** stehen ohne beides und stammen aus `modul-05`
@@ -106,22 +114,50 @@ ist.
 Regel verlorengeht**, nur an den Ort wandert, an dem sie gelesen wird. (b) und
 (c) sind **Umzüge**, kein Rückbau; das ist beim Abgleich sauber zu trennen.
 
-**Grenze dieser Messung:** Der Wortfolgen-Test sucht **wörtliche** Übernahme.
-Eine sinngemäße Doppelung in anderen Worten sieht er nicht — das bleibt
-Lese-Arbeit (slice-185 §2.3).
+**Geltungsbereich dieser Messung — und was daran nicht trägt.** Der
+Wortfolgen-Test sucht **wörtliche** Übernahme; eine sinngemäße Doppelung in
+anderen Worten sieht er nicht (slice-185 §2.3). Das war benannt. **Nicht
+benannt war der Parameter, und daran hängen die Zahlen:** Fenstergröße, Korpus
+und Normalisierung standen nirgends, und das Instrument liegt nicht im Repo —
+der Lauf ist damit **nicht wiederholbar**. Der unabhängige Review hat
+gegengemessen: Bei 8- bis 10-Wort-Fenstern über `regelwerk/*.md` hält die
+Aussage (drei Treffer, alle in Block 13, die anderen Blöcke null). Bei 6- bis
+7-Wort-Fenstern sind es sechs bzw. vier in Block 13 **und je einer in Block 18**
+(*„nicht ‚fertig', sondern nur ‚weg'"* gegen `modul-01`); mit `templates/` im
+Korpus kommen zwei weitere Blöcke dazu. **Die Zahl fünf und der Satz „die
+anderen 17 Blöcke: null" gelten also nur unter einem Parameter, den diese
+Messung nicht angab.** Der Befund (a) selbst bleibt davon unberührt — die drei
+nachgeschriebenen Sätze stehen unter jedem Parameter da. Dieselbe Lücke haben
+die Kandidaten-Zahlen (5/4/9 und 20/17/16/16/15/12/11, Summe 107): Sie sind
+eine **Reihenfolge**, kein Befund, und stammen aus einem Lauf, den niemand
+wiederholen kann. Das ist die eigene Mess-Regel
+([`AGENTS.md`](../../../../AGENTS.md) §5, *Geltungsbereich einer Messung*), an
+diesem Slice verletzt und vom Review gefangen.
 
 ## 3. Umsetzung
 
 ### 3.1 Die drei vorab gemessenen `AGENTS.md`-Befunde (§2.1) — aufgelöst
 
-**§5 von 16 740 auf 9491 Zeichen, 43 % kleiner.** Keine Regel geht verloren;
+**§5 von 16 740 auf 10 214 Zeichen, 39 % kleiner.** Keine Regel geht verloren;
 zwei sind **umgezogen**, eine ist auf Zeiger gekürzt.
+
+**Der Zwischenstand war 9491 (43 %) — der Review hat ihn korrigiert** (F-1):
+Beim Umzug der zwei Mess-Regeln ging nicht nur die Herleitung, sondern auch die
+**Zusage** mit, und die bindet den *Schreibenden* — Slice-Plan, Closure-Notiz,
+Review-Report —, der den Reviewer-Skill laut
+[`harness/README.md`](../../../../harness/README.md) §Guides gerade **nicht**
+liest. Der Zeiger trägt die zwei Sätze jetzt selbst (1267 statt 430 Zeichen);
+die Fälle, die Register-Anker und die Begründung bleiben im Skill. **Zwei
+Adressaten, zwei Orte** — das ist die Lehre, nicht die Zeichenzahl.
 
 | Befund | Vorher | Nachher | Wohin |
 |---|---|---|---|
 | (a) drei nachgeschriebene `modul-05`-Stellen | Slice-Form-Block 4285 | 3451 → dann umgezogen | Zeiger auf `modul-05` §Ziel-Form: Slice |
-| (b) zwei Mess-Regeln | 4045 | Zeiger (~430) | [`.harness/skills/reviewer.md`](../../../../.harness/skills/reviewer.md) §Mess-Regeln |
-| (c) Slice-Form-Kopieranleitung | 3451 | Zeiger (~440) | [`docs/plan/planning/README.md`](../README.md) §Beim Kopieren der Slice-Ziel-Form |
+| (b) zwei Mess-Regeln | 4045 | Zeiger **1267** | [`.harness/skills/reviewer.md`](../../../../.harness/skills/reviewer.md) §Mess-Regeln |
+| (c) Slice-Form-Kopieranleitung | 3451 | Zeiger **539** | [`docs/plan/planning/README.md`](../README.md) §Beim Kopieren der Slice-Ziel-Form |
+
+Alle Zahlen sind `wc -m` über den Abschnitt von `## 5.` bis ausschließlich
+`## 6.` bzw. über den Bullet-Block — keine Schätzung.
 
 **Bei (a) bleibt die repo-eigene Hälfte stehen:** die **Durchsetzung** —
 `make verify` ab slice-052, der Gate-Lauf als feste Zeile statt Checkbox, die
@@ -137,7 +173,7 @@ tiefer), und §5 einen Zeiger darauf.
 | Paar | Kandidaten | Ausgang |
 |---|---|---|
 | `README.md` | 5 | **übernommen:** die Rollen-Zeile, in beiden Sprachfassungen |
-| `docs/plan/planning/in-progress/roadmap.md` | 4 | **ohne Befund** — alle fünf Abschnitte der Ziel-Form vorhanden |
+| `docs/plan/planning/in-progress/roadmap.md` | 4 | **ohne Befund** auf Abschnitts-Ebene: alle **sechs** H2 der Ziel-Form vorhanden (`modul-06` nennt fünf, die Vorlage führt den *Abhängigkeitsgraphen* zusätzlich). **Ein Befund darunter:** siehe §3.4 |
 | `harness/README.md` | 9 | **ohne Befund** — die Treffer sind Bedienhinweise (*„Pointer-Artefakt … zuletzt füllen"*), kein Normtext |
 
 **Die Rollen-Zeile mit a-checks Rang.** Die Ziel-Form sagt *„Rang 6 der Source
@@ -170,6 +206,43 @@ mit 18 plus drei vorab gemessene Befunde. Sieben Paare mit 107 sind der
 angelegt mit diesem Slice. Er nimmt den Punkt an: §1 nennt genau diese sieben
 Paare, §2 trägt die Messung, §5 die Rückführung, falls auch sieben zu viel sind.
 
+### 3.4 Was der unabhängige Review verändert hat
+
+Der Report
+([`2026-09-08-slice-186-…`](../../../reviews/2026-09-08-slice-186-voll-abgleich-restliche-paare.md))
+trug **4 HIGH · 3 MEDIUM · 4 LOW · 1 INFO** und war merge-blockierend. Alle
+zwölf sind abgearbeitet; die vier HIGH einzeln:
+
+| Befund | Was daran stimmte | Behebung |
+|---|---|---|
+| **F-1** Mess-Regeln am Ort, den ihr Adressat nicht liest | Beide Regeltexte adressieren den *Schreibenden*; `harness/README.md` §Guides führt den Reviewer-Skill als *„nicht Teil der Implementer-Eingabe"* | §5 trägt die **Zusage** wieder (zwei nummerierte Sätze), der Skill die **Herleitung**; die Trennung ist an beiden Orten benannt |
+| **F-2** vier Selbstverweise ins Leere | Der Block war *wortgleich* umgezogen — und genau darin lag der Defekt: zweimal unqualifiziertes `(§3.7)`, *„an §5 dieser Datei"*, *„die Aufgabe dieser Datei"* | alle vier auf `AGENTS.md` re-verankert; im Skill steht jetzt **kein** unqualifiziertes `§` mehr |
+| **F-3** Herkunfts-Anker `seit slice-183` nicht am Zielort | `state.md` von [`BEO-HARNESS/baseline-normtext-nachgeschrieben`](../observations/BEO-HARNESS/baseline-normtext-nachgeschrieben/observation.md) nannte `AGENTS.md` §5 | Zielort auf den Skill umgestellt; die zwei anderen `state.md` (`review-geltungsbereich-zu-eng`, `probe-liefert-den-gegenstand-mit`) stimmen durch die F-1-Behebung **wieder von selbst** |
+| **F-4** Roadmap sagt *„In Arbeit: slice-169"* | slice-169 liegt seit **siebzehn** Übergängen in `done/`; das Paar war als *ohne Befund* geschlossen, weil nur H2-Überschriften verglichen wurden | Der Name ist **entfernt**, nicht aktualisiert: `modul-06` §Wann Arbeit eine Welle braucht verbietet die zweite Quelle. Es steht ein Zeiger auf `ls in-progress/`, der nicht altern kann |
+
+**Warum F-4 siebzehn Slices überlebt hat, ist der eigentliche Fund** — und er
+ist ein Doppelter: `make slice-mv` zog bei jedem Übergang die **Adresse** nach
+(der Link zeigte korrekt nach `done/`), nicht die **Aussage** daneben. Und
+`make doc-planning` konnte es nicht fangen, weil sein Vertrag mehr zusagte
+(*„benennt ihn"*), als das Modul prüft (Äquivalenz *Slice vorhanden ⟺ Marker
+fehlt*) — die Einschränkung stand ausschließlich als Kommentar in
+[`.d-check.yml`](../../../../.d-check.yml). **Das ist die HIGH-Kategorie *„Norm
+nur im Konfigurations-Kommentar"* aus dem Reviewer-Skill, im eigenen Bestand
+belegt.** Behoben an beiden Enden: [`harness/sensors/doc-planning.md`](../../../../harness/sensors/doc-planning.md)
+führt die Grenze jetzt als ersten Punkt, und die zwei Deklarations-Stellen
+([`AGENTS.md`](../../../../AGENTS.md) §4, `harness/README.md` §Sensors) sagen
+zu, was geprüft wird.
+
+**Die übrigen acht** in Kürze: `README.de.md` fehlte die Ziel-Form-Sektion *Was
+kann ich heute tun?* (F-5, seit slice-111 — die Datei war im Übernahme-, nicht
+im Befund-Scope; jetzt tragen beide Fassungen dieselben zehn H2) · der
+Wortfolgen-Test nennt seinen Geltungsbereich (F-6, §2.1) · Titel, §1 und
+Kopffeld sind der Plan-Änderung nachgezogen (F-8) · Tilde-Werte durch `wc -m`
+ersetzt (F-9) · *fünf* → **sechs** Ziel-Form-Abschnitte der Roadmap (F-10) ·
+zwei Zeiger auf ausgezogenen Text nachgezogen (F-11) · F-12 ist INFO ohne
+Handlungsbedarf (Nachtrag eines Erstauftretens, beide urteilsfreien Prüfungen
+bestehen).
+
 ## 4. Definition of Done
 
 - [x] **Drei** der zehn Paare sind abgeglichen; je Paar steht der Ausgang im
@@ -188,10 +261,10 @@ Paare, §2 trägt die Messung, §5 die Rückführung, falls auch sieben zu viel 
       Gegenprobe: §5 gemessen vor und nach dem Umzug.
 - [x] Jede Übernahme ist als solche kenntlich; jede bewusste Abweichung trägt
       ihre Begründung — eine Differenz ist nicht automatisch eine Lücke.
-- [ ] Unabhängiger Review durchgeführt (Report unter [`docs/reviews/`](../../../reviews/README.md)).
-- [ ] Closure-Notiz mit Steering-Loop-Lerneintrag.
-- [ ] Beobachtungs-Register fortgeschrieben.
-- [ ] Jedes Risiko aus §7 trägt einen Ausgang.
+- [x] Unabhängiger Review durchgeführt (Report unter [`docs/reviews/`](../../../reviews/README.md)) — 12 Findings, alle abgearbeitet (§3.4).
+- [x] Closure-Notiz mit Steering-Loop-Lerneintrag.
+- [x] Beobachtungs-Register fortgeschrieben.
+- [x] Jedes Risiko aus §7 trägt einen Ausgang.
 
 `make gates` und `make verify` grün.
 
@@ -255,13 +328,26 @@ Lerneintrag.
 **Lerneintrag — Form: geschärfte Regel.** *Ein Abschnitt wird nicht groß, weil
 er viel regelt, sondern weil er die Herleitung seiner Regeln nachschreibt.*
 `AGENTS.md` §5 war mit 16 740 Zeichen der größte Abschnitt der Datei und ist
-jetzt 9491 groß — **43 % kleiner, ohne dass eine Regel verloren geht.** Keiner
+jetzt 10 214 groß — **39 % kleiner, ohne dass eine Regel verloren geht.** Keiner
 der drei Befunde war eine überflüssige Regel: (a) drei Stellen schrieben
 `modul-05`-Normtext nach, (b) zwei Mess-Regeln waren Urteilsgrundlage des
 Reviewers und standen im Briefing des Implementers, (c) eine Kopieranleitung
 gehörte an den Ort, an dem kopiert wird. **Die Regel, die daraus wird:** Steht
 Text im falschen Dokument, ist die Antwort *umziehen*, nicht *kürzen* — und die
 Gegenprobe ist, ob der Zielort die Aussage danach **vollständig** trägt.
+
+**Und die Schärfung, die erst der Review geliefert hat** (F-1/F-2, §3.4):
+*Vollständig* heißt nicht *wortgleich*. Der Umzug der zwei Mess-Regeln war
+zeilengenau — genau deshalb war er falsch. Ein Text trägt zwei Dinge, die beim
+Verschieben auseinanderfallen: seine **Selbstverweise** (`(§3.7)`, *„dieser
+Datei"*, *„§5"* — vier Stück, alle stumm gebrochen) und seinen **Adressaten**.
+Die zwei Regeln binden den *Schreibenden*, gelandet sind sie in dem Dokument,
+das `harness/README.md` §Guides als *„nicht Teil der Implementer-Eingabe"*
+führt. Die Antwort ist keine Rückabwicklung, sondern eine **Teilung**: die
+Zusage ins Briefing, die Herleitung in den Skill. Die Prüf-Frage beim nächsten
+Umzug lautet darum nicht *„steht der Text vollständig am Zielort?"*, sondern
+**„liest ihn dort noch, wen er bindet — und zeigen seine Verweise noch dorthin,
+wo sie hinzeigen sollen?"**
 
 **Und die Ausnahme dazu, gemessen:** Nicht jede Doppelung ist eine. Bei (a)
 blieb a-checks Hälfte stehen — die **Durchsetzung** (`make verify` ab
@@ -275,7 +361,7 @@ Regelwerk?"*, sondern *„schreibt dieser Absatz ihre Begründung nach?"*
 grün auf dem Stand, der nach `done/` geht — mit den drei neuen
 Zellengrenzen-Regeln aus [`.d-check.yml`](../../../../.d-check.yml) und dem
 `mentions`-Modul, die seit slice-184 mitlaufen. (2) §5 von `AGENTS.md` misst
-9491 Zeichen gegen 16 740 vorher, und die zwei Zielorte
+10 214 Zeichen gegen 16 740 vorher, und die zwei Zielorte
 ([`.harness/skills/reviewer.md`](../../../../.harness/skills/reviewer.md)
 §Mess-Regeln, [`docs/plan/planning/README.md`](../README.md) §Beim Kopieren der
 Slice-Ziel-Form) tragen den umgezogenen Text — nachzählbar, nicht behauptet.
@@ -293,14 +379,51 @@ hängt am Erstdurchgang **nicht**. Neu im Register als
 [`BEO-PLAN/erstdurchgang-als-einmal-slice-geschnitten`](../observations/BEO-PLAN/erstdurchgang-als-einmal-slice-geschnitten/observation.md)
 bei **2×**; erreicht slice-187 den dritten Beleg, ist die Schwelle da.
 
-**Beobachtungs-Register — was dieser Slice zurückgibt:** ein neuer Eintrag mit
-zwei Belegen (slice-185 als Erstauftreten nachgetragen, slice-186 als zweites).
+**Beobachtungs-Register — was dieser Slice zurückgibt: fünf Einträge, alle bei
+2×.** Vier davon sind **neu** und tragen je zwei Belege, weil slice-185 als
+Erstauftreten nachgetragen ist:
+[`erstdurchgang-als-einmal-slice-geschnitten`](../observations/BEO-PLAN/erstdurchgang-als-einmal-slice-geschnitten/observation.md)
+· [`vollstaendigkeits-haken-ohne-erschoepften-gegenstand`](../observations/BEO-PLAN/vollstaendigkeits-haken-ohne-erschoepften-gegenstand/observation.md)
+· [`messung-ohne-reproduzierbares-instrument`](../observations/BEO-PLAN/messung-ohne-reproduzierbares-instrument/observation.md)
+· [`zielsatz-nach-plan-aenderung-nicht-nachgezogen`](../observations/BEO-PLAN/zielsatz-nach-plan-aenderung-nicht-nachgezogen/observation.md)
+· [`kandidaten-klassifikation-groeber-als-der-kandidat`](../observations/BEO-PLAN/kandidaten-klassifikation-groeber-als-der-kandidat/observation.md).
+Der fünfte,
+[`form-vergleich-sprachblind`](../observations/BEO-PLAN/form-vergleich-sprachblind/observation.md),
+steigt von 1× auf 2×.
+
+**Vier auf einmal ist kein Ausrutscher, sondern die Regel:** *Ab dem zweiten
+gleichartigen Vorfall entsteht ein Eintrag* ([`AGENTS.md`](../../../../AGENTS.md)
+§5). Der Review hat vier Finding-Klassen als **zweite Wiederholung in Folge**
+gegenüber slice-185 ausgewiesen; jede davon war damit fällig, und keine hatte
+bis dahin eine Kennung. Dass sie erst jetzt entstehen, ist selbst der Befund:
+Ein Report zählt Klassen, aber niemand trug sie in den Zähler ein, solange die
+Closure nur die *eigenen* Beobachtungen las. **Alle vier stehen jetzt bei 2×** —
+erreicht slice-187 den dritten Beleg, sind es vier fällige Ausgänge auf einmal,
+und das ist die Warnung, die dieser Absatz trägt.
+
 **Nicht** erhöht wurde
 [`BEO-GATE/muster-trifft-nur-die-haeufige-schreibweise`](../observations/BEO-GATE/muster-trifft-nur-die-haeufige-schreibweise/observation.md),
 obwohl die Vorauswahl hier versagte: Sie versagte durch **Rauschen**, jene
 Klasse durch **Schweigen**. Ein Beleg an der falschen Kennung hätte einen
 Zähler auf 3× gehoben und eine Regel ausgelöst, die den Fall nicht trifft — die
 Zählregel misst Wiederholung *einer* Klasse, nicht Häufigkeit von Ärger.
+**Erhöht** wurde stattdessen
+[`BEO-PLAN/form-vergleich-sprachblind`](../observations/BEO-PLAN/form-vergleich-sprachblind/observation.md)
+auf 2×: Genau dort trat die Schweige-Richtung auf — der Abgleich las die
+englische Fassung und übersah, dass `README.de.md` seit slice-111 eine
+Ziel-Form-Sektion fehlt. Der Slice hatte die Datei angefasst und das Paar als
+abgeglichen geschlossen; gefunden hat es der unabhängige Review.
+
+**Der Review ist die zweite Hälfte dieser Closure.** Zwölf Findings, vier davon
+HIGH, zwei merge-blockierend — an einem Slice, dessen eigene Gate-Läufe grün
+waren und dessen Kern-Messung zeichengenau reproduziert. Das ist der Beleg für
+die Regel, unter der er läuft
+([`AGENTS.md`](../../../../AGENTS.md) §6, *kein Self-Review*): Die vier HIGH
+liegen alle an Stellen, die der schreibende Kontext für erledigt hielt — ein
+wortgleicher Umzug, ein Anker, ein *ohne Befund* geschlossenes Paar. **Vier
+Finding-Klassen wiederholen sich zum zweiten Mal in Folge** gegenüber dem
+slice-185-Report, alle vier an derselben Arbeitsform; sie sind in §3.4 benannt
+und gehen als Prüfpunkte in slice-187 ein.
 
 ## 9. Sub-Area-Prüfungen und Modus-Begründung
 
@@ -333,3 +456,13 @@ Sub-Areas fünf Einträge, die diesen Slice betreffen:
 
 **Keiner erreicht mit diesem Slice 3×.** Der neu angelegte steht bei 2× — slice-187
 wäre der dritte Beleg und damit die Schwelle.
+
+**Nachtrag nach dem Review** (§3.4): Die Sichtung oben las das Register auf
+*eigene* Beobachtungen. Der Report hat vier Finding-**Klassen** als zweite
+Wiederholung in Folge ausgewiesen; für sie gilt dieselbe Schwellenregel, und sie
+hatten keine Kennung. Vier Einträge sind nachgetragen, dazu ein fünfter erhöht —
+die Liste steht in §8. **Das ist die Lehre für die Sichtung selbst:** Der
+Sichtungs-Schritt liest bisher das Register; er muss auch den **Report des
+Vorgänger-Slice** lesen, sonst zählt die dritte der drei Quellen
+(`modul-05` §Closure- und Lerneintrag-Regeln: *wiederkehrende Finding-Klasse aus
+dem Review*) faktisch nicht mit.
