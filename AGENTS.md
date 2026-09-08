@@ -169,7 +169,7 @@ die CI (Badge im [`README.md`](README.md)), nicht diese Tabelle.
 | `make doc-tracked` | Getrackt-Status auflösbarer Referenz-Ziele (Modul `tracked`, DC-FA-TRK-001) |
 | `make doc-targets` | Deklarations-Konsistenz Doku ↔ Build-Targets (Modul `targets`, DC-FA-TGT-001), konfiguriert in [`.d-check.yml`](.d-check.yml); im `gates`-Aggregat |
 | [`make doc-structure`](harness/sensors/doc-structure.md) | Struktur-Invarianten innerhalb der Dokumente: Größen-Regel, Closure-Struktur, Lerneintrag-Form, Kopffelder, AC-Form, Zellengrenzen der Gate-Tabellen |
-| `make doc-usage` | Aufruf und Optionen von d-check selbst (`--help`) — **advisory**, seit dem Pin auf `v0.74.1` von `d-check --print-mk` mit erzeugt |
+| `make doc-usage` | Aufruf und Optionen von d-check selbst (`--help`) — **advisory**, seit dem Pin auf `v0.75.0` von `d-check --print-mk` mit erzeugt |
 | `make doc-help` | Liste der `doc-*`-Targets (Utility) |
 | `make lint` | golangci-lint mit dem Projekt-Profil (§3.2, [ADR-0005](docs/plan/adr/0005-lint-profil.md)) |
 | `make test` | Akzeptanzkriterien der `AC-FA-*` als Go-Tests |
