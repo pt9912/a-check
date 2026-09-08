@@ -1,6 +1,6 @@
 **Stand:** verkörpert in [`make slice-mv`](../../../../../../Makefile)
 (`tools/slice-mv.sh`) `seit slice-118` — **mit einer benannten Lücke**, für die
-[slice-180](../../../open/slice-180-slice-mv-dritte-verweis-form.md) den Ausgang trägt.
+[slice-180](../../../in-progress/slice-180-slice-mv-dritte-verweis-form.md) den Ausgang trägt.
 
 Die Verkörperung deckt **zwei** der drei im Bestand vorkommenden Verweis-Formen. Die dritte —
 `<lifecycle-verzeichnis>/slice-NNN-….md` **ohne** `../`-Präfix, wie sie eine flach unter
