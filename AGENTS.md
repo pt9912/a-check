@@ -148,9 +148,9 @@ die Übereinstimmung Doku ↔ Makefile mechanisch — über diese Tabelle **und*
 [`harness/README.md`](harness/README.md) §Sensors. Die Code-Gates sind
 Dockerfile-Stages, die Meta-Gates laufen als Host-Bash. **Mandatory** ist, was in einem der
 beiden Aggregate hängt: `gates` (Code-Fragen) oder `verify` (DoD-/Closure-Fragen). Von den
-`doc-*`-Targets sind das `doc-check`, `doc-targets`, `doc-planning`, `doc-workflows` und
-`doc-immutable` (in
-`gates`) sowie `doc-structure` und `doc-complete` (in `verify`); die übrigen sind **advisory** —
+`doc-*`-Targets sind das `doc-check`, `doc-targets`, `doc-planning`, `doc-workflows`,
+`doc-reviews` und `doc-mentions` (in `gates`) sowie `doc-structure` und `doc-complete`
+(in `verify`); die übrigen sind **advisory** —
 `d-check`-Funktionen, die man aufruft, wenn man sie braucht. Ob ein Gate gerade grün ist, sagt
 die CI (Badge im [`README.md`](README.md)), nicht diese Tabelle.
 

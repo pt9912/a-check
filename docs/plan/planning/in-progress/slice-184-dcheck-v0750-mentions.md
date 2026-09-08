@@ -45,8 +45,12 @@ eine *existierende* Datei irgendwo genannt wird.
 **vier Zeilen**, und alle vier sagen dasselbe — die Modul-Liste bekommt
 `mentions`. Kein anderer Konfigurations-Block ändert sich.
 
-Der `--print-mk`-Diff zeigt die Folge: Jedes Target bekommt zusätzlich
-`--disable mentions`. Das Modul ist **strikt opt-in**.
+Der `--print-mk`-Diff zeigt die Folge: **sechs** der zwölf Recipe-Zeilen bekommen
+zusätzlich `--disable mentions` — die sechs, die ohnehin eine geschlossene
+Modul-Liste führen. Die erste Fassung schrieb hier *„jedes Target"*; das war
+nicht gemessen (Review F-2).
+**Die Folgerung bleibt trotzdem:** Das Modul ist strikt opt-in — aber sie trägt
+auf `modules:` in `.d-check.yml`, nicht auf den `--disable`-Flags.
 
 **Neuer Digest:** `sha256:18e9cd857f8db3569526d1f9a3cbeba8af51e9f2dd84c17a22444028b977c3da`
 (alt: `sha256:e31a372b66dbde26305982424854cfce7c9ab7ce555a94debeee7ee26e6d4641`).
@@ -239,10 +243,37 @@ Lerneintrag. Danach Archivierung als wellenloser Slice
   anderen Sensor vollständig hält** — das ist der Fall, für den die
   Durchsetzungsschicht gebaut ist.
 
-- **Beobachtungs-Register (`../observations/`):** kein neuer Eintrag, kein neuer
-  Beleg. Drei `GATE`-Einträge sind einschlägig und alle drei haben den Slice
-  **geformt** statt von ihm einen Beleg zu bekommen (§9) — das ist die Wirkung,
-  die der Zähler beabsichtigt.
+- **Was der Review fand (1 HIGH, 2 MEDIUM, 3 LOW).** Sein Verdikt: die Mechanik
+  trägt, alle vier `mentions`-Verhaltensaussagen treffen zu, beide
+  Mutations-Proben reproduzieren, und **der negative Liefer-Punkt 3 hält
+  adversarisch** — er hat gegen `documents: ["**/*.md"]` gegengeprüft, und selbst
+  dann bleiben 19 von 39 ADRs unerwähnt.
+  **F-1 (HIGH):** Die abschließende Aufzählung in
+  [`AGENTS.md`](../../../../AGENTS.md) §4 nannte `doc-mentions` nicht, während
+  [`harness/README.md`](../../../../harness/README.md) „im `gates`-Aggregat"
+  sagte. Beim Nachmessen kamen zwei ältere Fehler derselben Zeile ans Licht:
+  `doc-immutable` stand dort als „in `gates`", obwohl es nur CI-durchgesetzt ist,
+  und `doc-reviews` fehlte seit slice-160. Nach der Korrektur sind genannte und
+  reale Menge deckungsgleich — acht Targets, Differenz null.
+  **F-2/F-3:** zwei Zahlen, die ich nicht gemessen hatte — *„jedes Target
+  bekommt `--disable mentions`"* (sechs von zwölf) und *„15 von 15"* (der Lauf
+  meldet 16, die Sensor-Datei zählt sich selbst mit).
+
+- **Der Review fand auch etwas, das den Sensor stärker macht als gedacht (F-6):**
+  `mentions` hat **vier** fail-closed-Sperren, nicht zwei. Die zwei fehlenden
+  sind Leer-Mengen-Sperren: *„eine Deckungs-Aussage über null Mitglieder ist
+  keine"*. **Das Modul kann nicht ohne Gegenstand grün melden** — es ist von
+  Haus aus gegen die Klasse gehärtet, für die `make dcheck-phrase-selftest` eine
+  eigene Korpus-Kontrolle bauen musste.
+
+- **Beobachtungs-Register (`../observations/`):** ein neuer Eintrag,
+  [`BEO-HARNESS/aggregat-aufzaehlung-hinkt-dem-makefile-hinterher`](../observations/BEO-HARNESS/aggregat-aufzaehlung-hinkt-dem-makefile-hinterher/observation.md)
+  mit **zwei** Belegen (slice-160 nachgetragen, slice-184) — die Klasse der
+  abschließenden Aufzählung neben einer maschinenlesbaren Quelle, die kein
+  Sensor deckt.
+  Die drei einschlägigen `GATE`-Einträge bekommen **keinen** Beleg: Sie haben
+  den Slice **geformt** statt von ihm einen zu bekommen (§9) — das ist die
+  Wirkung, die der Zähler beabsichtigt.
 
 - **Folge-Slices:** keiner. Die zwei benannten Grenzen —
   `harness/README.md` ungewächtert, ADR-Index nicht ablösbar — sind

@@ -445,8 +445,8 @@ planning:
 # WARUM NUR AGENTS.md ALS DOKUMENT: harness/README.md nennt dieselben Dateien
 # geschwister-relativ (`sensors/<name>.md`) und kann das nicht aendern, ohne
 # seine Links zu brechen -- Markdown-Links sind dateirelativ. Der volle Pfad
-# steht nur in AGENTS.md Paragraph 4, und dort vollstaendig (15 von 15
-# gemessen). Die zweite Tabelle bleibt damit ungewaechtert; das ist die
+# steht nur in AGENTS.md Paragraph 4, und dort vollstaendig (16 von 16, die
+# Sensor-Datei dieses Gates eingeschlossen). Die zweite Tabelle bleibt damit ungewaechtert; das ist die
 # benannte Grenze dieser Regel, keine Nachlaessigkeit.
 #
 # WARUM NICHT DIE ADRs: Der ADR-Index verlinkt ebenfalls geschwister-relativ --

@@ -13,7 +13,8 @@ existiert; **eine Datei ohne Index-Zeile** und eine Zeile auf die falsche Datei
 bleiben still grün."*
 
 Der Lauf meldet eine **Quote**, nicht nur ein Ja/Nein:
-`mentions: 15 von 15 Artefakt(en) erwähnt, über 1 Dokument(e)`.
+`mentions: 16 von 16 Artefakt(en) erwähnt, über 1 Dokument(e)` — die 16. ist
+diese Datei selbst; der Sensor wächtert sich mit..
 
 ## Grenze — was das Grün nicht abdeckt
 
@@ -40,8 +41,19 @@ Der Lauf meldet eine **Quote**, nicht nur ein Ja/Nein:
 - `artifact-unmentioned` — eine Sensor-Datei wird in `AGENTS.md` §4 nicht
   genannt. Entweder fehlt ihre Zeile, oder die Datei ist verwaist.
 - `das Modul mentions braucht mentions.artifacts UND mentions.documents` —
-  fail-closed: fehlt eine der beiden Listen, bricht der Lauf ab, statt leer
-  durchzulaufen.
+  fehlt eine der beiden Listen, bricht der Lauf ab, statt leer durchzulaufen.
+- `mentions.artifacts […] trifft kein Artefakt — eine Deckungs-Aussage ueber
+  null Mitglieder ist keine`
+- `mentions.documents […] trifft kein Dokument — eine Deckungs-Aussage gegen
+  null Dokumente ist keine`
+
+**Alle vier Sperren sind fail-closed, und die letzten beiden sind bemerkenswert:**
+Das Modul kann **nicht ohne Gegenstand grün melden**. Es ist von Haus aus gegen
+genau die Klasse gehärtet, die a-check fünfmal getroffen hat
+([`BEO-GATE/pruefer-ohne-gegenstand-oder-aufruf`](../../docs/plan/planning/observations/BEO-GATE/pruefer-ohne-gegenstand-oder-aufruf/observation.md)) —
+und für die `make dcheck-phrase-selftest` eine eigene Korpus-Kontrolle bauen
+musste. Hier trägt sie das Werkzeug selbst; gemessen mit zwei Leer-Globs
+(slice-184).
 
 ## Bindung
 
