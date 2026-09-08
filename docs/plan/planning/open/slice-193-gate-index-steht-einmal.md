@@ -3,7 +3,7 @@
 **Welle:** ohne Welle.
 
 **Bezug:** Folge-Slice aus
-[slice-192](../done/slice-192-baseline-v660-vendoring.md) §1 — die eine
+[slice-192](../done/wellenlos/slice-192-baseline-v660-vendoring.md) §1 — die eine
 inhaltliche Neuerung des Sprungs auf `v6.6.0`.
 [`AC-QA-02`](../../../../spec/lastenheft.md#ac-qa-02--hermetik-und-ehrliche-heuristik-grenze).
 
@@ -84,7 +84,7 @@ erste Handlung des Slice — und sie ist maschinell zu erheben, nicht zu schätz
 ## 5. Trigger
 
 **Start** (`open` → `in-progress`):
-[slice-192](../done/slice-192-baseline-v660-vendoring.md) liegt in `done/` und
+[slice-192](../done/wellenlos/slice-192-baseline-v660-vendoring.md) liegt in `done/` und
 das WIP-Limit ist frei.
 
 **Rückführungen — vorab benannt:**
