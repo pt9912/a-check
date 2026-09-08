@@ -64,7 +64,7 @@ ist eine **Messung**, keine Erinnerung.
   Geltungsbereich weit genug ist, ist ein Urteil.
 - [`BEO-PLAN/verweis-auf-wandernden-slice`](../observations/BEO-PLAN/verweis-auf-wandernden-slice/observation.md)
   bei **7×** → **verkörpert mit benannter Lücke**; den Ausgang trägt
-  [slice-180](../done/slice-180-slice-mv-dritte-verweis-form.md). `make slice-mv`
+  [slice-180](wellenlos/slice-180-slice-mv-dritte-verweis-form.md). `make slice-mv`
   kennt zwei der drei Verweis-Formen; die dritte trat in dieser Welle
   **zehnmal** auf.
 
@@ -76,7 +76,7 @@ ist eine **Messung**, keine Erinnerung.
 
 ## 5. Folge-Slices
 
-- [slice-180](../done/slice-180-slice-mv-dritte-verweis-form.md) — `slice-mv` lernt
+- [slice-180](wellenlos/slice-180-slice-mv-dritte-verweis-form.md) — `slice-mv` lernt
   die dritte Verweis-Form.
 - Zwei benannt, ohne Datei: die verbliebenen zwei Historie-Zellen in `AGENTS.md`
   §4 (slice-177 §1) und die Zitier-Form im `**Welle:**`-Feld der Archiv-Stubs
