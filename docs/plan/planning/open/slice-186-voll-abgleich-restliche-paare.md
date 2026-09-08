@@ -55,6 +55,49 @@ Kandidaten je Paar aus der maschinellen Vorauswahl — **überwiegend Rauschen**
 das **kürzer** ist als seine Ziel-Form (9230 gegen 13 433 Zeichen) — in
 slice-185 der Indikator, der beim ersten Treffer sofort trug.
 
+### 2.1 Für `AGENTS.md` stehen drei Befunde bereits fest
+
+Sie sind nach slice-185 gemessen worden und ersparen dem Paar die Suche. Alle
+drei betreffen **§5 Dokumentations-Regeln** (16 740 Zeichen, 18 Blöcke) — mit
+Abstand den größten Abschnitt der Datei.
+
+**(a) Drei nachgeschriebene `modul-05`-Sätze im Slice-Form-Block** (~600
+Zeichen). Ein Wortfolgen-Test über alle 18 Blöcke gegen das vendorte Regelwerk
+findet **fünf** wörtliche Treffer, alle im selben Block; **zwei** davon sind
+legitime Zitate mit Anführungszeichen und Quelle (`modul-06` §Wann Arbeit eine
+Welle braucht), **drei** stehen ohne beides und stammen aus `modul-05`
+§Ziel-Form: Slice — *„ein Ausschluss ohne Grund ist eine Behauptung, keine
+Grenze"*, *„wer später etwas mitnimmt … hat den Plan geändert, nicht ergänzt"*,
+*„zerlegt, nicht gedehnt … eine von drei benannten Formen"*.
+**Die anderen 17 Blöcke: null Treffer.**
+*Warum es slice-183 entging:* Der Block wurde dort als a-check-eigen eingestuft
+(*„sieben Punkte, jeder gegen den Bestand gemessen"*) — das stimmt für die
+sieben Punkte; nachgeschrieben sind die **Rahmen-Sätze** darum. Er ist der
+einzige Block, in dem beides gemischt ist.
+
+**(b) Zwei Review-Urteilsregeln am falschen Ort** (**4045** Zeichen):
+*Geltungsbereich einer Messung* (2688) und *Eine Mutations-Probe belegt erst,
+wenn sie rot war* (1357). Beide sagen ausdrücklich **„Kein Sensor"** — sie sind
+inferentielle Urteilsregeln, und `modul-08` §Welche Rolle braucht welche
+Artefaktklasse weist genau diesen Fall der **Skill-Datei** zu, nicht dem
+Briefing. Ihr Ort wäre
+[`.harness/skills/reviewer.md`](../../../../.harness/skills/reviewer.md).
+
+**(c) Die Slice-Form-Kopieranleitung** (**4285** Zeichen, ein Viertel von §5).
+Sie ist eine Bedienungsanleitung für die Vorlage und steht in `AGENTS.md`, weil
+die vendorte Ziel-Form nicht geändert werden darf und a-check keine eigene
+Kopie führt. Ihr natürlicher Ort wäre
+[`docs/plan/planning/README.md`](../README.md), wo die Slice-Ablage beschrieben
+ist.
+
+**Zusammen 8930 Zeichen**, die §5 auf gut die Hälfte brächten — **ohne dass eine
+Regel verlorengeht**, nur an den Ort wandert, an dem sie gelesen wird. (b) und
+(c) sind **Umzüge**, kein Rückbau; das ist beim Abgleich sauber zu trennen.
+
+**Grenze dieser Messung:** Der Wortfolgen-Test sucht **wörtliche** Übernahme.
+Eine sinngemäße Doppelung in anderen Worten sieht er nicht — das bleibt
+Lese-Arbeit (slice-185 §2.3).
+
 ## 3. Umsetzung
 
 *(entsteht mit der Arbeit)*
@@ -62,6 +105,12 @@ slice-185 der Indikator, der beim ersten Treffer sofort trug.
 ## 4. Definition of Done
 
 - [ ] Alle neun Paare sind abgeglichen; je Paar steht der Ausgang im Plan.
+- [ ] Die drei für `AGENTS.md` **vorab gemessenen** Befunde (§2.1) sind
+      aufgelöst — die drei `modul-05`-Sätze auf Zitat oder Zeiger, die zwei
+      Urteilsregeln in den Reviewer-Skill, die Kopieranleitung nach
+      `docs/plan/planning/README.md`. **Umzug, kein Rückbau:** nach dem
+      Verschieben trägt der Zielort die Regel vollständig, und §5 einen Zeiger.
+      Gegenprobe: §5 gemessen vor und nach dem Umzug.
 - [ ] Jede Übernahme ist als solche kenntlich; jede bewusste Abweichung trägt
       ihre Begründung — eine Differenz ist nicht automatisch eine Lücke.
 - [ ] Unabhängiger Review durchgeführt (Report unter [`docs/reviews/`](../../../reviews/README.md)).
@@ -94,7 +143,12 @@ Lerneintrag.
 ## 7. Risiken und offene Punkte
 
 - **Neun Paare könnten wieder zu groß sein.** slice-185 hat vier geschafft und
-  das fünfte ohne Befund geschlossen; neun ist mehr als das Doppelte.
+  das fünfte ohne Befund geschlossen; neun ist mehr als das Doppelte — und mit
+  §2.1 kommt für `AGENTS.md` ein Umzug von 8930 Zeichen dazu, der für sich
+  genommen ein Slice wäre. — **Ausgang:** <offen bis Closure>
+- **Ein Umzug kann eine Regel unterwegs verlieren.** (b) und (c) verschieben
+  Text zwischen Dokumenten verschiedener Ränge; ein Zeiger, der die Aussage
+  nicht trägt, ist schlechter als die Doppelung.
   — **Ausgang:** <offen bis Closure>
 - **Die maschinelle Vorauswahl ist unscharf in beide Richtungen.** Sie meldet
   Rauschen — und sie kann eine echte Lücke verfehlen, wenn a-check dieselbe
