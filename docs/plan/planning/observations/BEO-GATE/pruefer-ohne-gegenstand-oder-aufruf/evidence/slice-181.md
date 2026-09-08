@@ -22,4 +22,4 @@ nach einem Sensor klingt, sieht im Werkzeug nach, **bevor** er zählt. Bei einem
 Fremdwerkzeug heißt das `--print-config` lesen — es dokumentiert jedes Feld, auch die nicht
 genutzten.
 
-**Ausgang:** trägt [slice-181](../../../../done/slice-181-tabellenzellen-gewaechtert.md).
+**Ausgang:** trägt [slice-181](../../../../done/wellenlos/slice-181-tabellenzellen-gewaechtert.md).
