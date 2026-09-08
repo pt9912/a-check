@@ -320,8 +320,14 @@ zusammen.
   darauf färbt ein Artefakt rot, das niemand mehr anfassen darf. Verankert im
   Reviewer-Skill; für Archiv-Stubs erzeugt `tools/archive-wave/` den Text, für
   die Ergebnisnotiz gilt sie beim Schreiben.
-  **Nicht** betroffen: lebende Dokumente — dort ist der Link richtig, und
-  `versions` hält ihn aktuell.
+  **Ebenso ein Planungs-Dokument, das einen anderen als den adoptierten Stand
+  nennt** (`seit slice-192`): Ein Slice-Plan, der eine Migration vorbereitet oder
+  einen gehenden Stand beschreibt, nennt ihn als **Kennung** — `v<X.Y.Z>` als
+  Text, das Verzeichnis beschrieben statt als Pfad geschrieben. Ein Pfad dort
+  wäre ein Pin auf einen Stand, der (noch) nicht adoptiert ist, und `versions`
+  meldet ihn zu Recht.
+  **Nicht** betroffen: lebende Dokumente, die den **adoptierten** Stand nennen —
+  dort ist der Link richtig, und `versions` hält ihn aktuell.
 - **Slice-Form:** neue Slices entstehen aus der **vendorten Ziel-Form**
   [`slice.template.md`](.harness/baseline/v6.5.0/templates/docs/plan/planning/slice.template.md) —
   a-check führt keine eigene Kopie, sie würde gegen die Baseline driften. **Was
