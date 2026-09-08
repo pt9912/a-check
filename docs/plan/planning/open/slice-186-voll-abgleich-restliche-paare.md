@@ -3,7 +3,7 @@
 **Welle:** ohne Welle — die Closure-Bedingung wäre die eigene DoD.
 
 **Bezug:** Folge-Slice aus
-[slice-185](../in-progress/slice-185-ziel-form-voll-abgleich.md) §7, Risiko 3
+[slice-185](../done/slice-185-ziel-form-voll-abgleich.md) §7, Risiko 3
 (*eingetreten*: 13 Paare sprengen die Größen-Regel).
 [`AC-QA-02`](../../../../spec/lastenheft.md#ac-qa-02--hermetik-und-ehrliche-heuristik-grenze).
 
@@ -21,7 +21,7 @@ und `spec/spezifikation.md` sind unter den Paaren.)*
 ## 1. Ziel und Abgrenzung
 
 **Ziel:** Die zehn Ziel-Form-Paare, die
-[slice-185](../in-progress/slice-185-ziel-form-voll-abgleich.md) nicht mehr
+[slice-185](../done/slice-185-ziel-form-voll-abgleich.md) nicht mehr
 getragen hat, sind abgeglichen — je Paar mit einem der drei Ausgänge:
 übernommen · bewusst abweichend (mit Begründung) · ohne Befund.
 
@@ -135,7 +135,7 @@ Lese-Arbeit (slice-185 §2.3).
 ## 5. Trigger
 
 **Start** (`open` → `in-progress`):
-[slice-185](../in-progress/slice-185-ziel-form-voll-abgleich.md) liegt in
+[slice-185](../done/slice-185-ziel-form-voll-abgleich.md) liegt in
 `done/` und das WIP-Limit ist frei.
 
 **Rückführungen — vorab benannt:**
