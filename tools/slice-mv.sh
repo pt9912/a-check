@@ -40,18 +40,28 @@ usage() {
 Aufruf: make slice-mv SLICE=<slice-NNN[-kurztitel[.md]]> TO=<open|next|in-progress|done>
 
   Bewegt den Slice per `git mv` und zieht die Verweise AUF ihn repo-weit nach.
-  Beide im Bestand vorkommenden Formen werden getroffen:
-      ../<verzeichnis>/<datei>            und
-      docs/plan/planning/<verzeichnis>/<datei>
+  Alle drei im Bestand vorkommenden Formen werden getroffen:
+      ../<verzeichnis>/<datei>                       (Geschwister-relativ)
+      docs/plan/planning/<verzeichnis>/<datei>       (repo-relativ)
+      <verzeichnis>/<datei> in einem Link oder in Inline-Code
+                                                     (flache Welle-Datei)
 USAGE
 }
 
 # Die Ersetzung als eigene Funktion — der Selbsttest muss sie pruefen koennen,
 # ohne ein git-Repo zu bewegen.
+# Die dritte Form (praefixlos) wird am KONTEXT erkannt, nicht am nackten Pfad:
+# als Markdown-Link-Ziel `](open/slice-NNN-….md)` oder in Inline-Code
+# `` `open/slice-NNN-….md` ``. Ein nackter Pfad im Fliesztext bleibt unberuehrt
+# — er kann alles sein, und der Selbsttest haelt diese Grenze fest.
+# Die Anker `](` und `` ` `` schlieszen die ersten beiden Formen zugleich aus:
+# dort steht davor `/` (aus `../` bzw. dem repo-relativen Pfad).
 rewrite_file() {  # $1=zieldatei  $2=basename  $3=von  $4=nach
   sed -i \
     -e "s|\.\./$3/$2|../$4/$2|g" \
     -e "s|$PLANNING/$3/$2|$PLANNING/$4/$2|g" \
+    -e "s|](\s*$3/$2|]($4/$2|g" \
+    -e "s|\`$3/$2|\`$4/$2|g" \
     "$1"
 }
 
@@ -60,11 +70,13 @@ self_test() {
   tmp="$(mktemp -d)"
   f="$tmp/probe.md"
   {
-    echo '[a](../open/slice-999-x.md)'                    # trifft
-    echo 'siehe `docs/plan/planning/open/slice-999-x.md`' # trifft, auch zitiert
+    echo '[a](../open/slice-999-x.md)'                    # Form 1, trifft
+    echo 'siehe `docs/plan/planning/open/slice-999-x.md`' # Form 2, trifft
+    echo '[d](open/slice-999-x.md)'                       # Form 3 als Link, trifft
+    echo 'liegt in `open/slice-999-x.md`'                 # Form 3 in Code, trifft
     echo '[b](../open/slice-998-y.md)'                    # ANDERE Datei
     echo '[c](../done/slice-999-x.md)'                    # ANDERES Verzeichnis
-    echo 'open/slice-999-x.md'                            # keine der zwei Formen
+    echo 'open/slice-999-x.md'                            # nackt: KEINE Form
   } > "$f"
   rewrite_file "$f" "slice-999-x.md" "open" "done"
   # Beide Zielformen sind umgeschrieben ...
@@ -88,8 +100,20 @@ self_test() {
     echo "slice-mv: Selbsttest FEHLGESCHLAGEN — bereits richtiger Verweis verdoppelt/verloren" >&2
     rm -rf "$tmp"; exit 2
   fi
+  # Form 3, beide Anker — POSITIV.
+  if ! grep -q '\](done/slice-999-x\.md)' "$f"; then
+    echo "slice-mv: Selbsttest FEHLGESCHLAGEN — Form 3 als Link nicht ersetzt" >&2
+    rm -rf "$tmp"; exit 2
+  fi
+  if ! grep -q '`done/slice-999-x\.md`' "$f"; then
+    echo "slice-mv: Selbsttest FEHLGESCHLAGEN — Form 3 in Inline-Code nicht ersetzt" >&2
+    rm -rf "$tmp"; exit 2
+  fi
+  # ... und die NEGATIVE Gegenprobe dazu: der nackte Pfad im Fliesztext ist
+  # keine Form. Ohne sie waere eine Ersetzung, die jedes `open/` trifft, von
+  # einer kontext-gebundenen nicht zu unterscheiden.
   if ! grep -qx 'open/slice-999-x.md' "$f"; then
-    echo "slice-mv: Selbsttest FEHLGESCHLAGEN — praefixlose Nicht-Form mitgeaendert" >&2
+    echo "slice-mv: Selbsttest FEHLGESCHLAGEN — nackter Pfad mitgeaendert" >&2
     rm -rf "$tmp"; exit 2
   fi
   rm -rf "$tmp"
