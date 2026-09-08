@@ -147,48 +147,49 @@ if ! printf '%s' "$out" | grep -q "section-oversized"; then
   fail=1
 fi
 
-# --- KORPUS-SEITE: traegt der echte Bestand die Muster noch? ---------------
+# --- KORPUS-SEITE: traegt der echte Bestand die Trigger-Phrase noch? -------
 #
 # Gefragt ist NICHTLEERHEIT, keine Erwartungszahl. Die belegte Ausfallart ist
-# "die Menge wird leer"; eine feste Zahl braeche zusaetzlich bei jedem neuen
-# Slice, und eine Regel, die den Bestand massenhaft bricht, wird abgeschaltet
-# statt befolgt (AGENTS.md §5, Begruendung zum Commit-Scope).
+# "die Kandidatenmenge wird leer"; eine feste Zahl braeche zusaetzlich bei
+# jedem neuen Slice.
+#
+# GEZAEHLT WIRD DIE MENGE DES MODULS, nicht eine Obermenge davon. Das Modul
+# reviews sieht einen DoD-Haken in einem FLACHEN done/-Slice; eine Nennung in
+# Prosa, in einer Tabelle oder in einer Wellen-Ergebnisnotiz sieht es nicht.
+# Wer weiter zaehlt, meldet gruen, waehrend die echte Menge leer ist -- genau
+# die Ausfallart, gegen die diese Kontrolle steht (Review slice-169, F-1:
+# gemessen auf einer Kopie meldete die vorige Fassung Exit 0, nachdem beide
+# echten Kandidaten entwertet waren).
+#
+# done-dir kommt aus .d-check.yml, nicht aus einer Kopie hier: eine Kopie
+# neben dem Original bleibt gruen, nachdem das Original umgezogen ist
+# (Review slice-168, F-2).
 
-# Muster aus der ECHTEN Konfiguration ziehen -- fail-closed.
-feld_aus_dcheck_yml() {  # $1 = Feldname
-  local wert
-  wert="$(sed -n "s/^ *$1: *'\(.*\)' *\$/\1/p; s/^ *$1: *\"\(.*\)\" *\$/\1/p" .d-check.yml | head -1)"
-  if [ -z "$wert" ]; then
-    echo "dcheck-phrase-selftest: FAIL — Feld '$1' in .d-check.yml nicht lesbar." >&2
-    echo "  Der Auszug ist fail-closed: ohne Muster wird nicht geprueft, sondern abgebrochen." >&2
-    return 1
-  fi
-  printf '%s' "$wert"
-}
-
-# (1) reviews-Trigger-Phrase im done/-Bestand
 REVIEW_PHRASE="unabhängiger Review"
-korpus_reviews="$(grep -rli "$REVIEW_PHRASE" docs/plan/planning/done/ 2>/dev/null | wc -l)"
-if [ "$korpus_reviews" -eq 0 ]; then
-  echo "dcheck-phrase-selftest: FAIL — Kandidatenmenge des reviews-Moduls ist LEER." >&2
-  echo "  Kein Slice in done/ traegt die Trigger-Phrase \"$REVIEW_PHRASE\"; make doc-reviews" >&2
-  echo "  meldet damit gruen, ohne etwas zu pruefen. Die Phrase gehoert in die DoD neuer Slices" >&2
-  echo "  (AGENTS.md §5, Kopieranleitung Punkt 7)." >&2
-  fail=1
+
+done_dir="$(sed -n "s/^ *done-dir: *\(.*[^ ]\) *$/\1/p" .d-check.yml | head -1)"
+if [ -z "$done_dir" ] || [ ! -d "$done_dir" ]; then
+  echo "dcheck-phrase-selftest: FAIL — done-dir aus .d-check.yml nicht lesbar oder kein Verzeichnis." >&2
+  echo "  Der Auszug ist fail-closed: ohne Kandidatenverzeichnis wird nicht geprueft, sondern abgebrochen." >&2
+  exit 1
 fi
 
-# (2) tasks-ignore-pattern gegen den done/-Bestand
-if TASKS_PAT="$(feld_aus_dcheck_yml tasks-ignore-pattern)"; then
-  korpus_tasks="$(grep -rhoE '^- \[[ x]\] .*' docs/plan/planning/done/ 2>/dev/null \
-                  | sed 's/^- \[[ x]\] //' | grep -cE "$TASKS_PAT" || true)"
-  if [ "${korpus_tasks:-0}" -eq 0 ]; then
-    echo "dcheck-phrase-selftest: FAIL — tasks-ignore-pattern trifft im done/-Bestand NICHTS." >&2
-    echo "  Muster: $TASKS_PAT" >&2
-    echo "  Die Groessen-Regel zaehlt damit konstante DoD-Posten mit; doc-structure meldet" >&2
-    echo "  entweder falsch rot oder gar nicht mehr, was es soll." >&2
-    fail=1
+# Flach, nicht rekursiv -- archivierte Stubs unter done/<welle>/ und
+# done/wellenlos/ tragen keine DoD mehr und sind fuer das Modul keine
+# Kandidaten.
+korpus_reviews=0
+for f in "$done_dir"/slice-*.md; do
+  [ -f "$f" ] || continue
+  if grep -qE '^- \[[ x]\] .*[Uu]nabhängiger Review' "$f"; then
+    korpus_reviews=$((korpus_reviews + 1))
   fi
-else
+done
+
+if [ "$korpus_reviews" -eq 0 ]; then
+  echo "dcheck-phrase-selftest: FAIL — Kandidatenmenge des reviews-Moduls ist LEER." >&2
+  echo "  Kein flacher Slice in $done_dir traegt \"$REVIEW_PHRASE\" auf einem DoD-Haken;" >&2
+  echo "  make doc-reviews meldet damit gruen, ohne etwas zu pruefen. Die Phrase gehoert in" >&2
+  echo "  die DoD neuer Slices (AGENTS.md §5, Kopieranleitung Punkt 7)." >&2
   fail=1
 fi
 
@@ -197,6 +198,7 @@ if [ "$fail" -ne 0 ]; then
   exit 1
 fi
 
-echo "dcheck-phrase-selftest ok: 4 Werkzeug-Kontrollen (2 Muster × 2 Richtungen) und 2 Korpus-Kontrollen"
-echo "  (reviews-Phrase: ${korpus_reviews} Slice(s) in done/ · tasks-ignore-pattern: ${korpus_tasks:-?} DoD-Zeile(n))."
-echo "  NICHT geprueft: die uebrigen zwoelf phrasen-basierten Felder — kein belegter Ausfall."
+echo "dcheck-phrase-selftest ok: 4 Werkzeug-Kontrollen (2 Muster × 2 Richtungen) und 1 Korpus-Kontrolle"
+echo "  (reviews-Phrase auf einem DoD-Haken: ${korpus_reviews} flache(r) Slice(s) in ${done_dir})."
+echo "  NICHT geprueft: die uebrigen phrasen-basierten Felder in .d-check.yml — fuer sie gibt es"
+echo "  keinen belegten Ausfall, und ein Sensor ohne Anlass ist selbst eine Behauptung."

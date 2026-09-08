@@ -15,19 +15,43 @@ kein Mehr über die eigene DoD hinaus).
 **Berührte Spec-Stellen:** — *(keine)* — Harness-/Werkzeug-Änderung ohne
 Vertragsberührung.
 
-**Verantwortlich:** — *(noch nicht priorisiert)*
+**Verantwortlich:** Claude — gesetzt beim Übergang nach `in-progress/`.
 
 **Autor:** Claude (Sonnet 5), im Auftrag des Maintainers. **Datum:**
 2026-09-06.
 
 ---
 
-## 1. Ziel
+## 1. Ziel und Abgrenzung
 
-`slice-168` kalibriert die **Werkzeug-Seite** phrasen-basierter Prüfer:
-reagiert `d-check` noch auf die gewählte Phrase? Ausgefallen ist zweimal
+**Ziel:** `slice-168` kalibriert die **Werkzeug-Seite** phrasen-basierter
+Prüfer: reagiert `d-check` noch auf die gewählte Phrase? Ausgefallen ist zweimal
 die **Korpus-Seite**: a-checks eigene Dokumente trafen das Muster nicht
 mehr (slice-120, slice-165). Dieser Slice deckt sie nach.
+
+**Ausdrücklich NICHT in diesem Slice** — je Punkt mit Begründung:
+
+- **`structure.tasks-ignore-pattern` als Korpus-Kontrolle.** Es fällt **laut**
+  aus: trifft es nichts mehr, zählen die konstanten DoD-Posten mit und
+  `doc-structure` meldet `section-oversized`. Der Eintrag im Register
+  beschreibt die **stille** Klasse — grün ohne Prüfgegenstand. Derselbe Maßstab
+  schließt `versions.current-from` aus (`d-check` bricht bei nicht auflösbarem
+  Anker ab).
+- **Die übrigen phrasen-basierten Felder in `.d-check.yml`.** Für sie gibt es
+  keinen belegten Ausfall, und ein Sensor ohne Anlass ist selbst eine
+  Behauptung. Fällt eines aus, ist das ein neuer Beleg am bestehenden
+  Register-Eintrag — kein neuer Sensor.
+- **Eine Erwartungszahl statt Nichtleerheit.** Die belegte Ausfallart ist „die
+  Menge wird leer"; eine feste Zahl bräche bei jedem neuen Slice, und eine
+  Regel, die den Bestand massenhaft bricht, wird abgeschaltet statt befolgt.
+- **Produkt-Code.** Der Slice rührt `internal/` nicht an — er arbeitet
+  ausschließlich in der Gate-/Werkzeug-Schicht.
+
+*(Der Abschnitt trug bis zur Review-Einarbeitung nur das Ziel. Die Ausschlüsse
+galten faktisch — sie standen als Argumente in §2.3 und §6 — und sind hier
+nachgezogen; der erste ist mit der Einarbeitung von F-6 zusätzlich
+**enger** geworden: die zweite Korpus-Kontrolle ist entfallen, nicht nur
+begrenzt.)*
 
 ## 2. Analyse (vor der Umsetzung)
 
@@ -69,48 +93,69 @@ gefangen, weil er **fail-closed** ist: Findet er das Feld nicht, bricht der Lauf
 ab, statt mit leerem Muster durchzulaufen. Mutations-belegt — ein umbenanntes
 Feld ergibt Exit 2 mit der Meldung *„nicht lesbar"*.
 
-**3. Geltungsbereich: zwei von vierzehn — die mit belegtem Ausfall.**
-`.d-check.yml` führt **14** phrasen-basierte Felder. Gedeckt sind die zwei, deren
-Ausfall dokumentiert ist: die `reviews`-Trigger-Phrase (zweimal ausgefallen) und
-`structure`s `tasks-ignore-pattern` (Review-Befund F-2 zu slice-168). Für die
-übrigen zwölf gibt es keinen Vorfall — **ein Sensor ohne Anlass ist selbst eine
-Behauptung**, und die Prüfmenge zu verdoppeln, ohne zu wissen, wofür, ist genau
+**3. Geltungsbereich: die eine Konfiguration mit belegtem *stillem* Ausfall.**
+Korpus-seitig gedeckt ist die `reviews`-Trigger-Phrase — zweimal ausgefallen
+(slice-120, slice-165), und ihr Ausfall ist **still**: ohne Kandidaten meldet
+`doc-reviews` grün, ohne etwas zu prüfen. Für die übrigen phrasen-basierten
+Felder gibt es keinen solchen Vorfall — **ein Sensor ohne Anlass ist selbst eine
+Behauptung**, und die Prüfmenge zu verbreitern, ohne zu wissen wofür, ist genau
 die Bewegung, die dieser Beobachtungs-Eintrag beschreibt.
 
-*(`versions.current-from` wäre der nächste Kandidat — slice-179 hat ihn als
-drittes Muster belegt. Er bleibt draußen, weil er bei Bruch **laut** ausfällt:
-`d-check` bricht bei nicht auflösbarem Anker ab, statt grün zu melden. Die
-Gefährlichkeit der leeren Prüfmenge fehlt ihm.)*
+**Keine Gesamtzahl.** Eine frühere Fassung nannte hier „vierzehn Felder"; die
+Zahl hängt an einer Zählregel für *phrasen-basiert*, die nirgends festgelegt ist
+— je nach Auslegung zählt `.d-check.yml` deutlich mehr regex-tragende Einträge.
+Und die `reviews`-Phrase ist gar kein Feld dort: sie lebt im gepinnten Werkzeug
+und steht in der Konfiguration nur im Kommentar (Review slice-169, F-7).
+
+*Zwei Kandidaten bleiben ausdrücklich draußen, beide weil sie **laut**
+ausfallen:* `versions.current-from` (Beleg `evidence/slice-173.md` im Register)
+— `d-check` bricht bei nicht auflösbarem Anker ab, statt grün zu melden. Und
+`structure`s `tasks-ignore-pattern`: trifft es nichts, zählen die konstanten
+DoD-Posten mit und `doc-structure` meldet `section-oversized`. Beiden fehlt die
+Gefährlichkeit der leeren Prüfmenge. **Der zweite stand bis zur
+Review-Einarbeitung als Korpus-Kontrolle drin** — mit demselben Maßstab
+gemessen, mit dem der erste ausgeschlossen wurde, gehört er nicht hinein
+(Review slice-169, F-6).
 
 ## 3. Umsetzung
 
 | Datei / Komponente | Änderungs-Art | Begründung |
 |---|---|---|
-| `tools/dcheck-phrase-selftest.sh` | update | zwei **Korpus**-Kontrollen neben die vier Werkzeug-Kontrollen; Muster per fail-closed-Auszug aus `.d-check.yml` statt als Kopie |
-| [`AGENTS.md`](../../../../AGENTS.md) §4, [`harness/README.md`](../../../../harness/README.md) | update | der Vertrag nennt jetzt beide Hälften |
+| `tools/dcheck-phrase-selftest.sh` | update | **eine** Korpus-Kontrolle neben die vier Werkzeug-Kontrollen; Kandidatenverzeichnis per fail-closed-Auszug aus `.d-check.yml` statt als Kopie |
+| [`AGENTS.md`](../../../../AGENTS.md) §4, [`harness/README.md`](../../../../harness/README.md), `harness/sensors/dcheck-phrase-selftest.md` | update | der Vertrag nennt beide Hälften und den Umfang der zweiten |
+| `observations/BEO-GATE/pruefer-ohne-gegenstand-oder-aufruf/state.md` | update | Ausgang von *geplant* auf *verkörpert*, mit benannter Grenze |
 
-**Zwei Kontrollen, nicht mehr:** je Muster eine Nichtleerheits-Prüfung gegen den
-`done/`-Bestand. Beide nennen ihre Zahl in der Erfolgs-Zeile (heute 5 Slices und
-14 DoD-Zeilen) — eine eingefrorene Zahl stünde falsch, sobald jemand committet,
-die **gezählte** sagt beim Lesen, worüber das Grün eine Aussage macht.
+**Eine Kontrolle, nicht zwei.** Der Plan sah je Muster eine
+Nichtleerheits-Prüfung vor; `structure`s `tasks-ignore-pattern` ist mit der
+Review-Einarbeitung entfallen, weil es **laut** ausfällt (§1, Review F-6).
 
-**Mutations-belegt in beide Richtungen:**
+**Gezählt wird die Menge des Moduls.** Das Modul `reviews` sieht einen
+**DoD-Haken** in einem **flachen** `done/`-Slice — eine Nennung in Prosa, in
+einer Tabelle oder in einer Wellen-Ergebnisnotiz sieht es nicht. Die erste
+Fassung zählte per `grep -rli` jede Datei unter `done/`, die die Phrase
+irgendwo trug: **5** statt **2**, und der Lauf blieb grün, nachdem beide echten
+Kandidaten entwertet waren (Review F-1). Die Zahl steht nur in der
+Erfolgs-Zeile, wo sie bei jedem Lauf neu gezählt wird.
+
+**Mutations-belegt in beide Richtungen**, jede Probe auf einer Kopie:
 
 | Mutation | Erwartet | Gemessen |
 |---|---|---|
-| `tasks-ignore-pattern` auf ein Muster ohne Treffer | rot | Exit 2, *„trifft im done/-Bestand NICHTS"* |
-| Feld umbenannt (unlesbar) | rot, **fail-closed** | Exit 2, *„nicht lesbar … wird nicht geprueft, sondern abgebrochen"* |
-| unverändert | grün | Exit 0, beide Mengen genannt |
+| die zwei DoD-Haken entwertet, Prosa-Nennungen bleiben | rot | Exit 1, *„Kandidatenmenge des reviews-Moduls ist LEER"* |
+| dieselbe Mutation gegen die **erste** Fassung | *(sie meldete grün)* | Exit 0, *„3 Slice(s)"* — der Befund, den F-1 belegt |
+| `done-dir` umbenannt (unlesbar) | rot, **fail-closed** | Exit 1, *„nicht lesbar oder kein Verzeichnis … abgebrochen"* |
+| unverändert | grün | Exit 0, *„2 flache(r) Slice(s)"* |
 
-Die zweite Zeile ist der Beleg für den Review-Befund F-2 zu slice-168: Dort
+Die dritte Zeile ist der Beleg für den Review-Befund F-2 zu slice-168: Dort
 blieb der Selbsttest nach einem Bruch der **echten** Konfiguration bei Exit 0,
 weil er eine Kopie las.
 
 ## 4. Definition of Done
 
 - [x] Analyse-Fragen aus §2 beantwortet und belegt.
-- [x] Korpus-seitige Kontrolle der Kandidatenmenge umgesetzt und gegen eine
-      absichtlich leere Menge verifiziert.
+- [x] Korpus-seitige Kontrolle **der Kandidatenmenge des Moduls** umgesetzt
+      und gegen eine absichtlich leere Menge verifiziert — Mutations-Probe auf
+      einer Kopie, beide echten Kandidaten entwertet, Lauf rot.
 - [x] Muster-Kopie durch eine Kopplung an `.d-check.yml` ersetzt, gegen
       einen Bruch der echten Konfiguration verifiziert.
 - [x] Unabhängiger Review durchgeführt (Report unter `docs/reviews/`).
@@ -143,13 +188,13 @@ geschrieben.
   keines. Was bleibt, ist seine Fragilität gegenüber YAML-Umformatierung — und
   die ist kein offener Punkt, sondern eine benannte **Sperre**: Der Auszug ist
   fail-closed und meldet den Bruch, statt ihn zu überspielen.
-- *Zwölf der vierzehn phrasen-basierten Felder bleiben ungedeckt, und der
+- *Die übrigen phrasen-basierten Felder bleiben ungedeckt, und der
   nächste Ausfall trifft eines davon* — **Ausgang:** weiter offen →
   Beobachtungs-Register,
   [`BEO-GATE/pruefer-ohne-gegenstand-oder-aufruf`](../observations/BEO-GATE/pruefer-ohne-gegenstand-oder-aufruf/observation.md).
-  Der Eintrag bleibt bestehen, weil die Klasse breiter ist als die zwei
-  gedeckten Muster; sein Ausgang wechselt mit diesem Slice von *geplant* auf
-  *verkörpert*, aber die Grenze ist benannt statt geschlossen.
+  Der Eintrag bleibt bestehen, weil die Klasse breiter ist als das eine
+  korpus-seitig gedeckte Muster; sein Ausgang wechselt mit diesem Slice von
+  *geplant* auf *verkörpert*, aber die Grenze ist benannt statt geschlossen.
 
 ## 8. Closure-Notiz
 
@@ -164,30 +209,37 @@ Kalibrierung).
   eine Notlösung gewesen; mit ihr ist er der einzige Weg, der ohne neue
   Abhängigkeit trägt.
 
-- **Was ging anders als geplant:** Der Plan nannte **vier** weitere
-  phrasen-basierte Konfigurationen als möglichen Geltungsbereich. Gezählt sind
-  es **vierzehn** — und die Antwort darauf ist nicht „alle decken", sondern die
-  Gegenfrage: Für zwölf davon gibt es **keinen belegten Ausfall**. Ein Sensor
-  ohne Anlass ist selbst eine Behauptung, und die Prüfmenge zu verdoppeln, ohne
-  zu wissen wofür, wäre genau die Bewegung, die dieser Beobachtungs-Eintrag
-  beschreibt.
+- **Was ging anders als geplant — zweimal, und beide Male fand es der
+  unabhängige Review.** (1) Der Plan sah **zwei** Korpus-Kontrollen vor, je
+  Muster eine. `structure`s `tasks-ignore-pattern` fällt aber **laut** aus:
+  trifft es nichts, meldet `doc-structure` `section-oversized`. Mit demselben
+  Maßstab, mit dem der Plan `versions.current-from` ausschloss, gehört es nicht
+  hinein — die Kontrolle ist entfallen statt repariert worden (F-6). (2) Die
+  verbliebene Kontrolle zählte eine **Obermenge** ihres Gegenstands: `grep -rli`
+  über `done/` fand 5 Dateien, die Kandidatenmenge des Moduls sind 2. Auf einer
+  Kopie gemessen blieb der Lauf grün, nachdem beide echten Kandidaten entwertet
+  waren (F-1) — **genau die Ausfallart, gegen die dieser Slice antritt.**
+  Ein Sensor, der die falsche Menge zählt, ist von einem funktionierenden erst
+  durch die Mutations-Probe zu unterscheiden.
 
 - **Steering-Loop-Eintrag — neuer Sensor:** Die Korpus-Hälfte des
-  Kalibrierungs-Selbsttests — je Muster eine **Nichtleerheits**-Prüfung gegen
-  den `done/`-Bestand, mit dem Muster aus `.d-check.yml` statt aus einer Kopie.
-  — liegt in `Makefile:dcheck-phrase-selftest`
+  Kalibrierungs-Selbsttests — eine **Nichtleerheits**-Prüfung gegen die
+  Kandidatenmenge des `reviews`-Moduls (DoD-Haken in einem flachen
+  `done/`-Slice), mit dem Kandidatenverzeichnis aus `.d-check.yml` statt aus
+  einer Kopie. — liegt in `Makefile:dcheck-phrase-selftest`
   (`tools/dcheck-phrase-selftest.sh`, im `gates`-Aggregat).
   Auslöser: [`BEO-GATE/pruefer-ohne-gegenstand-oder-aufruf`](../observations/BEO-GATE/pruefer-ohne-gegenstand-oder-aufruf/observation.md)
-  (slice-120, slice-123, slice-165, slice-173 — 4×), Ausgang war seit slice-168
-  *geplant* auf diesen Slice.
+  (slice-120, slice-123, slice-165, slice-173, slice-181 — 5×), Ausgang war
+  seit slice-168 *geplant* auf diesen Slice.
 
 - **Beobachtungs-Register (`../observations/`):** kein neuer Eintrag, kein
   neuer Beleg. Der auslösende Eintrag wechselt von *geplant* auf **verkörpert**
-  — mit einer benannten Grenze: zwölf der vierzehn Muster bleiben ungedeckt,
-  und der Eintrag bleibt darum stehen statt gestrichen zu werden.
+  — mit einer benannten Grenze: gedeckt ist **eine** Konfiguration, die mit
+  belegtem *stillem* Ausfall; der Eintrag bleibt darum stehen statt gestrichen
+  zu werden.
 
-- **Folge-Slices:** keine. Die zwölf ungedeckten Muster bekommen einen, wenn
-  eines davon ausfällt — nicht vorher.
+- **Folge-Slices:** keine. Die ungedeckten Muster bekommen einen, wenn eines
+  davon ausfällt — nicht vorher.
 
 - **Risiken aus §7:** drei, jedes mit genau einem Ausgang — zweimal *gestrichen
   mit Begründung* (beide Risiken waren der Grund für die getroffene Wahl),
@@ -198,14 +250,31 @@ Kalibrierung).
   **Folge-Slice** — keiner genannt.
   **Register** — der zitierte Eintrag existiert mit nicht leerem `evidence/`.
 
-## 9. Sub-Area-Modus
+## 9. Sub-Area-Prüfungen und Modus-Begründung
 
-**Vorgelagert — Sub-Area-Wahl prüfen:** eine Sub-Area berührt —
-**Gate-/Werkzeug-Schicht** (`tools/`, `Makefile`, `.d-check.yml`),
-Greenfield, Schwelle ≥ 2/3 erfüllt.
+**Vorgelagert — Sub-Area-Wahl prüfen:** zwei Sub-Areas berührt.
+**Gate-/Werkzeug-Schicht** `GATE` (`tools/`, `Makefile`, `.d-check.yml`) —
+Achsen 1,2,3, Schwelle erfüllt. **Harness-Einstieg** `HARNESS`
+([`AGENTS.md`](../../../../AGENTS.md) §4, [`harness/README.md`](../../../../harness/README.md)
+§Sensors, `harness/sensors/`) — Achsen 1,2,3; der Slice ändert dort die
+Vertrags-Aussage über das Target, das ist eine Berührung und keine
+Pfad-Koinzidenz.
 
-**Vorgelagert — offene Beobachtungen sichten:** entsteht mit dem Übergang
-nach `in-progress/` (der Register-Stand ist beim Anlegen ein anderer als
-beim Beginn der Arbeit).
+**Vorgelagert — offene Beobachtungen sichten:** gesichtet am 2026-09-08 gegen
+den gemergten Stand.
+
+- [`BEO-GATE/pruefer-ohne-gegenstand-oder-aufruf`](../observations/BEO-GATE/pruefer-ohne-gegenstand-oder-aufruf/observation.md)
+  — **5×**, der Eintrag, den dieser Slice bedient. Er steht auf *verkörpert*;
+  dieser Slice schärft die Verkörperung, statt sie neu zu setzen.
+- Unter der Schwelle, in `HARNESS` statt `GATE`, aber derselben Mechanik:
+  [`sensor-ohne-dod-phrase-wirkungslos`](../observations/BEO-HARNESS/sensor-ohne-dod-phrase-wirkungslos/observation.md)
+  (1×) — eine DoD-Phrase, ohne die ein Sensor stumm bleibt. Er bleibt offen;
+  dieser Slice erhöht ihn nicht, weil er die Phrase nicht ändert, sondern ihre
+  Kandidatenmenge misst.
+- **Keine weiteren Treffer** für `GATE`.
+
+*(Der Block trug bis zur Review-Einarbeitung den Satz „entsteht mit dem
+Übergang nach `in-progress/`" — der Übergang war zum Zeitpunkt des Commits
+vollzogen, die Sichtung fehlte trotzdem.)*
 
 **Alle berührten Sub-Areas GF** — kein Begründungsblock nötig.
