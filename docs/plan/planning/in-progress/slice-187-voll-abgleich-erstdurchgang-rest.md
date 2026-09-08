@@ -10,7 +10,7 @@ Risiko 1 (*eingetreten*).
 **Berührte Spec-Stellen:** `spec/lastenheft.md` und `spec/spezifikation.md`
 sind unter den Paaren — die Kennungen benennt die Umsetzung.
 
-**Verantwortlich:** —
+**Verantwortlich:** Claude — gesetzt beim Übergang nach `in-progress/`.
 
 **Autor:** Claude. **Datum:** 2026-09-08.
 
