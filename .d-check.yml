@@ -1,7 +1,20 @@
 # .d-check.yml — a-check prüft seine eigene Doku mit dem Schwester-Tool d-check
 # (Dogfooding des Stacks). Erzeugt aus `d-check --suggest-config ai-harness-init`
 # (v0.19.0) und auf a-check angepasst: AC-Kennungen statt DC-, kein slice-Muster
-# (alle Slice-Erwähnungen sind Vorwärts-Referenzen). Baseline v3.5.2 (vendored, MR-006).
+# (alle Slice-Erwähnungen sind Vorwärts-Referenzen). Der adoptierte Baseline-Stand
+# steht in harness/conventions.md Paragraph Baseline und NICHT hier -- eine
+# Versionsangabe an zwei Orten laeuft auseinander, und diese Zeile trug bis
+# slice-188 einen Stand, der vier Migrationen zurueckliegt.
+#
+# AKTIVIEREN HEISST ZWEI SCHRITTE (Ziel-Form v6.6.0): den Block schreiben UND
+# das Modul einschalten -- entweder ueber `modules` unten oder ueber ein
+# `--enable <modul>` in Makefile/d-check.mk. Nur der erste Schritt laesst das
+# Modul stumm: Die Konfiguration ist dann gueltig und wirkungslos, also genau
+# die Gate-Luege, gegen die Modul 13 antritt (in a-check zweimal belegt --
+# targets/slice-074 und planning/BEO-014). GEGENPROBE nach dem Aktivieren:
+# einen Verstoss der Klasse einbauen und den Befund sehen, nicht den Exit-Code.
+# GEMESSEN, slice-188: jeder konfigurierte Block steht in `modules` oder wird
+# per --enable geschaltet; kein stummer Block.
 #
 # Aktiv: links, anchors, ids (AC/ADR/MR-Linkpflicht), matrix (Spec-Straten
 # verweisen nie abwärts — intra-Spec no-downward + ADR→Slice-Disziplin, MR-005),
@@ -166,6 +179,10 @@ commits:
 # `exempt-targets` haelt dieselbe Utility-Menge wie UTILITY_TARGETS in
 # tools/gate-consistency.sh — solange beide Pruefer laufen, muessen sie sich
 # nicht widersprechen (die Abloesung entscheidet slice-073).
+# NAMENTLICH, nie als Glob (Ziel-Form v6.6.0): Wer ein Target hier eintraegt,
+# hat entschieden, dass es kein Gate ist. Kommt bei einer Regeneration des
+# Fragments ein Target dazu, soll der Sensor es MELDEN, statt es still
+# durchzulassen -- ein Glob an dieser Stelle gaebe die Zusage wieder auf.
 targets:
   makefiles: [Makefile, d-check.mk]
   # DER EINE GATE-INDEX (Baseline v6.6.0, grundlagen-harness-dateien.md):
