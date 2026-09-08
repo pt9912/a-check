@@ -156,17 +156,17 @@ die CI (Badge im [`README.md`](README.md)), nicht diese Tabelle.
 
 | Target | Zweck |
 |---|---|
-| [`make doc-check`](harness/sensors/doc-check.md) | Links, Anker, Kennungs-Linkpflicht und Referenzmatrix der Repo-Doku lösen auf; dazu die Lifecycle-Invariante wandernder Slices und die Versions-Kohärenz. **Vier benannte Grenzen** stehen in der Sensor-Datei |
+| [`make doc-check`](harness/sensors/doc-check.md) | Links, Anker, Kennungs-Linkpflicht und Referenzmatrix lösen auf; dazu Lifecycle-Invariante und Versions-Kohärenz |
 | `make doc-trace` | advisory Requirements Traceability Matrix via `d-check` (DC-FA-CLI-009; `TRACE_FLAGS=--json`) |
-| `make doc-complete` | Vollständigkeits-Gate: eine Anforderung ohne referenzierenden Slice ⇒ Exit 1 (DC-FA-CLI-011). Seit slice-123 **im `verify`-Aggregat** — davor advisory und damit nie gelaufen; eine Waise fiel erst auf, als jemand das Target von Hand aufrief |
+| `make doc-complete` | Vollständigkeits-Gate: eine Anforderung ohne referenzierenden Slice ⇒ Exit 1 (DC-FA-CLI-011); im `verify`-Aggregat |
 | `make doc-doctor` | erklärende Diagnose mit Fix-Kandidaten (DC-FA-CLI-007) — **advisory** |
 | `make doc-repair` | Reparatur-Patch (unified diff) auf stdout, git-apply-rein (DC-FA-CLI-008) |
-| `make doc-immutable` | ADR-Immutabilität (§3.5) via git-Diff (Modul `vcs`; `RANGE=`/`STAGED=1`, DC-FA-VCS-001) — **CI-durchgesetzt** über die Commit-Range ([`ci.yml`](.github/workflows/ci.yml)) |
+| `make doc-immutable` | ADR-Immutabilität (§3.5) via git-Diff (Modul `vcs`; `RANGE=`/`STAGED=1`) — CI-durchgesetzt über die Commit-Range |
 | `make doc-commits` | Commit-Message-Traceability (Modul `commits`; `RANGE=`, DC-FA-COMMITS-001) |
 | [`make doc-planning`](harness/sensors/doc-planning.md) | Lifecycle-Konsistenz Roadmap ↔ `in-progress/`: liegt dort ein Slice, benennt ihn die Roadmap-Sektion, statt den Ruhe-Marker zu tragen |
-| [`make doc-workflows`](harness/sensors/doc-workflows.md) | Deklarations-Form der `uses:`-Referenzen unter `.github/workflows`: voller SHA plus Tag-Kommentar beim Fremden, existierendes Ziel und gedeckte Rechte beim Lokalen. Prüft die **Form**, nicht die Gültigkeit |
-| [`make doc-mentions`](harness/sensors/doc-mentions.md) | Erwähnungs-Deckung, die **Gegenrichtung** des Link-Checks: jede Datei unter `harness/sensors/` ist in dieser Tabelle genannt. Eine Datei ohne Index-Zeile bliebe sonst still grün |
-| [`make doc-reviews`](harness/sensors/doc-reviews.md) | Review-Report-Deckung: eine `done/`-Slice-DoD-Zeile mit der Phrase „unabhängiger Review" braucht einen Report gleicher Kennung. **Opt-in pro Slice über die Phrase selbst** |
+| [`make doc-workflows`](harness/sensors/doc-workflows.md) | Deklarations-Form der `uses:`-Referenzen unter `.github/workflows`. Prüft die **Form**, nicht die Gültigkeit |
+| [`make doc-mentions`](harness/sensors/doc-mentions.md) | Erwähnungs-Deckung, die **Gegenrichtung** des Link-Checks: jede Datei unter `harness/sensors/` ist hier genannt |
+| [`make doc-reviews`](harness/sensors/doc-reviews.md) | Review-Report-Deckung für `done/`-Slices mit der DoD-Phrase; **Opt-in pro Slice über die Phrase selbst** |
 | `make doc-tracked` | Getrackt-Status auflösbarer Referenz-Ziele (Modul `tracked`, DC-FA-TRK-001) |
 | `make doc-targets` | Deklarations-Konsistenz Doku ↔ Build-Targets (Modul `targets`, DC-FA-TGT-001), konfiguriert in [`.d-check.yml`](.d-check.yml); im `gates`-Aggregat |
 | [`make doc-structure`](harness/sensors/doc-structure.md) | Struktur-Invarianten innerhalb der Dokumente: Größen-Regel, Closure-Struktur, Lerneintrag-Form, Kopffelder, AC-Form, Zellengrenzen der Gate-Tabellen |
@@ -177,26 +177,26 @@ die CI (Badge im [`README.md`](README.md)), nicht diese Tabelle.
 | `make coverage-gate` | Gesamt-Coverage ≥ 90 % über `./internal/...` ([ADR-0006](docs/plan/adr/0006-coverage-gate.md)) |
 | `make arch-check` | Eigen-Architektur via `a-check` selbst (Dogfooding) |
 | [`make gate-consistency`](harness/sensors/gate-consistency.md) | Meta-Gate, drei Prüfungen: `.d-check.yml`-Module, Pin-Konsistenz, ADR-Index-Vollständigkeit |
-| [`make version-coherence`](harness/sensors/version-coherence.md) | Kohärenz **doppelt deklarierter** Versions-Angaben: ein `uses:`-SHA ⇒ ein Tag-Kommentar; eine Variable in `Makefile` **und** `Dockerfile` ⇒ ein Wert. Prüft **Divergenz, nicht Wahrheit** |
+| [`make version-coherence`](harness/sensors/version-coherence.md) | Kohärenz **doppelt deklarierter** Versions-Angaben. Prüft **Divergenz, nicht Wahrheit** |
 | `make record-gates` | Gate-Nachweis (Working-Tree-Hash) für den Stop-Hook |
-| `make suppression-check` | Fitness Function zum Suppression-Verbot (§3.2, [ADR-0005](docs/plan/adr/0005-lint-profil.md)): keine `//nolint`-Direktive in den Go-Quellen — `nolintlint` prüft nur Wohlgeformtheit, nicht Existenz (slice-049) |
+| `make suppression-check` | Fitness Function zum Suppression-Verbot (§3.2): keine `//nolint`-Direktive in den Go-Quellen |
 | [`make symlink-check`](harness/sensors/symlink-check.md) | Zwei Prüfungen je getracktem Symlink: das Ziel existiert, und ein Ziel unter `.harness/baseline/` trägt den adoptierten Stand |
-| [`make dcheck-phrase-selftest`](harness/sensors/dcheck-phrase-selftest.md) | Kalibrierung der phrasen-basierten Modul-Konfigurationen, **beide Hälften**: vier Werkzeug-Kontrollen gegen eigene Fixtures (reagiert `d-check` noch?) und eine **Korpus**-Kontrolle gegen den `done/`-Bestand (trägt er die Phrase noch?) |
+| [`make dcheck-phrase-selftest`](harness/sensors/dcheck-phrase-selftest.md) | Kalibrierung der phrasen-basierten Modul-Konfigurationen, **beide Hälften**: Werkzeug und Korpus |
 | `make guard-selftest` | Selbsttest des PreToolUse-Command-Guard (Tool-Call-Gate §3.1) |
-| [`make ci-range-selftest`](harness/sensors/ci-range-selftest.md) | Selbsttest der Commit-Range-Weiche der CI: vier Fälle, darunter der **Force-Push**, bei dem eine im Runner-Klon unerreichbare Basis auf den Default-Branch fällt statt abzubrechen |
-| [`make image-scan`](harness/sensors/image-scan.md) | **kein Bestandteil von `gates`** (nicht hermetisch) — CVE-Scan gegen das **publizierte** Image; über rot entscheiden nur **behebbare** CRITICAL/HIGH. Exit-Codes und Sperren: siehe Sensor-Datei |
+| [`make ci-range-selftest`](harness/sensors/ci-range-selftest.md) | Selbsttest der Commit-Range-Weiche der CI: vier Fälle, darunter der **Force-Push** |
+| [`make image-scan`](harness/sensors/image-scan.md) | **kein Bestandteil von `gates`** (nicht hermetisch) — CVE-Scan gegen das **publizierte** Image |
 | [`make regelwerk-check`](harness/sensors/regelwerk-check.md) | **kein Gate** — misst die Integrität der vendored Baseline gegen `SHA256SUMS`, fail-closed. Die Freshness-Hälfte bleibt als Netz-Operation ungeprüft |
-| `make slice-mv` | **kein Gate** — ein Werkzeug: Lifecycle-Wechsel eines Slice per `git mv` **samt der Verweise auf ihn**, in allen drei im Bestand vorkommenden Formen. Die Gegenrichtung — Verweise **in** wandernden Dateien — trägt `doc-check` |
+| `make slice-mv` | **kein Gate** — ein Werkzeug: Lifecycle-Wechsel eines Slice per `git mv` samt der Verweise auf ihn |
 | `make gates` | alle inneren Gates (mandatory vor Handoff) |
-| [`make verify-risiko-ausgaenge`](harness/sensors/verify-risiko-ausgaenge.md) | Jedes in §6 **notierte** Risiko trägt genau einen Ausgang aus der geschlossenen Dreier-Menge. Geprüft in `done/` **und** in `in-progress/`, sobald die Closure-Notiz ausgefüllt ist |
-| [`make verify-observations`](harness/sensors/verify-observations.md) | Deckung des Beobachtungs-Registers: jeder in `done/` zitierte Pfad hat ein Verzeichnis, jedes Verzeichnis ein nicht leeres `evidence/`. Der Zähler wird abgeleitet, nicht geführt |
-| `make verify` | **Verifikations-Schicht** (getrennt von `gates`, Regelwerk Modul 11): beantwortet DoD-/Closure-Fragen statt Code-Fragen; vor der „fertig"-Meldung auszuführen |
-| `make image-test` | [AC-FA-DIST-001](spec/lastenheft.md#ac-fa-dist-001--distribution-image---print-mk-a-checkmk) + nativ==Container-Akzeptanz + Fragment-Parität (committete [`a-check.mk`](a-check.mk) == `--print-mk`, slice-034) gegen das gebaute Image |
+| [`make verify-risiko-ausgaenge`](harness/sensors/verify-risiko-ausgaenge.md) | Jedes in §6 **notierte** Risiko trägt genau einen Ausgang aus der geschlossenen Dreier-Menge |
+| [`make verify-observations`](harness/sensors/verify-observations.md) | Deckung des Beobachtungs-Registers; der Zähler wird abgeleitet, nicht geführt |
+| `make verify` | **Verifikations-Schicht** (getrennt von `gates`): DoD-/Closure-Fragen statt Code-Fragen |
+| `make image-test` | [AC-FA-DIST-001](spec/lastenheft.md#ac-fa-dist-001--distribution-image---print-mk-a-checkmk) + nativ==Container + Fragment-Parität |
 | `make ci` | CI-äquivalent: `gates` + `image-test` (Workflow `.github/workflows/ci.yml`) |
-| `make trace-check` | Traceability via Modul `commits` ([ADR-0021](docs/plan/adr/0021-commits-modul-trace-check.md)): `AC-*`/`ADR-*`/`MR-*`/`slice`-ID je Commit (§5; `MSGFILE=` Hook, `RANGE=` CI) |
-| `make commit-scope-check` | Commit-Scope `(planning)` berührt nur `docs/plan/planning/` (§5, [`SL-003`](docs/plan/planning/observations/README.md)); misst jeden Commit an der zu seinem Zeitpunkt geltenden Fassung (`RANGE=` wie `trace-check`, slice-062) |
+| `make trace-check` | Traceability via Modul `commits`: `AC-*`/`ADR-*`/`MR-*`/`slice`-ID je Commit (§5) |
+| `make commit-scope-check` | Commit-Scope `(planning)` berührt nur `docs/plan/planning/` (§5); misst jeden Commit an der damals geltenden Fassung |
 | `make archive-wave-test` | Testsuite von `tools/archive-wave/` (eigenes `go.mod` — **nicht** Teil von `make test`, das nur das Hauptmodul deckt) |
-| [`make archive-wave`](harness/sensors/archive-wave.md) | **kein Gate** — bewegt Zeitdokumente ins Archiv, Volltexte werden Stubs (`WELLE=`/`SLICE=`, `APPLY=1`); Pflichtschritt beim Abschluss eines wellenlosen Slice (§6) |
+| [`make archive-wave`](harness/sensors/archive-wave.md) | **kein Gate** — bewegt Zeitdokumente ins Archiv, Volltexte werden Stubs (`WELLE=`/`SLICE=`, `APPLY=1`) |
 
 ## 5. Dokumentations-Regeln
 
