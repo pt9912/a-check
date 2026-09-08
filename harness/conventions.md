@@ -111,15 +111,15 @@ eine ADR (kein `Status:`-Feld, an dem `immutable-when` greifen könnte).
 
 **Zu [`MR-000`](#mr-000) — Kommentar *über* den Eintrag, nicht in ihm.** Er
 **bleibt in dieser Datei** statt in einer eigenen: Er ist keine Adaption,
-sondern die Adoptions-Erklärung, und er gilt für jeden Lauf. **Und zwei Stellen
-seines Schemas sind offen, beide aus demselben Grund:** Das Pflichtfeld
-*Ersetzt-Baseline-Regel* fehlt, weil es nach seiner Annahme entstand; und die
-**Beobachtungs-Kennung** steht nicht in seiner ID-Liste, weil sie keine
-fortlaufende Nummer mehr ist, sondern der Pfad `BEO-<KUERZEL>/<slug>` —
-deklariert ist sie dort, wo ihr Kürzel herkommt (§Modus-Deklaration pro
-Sub-Area). Beides **nachzutragen wäre eine inhaltliche Änderung an einem
-akzeptierten Eintrag**, und die verbietet §Disziplin. Deshalb steht dieser
-Absatz hier und nicht dort.
+sondern die Adoptions-Erklärung, und er gilt für jeden Lauf. **Sein Pflichtfeld
+*Ersetzt-Baseline-Regel* fehlt**, weil es nach seiner Annahme entstand; §Aktive
+Adaptionen sagt dasselbe für die Tabellenspalte, und Nachfolge-Einträge tragen
+es. Beides ist eine Aussage **über** den Eintrag und ändert ihn nicht.
+
+**Was dagegen ein Nachfolge-Eintrag ist, ist einer:** Die **Beobachtungs-Kennung**
+fehlte in seiner ID-Liste — korrigiert durch [`MR-023`](#mr-023), mit
+[`MR-020`](#mr-020) als Präzedenzfall. §Disziplin nennt genau dieses Instrument;
+ein freistehender Absatz wäre ein drittes, nirgends vorgesehenes gewesen.
 
 ### MR-000 — Baseline-Aussage (inkl. ID-Schema-Deklaration)
 
@@ -172,6 +172,7 @@ einen Zeiger, zwei ein `—` mit Begründung in der Zelle.
 | [MR-019](conventions/MR-019-review-dod-opt-in.md) <a id="mr-019"></a> | Review-DoD-Punkt bleibt Opt-in statt verpflichtend | [`AGENTS.md`](../AGENTS.md) §5, [`.d-check.yml`](../.d-check.yml) | — *(kein Baseline-Regel-Ersatz — der Treiber ist ein Template; Begründung und Rückbau-Bedingung stehen im Eintrag)* |
 | [MR-020](conventions/MR-020-adr-vorlage-generisch.md) <a id="mr-020"></a> | ADR-Vorlagen-Referenz zeigt generisch auf den vendorten Stand | [`MR-000`](#mr-000) §ID-Schema, Zeile zu `ADR-NNNN` | — *(korrigiert eine Repo-Aussage, kein Baseline-Regel-Ersatz; permanent, kein Rückbau-Kandidat)* |
 | [MR-022](conventions/MR-022-verfeinerungs-form.md) <a id="mr-022"></a> | Verfeinerungen tragen `SPEC-*` statt der Suffix-Form (Begründung gemessen, mit Zählregel) | [`spec/spezifikation.md`](../spec/spezifikation.md) | [`grundlagen-source-precedence.md` §ID-Schema als Klammer](../.harness/baseline/v6.5.0/regelwerk/grundlagen-source-precedence.md#id-schema-als-klammer) |
+| [MR-023](conventions/MR-023-id-schema-beobachtungs-kennung.md) <a id="mr-023"></a> | ID-Schema-Deklaration um die Beobachtungs-Kennung ergänzt (Pfad-Form, Kürzel generisch) | [`MR-000`](#mr-000) §ID-Schema, [`observations/`](../docs/plan/planning/observations/README.md) | — *(korrigiert eine Repo-Aussage, kein Baseline-Regel-Ersatz — wie [MR-020](#mr-020); Rückbau mit der Überarbeitung der Deklaration)* |
 
 ### Aufgelöste Adaptionen
 
