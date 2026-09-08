@@ -17,7 +17,7 @@ hier notierten Funde blieben liegen.
 **Berührte Spec-Stellen:** — *(keine)* — Harness-Konventionen ohne
 Vertragsberührung.
 
-**Verantwortlich:** — *(noch nicht priorisiert)*
+**Verantwortlich:** Claude — gesetzt beim Übergang nach `in-progress/`.
 
 **Autor:** Claude (Opus 5), im Auftrag des Maintainers. **Datum:**
 2026-09-06.
