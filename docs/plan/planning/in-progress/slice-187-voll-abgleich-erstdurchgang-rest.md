@@ -14,7 +14,7 @@ sind unter den Paaren — die Kennungen benennt die Umsetzung.
 
 **Autor:** Claude. **Datum:** 2026-09-08.
 
-**Lerneintrag — Form:** wird bei Closure benannt.
+**Lerneintrag — Form:** geschärfte Regel.
 
 ---
 
@@ -273,21 +273,53 @@ sinkende Zahl belegt eine Übernahme; eine gleichbleibende widerlegt keine. **We
 diese Spalte als Fortschritt liest, liest sie falsch** — sie ist eine
 Reihenfolge, wie §2 sagt, und bleibt es auch hinterher.
 
+### 3.5 Ein Befund neben den Paaren: eine Zusage, die weiter reicht als ihr Prüfer
+
+Der Abgleich stellte die Frage *„was passiert, wenn ich
+[`MR-000`](../../../../harness/conventions.md#mr-000) trotzdem ändere?"* — und **maß** statt anzunehmen: `make doc-immutable` über die
+Commit-Range bleibt **grün**. Der Grund steht in
+[`.d-check.yml`](../../../../.d-check.yml): Das Modul `vcs` führt
+`paths: ["docs/plan/adr/[0-9]*.md"]`; `harness/conventions.md` steht dort nicht.
+
+**§Adaptions-Block sagte trotzdem *„analog zur ADR-Immutabilität"* mit Verweis
+auf [`AGENTS.md`](../../../../AGENTS.md) §3.5** — und dieser Verweis liest sich
+als Verweis auf dieselbe **Durchsetzung**. Für `MR`-Einträge gibt es sie nicht.
+
+Behoben ist es an der Zusage, nicht in der Konfiguration: §Disziplin trägt jetzt
+die Grenze im Satz (*analog* meint die Regel, nicht ihren Lauf) samt dem, was ein
+künftiger Sensor dort tragen müsste — ein `MR`-Eintrag hat kein `Status:`-Feld,
+an dem `immutable-when` greifen könnte. **Neu im Register:**
+[`BEO-GATE/zusage-weiter-als-ihre-durchsetzung`](../observations/BEO-GATE/zusage-weiter-als-ihre-durchsetzung/observation.md)
+mit **zwei** Belegen — slice-186 (`doc-planning` sagte *„benennt ihn"* zu und
+prüft eine Äquivalenz) und dieser Slice.
+
+**Und eine Folge für den Abgleich selbst:** Der Kommentar zum
+[Baseline-Eintrag](../../../../harness/conventions.md#mr-000) steht
+**über** dem Eintrag, nicht in ihm. Das ist keine Formalie — hätte er drinnen
+gestanden, wäre die Übernahme einer Ziel-Form-Regel selbst ein Verstoß gegen die
+Regel gewesen, die der Eintrag trägt, und **kein Lauf hätte es gemeldet**.
+
+
 ## 4. Definition of Done
 
-- [ ] Die **drei** Harness-Deklarations-Paare sind abgeglichen; je Paar steht
+- [x] Die **drei** Harness-Deklarations-Paare sind abgeglichen; je Paar steht
       der Ausgang im Plan — übernommen · bewusst abweichend (mit Begründung) ·
       ohne Befund.
-- [ ] Jede Übernahme ist als solche kenntlich, und **die Ebene steht im
+- [x] Jede Übernahme ist als solche kenntlich, und **die Ebene steht im
       Ausgang**: auf welcher Auflösung geprüft wurde, nicht nur *ob*
       ([`BEO-PLAN/vollstaendigkeits-haken-ohne-erschoepften-gegenstand`](../observations/BEO-PLAN/vollstaendigkeits-haken-ohne-erschoepften-gegenstand/observation.md),
       2×).
-- [ ] Die **Restmenge** ist mit Zähler übergeben: vier Paare, 123 Kandidaten,
-      Folge-Slices mit Kennung.
+- [x] Die **Restmenge** ist mit Zähler übergeben: vier Paare, 123 Kandidaten,
+      zwei Folge-Slices mit Kennung —
+      [slice-188](../open/slice-188-voll-abgleich-gate-und-skill.md) (Gate und
+      Skill, 67) und
+      [slice-189](../open/slice-189-voll-abgleich-spec-straten.md) (die zwei
+      Spec-Straten, 56). Beide zitieren das Instrument aus §2, statt es zu
+      wiederholen.
 - [ ] Unabhängiger Review durchgeführt (Report unter [`docs/reviews/`](../../../reviews/README.md)).
-- [ ] Closure-Notiz mit Steering-Loop-Lerneintrag.
-- [ ] Beobachtungs-Register fortgeschrieben.
-- [ ] Jedes Risiko aus §7 trägt einen Ausgang.
+- [x] Closure-Notiz mit Steering-Loop-Lerneintrag.
+- [x] Beobachtungs-Register fortgeschrieben.
+- [x] Jedes Risiko aus §7 trägt einen Ausgang.
 
 `make gates` und `make verify` grün. Ein öffentlicher Vertrag ist berührt:
 `AGENTS.md` ist Rang 8, `harness/conventions.md` Rang 9.
@@ -319,22 +351,107 @@ Lerneintrag.
 - **Drei Paare mit 124 Kandidaten sind mehr, als beide Vorgänger getragen
   haben** (39 und ~52 unter demselben Instrument). Die Setzung ist begründet
   (§2), aber sie ist eine Wette darauf, dass `AGENTS.md` durch slice-186 zur
-  Hälfte gelesen ist. — **Ausgang:** <offen bis Closure>
+  Hälfte gelesen ist. — **Ausgang:** *entfallen*, gestrichen mit Begründung: Die
+  Wette hielt. Alle drei Paare sind in **einem** Durchgang abgeglichen, keine
+  Rückführung, kein Paar abgegeben; 124 Kandidaten ergaben **acht** Übernahmen
+  (6,5 %). Getragen hat nicht die Zahl, sondern dass die Kandidaten dicht
+  beieinander lagen — dieselbe Artefaktklasse, wie §1 gesetzt hatte.
 - **Vier Register-Einträge stehen bei 2× und treffen genau diese Arbeitsform.**
   Erreicht einer mit diesem Slice 3×, ist er keine Notiz mehr, sondern eine
-  Lücke mit fälligem Ausgang — und vier auf einmal wären ein eigener Vorgang.
-  — **Ausgang:** <offen bis Closure>
-- **Die Vorauswahl bleibt eine Reihenfolge, kein Befund.** 124 Kandidaten sind
-  keine 124 Befunde, und das Instrument sieht sinngemäße Übernahme nicht. Wer
-  die Zahl für einen Umfang hält, plant falsch — in beide Richtungen.
-  — **Ausgang:** <offen bis Closure>
+  Lücke mit fälligem Ausgang. — **Ausgang:** *entfallen*, gestrichen mit
+  Begründung: **Keiner** der vier erreicht 3×, und zwar nicht durch Glück — der
+  Plan hat ihre Lehre **vorab angewandt** (§9, Spalte *Berührung*): Zuschnitt vor
+  der Arbeit korrigiert, Instrument in den Plan gelegt, Ebene in den Ausgang,
+  Zielsatz sofort nachgezogen. Ein Eintrag, dessen Lehre wirkt, zählt nicht
+  weiter. **Neu bei 2× entstanden ist ein anderer**
+  ([`BEO-GATE/zusage-weiter-als-ihre-durchsetzung`](../observations/BEO-GATE/zusage-weiter-als-ihre-durchsetzung/observation.md),
+  §3.5) — das ist kein Widerspruch, sondern der Zähler bei der Arbeit.
+- **Die Vorauswahl bleibt eine Reihenfolge, kein Befund.** — **Ausgang:**
+  *entfallen*, gestrichen mit Begründung: Die Zahl trägt ihre Warnung jetzt
+  selbst. §2 nennt Parameter und Instrument, §3.4 misst das Verhältnis (124
+  Kandidaten → 8 Übernahmen) **und** die Gegenrichtung: Das Paar
+  `docs/plan/planning/README.md` steht vorher wie nachher bei 26, obwohl eine
+  Übernahme dort steht — in eigenen Worten geschrieben, und das sieht ein
+  Wortfolgen-Test nicht. Wer die Spalte als Fortschritt liest, liest sie falsch;
+  das steht jetzt daneben.
 - **`harness/conventions.md` ist Rang 9 und trägt die Adaptions-Einträge.** Eine
   Ziel-Form-Regel, die dort etwas ändert, kann einen akzeptierten `MR` berühren —
-  und die sind immutabel. — **Ausgang:** <offen bis Closure>
+  und die sind immutabel. — **Ausgang:** *entfallen*, gestrichen mit Begründung:
+  Es **trat ein** und wurde **im Slice aufgelöst**, ohne den Eintrag anzufassen.
+  Zwei Ziel-Form-Punkte sind für
+  [`MR-000`](../../../../harness/conventions.md#mr-000) nicht übernehmbar; sie
+  stehen jetzt als benannte Grenze **über** dem Eintrag (§3.2, §3.5). Damit kann
+  das Risiko für diesen Slice nicht mehr eintreten.
+  **Eine Reibung bleibt, benannt statt gezählt:** Die geschlossene Dreier-Menge
+  hat keine Kategorie für *„eingetreten und im Slice selbst aufgelöst"* —
+  *eingetreten* verlangt einen **künftigen** Adressaten (Carveout oder
+  Folge-Slice), den es hier nicht braucht. Verwandt, aber nicht deckungsgleich
+  mit [`BEO-PLAN/risiko-ausgang-fuer-gewollte-wirkung`](../observations/BEO-PLAN/risiko-ausgang-fuer-gewollte-wirkung/observation.md)
+  (dort ist es eine *beabsichtigte Wirkung*, hier ein echtes, abgewendetes
+  Risiko); deshalb **kein Beleg** dort — ein Zähler misst Wiederholung einer
+  Klasse, nicht Ähnlichkeit.
 
 ## 8. Closure-Notiz
 
-*(bei Closure auszufüllen)*
+**Lerneintrag — Form: geschärfte Regel.** *Wo ein Repo eine Regel **übt**, ohne
+sie zu **schreiben**, sagt sein Briefing im Zweifel das Gegenteil.* Sechs der
+acht Übernahmen sind von dieser Art, und zwei davon sind die schwersten:
+`AGENTS.md` §3.3 trug nur den Regelfall *„erst `git mv`, dann Inhalt"* — während
+jede Slice-Closure dieses Repos die **umgekehrte** Reihenfolge fährt, weil die
+Closure-Notiz die Bedingung für `done/` ist. Und der Adaptions-Block beschrieb
+seine Disziplin, ohne zu sagen, dass die Datei der **Index** ist und der Zustand
+die Verzeichnis-Position. In beiden Fällen war die Praxis richtig und der Satz
+falsch oder abwesend. **Der Voll-Abgleich findet genau diese Klasse**, und kein
+Sensor kann sie finden: Ein Lauf misst, was dasteht, gegen das, was dasteht —
+nicht gegen das, was getan wird.
+
+**Warum das nicht der Delta-Analyse auffällt** — die Frage, die slice-185
+aufgeworfen hat, ist hier zum zweiten Mal beantwortet: Der Arbeitsteilungs-Satz
+für §4 steht seit `v5.12.0` unverändert in der Ziel-Form, hat **vier**
+Baseline-Deltas überlebt und war seit slice-185 **benannt**. Zwei Slices lang
+stand er auf einer Liste und nicht im Dokument. Ein Delta findet Änderungen; was
+seit der Adoption fehlt, findet nur der Voll-Abgleich — und übernommen ist es
+erst, wenn es dasteht.
+
+**Zwei beobachtbare Closure-Kriterien.** (1) `make gates` und `make verify`
+grün auf dem Stand, der nach `done/` geht. (2) Die Ausgangsmessung ist
+**wiederholbar**: §2 trägt Parameter und Instrument, und derselbe Aufruf liefert
+nach der Arbeit 48 / 29 / 26 gegen vorher 60 / 38 / 26. Das ist der erste
+Slice dieser Kette, dessen Zahlen jemand nachrechnen kann.
+
+**Und die dritte Zahl ist selbst der Lerneintrag zur Messung.** 26 vor der
+Arbeit, 26 danach — mit einer Übernahme dazwischen. Das Instrument misst
+**wörtliche** Überlappung; a-check hat den Punkt in eigenen Worten übernommen,
+und die Zahl bewegt sich nicht. **Eine sinkende Zahl belegt eine Übernahme;
+eine gleichbleibende widerlegt keine.** Wer die Spalte als Fortschritt liest,
+hat die Vorauswahl zum Prüfer erklärt.
+
+**Was der Slice nicht getragen hat, und mit welcher Adresse.** Vier Paare
+bleiben: `.d-check.yml` (42), `spec/lastenheft.md` (28),
+`spec/spezifikation.md` (28), `.harness/skills/closure-note-reviewer.md` (25) —
+**123 Kandidaten**, gemessen mit demselben Instrument. Sie sind **keine offene
+Aufgabe, sondern eine Restmenge mit Zähler**: §1 nennt für jede den
+Ausschlussgrund, §2 die Zahl, und zwei Folge-Slices tragen sie mit Kennung —
+[slice-188](../open/slice-188-voll-abgleich-gate-und-skill.md) und
+[slice-189](../open/slice-189-voll-abgleich-spec-straten.md), in dieser
+Reihenfolge, weil der Spec-Abgleich der heikelste ist und zuletzt kommt. Die zwei Spec-Straten sind dabei ausdrücklich
+**ein anderer Vorgang** — dort ist eine Übernahme ein Change Request, kein
+Doku-Pflege-Schritt.
+
+**Beobachtungs-Register.** Neu:
+[`BEO-GATE/zusage-weiter-als-ihre-durchsetzung`](../observations/BEO-GATE/zusage-weiter-als-ihre-durchsetzung/observation.md)
+bei **2×** (§3.5) — eine Zusage, die weiter reicht als der Lauf, der sie
+einlösen soll; slice-186 und dieser Slice. **Nicht** erhöht wurden die vier
+Einträge aus §9: Ihre Lehre ist in diesen Plan eingebaut, statt ein drittes Mal
+belegt zu werden — was der Zweck eines Registers ist und nicht seine Umgehung.
+
+**Der Sichtungs-Schritt hat zum ersten Mal zwei Quellen gelesen** (§9): das
+Register **und** den Review-Report des Vorgängers. Die zwei schärfsten Warnungen
+für diesen Slice standen nur im Report — *Selbstverweis beim Umzug nicht
+re-verankert* und *Zusage in der Doku, Grenze nur im Konfigurations-Kommentar* —,
+und die zweite hat unmittelbar getragen: Sie ist §3.5 geworden. `modul-05` nennt
+die Finding-Klasse als dritte Zähler-Quelle; ohne diesen Griff zählt sie nicht
+mit.
 
 ## 9. Sub-Area-Prüfungen und Modus-Begründung
 
