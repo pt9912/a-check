@@ -232,11 +232,27 @@ Kalibrierung).
   (slice-120, slice-123, slice-165, slice-173, slice-181 — 5×), Ausgang war
   seit slice-168 *geplant* auf diesen Slice.
 
-- **Beobachtungs-Register (`../observations/`):** kein neuer Eintrag, kein
-  neuer Beleg. Der auslösende Eintrag wechselt von *geplant* auf **verkörpert**
-  — mit einer benannten Grenze: gedeckt ist **eine** Konfiguration, die mit
-  belegtem *stillem* Ausfall; der Eintrag bleibt darum stehen statt gestrichen
-  zu werden.
+- **Die Lehre, die über diesen Sensor hinausgeht:** Ein Sensor, der die
+  **falsche Menge** zählt, ist von einem funktionierenden nicht durch Lesen zu
+  unterscheiden — beide melden grün. Nur die Mutations-Probe trennt sie, und
+  sie muss gegen die Menge laufen, über die der Sensor eine Aussage macht,
+  nicht gegen die, die er zählt. Der Slice hatte die Probe: sie mutierte das
+  Muster und traf damit die Zählmenge des Skripts, nicht die Kandidatenmenge
+  des Moduls. **Die Probe war grün und der Sensor blind.** Das ist dieselbe
+  Klasse wie der Eintrag, den dieser Slice bedient — nur eine Ebene höher: dort
+  ein Prüfer ohne Gegenstand, hier eine Probe ohne Gegenstand.
+
+- **Beobachtungs-Register (`../observations/`):** ein neuer Eintrag,
+  [`BEO-GATE/review-haken-vor-dem-review`](../observations/BEO-GATE/review-haken-vor-dem-review/observation.md)
+  (Beleg `evidence/slice-169.md`, Zähler damit 1×) — der Review-Haken dieses
+  Slice stand auf `[x]`, während kein Report existierte, und `make doc-reviews`
+  deckt die Attestierung in `in-progress/` nicht ab.
+  Der **auslösende** Eintrag
+  [`BEO-GATE/pruefer-ohne-gegenstand-oder-aufruf`](../observations/BEO-GATE/pruefer-ohne-gegenstand-oder-aufruf/observation.md)
+  bekommt keinen neuen Beleg; sein Ausgang wechselt von *geplant* auf
+  **verkörpert** — mit einer benannten Grenze: gedeckt ist **eine**
+  Konfiguration, die mit belegtem *stillem* Ausfall; der Eintrag bleibt darum
+  stehen statt gestrichen zu werden.
 
 - **Folge-Slices:** keine. Die ungedeckten Muster bekommen einen, wenn eines
   davon ausfällt — nicht vorher.
