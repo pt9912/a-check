@@ -288,7 +288,7 @@ oder `verify` (DoD-/Closure-Fragen). Welche Targets das sind, sagt das
   beim Kopieren anzupassen ist**, steht in
   [`docs/plan/planning/README.md`](docs/plan/planning/README.md) §Beim Kopieren
   der Slice-Ziel-Form.
-- **Zwei Mess-Regeln binden jeden, der einen Beleg schreibt** — also auch den
+- **Drei Mess-Regeln binden jeden, der einen Beleg schreibt** — also auch den
   Implementer- und den Planner-Lauf, nicht nur den Review:
   1. *Geltungsbereich einer Messung* (`seit slice-179`): Wer eine Messung als
      Beleg schreibt — Slice-Plan, Closure-Notiz, Review-Report —, **nennt ihren
@@ -300,8 +300,13 @@ oder `verify` (DoD-/Closure-Fragen). Welche Targets das sind, sagt das
      nennt die **Meldung** der roten, nicht nur den Exit-Code. Grün beweist
      nichts — ein Prüfer, der seinen Gegenstand nicht erreicht, ist grün.
 
-  **Kein Sensor:** beides ist ein Urteil über eine Absicht bzw. einen Aufbau
-  (§3.7). Die **Herleitung** und die gemessenen Fälle stehen im Reviewer-Skill
+  3. *Wer eine Menge zählt, zählt sie zweimal verschieden* (`seit slice-193`):
+     Eine Zählung, die einen Befund oder einen Umfang trägt, wird mit einem
+     **zweiten, anders gebauten** Zähler wiederholt. Weichen beide ab, ist der
+     Unterschied der Befund — nicht die erste Zahl.
+
+  **Kein Sensor:** alle drei sind ein Urteil über eine Absicht, einen Aufbau
+  oder eine Zuordnung (§3.7). Die **Herleitung** und die gemessenen Fälle stehen im Reviewer-Skill
   ([`.harness/skills/reviewer.md`](.harness/skills/reviewer.md) §Mess-Regeln) —
   dort urteilt, wer prüft; hier steht der Satz, an den sich bindet, wer
   schreibt.

@@ -37,7 +37,7 @@ diese Datei selbst; der Sensor wächtert sich mit.
    ADR-Index verlinkt geschwister-relativ — **39 von 39** —, und das Modul sähe
    jede einzelne als unerwähnt. Diese Richtung trägt weiter die Eigenbau-Prüfung
    (3) in `tools/gate-consistency.sh`. **Der Umweg aus Grenze 1 stünde dort
-   ebenso offen** (`../../docs/plan/adr/<datei>.md` löst aus dem ADR-Index auf
+   ebenso offen** (`../../../docs/plan/adr/<datei>.md` löst aus dem ADR-Index auf
    und trägt den vollen Pfad); ob 39 längere Links den Gewinn wert sind, ist eine
    Entscheidung und kein technisches Hindernis mehr.
 

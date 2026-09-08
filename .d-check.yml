@@ -168,10 +168,6 @@ commits:
 # nicht widersprechen (die Abloesung entscheidet slice-073).
 targets:
   makefiles: [Makefile, d-check.mk]
-  # BEIDE Doku-Tabellen: der abgeloeste gate-consistency-Check (1) las AGENTS.md
-  # UND harness/README.md. Ohne die zweite waere die Abloesung (slice-079) eine
-  # Scope-Verkleinerung — gemessen: ein Phantom nur in harness/README.md blieb
-  # unentdeckt.
   # DER EINE GATE-INDEX (Baseline v6.6.0, grundlagen-harness-dateien.md):
   # harness/README.md Paragraph Sensors traegt die Liste UND die Bindung;
   # AGENTS.md Paragraph 4 traegt die Regel und den Zeiger, nicht die Liste.
@@ -382,11 +378,11 @@ structure:
 
   # ENTFALLEN mit slice-193: die Zellengrenze der Zweck-Spalte in AGENTS.md §4
   # hatte ihren Gegenstand verloren, als der Gate-Index nach harness/README.md
-  # zog. GEMESSEN, weil es die interessantere Haelfte ist: Die Regel blieb nach
-  # dem Verschwinden der Tabelle GRUEN, statt fail-closed zu melden -- ein
-  # Pruefer ohne Gegenstand meldet gruen und ist damit nicht "unbenutzt",
-  # sondern unkalibriert (BEO-GATE/pruefer-ohne-gegenstand-oder-aufruf). Die
-  # Zellengrenze der Sensors-Tabelle oben deckt den Gegenstand jetzt allein.
+  # zog. Das Modul faellt dabei FAIL-CLOSED aus -- die Regel testweise wieder
+  # eingesetzt meldet `section-column-missing`, Exit 2 (gemessen, slice-193
+  # Review F-1). Entfernt wird sie deshalb nicht, weil sie still waere, sondern
+  # weil ihr Gegenstand weg ist; die Zellengrenze der Sensors-Tabelle oben deckt
+  # ihn jetzt allein.
 
 # Modul `planning` (DC-FA-PLAN-001): Lifecycle-Konsistenz Roadmap <-> in-progress/.
 # Ohne diesen Block lief `make doc-planning` WIRKUNGSLOS — d-check aktiviert das
@@ -446,18 +442,21 @@ planning:
 #    String statt einer Liste bricht mit einem yaml-unmarshal-Fehler.
 #  - Die Erfolgszeile nennt eine QUOTE ("N von M Artefakt(en) erwaehnt").
 #
-# WARUM NUR AGENTS.md ALS DOKUMENT: harness/README.md nennt dieselben Dateien
-# geschwister-relativ (`sensors/<name>.md`) und kann das nicht aendern, ohne
-# seine Links zu brechen -- Markdown-Links sind dateirelativ. Der volle Pfad
-# steht nur in AGENTS.md Paragraph 4, und dort vollstaendig (16 von 16, die
-# Sensor-Datei dieses Gates eingeschlossen). Die zweite Tabelle bleibt damit ungewaechtert; das ist die
-# benannte Grenze dieser Regel, keine Nachlaessigkeit.
+# WARUM DER GATE-INDEX ALS DOKUMENT (slice-193): harness/README.md verlinkt die
+# Sensor-Dateien ueber `../harness/sensors/<name>.md` -- der Link loest von dort
+# gleich auf und traegt den vollen repo-relativen Pfad als Teilzeichenkette.
+# Bis slice-193 stand hier, das sei unmoeglich; die Behauptung war ungemessen.
+# Gegenprobe in beide Richtungen: geschwister-relativ 0 von 1, mit dem Umweg
+# 1 von 1. PREIS: Wer die Links auf die kuerzere Form zurueckstellt, macht den
+# Sensor blind, OHNE dass ein Link bricht.
 #
-# WARUM NICHT DIE ADRs: Der ADR-Index verlinkt ebenfalls geschwister-relativ --
-# 39 von 39. mentions meldete dort jede einzelne als unerwaehnt. Die
-# ADR-Index-Vollstaendigkeit bleibt darum die Eigenbau-Pruefung (3) in
-# tools/gate-consistency.sh; eine Abloesung scheitert nicht am Willen, sondern
-# an der Pfad-Form (slice-184, gemessen).
+# WARUM NICHT DIE ADRs: Der ADR-Index verlinkt geschwister-relativ -- 39 von 39;
+# mentions meldete dort jede einzelne als unerwaehnt. Der Umweg stuende auch
+# dort offen (`../../../docs/plan/adr/<datei>.md` loest auf und traegt den
+# vollen Pfad, gemessen in beide Richtungen), ist also keine technische Grenze
+# mehr, sondern eine Abwaegung gegen 39 laengere Links. Bis dahin bleibt die
+# ADR-Index-Vollstaendigkeit die Eigenbau-Pruefung (3) in
+# tools/gate-consistency.sh.
 mentions:
   artifacts: ["harness/sensors/*.md"]
   # Zieht mit dem Gate-Index um (slice-193): eine Sensor-Datei gehoert dorthin

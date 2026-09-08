@@ -65,7 +65,8 @@ guard_verdict() {
     // verschwindet spurlos. Dasselbe gilt fuer `make <gate> && git commit` —
     // der Commit haengt dann an einem ungeprueften Lauf. Fuenf reale Vorfaelle
     // am 2026-07-25 (Steering-Loop SL-001).
-    // Vollstaendig gegen die deklarierten Pruef-Targets (AGENTS.md §4). Der
+    // Vollstaendig gegen die deklarierten Pruef-Targets des Gate-Index
+    // (harness/README.md Paragraph Sensors). Der
     // `--selftest` haelt die Liste dagegen aktuell — ohne ihn driftete sie:
     // `doc-immutable` fehlte, obwohl es als CI-durchgesetzt gefuehrt wird, und
     // `make doc-immutable | tail` lief ungehindert durch (Review 2026-07-26,

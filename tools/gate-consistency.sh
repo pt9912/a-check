@@ -5,7 +5,8 @@
 #   (1)+(2) ABGELOEST (slice-079) — die Deklarations-Konsistenz Doku <->
 #       Build-Targets prueft d-checks Modul `targets` ueber `make doc-targets`,
 #       das im `gates`-Aggregat laeuft. Die Nummern bleiben frei: sie stehen in
-#       den Closure-Notizen von slice-073/074/079 und in AGENTS §4.
+#       den Closure-Notizen von slice-073/074/079 und im Gate-Index
+#       (harness/README.md Paragraph Sensors).
 #   (3) Die modules-Liste der .a-check-Doku-Konfig (.d-check.yml) trägt die
 #       aktiven Module (links/anchors/ids/matrix) und NICHT external — sonst
 #       verliert der netzlose doc-check still seine Beweis-Aussage (AC-QA-02).

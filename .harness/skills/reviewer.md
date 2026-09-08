@@ -160,6 +160,24 @@ braucht welche Artefaktklasse weist die **Urteilsgrundlage** der Skill-Datei zu.
   18** Blöcken in [`AGENTS.md`](../../AGENTS.md) §5 zu — bei einem
   Größen-Faktor von **23,2 ×** gegen die
   Ziel-Form.
+- **Wer eine Menge zählt, zählt sie zweimal verschieden** (`seit slice-193`,
+  Register-Eintrag bei 3×): Eine Zählung, die einen **Befund** oder einen
+  **Umfang** trägt, wird mit einem zweiten, **anders gebauten** Zähler
+  wiederholt. Weichen beide ab, ist der Unterschied der Befund.
+  **Drei Ausprägungen, alle belegt:** Die Sammelaussage deckt ihre Menge nicht
+  (slice-185: *„alle sechs sind Bedienhinweise"* — einer trug eine Norm) · die
+  Zahl stammt aus der falschen Quelle (slice-186: *„alle fünf Abschnitte"* — die
+  Ziel-Form führt sechs) · **der Zähler liest je Zeile nur den ersten Treffer**
+  (slice-193: eine Tabellenzelle mit vier Targets zählte als eines; zwei Targets
+  wären ohne Index-Zeile geblieben und hätten den Lauf rot gemacht).
+  **Die Prüf-Frage ist nicht „hast du gezählt?", sondern „was zählt dein Zähler
+  als eins?"** — die dritte Ausprägung ist die teuerste, weil ihre Zahl
+  plausibel aussieht.
+  **Kein Sensor:** Ob eine Zählung ihre Menge trifft, ist ein Urteil über ihre
+  Konstruktion ([`AGENTS.md`](../../AGENTS.md) §3.7). Was greift, ist der zweite
+  Zähler — er kostet einen Aufruf und hätte alle drei Fälle gefangen.
+  Auslöser: [`BEO-PLAN/kandidaten-klassifikation-groeber-als-der-kandidat`](../../docs/plan/planning/observations/BEO-PLAN/kandidaten-klassifikation-groeber-als-der-kandidat/observation.md)
+  (slice-185, slice-186, slice-193 — 3×).
 - **Eine Mutations-Probe belegt erst, wenn sie rot war** (`seit slice-181`,
   Register-Eintrag bei 3×): Wer einen Prüfer mit einer Probe belegt, zeigt
   **beide** Richtungen — und die **rote** ist die, die zählt. Grün beweist

@@ -130,8 +130,8 @@ doc-workflows: ## Deklarations-Form der uses:-Referenzen unter .github/workflows
 	  --disable matrix --disable spans --disable hostpaths --disable reviews
 
 # Erwaehnungs-Deckung (Modul mentions, seit slice-184): die GEGENRICHTUNG des
-# Link-Checks. Jede Datei unter harness/sensors/ muss in AGENTS.md Paragraph 4
-# genannt sein — eine Sensor-Datei ohne Index-Zeile bleibt sonst still gruen
+# Link-Checks. Jede Datei unter harness/sensors/ muss im Gate-Index
+# (harness/README.md Paragraph Sensors) genannt sein — eine Sensor-Datei ohne Index-Zeile bleibt sonst still gruen
 # (die Grenze steht woertlich in der Ziel-Form von harness/README.md).
 # Das Fragment liefert dafuer KEIN Target; mentions steht dort nur in den
 # --disable-Listen. Darum hier, wie doc-workflows.
