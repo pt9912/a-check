@@ -37,6 +37,26 @@ Jeder Befund nennt Datei, Zeile, Regel und Grund; Exit-Codes: `0` sauber,
 `1` Befunde, `2` Nutzungs-/Konfigurationsfehler
 ([AC-FA-CLI-001](spec/lastenheft.md#ac-fa-cli-001--aufruf-scan-wurzel-und-exit-codes)).
 
+## Was kann ich heute tun?
+
+Regeln dieser Sektion: ehrlicher Ist-Stand — was **jetzt** läuft, nicht was geplant ist. Keine
+Erfolgsmeldung ohne lauffähigen Beleg (Baseline-Regelwerk `modul-09-implementierung.md`).
+
+- **Die Schichtung eines beliebigen Repositories prüfen** in acht Sprachen (C++/Go/Rust/Kotlin/
+  Java/Python/C#/TypeScript) aus einer einzigen `.a-check.yml` — `docker run …
+  ghcr.io/pt9912/a-check` gegen den gepinnten Digest in [`version.md`](version.md#aktuell).
+- **In einer Zeile an ein `make`-Target hängen:** `--print-mk` gibt das fertige
+  [`a-check.mk`](a-check.mk)-Fragment aus; die committete und die ausgegebene Fassung sind
+  byte-gleich, und ein Gate belegt das.
+- **Hermetisch laufen lassen:** Der Scan braucht kein Netz (`--network none`), liest nur und
+  schreibt nie in das geprüfte Repository.
+- **Den Graphen sehen** statt einer Liste — `--print-graph` zeichnet die Schicht-Kanten.
+- **Zwei echte Konsumenten** fahren ihn heute: `b-cad` (C++) und `belief-agent` (Kotlin/KMP).
+
+Was noch **nicht** da ist, steht dort, wo es hingehört: offene Anforderungen im
+[`spec/lastenheft.md`](spec/lastenheft.md), offene Beobachtungen im
+[Beobachtungs-Register](docs/plan/planning/observations/README.md).
+
 ## Warum a-check?
 
 Vier funktional überlappende `arch-check.sh`-Varianten sind in den
