@@ -249,7 +249,12 @@ Danach Archivierung als wellenloser Slice ([`AGENTS.md`](../../../../AGENTS.md) 
 - **Risiken aus §7:** siehe dort, jedes mit genau einem Ausgang.
 
 - **Drei Paarungen** (Repo ohne Wellen-Betrieb) — geprüft **nach** dem `git mv`
-  nach `done/`, weil sie dort suchen; eingetragen im dritten Closure-Commit.
+  nach `done/`, weil sie dort suchen; alle drei tragen:
+  **Anker** — `liegt in AGENTS.md §5`; der Zielort führt `seit slice-181`.
+  **Folge-Slice** — keiner genannt.
+  **Register** — drei zitierte Einträge, jeder mit nicht leerem `evidence/`:
+  `probe-liefert-den-gegenstand-mit` (3), `muster-trifft-nur-die-haeufige-schreibweise` (2),
+  `pruefer-ohne-gegenstand-oder-aufruf` (5).
 
 ## 9. Sub-Area-Prüfungen und Modus-Begründung
 
