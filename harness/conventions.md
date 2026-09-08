@@ -109,14 +109,16 @@ Eine Zeile je Datei in [`harness/conventions/`](conventions/). Geltungsbereich u
 Baseline-Regel stehen hier, damit ein Agent **ohne Öffnen** entscheiden kann, ob der Eintrag ihn
 betrifft.
 
-Jede Zeile trägt **zwei** Anker: die stabile Kennung `mr-<NNN>` — die Adresse, unter der andere
-Dateien referenzieren — und daneben den **alten Überschriften-Slug** aus der Inline-Form. Ohne den
-zweiten rotten alle vor slice-096 veröffentlichten Verweise.
+Jede Zeile trägt die stabile Kennung `mr-<NNN>` als Anker — die Adresse, unter der andere Dateien
+referenzieren. Wo ein Eintrag vor slice-096 unter seinem Überschriften-Slug veröffentlicht wurde,
+steht dieser **zusätzlich** daneben; sonst rotten die damaligen Verweise. Gemessen tragen das
+heute die Zeilen der **aufgelösten** Tabelle weiter unten, keine der aktiven — dort ist kein
+Eintrag alt genug.
 
-Die Spalte *Ersetzt-Baseline-Regel* ist das Pflichtfeld des neuen Stands. Sie steht hier überall
-auf `—`, weil sie in einen akzeptierten Eintrag **nicht nachgetragen** werden darf (Einträge
-werden nie überschrieben); sie entsteht in den Nachfolge-Einträgen der Etappe C2
-([slice-095 §4](../docs/plan/planning/done/wellenlos/slice-095-adaptions-durchgang-v5120.md)).
+Die Spalte *Ersetzt-Baseline-Regel* ist das Pflichtfeld des neuen Stands. Sie kann in einen
+akzeptierten Eintrag **nicht nachgetragen** werden (Einträge werden nie überschrieben); sie
+entsteht in den Nachfolge-Einträgen. Gemessen tragen heute **fünf** der sieben aktiven Zeilen
+einen Zeiger, zwei ein `—` mit Begründung in der Zelle.
 
 | MR | Titel | Geltungsbereich | Ersetzt-Baseline-Regel |
 |---|---|---|---|
