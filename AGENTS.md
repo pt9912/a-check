@@ -163,7 +163,7 @@ die CI (Badge im [`README.md`](README.md)), nicht diese Tabelle.
 | `make doc-repair` | Reparatur-Patch (unified diff) auf stdout, git-apply-rein (DC-FA-CLI-008) |
 | `make doc-immutable` | ADR-Immutabilität (§3.5) via git-Diff (Modul `vcs`; `RANGE=`/`STAGED=1`) — CI-durchgesetzt über die Commit-Range |
 | `make doc-commits` | Commit-Message-Traceability (Modul `commits`; `RANGE=`, DC-FA-COMMITS-001) |
-| [`make doc-planning`](harness/sensors/doc-planning.md) | Lifecycle-Konsistenz Roadmap ↔ `in-progress/`: liegt dort ein Slice, benennt ihn die Roadmap-Sektion, statt den Ruhe-Marker zu tragen |
+| [`make doc-planning`](harness/sensors/doc-planning.md) | Äquivalenz Roadmap ↔ `in-progress/`: liegt dort ein Slice, fehlt der Ruhe-Marker; ist es leer, steht er. Kein Name wird geprüft |
 | [`make doc-workflows`](harness/sensors/doc-workflows.md) | Deklarations-Form der `uses:`-Referenzen unter `.github/workflows`. Prüft die **Form**, nicht die Gültigkeit |
 | [`make doc-mentions`](harness/sensors/doc-mentions.md) | Erwähnungs-Deckung, die **Gegenrichtung** des Link-Checks: jede Datei unter `harness/sensors/` ist hier genannt |
 | [`make doc-reviews`](harness/sensors/doc-reviews.md) | Review-Report-Deckung für `done/`-Slices mit der DoD-Phrase; **Opt-in pro Slice über die Phrase selbst** |
@@ -303,14 +303,25 @@ die CI (Badge im [`README.md`](README.md)), nicht diese Tabelle.
   der Slice-Ziel-Form — sieben Punkte, jeder gegen den Bestand gemessen
   (slice-178), umgezogen mit slice-186 an den Ort, an dem die Slice-Ablage
   beschrieben ist.
-- **Zwei Mess-Regeln leben im Reviewer-Skill**, nicht hier: *Geltungsbereich
-  einer Messung* (`seit slice-179`) und *Eine Mutations-Probe belegt erst, wenn
-  sie rot war* (`seit slice-181`). Beide sind **inferentielle Urteilsregeln** —
-  sie sagen selbst „kein Sensor" —, und `modul-08` §Welche Rolle braucht welche
-  Artefaktklasse weist genau diesen Fall der **Skill-Datei** zu, nicht dem
-  Briefing. Umgezogen mit slice-186; sie gelten unverändert weiter.
-  Ort: [`.harness/skills/reviewer.md`](.harness/skills/reviewer.md)
-  §Mess-Regeln.
+- **Zwei Mess-Regeln binden jeden, der einen Beleg schreibt** — also auch den
+  Implementer- und den Planner-Lauf, nicht nur den Review:
+  1. *Geltungsbereich einer Messung* (`seit slice-179`): Wer eine Messung als
+     Beleg schreibt — Slice-Plan, Closure-Notiz, Review-Report —, **nennt ihren
+     Geltungsbereich** und sagt, ob er den Gegenstand deckt. Nicht *„22 Befunde,
+     keine weitere Klasse"*, sondern *„22 Befunde über Markdown-Links; Prosa
+     sieht das Instrument nicht"*.
+  2. *Eine Mutations-Probe belegt erst, wenn sie rot war* (`seit slice-181`):
+     Wer einen Prüfer mit einer Probe belegt, zeigt **beide** Richtungen und
+     nennt die **Meldung** der roten, nicht nur den Exit-Code. Grün beweist
+     nichts — ein Prüfer, der seinen Gegenstand nicht erreicht, ist grün.
+
+  **Kein Sensor:** beides ist ein Urteil über eine Absicht bzw. einen Aufbau
+  (§3.7). Die **Herleitung**, die gemessenen Fälle und die Register-Anker
+  (`seit slice-182`, `seit slice-183`) stehen im Reviewer-Skill
+  ([`.harness/skills/reviewer.md`](.harness/skills/reviewer.md) §Mess-Regeln) —
+  dort urteilt, wer prüft; hier steht der Satz, an den sich bindet, wer
+  schreibt. Getrennt mit slice-186, nachdem der Umzug beide Hälften an den Ort
+  des Prüfers gelegt hatte.
 - **CR-Texte an ein fremdes Werkzeug** (bisher vier an `d-check`) leben im Slice, der sie erzeugt,
   und gehen erst nach einem Prüf-Durchgang hinaus: der Skill
   [`.harness/skills/cr-text-reviewer.md`](.harness/skills/cr-text-reviewer.md) markiert jeden Satz,

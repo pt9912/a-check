@@ -48,8 +48,8 @@ Bevor der Reviewer den Gegenstand liest:
 - **Norm nur im Template-Kommentar** — eine Regel steht im `<!-- -->`-Block
   einer vendorten Ziel-Form und nirgends sonst. Sie ist weg, sobald jemand die
   Vorlage kopiert und die Kommentare löscht — und **a-check kopiert sie**
-  ([`AGENTS.md`](../../AGENTS.md) §5, *„Beim Kopieren anzupassen"*; eigene
-  Vorlagen-Dateien führt das Repo nicht).
+  ([`docs/plan/planning/README.md`](../../docs/plan/planning/README.md) §Beim
+  Kopieren der Slice-Ziel-Form; eigene Vorlagen-Dateien führt das Repo nicht).
   *Besetzter Fall:* `v6.5.0` · `templates/docs/reviews/review-report.template.md`
   trägt im vierten Kommentarblock die Norm *„die Klassen-Bezeichnung muss über
   Läufe hinweg stabil sein"* — sie steuert den Steering-Loop-Zähler und steht
@@ -111,8 +111,14 @@ im selben Kontextfenster (Modul 8). Report-Ablage: ein Report pro Lauf unter
 
 ## Mess-Regeln (umgezogen aus `AGENTS.md` §5, slice-186)
 
-Zwei Urteilsregeln über **Belege**. Beide sagen selbst „kein Sensor" — sie
-hängen am Review, und `modul-08` weist genau diesen Fall der Skill-Datei zu.
+Zwei Urteilsregeln über **Belege**: hier steht ihre **Herleitung** und der
+gemessene Bestand, an dem sie hängen — die **Zusage** selbst steht in
+[`AGENTS.md`](../../AGENTS.md) §5, weil sie den *Schreibenden* bindet und der
+diese Datei nicht liest ([`harness/README.md`](../../harness/README.md) §Guides:
+*„nicht Teil der Implementer-Eingabe"*). Zwei Adressaten, zwei Orte: Wer eine
+Messung schreibt, braucht den Satz; wer sie prüft, die Fälle darunter. Beide
+sagen selbst „kein Sensor" — sie hängen am Review, und `modul-08` §Welche Rolle
+braucht welche Artefaktklasse weist die **Urteilsgrundlage** der Skill-Datei zu.
 
 - **Geltungsbereich einer Messung** (`seit slice-179`, Lese-Schritt der
   welle-15-Closure): Wer eine Messung als **Beleg** schreibt — in einem
@@ -123,7 +129,8 @@ hängen am Review, und `modul-08` weist genau diesen Fall der Skill-Datei zu.
   **Anlass:** [`BEO-PLAN/review-geltungsbereich-zu-eng`](../../docs/plan/planning/observations/BEO-PLAN/review-geltungsbereich-zu-eng/observation.md)
   bei 3× — dreimal war die Begrenzung begründet und trotzdem zu eng, und
   dreimal fand es jemand anderes als der Messende. **Kein Sensor:** ob ein
-  Geltungsbereich weit genug ist, ist ein Urteil über eine Absicht (§3.7); ein
+  Geltungsbereich weit genug ist, ist ein Urteil über eine Absicht
+  ([`AGENTS.md`](../../AGENTS.md) §3.7); ein
   zweites Muster, das nach übersehenen Klassen sucht, kann dieselbe Verengung
   haben wie das erste. Was greift, ist die Frage beim **Schreiben** — sie kostet
   einen Halbsatz und hätte alle drei Fälle gefangen.
@@ -142,14 +149,16 @@ hängen am Review, und `modul-08` weist genau diesen Fall der Skill-Datei zu.
   `AC-QA-*` zusammen; gekürzt wurden zwei Abschnitte mit kleinerem Faktor, in
   denen das **Regelwerk** nachgeschrieben war — einer davon zweimal in derselben
   Datei.
-  **Dritte Hälfte** (`seit slice-183`, an §5 dieser Datei gemessen): *„Steht die
+  **Dritte Hälfte** (`seit slice-183`, an [`AGENTS.md`](../../AGENTS.md) §5
+  gemessen): *„Steht die
   Regel im Regelwerk?"* ist ebenfalls die falsche Frage. In einem Repo, das eine
   Baseline **adoptiert** hat, lautet die Antwort fast immer ja — sechs von sechs
   Substanz-Stichproben fanden eine Fundstelle. Trägt nur: *„schreibt dieser
   Absatz ihre **Begründung** nach?"* Eine Regel zu **nennen** und die repo-eigene
-  Ausprägung danebenzustellen ist die Aufgabe dieser Datei; erst die
+  Ausprägung danebenzustellen ist die Aufgabe eines Briefings; erst die
   nachgeschriebene Herleitung ist der Befund. Gemessen traf das auf **drei von
-  18** Blöcken in §5 zu — bei einem Größen-Faktor von **23,2 ×** gegen die
+  18** Blöcken in [`AGENTS.md`](../../AGENTS.md) §5 zu — bei einem
+  Größen-Faktor von **23,2 ×** gegen die
   Ziel-Form.
 - **Eine Mutations-Probe belegt erst, wenn sie rot war** (`seit slice-181`,
   Register-Eintrag bei 3×): Wer einen Prüfer mit einer Probe belegt, zeigt
@@ -166,7 +175,8 @@ hängen am Review, und `modul-08` weist genau diesen Fall der Skill-Datei zu.
   **Die Prüf-Frage ist nicht „hast du eine Probe?", sondern „war sie rot, und
   woran?"** — die Meldung nennen, nicht nur den Exit-Code.
   **Kein Sensor:** Ob eine Probe ihren Gegenstand trifft, ist ein Urteil über
-  ihren Aufbau (§3.7). Was greift, ist die Frage beim Schreiben — sie kostet
+  ihren Aufbau ([`AGENTS.md`](../../AGENTS.md) §3.7). Was greift, ist die Frage
+  beim Schreiben — sie kostet
   einen Handgriff und hätte alle drei Fälle gefangen.
   Auslöser: [`BEO-GATE/probe-liefert-den-gegenstand-mit`](../../docs/plan/planning/observations/BEO-GATE/probe-liefert-den-gegenstand-mit/observation.md)
   (slice-169, slice-180, slice-181 — 3×).
