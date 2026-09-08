@@ -192,7 +192,86 @@ diese hier ist nachrechenbar. Genau das ist der Grund für den Abschnitt.
 
 ## 3. Umsetzung
 
-*(entsteht mit der Arbeit)*
+**Acht Übernahmen über drei Paare.** Je Befund steht unten, *woran* er hängt und
+*auf welcher Ebene* er geprüft wurde — die Ebene gehört in den Ausgang
+([`BEO-PLAN/vollstaendigkeits-haken-ohne-erschoepften-gegenstand`](../observations/BEO-PLAN/vollstaendigkeits-haken-ohne-erschoepften-gegenstand/observation.md)).
+
+### 3.1 `AGENTS.md` — fünf Übernahmen
+
+| # | Ziel-Form-Stelle | Was a-check hatte | Übernommen |
+|---|---|---|---|
+| 1 | §4, Satz nach der Tabelle | nichts | *„Diese Tabelle **listet auf**; definiert wird hier nichts"* plus den Weg zur Bindung — `harness/README.md` §Sensors, von dort zur `AC-*`-ID |
+| 2 | §3.3, zwei nummerierte Fälle | **nur den Regelfall**, als Reihenfolge statt als Wahl | beide Fälle; der `done/`-Übergang kehrt die Reihenfolge um |
+| 3 | §1, *Breiterer Pflicht-Blick* | nur die Auswahlregel *„ein Abschnitt je Aufgabe"* | die drei Anlässe, bei denen das **nicht** reicht |
+| 4 | §1, zwei Rollen der Vorlagen | *„die Ziel-Formen daneben unter `templates/`"* | Referenz-Form **und** Kopiervorlage, für sechs Artefaktklassen |
+| 5 | §5, Struktur-IDs | nichts | `SPEC-<NNN>` gehört nicht in die Commit-Message |
+
+**Befund 2 ist der schwerste, und er ist gemessen statt vermutet.** Die
+Ziel-Form sagt seit jeher, dass die *Reihenfolge vom Vorgang abhängt*: Regelfall
+`git mv` zuerst, Lifecycle-Übergang nach `done/` **umgekehrt**, weil die
+Closure-Notiz die Bedingung für `done/` ist und nicht ihre Folge. a-checks §3.3
+trug nur den Regelfall — **und das Repo fährt seit jeher den zweiten**:
+`make slice-mv` bewegt die Datei ohne Inhaltsänderung, und die Closure-Commits
+der letzten Slices liegen ausnahmslos **vor** ihrem `git mv`. Das Briefing sagte
+also das Gegenteil der geübten Praxis. Nicht die Praxis war falsch, sondern der
+Satz, an dem sie gemessen worden wäre.
+
+**Befund 1 ist der älteste.** Der Satz steht seit `v5.12.0` unverändert in der
+Ziel-Form, überlebte **vier** Baseline-Deltas und ist genau das Beispiel, mit
+dem slice-185 den Voll-Abgleich begründet hat
+([`harness/conventions.md`](../../../../harness/conventions.md) §Baseline). Er
+war damit **benannt, aber nicht übernommen** — zwei Slices lang.
+
+### 3.2 `harness/conventions.md` — zwei Übernahmen, zwei benannte Grenzen
+
+| # | Ziel-Form-Stelle | Übernommen |
+|---|---|---|
+| 6 | §Adaptions-Block, *Regeln dieser Sektion* | Die Datei trägt den **Index**, nicht die Einträge; der Zustand ist die Verzeichnis-Position, kein Status-Feld; und der Grund — was hier steht, liest **jeder** Lauf |
+| 7 | §[`MR-000`](../../../../harness/conventions.md#mr-000), *Bleibt hier* | warum der Eintrag keine eigene Datei bekommt: Adoptions-Erklärung, keine Adaption |
+
+Auch hier war die **Praxis vorhanden und die Regel unausgesprochen**: a-check
+führt seit jeher eine Datei je Eintrag mit `conventions/done/` als zweitem Ort.
+Was fehlte, war der Satz, der das zur Regel macht — und mit ihm die Begründung,
+die den Schnitt trägt.
+
+**Zwei Ziel-Form-Punkte werden bewusst *nicht* übernommen, beide mit derselben
+Ursache:** Das Pflichtfeld *Ersetzt-Baseline-Regel* fehlt in
+[`MR-000`](../../../../harness/conventions.md#mr-000), und die
+**Beobachtungs-Kennung** steht nicht in dessen ID-Liste. Beides ließe sich nur
+durch eine **inhaltliche Änderung an einem akzeptierten Eintrag** beheben, und
+die verbietet §Disziplin (analog [`AGENTS.md`](../../../../AGENTS.md) §3.5). Die
+Abweichung steht jetzt **im Eintrag selbst als benannte Grenze**, statt als
+Leerstelle dazustehen; die Beobachtungs-Kennung ist in §Modus-Deklaration
+deklariert, wo auch ihr Kürzel herkommt.
+
+### 3.3 `docs/plan/planning/README.md` — eine Übernahme
+
+| # | Ziel-Form-Stelle | Übernommen |
+|---|---|---|
+| 8 | Kopf, *Reine `git mv`-Commits beim Wechsel* | der Zeiger auf die Hard Rule — **samt** der umgekehrten Reihenfolge nach `done/` (Befund 2) |
+
+Der Rest des Paares ist **ohne Befund auf Satz-Ebene**, und an zwei Stellen ist
+a-checks Fassung die schärfere: §Aktueller Stand sagt nicht nur *„nicht als
+Snapshot eintragen"*, sondern **warum** (der Snapshot driftet gegen die
+Verzeichnisse, und niemand merkt es), und das Beobachtungs-Register ist mit
+Verzeichnisform, abgeleitetem Zähler und der Wellen-Unabhängigkeit beschrieben,
+wo die Ziel-Form nur die Existenz nennt. Das `reconciliation.md` entfällt
+begründet — a-check kam nicht aus einem Brownfield-Bootstrap.
+
+### 3.4 Vorher/Nachher, mit demselben Instrument
+
+| Paar | vorher | nachher |
+|---|---|---|
+| `AGENTS.md` | 60 | **48** |
+| `harness/conventions.md` | 38 | **29** |
+| `docs/plan/planning/README.md` | 26 | **26** |
+
+**Die dritte Zeile ist der Befund an der Messung selbst.** Übernahme 8 steht im
+Dokument, und die Zahl bewegt sich nicht: Das Instrument misst **wörtliche**
+Überlappung, und a-check hat den Punkt in eigenen Worten übernommen. Eine
+sinkende Zahl belegt eine Übernahme; eine gleichbleibende widerlegt keine. **Wer
+diese Spalte als Fortschritt liest, liest sie falsch** — sie ist eine
+Reihenfolge, wie §2 sagt, und bleibt es auch hinterher.
 
 ## 4. Definition of Done
 

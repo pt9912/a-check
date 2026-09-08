@@ -29,6 +29,12 @@ bedeutet.
 | `in-progress/` | Beansprucht: der `git mv` hierher liegt **vor** der Arbeit. |
 | `done/` | DoD erfüllt, Closure-Notiz vorhanden, Gates grün. |
 
+**Jeder Wechsel ist ein reiner `git mv`-Commit** ([`AGENTS.md`](../../../AGENTS.md)
+§3.3). Beim Übergang nach `done/` ist die Reihenfolge **umgekehrt**: erst der
+Inhalt (DoD-Häkchen, Closure-Notiz), dann der reine `git mv` — die Notiz ist die
+Bedingung dafür, dass die Datei nach `done/` darf, nicht ihre Folge.
+`make slice-mv` fährt den Move und zieht die Verweise **auf** die Datei nach.
+
 ## Slices vs. Wellen — zwei Ablagen, dieselbe Regel
 
 Regeln dieser Sektion: Baseline-Regelwerk `modul-06-roadmap.md` §Wann Arbeit eine Welle braucht.
