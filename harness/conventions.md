@@ -99,22 +99,31 @@ akzeptierten Eintrag wird **nichts nachträglich inhaltlich geändert** —
 Korrekturen entstehen als neuer `MR` oder als ausdrückliche Aufhebung,
 analog zur ADR-Immutabilität ([`AGENTS.md`](../AGENTS.md) §3.5).
 
+**Benannte Grenze, gemessen (slice-187):** *analog* meint die Regel, nicht ihre
+Durchsetzung. `make doc-immutable` prüft ausschließlich
+`docs/plan/adr/[0-9]*.md` — die `paths`-Liste des Moduls `vcs` in
+[`.d-check.yml`](../.d-check.yml) nennt diese Dateien hier **nicht**. Für
+Adaptions-Einträge ist die Immutabilität damit **Disziplin ohne Sensor**, so
+wie [`AGENTS.md`](../AGENTS.md) §3.7. Wer sie mechanisch will, erweitert dort
+die `paths` — und trägt dann, dass ein `MR`-Eintrag anders aufgebaut ist als
+eine ADR (kein `Status:`-Feld, an dem `immutable-when` greifen könnte).
+
+
+**Zu [`MR-000`](#mr-000) — Kommentar *über* den Eintrag, nicht in ihm.** Er
+**bleibt in dieser Datei** statt in einer eigenen: Er ist keine Adaption,
+sondern die Adoptions-Erklärung, und er gilt für jeden Lauf. **Und zwei Stellen
+seines Schemas sind offen, beide aus demselben Grund:** Das Pflichtfeld
+*Ersetzt-Baseline-Regel* fehlt, weil es nach seiner Annahme entstand; und die
+**Beobachtungs-Kennung** steht nicht in seiner ID-Liste, weil sie keine
+fortlaufende Nummer mehr ist, sondern der Pfad `BEO-<KUERZEL>/<slug>` —
+deklariert ist sie dort, wo ihr Kürzel herkommt (§Modus-Deklaration pro
+Sub-Area). Beides **nachzutragen wäre eine inhaltliche Änderung an einem
+akzeptierten Eintrag**, und die verbietet §Disziplin. Deshalb steht dieser
+Absatz hier und nicht dort.
 
 ### MR-000 — Baseline-Aussage (inkl. ID-Schema-Deklaration)
 
 <a id="mr-000"></a>
-
-**Bleibt hier statt in einer eigenen Datei:** Der Eintrag ist keine Adaption,
-sondern die Adoptions-Erklärung, und er gilt für jeden Lauf.
-
-**Zwei benannte Grenzen des Schemas unten** — beide folgen aus der
-Immutabilität (§Disziplin), keine ist ein Versehen: Das Pflichtfeld
-*Ersetzt-Baseline-Regel* fehlt, weil es nach der Annahme dieses Eintrags
-entstand und nicht nachgetragen werden darf (§Aktive Adaptionen sagt dasselbe
-für die Tabellenspalte). Und die **Beobachtungs-Kennung** steht nicht in der
-Liste, weil sie keine fortlaufende Nummer mehr ist, sondern der Pfad
-`BEO-<KUERZEL>/<slug>`; deklariert ist sie dort, wo ihr Kürzel herkommt —
-§Modus-Deklaration pro Sub-Area.
 
 - **Datum:** 2026-06-20
 - **Geltungsbereich:** gesamtes Repo
