@@ -50,6 +50,35 @@ USAGE
 
 # Die Ersetzung als eigene Funktion — der Selbsttest muss sie pruefen koennen,
 # ohne ein git-Repo zu bewegen.
+# AUSWAHL UND ERSETZUNG TEILEN IHRE MUSTER. Zwei Listen fuer dieselbe Frage
+# driften: Bis slice-180 kannte `rewrite_file` drei Formen und der grep davor
+# nur zwei — eine Datei mit AUSSCHLIESZLICH der dritten Form wurde nie
+# ausgewaehlt, und das Werkzeug meldete "0 Datei(en)" mit Exit 0. Der
+# Selbsttest sah es nicht, weil er nur `rewrite_file` prueft
+# (Review slice-180, F-1/F-3).
+#
+# match_patterns() liefert die grep-Muster, rewrite_file() die sed-Ausdruecke
+# dazu. Wer eine Form ergaenzt, ergaenzt beide -- und `self_test` faehrt
+# seither BEIDE Schritte, damit ein Vergessen laut ausfaellt.
+match_patterns() {  # $1=basename  $2=von  -> grep -e Argumente auf stdout
+  printf '%s\0' "../$2/$1" "$PLANNING/$2/$1" "]($2/$1" "\`$2/$1"
+}
+
+# select_files() haelt die Suche an dieselben Muster. Zwei Ausschluesse:
+# die vendored Baseline (MR-006: unveraenderter Fremdtext) und docs/reviews/ —
+# ein Review-Report ist ein Lauf-Beleg, seine pfad-Felder halten den Stand
+# fest, gegen den geprueft wurde (BEO-PLAN/slice-mv-fasst-einfrierendes-
+# artefakt-an, 2x von Hand zurueckgenommen).
+select_files() {  # $1=basename  $2=von  $3=wurzel
+  local -a args=()
+  local pat
+  while IFS= read -r -d '' pat; do args+=(-e "$pat"); done < <(match_patterns "$1" "$2")
+  grep -rlF "${args[@]}" --include='*.md' "$3" 2>/dev/null \
+    | grep -v '/\.harness/baseline/' \
+    | grep -v '/docs/reviews/' \
+    || true
+}
+
 # Die dritte Form (praefixlos) wird am KONTEXT erkannt, nicht am nackten Pfad:
 # als Markdown-Link-Ziel `](open/slice-NNN-….md)` oder in Inline-Code
 # `` `open/slice-NNN-….md` ``. Ein nackter Pfad im Fliesztext bleibt unberuehrt
@@ -116,6 +145,35 @@ self_test() {
     echo "slice-mv: Selbsttest FEHLGESCHLAGEN — nackter Pfad mitgeaendert" >&2
     rm -rf "$tmp"; exit 2
   fi
+
+  # --- ZWEITER SCHRITT: die AUSWAHL, nicht nur die Ersetzung. ---
+  # Bis slice-180 endete der Selbsttest hier, und genau deshalb blieb
+  # unbemerkt, dass select_files eine Form nicht kannte, die rewrite_file
+  # kann: Eine Datei mit AUSSCHLIESZLICH Form 3 wurde nie ausgewaehlt
+  # (Review slice-180, F-1). Ein Selbsttest, der nur den zweiten Schritt
+  # prueft, kann den ersten nicht sehen.
+  mkdir -p "$tmp/aus/docs"
+  printf '[d](open/slice-999-x.md)\n'          > "$tmp/aus/docs/nur-form3-link.md"
+  printf 'liegt in `open/slice-999-x.md`\n'    > "$tmp/aus/docs/nur-form3-code.md"
+  printf '[a](../open/slice-999-x.md)\n'       > "$tmp/aus/docs/nur-form1.md"
+  printf 'open/slice-999-x.md\n'               > "$tmp/aus/docs/nackt.md"
+  printf '[b](../open/slice-998-y.md)\n'       > "$tmp/aus/docs/fremd.md"
+  local gefunden
+  gefunden="$(select_files "slice-999-x.md" "open" "$tmp/aus" | sed 's|.*/||' | sort | tr '\n' ' ')"
+  if [ "$gefunden" != "nur-form1.md nur-form3-code.md nur-form3-link.md " ]; then
+    echo "slice-mv: Selbsttest FEHLGESCHLAGEN — Auswahl trifft die falsche Menge." >&2
+    echo "  erwartet: nur-form1.md nur-form3-code.md nur-form3-link.md" >&2
+    echo "  bekommen: $gefunden" >&2
+    rm -rf "$tmp"; exit 2
+  fi
+  # Ein Review-Report bleibt aussen vor, auch wenn er die Form traegt.
+  mkdir -p "$tmp/aus/docs/reviews"
+  printf '[r](../open/slice-999-x.md)\n' > "$tmp/aus/docs/reviews/2026-01-01-slice-999.md"
+  if select_files "slice-999-x.md" "open" "$tmp/aus" | grep -q '/docs/reviews/'; then
+    echo "slice-mv: Selbsttest FEHLGESCHLAGEN — Review-Report nicht ausgenommen" >&2
+    rm -rf "$tmp"; exit 2
+  fi
+
   rm -rf "$tmp"
 }
 
@@ -161,8 +219,7 @@ while IFS= read -r f; do
   [ -n "$f" ] || continue
   rewrite_file "$f" "$base" "$from" "$TO"
   count=$((count + 1))
-done <<< "$(grep -rl -e "\.\./$from/$base" -e "$PLANNING/$from/$base" \
-             --include='*.md' . 2>/dev/null | grep -v '^\./\.harness/baseline/' || true)"
+done <<< "$(select_files "$base" "$from" .)"
 
 echo "slice-mv ok: $base  $from/ -> $TO/, $count Datei(en) mit Verweisen nachgezogen (Selbsttest gefeuert)."
 echo "  Beide Aenderungen gehoeren in EINEN Commit: der Rename bleibt bei 100 %, die Verweise"

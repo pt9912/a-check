@@ -1,7 +1,14 @@
-**Stand:** offen (2×)
+**Stand:** verkörpert in [`make slice-mv`](../../../../../../Makefile)
+(`tools/slice-mv.sh`, `select_files()`) `seit slice-180` — `docs/reviews/` fällt aus der
+Kandidatenmenge, und der Selbsttest hält den Ausschluss fest.
 
-Unter der Schwelle, aber nicht mehr weit davon: zweimal in zwei aufeinanderfolgenden Closures,
-beide Male derselbe Handgriff von Hand. Der nächstliegende Ort für einen Ausgang ist
-[slice-180](../../../in-progress/slice-180-slice-mv-dritte-verweis-form.md), der `slice-mv` ohnehin
-anfasst; verplant ist er dort nicht. Beim dritten Auftreten ist es eine Lücke und braucht einen
-Ausgang, nicht noch ein `git checkout`.
+**Vor der Schwelle verkörpert, bei 2×.** Der dritte Beleg wäre der Abschluss von slice-180
+selbst gewesen: Sein Closure-`slice-mv` hätte die `pfad`-Felder des eigenen Review-Reports
+umgeschrieben. Ihn zu sammeln, statt den Ausschluss einzubauen, während dasselbe Werkzeug
+ohnehin offen lag, wäre Zeremonie gewesen.
+
+**Was der Ausschluss nicht deckt:** Er ist eine **Pfad**-Regel und kennt die anderen drei
+einfrierenden Ziel-Formen nicht — Welle-Ergebnisnotiz und die beiden Archiv-Stubs liegen unter
+`docs/plan/planning/` und werden weiter angefasst. Bei der Ergebnisnotiz ist das heute richtig:
+Ihr Verweis ist ein Markdown-Link, der sonst bräche. Wäre sie zitier-form-konform
+([`AGENTS.md`](../../../../../../AGENTS.md) §5), wäre er unnötig — das ist der offene Rest.
