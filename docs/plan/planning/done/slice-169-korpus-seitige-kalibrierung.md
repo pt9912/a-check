@@ -272,8 +272,7 @@ Kalibrierung).
   einmal *weiter offen* → Register.
 
 - **Drei Paarungen** (Repo ohne Wellen-Betrieb) — geprüft **nach** dem
-  `git mv` nach `done/`, weil sie dort suchen; eingetragen im dritten
-  Closure-Commit:
+  `git mv` nach `done/`, weil sie dort suchen; alle drei tragen:
   **Anker** — `liegt in Makefile:dcheck-phrase-selftest`; der Zielort trägt
   `seit slice-169`, ebenso `harness/README.md` §Sensors,
   `harness/sensors/dcheck-phrase-selftest.md` und das Skript selbst. *(Bis zur
@@ -281,9 +280,20 @@ Kalibrierung).
   Paarung meldete grün, weil sie **Existenz** prüfte statt **Anker am
   Zielort**.)*
   **Folge-Slice** — keiner genannt.
-  **Register** — vier zitierte Einträge, jeder mit nicht leerem `evidence/`:
+  **Register** — fünf zitierte Einträge, jeder mit nicht leerem `evidence/`:
   `pruefer-ohne-gegenstand-oder-aufruf` (5), `attestierung-vor-dem-vorgang` (1),
-  `hard-rule-37-ohne-sensor` (2), `sensor-ohne-dod-phrase-wirkungslos` (1).
+  `hard-rule-37-ohne-sensor` (2), `sensor-ohne-dod-phrase-wirkungslos` (1),
+  `slice-mv-fasst-einfrierendes-artefakt-an` (1).
+
+- **Ein dritter Register-Eintrag, entstanden beim `git mv` selbst:**
+  [`BEO-PLAN/slice-mv-fasst-einfrierendes-artefakt-an`](../observations/BEO-PLAN/slice-mv-fasst-einfrierendes-artefakt-an/observation.md)
+  (1×). `make slice-mv` schrieb sieben `pfad`-Felder im **Review-Report** dieses
+  Slice von `in-progress/` auf `done/` um — der Report friert ein, und seine
+  `pfad`-Felder halten den Stand fest, gegen den geprüft wurde. Die Änderung
+  ist zurückgenommen. Das ist die **Gegenrichtung** zu
+  [`verweis-auf-wandernden-slice`](../observations/BEO-PLAN/verweis-auf-wandernden-slice/observation.md),
+  der dasselbe Werkzeug wegen **fehlender** Deckung führt: Es kennt die
+  Verweis-*Form*, aber nicht die *Klasse* des Dokuments, in dem sie steht.
 
 ## 9. Sub-Area-Prüfungen und Modus-Begründung
 

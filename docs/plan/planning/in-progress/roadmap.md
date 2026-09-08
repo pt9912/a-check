@@ -19,7 +19,7 @@ ist **derivativ**: Der Zustand sind die flachen Welle-Dateien; woran gearbeitet 
 `Welle:`-Feld der Slices in `in-progress/`. Ziel, Trigger und Closure-Kriterien stehen in der
 Welle-Datei, nicht hier.
 
-*(Keine offene Welle.)*
+*(Keine offene Welle.)* **Nichts in Arbeit.**
 
 In Arbeit: [slice-169](../done/slice-169-korpus-seitige-kalibrierung.md) — **wellenlos**.
 Er erscheint hier nicht als Welle-Zeile, weil wellenlose Arbeit keine ist (Baseline-Regelwerk
