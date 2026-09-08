@@ -280,8 +280,22 @@ je geänderten Abschnitts erneut gezählt, gegen §2 gehalten.
 - **Risiken aus §7:** drei, jedes mit genau einem Ausgang — einmal *gestrichen
   mit Begründung*, zweimal *weiter offen* → Register.
 
-- **Drei Paarungen** (Repo ohne Wellen-Betrieb) — geprüft nach dem `git mv`
-  nach `done/`; eingetragen im dritten Closure-Commit.
+- **Drei Paarungen** (Repo ohne Wellen-Betrieb) — geprüft **nach** dem `git mv`
+  nach `done/`, weil sie dort suchen; alle drei tragen:
+  **Anker** — `liegt in AGENTS.md §5`; der Zielort trägt `seit slice-182`.
+  **Folge-Slice** — [slice-183](../open/slice-183-agents-md-verweist-statt-wiederholt.md)
+  existiert als Datei im Lifecycle und **nimmt den Punkt an**: Was §1 hier
+  ausschließt (`AGENTS.md`), ist dort das Ziel.
+  **Register** — drei zitierte Einträge, jeder mit nicht leerem `evidence/`:
+  `baseline-normtext-nachgeschrieben` (2), `chronik-in-gelesenen-dateien` (2),
+  `slice-mv-fasst-einfrierendes-artefakt-an` (2).
+
+- **Ein dritter Register-Beleg, entstanden beim `git mv` selbst:**
+  [`BEO-PLAN/slice-mv-fasst-einfrierendes-artefakt-an`](../observations/BEO-PLAN/slice-mv-fasst-einfrierendes-artefakt-an/observation.md)
+  steht jetzt bei **2×** — `make slice-mv` schrieb acht `pfad`-Felder im
+  Review-Report dieses Slice um, wie schon bei slice-169. Anderer Vorgang, also
+  ein echter zweiter Beleg. Beim dritten Mal ist es eine Lücke und braucht einen
+  Ausgang, nicht noch ein `git checkout`.
 
 ### Messung nach der Umsetzung
 
