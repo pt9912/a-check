@@ -23,7 +23,8 @@
   2. **Ein Umbau träfe alle bestehenden `SPEC-*` samt ihrer Traceability-Verweise, ohne eine
      Aussage zu ändern.** Es sind **sieben** `SPEC-*`-Abschnitte.
 
-  **Zählregel und Geltungsbereich** ([`AGENTS.md`](../../AGENTS.md) §5): Gezählt sind Dateien
+  **Zählregel und Geltungsbereich** ([`AGENTS.md`](../../AGENTS.md) §5, `seit slice-171` in
+  dieser Form): Gezählt sind Dateien
   `docs/plan/adr/0*.md` (der Index `README.md` ist kein ADR und fällt heraus), deren
   `**Schärft:**`-Feldzeile mindestens einen `SPEC-`-Anker nennt — **34**, davon **30** mit Status
   `Accepted` und vier `Superseded`. Nicht gezählt: Prosa-Erwähnungen des Worts außerhalb der
