@@ -209,8 +209,11 @@ Kalibrierung).
   eine Notlösung gewesen; mit ihr ist er der einzige Weg, der ohne neue
   Abhängigkeit trägt.
 
-- **Was ging anders als geplant — zweimal, und beide Male fand es der
-  unabhängige Review.** (1) Der Plan sah **zwei** Korpus-Kontrollen vor, je
+- **Was ging anders als geplant.** Der unabhängige Review
+  ([`2026-09-08-slice-169-korpus-seitige-kalibrierung.md`](../../../reviews/2026-09-08-slice-169-korpus-seitige-kalibrierung.md))
+  war **merge-blockierend**: 2 HIGH, 8 MEDIUM, 4 LOW, vierzehn Finding-Klassen.
+  Zwei davon änderten die Substanz, und beide fand er, nicht die schreibende
+  Session. (1) Der Plan sah **zwei** Korpus-Kontrollen vor, je
   Muster eine. `structure`s `tasks-ignore-pattern` fällt aber **laut** aus:
   trifft es nichts, meldet `doc-structure` `section-oversized`. Mit demselben
   Maßstab, mit dem der Plan `versions.current-from` ausschloss, gehört es nicht
@@ -247,9 +250,16 @@ Kalibrierung).
   (Beleg `evidence/slice-169.md`, Zähler damit 1×) — der Review-Haken dieses
   Slice stand auf `[x]`, während kein Report existierte, und `make doc-reviews`
   deckt die Attestierung in `in-progress/` nicht ab.
+  Ein zweiter Beleg an
+  [`BEO-HARNESS/hard-rule-37-ohne-sensor`](../observations/BEO-HARNESS/hard-rule-37-ohne-sensor/observation.md)
+  (Zähler 2×) — der Review fand zwei Kommentare im Konjunktiv über die
+  verworfene Alternative und wies nach, dass dieselbe Form schon aus slice-168
+  im Bestand steht.
   Der **auslösende** Eintrag
   [`BEO-GATE/pruefer-ohne-gegenstand-oder-aufruf`](../observations/BEO-GATE/pruefer-ohne-gegenstand-oder-aufruf/observation.md)
-  bekommt keinen neuen Beleg; sein Ausgang wechselt von *geplant* auf
+  bekommt **keinen** neuen Beleg — *ein Vorgang zählt einmal*, und dieser Slice
+  ist der Vorgang, der ihn verkörpert, nicht einer, der ihn erneut auslöst.
+  Sein Ausgang wechselt von *geplant* auf
   **verkörpert** — mit einer benannten Grenze: gedeckt ist **eine**
   Konfiguration, die mit belegtem *stillem* Ausfall; der Eintrag bleibt darum
   stehen statt gestrichen zu werden.
@@ -261,10 +271,19 @@ Kalibrierung).
   mit Begründung* (beide Risiken waren der Grund für die getroffene Wahl),
   einmal *weiter offen* → Register.
 
-- **Drei Paarungen** (Repo ohne Wellen-Betrieb, nach dem `git mv` geprüft):
-  **Anker** — `liegt in Makefile:dcheck-phrase-selftest`, Ziel existiert.
+- **Drei Paarungen** (Repo ohne Wellen-Betrieb) — geprüft **nach** dem
+  `git mv` nach `done/`, weil sie dort suchen; eingetragen im dritten
+  Closure-Commit:
+  **Anker** — `liegt in Makefile:dcheck-phrase-selftest`; der Zielort trägt
+  `seit slice-169`, ebenso `harness/README.md` §Sensors,
+  `harness/sensors/dcheck-phrase-selftest.md` und das Skript selbst. *(Bis zur
+  Prüfung der Closure-Notiz war der Anker nur an zweien der vier Orte — die
+  Paarung meldete grün, weil sie **Existenz** prüfte statt **Anker am
+  Zielort**.)*
   **Folge-Slice** — keiner genannt.
-  **Register** — der zitierte Eintrag existiert mit nicht leerem `evidence/`.
+  **Register** — vier zitierte Einträge, jeder mit nicht leerem `evidence/`:
+  `pruefer-ohne-gegenstand-oder-aufruf` (5), `attestierung-vor-dem-vorgang` (1),
+  `hard-rule-37-ohne-sensor` (2), `sensor-ohne-dod-phrase-wirkungslos` (1).
 
 ## 9. Sub-Area-Prüfungen und Modus-Begründung
 

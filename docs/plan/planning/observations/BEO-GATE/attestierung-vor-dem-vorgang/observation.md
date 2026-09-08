@@ -1,13 +1,15 @@
-# Review-DoD-Haken gesetzt, bevor der Review lief
+# Ein DoD-Punkt attestiert einen Vorgang, der noch nicht stattgefunden hat
 
 **Sub-Area:** Gate-/Werkzeug-Schicht
 
-Ein Slice trägt den Haken `- [x] Unabhängiger Review durchgeführt`, während in `docs/reviews/`
-kein Report gleicher Kennung liegt. Der Haken ist **selbst-attestiert**: `make doc-reviews`
-prüft die Deckung erst für Slices in `done/` — solange der Slice in `in-progress/` liegt, ist
-ein falscher Haken von keinem Lauf gedeckt.
+Ein Slice-Plan trägt eine Aussage in der Vergangenheitsform über einen Schritt, der noch
+aussteht — der Haken `- [x] Unabhängiger Review durchgeführt` ohne Report, die Zeile
+„nach dem `git mv` geprüft" vor dem `git mv`. Die Aussage ist **selbst-attestiert**: Sie
+beschreibt nicht den Zustand, sondern die Absicht, und niemand unterscheidet die beiden beim
+Lesen.
 
-Die Lücke ist nicht die Zusage, sondern ihr **Zeitpunkt**: Der Sensor greift am Lifecycle-Ende,
-die Attestierung entsteht in der Mitte. Wer den Haken beim Schreiben der Implementierung setzt
-und den Review danach vergisst, bemerkt es erst beim `git mv` — oder gar nicht, wenn der Haken
-den Blick auf die offene Aufgabe verstellt.
+Die Lücke ist nicht die Zusage, sondern ihr **Zeitpunkt**. Die Sensoren, die solche Zusagen
+decken, greifen am Lifecycle-**Ende**: `make doc-reviews` prüft die Report-Deckung erst für
+Slices in `done/`, die drei Paarungen prüfen nach dem `git mv`. Die Attestierung entsteht davor.
+Wer den Haken beim Schreiben setzt, hat den ausstehenden Schritt danach nicht mehr im Blick —
+der Haken verstellt ihn.
