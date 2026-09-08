@@ -28,6 +28,33 @@ Bevor der Reviewer den Gegenstand liest:
 - Harness-Lüge: behauptetes Gate ohne Make-Target, erfundene ID, stille Setzung
 - Spec-Stratum referenziert abwärts (ADR/Slice) — Referenz-Richtung verletzt
 - nachweislich falsche Tatsachenbehauptung (gegen ein Repo-Artefakt verifiziert)
+- **Kommentar trägt keine der Kommentar-Klassen** — er beschreibt die verworfene
+  Alternative („ohne X wäre …"), einen abwesenden Text („früher stand hier …")
+  oder bricht mitten im Satz ab, weil eine Teilersetzung den Rest stehen ließ.
+  Gilt für Code, Konfiguration, Skripte
+  ([`AGENTS.md`](../../AGENTS.md) §3.7). **Kein Gate fängt das** — die Regel ist
+  inferentiell und hängt am Review.
+  *Im Bestand belegt:* [`BEO-HARNESS/hard-rule-37-ohne-sensor`](../../docs/plan/planning/observations/BEO-HARNESS/hard-rule-37-ohne-sensor/observation.md)
+  (slice-108, slice-169).
+- **Zustandsfeld trägt Chronik** — eine `Stand`-/`Status`-Zelle (Roadmap,
+  Beobachtungs-Register, Meilenstein) erzählt, *wie* der Zustand entstand,
+  statt Zustand und Beleg als auflösbaren Anker zu nennen; oder ein Drift-Log
+  protokolliert Schließungen und erreichte Meilensteine. **Kein Gate fängt
+  das.** Zwei Ausprägungen, beide teuer geworden: ein `state.md`, das nach der
+  Behebung den behobenen Zustand weiter behauptet, und eines, dessen
+  `Stand:`-Zeile bei 3× keinen der drei Ausgänge trägt.
+  *Im Bestand belegt:* [`BEO-HARNESS/chronik-in-gelesenen-dateien`](../../docs/plan/planning/observations/BEO-HARNESS/chronik-in-gelesenen-dateien/observation.md)
+  (slice-103, slice-182).
+- **Norm nur im Kommentar** — eine Regel steht ausschließlich in einem
+  Kommentarblock und nirgends in einem Dokument, das der Lauf liest. In der
+  Baseline zielt das auf `<!-- -->`-Blöcke der Ziel-Formen, die beim Kopieren
+  verschwinden; **a-check kopiert die Ziel-Formen nicht** und hat dort keinen
+  Fall. Der hiesige Gegenstand ist
+  [`.d-check.yml`](../../.d-check.yml): Ihre Kommentare tragen die Begründung
+  jeder Regel, und sie sind der **einzige** Ort dafür. Das ist zulässig —
+  aber eine *Zusage* darf dort nicht allein stehen: Sie gehört in
+  [`AGENTS.md`](../../AGENTS.md) §4 oder eine Sensor-Datei, die der Lauf liest.
+  **Kein Gate fängt das.**
 
 **MEDIUM** — vor Merge/Acceptance klären:
 - unbelegte Tatsachenbehauptung (nicht gegen ein Repo-Artefakt belegbar)

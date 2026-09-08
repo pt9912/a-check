@@ -2,6 +2,12 @@
 
 Architecture Decision Records dieses Repos.
 
+**Derivativ:** Quelle der Wahrheit sind die ADR-Dateien; dieser Index ist eine
+Bequemlichkeits-Sicht und wird bei jeder neuen oder akzeptierten ADR mitgezogen.
+Dass er das wird, prüft `make gate-consistency` — jede ADR-Datei muss hier
+verlinkt sein. Die Gegenrichtung (ein Index-Eintrag ohne Datei) fängt
+`make doc-check`.
+
 ## Konventionen
 
 - **Dateiname:** `<NNNN>-<kurzer-titel-kebab>.md` (vierstellig, zero-padded).

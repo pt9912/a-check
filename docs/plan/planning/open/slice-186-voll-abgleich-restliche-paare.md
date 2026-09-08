@@ -1,0 +1,112 @@
+# slice-186 — Voll-Abgleich: die neun verbleibenden Ziel-Form-Paare
+
+**Welle:** ohne Welle — die Closure-Bedingung wäre die eigene DoD.
+
+**Bezug:** Folge-Slice aus
+[slice-185](../in-progress/slice-185-ziel-form-voll-abgleich.md) §7, Risiko 3
+(*eingetreten*: 13 Paare sprengen die Größen-Regel).
+[`AC-QA-02`](../../../../spec/lastenheft.md#ac-qa-02--hermetik-und-ehrliche-heuristik-grenze).
+
+**Berührte Spec-Stellen:** — *(bei Umsetzung zu füllen: `spec/lastenheft.md`
+und `spec/spezifikation.md` sind unter den Paaren.)*
+
+**Verantwortlich:** —
+
+**Autor:** Claude. **Datum:** 2026-09-08.
+
+**Lerneintrag — Form:** wird bei Closure benannt.
+
+---
+
+## 1. Ziel und Abgrenzung
+
+**Ziel:** Die neun Ziel-Form-Paare, die
+[slice-185](../in-progress/slice-185-ziel-form-voll-abgleich.md) nicht mehr
+getragen hat, sind abgeglichen — je Paar mit einem der drei Ausgänge:
+übernommen · bewusst abweichend (mit Begründung) · ohne Befund.
+
+**Ausdrücklich NICHT in diesem Slice** — je Punkt mit Begründung:
+
+- **Die fünf in slice-185 abgeglichenen Paare.** Erledigt; ein zweiter Durchgang
+  wäre Arbeit ohne Gegenstand.
+- **Die zwölf Instanz-Vorlagen.** Dieselbe Abgrenzung wie in slice-185 §1: kein
+  einzelnes Gegenstück, Form geprüft durch `make doc-structure`.
+- **Ein Sensor auf Satz-Deckung.** Urteil über zwei Formulierungen, kein Match
+  ([`AGENTS.md`](../../../../AGENTS.md) §3.7).
+
+## 2. Ausgangsmessung (2026-09-08, aus slice-185 übernommen)
+
+Kandidaten je Paar aus der maschinellen Vorauswahl — **überwiegend Rauschen**
+(Platzhalter, Bedienhinweise), die Zahl ist eine Reihenfolge, kein Befund:
+
+| Paar | Kandidaten |
+|---|---|
+| `README.md` | 32 |
+| `AGENTS.md` | 22 |
+| `harness/conventions.md` | 18 |
+| `spec/lastenheft.md` | 18 |
+| `.d-check.yml` | 16 |
+| `.harness/skills/closure-note-reviewer.md` | 16 |
+| `docs/plan/planning/README.md` | 12 |
+| `spec/spezifikation.md` | 12 |
+| `harness/README.md` | 9 |
+
+**`README.md` zuerst:** Es ist neben dem Reviewer-Skill das zweite Gegenstück,
+das **kürzer** ist als seine Ziel-Form (9230 gegen 13 433 Zeichen) — in
+slice-185 der Indikator, der beim ersten Treffer sofort trug.
+
+## 3. Umsetzung
+
+*(entsteht mit der Arbeit)*
+
+## 4. Definition of Done
+
+- [ ] Alle neun Paare sind abgeglichen; je Paar steht der Ausgang im Plan.
+- [ ] Jede Übernahme ist als solche kenntlich; jede bewusste Abweichung trägt
+      ihre Begründung — eine Differenz ist nicht automatisch eine Lücke.
+- [ ] Unabhängiger Review durchgeführt (Report unter [`docs/reviews/`](../../../reviews/README.md)).
+- [ ] Closure-Notiz mit Steering-Loop-Lerneintrag.
+- [ ] Beobachtungs-Register fortgeschrieben.
+- [ ] Jedes Risiko aus §7 trägt einen Ausgang.
+
+`make gates` und `make verify` grün.
+
+## 5. Trigger
+
+**Start** (`open` → `in-progress`):
+[slice-185](../in-progress/slice-185-ziel-form-voll-abgleich.md) liegt in
+`done/` und das WIP-Limit ist frei.
+
+**Rückführungen — vorab benannt:**
+
+- `in-progress` → `next` (zu groß): Braucht ein einzelnes Paar mehr als einen
+  Durchgang — `spec/lastenheft.md` mit 84 146 Zeichen ist der Kandidat —, wird
+  es abgetrennt.
+- `in-progress` → `open` (blockiert): Findet der Abgleich eine Ziel-Form-Regel,
+  die a-check bewusst **nicht** übernehmen will, ist das eine `MR`-Adaption und
+  keine Nachtrags-Entscheidung dieses Slice.
+
+## 6. Closure-Trigger
+
+DoD vollständig, `make gates` und `make verify` grün, Closure-Notiz mit
+Lerneintrag.
+
+## 7. Risiken und offene Punkte
+
+- **Neun Paare könnten wieder zu groß sein.** slice-185 hat vier geschafft und
+  das fünfte ohne Befund geschlossen; neun ist mehr als das Doppelte.
+  — **Ausgang:** <offen bis Closure>
+- **Die maschinelle Vorauswahl ist unscharf in beide Richtungen.** Sie meldet
+  Rauschen — und sie kann eine echte Lücke verfehlen, wenn a-check dieselbe
+  Aussage in anderen Worten trägt. — **Ausgang:** <offen bis Closure>
+
+## 8. Closure-Notiz
+
+*(bei Closure auszufüllen)*
+
+## 9. Sub-Area-Prüfungen und Modus-Begründung
+
+**Vorgelagert — Sub-Area-Wahl prüfen:** *(beim Übergang nach `in-progress/`
+auszufüllen.)*
+
+**Vorgelagert — offene Beobachtungen sichten:** *(ebenso.)*

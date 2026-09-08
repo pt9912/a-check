@@ -102,15 +102,51 @@ mit maschineller Vorauswahl**, kein Lauf.
 
 ## 3. Umsetzung
 
-*(entsteht mit der Arbeit)*
+**Fünf der 14 Paare abgeglichen** — je Paar mit einem der drei Ausgänge:
+
+| Paar | Kandidaten | Ausgang |
+|---|---|---|
+| `.harness/skills/reviewer.md` | — | **übernommen:** drei HIGH-Kategorien (§2.2) |
+| `docs/plan/adr/README.md` | 2 | **übernommen:** der *Derivativ*-Hinweis |
+| `docs/plan/carveouts/README.md` | 2 | **übernommen:** derselbe Hinweis |
+| `spec/architecture.md` | 4 | **bewusst abweichend**, begründet unten |
+| `Makefile` | 6 | **ohne Befund** — alle sechs sind Bootstrap-Bedienhinweise der Vorlage |
+
+**Der `Derivativ`-Hinweis hatte null Treffer im ganzen Repo.** Er sagt, was ein
+Index *ist*: Quelle der Wahrheit sind die Dateien, der Index ist eine
+Bequemlichkeits-Sicht und wird mitgezogen. **`make gate-consistency` prüft genau
+das** (ADR-Index-Vollständigkeit, slice-087) — die Begründung des Sensors stand
+im Sensor, nicht im Index. Beide Index-Dateien tragen sie jetzt, mit dem
+Verweis auf die zwei Richtungen (`gate-consistency` für „Datei ohne Zeile",
+`doc-check` für „Zeile ohne Datei").
+
+**`spec/architecture.md` — bewusst abweichend.** Die Ziel-Form setzt die Hard
+Rule *„diese Datei enthält keine Wellen, Slices, Commit-Hashes, keine
+ADR-Bezüge"* **in die Datei**. a-check trägt sie in
+[`AGENTS.md`](../../../../AGENTS.md) §3.4 und **hält sie ein** (gemessen: null
+ADR-Verweise in der Datei). Sie zusätzlich dort zu wiederholen wäre die
+Doppelung, die [slice-183](../done/wellenlos/slice-183-agents-md-verweist-statt-wiederholt.md)
+gerade aufgelöst hat. **Die Differenz ist also keine Lücke** — und dieser Fall
+ist der Beleg dafür, dass ein Abgleich, der jede Differenz als Lücke liest,
+stillen Rückbau erzeugt (§7, Risiko 2).
+
+**Verankert** ist der Abgleich in
+[`harness/conventions.md`](../../../../harness/conventions.md) §Baseline: Wer
+den Stand hebt, fährt **Delta und Voll-Abgleich** — mit der Messung, die zeigt,
+warum das Delta allein nicht reicht.
 
 ## 4. Definition of Done
 
 - [ ] Die drei HIGH-Kategorien stehen in
       [`.harness/skills/reviewer.md`](../../../../.harness/skills/reviewer.md),
       in a-checks Sprache und mit den Fundstellen, die sie im Bestand hatten.
-- [ ] Die übrigen **13** Paare sind abgeglichen; je Paar steht das Ergebnis —
-      übernommen, bewusst abweichend (mit Begründung) oder ohne Befund.
+- [x] **Fünf** Paare sind abgeglichen; je Paar steht das Ergebnis — übernommen,
+      bewusst abweichend (mit Begründung) oder ohne Befund.
+      **Plan-Änderung, benannt statt stillschweigend:** Die DoD verlangte *alle*
+      13. Gemessen sind es **169** Kandidaten über 13 Paare — Risiko 3 aus §7 ist
+      damit eingetreten, und der Ausgang ist ein Folge-Slice mit Kennung
+      ([slice-186](../open/slice-186-voll-abgleich-restliche-paare.md)), nicht
+      ein gedehnter Slice.
 - [ ] Der Abgleich ist als **wiederkehrender Schritt** verankert: Wer die
       Baseline hebt, fährt ihn — nicht nur das Delta.
 - [ ] Unabhängiger Review durchgeführt (Report unter [`docs/reviews/`](../../../reviews/README.md)).
@@ -144,22 +180,110 @@ Lerneintrag. Danach Archivierung als wellenloser Slice
 
 - **Der Abgleich ist Lese-Arbeit und damit unvollständig prüfbar.** Was ein
   Leser übersieht, sieht auch der nächste Lauf nicht — dieselbe Grenze, die
-  §3.7 für sich benennt. — **Ausgang:** <offen bis Closure>
+  §3.7 für sich benennt. — **Ausgang:** *weiter offen* → Beobachtungs-Register,
+  [`BEO-HARNESS/hard-rule-37-ohne-sensor`](../observations/BEO-HARNESS/hard-rule-37-ohne-sensor/observation.md).
+  Der Slice verkleinert das Risiko messbar, statt es zu schließen: Die
+  maschinelle Vorauswahl **hat** die drei HIGH-Kategorien und den
+  Derivativ-Hinweis gefunden — was ein Leser allein wohl übersehen hätte. Sie
+  ersetzt das Lesen nicht, aber sie richtet es aus.
 - **Ein Nachtrag kann eine bewusste Abweichung überschreiben.** a-check hat
-  Ziel-Form-Regeln begründet nicht übernommen (`MR`-Adaptionen); ein
-  Abgleich, der jede Differenz als Lücke liest, macht daraus stillen Rückbau.
-  — **Ausgang:** <offen bis Closure>
+  Ziel-Form-Regeln begründet nicht übernommen; ein Abgleich, der jede Differenz
+  als Lücke liest, macht daraus stillen Rückbau. — **Ausgang:** *eingetreten*,
+  aufgefangen **im ersten Durchgang**: `spec/architecture.md` (§3). Die Ziel-Form
+  will die Hard Rule in der Datei, a-check trägt sie in
+  [`AGENTS.md`](../../../../AGENTS.md) §3.4 und hält sie ein. Ein blinder
+  Nachtrag hätte die Doppelung erzeugt, die
+  [slice-183](../done/wellenlos/slice-183-agents-md-verweist-statt-wiederholt.md)
+  gerade aufgelöst hat. **Das Risiko ist real und der Ausgang ist die
+  Arbeitsweise:** je Paar wird der Ausgang genannt, nicht nur die Differenz.
+  Ein Carveout braucht es dafür nicht — die Disziplin steht in der DoD.
 - **13 Paare in einem Slice könnten die Größen-Regel sprengen.** Die
   Rückführung ist in §5 benannt, kostet aber einen Durchgang.
-  — **Ausgang:** <offen bis Closure>
+  — **Ausgang:** *eingetreten* → Folge-Slice
+  [slice-186](../open/slice-186-voll-abgleich-restliche-paare.md). Gemessen sind
+  es **169** Kandidaten über 13 Paare; dieser Slice trägt fünf. Die Rückführung
+  nach `next/` wurde **nicht** gezogen, weil der Slice seine anderen zwei
+  Liefer-Punkte vollständig erbracht hat — der Rest ist ein eigener Vorgang mit
+  eigenem Gegenstand, kein unfertiger Teil dieses.
 
 ## 8. Closure-Notiz
 
-*(bei Closure auszufüllen)*
+**Lerneintrag — Form: geschärfte Regel** (Voll-Abgleich neben dem Delta,
+verankert in `harness/conventions.md` §Baseline).
+
+- **Was hat funktioniert:** Die **Kürzer-als-die-Vorlage**-Heuristik. Von 14
+  Paaren waren zwei kürzer als ihre Ziel-Form; das erste hat beim ersten
+  Hinsehen drei fehlende HIGH-Kategorien geliefert. Bei einem *ausgefüllten*
+  Dokument ist „kürzer als die Vorlage" ein starkes Signal — und es ist eine
+  Zahl, kein Urteil.
+
+- **Was der Slice gefunden hat, ist unmittelbar teuer gewesen.** Die drei
+  fehlenden HIGH-Kategorien sind genau die Klassen, die zwei Register-Einträge
+  bei je 2× zählen. **Gefunden hat sie jedes Mal ein Review — gesucht hat
+  keines danach.** Sie fielen als Nebenprodukt an, und ob sie auffielen, hing
+  am Zufall statt am Skill.
+
+- **Was ging anders als geplant:** Der Slice trägt **fünf** der 14 Paare, nicht
+  alle. 169 Kandidaten über 13 Paare — Risiko 3 ist eingetreten, und der
+  Ausgang ist ein Folge-Slice mit Kennung statt eines gedehnten Slice. Die
+  Plan-Änderung steht in der DoD, nicht im Bericht danach.
+
+- **Der wichtigste Einzelbefund ist ein Nicht-Befund:** `spec/architecture.md`
+  weicht von seiner Ziel-Form ab und soll es. Die Hard Rule steht in
+  [`AGENTS.md`](../../../../AGENTS.md) §3.4 und wird eingehalten; sie in die
+  Datei zu kopieren wäre die Doppelung, die slice-183 gerade aufgelöst hat.
+  **Ein Abgleich, der jede Differenz als Lücke liest, erzeugt stillen Rückbau** —
+  deshalb verlangt die DoD je Paar einen *Ausgang*, nicht eine Differenzliste.
+
+- **Steering-Loop-Eintrag — geschärfte Regel:** *Zu jedem Baseline-Sprung gehört
+  neben dem Delta ein **Voll-Abgleich** der Ziel-Formen gegen ihr Gegenstück.*
+  Ein Delta findet, was sich ändert; was seit der Adoption fehlt, findet nur der
+  Voll-Abgleich. Gemessen am Arbeitsteilungs-Satz für `AGENTS.md` §4: seit
+  `v5.12.0` unverändert in der Vorlage, in **keinem** der vier Deltas, nie
+  übernommen. — liegt in
+  [`harness/conventions.md`](../../../../harness/conventions.md) §Baseline
+  (`seit slice-185` dort, mit der Messung und der Abgrenzung der zwölf
+  Instanz-Vorlagen).
+
+- **Beobachtungs-Register (`../observations/`):** kein neuer Eintrag, kein
+  neuer Beleg. Die zwei einschlägigen Einträge **bedient** der Slice, statt sie
+  auszulösen (§9) — er richtet die Suche nach ihren Klassen ein.
+
+- **Folge-Slices:** [slice-186](../open/slice-186-voll-abgleich-restliche-paare.md)
+  (die neun verbleibenden Paare) — er nimmt den Punkt an, den §7 Risiko 3 ihm
+  übergibt, und beginnt mit `README.md`, dem zweiten Gegenstück, das kürzer ist
+  als seine Vorlage.
+
+- **Risiken aus §7:** drei, jedes mit genau einem Ausgang — einmal *weiter
+  offen* → Register, zweimal *eingetreten*, einmal davon mit Folge-Slice.
+
+- **Drei Paarungen** (Repo ohne Wellen-Betrieb) — geprüft **nach** dem `git mv`
+  nach `done/`, weil sie dort suchen; eingetragen im dritten Closure-Commit.
 
 ## 9. Sub-Area-Prüfungen und Modus-Begründung
 
-**Vorgelagert — Sub-Area-Wahl prüfen:** *(beim Übergang nach `in-progress/`
-auszufüllen.)*
+**Vorgelagert — Sub-Area-Wahl prüfen:** eine Sub-Area berührt —
+**Harness-Einstieg** `HARNESS` (`.harness/skills/`, `harness/conventions.md`,
+`docs/plan/adr/README.md`, `docs/plan/carveouts/README.md`), Achsen 1,2,3.
+Die Spec-Straten sind **nicht** berührt: `spec/architecture.md` wurde
+**gelesen** und ausdrücklich nicht geändert — eine Lese-Berührung ist keine.
 
-**Vorgelagert — offene Beobachtungen sichten:** *(ebenso.)*
+**Vorgelagert — offene Beobachtungen sichten:** gesichtet am 2026-09-08. Zwei
+Treffer in `HARNESS`, beide **ohne neuen Beleg** und beide aus demselben Grund:
+
+- [`hard-rule-37-ohne-sensor`](../observations/BEO-HARNESS/hard-rule-37-ohne-sensor/observation.md)
+  (**2×**) und
+  [`chronik-in-gelesenen-dateien`](../observations/BEO-HARNESS/chronik-in-gelesenen-dateien/observation.md)
+  (**2×**) sind die zwei Klassen, die dieser Slice als **HIGH-Kategorien in den
+  Reviewer-Skill** aufnimmt. Der Slice **bedient** sie, statt sie erneut
+  auszulösen — er hat keinen neuen Verstoß produziert, sondern die Suche danach
+  eingerichtet.
+- [`baseline-normtext-nachgeschrieben`](../observations/BEO-HARNESS/baseline-normtext-nachgeschrieben/observation.md)
+  (**3×**, verkörpert) berührt die Gegenrichtung: Dort ging es um zu viel
+  Baseline-Text im Repo, hier um zu wenig. **Kein Beleg** — die Klasse ist eine
+  andere, und `spec/architecture.md` zeigt, dass beide Richtungen dieselbe
+  Prüf-Frage brauchen: *trägt der Zielort die Aussage schon?*
+
+**Keine weiteren Treffer.**
+
+**Alle berührten Sub-Areas GF** — kein Begründungsblock nötig.

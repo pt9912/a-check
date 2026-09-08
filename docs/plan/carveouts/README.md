@@ -1,5 +1,9 @@
 # Carveouts — temporäre Ausnahmen mit Auflösungs-Plan
 
+**Derivativ:** Quelle der Wahrheit sind die Carveout-Dateien; die Tabellen hier
+sind eine Bequemlichkeits-Sicht und werden bei jedem neuen oder aufgelösten
+Carveout mitgezogen.
+
 Ein **Carveout** ist eine *temporäre* Ausnahme von einer Regel oder einem Gate, die einen
 **Auflösungs-Plan** trägt. Die Kernidee der Baseline (`modul-07`): *ein Carveout ohne
 Auflösungs-Trigger ist ein permanenter Carveout, der lügt.* Angelegt in slice-065; die ID-Reihe
