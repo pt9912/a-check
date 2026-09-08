@@ -7,6 +7,9 @@
 Cross-language hexagonal-architecture checker — deterministic, side-effect-free,
 text-heuristic, shipped as a container image.
 
+**Role:** Rank 7 of the source precedence — points at the canonical sources,
+does not duplicate them. See [`harness/README.md`](harness/README.md#source-precedence).
+
 ## What is a-check?
 
 **a-check** enforces a repository's hexagonal layered architecture **across languages**, driven

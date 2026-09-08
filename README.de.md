@@ -7,6 +7,9 @@
 Sprachübergreifender Hexagon-Architektur-Checker — deterministisch,
 seiteneffektfrei, text-heuristisch, ausgeliefert als Container-Image.
 
+**Rolle:** Rang 7 der Source Precedence — verweist auf die kanonischen
+Quellen, dupliziert sie nicht (siehe [`harness/README.md`](harness/README.md#source-precedence)).
+
 ## Was ist a-check?
 
 **a-check** erzwingt die hexagonale Schicht-Architektur eines Repositories
