@@ -172,8 +172,13 @@ targets:
   # UND harness/README.md. Ohne die zweite waere die Abloesung (slice-079) eine
   # Scope-Verkleinerung — gemessen: ein Phantom nur in harness/README.md blieb
   # unentdeckt.
-  doc-tables: [AGENTS.md, harness/README.md]
-  authority: AGENTS.md
+  # DER EINE GATE-INDEX (Baseline v6.6.0, grundlagen-harness-dateien.md):
+  # harness/README.md Paragraph Sensors traegt die Liste UND die Bindung;
+  # AGENTS.md Paragraph 4 traegt die Regel und den Zeiger, nicht die Liste.
+  # Vor slice-193 standen hier beide Dateien und AGENTS.md als authority --
+  # zwei Indizes, die pro Lauf zweimal bezahlt werden und auseinanderlaufen.
+  doc-tables: [harness/README.md]
+  authority: harness/README.md
   exempt-targets: [help, build, compile, hooks, arch-graph]
 
 # Modul-Option `links.resolve-from` (slice-080): loest tools/verify-slice-links.sh
@@ -362,7 +367,7 @@ structure:
           cell-min-chars: 1
         - name: Bindung
           cell-min-chars: 1
-    hint: "Zellengrenze der Vertrags-Spalte (max 250 Zeichen, nicht leer): was darueber hinausgeht, gehoert nach harness/sensors/<target>.md (AGENTS §4)"
+    hint: "Zellengrenze der Vertrags-Spalte (max 250 Zeichen, nicht leer): was darueber hinausgeht, gehoert nach harness/sensors/<target>.md"
 
   - files: "harness/conventions.md"
     section: "### Aktive Adaptionen"
@@ -375,14 +380,13 @@ structure:
           cell-min-chars: 1
     hint: "Zellengrenze der Adaptions-Uebersicht (max 250 Zeichen, nicht leer): die Begruendung gehoert in den MR-Eintrag, die Tabelle traegt nur, was ohne Oeffnen entscheidbar sein muss"
 
-  - files: "AGENTS.md"
-    section: "## 4. Quality Gates"
-    table:
-      column:
-        - name: Zweck
-          cell-max-chars: 150
-          cell-min-chars: 1
-    hint: "Zellengrenze der Zweck-Spalte (max 150 Zeichen, nicht leer): was darueber hinausgeht, gehoert nach harness/sensors/<target>.md (AGENTS §4)"
+  # ENTFALLEN mit slice-193: die Zellengrenze der Zweck-Spalte in AGENTS.md §4
+  # hatte ihren Gegenstand verloren, als der Gate-Index nach harness/README.md
+  # zog. GEMESSEN, weil es die interessantere Haelfte ist: Die Regel blieb nach
+  # dem Verschwinden der Tabelle GRUEN, statt fail-closed zu melden -- ein
+  # Pruefer ohne Gegenstand meldet gruen und ist damit nicht "unbenutzt",
+  # sondern unkalibriert (BEO-GATE/pruefer-ohne-gegenstand-oder-aufruf). Die
+  # Zellengrenze der Sensors-Tabelle oben deckt den Gegenstand jetzt allein.
 
 # Modul `planning` (DC-FA-PLAN-001): Lifecycle-Konsistenz Roadmap <-> in-progress/.
 # Ohne diesen Block lief `make doc-planning` WIRKUNGSLOS — d-check aktiviert das
@@ -456,7 +460,17 @@ planning:
 # an der Pfad-Form (slice-184, gemessen).
 mentions:
   artifacts: ["harness/sensors/*.md"]
-  documents: ["AGENTS.md"]
+  # Zieht mit dem Gate-Index um (slice-193): eine Sensor-Datei gehoert dorthin
+  # genannt, wo ihr Target steht.
+  #
+  # DAS MODUL SUCHT DEN VOLLEN REPO-RELATIVEN PFAD als Zeichenkette. Damit
+  # harness/README.md ihn traegt, verlinkt seine Sensors-Tabelle ueber
+  # `../harness/sensors/<name>.md` statt geschwister-relativ: der Link loest
+  # gleich auf, und der volle Pfad steht als Teilzeichenkette darin. Gemessen in
+  # beide Richtungen (slice-193) -- geschwister-relativ meldet 0 von 1, mit dem
+  # Umweg 1 von 1. Bis dahin galt diese Kopplung als unmoeglich (doc-mentions.md
+  # Grenze 1, slice-184); sie war es nicht, nur ungemessen.
+  documents: ["harness/README.md"]
 
 workflows:
   dir: .github/workflows

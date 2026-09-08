@@ -11,8 +11,8 @@ leer, trägt sie ihn. Beide Richtungen sind derselbe Defekt (Baseline `modul-06`
 
 1. **Kein Name wird geprüft.** Die Äquivalenz ist marker-seitig; *welchen*
    Slice die Sektion nennt — oder ob sie einen nennt —, sieht der Lauf nicht.
-   Bis slice-186 sagten [`AGENTS.md`](../../AGENTS.md) §4, `harness/README.md`
-   §Sensors und der Vertrag oben *„benennt ihn"* zu, und die Einschränkung stand
+   Bis slice-186 sagten der Gate-Index und der Vertrag oben *„benennt ihn"* zu,
+   und die Einschränkung stand
    nur als Kommentar in [`.d-check.yml`](../../.d-check.yml). Gemessen hat das
    getragen: Die Roadmap nannte **siebzehn Slice-Übergänge lang** einen Slice,
    der in `done/` lag, und das Gate blieb grün. Seit slice-186 nennt die Sektion

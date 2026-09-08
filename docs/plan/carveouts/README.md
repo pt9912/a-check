@@ -69,7 +69,7 @@ Status · Datum angelegt · Letzte Prüfung · betroffenes Gate · Geltungsberei
 statt Kurs-Konventionen); den Abschnitt `## Geschichte` streichen — er trägt Audit-Einträge einer
 Wellen-Closure-Prozedur, die a-check noch nicht durchläuft (Fund **B-13**, siehe
 [§Audit](#audit)); das Feld `Betroffenes Gate` auf eines der in
-[`AGENTS.md`](../../../AGENTS.md) §4 deklarierten Targets binden, kein erfundenes.
+[`harness/README.md`](../../../harness/README.md) §Sensors deklarierten Targets binden, kein erfundenes.
 
 - **Ohne Folge-Slice** ist der Carveout de facto permanent — dann gehört er über den Trichter in
   eine ADR, nicht hierher.

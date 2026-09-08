@@ -165,72 +165,26 @@ Harness-Lüge).
 
 ## 4. Quality Gates
 
-Regeln dieser Sektion: Nur Targets aufzählen, die im Makefile **existieren** — halluzinierte
-Gates sind die häufigste Form von Harness-Lüge (Baseline-Regelwerk `modul-13-quality-gates.md`).
+Regeln dieser Sektion: Baseline-Regelwerk `grundlagen-harness-dateien.md`
+§harness/README.md als Einstiegspunkt.
 
-Nur hier gelistete Targets existieren im Makefile. Halluzinierte Gates
-sind die häufigste Form von Harness-Lüge; `make doc-targets` erzwingt
-die Übereinstimmung Doku ↔ Makefile mechanisch — über diese Tabelle **und**
-[`harness/README.md`](harness/README.md) §Sensors. Die Code-Gates sind
-Dockerfile-Stages, die Meta-Gates laufen als Host-Bash. **Mandatory** ist, was in einem der
-beiden Aggregate hängt: `gates` (Code-Fragen) oder `verify` (DoD-/Closure-Fragen). Von den
-`doc-*`-Targets sind das `doc-check`, `doc-targets`, `doc-planning`, `doc-workflows`,
-`doc-reviews` und `doc-mentions` (in `gates`) sowie `doc-structure` und `doc-complete`
-(in `verify`); die übrigen sind **advisory** —
-`d-check`-Funktionen, die man aufruft, wenn man sie braucht. Ob ein Gate gerade grün ist, sagt
-die CI (Badge im [`README.md`](README.md)), nicht diese Tabelle.
+**Der Gate-Index steht einmal**, in [`harness/README.md`](harness/README.md)
+§Sensors — dort steht auch die *Bindung* jedes Targets, und von dort führt der
+Weg zur `AC-*`-ID, zur ADR oder zum Carveout. Wo ein Target mehr braucht als
+seine Zelle (Grenze, Ausgänge, Sperren), steht das in
+[`harness/sensors/`](harness/sensors/). **Diese Datei führt die Liste nicht.**
 
-| Target | Zweck |
-|---|---|
-| [`make doc-check`](harness/sensors/doc-check.md) | Links, Anker, Kennungs-Linkpflicht und Referenzmatrix lösen auf; dazu Lifecycle-Invariante und Versions-Kohärenz |
-| `make doc-trace` | advisory Requirements Traceability Matrix via `d-check` (DC-FA-CLI-009; `TRACE_FLAGS=--json`) |
-| `make doc-complete` | Vollständigkeits-Gate: eine Anforderung ohne referenzierenden Slice ⇒ Exit 1 (DC-FA-CLI-011); im `verify`-Aggregat |
-| `make doc-doctor` | erklärende Diagnose mit Fix-Kandidaten (DC-FA-CLI-007) — **advisory** |
-| `make doc-repair` | Reparatur-Patch (unified diff) auf stdout, git-apply-rein (DC-FA-CLI-008) |
-| `make doc-immutable` | ADR-Immutabilität (§3.5) via git-Diff (Modul `vcs`; `RANGE=`/`STAGED=1`) — CI-durchgesetzt über die Commit-Range |
-| `make doc-commits` | Commit-Message-Traceability (Modul `commits`; `RANGE=`, DC-FA-COMMITS-001) |
-| [`make doc-planning`](harness/sensors/doc-planning.md) | Äquivalenz Roadmap ↔ `in-progress/`: liegt dort ein Slice, fehlt der Ruhe-Marker; ist es leer, steht er. Kein Name wird geprüft |
-| [`make doc-workflows`](harness/sensors/doc-workflows.md) | Deklarations-Form der `uses:`-Referenzen unter `.github/workflows`. Prüft die **Form**, nicht die Gültigkeit |
-| [`make doc-mentions`](harness/sensors/doc-mentions.md) | Erwähnungs-Deckung, die **Gegenrichtung** des Link-Checks: jede Datei unter `harness/sensors/` ist hier genannt |
-| [`make doc-reviews`](harness/sensors/doc-reviews.md) | Review-Report-Deckung für `done/`-Slices mit der DoD-Phrase; **Opt-in pro Slice über die Phrase selbst** |
-| `make doc-tracked` | Getrackt-Status auflösbarer Referenz-Ziele (Modul `tracked`, DC-FA-TRK-001) |
-| `make doc-targets` | Deklarations-Konsistenz Doku ↔ Build-Targets (Modul `targets`, DC-FA-TGT-001), konfiguriert in [`.d-check.yml`](.d-check.yml); im `gates`-Aggregat |
-| [`make doc-structure`](harness/sensors/doc-structure.md) | Struktur-Invarianten innerhalb der Dokumente: Größen-Regel, Closure-Struktur, Lerneintrag-Form, Kopffelder, AC-Form, Zellengrenzen der Gate-Tabellen |
-| `make doc-usage` | Aufruf und Optionen von d-check selbst (`--help`) — **advisory**, seit dem Pin auf `v0.75.0` von `d-check --print-mk` mit erzeugt |
-| `make doc-help` | Liste der `doc-*`-Targets (Utility) |
-| `make lint` | golangci-lint mit dem Projekt-Profil (§3.2, [ADR-0005](docs/plan/adr/0005-lint-profil.md)) |
-| `make test` | Akzeptanzkriterien der `AC-FA-*` als Go-Tests |
-| `make coverage-gate` | Gesamt-Coverage ≥ 90 % über `./internal/...` ([ADR-0006](docs/plan/adr/0006-coverage-gate.md)) |
-| `make arch-check` | Eigen-Architektur via `a-check` selbst (Dogfooding) |
-| [`make gate-consistency`](harness/sensors/gate-consistency.md) | Meta-Gate, drei Prüfungen: `.d-check.yml`-Module, Pin-Konsistenz, ADR-Index-Vollständigkeit |
-| [`make version-coherence`](harness/sensors/version-coherence.md) | Kohärenz **doppelt deklarierter** Versions-Angaben. Prüft **Divergenz, nicht Wahrheit** |
-| `make record-gates` | Gate-Nachweis (Working-Tree-Hash) für den Stop-Hook |
-| `make suppression-check` | Fitness Function zum Suppression-Verbot (§3.2): keine `//nolint`-Direktive in den Go-Quellen |
-| [`make symlink-check`](harness/sensors/symlink-check.md) | Zwei Prüfungen je getracktem Symlink: das Ziel existiert, und ein Ziel unter `.harness/baseline/` trägt den adoptierten Stand |
-| [`make dcheck-phrase-selftest`](harness/sensors/dcheck-phrase-selftest.md) | Kalibrierung der phrasen-basierten Modul-Konfigurationen, **beide Hälften**: Werkzeug und Korpus |
-| `make guard-selftest` | Selbsttest des PreToolUse-Command-Guard (Tool-Call-Gate §3.1) |
-| [`make ci-range-selftest`](harness/sensors/ci-range-selftest.md) | Selbsttest der Commit-Range-Weiche der CI: vier Fälle, darunter der **Force-Push** |
-| [`make image-scan`](harness/sensors/image-scan.md) | **kein Bestandteil von `gates`** (nicht hermetisch) — CVE-Scan gegen das **publizierte** Image |
-| [`make regelwerk-check`](harness/sensors/regelwerk-check.md) | **kein Gate** — misst die Integrität der vendored Baseline gegen `SHA256SUMS`, fail-closed. Die Freshness-Hälfte bleibt als Netz-Operation ungeprüft |
-| `make slice-mv` | **kein Gate** — ein Werkzeug: Lifecycle-Wechsel eines Slice per `git mv` samt der Verweise auf ihn |
-| `make gates` | alle inneren Gates (mandatory vor Handoff) |
-| [`make verify-risiko-ausgaenge`](harness/sensors/verify-risiko-ausgaenge.md) | Jedes in §6 **notierte** Risiko trägt genau einen Ausgang aus der geschlossenen Dreier-Menge |
-| [`make verify-observations`](harness/sensors/verify-observations.md) | Deckung des Beobachtungs-Registers; der Zähler wird abgeleitet, nicht geführt |
-| `make verify` | **Verifikations-Schicht** (getrennt von `gates`): DoD-/Closure-Fragen statt Code-Fragen |
-| `make image-test` | [AC-FA-DIST-001](spec/lastenheft.md#ac-fa-dist-001--distribution-image---print-mk-a-checkmk) + nativ==Container + Fragment-Parität |
-| `make ci` | CI-äquivalent: `gates` + `image-test` (Workflow `.github/workflows/ci.yml`) |
-| `make trace-check` | Traceability via Modul `commits`: `AC-*`/`ADR-*`/`MR-*`/`slice`-ID je Commit (§5) |
-| `make commit-scope-check` | Commit-Scope `(planning)` berührt nur `docs/plan/planning/` (§5); misst jeden Commit an der damals geltenden Fassung |
-| `make archive-wave-test` | Testsuite von `tools/archive-wave/` (eigenes `go.mod` — **nicht** Teil von `make test`, das nur das Hauptmodul deckt) |
-| [`make archive-wave`](harness/sensors/archive-wave.md) | **kein Gate** — bewegt Zeitdokumente ins Archiv, Volltexte werden Stubs (`WELLE=`/`SLICE=`, `APPLY=1`) |
+**Kein Target nennen, das im Makefile nicht existiert** — auch nicht in Prosa.
+Halluzinierte Gates sind die häufigste Form von Harness-Lüge. Die maschinelle
+Hälfte dieser Regel ist `make doc-targets`: Es hält den Index gegen die
+`Makefile`-Regeln, in **beiden** Richtungen — kein behauptetes Target ohne
+Regel, keine Regel ohne Eintrag im Index. Die Autoritäts-Doku ist
+`harness/README.md`, und es gibt genau eine.
 
-Diese Tabelle **listet auf**; definiert wird hier nichts. Die *Bindung* eines
-Targets — welche Anforderung oder Entscheidung es durchsetzt — steht in
-[`harness/README.md`](harness/README.md) §Sensors; von dort führt der Weg zur
-`AC-*`-ID, zur ADR oder zum Carveout. Wo ein Target mehr braucht als seine
-Zelle — Grenze, Ausgänge, Sperren —, steht das in
-[`harness/sensors/`](harness/sensors/); `make doc-mentions` hält beide Enden
-zusammen.
+**Mandatory** ist, was in einem der beiden Aggregate hängt: `gates` (Code-Fragen)
+oder `verify` (DoD-/Closure-Fragen). Welche Targets das sind, sagt das
+[`Makefile`](Makefile); ob eines gerade grün ist, sagt die CI (Badge im
+[`README.md`](README.md)).
 
 ## 5. Dokumentations-Regeln
 

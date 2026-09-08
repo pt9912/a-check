@@ -2,8 +2,8 @@
 
 ## Vertrag
 
-Jede Datei unter `harness/sensors/` ist in [`AGENTS.md`](../../AGENTS.md) §4
-**genannt**. Das ist die Gegenrichtung zu `make doc-check`: Ein Link-Sensor
+Jede Datei unter `harness/sensors/` ist im **Gate-Index** genannt —
+[`harness/README.md`](../README.md) §Sensors. Das ist die Gegenrichtung zu `make doc-check`: Ein Link-Sensor
 prüft, ob ein **genanntes** Ziel existiert; dieser prüft, ob eine
 **existierende** Datei genannt wird.
 
@@ -13,17 +13,20 @@ existiert; **eine Datei ohne Index-Zeile** und eine Zeile auf die falsche Datei
 bleiben still grün."*
 
 Der Lauf meldet eine **Quote**, nicht nur ein Ja/Nein:
-`mentions: 16 von 16 Artefakt(en) erwähnt, über 1 Dokument(e)` — die 16. ist
-diese Datei selbst; der Sensor wächtert sich mit..
+`mentions: 16 von 16 Artefakt(en) erwähnt, über 1 Dokument(e)` — eine davon ist
+diese Datei selbst; der Sensor wächtert sich mit.
 
 ## Grenze — was das Grün nicht abdeckt
 
-1. **Nur `AGENTS.md` ist Dokument-Menge.** Das Modul sucht den **vollen
-   repo-relativen Pfad** als Zeichenkette (gemessen, slice-184).
-   [`harness/README.md`](../README.md) nennt dieselben Dateien
-   geschwister-relativ (`sensors/<name>.md`) und **kann das nicht ändern**, ohne
-   seine Links zu brechen — Markdown-Links sind dateirelativ. Seine
-   Sensor-Tabelle bleibt damit ungewächtert.
+1. **Das Modul sucht den vollen repo-relativen Pfad** als Zeichenkette, und es
+   kennt kein `resolve-from` (gemessen: `resolve-from`, `match-basename`,
+   `strip-prefix`, `paths-relative-to` sind alle unbekannte Felder). Der Index
+   trägt den Pfad deshalb über die Link-Form `../harness/sensors/<name>.md` —
+   sie löst von `harness/README.md` **gleich auf** und enthält den vollen Pfad
+   als Teilzeichenkette. **Bis slice-193 stand hier, das sei unmöglich**; die
+   Behauptung war ungemessen. Der Umweg ist der Preis: Wer die Links auf die
+   kürzere Geschwister-Form zurücksetzt, macht den Sensor blind, ohne dass ein
+   Link bricht.
 2. **Die zweite Richtung fehlt weiter:** eine Index-Zeile, die auf die *falsche*
    Datei zeigt, bleibt still grün. Das prüft `doc-check` (Ziel existiert) nur
    für die Existenz, nicht für die Zuordnung.
@@ -33,12 +36,14 @@ diese Datei selbst; der Sensor wächtert sich mit..
 4. **Die ADRs sind nicht gedeckt**, obwohl dieselbe Frage dort gilt. Der
    ADR-Index verlinkt geschwister-relativ — **39 von 39** —, und das Modul sähe
    jede einzelne als unerwähnt. Diese Richtung trägt weiter die Eigenbau-Prüfung
-   (3) in `tools/gate-consistency.sh`; die Ablösung scheitert an der Pfad-Form,
-   nicht am Willen (gemessen, slice-184).
+   (3) in `tools/gate-consistency.sh`. **Der Umweg aus Grenze 1 stünde dort
+   ebenso offen** (`../../docs/plan/adr/<datei>.md` löst aus dem ADR-Index auf
+   und trägt den vollen Pfad); ob 39 längere Links den Gewinn wert sind, ist eine
+   Entscheidung und kein technisches Hindernis mehr.
 
 ## Sperren
 
-- `artifact-unmentioned` — eine Sensor-Datei wird in `AGENTS.md` §4 nicht
+- `artifact-unmentioned` — eine Sensor-Datei wird im Gate-Index nicht
   genannt. Entweder fehlt ihre Zeile, oder die Datei ist verwaist.
 - `das Modul mentions braucht mentions.artifacts UND mentions.documents` —
   fehlt eine der beiden Listen, bricht der Lauf ab, statt leer durchzulaufen.
