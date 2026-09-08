@@ -19,3 +19,8 @@ Zählung entstand aus der Frage, warum `doc-doctor` und `doc-help` in der Liste 
 Index sie sichtbar führt. Das ist die Gegenprobe am Fund, die
 [`muster-trifft-nur-die-haeufige-schreibweise`](../../../BEO-GATE/muster-trifft-nur-die-haeufige-schreibweise/observation.md)
 als billigstes Mittel nennt.
+
+**Nachtrag aus dem Review:** Die Closure hatte den Ausgang zunächst auf *„den nächsten
+Lese-Schritt"* vertagt. In einem Repo ohne Wellen-Betrieb **ist** die Slice-Closure der
+Lese-Schritt; der Eintrag hätte sie ohne Ausgang überstanden, und `make verify` hätte es nicht
+gemeldet — `verify-observations` prüft Deckung, nicht Ausgänge.

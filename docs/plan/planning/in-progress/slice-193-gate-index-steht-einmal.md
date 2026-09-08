@@ -121,15 +121,23 @@ die Links auf die kürzere Form zurücksetzt, macht den Sensor blind, **ohne das
 ein Link bricht**. Und Grenze 4 (die 39 ADRs) ist damit kein technisches
 Hindernis mehr, sondern eine Abwägung.
 
-### 3.4 Was der Umzug an einer Regel sichtbar machte
+### 3.4 Die Zellengrenze entfällt — und das Modul fällt dabei fail-closed aus
 
 Die `structure`-Zellengrenze auf der *Zweck*-Spalte von §4 verlor mit der Tabelle
-ihren Gegenstand. **Gemessen, weil es die interessantere Hälfte ist:** Der Lauf
-blieb danach **grün**, statt fail-closed zu melden — ein Prüfer ohne Gegenstand
-meldet grün und ist damit nicht „unbenutzt", sondern **unkalibriert**
-([`BEO-GATE/pruefer-ohne-gegenstand-oder-aufruf`](../observations/BEO-GATE/pruefer-ohne-gegenstand-oder-aufruf/observation.md),
-verkörpert). Die Regel ist entfernt; die Zellengrenze der Sensors-Tabelle deckt
-den Gegenstand allein.
+ihren Gegenstand und ist entfernt; die Zellengrenze der Sensors-Tabelle deckt ihn
+allein.
+
+**Die erste Fassung dieses Abschnitts behauptete, die Regel sei danach grün
+geblieben — das war falsch, und der Review hat es widerlegt** (F-1). Testweise
+wortgleich wieder eingesetzt, meldet der Lauf
+`AGENTS.md:166 :: Spalte Zweck section-column-missing`, **Exit 2**. Grün war
+nicht der Prüfer, sondern **mein Lauf**: `doc-structure` hängt in `verify`, nicht
+in `gates` — ich hatte nach dem Streichen der Tabelle `make gates` gefahren und
+das Ergebnis auf den falschen Prüfer bezogen.
+
+**Die Lehre ist die unangenehmere Fassung derselben Regel, die §3.1 trägt:** Eine
+Messung nennt nicht nur ihr Ergebnis, sondern **ihren Aufruf**. Ein grüner Lauf
+belegt nur, was in ihm hing.
 
 ### 3.5 Drei Mutations-Proben, alle rot
 
@@ -141,6 +149,41 @@ den Gegenstand allein.
 
 Alle drei mit **genannter Meldung**, nicht nur mit Exit-Code; danach
 zurückgesetzt und `make gates` erneut grün.
+
+### 3.6 Was der unabhängige Review verändert hat
+
+Der Report
+([`2026-09-08-slice-193-…`](../../../reviews/2026-09-08-slice-193-gate-index-steht-einmal.md))
+trug **6 HIGH · 5 MEDIUM · 4 LOW · 1 INFO**. Er hat den Umzug selbst
+**bestätigt** — Differenz beidseitig eigenständig nachgemessen, null verloren,
+genau die fünf neuen Zeilen; die drei Mutations-Proben echt; der `mentions`-Umweg
+in beide Richtungen belegt; §4 ohne Auslassung die Ziel-Form. Und er hat vier
+merge-blockierende Dinge gefunden:
+
+| Befund | Kern | Behebung |
+|---|---|---|
+| **F-1** Der zentrale „Fund" war falsch | Die entfallene Zellengrenze meldet **nicht** grün, sondern `section-column-missing`, Exit 2. Grün war `make gates`, in dem `doc-structure` gar nicht hängt | §3.4, §8, §9 und der `.d-check.yml`-Kommentar richtiggestellt — die Konfigurations-Zeile war die langlebigste der drei Stellen |
+| **F-2/F-4/F-5** Der Umzug war gemacht, die Verweise nicht | `Makefile` Z. 133 und die `make help`-Zeile, `harness/conventions.md`, `docs/user/releasing.md` führten `AGENTS.md` §4 weiter als Deklarationsort; die **neu geschriebene** Grenze 4 in `doc-mentions.md` nannte für den ADR-Index `../../docs/plan/adr/…` — das löst nach `docs/docs/…` auf | alle vier nachgezogen; die ADR-Form auf `../../../` korrigiert und **in beide Richtungen gegengeprobt** (`../../` ⇒ `target-missing`, `../../../` ⇒ Exit 0) |
+| **F-3** Zwei überholte Begründungsblöcke | `.d-check.yml` trug unmittelbar über den geänderten Zeilen die alte Begründung (*„BEIDE Doku-Tabellen"*, *„WARUM NUR AGENTS.md"*) | beide ersetzt |
+| **F-6** Ein 3×-Eintrag ohne Ausgang | Der Ausgang war auf *„den nächsten Lese-Schritt"* vertagt — in einem Repo ohne Wellen **ist** die Slice-Closure der Lese-Schritt | Ausgang gezogen: *verkörpert*, dritte Mess-Regel (§8) |
+
+**F-1 ist der Befund über diesen Slice.** Er hatte einen eleganten Fund zu
+erzählen — *ein Prüfer verliert seinen Gegenstand und meldet weiter grün* — und
+die Belegkette dafür nie gefahren. Was grün war, war ein Aggregat, in dem der
+Prüfer nicht hängt. **Der eigene Skill nennt genau diese Frage** (*„war sie rot,
+und woran?"*), und sie war auf die Behauptung nicht angewandt, weil die
+Behauptung eine über einen **grünen** Lauf war.
+
+**F-2 ist die Wiederholung von slice-192.** Dort hieß der Befund *„eine
+Massen-Ersetzung trifft auch die Aussage, die stehenbleiben muss"*; hier ist es
+die Gegenrichtung — **eine Aussage, die mitgezogen werden musste und liegenblieb**.
+Beide Male ist der Handgriff derselbe: nach dem Umbau `grep` auf die alte
+Adresse, und zwar über **alle** Dateiarten, nicht nur die Doku. **Genau so
+gefahren fand er zwei weitere**, die auch der Review nicht als HIGH führte:
+`.claude/hooks/pretooluse-command-guard.sh` und `tools/gate-consistency.sh`
+nannten `AGENTS.md` §4 in ihren Kopfkommentaren als Deklarationsort. Beide
+nachgezogen — der `grep` über `*.sh` war der Unterschied.
+
 
 ## 4. Definition of Done
 
@@ -154,7 +197,7 @@ zurückgesetzt und `make gates` erneut grün.
       *Zweck*-Spalte entfällt oder wandert mit.
 - [x] Eine **Mutations-Probe** je umgezogenem Prüfer war **rot**, mit genannter
       Meldung: ein Target ohne Eintrag und ein Eintrag ohne Target.
-- [ ] Unabhängiger Review durchgeführt (Report unter [`docs/reviews/`](../../../reviews/README.md)).
+- [x] Unabhängiger Review durchgeführt (Report unter [`docs/reviews/`](../../../reviews/README.md)) — 16 Findings, alle abgearbeitet (§3.6).
 - [x] Closure-Notiz mit Steering-Loop-Lerneintrag.
 - [x] Beobachtungs-Register fortgeschrieben.
 - [x] Jedes Risiko aus §7 trägt einen Ausgang.
@@ -194,7 +237,8 @@ Lerneintrag.
   überflüssige Zeile bekommen und zwei — `doc-commits`, `doc-tracked` — **keine**,
   weil sie im Index nur in Prosa standen. Die Klasse ist
   [`BEO-PLAN/kandidaten-klassifikation-groeber-als-der-kandidat`](../observations/BEO-PLAN/kandidaten-klassifikation-groeber-als-der-kandidat/observation.md);
-  Beleg dort, damit sie beim nächsten Mal gezählt ist.
+  Beleg dort, damit sie beim nächsten Mal gezählt ist — und der Eintrag erreicht
+  damit 3× und trägt seinen Ausgang aus dieser Closure (§8).
 - **`mentions` hängt an `AGENTS.md`.** Zieht die Konfiguration um, ohne dass die
   Sensor-Dateien in `harness/README.md` genannt sind, meldet der Lauf gegen den
   Bestand — oder, schlimmer, er meldet nichts, weil die Prüfmenge leer wird.
@@ -250,19 +294,31 @@ Beleg, dass der umgezogene Index tatsächlich gewächtert wird und nicht nur
 grün meldet. (2) Die Differenz-Messung ist **beidseitig** null: kein Target steht
 nur in `AGENTS.md`, keines nur im Index; `mentions: 16 von 16`.
 
-**Und ein Fund an einer Regel, die niemand gesucht hat:** Die Zellengrenze auf
-der *Zweck*-Spalte verlor mit der Tabelle ihren Gegenstand — und meldete danach
-**grün** statt fail-closed. Ein Prüfer ohne Gegenstand ist nicht „unbenutzt",
-sondern **unkalibriert**; die Regel ist entfernt, nicht stehengelassen.
+**Und ein dritter Lerneintrag, den der Review erzwungen hat** (F-1): *Ein grüner
+Lauf belegt nur, was in ihm hing.* Dieser Slice behauptete, die entfallene
+Zellengrenze habe nach dem Wegfall ihres Gegenstands **grün** gemeldet — ein
+schönes Beispiel für einen unkalibrierten Prüfer, und **falsch**. Sie fällt
+fail-closed aus (`section-column-missing`, Exit 2); grün war `make gates`, in dem
+`doc-structure` gar nicht hängt. Der Satz stand dreifach: im Plan, in der
+Closure-Notiz und **dauerhaft als Kommentar in `.d-check.yml`** — die
+langlebigste der drei Stellen. Alle drei sind korrigiert. **Eine Messung nennt
+ihren Aufruf, nicht nur ihr Ergebnis**; genau das verlangt die Mess-Regel
+*Geltungsbereich*, und sie war hier auf den eigenen Lauf nicht angewandt.
 
 **Beobachtungs-Register.** Erhöht:
 [`BEO-PLAN/kandidaten-klassifikation-groeber-als-der-kandidat`](../observations/BEO-PLAN/kandidaten-klassifikation-groeber-als-der-kandidat/observation.md)
 auf **3×** — die Differenz-Messung selbst zählte eine Sammelzelle mit vier
-Targets als eines und hätte zwei Targets ohne Index-Zeile gelassen (§3.1). Der
-Ausgang ist fällig und **beim nächsten Lese-Schritt zuzuweisen**: eine
-Schreibregel im Reviewer-Skill — *wer eine Menge zählt, zählt sie zweimal
-verschieden* —, kein Sensor. Nicht hier, weil das eine Änderung am Skill wäre
-und dieser Slice die Gate-Index-Frage trägt.
+Targets als eines und hätte zwei Targets ohne Index-Zeile gelassen (§3.1).
+**Der Ausgang ist gezogen, hier und jetzt: *verkörpert*.** Die Zusage *„wer eine
+Menge zählt, zählt sie zweimal verschieden"* steht als dritte Mess-Regel in
+[`AGENTS.md`](../../../../AGENTS.md) §5, die Herleitung mit allen drei
+Ausprägungen im Reviewer-Skill — dieselbe Teilung wie bei den zwei älteren.
+**Das war zunächst auf „den nächsten Lese-Schritt" vertagt; der Review hat das
+korrigiert** (F-6): a-check fährt wellenlos, und dann **ist** die Slice-Closure
+der Lese-Schritt (`modul-06`, Tabelle *Träger im Repo ohne Wellen*). Ein Eintrag,
+der sie ohne Ausgang übersteht, ist genau das, was die Regel verbietet — und
+`make verify` hätte es nicht gemeldet, weil `verify-observations` nur Deckung
+prüft.
 
 ## 9. Sub-Area-Prüfungen und Modus-Begründung
 
@@ -287,17 +343,23 @@ F-3. Berührte Verzeichnisse: `AGENTS.md`, `.d-check.yml`, `harness/`,
 
 | Eintrag | Kürzel | Berührung |
 |---|---|---|
-| [`kandidaten-klassifikation-groeber-als-der-kandidat`](../observations/BEO-PLAN/kandidaten-klassifikation-groeber-als-der-kandidat/observation.md) | `PLAN` | **3× erreicht** — die Differenz-Messung selbst (§3.1); Ausgang beim nächsten Lese-Schritt |
+| [`kandidaten-klassifikation-groeber-als-der-kandidat`](../observations/BEO-PLAN/kandidaten-klassifikation-groeber-als-der-kandidat/observation.md) | `PLAN` | **3× erreicht, Ausgang gezogen** — *verkörpert* als dritte Mess-Regel (§8); der Lese-Schritt ist diese Closure |
 | [`zusage-weiter-als-ihre-durchsetzung`](../observations/BEO-GATE/zusage-weiter-als-ihre-durchsetzung/observation.md) | `GATE` | **berührt, kein Beleg** — die Zusage *„ein Index"* hat gar keinen Prüfer, statt einen zu knappen; siehe §7 |
-| [`pruefer-ohne-gegenstand-oder-aufruf`](../observations/BEO-GATE/pruefer-ohne-gegenstand-oder-aufruf/observation.md) | `GATE` | **bestätigt, verkörpert** — die Zellengrenze meldete nach dem Wegfall ihres Gegenstands grün (§3.4); der Eintrag ist geschlossen, der Fall belegt ihn erneut |
+| [`pruefer-ohne-gegenstand-oder-aufruf`](../observations/BEO-GATE/pruefer-ohne-gegenstand-oder-aufruf/observation.md) | `GATE` | **kein Treffer, entgegen der ersten Buchung** — die Zellengrenze fällt fail-closed aus, nicht grün (§3.4, Review F-1). Die Buchung stützte sich auf einen Lauf, in dem der Prüfer gar nicht hing |
 | [`muster-trifft-nur-die-haeufige-schreibweise`](../observations/BEO-GATE/muster-trifft-nur-die-haeufige-schreibweise/observation.md) | `GATE` | **bedient** — die Gegenprobe am Fund ist genau das, was §3.1 gerettet hat |
 | [`vollstaendigkeits-haken-ohne-erschoepften-gegenstand`](../observations/BEO-PLAN/vollstaendigkeits-haken-ohne-erschoepften-gegenstand/observation.md) | `PLAN` | **bedient** — jeder Ausgang nennt seine Ebene, und die DoD verlangt die Differenz-Messung statt Augenschein |
 | [`messung-ohne-reproduzierbares-instrument`](../observations/BEO-PLAN/messung-ohne-reproduzierbares-instrument/observation.md) | `PLAN` | **bedient** — §3.1 und §3.5 nennen Zählweise und Meldungen, nicht nur Ergebnisse |
 | [`chronik-in-gelesenen-dateien`](../observations/BEO-HARNESS/chronik-in-gelesenen-dateien/observation.md) | `HARNESS` | **berührt, nicht erhöht** — der neue §4-Text nennt keine vorige Fassung; die Chronik steht hier im Plan |
 | [`massen-ersetzung-trifft-die-historische-aussage`](../observations/BEO-HARNESS/massen-ersetzung-trifft-die-historische-aussage/observation.md) | `HARNESS` | **bedient** — die drei `AGENTS.md`-§4-Verweise außerhalb wurden einzeln gelesen, nicht ersetzt |
 
-**Nur einer erreicht 3×**, und sein Ausgang ist benannt und adressiert (§8). Die
-übrigen sind **bedient oder berührt**, nicht neu belegt.
+**Nur einer erreicht 3×**, und sein Ausgang ist **in dieser Closure gezogen**,
+nicht vertagt (§8). Die übrigen sind **bedient oder berührt**, nicht neu belegt.
+
+**Eine Zeile dieser Tabelle war falsch und ist korrigiert** (Review F-1): Die
+Buchung zu `pruefer-ohne-gegenstand-oder-aufruf` stützte sich auf eine Messung,
+die den Prüfer nie aufgerufen hatte. Sie steht hier stehen gelassen und
+richtiggestellt statt still entfernt — eine gestrichene Zeile sähe aus, als wäre
+die Frage nie gestellt worden.
 
 **(2) Report des Vorgängers** — zu slice-192, mit ihm archiviert. Seine schärfste
 Klasse für diesen Slice war *„eine Regel zu zitieren ist nicht, sie anzuwenden"*:
