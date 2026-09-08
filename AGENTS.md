@@ -233,20 +233,14 @@ die CI (Badge im [`README.md`](README.md)), nicht diese Tabelle.
 - Neue ADRs müssen den ADR-Index aktualisieren.
 - Roadmap/Status-Geschichte lebt in `docs/plan/planning/`, nicht in der
   Architektur-Spec.
-- **Slice-Lifecycle** ist reine Datei-Bewegung (`make slice-mv`, das den `git mv` samt der Verweise **auf** die Datei fährt; siehe §3.3) — der
-  Zustand ist das Verzeichnis, kein Feld im Dokument. **Fünf** Übergänge, drei
-  vorwärts und zwei zurück:
-
-  | von → nach | Bedingung |
-  |---|---|
-  | `open/` → `next/` | für die nächste Welle priorisiert |
-  | `next/` → `in-progress/` | Trigger eingetreten und WIP-Limit frei |
-  | `in-progress/` → `done/` | DoD erfüllt, Closure-Notiz geschrieben, Gates grün |
-  | `in-progress/` → `next/` | **Rückführung:** zu groß — zurück zur Zerlegung, nicht dehnen |
-  | `in-progress/` → `open/` | **Rückführung:** blockiert, solange der Blocker steht |
-
-  Der direkte Weg `open/ → in-progress/` bleibt zulässig; `next/` ist ein Ort,
-  keine Pflichtstation ([`next/README.md`](docs/plan/planning/next/README.md)).
+- **Slice-Lifecycle** ist reine Datei-Bewegung — der Zustand ist das
+  Verzeichnis, kein Feld im Dokument. Die **fünf** Übergänge und ihre Trigger
+  stehen in `modul-05` §Trigger je Lifecycle-Übergang und WIP-Limit; a-check
+  fährt sie mit **`make slice-mv`**, das den `git mv` samt der Verweise **auf**
+  die Datei erledigt (§3.3).
+  **Repo-eigen daneben:** Der direkte Weg `open/ → in-progress/` ist zulässig;
+  `next/` ist ein Ort, keine Pflichtstation
+  ([`next/README.md`](docs/plan/planning/next/README.md)).
 - **WIP-Limit = 1.** Es liegt **höchstens ein** Slice in `in-progress/` (die Roadmap
   zählt nicht mit). Das ist eine harte Obergrenze, kein Vorschlag: zwei aktive Slices
   teilen sich einen Gate-Nachweis und eine Closure-Aufmerksamkeit, und beides
@@ -262,26 +256,18 @@ die CI (Badge im [`README.md`](README.md)), nicht diese Tabelle.
   Einführung bestehenden sind **grandfathered** (vertraglich bindend, Rand- und
   Negativfälle bereits in Prosa — ein Umbau träfe die Form statt der Substanz),
   und die Grandfather-Liste wächst nicht mit.
-- **Diskrepanz-Trichter:** eine Ausnahme von einer Regel oder einem Gate wird **nicht** ad hoc
-  gesetzt, sondern über zwei Fragen eingeordnet — Granularität **vor** Temporalität: Cluster im
-  selben Geltungsbereich ⇒ BF-Sub-Area-Markierung in
-  [`harness/conventions.md`](harness/conventions.md#modus-deklaration-pro-sub-area); einzelne
-  Diskrepanz mit erreichbarem Trigger ⇒ **Carveout** unter
-  [`docs/plan/carveouts/`](docs/plan/carveouts/README.md); Trigger nie erreichbar ⇒ permanente
-  ADR. Bootstrap-aware Gates gehören in keine der drei Klassen — sie stufen die Prüfung, sie
-  nehmen keine Diskrepanz aus (slice-065).
-- **Beobachtungs-Register:** der Zähler des Steering Loops liegt als **stehende** Ablage
-  [`docs/plan/planning/observations/`](docs/plan/planning/observations/README.md) — nicht je Welle, weil
-  eine übernommene Sektion an einer ungebrochenen Kette hinge und eine vergessene Übernahme den
-  Zähler auf null setzte. Je Beobachtung ein Verzeichnis `BEO-<KUERZEL>/<slug>/` (Kürzel aus
-  [`harness/conventions.md`](harness/conventions.md#modus-deklaration-pro-sub-area), seit
-  slice-139 — davor Tabellenform, `BEO-NNN`, seit slice-101). **Eingetragen wird bei der
-  Slice-Closure**: neues Verzeichnis mit `observation.md`, oder eine weitere Datei in ein
-  vorhandenes `evidence/`. Der Zähler wird **abgeleitet** — er ist die Zahl der Evidence-Dateien;
-  es gibt kein Feld, das man erhöht.
-  Er ist zugleich der dritte Ausgang, den jedes offene Risiko einer Closure nimmt: *eingetreten* ⇒
-  Carveout oder Folge-Slice · *entfallen* ⇒ gestrichen **mit Begründung** · *weiter offen* ⇒
-  Register (slice-101).
+- **Diskrepanz-Trichter:** eine Ausnahme wird **nicht** ad hoc gesetzt. Die
+  Werkzeug-Wahl — BF-Sub-Area-Markierung, Carveout oder permanente ADR — steht
+  in `modul-07` §Werkzeug-Wahl bei Diskrepanz; die Ablageorte hier sind
+  [`harness/conventions.md`](harness/conventions.md#modus-deklaration-pro-sub-area)
+  bzw. [`docs/plan/carveouts/`](docs/plan/carveouts/README.md).
+- **Beobachtungs-Register:** Form, Zählregel und die drei Risiko-Ausgänge stehen
+  in `modul-06` §Das Beobachtungs-Register. **Repo-eigen ist der Ort und das
+  Kürzel:** die stehende Ablage
+  [`docs/plan/planning/observations/`](docs/plan/planning/observations/README.md),
+  je Beobachtung ein Verzeichnis `BEO-<KUERZEL>/<slug>/`, und `<KUERZEL>` wird
+  in [`harness/conventions.md`](harness/conventions.md#modus-deklaration-pro-sub-area)
+  §Modus-Deklaration **nachgeschlagen, nicht erfunden**.
 - **Steering-Loop:** wiederkehrende Fehlermuster werden in
   [`docs/plan/steering-loop.md`](docs/plan/planning/observations/README.md) gezählt. Ab dem
   **zweiten** gleichartigen Vorfall entsteht ein Eintrag, ab dem **dritten** ist
