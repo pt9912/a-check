@@ -1,4 +1,4 @@
-# slice-189 — Voll-Abgleich: die zwei Spec-Straten
+# slice-189 — Voll-Abgleich: die Spec-Straten und die offene Architektur-Klausel
 
 **Welle:** ohne Welle.
 
@@ -30,6 +30,21 @@ der Grund, warum er von slice-187 abgetrennt wurde.
 |---|---|
 | [`spec/lastenheft.md`](../../../../spec/lastenheft.md) | 28 |
 | [`spec/spezifikation.md`](../../../../spec/spezifikation.md) | 28 |
+| [`spec/architecture.md`](../../../../spec/architecture.md) | 20 — **nur die eine offene Klausel**, siehe unten |
+
+**Und ein liegengebliebener Punkt, der hierher gehört.** slice-185 hat
+`spec/architecture.md` abgeglichen und **eine von drei** Klauseln der dortigen
+Hard Rule als **verletzt** offen gelassen: *„keine Historie — `Letzte Änderung`
+oben ist ein Frische-Marker, kein Protokoll"*. §8 der Datei trägt weiterhin eine
+Versions-Tabelle. Adressiert war der Punkt an slice-186; dort und in slice-187
+kommt er **nicht** vor, und slice-187 §3.3 hat ihn nicht bemerkt. Gefunden hat
+es der unabhängige Review zu slice-187 (F-1).
+
+Er gehört hierher und nirgends sonst: Ob a-check den Historie-Abschnitt streicht
+und auf `git` verweist oder die Abweichung als `MR` deklariert, ist **eine
+Entscheidung über ein Spec-Stratum** — genau der Gegenstand dieses Slice. Die
+übrigen zwei Klauseln sind eingehalten und in slice-185 belegt; sie werden hier
+nicht erneut geprüft.
 
 **Ausdrücklich NICHT in diesem Slice** — je Punkt mit Begründung:
 
@@ -41,8 +56,12 @@ der Grund, warum er von slice-187 abgetrennt wurde.
 - **Die 19 grandfatherten `AC-*`.** *Bestand bleibt bewusst stehen:* Ihre Form
   ist seit slice-054 ausdrücklich ausgenommen, und die Grandfather-Liste wächst
   nicht mit ([`AGENTS.md`](../../../../AGENTS.md) §5).
-- **`spec/architecture.md`.** *Schicht-Abgrenzung:* Rang 3, eigenes Paar, in
-  slice-185 bereits abgeglichen.
+- **Die zwei eingehaltenen Klauseln von `spec/architecture.md`.** *Bestand
+  bleibt bewusst stehen:* Sie sind in slice-185 gemessen (je null Treffer) und
+  als *bewusst abweichend* geschlossen — die Regel steht in
+  [`AGENTS.md`](../../../../AGENTS.md) §3.4, sie zusätzlich in die Datei zu
+  schreiben wäre die Doppelung, die dieses Repo gerade abbaut. **Die dritte
+  Klausel ist ausdrücklich Gegenstand** (§1).
 - **Die dreizehn bereits abgeglichenen Paare.** Erledigt (slice-185/186/187/188).
 
 ## 2. Ausgangsmessung
@@ -63,11 +82,13 @@ Arbeit; 56 Kandidaten sind ihre Reihenfolge.
 
 ## 4. Definition of Done
 
-- [ ] Beide Paare sind abgeglichen; je Paar steht der Ausgang **mit seiner
-      Prüf-Ebene** im Plan.
-- [ ] Je Kandidat ist getrennt: **Doku-Pflege** (in diesem Slice ausgeführt) ·
-      **Change Request** (benannt, mit dem, was er ändern würde) · **bewusst
-      schärfer** (mit Begründung).
+- [ ] Beide Spec-Straten sind abgeglichen; je Paar steht der Ausgang **mit
+      seiner Prüf-Ebene** im Plan, und **je Kandidat** ist getrennt:
+      **Doku-Pflege** (hier ausgeführt) · **Change Request** (benannt, mit dem,
+      was er ändern würde) · **bewusst schärfer** (mit Begründung).
+- [ ] Die offene dritte Architektur-Klausel trägt eine **Entscheidung**:
+      Historie-Abschnitt gestrichen und auf `git` verwiesen, oder Abweichung als
+      `MR` deklariert. Kein dritter Weg, kein Weiterreichen.
 - [ ] Kein bestehendes `AC-*` ist inhaltlich geändert; `make doc-immutable`
       über die Commit-Range ist grün.
 - [ ] Unabhängiger Review durchgeführt (Report unter [`docs/reviews/`](../../../reviews/README.md)).
@@ -107,6 +128,9 @@ Lerneintrag.
 - **`doc-immutable` deckt die Spec-Straten nicht.** Das Modul `vcs` führt
   ausschließlich `docs/plan/adr/[0-9]*.md` (gemessen in slice-187 §3.5); eine
   unbeabsichtigte Änderung an einer `AC-*` meldet **kein** Lauf.
+  — **Ausgang:** <offen bis Closure>
+- **Der Historie-Abschnitt könnte an anderen Stellen zitiert sein.** Ein
+  Streichen bricht dann Anker; die Antwort ist dieselbe wie unten.
   — **Ausgang:** <offen bis Closure>
 - **Ein umbenannter `AC-*`-Anker bricht eine `Accepted`-ADR.** Der Fall ist im
   Repo belegt und die Antwort steht in

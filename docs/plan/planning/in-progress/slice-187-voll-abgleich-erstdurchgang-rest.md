@@ -93,10 +93,21 @@ trägt der **Kommentar** den Text, dort wird `#` gestrippt statt übersprungen.
 Eine Zeile gilt als gedeckt, sobald **eine** ihrer Wortfolgen im Gegenstück
 vorkommt.
 
-**Was das Instrument nicht kann, und es sagt es selbst:** Es findet **wörtliche**
-Übernahme. Eine sinngemäße Doppelung in anderen Worten sieht es nicht, und a-check
-formuliert fast alles um — die Zahlen sind darum eine **Reihenfolge, kein
-Befund**. Ein Kandidat ist erst ein Befund, wenn das Lesen ihn dazu macht.
+**Was das Instrument nicht kann — drei Grenzen, und die dritte ist die teuerste:**
+
+1. Es findet **wörtliche** Übernahme. Eine sinngemäße Doppelung in anderen Worten
+   sieht es nicht, und a-check formuliert fast alles um — die Zahlen sind darum
+   eine **Reihenfolge, kein Befund**.
+2. Eine Vorlagenzeile gilt als gedeckt, sobald **eine** ihrer Wortfolgen im
+   Gegenstück vorkommt (`any(...)`). Eine nur **zur Hälfte** übernommene Zeile
+   wird nie Kandidat und ist damit unsichtbar — das ist die Richtung, die zu
+   **zu wenigen** Kandidaten führt, und sie ist teurer als das Rauschen.
+3. Es läuft nur **Vorlage → Repo**. Eine Aussage, die a-check trägt und die
+   Ziel-Form nicht kennt, kann falsch sein, ohne je Kandidat zu werden — §3.6
+   führt genau so einen Fall.
+
+Ein Kandidat ist erst ein Befund, wenn das Lesen ihn dazu macht; und das Lesen
+findet Dinge, die kein Kandidat waren.
 
 ```python
 #!/usr/bin/env python3
@@ -158,8 +169,10 @@ if __name__ == '__main__':
 
 Aufruf: `python3 abgleich.py "<vorlage>::<repo-datei>" …`
 
-**Ergebnis über alle 15 Ziel-Form-Paare** — die acht bereits abgeglichenen sind
-mitgemessen, weil eine Zahl ohne Vergleichsmaßstab keine Größe ist:
+**Ergebnis über die 16 gemessenen Paar-Kombinationen** — die bereits
+abgeglichenen sind mitgemessen, weil eine Zahl ohne Vergleichsmaßstab keine
+Größe ist. `README.md` und `README.de.md` stehen **beide** darin: Die Ziel-Form
+führt eine Zeile, a-check zwei Dateien (`BEO-PLAN/form-vergleich-sprachblind`):
 
 | Paar | Kandidaten | Stand |
 |---|---|---|
@@ -171,6 +184,8 @@ mitgemessen, weil eine Zahl ohne Vergleichsmaßstab keine Größe ist:
 | `docs/plan/planning/README.md` | **26** | dieser Slice |
 | `.harness/skills/closure-note-reviewer.md` | **25** | abgetrennt (§1) |
 | `.harness/skills/reviewer.md` | 40 | slice-185 |
+| `spec/architecture.md` | 20 | slice-185 — **eine Klausel blieb offen**, siehe §3.6 |
+| `README.md` | 10 | slice-186 |
 | `harness/README.md` | 23 | slice-186 |
 | `docs/plan/planning/in-progress/roadmap.md` | 9 | slice-186 |
 | `README.de.md` | 7 | slice-186 |
@@ -198,6 +213,12 @@ diese hier ist nachrechenbar. Genau das ist der Grund für den Abschnitt.
 
 ### 3.1 `AGENTS.md` — fünf Übernahmen
 
+**Prüf-Ebene:** Zeile für Zeile über alle **60** Kandidaten, jeder einer
+Ziel-Form-Sektion zugeordnet (10 Sektionen), und je Kandidat die Frage *„trägt
+a-check die Aussage — irgendwo?"* gegen den Ist-Stand. **Nicht** geprüft: was
+die Ziel-Form **nicht** führt (§2, Grenze 3) und Zeilen, deren erste sechs
+Wörter treffen (Grenze 2).
+
 | # | Ziel-Form-Stelle | Was a-check hatte | Übernommen |
 |---|---|---|---|
 | 1 | §4, Satz nach der Tabelle | nichts | *„Diese Tabelle **listet auf**; definiert wird hier nichts"* plus den Weg zur Bindung — `harness/README.md` §Sensors, von dort zur `AC-*`-ID |
@@ -210,9 +231,10 @@ diese hier ist nachrechenbar. Genau das ist der Grund für den Abschnitt.
 Ziel-Form sagt seit jeher, dass die *Reihenfolge vom Vorgang abhängt*: Regelfall
 `git mv` zuerst, Lifecycle-Übergang nach `done/` **umgekehrt**, weil die
 Closure-Notiz die Bedingung für `done/` ist und nicht ihre Folge. a-checks §3.3
-trug nur den Regelfall — **und das Repo fährt seit jeher den zweiten**:
-`make slice-mv` bewegt die Datei ohne Inhaltsänderung, und die Closure-Commits
-der letzten Slices liegen ausnahmslos **vor** ihrem `git mv`. Das Briefing sagte
+trug nur den Regelfall — **und das Repo fährt den zweiten**: Für slice-183 bis
+slice-186 liegt der Closure-Commit ausnahmslos **vor** dem
+`… -> done (make slice-mv)`-Commit (gemessen; `make slice-mv` gibt es erst seit
+slice-118, für ältere Slices ist der Geltungsbereich nicht erhoben). Das Briefing sagte
 also das Gegenteil der geübten Praxis. Nicht die Praxis war falsch, sondern der
 Satz, an dem sie gemessen worden wäre.
 
@@ -222,7 +244,10 @@ dem slice-185 den Voll-Abgleich begründet hat
 ([`harness/conventions.md`](../../../../harness/conventions.md) §Baseline). Er
 war damit **benannt, aber nicht übernommen** — zwei Slices lang.
 
-### 3.2 `harness/conventions.md` — zwei Übernahmen, zwei benannte Grenzen
+### 3.2 `harness/conventions.md` — zwei Übernahmen, eine Grenze, ein `MR`
+
+**Prüf-Ebene:** dieselbe — Zeile für Zeile über **38** Kandidaten, fünf
+Ziel-Form-Sektionen.
 
 | # | Ziel-Form-Stelle | Übernommen |
 |---|---|---|
@@ -230,9 +255,11 @@ war damit **benannt, aber nicht übernommen** — zwei Slices lang.
 | 7 | §[`MR-000`](../../../../harness/conventions.md#mr-000), *Bleibt hier* | warum der Eintrag keine eigene Datei bekommt: Adoptions-Erklärung, keine Adaption |
 
 Auch hier war die **Praxis vorhanden und die Regel unausgesprochen**: a-check
-führt seit jeher eine Datei je Eintrag mit `conventions/done/` als zweitem Ort.
-Was fehlte, war der Satz, der das zur Regel macht — und mit ihm die Begründung,
-die den Schnitt trägt.
+führt **seit slice-096** eine Datei je Eintrag mit `conventions/done/` als
+zweitem Ort — davor lebten die Einträge als `###`-Abschnitte in
+`harness/conventions.md`, und die Datei sagt das selbst. Was fehlte, war der
+Satz, der die heutige Ablage zur Regel macht — und mit ihm die Begründung, die
+den Schnitt trägt.
 
 **Zwei Ziel-Form-Punkte werden bewusst *nicht* übernommen, beide mit derselben
 Ursache:** Das Pflichtfeld *Ersetzt-Baseline-Regel* fehlt in
@@ -244,13 +271,18 @@ Abweichung steht jetzt **im Eintrag selbst als benannte Grenze**, statt als
 Leerstelle dazustehen; die Beobachtungs-Kennung ist in §Modus-Deklaration
 deklariert, wo auch ihr Kürzel herkommt.
 
-### 3.3 `docs/plan/planning/README.md` — eine Übernahme
+### 3.3 `docs/plan/planning/README.md` — eine Übernahme, ein nachgereichter Befund
+
+**Prüf-Ebene:** Zeile für Zeile über **26** Kandidaten. **Diese Ebene reichte
+nicht** — der Review fand in derselben Datei eine gegen den Repo-Bestand
+widerlegte Aussage, die **kein** Kandidat war, weil die Ziel-Form den Abschnitt
+nicht führt (§3.6, F-5).
 
 | # | Ziel-Form-Stelle | Übernommen |
 |---|---|---|
 | 8 | Kopf, *Reine `git mv`-Commits beim Wechsel* | der Zeiger auf die Hard Rule — **samt** der umgekehrten Reihenfolge nach `done/` (Befund 2) |
 
-Der Rest des Paares ist **ohne Befund auf Satz-Ebene**, und an zwei Stellen ist
+Der Rest des Paares ist **in der Richtung Vorlage → Repo ohne Befund**, und an zwei Stellen ist
 a-checks Fassung die schärfere: §Aktueller Stand sagt nicht nur *„nicht als
 Snapshot eintragen"*, sondern **warum** (der Snapshot driftet gegen die
 Verzeichnisse, und niemand merkt es), und das Beobachtungs-Register ist mit
@@ -298,6 +330,54 @@ prüft eine Äquivalenz) und dieser Slice.
 **über** dem Eintrag, nicht in ihm. Das ist keine Formalie — hätte er drinnen
 gestanden, wäre die Übernahme einer Ziel-Form-Regel selbst ein Verstoß gegen die
 Regel gewesen, die der Eintrag trägt, und **kein Lauf hätte es gemeldet**.
+
+
+### 3.6 Was der unabhängige Review verändert hat
+
+Der Report
+([`2026-09-08-slice-187-…`](../../../reviews/2026-09-08-slice-187-voll-abgleich-erstdurchgang-rest.md))
+trug **5 HIGH · 6 MEDIUM · 3 LOW · 1 INFO**. Er hat die Ausgangsmessung
+**vollständig reproduziert** — alle vierzehn Zahlen, mit dem Instrument aus §2
+gegen `HEAD` und gegen den Stand davor. Und er hat fünf Dinge gefunden, die der
+Abgleich nicht finden konnte oder übersehen hat:
+
+| Befund | Kern | Behebung |
+|---|---|---|
+| **F-1** Ein liegengebliebener Punkt aus slice-185 | `spec/architecture.md` trägt eine **verletzte** dritte Klausel (Historie-Abschnitt); slice-185 adressierte sie an slice-186, dort kommt sie nicht vor, hier auch nicht — und slice-189 schloss das Paar mit *„bereits abgeglichen"* aus | slice-189 **nimmt** die Klausel: §1 führt sie, die DoD verlangt eine Entscheidung (streichen oder als `MR` deklarieren), §7 trägt das Anker-Risiko |
+| **F-2** Der Sichtungs-Schritt las die falsche Sub-Area | §9 nennt `HARNESS` als berührt und sichtet **sechs** `BEO-PLAN`-Einträge; die 15 `BEO-HARNESS`-Einträge blieben ungelesen | §9 sichtet jetzt nach **allen** berührten Kürzeln; zwei `BEO-HARNESS`-Einträge erreichen dadurch 3× |
+| **F-3** Chronik in `AGENTS.md` §3.3 | Der Abgleich erklärte die Korrektur **im Regeltext** — genau die Form, die §3.7 verbietet | beide Stellen der Datei entfernt; auf Maintainer-Weisung dazu die Forensik in §1/§4/§5 |
+| **F-4** Die Werkzeug-Wahl trug nicht | *„ließe sich **nur** durch eine inhaltliche Änderung beheben"* — §Disziplin nennt zwei Instrumente, und [`MR-020`](../../../../harness/conventions.md#mr-020) ist der Präzedenzfall | [`MR-023`](../../../../harness/conventions.md#mr-023) statt freistehendem Absatz |
+| **F-5** *„ohne Befund"* für eine widerlegte Aussage | `docs/plan/planning/README.md` behauptete, a-check habe Wellen-Closure-Schritt 4 nicht adoptiert — 13 `done/welle-*/archiv.zip` und ein Pflichtschritt in [`AGENTS.md`](../../../../AGENTS.md) §6 sagen das Gegenteil | Der Abschnitt führt jetzt **sechs** Schritte, Schritt 4 mit Beleg |
+
+**F-5 ist der Befund über den Abgleich selbst.** Die falsche Aussage war **kein
+Kandidat** und konnte keiner sein: Das Instrument läuft nur Vorlage → Repo, und
+die Ziel-Form führt den Abschnitt gar nicht. Der Ausgang *„ohne Befund auf
+Satz-Ebene"* behauptete trotzdem die Satz-Ebene für das **Paar**. Die Lehre steht
+jetzt als dritte Grenze in §2 und als korrigierter Ausgang in §3.3: **Ein
+Ziel-Form-Abgleich prüft, ob das Repo die Vorlage trägt — nicht, ob das Repo
+recht hat.**
+
+**Die übrigen zehn** in Kürze: die Probe zu `doc-immutable` hatte keine Mutation
+vor sich, der tragende Beleg (die `paths`-Liste) steht daneben (F-7) · die
+Prüf-Ebene stand nur in einem der drei Ausgänge (F-8, jetzt in allen dreien) ·
+zwei Provenienz-Aussagen waren aus dem Gedächtnis, *„seit jeher"* stimmt für die
+Verzeichnis-Form erst seit slice-096 (F-9) · der Geltungsbereich des Instruments
+nannte nur die billige Richtung (F-10, jetzt drei Grenzen) · die benannte
+Reibung am Risiko-Ausgang hatte keine Kennung und wäre mit dem Slice archiviert
+worden (F-11 → [`BEO-PLAN/risiko-eingetreten-und-im-slice-aufgeloest`](../observations/BEO-PLAN/risiko-eingetreten-und-im-slice-aufgeloest/observation.md))
+· drei Sammelaussagen waren gröber als ihre Menge (F-12) · zweimal war
+`make slice-mv` eine Leistung zugeschrieben, die es nicht erbringt (F-13) · eine
+Doppelung in derselben Datei (F-14) · F-15 ist INFO.
+
+**Zwei Register-Einträge erreichen durch diesen Slice 3×**, beide unter
+`BEO-HARNESS` — also genau dort, wo §9 nicht hingesehen hatte:
+[`chronik-in-gelesenen-dateien`](../observations/BEO-HARNESS/chronik-in-gelesenen-dateien/observation.md)
+→ *geplant*, [slice-191](../open/slice-191-chronik-phrasen-sensor.md)
+(Phrasen-Sensor auf die häufige Schreibweise, mit der Grenze am Sensor) ·
+[`adaption-korrigiert-repo-aussage`](../observations/BEO-HARNESS/adaption-korrigiert-repo-aussage/observation.md)
+→ *geplant*, [slice-190](../open/slice-190-id-schema-deklaration-ueberarbeiten.md)
+(die ID-Schema-Deklaration wird überarbeitet statt weiter geflickt — ihr eigener,
+im Eintrag genannter Trigger).
 
 
 ## 4. Definition of Done
@@ -360,12 +440,17 @@ Lerneintrag.
   Erreicht einer mit diesem Slice 3×, ist er keine Notiz mehr, sondern eine
   Lücke mit fälligem Ausgang. — **Ausgang:** *entfallen*, gestrichen mit
   Begründung: **Keiner** der vier erreicht 3×, und zwar nicht durch Glück — der
-  Plan hat ihre Lehre **vorab angewandt** (§9, Spalte *Berührung*): Zuschnitt vor
-  der Arbeit korrigiert, Instrument in den Plan gelegt, Ebene in den Ausgang,
-  Zielsatz sofort nachgezogen. Ein Eintrag, dessen Lehre wirkt, zählt nicht
-  weiter. **Neu bei 2× entstanden ist ein anderer**
-  ([`BEO-GATE/zusage-weiter-als-ihre-durchsetzung`](../observations/BEO-GATE/zusage-weiter-als-ihre-durchsetzung/observation.md),
-  §3.5) — das ist kein Widerspruch, sondern der Zähler bei der Arbeit.
+  Plan hat ihre Lehre **vorab angewandt** (§9): Zuschnitt vor der Arbeit
+  korrigiert, Instrument in den Plan gelegt, Ebene in den Ausgang, Zielsatz
+  sofort nachgezogen. Ein Eintrag, dessen Lehre wirkt, zählt nicht weiter.
+  **Das Risiko war aber falsch gestellt** — es fragte nach *diesen vier*, und
+  §9 sah nur in `BEO-PLAN`. Drei andere sind dennoch bewegt worden:
+  [`zusage-weiter-als-ihre-durchsetzung`](../observations/BEO-GATE/zusage-weiter-als-ihre-durchsetzung/observation.md)
+  neu bei 2× (§3.5), und **zwei erreichen 3×** —
+  [`chronik-in-gelesenen-dateien`](../observations/BEO-HARNESS/chronik-in-gelesenen-dateien/observation.md)
+  und [`adaption-korrigiert-repo-aussage`](../observations/BEO-HARNESS/adaption-korrigiert-repo-aussage/observation.md),
+  beide unter `BEO-HARNESS`, beide mit Ausgang *geplant* (§3.6). Der Zähler hat
+  gearbeitet; die Sichtung hatte nur nicht hingesehen.
 - **Die Vorauswahl bleibt eine Reihenfolge, kein Befund.** — **Ausgang:**
   *entfallen*, gestrichen mit Begründung: Die Zahl trägt ihre Warnung jetzt
   selbst. §2 nennt Parameter und Instrument, §3.4 misst das Verhältnis (124
@@ -378,18 +463,22 @@ Lerneintrag.
   Ziel-Form-Regel, die dort etwas ändert, kann einen akzeptierten `MR` berühren —
   und die sind immutabel. — **Ausgang:** *entfallen*, gestrichen mit Begründung:
   Es **trat ein** und wurde **im Slice aufgelöst**, ohne den Eintrag anzufassen.
-  Zwei Ziel-Form-Punkte sind für
-  [`MR-000`](../../../../harness/conventions.md#mr-000) nicht übernehmbar; sie
-  stehen jetzt als benannte Grenze **über** dem Eintrag (§3.2, §3.5). Damit kann
-  das Risiko für diesen Slice nicht mehr eintreten.
-  **Eine Reibung bleibt, benannt statt gezählt:** Die geschlossene Dreier-Menge
-  hat keine Kategorie für *„eingetreten und im Slice selbst aufgelöst"* —
-  *eingetreten* verlangt einen **künftigen** Adressaten (Carveout oder
-  Folge-Slice), den es hier nicht braucht. Verwandt, aber nicht deckungsgleich
-  mit [`BEO-PLAN/risiko-ausgang-fuer-gewollte-wirkung`](../observations/BEO-PLAN/risiko-ausgang-fuer-gewollte-wirkung/observation.md)
-  (dort ist es eine *beabsichtigte Wirkung*, hier ein echtes, abgewendetes
-  Risiko); deshalb **kein Beleg** dort — ein Zähler misst Wiederholung einer
-  Klasse, nicht Ähnlichkeit.
+  Ein Ziel-Form-Punkt ist über
+  [`MR-023`](../../../../harness/conventions.md#mr-023) übernommen — dem
+  Instrument, das §Disziplin dafür nennt —, der andere steht als benannte Grenze
+  **über** [`MR-000`](../../../../harness/conventions.md#mr-000) (§3.2, §3.5).
+  Der Eintrag selbst ist byte-identisch geblieben.
+  **Die Reibung hat jetzt eine Kennung:** Die geschlossene Dreier-Menge hat
+  keine Kategorie für *„eingetreten und im Slice selbst aufgelöst"* —
+  *eingetreten* verlangt einen **künftigen** Adressaten, den es hier nicht
+  braucht, und *entfallen* behauptet, das Risiko sei nie eingetreten. Als
+  [`BEO-PLAN/risiko-eingetreten-und-im-slice-aufgeloest`](../observations/BEO-PLAN/risiko-eingetreten-und-im-slice-aufgeloest/observation.md)
+  bei 1× angelegt, ausdrücklich **getrennt** von
+  [`risiko-ausgang-fuer-gewollte-wirkung`](../observations/BEO-PLAN/risiko-ausgang-fuer-gewollte-wirkung/observation.md)
+  (dort war der Punkt nie ein Risiko) — ob beide dieselbe Klasse sind, entscheidet
+  der Lese-Schritt bei 3× und nicht die Anlage. **Nur benennen hätte nicht
+  gereicht:** Der Plan wird archiviert, und was keine Kennung hat, ist beim
+  nächsten Vorkommen nicht auffindbar (Review F-11).
 
 ## 8. Closure-Notiz
 
@@ -453,6 +542,33 @@ und die zweite hat unmittelbar getragen: Sie ist §3.5 geworden. `modul-05` nenn
 die Finding-Klasse als dritte Zähler-Quelle; ohne diesen Griff zählt sie nicht
 mit.
 
+**Und die erste Quelle war zu schmal — das ist der zweite Lerneintrag.** §9 nennt
+`HARNESS` als berührte Sub-Area und sichtete dann **nur** `BEO-PLAN`. Die 15
+`BEO-HARNESS`-Einträge blieben ungelesen, und **zwei davon treten in genau
+diesem Diff ein drittes Mal auf**: Chronik im Briefing und ein Adaptions-Eintrag,
+der eine Repo-Aussage korrigiert. Beide haben jetzt ihren Ausgang
+([slice-191](../open/slice-191-chronik-phrasen-sensor.md),
+[slice-190](../open/slice-190-id-schema-deklaration-ueberarbeiten.md)), aber
+gefunden hat sie der Review, nicht die Sichtung. **Die Regel, die daraus wird:**
+Das Register wird nach **allen** berührten Kürzeln gelesen — nicht nach dem, in
+dessen Verzeichnis man gerade arbeitet. Sie steht in §9 der drei Folge-Slices.
+
+**Der Review hat außerdem den Befund geliefert, den der Abgleich nicht finden
+konnte** (§3.6, F-5): `docs/plan/planning/README.md` behauptete, a-check habe
+den Archivierungs-Schritt der Wellen-Closure nicht adoptiert — 13 Archive und ein
+Pflichtschritt im Briefing sagen das Gegenteil. Die Stelle war **kein Kandidat**
+und konnte keiner sein, weil das Instrument nur Vorlage → Repo läuft. **Ein
+Ziel-Form-Abgleich prüft, ob das Repo die Vorlage trägt — nicht, ob das Repo
+recht hat.** Diese Grenze steht jetzt in §2 und im Ausgang des Paares.
+
+**Und ein Punkt war zwei Slices lang unterwegs verloren** (F-1): slice-185 hatte
+für `spec/architecture.md` eine von drei Klauseln als **verletzt** offen gelassen
+und an slice-186 adressiert; dort und hier kommt sie nicht vor, und
+[slice-189](../open/slice-189-voll-abgleich-spec-straten.md) schloss das Paar mit
+*„bereits abgeglichen"* aus. Er nimmt sie jetzt. Die Zusage *„Restmenge mit
+Zähler, kein offener Rest"* hat dadurch überhaupt erst gestimmt — sie war beim
+Schreiben falsch.
+
 ## 9. Sub-Area-Prüfungen und Modus-Begründung
 
 **Vorgelagert — Sub-Area-Wahl prüfen.** Berührt ist **eine** Sub-Area, in
@@ -508,3 +624,27 @@ schärferen sind:
 
 **Keine Treffer sind ebenfalls eine Antwort:** Zur Sub-Area `SPEC` steht nichts
 Offenes an, das diesen Slice beträfe — sie ist ohnehin abgetrennt (§1).
+
+**Nachtrag nach dem Review — die Sichtung war unvollständig, und das ist ihr
+schwerster Befund.** §Sub-Area-Wahl oben nennt `HARNESS` als berührt; gesichtet
+wurden **nur** die sechs `BEO-PLAN`-Einträge. Die **15** Einträge unter
+`BEO-HARNESS` blieben ungelesen — und zwei davon treten in genau diesem Diff ein
+drittes Mal auf (§3.6):
+
+| Eintrag | Stand vorher | durch diesen Slice |
+|---|---|---|
+| [`BEO-HARNESS/chronik-in-gelesenen-dateien`](../observations/BEO-HARNESS/chronik-in-gelesenen-dateien/observation.md) | offen (2×) | **3×** → *geplant*, [slice-191](../open/slice-191-chronik-phrasen-sensor.md) |
+| [`BEO-HARNESS/adaption-korrigiert-repo-aussage`](../observations/BEO-HARNESS/adaption-korrigiert-repo-aussage/observation.md) | offen (2×) | **3×** → *geplant*, [slice-190](../open/slice-190-id-schema-deklaration-ueberarbeiten.md) |
+| [`BEO-HARNESS/baseline-regel-nie-erwogen-weil-bestand-sie-verletzt`](../observations/BEO-HARNESS/baseline-regel-nie-erwogen-weil-bestand-sie-verletzt/observation.md) | offen (2×) | **berührt, nicht erhöht** — sein Beleg führt denselben `AGENTS.md`-§4-Satz, den §3.1 als Befund 1 übernimmt; der Eintrag hatte ihn also schon benannt |
+| [`BEO-GATE/zusage-weiter-als-ihre-durchsetzung`](../observations/BEO-GATE/zusage-weiter-als-ihre-durchsetzung/observation.md) | — | **neu, 2×** (§3.5) |
+| [`BEO-PLAN/risiko-eingetreten-und-im-slice-aufgeloest`](../observations/BEO-PLAN/risiko-eingetreten-und-im-slice-aufgeloest/observation.md) | — | **neu, 1×** (§7, Risiko 4) |
+
+**Die Lehre gehört an den Sichtungs-Schritt, nicht an diesen Slice:** Das
+Register wird nach **allen** berührten Kürzeln gelesen, nicht nach dem, in
+dessen Verzeichnis man gerade arbeitet. Die drei Folge-Slices (188/189/190/191)
+tragen den Satz in ihrem §9 bereits.
+
+**Und die zweite Quelle hat getragen:** Der Report des Vorgängers stand in §9 von
+Anfang an und lieferte die zwei schärfsten Warnungen — *Selbstverweis beim Umzug*
+und *Zusage mit Grenze nur im Konfigurations-Kommentar*. Die zweite ist §3.5
+geworden. Was fehlte, war nicht die Quelle, sondern die **Breite** der ersten.

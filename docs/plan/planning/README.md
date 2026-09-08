@@ -33,7 +33,9 @@ bedeutet.
 §3.3). Beim Übergang nach `done/` ist die Reihenfolge **umgekehrt**: erst der
 Inhalt (DoD-Häkchen, Closure-Notiz), dann der reine `git mv` — die Notiz ist die
 Bedingung dafür, dass die Datei nach `done/` darf, nicht ihre Folge.
-`make slice-mv` fährt den Move und zieht die Verweise **auf** die Datei nach.
+`make slice-mv` fährt den Move und zieht die Verweise **auf** die Datei nach —
+Pfade, keine Aussagen: Ein Zustandssatz daneben (etwa der Ruhe-Marker der
+Roadmap) bleibt Sache des Laufs.
 
 ## Slices vs. Wellen — zwei Ablagen, dieselbe Regel
 
@@ -120,13 +122,14 @@ Wellen-Closure.
 
 ## Wellen-Closure-Prozedur
 
-Quelle: `modul-06` §Wellen-Closure. **Fünf Schritte, jeder
-mit einem Beleg — keiner mit einem Datum.** Erst wenn alle fünf Belege vorliegen, ist eine Welle
-*auditierbar* geschlossen. (Die Baseline führt seit `v6.0.0` einen sechsten Schritt —
-Zeitdokumente archivieren, zwischen Welle-Schließen und Self-Close-Commit; ausdrücklich optional,
-„kein Zwang zum Nachrüsten — und kein Verbot". a-check hat ihn nicht adoptiert, mangels Trigger:
-keine offene Welle, kein Bedarf, alten Bestand loszuwerden. Diese fünf Schritte bleiben darum
-a-checks vollständige, gelebte Prozedur.)
+Quelle: `modul-06` §Wellen-Closure. **Sechs Schritte, jeder mit einem Beleg — keiner mit einem
+Datum.** Erst wenn alle sechs Belege vorliegen, ist eine Welle *auditierbar* geschlossen.
+
+Schritt 4 — **Zeitdokumente archivieren** — ist in a-check **verkörpert**: `make archive-wave`
+bewegt den Volltext ins Archiv und lässt einen Stub zurück; für einen wellenlosen Slice ist es
+ein Pflichtschritt der Closure ([`AGENTS.md`](../../../AGENTS.md) §6). Der Bestand trägt das:
+`done/welle-*/archiv.zip` gibt es für **13** geschlossene Wellen, und `done/wellenlos/` führt je
+Slice ein eigenes.
 
 **1 — Trigger prüfen.** Alle Slices der Welle liegen in `done/`, und der Lauf ist grün. Das ist
 die beobachtbare Bedingung, nicht der Kalendertag.
@@ -165,11 +168,19 @@ das Netz, aber erst *nach* dem `mv`.
 erst bei der nächsten Closure entsteht, würde zwischen zwei Wellen nichts zählen — genau der
 Fehler, den slice-057 vermieden hat.
 
-**4 — Wave-Self-Close-Commit.** Ein einzelner, beobachtbarer Commit markiert den Abschluss.
+**4 — Zeitdokumente archivieren.** Die Slice-Dateien der Welle, ihr eigener Plan und die
+Review-Reports dieser Slices wandern in ein unveränderliches `done/<welle-id>/archiv.zip`; am Ort
+bleibt ein gekürzter Stub, die Ergebnis-Notiz bleibt vollständig und flach.
+*Beleg:* `make archive-wave WELLE=<id> APPLY=1` als eigener Commit, danach `make gates` und
+`make verify` auf dem archivierten Stand erneut grün. Eingesammelt wird **nach der Welle, nicht
+nach dem Verzeichnis** — auch die wellenlosen Slices, die seit der letzten Closure geschlossen
+wurden.
+
+**5 — Wave-Self-Close-Commit.** Ein einzelner, beobachtbarer Commit markiert den Abschluss.
 *Beleg:* der Commit-Hash. Der Audit sieht *einen* Punkt, an dem die Welle schloss, statt eines
 verstreuten Verschwindens über mehrere Commits.
 
-**5 — Roadmap fortschreiben.** Die Welle wandert aus *Offene Wellen* in die Tabelle
+**6 — Roadmap fortschreiben.** Die Welle wandert aus *Offene Wellen* in die Tabelle
 *Abgeschlossene Wellen* (mit Zeiger auf ihre Ergebnis-Notiz); die erste Zeile aus *Nächste Wellen*
 rückt unter *Offene Wellen* nach, sofern ihr Trigger gefeuert hat. Hat ein Trigger dabei eine Umplanung ausgelöst, bekommt
 *Historische Trigger-Verschiebungen* ihren Eintrag.
