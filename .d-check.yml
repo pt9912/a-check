@@ -314,6 +314,59 @@ structure:
     exempt-expect-count: 19
     hint: "neue AC braucht Happy, Boundary, Negative und Out-of-Scope (AGENTS §5); die 19 bei Einfuehrung bestehenden sind grandfathered"
 
+  # (6) Zellengrenze der Vertrags-Spalten in den beiden Gate-Tabellen
+  #     (slice-181). Die Ziel-Form der Sensors-Sektion sagt: "Braucht ein Gate
+  #     mehr als EINEN SATZ — Deckungsgrenze, Ausgabe-Bedeutung, Exit-Codes,
+  #     Abbruch-Bedingungen —, wandert das nach harness/sensors/<target>.md".
+  #
+  #     WARUM ZEICHEN UND NICHT SAETZE, obwohl die Ziel-Form Saetze nennt:
+  #     gemessen ueber alle 66 Zellen der zwei Spalten traegt genau EINE mehr
+  #     als einen Satz — auch die mit 354 Zeichen. Das Satz-Kriterium ist
+  #     INHALTLICH gemeint ("sagt mehr, als ein Satz sagen sollte") und als
+  #     Muster nicht greifbar. Die Zeichenzahl ist ein PROXY dafuer; sie faengt
+  #     denselben Fall aus einer anderen Richtung und ist maschinell pruefbar.
+  #     Das ist die benannte Grenze dieser Regel: eine ueberladene Zelle mit
+  #     240 Zeichen passiert gruen.
+  #
+  #     SCHWELLE 250, am Bestand gemessen statt gesetzt: Median der zwei
+  #     Spalten 152 bzw. 158 Zeichen, 250 also rund das 1,6-fache. Bei 200
+  #     waeren es 17 Befunde gewesen, bei 250 acht — und die acht sind genau
+  #     die, die beim Ueberfliegen der Tabelle nicht mehr lesbar waren. Nach
+  #     ihrer Aufloesung liegt der Bestand bei max 242; das sind acht Zeichen
+  #     Luft, und die Enge ist Absicht.
+  #
+  #     GRENZE DES hint-FELDES: es gewinnt gegen die modul-eigene Meldung — und
+  #     zwar fuer ALLE Befunde dieser Regel. Bei section-column-missing und
+  #     section-cell-undersized steht dann "Zelle ueber 250 Zeichen" ueber einem
+  #     Befund, der etwas anderes sagt (gemessen, slice-181). Der Grund-Code in
+  #     Spalte 3 bleibt richtig; wer nur den Hinweis liest, wird fehlgeleitet.
+  #
+  #     KEINE OBERGRENZE AUF DER BINDUNG-SPALTE: sie fuehrt strukturelle
+  #     Referenzen (Slice-IDs, ADR-IDs, Schwellen) und waechst mit der Zahl der
+  #     Bindungen, nicht mit der Geschwaetzigkeit — die Ziel-Form beschreibt sie
+  #     ausdruecklich so. Die Untergrenze 1 bindet die Spalte trotzdem: ohne
+  #     einen Selektor sieht das Modul sie nie, und eine Zeile, der die Spalte
+  #     GANZ fehlt, meldete nichts.
+  - files: "harness/README.md"
+    section: "## Sensors (Feedback-Gates)"
+    table:
+      column:
+        - name: Vertrag
+          cell-max-chars: 250
+          cell-min-chars: 1
+        - name: Bindung
+          cell-min-chars: 1
+    hint: "Zellengrenze der Vertrags-Spalte (max 250 Zeichen, nicht leer): was darueber hinausgeht, gehoert nach harness/sensors/<target>.md (AGENTS §4)"
+
+  - files: "AGENTS.md"
+    section: "## 4. Quality Gates"
+    table:
+      column:
+        - name: Zweck
+          cell-max-chars: 250
+          cell-min-chars: 1
+    hint: "Zellengrenze der Zweck-Spalte (max 250 Zeichen, nicht leer): was darueber hinausgeht, gehoert nach harness/sensors/<target>.md (AGENTS §4)"
+
 # Modul `planning` (DC-FA-PLAN-001): Lifecycle-Konsistenz Roadmap <-> in-progress/.
 # Ohne diesen Block lief `make doc-planning` WIRKUNGSLOS — d-check aktiviert das
 # Modul per --enable, findet keine Konfiguration und meldet 0 Befunde, Exit 0
