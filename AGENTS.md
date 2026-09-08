@@ -165,6 +165,7 @@ die CI (Badge im [`README.md`](README.md)), nicht diese Tabelle.
 | `make doc-commits` | Commit-Message-Traceability (Modul `commits`; `RANGE=`, DC-FA-COMMITS-001) |
 | [`make doc-planning`](harness/sensors/doc-planning.md) | Lifecycle-Konsistenz Roadmap ↔ `in-progress/`: liegt dort ein Slice, benennt ihn die Roadmap-Sektion, statt den Ruhe-Marker zu tragen |
 | [`make doc-workflows`](harness/sensors/doc-workflows.md) | Deklarations-Form der `uses:`-Referenzen unter `.github/workflows`: voller SHA plus Tag-Kommentar beim Fremden, existierendes Ziel und gedeckte Rechte beim Lokalen. Prüft die **Form**, nicht die Gültigkeit |
+| [`make doc-mentions`](harness/sensors/doc-mentions.md) | Erwähnungs-Deckung, die **Gegenrichtung** des Link-Checks: jede Datei unter `harness/sensors/` ist in dieser Tabelle genannt. Eine Datei ohne Index-Zeile bliebe sonst still grün |
 | [`make doc-reviews`](harness/sensors/doc-reviews.md) | Review-Report-Deckung: eine `done/`-Slice-DoD-Zeile mit der Phrase „unabhängiger Review" braucht einen Report gleicher Kennung. **Opt-in pro Slice über die Phrase selbst** |
 | `make doc-tracked` | Getrackt-Status auflösbarer Referenz-Ziele (Modul `tracked`, DC-FA-TRK-001) |
 | `make doc-targets` | Deklarations-Konsistenz Doku ↔ Build-Targets (Modul `targets`, DC-FA-TGT-001), konfiguriert in [`.d-check.yml`](.d-check.yml); im `gates`-Aggregat |

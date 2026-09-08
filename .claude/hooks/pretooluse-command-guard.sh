@@ -76,7 +76,7 @@ guard_verdict() {
       "gate-consistency","verify-risiko-ausgaenge",
       "verify-observations","commit-scope-check","guard-selftest","doc-complete","doc-immutable",
       "doc-commits","doc-planning","doc-tracked","doc-targets","doc-structure","doc-workflows",
-      "doc-reviews",
+      "doc-reviews","doc-mentions",
       "version-coherence","ci-range-selftest","dcheck-phrase-selftest","symlink-check",
       "regelwerk-check","archive-wave-test"]);
 

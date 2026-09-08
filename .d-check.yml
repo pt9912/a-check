@@ -428,5 +428,35 @@ planning:
 # verlangt (uses-local-perms-undeclared/-narrow). Der erste Lauf fand hier den
 # latenten Bruch in release.yml, der die Hub-Darstellung bei v0.18.0 zur
 # Handarbeit machte (slice-130 §4).
+# Modul `mentions` (slice-184, seit d-check v0.75.0): die GEGENRICHTUNG des
+# Link-Checks. Ein Link-Sensor prueft, ob ein GENANNTES Ziel existiert; mentions
+# prueft, ob eine EXISTIERENDE Datei genannt wird. Genau die Grenze, die die
+# Ziel-Form von harness/README.md woertlich benennt ("eine Datei ohne
+# Index-Zeile bleibt still gruen") und die harness/sensors/gate-consistency.md
+# seit slice-181 als eigene Grenze fuehrt.
+#
+# GEMESSEN, WEIL --print-config das Modul NICHT dokumentiert (slice-184):
+#  - Es sucht den VOLLEN repo-relativen Pfad als Zeichenkette. Alle drei
+#    Erwaehnungsformen treffen: Markdown-Link, Inline-Code und nackte Prosa.
+#  - Beide Listen sind Pflicht, fail-closed (DC-FA-MENT-001); ein einzelner
+#    String statt einer Liste bricht mit einem yaml-unmarshal-Fehler.
+#  - Die Erfolgszeile nennt eine QUOTE ("N von M Artefakt(en) erwaehnt").
+#
+# WARUM NUR AGENTS.md ALS DOKUMENT: harness/README.md nennt dieselben Dateien
+# geschwister-relativ (`sensors/<name>.md`) und kann das nicht aendern, ohne
+# seine Links zu brechen -- Markdown-Links sind dateirelativ. Der volle Pfad
+# steht nur in AGENTS.md Paragraph 4, und dort vollstaendig (15 von 15
+# gemessen). Die zweite Tabelle bleibt damit ungewaechtert; das ist die
+# benannte Grenze dieser Regel, keine Nachlaessigkeit.
+#
+# WARUM NICHT DIE ADRs: Der ADR-Index verlinkt ebenfalls geschwister-relativ --
+# 39 von 39. mentions meldete dort jede einzelne als unerwaehnt. Die
+# ADR-Index-Vollstaendigkeit bleibt darum die Eigenbau-Pruefung (3) in
+# tools/gate-consistency.sh; eine Abloesung scheitert nicht am Willen, sondern
+# an der Pfad-Form (slice-184, gemessen).
+mentions:
+  artifacts: ["harness/sensors/*.md"]
+  documents: ["AGENTS.md"]
+
 workflows:
   dir: .github/workflows

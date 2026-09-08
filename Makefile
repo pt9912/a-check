@@ -51,7 +51,7 @@ NO_CACHE_FILTER_COV  := --no-cache-filter coverage
         gate-consistency guard-selftest ci-range-selftest record-gates gates image-test ci \
         trace-check hooks suppression-check symlink-check dcheck-phrase-selftest regelwerk-check commit-scope-check \
         verify verify-risiko-ausgaenge verify-observations slice-mv image-scan \
-        doc-workflows doc-reviews version-coherence archive-wave-test archive-wave
+        doc-workflows doc-reviews doc-mentions version-coherence archive-wave-test archive-wave
 
 # Gates seriell: unter `make -j` liefen die Sub-Gates sonst parallel und die
 # Reihenfolge/der Abbruch bei rotem Gate wären nicht garantiert.
@@ -129,6 +129,19 @@ doc-workflows: ## Deklarations-Form der uses:-Referenzen unter .github/workflows
 	  --disable links --disable anchors --disable ids \
 	  --disable matrix --disable spans --disable hostpaths --disable reviews
 
+# Erwaehnungs-Deckung (Modul mentions, seit slice-184): die GEGENRICHTUNG des
+# Link-Checks. Jede Datei unter harness/sensors/ muss in AGENTS.md Paragraph 4
+# genannt sein — eine Sensor-Datei ohne Index-Zeile bleibt sonst still gruen
+# (die Grenze steht woertlich in der Ziel-Form von harness/README.md).
+# Das Fragment liefert dafuer KEIN Target; mentions steht dort nur in den
+# --disable-Listen. Darum hier, wie doc-workflows.
+doc-mentions: ## Erwaehnungs-Deckung: jede harness/sensors/-Datei ist in AGENTS.md genannt (Modul mentions).
+	$(DOCKER) run --rm --network none -v "$(CURDIR):/repo:ro" $(DCHECK_REF) \
+	  --enable mentions \
+	  --disable links --disable anchors --disable ids \
+	  --disable matrix --disable spans --disable hostpaths \
+	  --disable versions --disable reviews
+
 # Review-Report-Deckung (DC-FA-RVW-001, Modul reviews, seit slice-160): eine
 # DoD-Zeile mit der Phrase "unabhaengiger Review" braucht mindestens einen
 # Report unter docs/reviews/ mit derselben slice-<NNN>-Kennung im Dateinamen.
@@ -191,7 +204,7 @@ verify: ## Verifikations-Schicht: DoD-/Closure-Fragen (vor der "fertig"-Meldung;
 record-gates: ## Gate-Nachweis (Working-Tree-Hash) für den Stop-Hook schreiben.
 	@bash tools/harness/record-gates.sh
 
-gates: lint test coverage-gate arch-check doc-check doc-targets doc-planning doc-workflows doc-reviews gate-consistency version-coherence suppression-check symlink-check dcheck-phrase-selftest guard-selftest ci-range-selftest record-gates ## alle inneren Gates (mandatory vor Handoff).
+gates: lint test coverage-gate arch-check doc-check doc-targets doc-planning doc-workflows doc-reviews doc-mentions gate-consistency version-coherence suppression-check symlink-check dcheck-phrase-selftest guard-selftest ci-range-selftest record-gates ## alle inneren Gates (mandatory vor Handoff).
 
 image-test: build ## AC-FA-DIST-001 + nativ==Container-Akzeptanz gegen das gebaute Image.
 	@IMAGE=$(IMAGE) bash tools/image-test.sh
