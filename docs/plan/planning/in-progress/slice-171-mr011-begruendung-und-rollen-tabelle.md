@@ -44,6 +44,25 @@ gesehen — sie fallen nur auf, wenn jemand sie liest.
   ein Urteil, kein Match ([`AGENTS.md`](../../../../AGENTS.md) §3.7) — genau
   deshalb fiel beides erst beim Lesen auf.
 
+**Zwei benannte Plan-Änderungen** ([`AGENTS.md`](../../../../AGENTS.md) §6):
+
+1. **Ein dritter `MR`-Eintrag.** Der Review fand in
+   [`MR-021`](../../../../harness/conventions/done/MR-021-verfeinerungs-form.md)
+   eine falsche Zahl (F-1) — denselben Fehlertyp, den der Eintrag behob. Er war
+   zu diesem Zeitpunkt bereits gepusst und damit im Bestand; ein akzeptierter
+   Eintrag wird nicht überschrieben. Daher die Kette
+   [`MR-011`](../../../../harness/conventions/done/MR-011-verfeinerungs-form.md) → [`MR-021`](../../../../harness/conventions/done/MR-021-verfeinerungs-form.md) → [`MR-022`](../../../../harness/conventions/MR-022-verfeinerungs-form.md)
+   statt einer stillen Korrektur.
+2. **Zwei weitere falsche Aussagen im selben Abschnitt** (Review F-6): Der
+   Prosa-Rahmen über der Adaptions-Tabelle behauptete *„jede Zeile trägt zwei
+   Anker"* (gemessen: null der sieben) und *„die Spalte steht hier überall auf
+   `—`"* (gemessen: fünf von sieben tragen einen Zeiger). **Damit ist die
+   Rückführungs-Bedingung aus §5 wörtlich eingetreten** — *„weitere überholte
+   Aussagen im selben Abschnitt"*. Sie wird trotzdem nicht gezogen: Es sind zwei
+   Prosa-Zeilen in einer Datei, die der Slice ohnehin ändert, und nichts daran
+   wächst mit dem Umfang (Größen-Regel). Die Entscheidung steht hier, damit sie
+   prüfbar ist statt stillschweigend.
+
 ## 2. Analyse (vor der Umsetzung)
 
 ### 2.1 [`MR-011`](../../../../harness/conventions.md#mr-011) begründet sich mit einem Feld, das die genannte Beziehung nicht trägt
@@ -159,7 +178,7 @@ eigene Entscheidung, und beide standen bis hierher nur im Gesprächsprotokoll.
 
 **Zwei Commits statt einem** ([`AGENTS.md`](../../../../AGENTS.md) §3.3): erst
 die Bewegung samt der Pfade, die sie erzwingt — die Datei liegt eine Ebene
-tiefer, also brauchen ihre sechs relativen Links ein `../` mehr —, dann der
+tiefer, also brauchen ihre **fünf** relativen Links ein `../` mehr —, dann der
 ablösende Eintrag. Rename-Erkennung nach dem ersten Commit: **72 %**, also weit
 über der 50-%-Schwelle, `git log --follow` bleibt zuverlässig.
 
@@ -223,10 +242,15 @@ geschrieben.
   **Gemessen und dabei korrigiert:** Der Slice-Plan sprach von `v6.0.0`-Ankern;
   im heutigen Bestand zeigt kein `Ersetzt-Baseline-Regel`-Feld mehr dorthin —
   slice-172 hat den Stand entfernt, und die Zeiger sind mit der
-  Baseline-Migration auf `v6.5.0` mitgewandert. [`MR-021`](../../../../harness/conventions/done/MR-021-verfeinerungs-form.md) trägt denselben Zeiger
-  wie [`MR-011`](../../../../harness/conventions/done/MR-011-verfeinerungs-form.md), nur auf den aktuellen Stand. Die Klasse bleibt trotzdem offen:
-  Was beim nächsten Sprung mit ihnen geschieht, ist weiterhin nicht
-  querschnittlich entschieden.
+  Baseline-Migration auf `v6.5.0` mitgewandert. Der neue Eintrag trägt denselben
+  Zeiger, nur auf den aktuellen Stand.
+  **Zum Ausgang selbst** (Review F-4): Der genannte Eintrag steht auf
+  *verkörpert*, und dieser Slice legt **keinen** Beleg an — der Zähler bewegt
+  sich also nicht. Das ist beabsichtigt und der Grund steht in §9: Der Slice
+  berührt ein Feld, das der Eintrag beschreibt, aber er **löst die Klasse nicht
+  aus** — alle fünf Zeiger stehen bereits auf dem aktuellen Stand. *Weiter
+  offen* heißt hier: Die Frage kehrt beim nächsten Baseline-Sprung wieder, nicht
+  dass dieser Slice sie erneut gestellt hätte.
 
 ## 8. Closure-Notiz
 
@@ -247,6 +271,17 @@ geschrieben.
   ist abgehakt** — er beschreibt einen Zustand, nicht eine Tätigkeit; wer ihn
   streicht, verliert die Aussage, dass er geprüft wurde.
 
+- **Was der Review fand — und warum es diesmal besonders weh tut.** 2 HIGH,
+  4 MEDIUM, 3 LOW. **F-1: [`MR-021`](../../../../harness/conventions/done/MR-021-verfeinerungs-form.md) nannte eine falsche Zahl** — *„40
+  ADR-Dateien tragen ein `Schärft:`-Feld, das auf solche Anker zeigt"*. Die 40
+  zählt Dateien mit dem *String*, den Index eingeschlossen; über Felder, die
+  zeigen, sagt sie nichts (gemessen: 34, davon 30 `Accepted`). **Das ist
+  derselbe Fehlertyp, den derselbe Eintrag behob.** Ein Beleg, der plausibel
+  klingt und die gestellte Frage nicht misst — zweimal hintereinander, in
+  derselben Sache.
+  **F-2: *„keine weiteren Treffer für `HARNESS`"* war falsch** — 14 Einträge,
+  10 offen, zwei genannt. Vier Wörter statt vierzehn Zeilen.
+
 - **Steering-Loop-Eintrag — geschärfte Regel:** *Eine Begründung, die einen
   Beleg über das Repo führt, nennt ihn mit Zahl und Quelle — im Eintrag, nicht
   im Slice.* Ein `MR`-Eintrag ist immutabel und wird Jahre später gelesen; ein
@@ -257,6 +292,16 @@ geschrieben.
   **Kein Sensor:** Ob eine Begründung gemessen ist, ist ein Urteil über ihren
   Entstehungsweg ([`AGENTS.md`](../../../../AGENTS.md) §3.7) — dieselbe Grenze,
   die §5 für CR-Texte an ein fremdes Werkzeug bereits benennt.
+
+- **Die zweite Lehre, teurer bezahlt:** *Ein `MR`-Eintrag ist ab seinem
+  Anlage-Commit im Bestand — der Review kommt danach.* [`MR-021`](../../../../harness/conventions/done/MR-021-verfeinerungs-form.md) war beim
+  Finding bereits gepusht; die Immutabilität ließ nur die Ablösung. Daraus die
+  Kette [`MR-011`](../../../../harness/conventions/done/MR-011-verfeinerungs-form.md) → [`MR-021`](../../../../harness/conventions/done/MR-021-verfeinerungs-form.md) → [`MR-022`](../../../../harness/conventions/MR-022-verfeinerungs-form.md) für **eine Zahl**. Wer das vermeiden
+  will, hat zwei Wege: den Review **vor** den Anlage-Commit ziehen, oder den
+  Eintrag zunächst als `Proposed` führen und erst mit der Closure auf
+  `Accepted` setzen. **Der Bestand kennt keinen `Proposed`-`MR`** — gemessen:
+  alle **12** tragen `Accepted`. Das ist die benannte Spec-Lücke dieses Slice,
+  kein Vorschlag: Ob der Weg beschritten wird, entscheidet ein eigener Vorgang.
 
 - **Beobachtungs-Register (`../observations/`):** kein neuer Eintrag, kein
   neuer Beleg — beide gesichteten Einträge sind in §9 begründet ausgeschlossen.
@@ -298,6 +343,29 @@ den gemergten Stand. Zwei Treffer, beide vorab richtig vermutet:
   heute `v6.5.0`, keines mehr einen alten Stand. Der Eintrag bleibt, weil die
   Querschnitts-Frage beim **nächsten** Sprung wiederkehrt.
 
-**Keine weiteren Treffer** für `HARNESS`.
+**Die übrigen zwölf `HARNESS`-Einträge, einzeln durchgegangen** — der Review
+fand die erste Fassung *„keine weiteren Treffer"* gegen das Register falsch
+(F-2), und sie war es: `BEO-HARNESS/` führt **14** Einträge, **10** davon
+`offen`.
+
+| Eintrag | Stand | berührt dieser Slice ihn? |
+|---|---|---|
+| [`hard-rule-37-ohne-sensor`](../observations/BEO-HARNESS/hard-rule-37-ohne-sensor/observation.md) | offen 2× | **nein, und das ist die knappste Entscheidung.** Der Slice *beruft* sich zweimal auf §3.7 — das ist Anwendung der Regel, kein Vorkommen der Lücke. Ein Beleg entstünde bei einem **Verstoß**, der ungeprüft bliebe (so bei slice-180: zwei Konjunktiv-Kommentare). Hier ist keiner gefunden. |
+| [`mr-aufloesungs-trigger-ohne-waechter`](../observations/BEO-HARNESS/mr-aufloesungs-trigger-ohne-waechter/observation.md) | offen 1× | **nein.** Der Slice legt einen `MR` mit Auflösungs-Trigger an — der Trigger ist unverändert von [`MR-011`](../../../../harness/conventions/done/MR-011-verfeinerungs-form.md) übernommen und bekommt keinen neuen Wächter, aber er **verliert** auch keinen. Der Eintrag beschreibt eine stehende Lücke, kein Ereignis. |
+| [`chronik-in-gelesenen-dateien`](../observations/BEO-HARNESS/chronik-in-gelesenen-dateien/observation.md) | offen 2× | **nein.** Der Eintrag nennt `conventions.md` namentlich; der Slice hat dort zwei falsche **Tatsachen**-Aussagen korrigiert (F-6), keine Chronik entfernt. Andere Klasse. |
+| [`baseline-normtext-nachgeschrieben`](../observations/BEO-HARNESS/baseline-normtext-nachgeschrieben/observation.md) | offen 2× | nein — kein Baseline-Normtext berührt. |
+| [`adaption-korrigiert-repo-aussage`](../observations/BEO-HARNESS/adaption-korrigiert-repo-aussage/observation.md) | offen 2× | nein, siehe oben. |
+| [`baseline-regel-nie-erwogen-weil-bestand-sie-verletzt`](../observations/BEO-HARNESS/baseline-regel-nie-erwogen-weil-bestand-sie-verletzt/observation.md) | offen 2× | nein — die Baseline-Regel (Suffix-Form) ist ausdrücklich erwogen und begründet abgelehnt; das ist das Gegenteil des Eintrags. |
+| [`agents-md-hinkt-baseline-dod-item-hinterher`](../observations/BEO-HARNESS/agents-md-hinkt-baseline-dod-item-hinterher/observation.md) | offen 1× | nein — `AGENTS.md` nicht berührt. |
+| [`rueckbau-eintrag-ablage-auslegung`](../observations/BEO-HARNESS/rueckbau-eintrag-ablage-auslegung/observation.md) | offen 1× | nein — kein Rückbau-Eintrag; [`MR-022`](../../../../harness/conventions/MR-022-verfeinerungs-form.md) ist eine Ablösung mit fortbestehender Adaption. |
+| [`selbst-archivierung-verdoppelt-abschluss-aufwand`](../observations/BEO-HARNESS/selbst-archivierung-verdoppelt-abschluss-aufwand/observation.md) | offen 1× | nein — betrifft die Closure-Mechanik, nicht diesen Gegenstand. |
+| [`sensor-ohne-dod-phrase-wirkungslos`](../observations/BEO-HARNESS/sensor-ohne-dod-phrase-wirkungslos/observation.md) | offen 1× | nein — keine DoD-Phrase geändert. |
+| [`behauptete-vollstaendigkeit-extern-gefangen`](../observations/BEO-HARNESS/behauptete-vollstaendigkeit-extern-gefangen/observation.md) | verkörpert 4× | **berührt, ohne Beleg.** Die erste Fassung dieser Sichtung behauptete Vollständigkeit (*„keine weiteren Treffer"*) und war unvollständig — extern gefangen, vom Review. Die Regel dagegen ist seit slice-159 in `AGENTS.md` §6 verkörpert und hat **funktioniert**: Der unabhängige Review fand es. Ein Beleg zählt ein *Versagen* der Deckung; hier hat sie getragen. |
+| [`harness-einstieg-ohne-modus-zeile`](../observations/BEO-HARNESS/harness-einstieg-ohne-modus-zeile/observation.md) · [`rueckbau-kandidat-ueberlebt-baseline-migration`](../observations/BEO-HARNESS/rueckbau-kandidat-ueberlebt-baseline-migration/observation.md) · [`zwei-baseline-staende-nach-migrationsende`](../observations/BEO-HARNESS/zwei-baseline-staende-nach-migrationsende/observation.md) | verkörpert | nein bzw. oben behandelt. |
+
+**Die Lehre aus F-2 steckt in der Tabelle selbst:** *„keine weiteren Treffer"*
+ist eine Vollständigkeits-Behauptung und braucht dieselbe Sorgfalt wie eine
+Messung. Vier Wörter sind billiger als vierzehn Zeilen — und genau deshalb
+falsch.
 
 **Alle berührten Sub-Areas GF** — kein Begründungsblock nötig.
