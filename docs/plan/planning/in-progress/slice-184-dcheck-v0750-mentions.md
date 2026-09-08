@@ -10,7 +10,7 @@ Closure-Bedingung wäre die eigene DoD (Baseline-Regelwerk
 
 **Berührte Spec-Stellen:** — (Werkzeug-Pin und Gate-Konfiguration ohne Vertragsberührung).
 
-**Verantwortlich:** —
+**Verantwortlich:** Claude — gesetzt beim Übergang nach `in-progress/`.
 
 **Autor:** Claude. **Datum:** 2026-09-08.
 
