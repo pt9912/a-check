@@ -279,6 +279,34 @@ verankert in `harness/conventions.md` §Baseline).
   **Ein Abgleich, der jede Differenz als Lücke liest, erzeugt stillen Rückbau** —
   deshalb verlangt die DoD je Paar einen *Ausgang*, nicht eine Differenzliste.
 
+- **Was der Review fand — vier HIGH, und alle vier an derselben Stelle.** Sein
+  Verdikt trennt sauber: *„Die Idee des Slice trägt … die Ausführung der Messung
+  trägt an vier Stellen nicht — und dieser Slice macht Messgenauigkeit zu seinem
+  Gegenstand."* Der **Kern-Beleg hält** (unabhängig nachgemessen: der
+  Arbeitsteilungs-Satz steht wortgleich in `v5.12.0`, `v6.0.0`, `v6.2.0`,
+  `v6.5.0` und fehlt in `v3.5.2`). Falsch waren die Messungen darum herum:
+
+  | Finding | was falsch war |
+  |---|---|
+  | F-1 | `README.md` gegen den **Verzeichnis-Index** gemessen statt gegen `project-readme.template.md` — a-checks Datei ist **länger**, nicht kürzer |
+  | F-2 | Nicht-Befund zu `spec/architecture.md` deckte **eine von drei** Klauseln; die dritte ist verletzt |
+  | F-3 | *„a-check kopiert die Ziel-Formen nicht"* widerspricht `AGENTS.md` §5 — und der Fall ist besetzt |
+  | F-4 | Feld `klasse` fehlte im Output-Schema, obwohl alle neun Reports es führen |
+
+- **Zwei Fehler, eine Ursache: ein Match ist keine Zuordnung.** F-1 kam von der
+  Paarbildung per **Basisnamen** (`templates/README.md` → `README.md`), F-7 vom
+  Suchen per **Pfad** (`roadmap.template.md` → `docs/plan/planning/roadmap.md`,
+  während die Datei in `in-progress/` liegt). Beide Male hat der Automatismus
+  eine Zuordnung *hergestellt* statt sie nachzuschlagen — und die richtige stand
+  daneben: `templates/README.md` führt eine **Übersichts-Tabelle**, die jeder
+  Vorlage ihr Ziel zuweist.
+
+- **Und ein dritter derselben Familie, auf der Lese-Seite:** F-2. Eine Zusage
+  mit drei Klauseln, eine geprüft, das Ergebnis als Deckung ausgegeben. Der
+  Reviewer nennt es *„Teil-Messung als Deckungs-Nachweis für eine mehrteilige
+  Zusage"* — die Lese-Variante der Probe, die ihren Gegenstand verfehlt
+  ([`AGENTS.md`](../../../../AGENTS.md) §5, `seit slice-181`).
+
 - **Steering-Loop-Eintrag — geschärfte Regel:** *Zu jedem Baseline-Sprung gehört
   neben dem Delta ein **Voll-Abgleich** der Ziel-Formen gegen ihr Gegenstück.*
   Ein Delta findet, was sich ändert; was seit der Adoption fehlt, findet nur der
