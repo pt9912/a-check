@@ -78,7 +78,7 @@ In dieser Reihenfolge:
 
 ### 3.1 Docker/make-only
 
-Implementierungssprache ist **Go** (Fundament-ADR, entsteht mit slice-001):
+Implementierungssprache ist **Go**:
 ein statisches, sprach-agnostisches Binary, das *fremde* Quellen
 text-heuristisch prüft. Es gilt: **kein Host-Go und keine
 Host-Paketmanager** (`go`, `pip`, `npm`, `cargo`, `apt`, `brew`, …). Alle
@@ -86,12 +86,12 @@ Checks laufen über `make`; die Go-Toolchain läuft in Docker. Der Host
 braucht nur `git`, GNU `make`, `bash` und Docker.
 
 **Falsch:** `go build ./…`, `go test ./…`
-**Richtig:** `make gates` (Implementierungs-Gates entstehen mit slice-003)
+**Richtig:** `make gates`
 
 **Begründung:** Toolchain-Reproduzierbarkeit + Supply-Chain-Defense.
 
 **Durchsetzung:** Ein PreToolUse-Command-Guard
-(`.claude/hooks/pretooluse-command-guard.sh`, slice-005) lehnt Host-Toolchain-
+(`.claude/hooks/pretooluse-command-guard.sh`) lehnt Host-Toolchain-
 und Paketmanager-Aufrufe (`go`/`golangci-lint`/`pip`/`npm`/`cargo`/`apt`/`brew`/…)
 **vor** der Ausführung fail-closed ab (Tool-Call-Gate der Durchsetzungsschicht);
 `make gates` belegt ihn über `make guard-selftest`.
@@ -99,7 +99,7 @@ und Paketmanager-Aufrufe (`go`/`golangci-lint`/`pip`/`npm`/`cargo`/`apt`/`brew`/
 ### 3.2 Suppression-Verbot
 
 Inline-Suppressions sind verboten (`//nolint` o. Ä.). Ausnahmen leben
-zentral in der Lint-Konfiguration mit Begründung (entsteht mit slice-003).
+zentral in der Lint-Konfiguration mit Begründung.
 
 ### 3.3 git mv + Inhaltsänderung = zwei Commits
 
@@ -114,10 +114,6 @@ der Vorgang:**
 
 **Begründung:** Sonst fällt die Rename-Detection unter die 50 %-Schwelle und
 `git log --follow` wird unzuverlässig.
-
-Bis slice-187 stand hier nur der Regelfall — als Reihenfolge, nicht als Wahl.
-Der zweite Fall ist die geübte Praxis (`make slice-mv` fährt genau ihn), und
-das Briefing sagte das Gegenteil.
 
 ### 3.4 Architektur sprach-/meilensteinfrei; Spec-Straten nie abwärts
 
@@ -239,7 +235,7 @@ zusammen.
 
 - Commits/PRs müssen mindestens eine `AC-*`- oder `ADR-*`-ID nennen
   (auch `MR-*`/`slice-NNN` gelten). Durchgesetzt durch `make trace-check`
-  (slice-006; via d-check-Modul `commits`, [ADR-0021](docs/plan/adr/0021-commits-modul-trace-check.md))
+  (d-check-Modul `commits`, [ADR-0021](docs/plan/adr/0021-commits-modul-trace-check.md))
   — lokal über `HEAD~1..HEAD`, in der CI über den Commit-Range
   ([`.github/workflows/ci.yml`](.github/workflows/ci.yml)). IDs werden nur
   beim Spec-/ADR-Schreiben nach dem deklarierten Schema vergeben (siehe
@@ -251,23 +247,19 @@ zusammen.
 - **Commit-Scope `(planning)`:** ein Commit mit diesem Scope (`docs(planning)`,
   `fix(planning)`, `chore(planning)`) berührt **ausschließlich**
   `docs/plan/planning/`. Wandert Substanz eines anderen Bereichs mit, ist das ein
-  eigener Commit mit passendem Scope. Durchgesetzt durch `make commit-scope-check`
-  (slice-062); jeder Commit wird an der Fassung gemessen, die zu **seinem**
-  Zeitpunkt galt, ältere sind damit grandfathered.
-  **Warum nur dieser Scope:** über die gesamte Historie ist die Regel hier
-  rauschfrei — fünf Treffer bei 74 Commits, alle fünf echte Diskrepanzen
-  ([`SL-003`](docs/plan/planning/observations/README.md)). Für `docs(...)` allgemein wären es 31
-  bei 193, weil `docs(spec)` legitim `spec/` und `docs(adr)` legitim ADRs ändert;
-  eine Regel, die den Bestand massenhaft bricht, wird abgeschaltet statt befolgt.
-  Ein weiterer Scope wird erst geregelt, wenn er auffällt — und dann gemessen,
-  nicht geraten.
+  eigener Commit mit passendem Scope. Durchgesetzt durch `make commit-scope-check`;
+  jeder Commit wird an der Fassung gemessen, die zu **seinem** Zeitpunkt galt.
+  **Nur dieser Scope ist geregelt:** Bei `docs(spec)` und `docs(adr)` ist der
+  Fremd-Bereich legitim, und eine Regel, die den Bestand massenhaft bricht, wird
+  abgeschaltet statt befolgt. Ein weiterer Scope wird erst geregelt, wenn er
+  auffällt — und dann gemessen, nicht geraten.
 - **Wer eine Anforderung anlegt, nennt ihre Kennung in der Closure-Notiz.** Im **Plan** kann er es
   nicht: IDs werden referenziert statt erfunden, die neue Kennung existiert dort noch nicht, und
   jede genannte ist linkpflichtig — ein Link ins Leere macht `doc-check` rot. Also umschreibt der
   Plan sie („eine neue `AC-FA-CLI`-Kennung"), und die Requirements-Matrix sieht den Slice **nicht**.
   Bei der Closure ist die Anforderung geschrieben; dort steht die Kennung mit Link. Durchgesetzt
-  durch `make doc-complete` im `verify`-Aggregat (slice-123) — eine Anforderung ohne
-  referenzierenden Slice ist ab dann abschluss-blockierend.
+  durch `make doc-complete` im `verify`-Aggregat — eine Anforderung ohne
+  referenzierenden Slice ist abschluss-blockierend.
 - Neue oder geänderte `AC-*`-Anforderungen entstehen nur in
   [`spec/lastenheft.md`](spec/lastenheft.md) — nie per ADR (ADRs schärfen
   die Spezifikation, nicht das Lastenheft).
@@ -286,17 +278,14 @@ zusammen.
   zählt nicht mit). Das ist eine harte Obergrenze, kein Vorschlag: zwei aktive Slices
   teilen sich einen Gate-Nachweis und eine Closure-Aufmerksamkeit, und beides
   trägt nur einmal. **Null ist zulässig** — nach jedem Abschluss der Normalfall,
-  bis der nächste Slice gezogen wird. Bis slice-077 stand hier „genau ein"; das
-  machte aus dem Baseline-Maximum zusätzlich ein Minimum und erklärte den
-  regulären Leerlauf zum Regelverstoß.
+  bis der nächste Slice gezogen wird; ein Maximum ist kein Minimum.
 - **AC-Form:** die Pflicht-Bausteine einer Anforderung stehen in
   [`harness/conventions.md`](harness/conventions.md) §Anforderungs-Anlege-Prozess
   — dort seit jeher die drei Pfade (Happy/Boundary/Negative im
-  Given/When/Then-Stil) plus Out-of-Scope. Neu ist nur die **Durchsetzung**:
-  `make verify` prüft sie ab slice-054 für **neue** `AC-*`; die **19** bei
-  Einführung bestehenden sind **grandfathered** (vertraglich bindend, Rand- und
-  Negativfälle bereits in Prosa — ein Umbau träfe die Form statt der Substanz),
-  und die Grandfather-Liste wächst nicht mit.
+  Given/When/Then-Stil) plus Out-of-Scope. `make verify` prüft die Form für
+  **neue** `AC-*`; die **19** grandfatherten sind ausgenommen (vertraglich
+  bindend, Rand- und Negativfälle bereits in Prosa — ein Umbau träfe die Form
+  statt der Substanz), und die Liste wächst nicht mit.
 - **Diskrepanz-Trichter:** eine Ausnahme wird **nicht** ad hoc gesetzt. Die
   Werkzeug-Wahl — BF-Sub-Area-Markierung, Carveout oder permanente ADR — steht
   in `modul-07` §Werkzeug-Wahl bei Diskrepanz; die Ablageorte hier sind
@@ -327,10 +316,7 @@ zusammen.
   als **Tag + Pfad in Inline-Code** statt als Link
   (`` `v<X.Y.Z>` · `regelwerk/<datei>.md` §<Abschnitt> ``). Grund: Der vendored
   Baum trägt genau einen Tag, der nächste Sprung löscht den alten, und ein Link
-  darauf färbt ein Artefakt rot, das niemand mehr anfassen darf. **Gemessen
-  statt behauptet** (slice-176): Nach der Umstellung von 16 Links ließ sich der
-  vorige Stand entfernen, ohne ein einziges eingefrorenes Artefakt anzufassen —
-  slice-172 hatte an derselben Stelle 22 Nachzüge gebraucht. Verankert im
+  darauf färbt ein Artefakt rot, das niemand mehr anfassen darf. Verankert im
   Reviewer-Skill; für Archiv-Stubs erzeugt `tools/archive-wave/` den Text, für
   die Ergebnisnotiz gilt sie beim Schreiben.
   **Nicht** betroffen: lebende Dokumente — dort ist der Link richtig, und
@@ -340,9 +326,7 @@ zusammen.
   a-check führt keine eigene Kopie, sie würde gegen die Baseline driften. **Was
   beim Kopieren anzupassen ist**, steht in
   [`docs/plan/planning/README.md`](docs/plan/planning/README.md) §Beim Kopieren
-  der Slice-Ziel-Form — sieben Punkte, jeder gegen den Bestand gemessen
-  (slice-178), umgezogen mit slice-186 an den Ort, an dem die Slice-Ablage
-  beschrieben ist.
+  der Slice-Ziel-Form.
 - **Zwei Mess-Regeln binden jeden, der einen Beleg schreibt** — also auch den
   Implementer- und den Planner-Lauf, nicht nur den Review:
   1. *Geltungsbereich einer Messung* (`seit slice-179`): Wer eine Messung als
@@ -356,18 +340,15 @@ zusammen.
      nichts — ein Prüfer, der seinen Gegenstand nicht erreicht, ist grün.
 
   **Kein Sensor:** beides ist ein Urteil über eine Absicht bzw. einen Aufbau
-  (§3.7). Die **Herleitung**, die gemessenen Fälle und die Register-Anker
-  (`seit slice-182`, `seit slice-183`) stehen im Reviewer-Skill
+  (§3.7). Die **Herleitung** und die gemessenen Fälle stehen im Reviewer-Skill
   ([`.harness/skills/reviewer.md`](.harness/skills/reviewer.md) §Mess-Regeln) —
   dort urteilt, wer prüft; hier steht der Satz, an den sich bindet, wer
-  schreibt. Getrennt mit slice-186, nachdem der Umzug beide Hälften an den Ort
-  des Prüfers gelegt hatte.
-- **CR-Texte an ein fremdes Werkzeug** (bisher vier an `d-check`) leben im Slice, der sie erzeugt,
+  schreibt.
+- **CR-Texte an ein fremdes Werkzeug** leben im Slice, der sie erzeugt,
   und gehen erst nach einem Prüf-Durchgang hinaus: der Skill
   [`.harness/skills/cr-text-reviewer.md`](.harness/skills/cr-text-reviewer.md) markiert jeden Satz,
   der eine **Tatsache** über ein System behauptet — das eigene oder das fremde —, und nennt den
-  Handgriff, der ihn belegt. Anlass ist [`BEO-022`](docs/plan/planning/observations/BEO-GATE/cr-text-behauptet-statt-gemessen/observation.md) bei **3×**:
-  dreimal stand eine Behauptung als Annahme da, die eine Messung zugelassen hätte. Die Prüf-Frage
+  Handgriff, der ihn belegt. Die Prüf-Frage
   ist **nicht** „hast du gemessen?", sondern „hast du *das* gemessen, worüber du redest?" — die
   zweite Ausprägung misst die eigene Menge und sagt über die fremde aus, sieht dabei aus wie ein
   Beleg und kann sogar zutreffen. **Kein Sensor:** ob ein Satz gemessen wurde, ist ein Urteil über
@@ -380,7 +361,7 @@ zusammen.
   nicht „fertig", sondern nur „weg". Die *strukturelle* Hälfte prüft
   `make verify` maschinell, die *semantische* (Inhalt vs. Floskel) der
   Skill [`.harness/skills/closure-note-reviewer.md`](.harness/skills/closure-note-reviewer.md)
-  (slice-050).
+
 
 ## 6. Minimal Agent Workflow
 
@@ -398,7 +379,7 @@ Pro Slice:
    mit, das §1 ausschließt, ist das eine **Plan-Änderung** und gehört vor den
    Code, nicht in den Bericht danach.
 5. Engsten nützlichen Sensor laufen lassen.
-6. Repo-weiten Gate-Lauf vor Handoff (`make gates`, sobald slice-003 ihn anlegt).
+6. Repo-weiten Gate-Lauf vor Handoff (`make gates`).
 7. Doku/Indizes aktualisieren, falls ein öffentlicher Vertrag berührt.
 8. Ausgeführte Sensors und verbleibende Risiken berichten — keine
    Erfolgsmeldung ohne Gate-Ausführung.
@@ -411,8 +392,7 @@ Self-Review — anderer Kontext findet andere Findings, derselbe Kontext
 dieselben blinden Flecken (Baseline-Regelwerk `modul-08-agentenrollen.md`);
 ein `fork`-Subagent erbt den Kontext und zählt darum **nicht** — ein
 frischer Subagent-Typ ohne `fork`, briefed mit dem nötigen Kontext, zählt
-(Modul 8 §Kontext-Trennung). Ausfallbeleg:
-[`BEO-HARNESS/behauptete-vollstaendigkeit-extern-gefangen`](docs/plan/planning/observations/BEO-HARNESS/behauptete-vollstaendigkeit-extern-gefangen/observation.md).
+(Modul 8 §Kontext-Trennung).
 
 Beim **Abschluss** eines Slice zusätzlich `make verify` (Verifikations-Schicht,
 §4): `gates` beantwortet Code-Fragen, `verify` die DoD-/Closure-Fragen. Die
