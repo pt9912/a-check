@@ -18,7 +18,7 @@ Gegenstand, sondern ein **ganzes Feld ohne Konfiguration**.
 **Berührte Spec-Stellen:** — *(keine)* — Gate-Konfiguration ohne
 Vertragsberührung.
 
-**Verantwortlich:** — *(noch nicht priorisiert)*
+**Verantwortlich:** Claude — gesetzt beim Übergang nach `in-progress/`. *(noch nicht priorisiert)*
 
 **Autor:** Claude (Opus 5), im Auftrag des Maintainers. **Datum:**
 2026-09-07.
