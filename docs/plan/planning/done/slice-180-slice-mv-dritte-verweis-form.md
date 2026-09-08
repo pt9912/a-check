@@ -195,8 +195,8 @@ Danach Archivierung als wellenloser Slice ([`AGENTS.md`](../../../../AGENTS.md) 
 
 ## 8. Closure-Notiz
 
-**Lerneintrag — Form: geschärfte Regel** (neuer Register-Eintrag, der die
-Prüf-Frage festhält).
+**Lerneintrag — Form: neuer Sensor** (der Selbsttest deckt jetzt beide
+Schritte des Werkzeugs, nicht nur den zweiten).
 
 - **Was hat funktioniert:** Die offene Frage aus §2 — dritte Regel oder
   Verallgemeinerung — nicht abgewogen, sondern **gemessen**: Der Selbsttest
@@ -211,23 +211,26 @@ Prüf-Frage festhält).
   unabhängige Review fand es (F-1); er las die Auswahl, während die Probe die
   Ersetzung vorführte.
 
-- **Steering-Loop-Eintrag — geschärfte Regel:** *Eine Mutations-Probe, die
-  ihren Gegenstand mitliefert, prüft ihn nicht.* Hier trug die Probe **alle
+- **Steering-Loop-Eintrag — neuer Sensor:** Der Selbsttest von `slice-mv`
+  prüft jetzt **beide** Schritte — Kandidaten-Auswahl *und* Ersetzung — gegen
+  eine Menge, die er selbst nicht herstellt: eine Datei mit ausschließlich der
+  neuen Form, eine mit ausschließlich einer alten, ein nackter Pfad, ein
+  Review-Report. Auswahl und Ersetzung teilen dafür **eine** Muster-Quelle
+  (`match_patterns`); zwei Listen für dieselbe Frage driften, wie hier
+  geschehen. — liegt in `Makefile:slice-mv` (`tools/slice-mv.sh`, `self_test`).
+  Auslöser: [`BEO-PLAN/verweis-auf-wandernden-slice`](../observations/BEO-PLAN/verweis-auf-wandernden-slice/observation.md)
+  (7×) und der Review-Befund F-1 dieses Slice.
+
+- **Die Regel daneben ist gezählt, nicht verkörpert:** *Eine Mutations-Probe,
+  die ihren Gegenstand mitliefert, prüft ihn nicht.* Hier trug die Probe **alle
   drei** Verweis-Formen; die zwei bereits gedeckten brachten die Datei in die
   Auswahl und machten die Lücke unsichtbar. Bei slice-169 dieselbe Klasse in der
   anderen Ausprägung: Die Probe mutierte das *Muster* statt der Kandidatenmenge.
-  — liegt in
-  [`BEO-GATE/probe-liefert-den-gegenstand-mit`](../observations/BEO-GATE/probe-liefert-den-gegenstand-mit/observation.md)
-  (`seit slice-180`).
-  **Kein Sensor:** Ob eine Probe ihren Gegenstand mitliefert, ist ein Urteil über
-  ihren Aufbau ([`AGENTS.md`](../../../../AGENTS.md) §3.7) — beide Male fand es
-  der Review, nicht der Lauf.
-
-- **Die strukturelle Antwort daneben:** Auswahl und Ersetzung teilen jetzt
-  **eine** Muster-Quelle (`match_patterns`), und der Selbsttest fährt **beide**
-  Schritte. Zwei Listen für dieselbe Frage driften — dieselbe Lehre, die
-  slice-168 für die Muster-Kopie neben `.d-check.yml` gezogen hat, eine Ebene
-  tiefer.
+  Der Eintrag steht bei **2×** und bleibt `offen` — **kein Zielort, also kein
+  Anker.** Ein Sensor käme ohnehin nicht in Frage: Ob eine Probe ihren
+  Gegenstand mitliefert, ist ein Urteil über ihren Aufbau
+  ([`AGENTS.md`](../../../../AGENTS.md) §3.7), und beide Male fand es der
+  Review, nicht der Lauf.
 
 - **Beobachtungs-Register (`../observations/`):** ein neuer Eintrag
   [`probe-liefert-den-gegenstand-mit`](../observations/BEO-GATE/probe-liefert-den-gegenstand-mit/observation.md)
@@ -247,7 +250,17 @@ Prüf-Frage festhält).
   offen* → Register.
 
 - **Drei Paarungen** (Repo ohne Wellen-Betrieb) — geprüft **nach** dem `git mv`
-  nach `done/`, weil sie dort suchen; eingetragen im dritten Closure-Commit.
+  nach `done/`, weil sie dort suchen; alle drei tragen:
+  **Anker** — `liegt in Makefile:slice-mv`; sowohl die Makefile-Zeile als auch
+  `tools/slice-mv.sh:149` tragen `seit slice-180`.
+  **Folge-Slice** — keiner genannt.
+  **Register** — vier zitierte Einträge, jeder mit nicht leerem `evidence/`:
+  `verweis-auf-wandernden-slice` (7), `slice-mv-fasst-einfrierendes-artefakt-an`
+  (2), `probe-liefert-den-gegenstand-mit` (2),
+  `muster-trifft-nur-die-haeufige-schreibweise` (1).
+  *(Der zuerst notierte Anker zeigte auf den Register-Eintrag selbst — der ist
+  der **Zähler**, kein Zielort. Ein Eintrag bei 2× ist gezählt, nicht
+  verkörpert; die Teil-Zeile entfällt dort ersatzlos.)*
 
 ## 9. Sub-Area-Prüfungen und Modus-Begründung
 
