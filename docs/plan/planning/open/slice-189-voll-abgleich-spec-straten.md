@@ -3,7 +3,7 @@
 **Welle:** ohne Welle.
 
 **Bezug:** Folge-Slice aus
-[slice-187](../in-progress/slice-187-voll-abgleich-erstdurchgang-rest.md) §1
+[slice-187](../done/slice-187-voll-abgleich-erstdurchgang-rest.md) §1
 (*es wäre ein anderer Vorgang*).
 [`AC-QA-02`](../../../../spec/lastenheft.md#ac-qa-02--hermetik-und-ehrliche-heuristik-grenze).
 
@@ -67,7 +67,7 @@ nicht erneut geprüft.
 ## 2. Ausgangsmessung
 
 Instrument, Parameter und Vorgehen: siehe
-[slice-187](../in-progress/slice-187-voll-abgleich-erstdurchgang-rest.md) §2 —
+[slice-187](../done/slice-187-voll-abgleich-erstdurchgang-rest.md) §2 —
 zitiert statt wiederholt, derselbe Aufruf, derselbe Lauf.
 
 **Was die Zahl hier nicht sagt:** Ein Kandidat im Lastenheft kann drei sehr

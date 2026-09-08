@@ -3,7 +3,7 @@
 **Welle:** ohne Welle.
 
 **Bezug:** Folge-Slice aus
-[slice-187](../in-progress/slice-187-voll-abgleich-erstdurchgang-rest.md) §1
+[slice-187](../done/slice-187-voll-abgleich-erstdurchgang-rest.md) §1
 (Schicht-Abgrenzung).
 [`AC-QA-02`](../../../../spec/lastenheft.md#ac-qa-02--hermetik-und-ehrliche-heuristik-grenze).
 
@@ -44,7 +44,7 @@ bewusst abweichend (mit Begründung) · ohne Befund.
 ## 2. Ausgangsmessung
 
 Instrument, Parameter und Vorgehen stehen in
-[slice-187](../in-progress/slice-187-voll-abgleich-erstdurchgang-rest.md) §2 —
+[slice-187](../done/slice-187-voll-abgleich-erstdurchgang-rest.md) §2 —
 sie werden hier **nicht wiederholt**, sondern zitiert; der Aufruf ist derselbe.
 Die zwei Zahlen oben stammen aus **demselben** Lauf wie die dortige Tabelle.
 
@@ -74,7 +74,7 @@ Die Zahl ist eine Reihenfolge, kein Befund.
 ## 5. Trigger
 
 **Start** (`open` → `in-progress`):
-[slice-187](../in-progress/slice-187-voll-abgleich-erstdurchgang-rest.md) liegt
+[slice-187](../done/slice-187-voll-abgleich-erstdurchgang-rest.md) liegt
 in `done/` und das WIP-Limit ist frei.
 
 **Rückführungen — vorab benannt:**
