@@ -394,9 +394,10 @@ im Eintrag genannter Trigger).
       [slice-188](../open/slice-188-voll-abgleich-gate-und-skill.md) (Gate und
       Skill, 67) und
       [slice-189](../open/slice-189-voll-abgleich-spec-straten.md) (die zwei
-      Spec-Straten, 56). Beide zitieren das Instrument aus §2, statt es zu
-      wiederholen.
-- [ ] Unabhängiger Review durchgeführt (Report unter [`docs/reviews/`](../../../reviews/README.md)).
+      Spec-Straten, 56, **plus** die seit slice-185 offene dritte
+      Architektur-Klausel, Review F-1). Beide zitieren das Instrument aus §2,
+      statt es zu wiederholen.
+- [x] Unabhängiger Review durchgeführt (Report unter [`docs/reviews/`](../../../reviews/README.md)) — 15 Findings, alle abgearbeitet (§3.6).
 - [x] Closure-Notiz mit Steering-Loop-Lerneintrag.
 - [x] Beobachtungs-Register fortgeschrieben.
 - [x] Jedes Risiko aus §7 trägt einen Ausgang.
