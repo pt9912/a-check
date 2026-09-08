@@ -285,7 +285,16 @@ Lerneintrag. Danach Archivierung als wellenloser Slice
   auflöst.
 
 - **Drei Paarungen** (Repo ohne Wellen-Betrieb) — geprüft **nach** dem `git mv`
-  nach `done/`, weil sie dort suchen; eingetragen im dritten Closure-Commit.
+  nach `done/`, weil sie dort suchen; alle drei tragen:
+  **Anker** — `liegt in Makefile:doc-mentions`; `slice-184` steht dort sowie in
+  [`.d-check.yml`](../../../../.d-check.yml) und
+  `harness/sensors/doc-mentions.md`.
+  **Folge-Slice** — keiner genannt; die zwei benannten Grenzen sind
+  Eigenschaften des Gegenstands, keine offenen Aufgaben.
+  **Register** — der neue Eintrag
+  `aggregat-aufzaehlung-hinkt-dem-makefile-hinterher` existiert mit **zwei**
+  Belegen; die drei in §9 zitierten `GATE`-Einträge tragen alle ein nicht leeres
+  `evidence/`.
 
 ## 9. Sub-Area-Prüfungen und Modus-Begründung
 
