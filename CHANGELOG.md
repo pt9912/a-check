@@ -6,7 +6,7 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
-### Changed
+### Changed — BREAKING
 
 - **Ein Richtungssegment im Port-Glob schaltet `port-locality` nicht mehr ab** (`AC-FA-RULE-010`,
   Spezifikation 0.32.0, [ADR-0040](docs/plan/adr/0040-portscope-richtungssegment.md); slice-194).
@@ -38,6 +38,43 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
   `driving`/`driven` als **Adapter**-Vokabular führen und `inbound`/`outbound` den **Ports**
   vorbehalten. Das Dokument führte damit zwei Vokabulare für dieselbe Rolle — die eine Stelle, die
   gemessen wurde; die beiden anderen Dokumente unter `docs/user/` führen das Vokabular nicht.
+
+### Harness (nicht anwender-sichtbar)
+
+Zwischen diesem und dem letzten Release liegen **58** Slices. Am Image und an den Regeln ändert
+davon **einer** etwas für den Anwender (oben); dieser Abschnitt sagt, was sonst am Harness steht —
+als **Zustand**, den man im Repo nachsehen kann, mit den Slice-Kennungen als Herkunft. Die Listen
+sind vollständig; ein Bereich wie „135–140" wäre gröber als sein Gegenstand.
+
+- **Die vendored Baseline steht auf `v6.6.0`** (slice-135, 136, 137, 140, 142, 161, 162, 163, 164,
+  167, 172, 174, 175, 179, 192). Der Sprung `v5.12.0` → `v6.6.0` lief in Etappen — Delta-Analyse,
+  Vendoring, Adaptions-Durchgang —; die Integrität prüft `make regelwerk-check` gegen die
+  `SHA256SUMS`, und es liegt **genau ein** Stand im Baum (den alten ließ slice-172 fallen; die
+  `.claude/rules/`-Symlinks zog slice-142 nach).
+- **Beim Heben gehört ein Voll-Abgleich dazu** (slice-185, 186, 187): vier Delta-Analysen hatten
+  einen Satz übersehen, den erst der Abschnitt-für-Abschnitt-Vergleich der Ziel-Formen findet.
+- **Das Beobachtungs-Register liegt auf Verzeichnisform** (slice-138, 139): je Beobachtung ein
+  Verzeichnis `BEO-<KUERZEL>/<slug>/` mit `observation.md`, `state.md` und `evidence/`. Der Zähler
+  des Steering Loops ist **abgeleitet**, nicht gespeichert — es gibt kein Feld, das falsch stehen
+  kann.
+- **Zeitdokumente werden archiviert** (slice-143, 144, 145, 146, 147, 148, 152, 153, 156, 157,
+  158): das Werkzeug `tools/archive-wave/` kam aus dem Schwester-Repo; Slices und Review-Reports
+  wandern in ein Archiv und bleiben als **Stub** stehen, die Verweise auf sie werden nachgezogen.
+  Seit slice-157 ist das ein Schritt der Closure; `make archive-wave-test` (slice-145) fährt die
+  Testsuite des Werkzeugs.
+- **Neue Gate-Targets**: `make doc-reviews` (Review-Report-Deckung, slice-160),
+  `make dcheck-phrase-selftest` (Kalibrierung phrasen-basierter Prüfer, slice-168 und 169),
+  `make symlink-check` (slice-173) und `make doc-mentions` (die Gegenrichtung des Link-Checks,
+  d-check `v0.75.0`, slice-184). Dazu **geschärfte Konfigurationen**: Baseline-Pins über das
+  `versions`-Muster (slice-173), Zellengrenzen der Tabellen (slice-181), die Zeiger-Disziplin der
+  Harness-Dateien (slice-182, 183), die Aktivierungs-Regel der `.d-check.yml` (slice-188) und der
+  Gate-Index „einmal" (slice-193). Alle stehen im Gate-Index `harness/README.md` §Sensors.
+- **Form-Nachzüge und Entscheidungen** (slice-141, 149, 150, 151, 154, 155, 159, 165, 166, 170,
+  171, 176, 177, 178): Roadmap-Form, Spezifikations-Gliederung, ADR- und Carveout-Readme, die
+  Zitier-Form einfrierender Artefakte, die Slice-Form, die Reviewer-Rolle in `AGENTS.md` §6, der
+  Review-DoD-Punkt als Opt-in, die ADR-Vorlagen-Referenz; dazu drei aufgelöste Adaptions-Einträge
+  (slice-141, 170) und zwei korrigierte Repo-Aussagen (slice-171).
+- **Werkzeug** (slice-180): `slice-mv` zieht die dritte Verweis-Form.
 
 ## [0.19.0] - 2026-08-31
 
