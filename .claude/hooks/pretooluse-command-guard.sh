@@ -72,7 +72,7 @@ guard_verdict() {
     // `make doc-immutable | tail` lief ungehindert durch (Review 2026-07-26,
     // R-057-F1). Nicht enthalten sind Targets, deren Ausgabe bestimmungsgemaess
     // weiterverarbeitet wird — siehe NICHT_PRUEFEND im Selbsttest.
-    const GATES = new Set(["gates","verify","ci","lint","test","coverage-gate",
+    const GATES = new Set(["gates","verify","ci","preflight","lint","test","coverage-gate",
       "arch-check","doc-check","image-test","trace-check","suppression-check",
       "gate-consistency","verify-risiko-ausgaenge",
       "verify-observations","commit-scope-check","guard-selftest","doc-complete","doc-immutable",
