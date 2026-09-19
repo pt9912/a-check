@@ -2,9 +2,10 @@
 # (Dogfooding des Stacks). Erzeugt aus `d-check --suggest-config ai-harness-init`
 # (v0.19.0) und auf a-check angepasst: AC-Kennungen statt DC-, kein slice-Muster
 # (alle Slice-Erwähnungen sind Vorwärts-Referenzen). Der adoptierte Baseline-Stand
-# steht in harness/conventions.md Paragraph Baseline und NICHT hier -- eine
-# Versionsangabe an zwei Orten laeuft auseinander, und diese Zeile trug bis
-# slice-188 einen Stand, der vier Migrationen zurueckliegt.
+# steht in harness/conventions.md Paragraph Baseline; diese Datei fuehrt keinen
+# Pin darauf -- eine Versionsangabe an zwei Orten laeuft auseinander. Wo ein Block
+# aus der Ziel-Form stammt, nennt er den Stand, aus dem er stammt: das ist
+# Herkunft, keine Angabe ueber den aktuellen Stand.
 #
 # AKTIVIEREN HEISST ZWEI SCHRITTE (Ziel-Form v6.6.0): den Block schreiben UND
 # das Modul einschalten -- entweder ueber `modules` unten oder ueber ein
@@ -16,14 +17,13 @@
 # GEMESSEN, slice-188: jeder konfigurierte Block steht in `modules` oder wird
 # per --enable geschaltet; kein stummer Block.
 #
-# Aktiv: links, anchors, ids (AC/ADR/MR-Linkpflicht), matrix (Spec-Straten
-# verweisen nie abwärts — intra-Spec no-downward + ADR→Slice-Disziplin, MR-005),
-# spans (offene Code-Spans) seit slice-029. `codepaths` bewusst NICHT aktiv:
-# a-checks Domäne (Import-Auflösung) füllt die Doku mit illustrativen
-# Beispiel-Specifiern (`./b`, `../core/model`, `./db` …), die codepaths nicht
-# von echten Datei-Verweisen trennen kann — ~40 Falsch-Positive, Domänen-Misfit
-# (slice-029 §Entscheidung). vcs/planning sind separate Targets (doc-immutable/
-# doc-planning), nicht im Default.
+# Was aktiv ist, sagt die `modules`-Zeile unten — eine Aufzaehlung daneben
+# driftet gegen sie. Was NICHT aktiv ist, steht hier mit seinem Grund:
+# `codepaths` bewusst nicht -- a-checks Domäne (Import-Auflösung) füllt die Doku
+# mit illustrativen Beispiel-Specifiern (`./b`, `../core/model`, `./db` …), die
+# codepaths nicht von echten Datei-Verweisen trennen kann (~40 Falsch-Positive,
+# Domänen-Misfit, slice-029 §Entscheidung). vcs/planning sind separate Targets
+# (doc-immutable/doc-planning), nicht im Default.
 scan:
   roots: ["."]
   # .harness/baseline/: committet vendored Baseline (MR-006) — externer,

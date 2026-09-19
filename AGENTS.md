@@ -174,12 +174,28 @@ Weg zur `AC-*`-ID, zur ADR oder zum Carveout. Wo ein Target mehr braucht als
 seine Zelle (Grenze, Ausgänge, Sperren), steht das in
 [`harness/sensors/`](harness/sensors/). **Diese Datei führt die Liste nicht.**
 
+**Dieselbe Regel gilt für jede abschließende Aufzählung neben einer
+maschinenlesbaren Quelle** — `Makefile`, `modules:` in
+[`.d-check.yml`](.d-check.yml), ein Verzeichnis. Sie ist beim Schreiben richtig
+und wird ohne Vorwarnung falsch; sie schrumpft auf einen **Zeiger** („welche
+genau, sagt das `Makefile`"), statt die Menge ein zweites Mal zu nennen.
+
 **Kein Target nennen, das im Makefile nicht existiert** — auch nicht in Prosa.
 Halluzinierte Gates sind die häufigste Form von Harness-Lüge. Die maschinelle
 Hälfte dieser Regel ist `make doc-targets`: Es hält den Index gegen die
 `Makefile`-Regeln, in **beiden** Richtungen — kein behauptetes Target ohne
 Regel, keine Regel ohne Eintrag im Index. Die Autoritäts-Doku ist
 `harness/README.md`, und es gibt genau eine.
+
+**Ein konfigurierter Block ist erst aktiv, wenn er geschaltet ist — zwei
+Schritte.** Ein Block in [`.d-check.yml`](.d-check.yml) wirkt nur, wenn sein
+Modul zusätzlich in `modules:` steht oder über ein `--enable <modul>` in
+`Makefile`/`d-check.mk` geladen wird. Nur der erste Schritt lässt das Modul
+**gültig und wirkungslos**: Der Lauf meldet grün, ohne geprüft zu haben —
+dieselbe Klasse wie ein behauptetes Target ohne Makefile-Regel, und derselbe
+Grund, warum `make doc-targets` beide Richtungen prüft. Nach dem Aktivieren
+gehört die **Gegenprobe** dazu: einen Verstoß der Klasse einbauen und den
+**Befund** sehen, nicht den Exit-Code.
 
 **Mandatory** ist, was in einem der beiden Aggregate hängt: `gates` (Code-Fragen)
 oder `verify` (DoD-/Closure-Fragen). Welche Targets das sind, sagt das
