@@ -111,7 +111,7 @@ Bürokratie verkommt. Ein Punkt je Phase (slice-051):
 | # | Item | Beleg-Slot |
 |---|---|---|
 | 1 | **Spec** — jede neue/geänderte `AC-*` liegt im Lastenheft, keine ADR hat es geschärft | Lastenheft-Version + `SPEC-*`/`ARC-*`-Bumps im Diff |
-| 2 | **Architektur** — jede referenzierte ADR ist `Accepted` oder ausgewiesen `Superseded` | `make doc-immutable` über die Release-Range, Exit 0 |
+| 2 | **Architektur** — jede referenzierte ADR ist `Accepted` oder ausgewiesen `Superseded` | `make doc-immutable` über die Release-Range, Exit 0 — **oder** die verbleibenden Befunde sind **deklariert** (Adaptions-Block, [`MR-024`](../../harness/conventions.md#mr-024)); die Freigabe nennt sie mit ihrer Ursache |
 | 3 | **Planung** — die gelieferten Slices liegen in `done/` und tragen eine ausgefüllte Closure-Notiz | `make verify`, Exit 0 |
 | 4 | **Agenten** — der Gate-Index (`harness/README.md` §Sensors) beschreibt nur real existierende Targets, und jede reale Gate-Regel steht dort | `make doc-targets` (in `gates`), Exit 0 |
 | 5 | **Qualität** — Gates grün auf **frischem Klon** *und* in der CI mit demselben Image | CI-Run-Link + `make ci`-Ausgabe |

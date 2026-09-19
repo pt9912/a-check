@@ -99,7 +99,7 @@ Lauf-Wahrheit pro Commit liegt in der CI, nicht in diesem Rang-9-Dokument.
 | `make commit-scope-check` | Commit-Scope `(planning)` berührt ausschließlich `docs/plan/planning/`; jeder Commit wird an der damals geltenden Fassung gemessen | Harness-Prozess ([`AGENTS.md`](../AGENTS.md) §5); slice-062 |
 | `make archive-wave-test` | Testsuite von `tools/archive-wave/` — eigenes `go.mod`, **nicht** Teil von `make test`, das nur das Hauptmodul deckt | Harness-Prozess; slice-145 |
 | `make verify` | **Verifikations-Schicht**, getrennt von `gates`: DoD- und Closure-Fragen statt Code-Fragen. **Welche genau, sagt das [`Makefile`](../Makefile)** | — (Aggregat) |
-| `make doc-immutable` | ADR-Immutabilität über die Commit-Range (`d-check`-Modul `vcs`; `RANGE=`/`STAGED=1`) | [`AGENTS.md` §3.5](../AGENTS.md#35-adrs-sind-nach-accepted-immutable); slice-029, CI-durchgesetzt |
+| `make doc-immutable` | ADR-Immutabilität über die Commit-Range (`d-check`-Modul `vcs`; `RANGE=`/`STAGED=1`) | [`AGENTS.md` §3.5](../AGENTS.md#35-adrs-sind-nach-accepted-immutable); slice-029, CI-durchgesetzt. Deklarierte historische Befunde: [`MR-024`](conventions.md#mr-024) |
 
 ### Nicht-Gates
 
