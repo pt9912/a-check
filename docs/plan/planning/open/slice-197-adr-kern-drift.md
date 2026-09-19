@@ -4,7 +4,7 @@
 
 **Bezug:** Item **2** der Freigabe-Checkliste in
 [`docs/user/releasing.md`](../../../../docs/user/releasing.md) — „`make doc-immutable` über die
-Release-Range, Exit 0". Übernommen von [slice-196](../done/slice-196-changelog-unreleased-nachtragen.md) §7.
+Release-Range, Exit 0". Übernommen von [slice-196](../done/wellenlos/slice-196-changelog-unreleased-nachtragen.md) §7.
 
 **Berührte Spec-Stellen:** — (Gegenstand sind drei ADRs, kein Spec-Stratum).
 
