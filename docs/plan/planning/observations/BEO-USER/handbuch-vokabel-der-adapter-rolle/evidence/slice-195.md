@@ -12,8 +12,9 @@ Umbau auf `adapters/driving|driven + ports/inbound|outbound` vollzogen hatte und
 des Handbuchs auf die alte Form stieß.
 
 **Gemessen, mit zwei verschieden gebauten Zählern** (Mess-Regel 3): `grep` auf die alte Wendung
-und ein `awk` über Zeilen, die `dapter` **und** `inbound|outbound` führen — beide nennen **eine**
-Stelle. Die beiden anderen Dokumente unter `docs/user/` (`benutzerhandbuch-standard.md`,
+liefert **eine** Zeile; ein `awk` über Zeilen, die `dapter` **und** `inbound|outbound` führen,
+liefert **sechs** — von denen **eine** fehlerhaft ist. Der zweite Zähler ist der weitere; die
+fünf richtigen Zeilen sind die Gegenprobe, die den Befund auf die eine Stelle eingrenzt. Die beiden anderen Dokumente unter `docs/user/` (`benutzerhandbuch-standard.md`,
 `releasing.md`) führen das Vokabular überhaupt nicht.
 
 **Behoben** mit `internal/adapters/{driving,driven}/…`; die Sub-Area „Benutzer-Doku" bekam ihre

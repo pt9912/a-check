@@ -9,7 +9,7 @@ zeilengenau nachgeprüft. Folgt dem Zuschnitt von
 **Berührte Spec-Stellen:** — (der Slice berührt kein Spec-Stratum; er zieht ein
 Benutzer-Dokument auf eine `Accepted`-Entscheidung nach).
 
-**Verantwortlich:** — (bis zur Priorisierung).
+**Verantwortlich:** Claude — gesetzt beim Übergang nach `in-progress/`.
 
 **Autor:** Claude, im Auftrag des Maintainers. **Datum:** 2026-09-19.
 
@@ -23,9 +23,9 @@ Benutzer-Dokument auf eine `Accepted`-Entscheidung nach).
 [`ADR-0036`](../../adr/0036-port-richtung-inbound-outbound.md) entschiedene (`driving`/`driven`) —,
 und die Handbuch-Familie hat einen deklarierten Ort im Beobachtungs-Register.
 
-**Ausgangslage (gemessen):** `docs/user/benutzerhandbuch.md:350` zeigt
+**Ausgangslage (gemessen):** `docs/user/benutzerhandbuch.md:365` zeigt
 `internal/adapters/{inbound,outbound}/…`; derselbe Text sagt ab `:726` („Ein Port *treibt* nichts
-… ein Adapter ist nicht *eingehend*") und die Regel-Tabelle ab `:242` das Gegenteil. `inbound`
+… ein Adapter ist nicht *eingehend*") und die Regel-Tabelle ab `:257` das Gegenteil. `inbound`
 und `outbound` sind seit [`ADR-0036`](../../adr/0036-port-richtung-inbound-outbound.md) das
 **Port**-Vokabular. Das Dokument widerspricht sich damit selbst für dieselbe Rolle.
 
@@ -53,14 +53,17 @@ und `outbound` sind seit [`ADR-0036`](../../adr/0036-port-richtung-inbound-outbo
 | Zähler | Bau | Ergebnis |
 |---|---|---|
 | 1 | `grep` auf die alte Wendung `adapters/{inbound,outbound}` und ihre Einzelformen | **1** Treffer (`benutzerhandbuch.md:365`) |
-| 2 | `awk` über Zeilen, die `dapter` **und** `inbound\|outbound` führen | **1** Treffer — dieselbe Zeile |
+| 2 | `awk` über Zeilen, die `dapter` **und** `inbound\|outbound` führen | **6** Rohzeilen — davon **eine** fehlerhaft (dieselbe wie bei 1); die fünf übrigen führen das Vokabular richtig |
 
-Beide nennen dieselbe Stelle; die übrigen Treffer des zweiten Zählers sind die Stellen, die das
-Vokabular **richtig** führen (Regel-Tabelle, §4, Änderungshistorie) — sie sind die Gegenprobe.
+Zähler 1 liefert die **rohe** Menge (eine Zeile), Zähler 2 eine größere, die erst durch die
+Klassifikation „führt das Vokabular richtig" auf dieselbe eine zusammengeht — die fünf richtigen
+Zeilen sind die Gegenprobe, nicht das Ergebnis.
 
 **Geltungsbereich:** Prosa der drei Dokumente unter `docs/user/`. `benutzerhandbuch-standard.md`
 und `releasing.md` führen das Vokabular **überhaupt nicht** (gemessen, nicht angenommen) — es gibt
-dort also nichts nachzuziehen. Andere Strata wurden nicht gemessen.
+dort also nichts nachzuziehen. Andere Strata wurden nicht gemessen. **Nicht dasselbe Muster:** `adapters/outbound` als Schicht-**Name**
+(etwa in Test-Fixtures und in [`ADR-0028`](../../adr/0028-ziel-glob-schattenwurf.md)) ist kein
+zweites Vorkommen — dort ist `outbound` ein Name, nicht der `direction`-Wert der Rolle.
 
 ## 3. Umsetzung
 
@@ -95,7 +98,7 @@ Beleg geschrieben werden kann, nicht ein Nachzug danach.
 - [x] Unabhängiger Review durchgeführt (Report unter [`docs/reviews/`](../../../reviews/README.md)).
 - [x] Closure-Notiz mit Steering-Loop-Lerneintrag.
 - [x] Beobachtungs-Register fortgeschrieben.
-- [x] Jedes Risiko aus §6 trägt einen Ausgang.
+- [x] Jedes Risiko aus §7 trägt einen Ausgang.
 
 `make gates` und `make verify` grün.
 
@@ -114,7 +117,13 @@ Beleg geschrieben werden kann, nicht ein Nachzug danach.
   vergebenen, ist die Zeile keine Deklaration mehr, sondern eine Umbenennung — und die ist ein
   eigener Vorgang mit eigenem Register-Nachzug.
 
-## 6. Risiken und offene Punkte
+## 6. Closure-Trigger
+
+DoD vollständig, `make gates` und `make verify` grün, Closure-Notiz mit Lerneintrag — und der
+Register-Beleg liegt unter dem Kürzel, das dieser Slice vergibt. Die drei Paarungen trägt im
+wellenlosen Repo die Slice-Closure selbst (§8).
+
+## 7. Risiken und offene Punkte
 
 - **Der Nachzug trifft nur die zitierte Zeile.** Ein zweites Vorkommen bleibt stehen, und das
   Dokument widerspricht sich danach **leiser** als vorher. Dagegen steht die Messung in §2.
@@ -132,7 +141,7 @@ Beleg geschrieben werden kann, nicht ein Nachzug danach.
   ist **keine** Adaption — sie deklariert, sie weicht nicht ab, und die Zeile entsteht im selben
   Bau wie die acht bestehenden. Ein `MR`-Eintrag wäre das falsche Werkzeug gewesen.
 
-## 7. Closure-Notiz
+## 8. Closure-Notiz
 
 **Lerneintrag — Form: benannte Spec-Lücke.** *Ein Fund kann keinen Ort haben — und dann zählt er
 nicht.* Der Vokabel-Widerspruch war **gemessen** und trotzdem nirgends ablegbar: Die Kennung des
@@ -157,13 +166,13 @@ Modus-Deklaration vergibt.
 
 **Folge-Slices:** keine.
 
-**Risiken aus §6:** alle drei *entfallen*, gestrichen mit Begründung — siehe dort.
+**Risiken aus §7:** alle drei *entfallen*, gestrichen mit Begründung — siehe dort.
 
 **Drei Paarungen:** Anker — kein `liegt in`-Feld gesetzt, weil nichts verkörpert wurde; nichts zu
 paaren · Folge-Slice — keiner genannt · Register getragen (der genannte Pfad existiert und trägt
 einen Beleg).
 
-## 8. Sub-Area-Prüfungen und Modus-Begründung
+## 9. Sub-Area-Prüfungen und Modus-Begründung
 
 **Vorgelagert — Sub-Area-Wahl prüfen:** berührt sind die **Benutzer-Doku** (`docs/user/`, als
 Sub-Area bislang undeklariert — genau das behebt dieser Slice) und `HARNESS`
