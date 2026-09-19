@@ -27,8 +27,11 @@ seiner alten `BEO-<NNN>`-Kennung — historische Zitate in `done/` verwenden wei
 Nummer (Prosa wird nicht umgeschrieben, [`AGENTS.md`](../../../../AGENTS.md) §3.7 sinngemäß);
 `make verify-observations` löst beide Formen auf.
 
-**Ist nichts offen**, steht hier nur diese Datei — ein leeres Verzeichnis führt `git` nicht. Aktuell
-33 aktive Beobachtungen unter [`BEO-GATE/`](BEO-GATE), [`BEO-HARNESS/`](BEO-HARNESS),
-[`BEO-PLAN/`](BEO-PLAN), [`BEO-SPEC/`](BEO-SPEC) und [`BEO-KERN/`](BEO-KERN); eine gestrichene
-unter [`BEO-PLAN/vier-form-vergleiche-ungeprueft/`](BEO-PLAN/vier-form-vergleiche-ungeprueft)
-(`state.md` trägt `gestrichen`, das Verzeichnis bleibt liegen).
+**Ist nichts offen**, steht hier nur diese Datei — ein leeres Verzeichnis führt `git` nicht.
+Welche Beobachtungen es gibt und wie viele, sagen die **Verzeichnisse**: je Sub-Area ein
+`BEO-<KUERZEL>/` ([`BEO-GATE/`](BEO-GATE), [`BEO-HARNESS/`](BEO-HARNESS), [`BEO-KERN/`](BEO-KERN),
+[`BEO-PLAN/`](BEO-PLAN), [`BEO-SPEC/`](BEO-SPEC), [`BEO-USER/`](BEO-USER)), darunter je
+Beobachtung ein Verzeichnis. Eine Aufzählung mit Zahl daneben driftet gegen die Verzeichnisse —
+die Zahl ist der `ls`-Aufruf, nicht diese Zeile. Eine gestrichene Beobachtung bleibt als
+Verzeichnis liegen (`state.md` trägt `gestrichen`), und `make verify-observations` nennt die
+Gesamtzahl.
