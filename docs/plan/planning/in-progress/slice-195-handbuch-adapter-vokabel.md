@@ -13,7 +13,7 @@ Benutzer-Dokument auf eine `Accepted`-Entscheidung nach).
 
 **Autor:** Claude, im Auftrag des Maintainers. **Datum:** 2026-09-19.
 
-**Lerneintrag — Form:** wird bei Closure benannt (eine der drei Formen der Ziel-Form).
+**Lerneintrag — Form:** benannte Spec-Lücke.
 
 ---
 
@@ -46,23 +46,28 @@ und `outbound` sind seit [`ADR-0036`](../../adr/0036-port-richtung-inbound-outbo
   ([`AC-QA-02`](../../../../spec/lastenheft.md#ac-qa-02--hermetik-und-ehrliche-heuristik-grenze))
   ist Gegenstand anderer Slices; hier geht es um ein Vokabular.
 
-## 2. Ausgangsmessung (beim Übergang nach `in-progress/` zu wiederholen)
+## 2. Ausgangsmessung — zwei Zähler, ein Ergebnis
 
-Gelesen, nicht gefahren: `docs/user/benutzerhandbuch.md:350` (Beispielstruktur §3.7) gegen
-`:242` (Regel-Tabelle) und `:726-737` (§4 „Richtung"). Vor dem Umbau läuft ein Zähler über das
-Dokument, der **beide** Vokabulare auffindet — sonst behebt der Slice die zitierte Zeile und
-lässt die zweite stehen.
+**Erhoben, nicht gelesen** (Mess-Regel 3: eine Menge wird zweimal verschieden gezählt):
 
-**Geltungsbereich:** Prosa des Handbuchs. Andere Dokumente unter `docs/user/` sind **nicht**
-gemessen; findet der Lauf dort dasselbe Muster, ist die Entscheidung, ob es mitgeht, Teil dieses
-Slice (§4).
+| Zähler | Bau | Ergebnis |
+|---|---|---|
+| 1 | `grep` auf die alte Wendung `adapters/{inbound,outbound}` und ihre Einzelformen | **1** Treffer (`benutzerhandbuch.md:365`) |
+| 2 | `awk` über Zeilen, die `dapter` **und** `inbound\|outbound` führen | **1** Treffer — dieselbe Zeile |
+
+Beide nennen dieselbe Stelle; die übrigen Treffer des zweiten Zählers sind die Stellen, die das
+Vokabular **richtig** führen (Regel-Tabelle, §4, Änderungshistorie) — sie sind die Gegenprobe.
+
+**Geltungsbereich:** Prosa der drei Dokumente unter `docs/user/`. `benutzerhandbuch-standard.md`
+und `releasing.md` führen das Vokabular **überhaupt nicht** (gemessen, nicht angenommen) — es gibt
+dort also nichts nachzuziehen. Andere Strata wurden nicht gemessen.
 
 ## 3. Umsetzung
 
 | Datei / Komponente | Änderungs-Art | Begründung |
 |---|---|---|
-| [`docs/user/benutzerhandbuch.md`](../../../../docs/user/benutzerhandbuch.md) | update | `:350` auf `driving`/`driven`; zweites Vorkommen aus der Messung (§2) mit; Änderungshistorie-Zeile |
-| [`harness/conventions.md`](../../../../harness/conventions.md) | update | Zeile für die **Benutzer-Doku** in §Modus-Deklaration: Pfad-Familie `docs/user/`, Kürzel (Vorschlag `USER`), Achsen, Modus GF, Graduation `n/a` |
+| [`docs/user/benutzerhandbuch.md`](../../../../docs/user/benutzerhandbuch.md) | update | die eine gemessene Stelle auf `driving`/`driven`; Änderungshistorie-Zeile |
+| [`harness/conventions.md`](../../../../harness/conventions.md) | update | Zeile für die **Benutzer-Doku** in §Modus-Deklaration: Pfad-Familie `docs/user/`, Kürzel **`USER`** (vergeben, nicht nachgeschlagen — die Tabelle führte die Familie nicht), Achsen, Modus GF, Graduation `n/a` |
 | [`CHANGELOG.md`](../../../../CHANGELOG.md) | update | Benutzer-Doku-Korrektur |
 
 **Der Pflicht-Blick, den dieser Slice auslöst.** Jede Änderung an
@@ -82,15 +87,15 @@ Beleg geschrieben werden kann, nicht ein Nachzug danach.
 
 ## 4. Definition of Done
 
-- [ ] Das Benutzerhandbuch führt für die Adapter-Rolle ein Vokabular; das zweite Vorkommen aus
-      der Messung (§2) ist mit erledigt.
-- [ ] Die Benutzer-Doku hat eine Zeile in §Modus-Deklaration der
+- [x] Das Benutzerhandbuch führt für die Adapter-Rolle ein Vokabular; die Messung (§2) fand
+      **eine** Stelle, und die ist erledigt.
+- [x] Die Benutzer-Doku hat eine Zeile in §Modus-Deklaration der
       [`harness/conventions.md`](../../../../harness/conventions.md) mit deklariertem Kürzel.
 
-- [ ] Unabhängiger Review durchgeführt (Report unter [`docs/reviews/`](../../../reviews/README.md)).
-- [ ] Closure-Notiz mit Steering-Loop-Lerneintrag.
-- [ ] Beobachtungs-Register fortgeschrieben.
-- [ ] Jedes Risiko aus §6 trägt einen Ausgang.
+- [x] Unabhängiger Review durchgeführt (Report unter [`docs/reviews/`](../../../reviews/README.md)).
+- [x] Closure-Notiz mit Steering-Loop-Lerneintrag.
+- [x] Beobachtungs-Register fortgeschrieben.
+- [x] Jedes Risiko aus §6 trägt einen Ausgang.
 
 `make gates` und `make verify` grün.
 
@@ -113,17 +118,50 @@ Beleg geschrieben werden kann, nicht ein Nachzug danach.
 
 - **Der Nachzug trifft nur die zitierte Zeile.** Ein zweites Vorkommen bleibt stehen, und das
   Dokument widerspricht sich danach **leiser** als vorher. Dagegen steht die Messung in §2.
-  — **Ausgang:** <offen bis Closure>
+  — **Ausgang:** *entfallen*, gestrichen mit Begründung: Zwei verschieden gebaute Zähler nennen
+  **eine** Stelle (§2), und die beiden anderen Dokumente unter `docs/user/` führen das Vokabular
+  nicht — es gibt keine zweite Stelle, die stehenbleiben könnte.
 - **Das Kürzel ist eine Setzung, die keiner nachschlagen kann.** Es entsteht in diesem Slice;
   „nachgeschlagen, nicht erfunden" gilt für seinen **Gebrauch**, nicht für seine Vergabe.
-  — **Ausgang:** <offen bis Closure>
+  — **Ausgang:** *entfallen*, gestrichen mit Begründung: `USER` ist gegen die Tabelle geprüft
+  (frei) und steht ab jetzt dort, wo jeder Lauf ihn nachschlägt; sein **erster** Gebrauch ist der
+  Register-Pfad `BEO-USER/…` dieses Slice.
 - **Die Zeile könnte die Modus-Deklaration als Ganzes berühren.** Wird die Handbuch-Familie
   nicht als eigene Sub-Area anerkannt, ist die Antwort eine Änderung an einer Deklaration, die
-  jeder Lauf liest. — **Ausgang:** <offen bis Closure>
+  jeder Lauf liest. — **Ausgang:** *entfallen*, gestrichen mit Begründung: Die Modus-Deklaration
+  ist **keine** Adaption — sie deklariert, sie weicht nicht ab, und die Zeile entsteht im selben
+  Bau wie die acht bestehenden. Ein `MR`-Eintrag wäre das falsche Werkzeug gewesen.
 
 ## 7. Closure-Notiz
 
-*(bei Closure auszufüllen)*
+**Lerneintrag — Form: benannte Spec-Lücke.** *Ein Fund kann keinen Ort haben — und dann zählt er
+nicht.* Der Vokabel-Widerspruch war **gemessen** und trotzdem nirgends ablegbar: Die Kennung des
+Registers ist der Pfad `BEO-<KUERZEL>/<slug>`, und für `docs/user/` führte die Modus-Deklaration
+**keine** Zeile — kein Kürzel, kein Pfad, kein Beleg. **Weil** eine Ablage ohne Adresse nichts
+aufnimmt, war die Deklarations-Zeile die **Bedingung** dieses Slice, nicht sein Nachzug.
+
+**Der zweite Lerneintrag ist der kleinere und allgemeinere:** *Zwei Vokabulare für dieselbe Rolle
+sind kein Tippfehler, sondern eine Fassung, die nicht nachgezogen wurde.* Das Handbuch trug
+`inbound`/`outbound` an der Adapter-Rolle über den Umbau hinaus, während §4 und die Regel-Tabelle
+**derselben Datei** längst das Gegenteil sagten. Gefunden hat das ein **Leser**, nicht ein Lauf —
+und der Konsument, nicht das Repo.
+
+**Steering-Loop-Eintrag:** gezählt, nicht verkörpert.
+[`BEO-USER/handbuch-vokabel-der-adapter-rolle`](../observations/BEO-USER/handbuch-vokabel-der-adapter-rolle/observation.md)
+ist **neu angelegt** (1×); die Schwelle ist nicht erreicht, ein Ausgang nicht fällig.
+
+**Beobachtungs-Register ([`../observations/`](../observations/README.md)):** ein Verzeichnis
+**neu angelegt** — `BEO-USER/handbuch-vokabel-der-adapter-rolle/`, Beleg `evidence/slice-195.md`,
+Zähler **1×**. Es ist zugleich der erste Eintrag unter dem Kürzel `USER`, das dieser Slice in der
+Modus-Deklaration vergibt.
+
+**Folge-Slices:** keine.
+
+**Risiken aus §6:** alle drei *entfallen*, gestrichen mit Begründung — siehe dort.
+
+**Drei Paarungen:** Anker — kein `liegt in`-Feld gesetzt, weil nichts verkörpert wurde; nichts zu
+paaren · Folge-Slice — keiner genannt · Register getragen (der genannte Pfad existiert und trägt
+einen Beleg).
 
 ## 8. Sub-Area-Prüfungen und Modus-Begründung
 
