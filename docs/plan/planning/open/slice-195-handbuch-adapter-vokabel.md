@@ -33,7 +33,7 @@ und `outbound` sind seit [`ADR-0036`](../../adr/0036-port-richtung-inbound-outbo
 
 - **Ein Nachzug der Lab-Config des Konsumenten** — *ein anderer Vorgang in einem anderen Repo:*
   dort steht ein Kommentar, der die Kopplung Glob-Präfix ↔ Richtungssegment festhält; er ist
-  Gegenstand von [slice-194](../done/slice-194-portscope-richtungssegment.md), nicht dieses Slice.
+  Gegenstand von [slice-194](../done/wellenlos/slice-194-portscope-richtungssegment.md), nicht dieses Slice.
 - **Eine MR-Adaption für die Kürzel-Vergabe** — *es wäre ein anderes Werkzeug:* der
   Adaptions-Block trägt Abweichungen **gegenüber der Baseline**
   ([`harness/conventions.md`](../../../../harness/conventions.md) §Adaptions-Block). Eine neue
@@ -97,7 +97,7 @@ Beleg geschrieben werden kann, nicht ein Nachzug danach.
 ## 5. Trigger
 
 **Start** (`open` → `in-progress`): das WIP-Limit ist frei. **Keine** Abhängigkeit von
-[slice-194](../done/slice-194-portscope-richtungssegment.md) — dieser Slice zitiert dort nichts und
+[slice-194](../done/wellenlos/slice-194-portscope-richtungssegment.md) — dieser Slice zitiert dort nichts und
 ändert dort nichts; die beiden berühren verschiedene Sub-Areas.
 
 **Rückführungen — vorab benannt:**
