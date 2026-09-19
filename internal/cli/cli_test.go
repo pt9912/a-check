@@ -1476,8 +1476,7 @@ func TestHandbuchURLInFragmentUndUsage(t *testing.T) {
 
 // portScopeCfg declares per-slice app globs and a port folder whose glob ends on
 // the direction segment — the configuration the handbook §4 instructs for
-// port-direction-mismatch, and the one that used to keep port-locality silent
-// (ADR-0040).
+// port-direction-mismatch (ADR-0040).
 const portScopeCfg = `version: 1
 languages: {go: ["**/*.go"]}
 layers:
@@ -1533,5 +1532,27 @@ func TestPortScopeNoticeSilentWhenDirectionDeclared(t *testing.T) { // ADR-0040:
 	}
 	if strings.Contains(errb.String(), "erreichen den App-Baum nicht") {
 		t.Fatalf("deklarierte Richtung loest den Scope auf — kein Hinweis: %q", errb.String())
+	}
+}
+
+func TestPortScopeNoticeCapNamesRemainder(t *testing.T) { // ADR-0040: Kuerzung nennt ihre Groesse (Hausregel der Vorgaenger)
+	var globs strings.Builder
+	for i := 0; i < 12; i++ {
+		fmt.Fprintf(&globs, "      - \"internal/hexagon/application/order/createorder/ports/p%02d/**\"\n", i)
+	}
+	cfg := strings.Replace(portScopeCfg,
+		"      - \"internal/hexagon/application/order/createorder/ports/outbound/**\"\n",
+		globs.String(), 1)
+	dir := writeRepo(t, map[string]string{".a-check.yml": cfg, portFile: "package outbound\n"})
+	var out, errb bytes.Buffer
+	if code := cli.Run([]string{dir}, &out, &errb); code != 0 {
+		t.Fatalf("der Hinweis darf den Exit-Code nicht aendern, got %d", code)
+	}
+	e := errb.String()
+	if !strings.Contains(e, "12 Port-Glob(s) erreichen den App-Baum nicht") {
+		t.Fatalf("die Gesamtzahl gehoert in den Hinweis: %q", e)
+	}
+	if !strings.Contains(e, "… und 2 weitere") {
+		t.Fatalf("die Kuerzung muss ihre Groesse nennen: %q", e)
 	}
 }

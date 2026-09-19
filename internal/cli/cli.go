@@ -136,7 +136,7 @@ func Run(args []string, out, errw io.Writer) int {
 // although the port directory lies INSIDE the application tree — locality would
 // be meaningful for them, and the scope derivation did not reach it (ADR-0040).
 // Advisory on stderr, after the resolution notice, exit code untouched, capped
-// like its two elders (ADR-0029/ADR-0031).
+// like its elders (ADR-0029, ADR-0035, ADR-0032).
 //
 // The criterion is deliberately the defect and not its cause: a port glob ending
 // on a direction segment is the measured cause, but a typo or a differently
@@ -190,7 +190,7 @@ func writeResolutionNotice(errw io.Writer, stats []core.LayerResolution) {
 	_, _ = fmt.Fprintln(errw, "  Abhilfe: layers-Globs gegen die echten Import-Pfade prüfen oder resolution konfigurieren.")
 }
 
-// noticeLimit caps the listed entries of both advisory diagnoses. The cap is NOT
+// noticeLimit caps the listed entries of the advisory diagnoses. The cap is NOT
 // silent: each notice names how many entries it left out (ADR-0029, ADR-0031).
 // One constant for both on purpose — two cap semantics side by side would be a
 // trap for whoever reads one notice and infers the other.

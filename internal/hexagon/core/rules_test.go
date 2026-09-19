@@ -1500,8 +1500,9 @@ func TestPortLocalitySiblingPortsNoFinding(t *testing.T) { // AC-FA-RULE-010 Rev
 // sliceDirectionModel is the HexSlice shape AFTER the direction split: one port
 // LAYER per direction, so each glob carries its direction segment. That is the
 // configuration the user handbook §4 instructs for port-direction-mismatch (a
-// layer carries exactly ONE direction) — and it is the one that used to switch
-// port-locality off silently (ADR-0040).
+// layer carries exactly ONE direction) — and the shape in which the direction
+// segment sits BELOW the port folder, so the scope derivation has to know about
+// both segments (ADR-0040).
 func sliceDirectionModel() Model {
 	return Model{
 		Layers: []Layer{
@@ -1561,6 +1562,61 @@ func TestInertPortScopesResolvedConfigSilent(t *testing.T) { // ADR-0040: kein R
 func TestInertPortScopesSiblingPortsSilent(t *testing.T) { // AC-FA-RULE-010: Geschwister-Ports sind DOKUMENTIERT inert, kein Hinweis
 	if got := InertPortScopes(classicModel()); len(got) != 0 {
 		t.Fatalf("Geschwister-Ports liegen ausserhalb des App-Baums — die Diagnose darf dort schweigen, got %v", got)
+	}
+}
+
+// siblingDirectionModel is the classic hexagonal shape — ports as a SIBLING of
+// the app layer — with a direction on the port layer, plus an app layer OUTSIDE
+// that tree. The second app layer is what makes the shape decisive: it is the
+// file no ancestor of the port tree contains, so a scope that drifted up to
+// `hex` would report on it (ADR-0040, Leitplanke 1).
+func siblingDirectionModel() Model {
+	return Model{
+		Layers: []Layer{
+			{Name: "ports", Globs: []string{"hex/ports/inbound/**"}, Role: "port", Direction: "inbound"},
+			{Name: "svc", Globs: []string{"hex/services/**"}, Role: "app"},
+			{Name: "other", Globs: []string{"other/**"}, Role: "app"},
+		},
+		Edges: []Edge{{From: "svc", To: "ports"}, {From: "other", To: "ports"}},
+	}
+}
+
+func TestPortLocalitySiblingWithDirectionStaysInert(t *testing.T) { // ADR-0040 Leitplanke 1: der Schnitt greift nur, wo der Port IM App-Baum liegt
+	fs := mustEval(t, siblingDirectionModel(), []FileImports{
+		{Path: "other/svc.go", Layer: "other", Imports: []Import{
+			{Symbol: "x/hex/ports/inbound/port", Line: 3},
+		}},
+	})
+	if hasRule(fs, "port-locality") {
+		t.Fatalf("eine Geschwister-Port-Schicht MIT Richtung bleibt inert (AC-FA-RULE-010), got %v", fs)
+	}
+}
+
+// directionFoldedModel carries the direction segment where the port folder
+// itself sits — `…/createorder/outbound/**`, without a `ports/` level. That is
+// the shape in which a second cut would take the scope PAST the port folder
+// (ADR-0040, Leitplanke 2).
+func directionFoldedModel() Model {
+	return Model{
+		Layers: []Layer{
+			{Name: "ports_out", Globs: []string{"src/hexagon/application/order/createorder/outbound/**"}, Role: "port", Direction: "outbound"},
+			{Name: "app", Globs: []string{
+				"src/hexagon/application/order/createorder/**",
+				"src/hexagon/application/order/cancelorder/**",
+			}, Role: "app"},
+		},
+		Edges: []Edge{{From: "app", To: "ports_out"}},
+	}
+}
+
+func TestPortLocalityDirectionFoldedKeepsSliceScope(t *testing.T) { // ADR-0040 Leitplanke 2: der Scope darf nie weiter werden als zuvor
+	fs := mustEval(t, directionFoldedModel(), []FileImports{
+		{Path: "src/hexagon/application/order/cancelorder/handler.go", Layer: "app", Imports: []Import{
+			{Symbol: "x/src/hexagon/application/order/createorder/outbound/idgen", Line: 7},
+		}},
+	})
+	if !hasRule(fs, "port-locality") {
+		t.Fatalf("der Scope darf nicht ueber den Port-Ordner hinauswachsen, got %v", fs)
 	}
 }
 
