@@ -362,7 +362,12 @@ Pro Slice:
    Code, nicht in den Bericht danach.
 5. Engsten nützlichen Sensor laufen lassen.
 6. Repo-weiten Gate-Lauf vor Handoff (`make gates`).
-7. Doku/Indizes aktualisieren, falls ein öffentlicher Vertrag berührt.
+7. Doku/Indizes aktualisieren, falls ein öffentlicher Vertrag berührt. **Die CHANGELOG-Zeile
+   gehört hierher — nicht in die Release-Vorbereitung.** Der CHANGELOG ist die *kuratierte
+   Begründung* eines Releases; wer ihn beim Taggen schreibt, rekonstruiert aus `git`, statt zu
+   bezeugen. Ein Slice, der Lastenheft, Spezifikation oder Benutzerhandbuch ändert, trägt seinen
+   Eintrag in `[Unreleased]` **in sich**. Kein Gate deckt das: `gate-consistency` vergleicht nur
+   Versions-Nummern, nicht ob eine Änderung einen Eintrag hat.
 8. Ausgeführte Sensors und verbleibende Risiken berichten — keine
    Erfolgsmeldung ohne Gate-Ausführung.
 
