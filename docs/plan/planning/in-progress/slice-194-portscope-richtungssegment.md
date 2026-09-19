@@ -109,7 +109,7 @@ ist unverändert, nur ihre Ableitung war unterbestimmt.
 | [`spec/spezifikation.md`](../../../../spec/spezifikation.md) | update | [`SPEC-RULE-001`](../../../../spec/spezifikation.md#spec-rule-001--regel-auswertung): die Ableitung überspringt ein abschließendes Richtungssegment; Versions-Bump + Historie |
 | eine neue ADR unter [`docs/plan/adr/`](../../adr/README.md) + Index | neu / update | Nummer vergibt der schreibende Lauf nach dem Index — im Plan **nicht** vorweggenommen. **Kein** `slice-\d{3}`-Token im ADR-Körper ([`.d-check.yml`](../../../../.d-check.yml), `matrix`) |
 | [`internal/hexagon/core/rules.go`](../../../../internal/hexagon/core/rules.go) | update | `portScope` überspringt das Richtungssegment; Diskriminator ist der **deklarierte** `direction`-Wert der gewinnenden Schicht, **keine** hartkodierte Wortliste |
-| `internal/cli/cli.go` (+ Kern-Anteil) | update | dritte Advisory-Diagnose nach dem Muster von [`ADR-0029`](../../adr/0029-abdeckungs-diagnose-advisory.md)/[`ADR-0031`](../../adr/0031-heuristik-grenzen-diagnose.md): stderr, exit-neutral, gedeckelt, mit „Abhilfe" |
+| `internal/cli/cli.go` (+ Kern-Anteil) | update | weitere Advisory-Diagnose nach dem Muster von [`ADR-0029`](../../adr/0029-abdeckungs-diagnose-advisory.md), [`ADR-0035`](../../adr/0035-grenz-diagnose-gegen-globs.md), [`ADR-0032`](../../adr/0032-aufloesungs-diagnose-repoweit.md): stderr, exit-neutral, gedeckelt, mit „Abhilfe" |
 | `internal/hexagon/core/rules_test.go`, `internal/cli/cli_test.go` | update | beide Glob-Varianten gegen denselben Verstoß (rot/grün) und die Diagnose — je mit **Mutations-Probe** |
 | [`docs/user/benutzerhandbuch.md`](../../../../docs/user/benutzerhandbuch.md) | update | §3.7 dritter Fallstrick + §4-Absatz „Richtung": die Kopplung benennen, den Geschwister-Fall abgrenzen |
 | [`CHANGELOG.md`](../../../../CHANGELOG.md) | update | Verhaltens-Änderung an einer Regel und eine neue Diagnose |
@@ -128,6 +128,18 @@ jedem klassisch-hexagonalen Repo zum Rauschen und damit abgeschaltet. Der Unters
 prüfbar: **hier** liegt der Port im App-Baum und nur der Glob endet eine Ebene zu tief, **dort**
 liegt er außerhalb.
 
+**Die drei Mutations-Proben, mit ihrer roten Meldung** (Mess-Regel 2: grün beweist nichts, und
+eine Probe ohne Meldung belegt nur einen Exit-Code):
+
+| Probe | Mutation | rote Meldung |
+|---|---|---|
+| Kern | Schnitt zurückgenommen (`scopeFor` = nur Marker) | `ein Port-Glob mit Richtungssegment darf port-locality nicht abschalten, got []` |
+| Leitplanke 1 | `!nestedInAppTree(m, prefix)` entfernt | `eine Geschwister-Port-Schicht MIT Richtung bleibt inert, got [{other/svc.go 3 port-locality app außerhalb Port-Scope hex: …}]` |
+| Leitplanke 2 | `!appTreeContains(m, marker)` entfernt | `der Scope darf nicht ueber den Port-Ordner hinauswachsen, got []` |
+
+Alle drei sind danach **zurückgenommen**; der Stand, über den die Gates liefen, trägt keine
+Mutation.
+
 **Auszuführende Gates:** `make gates` (tragend `test`, `coverage-gate`, `arch-check`,
 `doc-check`, `doc-structure`), zum Abschluss `make verify`.
 
@@ -136,7 +148,7 @@ liegt er außerhalb.
 - [x] Die Spec-Kette trägt die geschärfte Ableitung:
       [`SPEC-RULE-001`](../../../../spec/spezifikation.md#spec-rule-001--regel-auswertung)
       nachgezogen, eine neue ADR samt Index-Eintrag.
-- [x] Die Engine setzt es durch: `portScope` überspringt das Richtungssegment, und die dritte
+- [x] Die Engine setzt es durch: `portScope` überspringt das Richtungssegment, und die weitere
       Advisory-Diagnose meldet die Restfälle.
 - [x] Tests und Benutzerhandbuch sind nachgezogen; jede Probe ist **rot gewesen** und nennt ihre
       Meldung.
@@ -174,7 +186,9 @@ DoD vollständig, `make gates` und `make verify` grün, Closure-Notiz mit Lernei
   klassisch-hexagonalen Repo und wird abgeschaltet statt befolgt. — **Ausgang:** *entfallen*,
   gestrichen mit Begründung: Die Diagnose keilt auf **zwei** Bedingungen (`nestedInAppTree` **und**
   `!appTreeContains`), und der Geschwister-Fall erfüllt schon die erste nicht — sein Verzeichnis
-  liegt außerhalb des App-Baums. `TestInertPortScopesSiblingPortsSilent` hält das fest.
+  liegt außerhalb des App-Baums. `TestInertPortScopesSiblingPortsSilent` hält das für die
+  **Diagnose** fest, `TestPortLocalitySiblingWithDirectionStaysInert` für die **Ableitung** — beide
+  sind in der Mutations-Probe **rot** gewesen (§3).
 - **Der Diskriminator „deklarierte Richtung" greift zu kurz.** Eine Richtungsebene, die anders
   heißt als ihr `direction`-Wert, bleibt still — dieselbe Klasse, seltener. — **Ausgang:**
   *entfallen*, gestrichen mit Begründung: Genau dafür ist die Diagnose da, und sie greift
@@ -186,8 +200,8 @@ DoD vollständig, `make gates` und `make verify` grün, Closure-Notiz mit Lernei
   neue Befunde erzeugen. — **Ausgang:** *entfallen*, gestrichen mit Begründung: Der zusätzliche
   Schnitt wird nur genommen, wo der Marker-Schnitt den App-Baum **verfehlt** und der tiefere ihn
   **erreicht**; der Scope kann dadurch nie weiter werden als zuvor. Die Umkehr steht als Test
-  (`TestPortLocalityDirectionSegmentOwnSliceSilent`) und der Aufweichungs-Fall als
-  Mutations-Probe.
+  (`TestPortLocalityDirectionSegmentOwnSliceSilent`), der Aufweichungs-Fall als eigener Test
+  (`TestPortLocalityDirectionFoldedKeepsSliceScope`) — beide in der Mutations-Probe **rot** (§3).
 - **Der Kommentar im Konsumenten-Repo wird durch diesen Slice falsch.** Er hält die Kopplung
   fest, die es danach nicht mehr gibt. — **Ausgang:** *entfallen*, gestrichen mit Begründung: Der
   Kommentar liegt in einem **fremden** Repo; dieser Slice kann ihn nicht ändern, und ihn hier zu
@@ -215,7 +229,7 @@ beiden Richtungen geprüft.
 über einer **stillen** Regel sieht aus wie ein grüner Lauf über einer geprüften.* Die Meldung des
 Konsumenten war nur deshalb eine Meldung, weil dort **gemessen** wurde; hier hatte niemand
 nachgesehen, und kein Gate fing es — die drei Diagnosen sind die Antwort auf genau diese
-Unterscheidung, und die neue ist die dritte ihrer Art.
+Unterscheidung, und die neue reiht sich in die bestehenden ein.
 
 **Steering-Loop-Eintrag:** gezählt, nicht verkörpert.
 [`BEO-HARNESS/zwei-regeln-machen-einander-unmoeglich`](../observations/BEO-HARNESS/zwei-regeln-machen-einander-unmoeglich/observation.md)
@@ -232,6 +246,12 @@ bleibt bei **2×**: Die Ausgangsmessung nennt ihre Parameter (§2), und das Inst
 diesem Slice als Regeltest im Repo — die Bedingung des Eintrags ist damit erfüllt, nicht verletzt.
 [`BEO-KERN/dirvocab-portfor-auseinander`](../observations/BEO-KERN/dirvocab-portfor-auseinander/observation.md)
 bleibt bei 1×: anderer Mechanismus, siehe §9.
+
+**Benannt, nicht gezählt — eine Klasse aus dem Review, die keinen Eintrag bekommt.** F-4 fand die
+`Stand:`-Ziffer dieses Eintrags bei `1×`, während seine Belegliste schon zwei Dateien trug: eine
+zweite Quelle neben dem abgeleiteten Zähler, und modul-06 verwirft genau die. Es ist der **erste**
+Vorfall dieser Art (17 weitere Einträge mit Ziffer stimmen), und die Steering-Loop-Regel setzt den
+Eintrag beim **zweiten** an — bis dahin bleibt es hier benannt.
 
 **Folge-Slices:** [slice-195](../open/slice-195-handbuch-adapter-vokabel.md) (Handbuch-Vokabel für
 die Adapter-Rolle) — liegt in `open/`.

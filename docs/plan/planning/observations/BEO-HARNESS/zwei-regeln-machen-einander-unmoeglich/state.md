@@ -1,4 +1,4 @@
-**Stand:** offen (1×)
+**Stand:** offen (2×)
 
 Unterhalb der Schwelle. Ein Sensor ist nicht in Sicht: Ob zwei Prosa-Zusagen einander ausschließen,
 ist ein Urteil über ihre Folgen ([`AGENTS.md`](../../../../../../AGENTS.md) §3.7) — und die Folgen

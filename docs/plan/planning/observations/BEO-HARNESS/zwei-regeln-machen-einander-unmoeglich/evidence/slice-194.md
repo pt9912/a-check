@@ -31,7 +31,7 @@ einzige Stelle, an der die Grenze überhaupt benannt war.
 **Behoben mit [ADR-0040](../../../../../adr/0040-portscope-richtungssegment.md):** Die Ableitung
 zieht das Richtungssegment zusätzlich ab — nur wenn die Schicht ihre `direction` trägt, der Port im
 App-Baum liegt und der Schnitt den Scope **in** ihn bringt statt über ihn hinaus —, und eine
-dritte Advisory-Diagnose macht die Restfälle laut. Der Test
+weitere Advisory-Diagnose macht die Restfälle laut. Der Test
 `TestPortLocalityDirectionSegmentKeepsRule` fährt beide Glob-Varianten gegen denselben Verstoß; die
 Mutations-Probe war **rot** mit der Meldung *„ein Port-Glob mit Richtungssegment darf
 port-locality nicht abschalten, got []"*.
