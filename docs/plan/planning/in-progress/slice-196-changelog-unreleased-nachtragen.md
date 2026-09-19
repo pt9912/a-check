@@ -23,10 +23,11 @@ seit dem letzten Release gelandet ist — die **58** Slices von 135 bis 195. Und
 *dahinter* bekommt ihren Ausgang, den sie bei 3× verlangt.
 
 **Ausgangslage (gemessen):** `v0.19.0..HEAD` trägt **265** Commits und **58** Slices. Der
-`[Unreleased]`-Abschnitt trug bis zu diesem Slice die vier Einträge der Slices 194/195 und sonst
-nichts. **Die konsumenten-sichtbare Änderung ist dabei genau eine:** `git log v0.19.0..HEAD --
-internal/` nennt nur die Commits von slice-194; `spec/` änderte sich in slice-194 und slice-154
-(Form-Nachzug), das Lastenheft gar nicht. Die übrigen 56 Slices sind Harness-Arbeit — für sie
+`[Unreleased]`-Abschnitt trug bis zu diesem Slice die **drei** Einträge der Slices 194/195 und
+sonst nichts. **Die konsumenten-sichtbare *Verhaltens*-Änderung ist dabei genau eine:** `git log
+v0.19.0..HEAD -- internal/` nennt nur die Commits von slice-194. Die **Vertrags-Dokumente** haben
+sich daneben in der **Form** bewegt — `spec/` in slice-194 (Verhalten) und slice-154
+(Lastenheft 0.26.0 → 0.27.0: §5 und §6 nachgezogen, **ohne** neue Zusage). Die übrigen 56 Slices sind Harness-Arbeit — für sie
 führt der CHANGELOG den Abschnitt *„Harness (nicht anwender-sichtbar)"*.
 
 **Ausdrücklich NICHT in diesem Slice** — je Punkt mit Begründung:
@@ -46,7 +47,7 @@ führt der CHANGELOG den Abschnitt *„Harness (nicht anwender-sichtbar)"*.
 | Zähler | Bau | Ergebnis |
 |---|---|---|
 | Slices seit dem Release | `find done -name 'slice-*.md'` ≥ 135, beide Ablageorte | **58** |
-| Commits seit dem Release | `git log --oneline v0.19.0..HEAD` | **265** |
+| Commits seit dem Release | `git log --oneline v0.19.0..HEAD` | **265** (Stand dieses Laufs; der Anker wandert mit jedem Commit) |
 | davon mit `internal/`-Änderung | `git log v0.19.0..HEAD -- internal/` | **2 Commits, ein Slice** (194) |
 | Einträge in `[Unreleased]` vorher | `sed -n '/Unreleased/,/0.19.0/p'` | **3** (die von 194/195) |
 
@@ -58,7 +59,7 @@ führt der CHANGELOG den Abschnitt *„Harness (nicht anwender-sichtbar)"*.
 | Datei / Komponente | Änderungs-Art | Begründung |
 |---|---|---|
 | [`CHANGELOG.md`](../../../../CHANGELOG.md) | update | der `[Unreleased]`-Abschnitt: die konsumenten-sichtbaren Einträge bleiben; ein Block *„Harness"* beschreibt die übrigen Slices in Gruppen |
-| die Modus-Deklaration oder [`AGENTS.md`](../../../../AGENTS.md) §5 | update | der **Ausgang** der Klasse bei 3× — Guide oder Sensor (Entscheidung beim Bau, §7) |
+| die Modus-Deklaration oder [`AGENTS.md`](../../../../AGENTS.md) §6 Schritt 7 | update | der **Ausgang** der Klasse bei 3× — Guide oder Sensor (Entscheidung beim Bau, §7) |
 
 **Was der Harness-Block trägt und was nicht.** Er nennt **Zustände**, die heute im Repo prüfbar
 sind — der vendored Stand, das Register auf Verzeichnisform, die neuen Sensoren, das

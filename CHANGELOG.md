@@ -49,7 +49,7 @@ sind vollständig; ein Bereich wie „135–140" wäre gröber als sein Gegensta
 - **Die vendored Baseline steht auf `v6.6.0`** (slice-135, 136, 137, 140, 142, 161, 162, 163, 164,
   167, 172, 174, 175, 179, 192). Der Sprung `v5.12.0` → `v6.6.0` lief in Etappen — Delta-Analyse,
   Vendoring, Adaptions-Durchgang —; die Integrität prüft `make regelwerk-check` gegen die
-  `SHA256SUMS`, und es liegt **genau ein** Stand im Baum (den alten ließ slice-172 fallen; die
+  `SHA256SUMS`, und es liegt **genau ein** Stand im Baum (den `v5.12.0` ließ slice-140 fallen, das `v6.0.0` slice-172; die
   `.claude/rules/`-Symlinks zog slice-142 nach).
 - **Beim Heben gehört ein Voll-Abgleich dazu** (slice-185, 186, 187): vier Delta-Analysen hatten
   einen Satz übersehen, den erst der Abschnitt-für-Abschnitt-Vergleich der Ziel-Formen findet.
@@ -68,7 +68,9 @@ sind vollständig; ein Bereich wie „135–140" wäre gröber als sein Gegensta
   d-check `v0.75.0`, slice-184). Dazu **geschärfte Konfigurationen**: Baseline-Pins über das
   `versions`-Muster (slice-173), Zellengrenzen der Tabellen (slice-181), die Zeiger-Disziplin der
   Harness-Dateien (slice-182, 183), die Aktivierungs-Regel der `.d-check.yml` (slice-188) und der
-  Gate-Index „einmal" (slice-193). Alle stehen im Gate-Index `harness/README.md` §Sensors.
+  Gate-Index „einmal" (slice-193). Die **Targets** stehen alle im Gate-Index
+  `harness/README.md` §Sensors; die geschärften Konfigurationen stehen in `.d-check.yml` und
+  `Makefile`.
 - **Form-Nachzüge und Entscheidungen** (slice-141, 149, 150, 151, 154, 155, 159, 165, 166, 170,
   171, 176, 177, 178): Roadmap-Form, Spezifikations-Gliederung, ADR- und Carveout-Readme, die
   Zitier-Form einfrierender Artefakte, die Slice-Form, die Reviewer-Rolle in `AGENTS.md` §6, der
