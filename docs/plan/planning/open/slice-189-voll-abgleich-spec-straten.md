@@ -102,7 +102,7 @@ Rang 1 und Rang 2 der Source Precedence.
 ## 5. Trigger
 
 **Start** (`open` → `in-progress`):
-[slice-188](../done/slice-188-voll-abgleich-gate-und-skill.md) liegt in `done/` und das
+[slice-188](../done/wellenlos/slice-188-voll-abgleich-gate-und-skill.md) liegt in `done/` und das
 WIP-Limit ist frei. **Reihenfolge ist Absicht:** Der Spec-Abgleich ist der
 heikelste; er kommt zuletzt, wenn das Verfahren an vier Slices eingespielt ist.
 
