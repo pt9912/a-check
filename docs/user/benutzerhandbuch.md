@@ -362,7 +362,7 @@ internal/hexagon/
     cancelorder/{command,handler,…}.go   # Slice B
     cancelorder/ports/notifier.go        #   ihr lokaler Port
     ports/order_repository.go            # von der Business-Area geteilter Port
-internal/adapters/{inbound,outbound}/…   # Adapter
+internal/adapters/{driving,driven}/…   # Adapter
 ```
 
 **Schritt 1 — jede Slice als eigenes `app`-Glob, jeder Port-Ordner als eigenes `port`-Glob.** Das ist

@@ -30,6 +30,15 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
   Geschwister-Ports (klassisches Hexagonal) liegen mit ihrem Verzeichnis außerhalb des App-Baums und
   werden **nicht** gemeldet; der Exit-Code bleibt unberührt.
 
+### Fixed
+
+- **Das Benutzerhandbuch nennt die Adapter-Rolle in ihrem eigenen Vokabular** (slice-195). Die
+  Beispielstruktur in §3.7 zeigte `internal/adapters/{inbound,outbound}/…`, während §4 und die
+  Regel-Tabelle seit [ADR-0036](docs/plan/adr/0036-port-richtung-inbound-outbound.md)
+  `driving`/`driven` als **Adapter**-Vokabular führen und `inbound`/`outbound` den **Ports**
+  vorbehalten. Das Dokument führte damit zwei Vokabulare für dieselbe Rolle — die eine Stelle, die
+  gemessen wurde; die beiden anderen Dokumente unter `docs/user/` führen das Vokabular nicht.
+
 ## [0.19.0] - 2026-08-31
 
 ### Added
