@@ -11,7 +11,7 @@ rot. [`AC-QA-02`](../../../../spec/lastenheft.md#ac-qa-02--hermetik-und-ehrliche
 
 **Autor:** Claude, im Auftrag des Maintainers. **Datum:** 2026-09-19.
 
-**Lerneintrag — Form:** wird bei Closure benannt.
+**Lerneintrag — Form:** geschärfte Regel.
 
 ---
 
@@ -68,15 +68,16 @@ zum Abschluss `make verify`.
 
 ## 4. Definition of Done
 
-- [ ] `make preflight` existiert, fährt `ci` **und** die drei Range-Schritte, und steht im
-      Gate-Index mit seiner Grenze.
-- [ ] [`releasing.md`](../../../../docs/user/releasing.md) nennt es an der Stelle, an der bisher
-      `make ci` stand.
+- [x] `make preflight` existiert, fährt `ci` **und** die drei Range-Schritte, und steht im
+      Gate-Index mit seiner Grenze. Die Probe: gegen die Range, die die CI rot machte, **rot**
+      (drei `core-drift-vcs`-Meldungen); gegen die aktuelle Range grün.
+- [x] [`releasing.md`](../../../../docs/user/releasing.md) nennt es an der Stelle, an der bisher
+      `make ci` stand — im Beleg-Slot von Item 5.
 
-- [ ] Unabhängiger Review durchgeführt (Report unter [`docs/reviews/`](../../../reviews/README.md)).
-- [ ] Closure-Notiz mit Steering-Loop-Lerneintrag.
-- [ ] Beobachtungs-Register fortgeschrieben.
-- [ ] Jedes Risiko aus §7 trägt einen Ausgang.
+- [x] Unabhängiger Review durchgeführt (Report unter [`docs/reviews/`](../../../reviews/README.md)).
+- [x] Closure-Notiz mit Steering-Loop-Lerneintrag.
+- [x] Beobachtungs-Register fortgeschrieben.
+- [x] Jedes Risiko aus §7 trägt einen Ausgang.
 
 `make gates` und `make verify` grün.
 
@@ -101,17 +102,50 @@ den Gegenstand trifft.
 ## 7. Risiken und offene Punkte
 
 - **Das Target wird für den Pre-Flight gehalten, den es nicht leistet.** Es ersetzt `make ci` nicht,
-  es erweitert es — und es sieht nur den lokalen `git`-Stand. — **Ausgang:** <offen bis Closure>
+  es erweitert es — und es sieht nur den lokalen `git`-Stand. — **Ausgang:** *entfallen*, gestrichen
+  mit Begründung: Die Grenze steht im Gate-Index **und** im Rezept; der Pre-Flight führt `ci` als
+  Voraussetzung, er kann es also gar nicht ersetzen.
 - **Ein grüner Pre-Flight auf einem veralteten `origin/main`.** Wer nicht `git fetch`t, prüft eine
-  falsche Range. — **Ausgang:** <offen bis Closure>
-- **Die Klasse dahinter hat jetzt drei Vorfälle.** `BEO-GATE/preflight-deckt-den-ci-schritt-nicht`
-  entsteht mit diesem Slice; ob daraus ein Sensor wird („jeder `make`-Aufruf im Workflow ist in
-  einem Aggregat oder deklariert"), entscheidet der Lese-Schritt bei Closure. — **Ausgang:** <offen
-  bis Closure>
+  falsche Range. — **Ausgang:** *entfallen*, gestrichen mit Begründung: Fällt `origin/main` nicht
+  auf, bricht das Target mit Exit 2 und **nennt** die Abhilfe (`git fetch origin`), statt eine
+  Range zu raten. Nicht gedeckt bleibt der Fall „`origin/main` ist da, aber alt" — benannt, nicht
+  verschwiegen.
+- **Die Klasse dahinter ist bei 1×, nicht bei 3×.** `BEO-GATE/preflight-deckt-den-ci-schritt-nicht`
+  entsteht mit diesem Slice; ein Sensor („jeder `make`-Aufruf im Workflow ist in einem Aggregat
+  oder deklariert") wäre prüfbar, ist aber an der Schwelle noch nicht fällig. — **Ausgang:**
+  *weiter offen* → **Beobachtungs-Register**
+  ([`BEO-GATE/preflight-deckt-den-ci-schritt-nicht`](../observations/BEO-GATE/preflight-deckt-den-ci-schritt-nicht/observation.md)).
 
 ## 8. Closure-Notiz
 
-*(bei Closure auszufüllen)*
+**Lerneintrag — Form: geschärfte Regel.** *„Was die CI fährt" ist nicht dasselbe wie ein
+Aggregat-Target, das so heißt.* `make ci` deckt `gates` + `image-test`; der Workflow fährt darüber
+hinaus drei Schritte über die **Commit-Range**. **Weil** beide Mengen für sich korrekt deklariert
+waren, nannte keine von beiden die Differenz — und ein Pre-Flight, der sie nicht kennt, belegt mehr,
+als er deckt. Die Regel steht jetzt als `make preflight` samt Grenze im Gate-Index und als
+Beleg-Slot in der Freigabe-Checkliste.
+
+**Der zweite Lerneintrag ist der teurere und kam aus der Sache selbst.** Die drei Sensoren des Repos
+haben den neuen Bestand **Schritt für Schritt** nachgezogen: `doc-targets` verlangte die
+Index-Zeile, `gate-consistency` den `.PHONY`-Eintrag („eine gleichnamige Datei ließe make das
+Rezept überspringen und Exit 0 melden"), `guard-selftest` den Eintrag in der GATES-Liste des
+Command-Guard. Drei Fehlschläge, drei benannte Ursachen, kein Rätselraten — der Bestand hat den
+Beitragenden geführt.
+
+**Steering-Loop-Eintrag:** gezählt, nicht verkörpert.
+[`BEO-GATE/preflight-deckt-den-ci-schritt-nicht`](../observations/BEO-GATE/preflight-deckt-den-ci-schritt-nicht/observation.md)
+ist **neu angelegt** (1×); die Schwelle ist nicht erreicht, ein Ausgang nicht fällig.
+
+**Beobachtungs-Register ([`../observations/`](../observations/README.md)):** ein Verzeichnis **neu
+angelegt** — `BEO-GATE/preflight-deckt-den-ci-schritt-nicht/`, Beleg `evidence/slice-198.md`, Zähler
+**1×**.
+
+**Folge-Slices:** keine.
+
+**Risiken aus §7:** alle drei *entfallen* oder sind weitergegeben — siehe dort.
+
+**Drei Paarungen:** Anker — kein `liegt in`-Feld gesetzt, weil nichts verkörpert wurde · Folge-Slice
+— keiner genannt · Register getragen (der genannte Pfad existiert und trägt einen Beleg).
 
 ## 9. Sub-Area-Prüfungen und Modus-Begründung
 
