@@ -1497,6 +1497,73 @@ func TestPortLocalitySiblingPortsNoFinding(t *testing.T) { // AC-FA-RULE-010 Rev
 	}
 }
 
+// sliceDirectionModel is the HexSlice shape AFTER the direction split: one port
+// LAYER per direction, so each glob carries its direction segment. That is the
+// configuration the user handbook §4 instructs for port-direction-mismatch (a
+// layer carries exactly ONE direction) — and it is the one that used to switch
+// port-locality off silently (ADR-0040).
+func sliceDirectionModel() Model {
+	return Model{
+		Layers: []Layer{
+			{Name: "ports_out", Globs: []string{"src/hexagon/application/order/createorder/ports/outbound/**"}, Role: "port", Direction: "outbound"},
+			{Name: "ports_in", Globs: []string{"src/hexagon/application/order/createorder/ports/inbound/**"}, Role: "port", Direction: "inbound"},
+			{Name: "app", Globs: []string{
+				"src/hexagon/application/order/createorder/**",
+				"src/hexagon/application/order/cancelorder/**",
+			}, Role: "app"},
+		},
+		Edges: []Edge{{From: "app", To: "ports_out"}, {From: "app", To: "ports_in"}},
+	}
+}
+
+func TestPortLocalityDirectionSegmentKeepsRule(t *testing.T) { // ADR-0040 (AC-FA-RULE-010): das Richtungssegment schaltet die Regel nicht ab
+	fs := mustEval(t, sliceDirectionModel(), []FileImports{
+		{Path: "src/hexagon/application/order/cancelorder/handler.go", Layer: "app", Imports: []Import{
+			{Symbol: "x/src/hexagon/application/order/createorder/ports/outbound/idgen", Line: 7},
+		}},
+	})
+	if !hasRule(fs, "port-locality") {
+		t.Fatalf("ein Port-Glob mit Richtungssegment darf port-locality nicht abschalten, got %v", fs)
+	}
+}
+
+func TestPortLocalityDirectionSegmentOwnSliceSilent(t *testing.T) { // ADR-0040 happy: die eigene Slice bleibt erlaubt
+	fs := mustEval(t, sliceDirectionModel(), []FileImports{
+		{Path: "src/hexagon/application/order/createorder/handler.go", Layer: "app", Imports: []Import{
+			{Symbol: "x/src/hexagon/application/order/createorder/ports/outbound/idgen", Line: 7},
+		}},
+	})
+	if len(fs) != 0 {
+		t.Fatalf("der eigene slice-lokale Port ist kein Befund, got %v", fs)
+	}
+}
+
+func TestInertPortScopesReportsUndeclaredDirection(t *testing.T) { // ADR-0040: die Diagnose meldet, was die Ableitung nicht erreicht
+	m := sliceDirectionModel()
+	for i := range m.Layers {
+		m.Layers[i].Direction = "" // Glob traegt das Segment, die Schicht sagt nichts
+	}
+	got := InertPortScopes(m)
+	if len(got) != 2 {
+		t.Fatalf("zwei Port-Globs erreichen den App-Baum nicht, got %v", got)
+	}
+	if got[0].Scope != "src/hexagon/application/order/createorder/ports" {
+		t.Fatalf("die Meldung nennt den abgeleiteten Scope, got %q", got[0].Scope)
+	}
+}
+
+func TestInertPortScopesResolvedConfigSilent(t *testing.T) { // ADR-0040: kein Rauschen im Normalfall
+	if got := InertPortScopes(sliceDirectionModel()); len(got) != 0 {
+		t.Fatalf("deklarierte Richtung loest den Scope auf — kein Hinweis, got %v", got)
+	}
+}
+
+func TestInertPortScopesSiblingPortsSilent(t *testing.T) { // AC-FA-RULE-010: Geschwister-Ports sind DOKUMENTIERT inert, kein Hinweis
+	if got := InertPortScopes(classicModel()); len(got) != 0 {
+		t.Fatalf("Geschwister-Ports liegen ausserhalb des App-Baums — die Diagnose darf dort schweigen, got %v", got)
+	}
+}
+
 func TestLateralSliceSeparateAppLayersEdgeAllowed(t *testing.T) { // AC-FA-RULE-009 Review-Regression: getrennte app-Layer sind edge-regiert
 	fs := mustEval(t, classicModel(), []FileImports{
 		{Path: "hex/services/edit.go", Layer: "svc", Imports: []Import{{Symbol: "hex/services/geometry/stair", Line: 5}}},

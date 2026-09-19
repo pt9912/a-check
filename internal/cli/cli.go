@@ -128,7 +128,34 @@ func Run(args []string, out, errw io.Writer) int {
 	writeCoverageNotice(errw, core.UncoveredFiles(m, files))
 	writeLimitNotice(errw, core.HeuristicLimits(m, files))
 	writeResolutionNotice(errw, core.LayerResolutions(m, files))
+	writePortScopeNotice(errw, core.InertPortScopes(m))
 	return code
+}
+
+// writePortScopeNotice reports the port globs that leave port-locality silent
+// although the port directory lies INSIDE the application tree — locality would
+// be meaningful for them, and the scope derivation did not reach it (ADR-0040).
+// Advisory on stderr, after the resolution notice, exit code untouched, capped
+// like its two elders (ADR-0029/ADR-0031).
+//
+// The criterion is deliberately the defect and not its cause: a port glob ending
+// on a direction segment is the measured cause, but a typo or a differently
+// named direction level look the same from here. Classic sibling ports have
+// their directory OUTSIDE the app tree and stay unreported — the documented
+// inertness of AC-FA-RULE-010 is not a gap.
+func writePortScopeNotice(errw io.Writer, scopes []core.InertPortScope) {
+	if len(scopes) == 0 {
+		return
+	}
+	_, _ = fmt.Fprintf(errw, "Hinweis: %d Port-Glob(s) erreichen den App-Baum nicht — port-locality bleibt dafür ungeprueft:\n", len(scopes))
+	for i, s := range scopes {
+		if i == noticeLimit {
+			_, _ = fmt.Fprintf(errw, "  … und %d weitere\n", len(scopes)-noticeLimit)
+			break
+		}
+		_, _ = fmt.Fprintf(errw, "  %s -> Scope %s\n", s.Glob, s.Scope)
+	}
+	_, _ = fmt.Fprintln(errw, "  Abhilfe: Port-Glob auf den Port-Ordner schneiden (…/ports/**) oder der Schicht ihre direction geben.")
 }
 
 // writeResolutionNotice reports the fully-green-fully-blind configuration:

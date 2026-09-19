@@ -351,6 +351,54 @@ func UncoveredFiles(m Model, files []FileImports) []string {
 	return out
 }
 
+// InertPortScope is a port glob whose scope derivation does not reach the app
+// tree although the port directory lies inside it — the configuration shape in
+// which port-locality is silently inert (ADR-0040). Glob is the configured
+// pattern, Scope the directory the derivation produced from it.
+type InertPortScope struct {
+	Glob  string
+	Scope string
+}
+
+// InertPortScopes returns the port globs that keep port-locality silent even
+// though locality would be meaningful for them, stably sorted by glob
+// (ADR-0040). The criterion is the defect itself, not its cause: the port
+// DIRECTORY lies inside the application tree, while the DERIVED SCOPE does not
+// reach it. Classic sibling ports (`hex/ports/**` next to `hex/services/**`)
+// have their directory outside the app tree — the documented, deliberate
+// inertness of AC-FA-RULE-010 — and are NOT reported: a notice that fires there
+// would be noise on every classic-hexagonal config and would be switched off
+// rather than followed.
+//
+// Reported on the CONFIG side, not per import: a tree may contain no app import
+// of such a port at all, and the gap would still be there — waiting for the
+// first one. That is the same shape the two elder diagnoses (ADR-0029,
+// ADR-0031) exist for: a run that ends with zero findings is exactly the run
+// where this notice is the only thing separating "clean" from "not looked at".
+func InertPortScopes(m Model) []InertPortScope {
+	var out []InertPortScope
+	seen := map[string]bool{}
+	for _, l := range m.Layers {
+		if EffectiveRole(l) != "port" {
+			continue
+		}
+		for _, g := range l.Globs {
+			p := globPrefix(g)
+			if p == "" || !nestedInAppTree(m, p) {
+				continue
+			}
+			sc := scopeFor(m, p, l.Direction)
+			if sc == "" || appTreeContains(m, sc) || seen[g] {
+				continue
+			}
+			seen[g] = true
+			out = append(out, InertPortScope{Glob: g, Scope: sc})
+		}
+	}
+	sort.Slice(out, func(i, j int) bool { return out[i].Glob < out[j].Glob })
+	return out
+}
+
 // LayerResolution is how much of ONE layer's extracted import symbols actually
 // resolve to a layer — the raw counts behind the resolution diagnosis (slice-085).
 type LayerResolution struct {
@@ -511,27 +559,87 @@ func sliceOf(path string, m Model) string {
 }
 
 // portScope returns the scope directory of a port candidate (AC-FA-RULE-010):
-// the longest matching port-role glob literal prefix MINUS its last path segment
-// (the port-dir marker, typically "ports"), so `…/createorder/ports/**` scopes
-// to `…/createorder`, `…/order/ports/**` to `…/order` (business area), and
-// `…/application/ports/**` to `…/application` (app-wide). "" if no port glob
-// matches or the prefix has no parent segment (then port-locality does not fire).
+// the longest matching port-role glob literal prefix, minus its port-dir marker
+// (typically "ports") and — when the layer declares a direction and the segment
+// above the marker equals it — minus that direction segment too (ADR-0040), so
+// `…/createorder/ports/**` scopes to `…/createorder`, `…/order/ports/**` to
+// `…/order` (business area), `…/application/ports/**` to `…/application`
+// (app-wide) and `…/createorder/ports/outbound/**` to `…/createorder` as well.
+// "" if no port glob matches or the prefix has no parent segment (then
+// port-locality does not fire).
 func portScope(cand string, m Model) string {
-	best, bestLen := "", -1
+	best, bestLen, dir := "", -1, ""
 	for _, l := range m.Layers {
 		if EffectiveRole(l) != "port" {
 			continue
 		}
 		for _, g := range l.Globs {
 			if p := globPrefix(g); p != "" && segIndex(cand, p) >= 0 && len(p) > bestLen {
-				best, bestLen = p, len(p)
+				best, bestLen, dir = p, len(p), l.Direction
 			}
 		}
 	}
-	if i := strings.LastIndexByte(best, '/'); i >= 0 {
-		return best[:i]
+	return scopeFor(m, best, dir)
+}
+
+// scopeFor derives a scope directory from a port glob's literal prefix.
+//
+// The direction segment sits BELOW the port-dir marker (`…/ports/outbound/**`),
+// so when the prefix ends on the layer's declared direction, both segments fall.
+// Two guards keep that from making the scope LOOSER than the plain marker cut
+// ever was — a scope that drifts upwards would silence port-locality instead of
+// restoring it (ADR-0040):
+//
+//   - the port must lie INSIDE the app tree (nestedInAppTree). Without it, a
+//     classic sibling port layer that carries a direction (`hex/ports/driving/**`)
+//     would scope to `hex`, an ancestor of every app file, and start reporting
+//     on a shape AC-FA-RULE-010 declares inert.
+//   - the extra cut is taken only where the marker cut alone MISSES the app tree
+//     and the deeper cut reaches it. So the direction segment is dropped exactly
+//     where it would otherwise cost the rule its scope — never elsewhere.
+func scopeFor(m Model, prefix, dir string) string {
+	marker := parentOf(prefix)
+	if dir == "" || lastSegment(prefix) != dir || !nestedInAppTree(m, prefix) {
+		return marker
+	}
+	inner := parentOf(marker)
+	if inner != "" && !appTreeContains(m, marker) && appTreeContains(m, inner) {
+		return inner
+	}
+	return marker
+}
+
+// parentOf drops the last path segment; "" if there is none.
+func parentOf(p string) string {
+	if i := strings.LastIndexByte(p, '/'); i >= 0 {
+		return p[:i]
 	}
 	return ""
+}
+
+// lastSegment returns the final path segment of p ("" when p is empty).
+func lastSegment(p string) string {
+	return p[strings.LastIndexByte(p, '/')+1:]
+}
+
+// nestedInAppTree reports whether the directory prefix p lies INSIDE the
+// application tree — i.e. some app-role glob prefix is a segment run within p.
+// This is the port-directory side of the locality question, where
+// appTreeContains answers the scope side: for a port nested in a slice both are
+// true, for classic sibling ports (hex/ports next to hex/services) both are
+// false and the rule is legitimately inert (AC-FA-RULE-010).
+func nestedInAppTree(m Model, p string) bool {
+	for _, l := range m.Layers {
+		if EffectiveRole(l) != "app" {
+			continue
+		}
+		for _, g := range l.Globs {
+			if q := globPrefix(g); q != "" && segIndex(p, q) >= 0 {
+				return true
+			}
+		}
+	}
+	return false
 }
 
 // lateralSlice reports a forbidden cross-slice app import (AC-FA-RULE-009). It

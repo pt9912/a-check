@@ -1473,3 +1473,65 @@ func TestHandbuchURLInFragmentUndUsage(t *testing.T) {
 		t.Errorf("--help: Usage ohne Handbuch-URL (AC-FA-CLI-003)")
 	}
 }
+
+// portScopeCfg declares per-slice app globs and a port folder whose glob ends on
+// the direction segment — the configuration the handbook §4 instructs for
+// port-direction-mismatch, and the one that used to keep port-locality silent
+// (ADR-0040).
+const portScopeCfg = `version: 1
+languages: {go: ["**/*.go"]}
+layers:
+  app:
+    globs:
+      - "internal/hexagon/application/order/createorder/**"
+      - "internal/hexagon/application/order/cancelorder/**"
+    role: app
+  ports:
+    globs:
+      - "internal/hexagon/application/order/createorder/ports/outbound/**"
+    role: port
+  domain:
+    globs: ["internal/hexagon/domain/**"]
+    role: domain
+edges:
+  - {from: app, to: ports}
+  - {from: ports, to: domain}
+`
+
+const portFile = "internal/hexagon/application/order/createorder/ports/outbound/idgen.go"
+
+func TestPortScopeNoticeReportsInertGlob(t *testing.T) { // ADR-0040: die stille Form wird laut
+	dir := writeRepo(t, map[string]string{
+		".a-check.yml": portScopeCfg,
+		portFile:       "package outbound\n",
+	})
+	var out, errb bytes.Buffer
+	if code := cli.Run([]string{dir}, &out, &errb); code != 0 {
+		t.Fatalf("der Hinweis darf den Exit-Code nicht aendern, got %d", code)
+	}
+	e := errb.String()
+	if !strings.Contains(e, "Port-Glob(s) erreichen den App-Baum nicht") {
+		t.Fatalf("Hinweis fehlt: %q", e)
+	}
+	if !strings.Contains(e, "ports/outbound/** -> Scope internal/hexagon/application/order/createorder/ports") {
+		t.Fatalf("Glob und abgeleiteter Scope gehoeren in den Hinweis: %q", e)
+	}
+	if out.Len() != 0 {
+		t.Fatalf("der Hinweis gehoert auf stderr, stdout war %q", out.String())
+	}
+}
+
+func TestPortScopeNoticeSilentWhenDirectionDeclared(t *testing.T) { // ADR-0040: kein Rauschen, wo die Ableitung traegt
+	dir := writeRepo(t, map[string]string{
+		".a-check.yml": strings.Replace(portScopeCfg,
+			"  ports:\n", "  ports:\n    direction: outbound\n", 1),
+		portFile: "package outbound\n",
+	})
+	var out, errb bytes.Buffer
+	if code := cli.Run([]string{dir}, &out, &errb); code != 0 {
+		t.Fatalf("sauberer Lauf erwartet, got %d", code)
+	}
+	if strings.Contains(errb.String(), "erreichen den App-Baum nicht") {
+		t.Fatalf("deklarierte Richtung loest den Scope auf — kein Hinweis: %q", errb.String())
+	}
+}
