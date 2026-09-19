@@ -49,7 +49,7 @@ lautlos abschalten.
   implementieren driven-Adapter Outbound-Ports strukturell (kein Import), die Regel kann dort
   nicht feuern. Das ist die zweite Hälfte der Meldung und ein eigener Gegenstand, kein Nachzug.
 
-## 2. Ausgangsmessung (beim Übergang nach `in-progress/` zu wiederholen)
+## 2. Ausgangsmessung — vorher und nachher
 
 **Instrument:** `a-check:dev` — der Regelcode-Stand ist seit
 [slice-121](../done/wellenlos/slice-121-port-richtung-inbound-outbound.md) unverändert und liegt
@@ -82,6 +82,20 @@ Bugfix — und die neue ADR trägt sie.
 **Entscheidung des Maintainers (2026-09-19):** Route **(a)+(d)** — die Semantik wird korrigiert
 **und** die Restfälle werden laut. Route (b) (Validierung, Exit 2) und (c) (nur als Grenze
 dokumentieren) sind verworfen.
+
+**Nachher — dieselben Fixtures, gemessen gegen das released `v0.19.0` und gegen das Image mit
+dieser Änderung.** Die zwei Zeilen unterscheiden sich **nur** im gebauten Stand:
+
+| Variante | Config | `v0.19.0` (vorher) | dieser Stand (nachher) |
+|---|---|---|---|
+| v1 | `…/createorder/ports/**` | `port-locality: 1`, Exit 1 | `port-locality: 1`, Exit 1 — **unverändert** |
+| v2 | `…/ports/{inbound,outbound}/**`, **keine** `direction` | `gesamt: 0 Befund(e)`, Exit 0 — **still** | 0 Befunde, Exit 0, **und der Hinweis** nennt beide Globs samt abgeleitetem Scope |
+| v4 | getrennte Port-Schichten **mit** `direction` (der Weg, den §4 anweist) | `gesamt: 0 Befund(e)`, Exit 0 — **still** | `port-locality: 1`, Exit 1 — **dieselbe Meldung und derselbe Scope wie v1** |
+
+**v4 ist die tragende Zeile:** Der Verstoß, den v1 bei `…/ports/**` meldet, wird bei getrennten
+Port-Schichten **wieder** gemeldet — mit demselben Scope (`…/createorder`) und derselben Meldung.
+**v2 ist die zweite:** Wo die Ableitung die Richtung nicht kennen kann, bleibt sie unverändert
+inert, aber der Lauf sagt es jetzt. Zwischen „still" und „unbeurteilt" liegt genau dieser Hinweis.
 
 ## 3. Umsetzung
 
@@ -119,12 +133,12 @@ liegt er außerhalb.
 
 ## 4. Definition of Done
 
-- [ ] Die Spec-Kette trägt die geschärfte Ableitung:
+- [x] Die Spec-Kette trägt die geschärfte Ableitung:
       [`SPEC-RULE-001`](../../../../spec/spezifikation.md#spec-rule-001--regel-auswertung)
       nachgezogen, eine neue ADR samt Index-Eintrag.
-- [ ] Die Engine setzt es durch: `portScope` überspringt das Richtungssegment, und die dritte
+- [x] Die Engine setzt es durch: `portScope` überspringt das Richtungssegment, und die dritte
       Advisory-Diagnose meldet die Restfälle.
-- [ ] Tests und Benutzerhandbuch sind nachgezogen; jede Probe ist **rot gewesen** und nennt ihre
+- [x] Tests und Benutzerhandbuch sind nachgezogen; jede Probe ist **rot gewesen** und nennt ihre
       Meldung.
 
 - [ ] Unabhängiger Review durchgeführt (Report unter [`docs/reviews/`](../../../reviews/README.md)).
@@ -157,25 +171,76 @@ DoD vollständig, `make gates` und `make verify` grün, Closure-Notiz mit Lernei
 ## 7. Risiken und offene Punkte
 
 - **Die Diagnose trifft den legitimen Geschwister-Fall.** Dann meldet sie auf jedem
-  klassisch-hexagonalen Repo und wird abgeschaltet statt befolgt. — **Ausgang:** <offen bis
-  Closure>
+  klassisch-hexagonalen Repo und wird abgeschaltet statt befolgt. — **Ausgang:** *entfallen*,
+  gestrichen mit Begründung: Die Diagnose keilt auf **zwei** Bedingungen (`nestedInAppTree` **und**
+  `!appTreeContains`), und der Geschwister-Fall erfüllt schon die erste nicht — sein Verzeichnis
+  liegt außerhalb des App-Baums. `TestInertPortScopesSiblingPortsSilent` hält das fest.
 - **Der Diskriminator „deklarierte Richtung" greift zu kurz.** Eine Richtungsebene, die anders
-  heißt als ihr `direction`-Wert, bleibt still — dieselbe Klasse, seltener. — **Ausgang:** <offen
-  bis Closure>
+  heißt als ihr `direction`-Wert, bleibt still — dieselbe Klasse, seltener. — **Ausgang:**
+  *entfallen*, gestrichen mit Begründung: Genau dafür ist die Diagnose da, und sie greift
+  **breiter** als die Ableitung — sie keilt nicht auf dem Vokabular, sondern auf „Verzeichnis im
+  App-Baum, Scope nicht". `TestInertPortScopesReportsUndeclaredDirection` fährt den Fall ohne
+  deklarierte Richtung als roten Beleg.
 - **Die Semantik-Änderung verschiebt bestehende Scopes.** Ein Port-Glob, dessen letztes Segment
   zufällig dem deklarierten Richtungswert entspricht, skopiert danach eine Ebene höher und kann
-  neue Befunde erzeugen. — **Ausgang:** <offen bis Closure>
+  neue Befunde erzeugen. — **Ausgang:** *entfallen*, gestrichen mit Begründung: Der zusätzliche
+  Schnitt wird nur genommen, wo der Marker-Schnitt den App-Baum **verfehlt** und der tiefere ihn
+  **erreicht**; der Scope kann dadurch nie weiter werden als zuvor. Die Umkehr steht als Test
+  (`TestPortLocalityDirectionSegmentOwnSliceSilent`) und der Aufweichungs-Fall als
+  Mutations-Probe.
 - **Der Kommentar im Konsumenten-Repo wird durch diesen Slice falsch.** Er hält die Kopplung
-  fest, die es danach nicht mehr gibt. Ein fremdes Repo, kein Edit hier; die Meldung dorthin
-  gehört zum Abschluss. — **Ausgang:** <offen bis Closure>
+  fest, die es danach nicht mehr gibt. — **Ausgang:** *entfallen*, gestrichen mit Begründung: Der
+  Kommentar liegt in einem **fremden** Repo; dieser Slice kann ihn nicht ändern, und ihn hier zu
+  einem Folge-Slice zu machen hieße, eine Adresse zu erfinden, die die Sendung nicht annehmen
+  kann. Die Meldung dorthin geht mit der Antwort auf die Konsumenten-Meldung hinaus.
 - **`BEO-PLAN/messung-ohne-reproduzierbares-instrument` steht bei 2×.** Die Meldung kam mit
-  einem externen Nachweis, der im Repo nicht nachvollziehbar war. Dieser Slice liefert das
-  Instrument **im** Repo — ob das den Eintrag auflöst, entscheidet der Lese-Schritt bei Closure,
-  nicht dieser Plan. — **Ausgang:** <offen bis Closure>
+  einem externen Nachweis, der im Repo nicht nachvollziehbar war. — **Ausgang:** *entfallen*,
+  gestrichen mit Begründung: Das Instrument liegt mit diesem Slice **im** Repo — die beiden
+  Glob-Varianten gegen denselben Verstoß sind Regeltests, die Mutations-Probe ist gefahren und
+  ihre rote Meldung benannt (§3). Der Beleg ist damit wiederholbar; ein Vorkommen der Klasse war
+  das nicht.
 
 ## 8. Closure-Notiz
 
-*(bei Closure auszufüllen)*
+**Lerneintrag — Form: benannte Spec-Lücke.** *Die Spezifikation war vollständig und trotzdem
+falsch: „minus seinem letzten Pfad-Segment" beschreibt eine Ableitung, die **genau ein** Segment
+zwischen App-Baum und Port-Ordner voraussetzt — und diese Voraussetzung stand nirgends.* Der Satz
+war nicht ungenau, er war **unterbestimmt**, und die fehlende Bedingung fiel erst auf, als eine
+zweite Dimension ([`ADR-0036`](../../adr/0036-port-richtung-inbound-outbound.md)) denselben
+Glob-Präfix benutzte. **Weil** eine Ableitung ihre Annahmen mitträgt, gehört die Annahme **in den
+Satz**: Die drei Segmente (App-Baum · Port-Ordner · Richtungssegment) sind jetzt benannt und in
+beiden Richtungen geprüft.
+
+**Der zweite Lerneintrag nimmt die Review-Klasse aus dem Vorgänger-Slice auf:** *Ein grüner Lauf
+über einer **stillen** Regel sieht aus wie ein grüner Lauf über einer geprüften.* Die Meldung des
+Konsumenten war nur deshalb eine Meldung, weil dort **gemessen** wurde; hier hatte niemand
+nachgesehen, und kein Gate fing es — die drei Diagnosen sind die Antwort auf genau diese
+Unterscheidung, und die neue ist die dritte ihrer Art.
+
+**Steering-Loop-Eintrag:** gezählt, nicht verkörpert.
+[`BEO-HARNESS/zwei-regeln-machen-einander-unmoeglich`](../observations/BEO-HARNESS/zwei-regeln-machen-einander-unmoeglich/observation.md)
+erreicht mit diesem Slice **2×** (Beleg `evidence/slice-194.md`); die Schwelle ist nicht erreicht,
+ein Ausgang ist nicht fällig. Ein neuer Eintrag wurde nicht angelegt.
+
+**Beobachtungs-Register ([`../observations/`](../observations/README.md)):** ein Beleg ergänzt, ein
+Eintrag **benannt statt gezählt**.
+[`BEO-HARNESS/zwei-regeln-machen-einander-unmoeglich`](../observations/BEO-HARNESS/zwei-regeln-machen-einander-unmoeglich/observation.md)
+— `evidence/slice-194.md`, Zähler **2×**; der Beleg führt die **stille** Ausprägung aus, die die
+Erkennungs-Sentence des Eintrags bis hierher nicht kannte.
+[`BEO-PLAN/messung-ohne-reproduzierbares-instrument`](../observations/BEO-PLAN/messung-ohne-reproduzierbares-instrument/observation.md)
+bleibt bei **2×**: Die Ausgangsmessung nennt ihre Parameter (§2), und das Instrument liegt mit
+diesem Slice als Regeltest im Repo — die Bedingung des Eintrags ist damit erfüllt, nicht verletzt.
+[`BEO-KERN/dirvocab-portfor-auseinander`](../observations/BEO-KERN/dirvocab-portfor-auseinander/observation.md)
+bleibt bei 1×: anderer Mechanismus, siehe §9.
+
+**Folge-Slices:** [slice-195](../open/slice-195-handbuch-adapter-vokabel.md) (Handbuch-Vokabel für
+die Adapter-Rolle) — liegt in `open/`.
+
+**Risiken aus §7:** alle fünf *entfallen*, gestrichen mit Begründung — siehe dort.
+
+**Drei Paarungen:** Anker — kein `liegt in`-Feld gesetzt, weil nichts verkörpert wurde; nichts zu
+paaren · Folge-Slice getragen (slice-195 existiert in `open/`) · Register getragen (beide genannten
+Pfade existieren und tragen Belege).
 
 ## 9. Sub-Area-Prüfungen und Modus-Begründung
 
@@ -195,10 +260,10 @@ gehört hierher, die Korrektur nicht: er trägt den Folge-Slice
   schweigt eine Regel wegen einer Glob-Form. Der Zähler bleibt unberührt.
 - `BEO-HARNESS` —
   [`zwei-regeln-machen-einander-unmoeglich`](../observations/BEO-HARNESS/zwei-regeln-machen-einander-unmoeglich/observation.md)
-  (1×) ist die **nächstliegende** Klasse, trifft aber nicht: ihre Erkennungs-Sentence lautet „an
-  einem Sensor, der **rot** wird" — hier wird nichts rot, die Regel **schweigt**. Ob das eine
-  eigene Beobachtung ist oder die Klasse weiter gefasst werden muss, entscheidet der Schreibende
-  bei Closure; der Plan nimmt die Antwort **nicht** vorweg und zählt den Eintrag darum nicht hoch.
+  (1×): die nächstliegende Klasse, und **sie trifft zu**. Ihre Erkennungs-Sentence („an einem
+  Sensor, der **rot** wird") beschreibt nur die **laute** Ausprägung; hier schweigt die Regel. Der
+  Plan hatte die Zuordnung ausdrücklich offengelassen — **sie ist mit dem Bau entschieden**: Der
+  Eintrag wird auf **2×** gehoben, und der Beleg nennt die stille Ausprägung (§8).
 - `BEO-PLAN` — [`messung-ohne-reproduzierbares-instrument`](../observations/BEO-PLAN/messung-ohne-reproduzierbares-instrument/observation.md)
   (2×) ist einschlägig und steht als Risiko in §7.
 - `BEO-SPEC` — keine Treffer zu diesem Gegenstand.
