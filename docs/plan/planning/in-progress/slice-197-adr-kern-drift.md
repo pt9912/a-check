@@ -24,9 +24,11 @@ Release-Range, Exit 0". Übernommen von [slice-196](../done/wellenlos/slice-196-
 **Ausgangslage (gemessen):** `make doc-immutable RANGE=v0.19.0..HEAD` meldet **Exit 2** für
 [`ADR-0017`](../../adr/0017-relative-resolution-modus.md), [`ADR-0018`](../../adr/0018-exclude-scan-scope.md) und [`ADR-0038`](../../adr/0038-dependabot-als-hebungskanal.md) (`core-drift-vcs`: „Core einer immutablen Datei hat sich über
 die Commit-Range geändert"). Der Befund ist **vorbestehend** — er tritt ohne die Commits dieser
-Sitzung ebenso auf (`RANGE=v0.19.0..89fc7dc`, Exit 2). Ursache ist die Register-Migration
-(`slice-139`), die Pfade in ADR-Körpern nachgezogen hat; bei [`ADR-0038`](../../adr/0038-dependabot-als-hebungskanal.md) ist die geänderte Zeile ein
-Verweis auf ein Beobachtungs-Verzeichnis, das vorher flach lag.
+Sitzung ebenso auf (`RANGE=v0.19.0..89fc7dc`, Exit 2). Ursache sind die **Zeitdokument-Sweeps**,
+die Pfade in ADR-Körpern nachgezogen haben: `slice-148` in [`ADR-0017`](../../adr/0017-relative-resolution-modus.md)
+und [`ADR-0018`](../../adr/0018-exclude-scan-scope.md), `slice-139` in
+[`ADR-0038`](../../adr/0038-dependabot-als-hebungskanal.md) (dort ein Verweis auf ein
+Beobachtungs-Verzeichnis, das vorher flach lag).
 
 **Ausdrücklich NICHT in diesem Slice** — je Punkt mit Begründung:
 
@@ -68,6 +70,24 @@ Sensor prüft die **Commit-Range**, und der verursachende Nachzug liegt **in** i
 RANGE=v0.19.0..HEAD` meldet nach B weiterhin Exit 2. B beseitigt die Drift-**Quelle** für die
 Zukunft, nicht die Vergangenheit; für den historischen Befund tritt
 [`MR-024`](../../../../harness/conventions.md#mr-024) daneben.
+
+**Und das Instrument für die historische Hälfte — eine eigene Entscheidung, nicht der Rest von B.**
+B behebt die Ursache; es kann einen Befund aber nicht aus einer Range entfernen, die den Sweep
+enthält. Für diesen Rest war das Instrument zu wählen, und drei standen zur Wahl:
+
+| Instrument | Was es bedeutete | Warum es nicht gewählt wurde |
+|---|---|---|
+| **Carveout** (`CO-NNN`) | das rote Item 2 mit dokumentierter Ausnahme und Folge-Slice | Der Auflösungs-Trigger wäre **uneinlösbar**: Historie lässt sich nicht umschreiben, der Folge-Slice könnte den Befund nie abtragen |
+| **BF-Sub-Area-Markierung** | die Sub-Area `ADR` als Brownfield führen | Sie beschreibt ein Verhältnis von *Doku zu Code*, nicht einen Sensor-Befund — der falsche Gegenstand |
+| **`MR`-Eintrag** (gewählt) | drei **benannte** Befunde deklariert, im Bestand sichtbar, mit selbst-auflösendem Trigger | — |
+
+Gewählt wurde der `MR`-Eintrag (Maintainer, 2026-09-19). Er ist der Ort, an dem dieses Repo
+Ausnahmen mit Begründung und Auflösungs-Trigger führt — [`MR-019`](../../../../harness/conventions.md#mr-019),
+[`MR-020`](../../../../harness/conventions.md#mr-020) und [`MR-023`](../../../../harness/conventions.md#mr-023)
+sind die Präzedenz für Einträge mit `Ersetzt-Baseline-Regel: —` —, und **das Gate wird dabei nicht
+angefasst**: `.d-check.yml` bleibt unverändert, `doc-immutable` bleibt für jede künftige
+Kern-Änderung scharf. Deshalb ist es **keine** Schwellen-Senkung im Sinne von §3.6 und braucht
+keine ADR.
 
 **Auszuführende Gates:** `make doc-immutable RANGE=v0.19.0..HEAD` (das Item selbst), `make gates`,
 zum Abschluss `make verify`.
@@ -146,14 +166,24 @@ Eintrag (siehe §9); ob sie einen braucht, entscheidet das nächste Auftreten �
 [`MR-024`](../../../../harness/conventions.md#mr-024)-Trigger löst sich mit dem nächsten Release
 selbst ein.
 
-**Beobachtungs-Register ([`../observations/`](../observations/README.md)):** ein Verzeichnis
-**neu angelegt** — [`BEO-HARNESS/altbestand-braucht-nachzug`](../observations/BEO-HARNESS/altbestand-braucht-nachzug/observation.md),
-Beleg `evidence/slice-197.md`, Zähler **1×**. Der Vorgang selbst ist ein Nachzug; die **Klasse**
-dahinter ist neu und wird mit ihm benannt. `BEO-HARNESS/chronik-in-gelesenen-dateien`
+**Beobachtungs-Register ([`../observations/`](../observations/README.md)):** drei Bewegungen.
+[`BEO-HARNESS/altbestand-braucht-nachzug`](../observations/BEO-HARNESS/altbestand-braucht-nachzug/observation.md)
+— **neu angelegt**, Beleg `evidence/slice-197.md`, Zähler **1×** (der Anlass).
+[`BEO-HARNESS/mr-aufloesungs-trigger-ohne-waechter`](../observations/BEO-HARNESS/mr-aufloesungs-trigger-ohne-waechter/observation.md)
+— Beleg ergänzt, Zähler **2×**: das gewählte Instrument hat das Feld, dessen Wächter fehlt.
+[`BEO-GATE/attestierung-vor-dem-vorgang`](../observations/BEO-GATE/attestierung-vor-dem-vorgang/observation.md)
+— Beleg ergänzt, Zähler **2×**: der DoD-Haken dieses Slice war gesetzt, **bevor** der Review lief
+(siehe unten). `BEO-HARNESS/chronik-in-gelesenen-dateien`
 bleibt bei 3× mit Ausgang *geplant*; [`MR-024`](../../../../harness/conventions.md#mr-024) ist **kein** Beleg dafür (der Eintrag ist ein
 Adaptions-Eintrag, kein Chronik-Fall).
 
 **Folge-Slices:** keine.
+
+**Ein eigener Fehler, den der Review gefunden hat.** Der Haken `- [x] Unabhängiger Review
+durchgeführt` stand schon im Arbeits-Commit `010960e` — also **vor** dem Review. Am Ende ist er
+wahr (der Report existiert), aber er war zum Zeitpunkt seiner Setzung falsch, und das ist die
+Klasse [`BEO-GATE/attestierung-vor-dem-vorgang`](../observations/BEO-GATE/attestierung-vor-dem-vorgang/observation.md)
+(jetzt 2×). Kein Gate deckt sie: `make doc-reviews` greift erst für einen Slice in `done/`.
 
 **Risiken aus §7:** alle drei *entfallen* oder sind entschieden — siehe dort.
 
@@ -165,7 +195,12 @@ Adaptions-Eintrag, kein Chronik-Fall).
 **Vorgelagert — Sub-Area-Wahl prüfen:** berührt sind `ADR` (die drei Entscheidungen samt Index) und,
 je nach Weg, `HARNESS` (der Adaptions-Block) oder `GATE` (der Sensor). Alle GF.
 
-**Vorgelagert — offene Beobachtungen sichten:** Register über `ADR`, `HARNESS`, `GATE` gelesen — zu
-diesem Gegenstand kein Treffer; die Klasse *Chronik/Drift in ADRs* ist nicht geführt.
+**Vorgelagert — offene Beobachtungen sichten:** Register über `ADR`, `HARNESS`, `GATE` gelesen.
+**Ein Treffer, und der Plan hat ihn zunächst übersehen:** [`BEO-HARNESS/mr-aufloesungs-trigger-ohne-waechter`](../observations/BEO-HARNESS/mr-aufloesungs-trigger-ohne-waechter/observation.md)
+(1×) betrifft **genau das gewählte Instrument** — das Pflichtfeld `Auflösungs-Trigger` eines
+`MR`-Eintrags hat keinen Wächter. Dieser Vorgang ist sein **zweites** Auftreten; der Beleg steht in
+§8. Der eigene Eintrag dieses Slice
+([`BEO-HARNESS/altbestand-braucht-nachzug`](../observations/BEO-HARNESS/altbestand-braucht-nachzug/observation.md))
+bleibt davon getrennt: er beschreibt den **Anlass**, nicht das Instrument.
 
 **Modus-Begründungsblock:** alle berührten Sub-Areas GF. Kein Block je Sub-Area nötig.

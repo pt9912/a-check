@@ -1,4 +1,4 @@
-**Stand:** offen (1×)
+**Stand:** offen (2×)
 
 Unterhalb der Schwelle. Ein Sensor wäre denkbar — das Feld `Auflösungs-Trigger` ist in jedem
 Eintrag vorhanden, seine *Bedingung* ist aber Prosa und maschinell nicht auswertbar; prüfbar wäre
