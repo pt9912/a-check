@@ -6,11 +6,12 @@
 - **Bezug:** [AC-FA-RULE-010](../../../spec/lastenheft.md#ac-fa-rule-010--port-lokalität-regel-port-locality),
   [AC-FA-RULE-008](../../../spec/lastenheft.md#ac-fa-rule-008--richtungs-dimension-regel-port-direction-mismatch),
   [ADR-0036](0036-port-richtung-inbound-outbound.md) (die zweite Vokabel),
-  [ADR-0029](0029-abdeckungs-diagnose-advisory.md) und
-  [ADR-0031](0031-heuristik-grenzen-diagnose.md) (die zwei Diagnosen, in deren Reihe die dritte tritt)
+  [ADR-0029](0029-abdeckungs-diagnose-advisory.md),
+  [ADR-0035](0035-grenz-diagnose-gegen-globs.md) und
+  [ADR-0032](0032-aufloesungs-diagnose-repoweit.md) — die Diagnosen, in deren Reihe diese tritt
 - **Schärft:** [SPEC-RULE-001](../../../spec/spezifikation.md#spec-rule-001--regel-auswertung) und
   [SPEC-CLI-001](../../../spec/spezifikation.md#spec-cli-001--aufruf-scan-wurzel-und-exit-codes) —
-  macht die Ableitung des Port-Scopes und die dritte Diagnose verbindlich.
+  macht die Ableitung des Port-Scopes und diese Diagnose verbindlich.
 
 ## Kontext
 
@@ -62,16 +63,22 @@ zusammen ab — die eine lautlos.
    ([ADR-0036](0036-port-richtung-inbound-outbound.md)), und eine dritte Quelle für dieselbe
    Menge wäre eine Kopie, die driftet.
 2. **Die Restfälle werden laut — mit einem Kriterium, das den legitimen Fall nicht trifft.**
-   Eine dritte Advisory-Diagnose (stderr, exit-neutral, gedeckelt, mit „Abhilfe") meldet einen
+   Eine **weitere** Advisory-Diagnose (stderr, exit-neutral, gedeckelt, mit „Abhilfe") meldet einen
    `port`-Glob, dessen **Verzeichnis im App-Baum liegt**, dessen **abgeleiteter Scope** ihn aber
    nicht erreicht. Das ist die Definition des Defekts: Lokalität wäre hier sinnvoll, und die
    Ableitung hat sie trotzdem verloren. Für Geschwister-Ports (`hex/ports/**` neben
    `hex/services/**`) liegt schon das **Verzeichnis** außerhalb des App-Baums — dort schweigt die
    Diagnose, wie die Regel schweigt. Sie greift damit **breiter** als Punkt 1: auch eine anders
    benannte Richtungsebene und ein Tippfehler im Glob werden sichtbar.
-3. **Kein Lastenheft-Bump.** [AC-FA-RULE-010](../../../spec/lastenheft.md#ac-fa-rule-010--port-lokalität-regel-port-locality)
-   sagt „der Verzeichnis-Teilbaum, der seinen Port-Ordner besitzt" und lässt die Segment-Mechanik
-   offen; die Entscheidung präzisiert eine Ableitung, sie ändert keine Zusage.
+3. **Kein Lastenheft-Bump.** Drei Stellen von
+   [AC-FA-RULE-010](../../../spec/lastenheft.md#ac-fa-rule-010--port-lokalität-regel-port-locality)
+   sind die mögliche Gegenlesart, und alle drei halten. *„Der Verzeichnis-Teilbaum, der seinen
+   Port-Ordner besitzt"* beschreibt weiterhin den Scope. *„Der Scope ist **pfad-abgeleitet** (keine
+   Deklaration)"* bleibt wahr: Der Scope entsteht nach wie vor aus dem **Pfad**; `direction` sagt
+   nur, wo der Port-Ordner **endet** — die Schicht deklariert ihre Richtung, keine Scope-Grenze.
+   Und die out-of-scope gestellte *„erzwungene explizite Scope-Deklaration in der Config"* bleibt
+   ausgeschlossen: Wer keine Richtung deklariert, bekommt die alte Ableitung unverändert. Die
+   Entscheidung präzisiert eine Ableitung, sie ändert keine Zusage.
 
 **Verworfene Alternative — feste Wortliste (`inbound|outbound`) in der Ableitung.** Sie träfe auch
 einen Ordner, der zufällig so heißt, und ließe eine anders benannte Richtungsebene weiter still —
@@ -93,8 +100,9 @@ Grenze wäre echt, aber sie wäre **gewählt**, obwohl die Ableitung sie nicht b
   Segment endet, das dem deklarierten `direction`-Wert ihrer Schicht entspricht, kann danach Befunde
   erzeugen, die sie vorher verschwieg. Ein Konsument, der die Kopplung als Grenze dokumentiert hat
   (so geschehen), muss seinen Kommentar nachziehen — die Grenze gibt es nicht mehr.
-- **Die Diagnose ist die dritte ihrer Art**, nach [ADR-0029](0029-abdeckungs-diagnose-advisory.md)
-  und [ADR-0031](0031-heuristik-grenzen-diagnose.md). Sie erbt deren Hausregeln: eigener Kanal
+- **Die Diagnose reiht sich in die bestehenden ein** ([ADR-0029](0029-abdeckungs-diagnose-advisory.md),
+  [ADR-0035](0035-grenz-diagnose-gegen-globs.md), [ADR-0032](0032-aufloesungs-diagnose-repoweit.md)).
+  Sie erbt deren Hausregeln: eigener Kanal
   (stderr, nach der Zusammenfassung), **Exit-Code unberührt**, Deckel **mit Restzahl**, und ein
   Baum ohne solche Globs bleibt **still** — sonst ist sie Rauschen statt Signal.
 - **Der legitime Fall bleibt unberührt, und das ist prüfbar.** Geschwister-Ports sind die eine
