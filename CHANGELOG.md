@@ -6,6 +6,30 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
+### Changed
+
+- **Ein Richtungssegment im Port-Glob schaltet `port-locality` nicht mehr ab** (`AC-FA-RULE-010`,
+  Spezifikation 0.32.0, [ADR-0040](docs/plan/adr/0040-portscope-richtungssegment.md); slice-194).
+  Der Port-Scope entsteht aus dem längsten `port`-Glob-Präfix „minus seinem letzten Segment". Endete
+  der Glob auf dem **Richtungssegment** (`…/ports/outbound/**`), war der Port-Ordner-Marker das
+  Richtungssegment selbst: Der Scope fiel auf `…/ports`, lag damit außerhalb des App-Baums — und die
+  Regel **schwieg**: kein Befund, Exit 0, bei einem echten slice-übergreifenden Import. Genau die
+  Konfiguration also, die `direction` an einer Port-Schicht deklariert und damit
+  `port-direction-mismatch` scharf macht, schaltete die **andere** kategorische Regel still. Die
+  Ableitung zieht das Richtungssegment jetzt zusätzlich ab — nur wenn die Schicht ihre `direction`
+  trägt, der Port im App-Baum liegt und der Schnitt den Scope in ihn bringt statt über ihn hinaus.
+  **Verhaltensänderung:** Eine solche Konfiguration kann danach Befunde erzeugen, die sie vorher
+  verschwieg.
+
+### Added
+
+- **Dritter advisory Hinweis: Port-Globs, die den App-Baum nicht erreichen** (`SPEC-CLI-001`,
+  Spezifikation 0.32.0, [ADR-0040](docs/plan/adr/0040-portscope-richtungssegment.md); slice-194).
+  Meldet auf stderr einen `port`-Glob, dessen Verzeichnis **im** App-Baum liegt, dessen abgeleiteter
+  Scope ihn aber **nicht** erreicht — die Konfigurations-Form, in der `port-locality` still bleibt.
+  Geschwister-Ports (klassisches Hexagonal) liegen mit ihrem Verzeichnis außerhalb des App-Baums und
+  werden **nicht** gemeldet; der Exit-Code bleibt unberührt.
+
 ## [0.19.0] - 2026-08-31
 
 ### Added

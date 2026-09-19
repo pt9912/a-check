@@ -1,6 +1,6 @@
 # Benutzerhandbuch: a-check
 
-**Handbuch-Version:** 1.37 · **Software-Version:** [aktuelles Release](../../version.md#aktuell) · **Stand:** 2026-08-30 ·
+**Handbuch-Version:** 1.40 · **Software-Version:** [aktuelles Release](../../version.md#aktuell) · **Stand:** 2026-09-19 ·
 **Autor:** pt9912 (Maintainer)
 
 ---
@@ -398,7 +398,17 @@ exclude: ["**/*_test.go"]
   Ebene höher (dann in `…/order/ports/**` verschieben — „so gemeinsam wie nötig"), oder der Import ist
   falsch und sollte über einen Port der eigenen Slice laufen.
 
-**Zwei Fallstricke:**
+**Drei Fallstricke:**
+
+* **Ein Richtungssegment im Port-Glob ist keine Lokalitäts-Grenze.** Trennen Sie Ihre Ports nach
+  `inbound`/`outbound` — was Abschnitt 4 für `port-direction-mismatch` verlangt —, dann endet das
+  Port-Glob naturgemäß auf dem Richtungssegment (`…/ports/outbound/**`). a-check zieht dieses
+  Segment **zusätzlich** zum Port-Ordner ab, wenn die Schicht ihre `direction` trägt und der Port
+  im Application-Baum liegt: **`port-locality` bleibt damit wirksam**, und eine `direction` an der
+  Port-Schicht kostet Sie die zweite Regel nicht mehr. Trägt die Schicht **keine** Richtung, ändert
+  sich an der Ableitung nichts — dann **meldet** der Lauf den betroffenen Port-Glob als Hinweis
+  (`<glob> -> Scope <verzeichnis>`), statt still zu bleiben. Der Hinweis ist **advisory**: Er lässt
+  den Exit-Code unberührt.
 
 * **Saubere Präfix-Globs sind Pflicht — sonst verlieren Sie mehr als die zwei Regeln.** Ein `*.go`-
   oder `application/**/ports/**`-Glob hat kein literales Verzeichnispräfix; a-check kann das
@@ -735,6 +745,11 @@ ein `driving`-Adapter einen `outbound`-Port (oder umgekehrt, beide Seiten deklar
 `port-direction-mismatch` (kategorisch — `edges`/`allow` heben nicht auf). Tragen die
 Schichten **keine** `direction`, ändert sich nichts — die Dimension ist rein additiv und
 braucht getrennte Adapter-Schichten (`driving`/`driven`) **und** Port-Schichten (`inbound`/`outbound`), um zu greifen.
+**Eine Port-Schicht, die ihre Richtung trägt, verliert dadurch nicht `port-locality`:** Das
+Richtungssegment im Glob (`…/ports/outbound/**`) wird zusätzlich zum Port-Ordner abgezogen, sodass
+der Port-Scope derselbe bleibt wie ohne Richtung. Wo das nicht gelingt — etwa wenn die Schicht
+**keine** `direction` deklariert, das Glob aber auf einem Richtungssegment endet —, nennt der Lauf
+den betroffenen Glob als **Hinweis** (siehe Abschnitt 3.7, dritter Fallstrick).
 
 ## 5. Berechtigungen und Sicherheit
 
@@ -903,3 +918,4 @@ und die [Spezifikation](../../spec/spezifikation.md); ein Überblick steht in de
 | 1.38 | 2026-08-09 | §2 um den **Auflösungs-Hinweis** ergänzt: löst im **ganzen** Scan kein Import-Symbol auf eine Schicht auf, obwohl Symbole extrahiert wurden, nennt a-check je Schicht Datei- und Symbolzahl — die gefährlichste Konfiguration, weil alles grün aussieht und nichts geprüft wird (typisch: `layers`-Globs mit einem Präfix, das in den echten Importpfaden fehlt). Auslösung **repo-weit, nicht je Schicht**: eine einzelne Schicht ohne auflösende Importe ist normal (abhängigkeitsfreier Kern) — daraus folgt ausdrücklich, dass ein **Teil**ausfall still bleibt. Spez 0.29.0, [ADR-0032](../plan/adr/0032-aufloesungs-diagnose-repoweit.md), slice-085. |
 | 1.39 | 2026-08-09 | §4: neuer Absatz **„Verbotene Konstrukte je Schicht (`forbidden_constructs`)"** — der Block gilt nur für Schichten mit der Rolle `port`, und ein Eintrag, der nie melden könnte (unbekannte Schicht, andere Rolle, leeres Muster, leere Musterliste), bricht jetzt mit **Exit-Code 2** statt still zu wirken; bis `v0.16.0` waren alle vier Fälle stumm. Ergänzt um die Abgrenzung zu `constructs` (Blacklist je Schicht ↔ Monopol je Zone — komplementär, nicht austauschbar) und den Glossar-Eintrag. §3.3 zugleich korrigiert: das **erzeugte** `--print-mk`-Fragment trägt einen **Platzhalter** statt eines Digests (neuer Pflicht-Schritt 2 mit beiden Bezugsquellen) und ruft die Runtime über `$(DOCKER)` — inklusive der Reihenfolge-Regel, dass `DOCKER` **vor** dem `include` gesetzt sein muss. Spez 0.30.0, [ADR-0033](../plan/adr/0033-forbidden-constructs-fail-closed.md)/[ADR-0030](../plan/adr/0030-kein-digest-im-generierten-fragment.md), slice-086/083/082/088. |
 | 1.37 | 2026-08-30 | §4 und die Regel-Tabelle an Lastenheft 0.25.0 angeglichen: der Wertebereich von `direction` ist **rollen-abhängig** — `inbound`/`outbound` an `role: port`, `driving`/`driven` an `role: adapter` ([ADR-0036](../plan/adr/0036-port-richtung-inbound-outbound.md)). Ein Port *treibt* nichts, er wird benutzt. `port-direction-mismatch` prüft dadurch eine **Paarung** (`driving`↔`inbound`, `driven`↔`outbound`). **Breaking:** die falsche Vokabel an einer Rolle ist Exit 2 mit nennender Meldung; ebenso eine Richtung an einer Schicht ohne Port-/Adapter-Rolle, die bis 0.24.0 stillschweigend lud. |
+| 1.40 | 2026-09-19 | §3.7 und §4: **ein Richtungssegment im Port-Glob schaltet `port-locality` nicht mehr ab.** Trennt eine Port-Schicht ihre Richtung (`inbound`/`outbound` — was §4 für `port-direction-mismatch` verlangt), endet ihr Glob naturgemäß auf dem Richtungssegment. Die Scope-Ableitung zog es als „Port-Ordner-Marker" ab, der Scope fiel auf `…/ports`, und die Regel **schwieg**: kein Befund, Exit 0, bei einem echten slice-übergreifenden Import. Die Ableitung zieht das Segment jetzt zusätzlich ab, sofern die Schicht ihre `direction` trägt und der Port im Application-Baum liegt; die Restfälle meldet der Lauf als **advisory Hinweis**. Dritter Fallstrick in §3.7. Spez 0.32.0, [ADR-0040](../plan/adr/0040-portscope-richtungssegment.md), slice-194. |
