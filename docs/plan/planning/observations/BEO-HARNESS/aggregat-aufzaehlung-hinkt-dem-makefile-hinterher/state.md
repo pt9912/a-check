@@ -1,7 +1,14 @@
-**Stand:** offen (2×)
+**Stand:** verkörpert in [`AGENTS.md`](../../../../../../AGENTS.md) §4
+(*„Dieselbe Regel gilt für jede abschließende Aufzählung neben einer maschinenlesbaren Quelle"*)
+`seit slice-188`.
 
-Unterhalb der Schwelle. Der konkrete Fall ist behoben; ein Gegenmittel ist nicht offensichtlich —
-`doc-targets` müsste den Prosa-Absatz parsen, oder der Absatz müsste auf einen Zeiger schrumpfen
-(*„welche genau, sagt das `Makefile`"*), wie es die `gates`-Zelle in
-[`harness/README.md`](../../../../../../harness/README.md) seit slice-181 tut. Die zweite Antwort
-ist die billigere und wäre beim dritten Auftreten die naheliegende.
+Drei Ausprägungen, alle drei belegt: die `doc-*`-Aufzählung in `AGENTS.md` §4 gegen das
+`Makefile` (Anlass, behoben) · die `gates`-Zelle in
+[`harness/README.md`](../../../../../../harness/README.md), die auf das `Makefile` zeigt statt
+zu zählen (slice-181) · die `Aktiv:`-Zeile in `.d-check.yml` gegen die `modules:`-Zeile
+derselben Datei (slice-188) — die dritte hat den Ausgang ausgelöst.
+
+**Kein Sensor**, und das ist benannt statt verschwiegen: Ob eine Aufzählung abschließend ist,
+ist ein Urteil über ihren Anspruch ([`AGENTS.md`](../../../../../../AGENTS.md) §3.7). Die
+mechanische Hälfte — „existiert das genannte Target überhaupt?" — deckt `make doc-targets` für
+die zwei Gate-**Tabellen**; für Prosa und YAML-Kommentare gibt es sie nicht.
