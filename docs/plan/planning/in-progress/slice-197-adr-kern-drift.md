@@ -8,11 +8,11 @@ Release-Range, Exit 0". Übernommen von [slice-196](../done/wellenlos/slice-196-
 
 **Berührte Spec-Stellen:** — (Gegenstand sind drei ADRs, kein Spec-Stratum).
 
-**Verantwortlich:** — (bis zur Priorisierung).
+**Verantwortlich:** Claude — gesetzt beim Übergang nach `in-progress/`.
 
 **Autor:** Claude, im Auftrag des Maintainers. **Datum:** 2026-09-19.
 
-**Lerneintrag — Form:** wird bei Closure benannt.
+**Lerneintrag — Form:** benannte Spec-Lücke.
 
 ---
 
@@ -57,22 +57,33 @@ Die Entscheidung steht **vor** der Umsetzung und ist der eigentliche Inhalt dies
 | **B — die Verweise aus dem ADR-Körper herausziehen** (der ADR nennt den Gegenstand, nicht den Pfad) | Der Kern trägt keine Pfade mehr, die wandern können | Drei `Accepted`-ADRs würden erneut geändert — dieselbe Klasse, diesmal **gewollt** und dokumentiert |
 | **C — Folge-ADR mit `Supersedes`** | Der Formalfehler wird nach §3.5 geheilt | Drei ADRs für drei Verweise — unverhältnismäßig, und sie sagen inhaltlich nichts Neues |
 
-**Zu wählen beim Bau**, mit dem Maintainer; die Entscheidung gehört in eine ADR oder in den
-Adaptions-Block, nicht in eine Commit-Message.
+**Gewählt: Weg B** (Maintainer, 2026-09-19) — die Verweise wandern aus dem ADR-Körper heraus.
+Umgesetzt: die drei ADRs zitieren ihre Zeitdokumente jetzt als **Kennung** statt als Adresse, genau
+die Form, die [`AGENTS.md`](../../../../AGENTS.md) §5 seit `slice-176` für einfrierende Artefakte
+verlangt.
+
+**Und eine Messung, die den Plan in einem Punkt widerlegt:** B macht Item 2 **nicht** grün. Der
+Sensor prüft die **Commit-Range**, und der verursachende Nachzug liegt **in** ihr — jede heutige
+Änderung ist selbst wieder eine Kern-Änderung derselben Range. `make doc-immutable
+RANGE=v0.19.0..HEAD` meldet nach B weiterhin Exit 2. B beseitigt die Drift-**Quelle** für die
+Zukunft, nicht die Vergangenheit; für den historischen Befund tritt
+[`MR-024`](../../../../harness/conventions.md#mr-024) daneben.
 
 **Auszuführende Gates:** `make doc-immutable RANGE=v0.19.0..HEAD` (das Item selbst), `make gates`,
 zum Abschluss `make verify`.
 
 ## 4. Definition of Done
 
-- [ ] Die drei Befunde sind entschieden und die Entscheidung ist begründet abgelegt.
-- [ ] `make doc-immutable` über die Release-Range ist **Exit 0** — oder die verbleibende Ausnahme
-      ist deklariert und benannt.
+- [x] Die drei Befunde sind entschieden und die Entscheidung ist begründet abgelegt — Weg **B**,
+      ausgeführt; die historische Hälfte deklariert [`MR-024`](../../../../harness/conventions.md#mr-024).
+- [x] Die verbleibende Ausnahme ist **deklariert und benannt**: drei historische Kern-Drift-Befunde,
+      [`MR-024`](../../../../harness/conventions.md#mr-024) — mit einem Auflösungs-Trigger, der sich
+      mit dem nächsten Release selbst einlöst.
 
-- [ ] Unabhängiger Review durchgeführt (Report unter [`docs/reviews/`](../../../reviews/README.md)).
-- [ ] Closure-Notiz mit Steering-Loop-Lerneintrag.
-- [ ] Beobachtungs-Register fortgeschrieben.
-- [ ] Jedes Risiko aus §7 trägt einen Ausgang.
+- [x] Unabhängiger Review durchgeführt (Report unter [`docs/reviews/`](../../../reviews/README.md)).
+- [x] Closure-Notiz mit Steering-Loop-Lerneintrag.
+- [x] Beobachtungs-Register fortgeschrieben.
+- [x] Jedes Risiko aus §7 trägt einen Ausgang.
 
 `make gates` und `make verify` grün.
 
@@ -95,17 +106,59 @@ DoD vollständig, `make gates` und `make verify` grün, Closure-Notiz mit Lernei
 ## 7. Risiken und offene Punkte
 
 - **Die Ausnahme wird zu breit.** Ein deklarierter Freibrief für „Pfad-Nachzüge" macht den Sensor
-  stumpf für echte Kern-Änderungen. — **Ausgang:** <offen bis Closure>
+  stumpf für echte Kern-Änderungen. — **Ausgang:** *entfallen*, gestrichen mit Begründung: Die
+  Deklaration nennt **drei benannte Befunde** und einen Grund, sie ist kein Freibrief; die drei
+  ADRs bleiben über `exempt-paths` **im** Geltungsbereich des Sensors, statt ausgenommen zu werden
+  — der Weg, der sie dauerhaft blind gestellt hätte.
 - **Weg B erzeugt denselben Befund erneut.** Drei `Accepted`-ADRs zu ändern, um einen
-  Immutabilitäts-Befund zu beheben, ist eine Änderung an `Accepted`-ADRs. — **Ausgang:** <offen bis
-  Closure>
-- **Der Befund ist älter als die Range.** Er entstand in `slice-139` und wäre bei jedem Release
+  Immutabilitäts-Befund zu beheben, ist eine Änderung an `Accepted`-ADRs. — **Ausgang:**
+  *entfallen*, gestrichen mit Begründung: Der Befund nach der Änderung ist **derselbe** historische
+  — kein neuer. Die Änderung ist einmalig geschehen, berührt keine Entscheidung und entfernt die
+  Adresse, die ihn erzeugen konnte. Die Messung danach (`Exit 2`, historische Hälfte) steht in §3
+  und in der Closure.
+- **Der Befund ist älter als die Range.** Er entstand im Archiv-Sweep und wäre bei jedem Release
   seitdem aufgetreten; ob es weitere gibt, sagt nur eine Messung über mehr als die Release-Range. —
-  **Ausgang:** <offen bis Closure>
+  **Ausgang:** *weiter offen* → **Beobachtungs-Register**:
+  [`BEO-HARNESS/altbestand-braucht-nachzug`](../observations/BEO-HARNESS/altbestand-braucht-nachzug/observation.md)
+  — die Klasse dahinter ist „eine neue Regel gilt für den Bestand, den sie beim Entstehen sieht";
+  ob es **weitere** Befunde gibt, sagt nur eine Messung über mehr als die Release-Range, und die
+  ist ein eigener Vorgang.
 
 ## 8. Closure-Notiz
 
-*(bei Closure auszufüllen)*
+**Lerneintrag — Form: benannte Spec-Lücke.** *Die Hausregel gegen genau diese Klasse existierte
+längst — sie galt nur für Artefakte, die nach ihr entstanden sind.* Seit `slice-176` zitieren
+einfrierende Artefakte **Kennung statt Adresse**, und genau deshalb altert kein Pfad in einem
+`Accepted` ADR mehr. Die drei betroffenen ADRs stammen von **davor**; ihre Adressen hat der
+Archiv-Sweep nachgezogen, und der Immutabilitäts-Sensor meldet das seither bei **jedem** Release.
+**Weil** eine Regel nur für den Bestand gilt, den sie beim Entstehen sieht, braucht jede neue
+Zitier-Regel einen **Nachzug des Altbestands** — hier nachgeholt.
+
+**Und eine Lehre über die eigene Planung.** §3 dieses Plans bot drei Wege an und stellte B als den
+dar, der den Sensor scharf lässt. Die Messung nach der Umsetzung zeigte: B lässt ihn für die
+**Zukunft** scharf, aber Item 2 wird davon nicht grün — der Sensor prüft die **Commit-Range**, und
+die Vergangenheit bleibt in ihr. Der Plan hatte den Sensor für ein Zustands-Werkzeug gehalten; er
+ist ein **Verlaufs**-Werkzeug. Der Fehler ist mit einer Messung gefunden worden, nicht mit einem
+Argument.
+
+**Steering-Loop-Eintrag:** gezählt, nicht verkörpert. Zu dieser Klasse führt das Register **keinen**
+Eintrag (siehe §9); ob sie einen braucht, entscheidet das nächste Auftreten — der
+[`MR-024`](../../../../harness/conventions.md#mr-024)-Trigger löst sich mit dem nächsten Release
+selbst ein.
+
+**Beobachtungs-Register ([`../observations/`](../observations/README.md)):** ein Verzeichnis
+**neu angelegt** — [`BEO-HARNESS/altbestand-braucht-nachzug`](../observations/BEO-HARNESS/altbestand-braucht-nachzug/observation.md),
+Beleg `evidence/slice-197.md`, Zähler **1×**. Der Vorgang selbst ist ein Nachzug; die **Klasse**
+dahinter ist neu und wird mit ihm benannt. `BEO-HARNESS/chronik-in-gelesenen-dateien`
+bleibt bei 3× mit Ausgang *geplant*; [`MR-024`](../../../../harness/conventions.md#mr-024) ist **kein** Beleg dafür (der Eintrag ist ein
+Adaptions-Eintrag, kein Chronik-Fall).
+
+**Folge-Slices:** keine.
+
+**Risiken aus §7:** alle drei *entfallen* oder sind entschieden — siehe dort.
+
+**Drei Paarungen:** Anker — kein `liegt in`-Feld gesetzt, weil nichts verkörpert wurde · Folge-Slice
+— keiner genannt · Register — keine Beobachtung genannt, keine zu decken.
 
 ## 9. Sub-Area-Prüfungen und Modus-Begründung
 

@@ -160,8 +160,8 @@ Eintrag alt genug.
 
 Die Spalte *Ersetzt-Baseline-Regel* ist das Pflichtfeld des neuen Stands. Sie kann in einen
 akzeptierten Eintrag **nicht nachgetragen** werden (Einträge werden nie überschrieben); sie
-entsteht in den Nachfolge-Einträgen. Gemessen tragen heute **fünf** der sieben aktiven Zeilen
-einen Zeiger, zwei ein `—` mit Begründung in der Zelle.
+entsteht in den Nachfolge-Einträgen. Gemessen tragen heute **fünf** der **neun** aktiven Zeilen
+einen Zeiger, **vier** ein `—` mit Begründung in der Zelle.
 
 | MR | Titel | Geltungsbereich | Ersetzt-Baseline-Regel |
 |---|---|---|---|
@@ -173,6 +173,7 @@ einen Zeiger, zwei ein `—` mit Begründung in der Zelle.
 | [MR-020](conventions/MR-020-adr-vorlage-generisch.md) <a id="mr-020"></a> | ADR-Vorlagen-Referenz zeigt generisch auf den vendorten Stand | [`MR-000`](#mr-000) §ID-Schema, Zeile zu `ADR-NNNN` | — *(korrigiert eine Repo-Aussage, kein Baseline-Regel-Ersatz; permanent, kein Rückbau-Kandidat)* |
 | [MR-022](conventions/MR-022-verfeinerungs-form.md) <a id="mr-022"></a> | Verfeinerungen tragen `SPEC-*` statt der Suffix-Form (Begründung gemessen, mit Zählregel) | [`spec/spezifikation.md`](../spec/spezifikation.md) | [`grundlagen-source-precedence.md` §ID-Schema als Klammer](../.harness/baseline/v6.6.0/regelwerk/grundlagen-source-precedence.md#id-schema-als-klammer) |
 | [MR-023](conventions/MR-023-id-schema-beobachtungs-kennung.md) <a id="mr-023"></a> | ID-Schema-Deklaration um die Beobachtungs-Kennung ergänzt (Pfad-Form, Kürzel generisch) | [`MR-000`](#mr-000) §ID-Schema, [`observations/`](../docs/plan/planning/observations/README.md) | — *(korrigiert eine Repo-Aussage, kein Baseline-Regel-Ersatz — wie [MR-020](#mr-020); Rückbau mit der Überarbeitung der Deklaration)* |
+| [MR-024](conventions/MR-024-historische-kern-drift-deklariert.md) <a id="mr-024"></a> | Historische Kern-Drift-Befunde aus dem Archiv-Sweep sind deklariert | `make doc-immutable`, Item 2 der [Freigabe-Checkliste](../docs/user/releasing.md); [`ADR-0017`](../docs/plan/adr/0017-relative-resolution-modus.md), [`ADR-0018`](../docs/plan/adr/0018-exclude-scan-scope.md), [`ADR-0038`](../docs/plan/adr/0038-dependabot-als-hebungskanal.md) | — *(deklariert eine Ausnahme im eigenen Bestand, kein Baseline-Regel-Ersatz; selbst-auflösend mit dem nächsten Release)* |
 
 ### Aufgelöste Adaptionen
 
