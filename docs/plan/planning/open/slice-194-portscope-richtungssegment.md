@@ -137,7 +137,7 @@ liegt er außerhalb.
 ## 5. Trigger
 
 **Start** (`open` → `in-progress`): das WIP-Limit ist frei. Keine Abhängigkeit von
-[slice-188](../in-progress/slice-188-voll-abgleich-gate-und-skill.md)/[slice-189](../open/slice-189-voll-abgleich-spec-straten.md)/[slice-190](../open/slice-190-id-schema-deklaration-ueberarbeiten.md)/[slice-191](../open/slice-191-chronik-phrasen-sensor.md) —
+[slice-188](../done/slice-188-voll-abgleich-gate-und-skill.md)/[slice-189](../open/slice-189-voll-abgleich-spec-straten.md)/[slice-190](../open/slice-190-id-schema-deklaration-ueberarbeiten.md)/[slice-191](../open/slice-191-chronik-phrasen-sensor.md) —
 der Slice berührt keine ihrer Dateien.
 
 **Rückführungen — vorab benannt:**
