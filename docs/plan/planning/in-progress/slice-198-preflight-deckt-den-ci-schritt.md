@@ -36,8 +36,8 @@ in der gepushten Range lagen.
 - **Den Sensor ändern** (`vcs`-Modul, `exempt-paths`). *Es wäre ein anderer Vorgang:* Gegenstand von
   [slice-197](../done/wellenlos/slice-197-adr-kern-drift.md) und [`MR-024`](../../../../harness/conventions.md#mr-024).
 - **Die Range-Bestimmung neu erfinden.** *Bestand bleibt bewusst stehen:* `tools/ci-commit-range.sh`
-  löst die Range in der CI auf (inkl. Force-Push-Fall); lokal ist sie `origin/main..HEAD`, und das
-  ist genau das, was der nächste Push prüfen wird.
+  löst die Range in der CI auf (inkl. Force-Push-Fall); lokal ist sie `origin/main..HEAD` — gleich
+  oder größer als das, was der nächste Push enthält.
 
 ## 2. Ausgangsmessung
 
@@ -69,8 +69,9 @@ zum Abschluss `make verify`.
 ## 4. Definition of Done
 
 - [x] `make preflight` existiert, fährt `ci` **und** die drei Range-Schritte, und steht im
-      Gate-Index mit seiner Grenze. Die Probe: gegen die Range, die die CI rot machte, **rot**
-      (drei `core-drift-vcs`-Meldungen); gegen die aktuelle Range grün.
+      Gate-Index mit seiner Grenze. Die Proben: `PREFLIGHT_RANGE=89fc7dc..ed7a3d8` → **Exit 2**
+      mit drei `core-drift-vcs`-Meldungen; `PREFLIGHT_RANGE=ed7a3d8..06c7876` → **Exit 0** über
+      vier Commits. Eine **leere** Range meldet der Lauf als WARNUNG, weil sie nichts prüft.
 - [x] [`releasing.md`](../../../../docs/user/releasing.md) nennt es an der Stelle, an der bisher
       `make ci` stand — im Beleg-Slot von Item 5.
 
@@ -132,6 +133,13 @@ Rezept überspringen und Exit 0 melden"), `guard-selftest` den Eintrag in der GA
 Command-Guard. Drei Fehlschläge, drei benannte Ursachen, kein Rätselraten — der Bestand hat den
 Beitragenden geführt.
 
+**Ein Befund des Reviews, der eine Zusage dieses Slice widerlegt hat.** Die DoD nannte für die
+**grüne** Probe nur „die aktuelle Range" — und die war am Tag des Reviews **leer** (`origin/main`
+== `HEAD`, nachdem der Maintainer gepusht hatte): Der Lauf meldete grün über **null** Commits.
+Genau die Klasse der ersten Mess-Regel ([`AGENTS.md`](../../../../AGENTS.md) §5): ein Beleg, der
+seinen Geltungsbereich nicht nennt, deckt seinen Gegenstand nicht. Das Rezept **zählt** jetzt die
+Commits und meldet eine leere Range als WARNUNG; die Checkliste nennt den Fall.
+
 **Steering-Loop-Eintrag:** gezählt, nicht verkörpert.
 [`BEO-GATE/preflight-deckt-den-ci-schritt-nicht`](../observations/BEO-GATE/preflight-deckt-den-ci-schritt-nicht/observation.md)
 ist **neu angelegt** (1×); die Schwelle ist nicht erreicht, ein Ausgang nicht fällig.
@@ -149,9 +157,9 @@ angelegt** — `BEO-GATE/preflight-deckt-den-ci-schritt-nicht/`, Beleg `evidence
 
 ## 9. Sub-Area-Prüfungen und Modus-Begründung
 
-**Vorgelagert — Sub-Area-Wahl prüfen:** berührt sind `GATE` (Makefile, Workflow, Gate-Index) und
-`HARNESS` (`releasing.md` liegt unter `docs/user/` — das ist die Sub-Area `USER`, seit slice-195
-deklariert).
+**Vorgelagert — Sub-Area-Wahl prüfen:** berührt sind `GATE` (Makefile, Workflow, Gate-Index,
+Command-Guard) und `USER` ([`docs/user/releasing.md`](../../../../docs/user/releasing.md),
+seit slice-195 deklariert).
 
 **Vorgelagert — offene Beobachtungen sichten:** Register über `GATE`, `HARNESS`, `USER` gelesen —
 [`BEO-GATE/ungelaufene-mechanik-docker-hub-spiegel`](../observations/BEO-GATE/ungelaufene-mechanik-docker-hub-spiegel/observation.md)

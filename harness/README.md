@@ -52,8 +52,9 @@ das mechanisch — **diese** Tabelle ist die Autoritäts-Doku, und es gibt nur s
 Dockerfile-Stages (Muster d-check/u-boot, digest-gepinnte Bases); die Meta-/
 Harness-Gates laufen als Host-Bash. Die Durchsetzungsschicht deckt Tool-Call-,
 Handoff- und Meta-Gate ab; die PR-/Push-CI
-([`.github/workflows/ci.yml`](../.github/workflows/ci.yml)) zieht `make ci` +
-`make trace-check` auf jede Integration und schließt die
+([`.github/workflows/ci.yml`](../.github/workflows/ci.yml)) zieht auf jede Integration
+`make ci` **plus drei Schritte über die Commit-Range** (`make trace-check`,
+`make commit-scope-check`, `make doc-immutable`) und schließt die
 Stop-Hook-„frischer-Klon"-Restlücke.
 
 <!--
@@ -89,7 +90,7 @@ Lauf-Wahrheit pro Commit liegt in der CI, nicht in diesem Rang-9-Dokument.
 | `make gates` | aggregiert die inneren Gates und schließt mit `record-gates`. **Welche genau, sagt das [`Makefile`](../Makefile)** — eine Liste hier wäre eine zweite Quelle | — (Aggregat) |
 | `make image-test` | Distributions-Akzeptanz (`--print-mk`/`--print-config`/`--print-graph`/unbekanntes Flag) + Fragment-Parität (committete [`a-check.mk`](../a-check.mk) == `--print-mk`-Output) + nativ==Container-Determinismus eines Scans gegen das gebaute Image | [`AC-FA-DIST-001`](../spec/lastenheft.md#ac-fa-dist-001--distribution-image---print-mk-a-checkmk)/[`AC-QA-02`](../spec/lastenheft.md#ac-qa-02--hermetik-und-ehrliche-heuristik-grenze); slice-006, Fragment-Parität slice-034 |
 | `make ci` | CI-äquivalent: `gates` + `image-test` (Engine des Workflows `.github/workflows/ci.yml`) | — (Aggregat) |
-| [`make preflight`](../Makefile) | **Lokaler Pre-Flight**: `ci` **plus** die drei Range-Schritte des `ci`-Workflows (`trace-check`, `commit-scope-check`, `doc-immutable`) über `origin/main..HEAD`. **Grenze:** nur der lokale `git`-Stand, kein Ersatz für `ci` | [`AC-QA-02`](../spec/lastenheft.md#ac-qa-02--hermetik-und-ehrliche-heuristik-grenze); slice-198 |
+| [`make preflight`](../Makefile) | **Lokaler Pre-Flight**: `ci` **plus** die drei Range-Schritte des `ci`-Workflows über `origin/main..HEAD`. **Grenze:** nur der lokale `git`-Stand; eine **leere** Range wird als WARNUNG gemeldet, weil sie nichts prüft | [`AC-QA-02`](../spec/lastenheft.md#ac-qa-02--hermetik-und-ehrliche-heuristik-grenze); slice-198 |
 | `make trace-check` | Traceability via Modul `commits`: jede Commit-Message nennt `AC-*`/`ADR-*`/`MR-*`/`slice-NNN` (`MSGFILE=` Hook, `RANGE=` CI) | [`ADR-0021`](../docs/plan/adr/0021-commits-modul-trace-check.md); Harness-Prozess ([`AGENTS.md` §5](../AGENTS.md#5-dokumentations-regeln)); slice-006, Modul seit slice-030 |
 | [`make verify-observations`](../harness/sensors/verify-observations.md) | Deckung des Beobachtungs-Registers: jeder in `done/` zitierte Pfad hat ein Verzeichnis, jedes Verzeichnis ein nicht leeres `evidence/`. Der Zähler wird abgeleitet, nicht geführt | Harness-Prozess (Regelwerk `modul-06` §Das Beobachtungs-Register); slice-102, Verzeichnisform slice-139 |
 | [`make doc-mentions`](../harness/sensors/doc-mentions.md) | Jede Datei unter `harness/sensors/` ist **hier** genannt — die **Gegenrichtung** des Link-Checks | `DC-FA-MENT-001`; slice-184 (Modul seit `d-check v0.75.0`); im `gates`-Aggregat |
@@ -117,8 +118,8 @@ der Zeile selbst.
 | `make doc-trace` · `make doc-doctor` · `make doc-usage` · `make doc-help` | **sagen** — Traceability-Matrix, Diagnose mit Fix-Kandidaten, Aufruf-Hilfe, Target-Liste | `kein Gate`; advisory, verfügbar aber nicht als Gate behauptet |
 
 **Nicht hier, obwohl sie in keinem Aggregat hängen:** `make doc-tracked`,
-`make doc-commits`, `make commit-scope-check`, `make archive-wave-test` und
-`make image-scan` stehen in der Tabelle **oben** — sie **urteilen** über einen
+`make doc-commits`, `make commit-scope-check`, `make archive-wave-test`,
+`make preflight` und `make image-scan` stehen in der Tabelle **oben** — sie **urteilen** über einen
 Zustand (Getrackt-Status, Commit-Traceability, Commit-Scope, Testlage, CVE-Lage)
 und sind damit Gates, nur nicht aggregierte. Das Kriterium ist **urteilen** gegen
 *bewegen · messen · sagen*, nicht die Aggregat-Zugehörigkeit.
