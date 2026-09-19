@@ -12,7 +12,7 @@ bei **3×**. [`AC-QA-02`](../../../../spec/lastenheft.md#ac-qa-02--hermetik-und-
 
 **Autor:** Claude, im Auftrag des Maintainers. **Datum:** 2026-09-19.
 
-**Lerneintrag — Form:** wird bei Closure benannt.
+**Lerneintrag — Form:** geschärfte Regel.
 
 ---
 
@@ -34,7 +34,7 @@ führt der CHANGELOG den Abschnitt *„Harness (nicht anwender-sichtbar)"*.
 - **Der Schnitt des Abschnitts unter eine Versionsnummer.** *Schicht-Abgrenzung:* `releasing.md`
   bindet den Schnitt an den **Re-Pin nach dem Publish** — ein Schnitt davor macht den Pin-Check in
   der Pipeline rot. Dieser Slice **füllt**, er schneidet nicht.
-- **Die drei `doc-immutable`-Befunde über die Release-Range** (ADR-0017, ADR-0018, ADR-0038).
+- **Die drei `doc-immutable`-Befunde über die Release-Range** ([`ADR-0017`](../../adr/0017-relative-resolution-modus.md), [`ADR-0018`](../../adr/0018-exclude-scan-scope.md), [`ADR-0038`](../../adr/0038-dependabot-als-hebungskanal.md)).
   *Es ist ein anderer Vorgang:* dort geht es um den Kern `Accepted`er ADRs, hier um den CHANGELOG.
   Eigener Folge-Slice, siehe §7.
 - **Ein Eintrag je Slice.** *Es wäre ein anderes Erzeugnis:* Der CHANGELOG ist die **kuratierte
@@ -71,15 +71,16 @@ beschreibt.
 
 ## 4. Definition of Done
 
-- [ ] Der `[Unreleased]`-Abschnitt nennt jede der **58** Slices — die sichtbaren einzeln, die
-      übrigen in benannten Gruppen, deren Zustand im Repo prüfbar ist.
-- [ ] Die Klasse aus `BEO-PLAN/changelog-unreleased-ungepflegt` hat ihren **Ausgang** (Guide oder
-      Sensor) — bei 3× ist das Pflicht, nicht Kür.
+- [x] Der `[Unreleased]`-Abschnitt nennt jede der **58** Slices — die sichtbaren einzeln, die
+      übrigen in benannten Gruppen, deren Zustand im Repo prüfbar ist. Nachgezählt: 58 von 58.
+- [x] Die Klasse aus `BEO-PLAN/changelog-unreleased-ungepflegt` hat ihren **Ausgang** — ein
+      **Guide** in `AGENTS.md` §6 Schritt 7; die Begründung, warum kein Sensor trägt, steht im
+      Beleg.
 
-- [ ] Unabhängiger Review durchgeführt (Report unter [`docs/reviews/`](../../../reviews/README.md)).
-- [ ] Closure-Notiz mit Steering-Loop-Lerneintrag.
-- [ ] Beobachtungs-Register fortgeschrieben.
-- [ ] Jedes Risiko aus §7 trägt einen Ausgang.
+- [x] Unabhängiger Review durchgeführt (Report unter [`docs/reviews/`](../../../reviews/README.md)).
+- [x] Closure-Notiz mit Steering-Loop-Lerneintrag.
+- [x] Beobachtungs-Register fortgeschrieben.
+- [x] Jedes Risiko aus §7 trägt einen Ausgang.
 
 `make gates` und `make verify` grün.
 
@@ -102,17 +103,59 @@ DoD vollständig, `make gates` und `make verify` grün, Closure-Notiz mit Lernei
 ## 7. Risiken und offene Punkte
 
 - **Der Block behauptet einen Zustand, den er nicht geprüft hat.** Genau die Klasse, die dieser
-  Slice im CHANGELOG *nicht* wiederholen darf; dagegen steht §3. — **Ausgang:** <offen bis Closure>
+  Slice im CHANGELOG *nicht* wiederholen darf; dagegen steht §3. — **Ausgang:** *entfallen*,
+  gestrichen mit Begründung: Jede Gruppe nennt einen Zustand, der heute im Repo nachsehbar ist (der
+  vendored Stand, das Register-Verzeichnis, `tools/archive-wave/`, der Gate-Index) — und die
+  Slice-Kennungen daneben erlauben die Gegenprobe. **Keine** Aussage stammt aus einer ungelesenen
+  Closure-Notiz.
 - **Der Ausgang wird zur Attrappe.** Ein Guide, der nur sagt „besser aufpassen", ist keiner; ein
-  Sensor, der den Gegenstand nicht erreicht, meldet grün. — **Ausgang:** <offen bis Closure>
+  Sensor, der den Gegenstand nicht erreicht, meldet grün. — **Ausgang:** *entfallen*, gestrichen mit
+  Begründung: Der Guide benennt den **Zeitpunkt** („gehört hierher, nicht in die
+  Release-Vorbereitung"), nicht die Sorgfalt — und er nennt seine Grenze selbst („kein Gate deckt
+  das"). Warum kein Sensor trägt, steht im Beleg: Er bräuchte das Urteil „eintragspflichtig" als
+  Eingabe.
 - **Die drei ADR-Kern-Drifts bleiben liegen.** Sie sind Item 2 der Release-Checkliste und
   **vorbestehend** (gemessen `v0.19.0..89fc7dc`, Exit 2). Dieser Slice schließt sie ausdrücklich
   aus — sie sind ein eigener Vorgang mit eigener Entscheidung (Folge-ADR oder gewollter
-  Pfad-Nachzug). — **Ausgang:** <offen bis Closure>
+  Pfad-Nachzug). — **Ausgang:** *weiter offen* → als Folge-Slice weitergegeben:
+  [slice-197](../open/slice-197-adr-kern-drift.md).
 
 ## 8. Closure-Notiz
 
-*(bei Closure auszufüllen)*
+**Lerneintrag — Form: geschärfte Regel.** *Eine Änderung, die man erst zur Freigabe aufschreibt,
+ist eine Rekonstruktion — kein Beleg.* Der `[Unreleased]`-Abschnitt war bei **jedem** der drei
+Vorfälle leer, und aufgefallen ist das jedes Mal an derselben Stelle: der Release-Vorbereitung.
+**Weil** der Eintrag dort aus `git` rekonstruiert werden muss — 265 Commits, 58 Slices —, kostet er
+ein Vielfaches dessen, was er im Slice gekostet hätte, und er bezeugt nichts mehr. Die Regel steht
+jetzt in [`AGENTS.md`](../../../../AGENTS.md) §6 Schritt 7 und nennt ihre Grenze mit.
+
+**Der zweite Lerneintrag kommt aus einem eigenen Fehler während dieses Slice.** Die erste Fassung
+des Harness-Blocks schrieb Bereiche („slice-135 … slice-140"); nachgezählt fehlten darin **18** der
+58 Slices, weil ein Auslassungszeichen sie verdeckt. Das ist die Klasse
+[`BEO-PLAN/kandidaten-klassifikation-groeber-als-der-kandidat`](../observations/BEO-PLAN/kandidaten-klassifikation-groeber-als-der-kandidat/observation.md)
+— **verkörpert**, also kein Zähler, sondern eine Regel, die an *dieser* Stelle nicht angewandt
+wurde. Der Block zählt seither jede Kennung einzeln auf.
+
+**Steering-Loop-Eintrag:** geschärfte Regel ergänzt — die CHANGELOG-Zeile entsteht im Slice, der den
+Vertrag berührt, nicht bei der Release-Vorbereitung; sie liegt in
+[`AGENTS.md`](../../../../AGENTS.md) §6 Schritt 7, `seit slice-196`. Auslöser:
+[`BEO-PLAN/changelog-unreleased-ungepflegt`](../observations/BEO-PLAN/changelog-unreleased-ungepflegt/observation.md)
+(slice-127, slice-133, slice-196 — **3×**).
+
+**Beobachtungs-Register ([`../observations/`](../observations/README.md)):**
+[`BEO-PLAN/changelog-unreleased-ungepflegt`](../observations/BEO-PLAN/changelog-unreleased-ungepflegt/observation.md)
+— `evidence/slice-196.md` ergänzt, Zähler **3×**, Ausgang *verkörpert* (die Regel oben); `state.md`
+auf den Ausgang gezogen. `BEO-PLAN/kandidaten-klassifikation-groeber-als-der-kandidat` bleibt bei
+3× — verkörpert, der eigene Fall bewegt den Zähler nicht.
+
+**Folge-Slices:** [slice-197](../open/slice-197-adr-kern-drift.md) (drei `Accepted`-ADRs mit geändertem
+Kern) — liegt in `open/`.
+
+**Risiken aus §7:** alle drei *entfallen* oder sind weitergegeben — siehe dort.
+
+**Drei Paarungen:** Anker getragen (der Zielort [`AGENTS.md`](../../../../AGENTS.md) §6 Schritt 7
+existiert und trägt `seit slice-196`) · Folge-Slice getragen (slice-197 existiert in `open/`) ·
+Register getragen (beide genannten Pfade existieren und tragen Belege).
 
 ## 9. Sub-Area-Prüfungen und Modus-Begründung
 
