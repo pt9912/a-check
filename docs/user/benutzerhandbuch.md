@@ -126,6 +126,21 @@ abhängigkeitsfreier Domänenkern importiert nur die Standardbibliothek. Das bed
 nur **ein Teil** Ihrer Schichten falsch konfiguriert, sagt a-check nichts. Prüfen Sie Ihre Globs
 nach jeder Umstrukturierung, statt sich auf diesen Hinweis zu verlassen.
 
+**Und ein Port-Scope-Hinweis.** Liegt ein Port-Glob **innerhalb** Ihrer Application-Schicht, sein
+daraus abgeleiteter Scope erreicht sie aber nicht, nennt a-check Glob und Scope:
+
+```text
+Hinweis: 1 Port-Glob(s) erreichen den App-Baum nicht — port-locality bleibt dafür ungeprueft:
+  internal/hexagon/application/order/createorder/ports/outbound/** -> Scope internal/hexagon/application/order/createorder/ports
+  Abhilfe: Port-Glob auf den Port-Ordner schneiden (…/ports/**) oder der Schicht ihre direction geben.
+```
+
+Auch das ist **kein Befund** — der Exit-Code bleibt unberührt. Der Hinweis trennt „geprüft" von
+„nicht geprüft": Für diesen Port kann `port-locality` gar nicht greifen, und kein Import darauf wird
+beurteilt. **Geschwister-Ports bleiben ungemeldet** (klassisches Hexagonal, `hexagon/ports/**` neben
+`hexagon/services/**`) — dort ist die Inertheit zugesagt, kein Defekt. Ab zehn Globs wird gekürzt
+und die Restzahl genannt; ein Baum ohne solche Globs erzeugt keine Ausgabe.
+
 ## 3. Aufgaben
 
 ### 3.1 a-check lokal ausführen

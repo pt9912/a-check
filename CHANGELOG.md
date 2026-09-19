@@ -23,7 +23,7 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
 ### Added
 
-- **Dritter advisory Hinweis: Port-Globs, die den App-Baum nicht erreichen** (`SPEC-CLI-001`,
+- **Weiterer advisory Hinweis: Port-Globs, die den App-Baum nicht erreichen** (`SPEC-CLI-001`,
   Spezifikation 0.32.0, [ADR-0040](docs/plan/adr/0040-portscope-richtungssegment.md); slice-194).
   Meldet auf stderr einen `port`-Glob, dessen Verzeichnis **im** App-Baum liegt, dessen abgeleiteter
   Scope ihn aber **nicht** erreicht — die Konfigurations-Form, in der `port-locality` still bleibt.
