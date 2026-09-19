@@ -20,7 +20,7 @@ bleibt unverändert — der Slice macht sie wieder erreichbar.
 
 **Autor:** Claude, im Auftrag des Maintainers. **Datum:** 2026-09-19.
 
-**Lerneintrag — Form:** wird bei Closure benannt (eine der drei Formen der Ziel-Form).
+**Lerneintrag — Form:** benannte Spec-Lücke.
 
 ---
 
