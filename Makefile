@@ -48,7 +48,7 @@ NO_CACHE_FILTER_COV  := --no-cache-filter coverage
 # getan zu haben. `gate-consistency` prueft die Vollstaendigkeit (slice-068,
 # Fund F-1 des unabhaengigen Reviews).
 .PHONY: help compile lint test coverage-gate build arch-check arch-graph \
-        gate-consistency guard-selftest ci-range-selftest record-gates gates image-test ci \
+        gate-consistency guard-selftest ci-range-selftest record-gates gates image-test ci preflight \
         trace-check hooks suppression-check symlink-check dcheck-phrase-selftest regelwerk-check commit-scope-check \
         verify verify-risiko-ausgaenge verify-observations slice-mv image-scan \
         doc-workflows doc-reviews doc-mentions version-coherence archive-wave-test archive-wave
@@ -211,6 +211,22 @@ image-test: build ## AC-FA-DIST-001 + nativ==Container-Akzeptanz gegen das gebau
 
 ci: gates image-test ## CI-äquivalenter Lauf: gates + image-test (AC-FA-DIST-001).
 	@echo "[ci] gates + image-test grün"
+
+# `make ci` ist NICHT die ganze CI: der Workflow .github/workflows/ci.yml faehrt
+# darueber hinaus drei Schritte ueber die COMMIT-RANGE (Schritt "Traceability +
+# ADR-Immutabilitaet"). Lokal ist das genau die Range, die der naechste Push
+# pruefen wird -- deshalb ein eigenes Target und KEINE Erweiterung von `ci`:
+# `ci` laeuft auch in der Release-Pipeline auf einem Tag, und dort waere "die
+# Push-Range" die Release-Range (slice-198).
+PREFLIGHT_RANGE ?= $(shell git merge-base origin/main HEAD 2>/dev/null)..HEAD
+
+preflight: ci ## Lokaler Pre-Flight: ci PLUS die drei Range-Schritte des ci-Workflows (AGENTS §6 Schritt 6; AC-QA-02).
+	@case "$(PREFLIGHT_RANGE)" in ..HEAD) echo "make preflight: origin/main nicht aufloesbar — erst git fetch origin fahren." >&2; exit 2;; esac
+	@echo "[preflight] Range: $(PREFLIGHT_RANGE)"
+	@$(MAKE) --no-print-directory trace-check RANGE=$(PREFLIGHT_RANGE)
+	@$(MAKE) --no-print-directory commit-scope-check RANGE=$(PREFLIGHT_RANGE)
+	@$(MAKE) --no-print-directory doc-immutable RANGE=$(PREFLIGHT_RANGE)
+	@echo "[preflight] ci + Range-Schritte gruen"
 
 # FOCUS_COMMITS wählt alle übrigen .d-check.yml-Module ab, sodass nur `commits`
 # läuft (sonst feuern die Datei-Module auf den Arbeitsbaum). ADR-0021.
