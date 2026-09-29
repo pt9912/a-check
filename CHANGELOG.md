@@ -4,6 +4,20 @@ Alle nennenswerten Änderungen an diesem Projekt werden in dieser Datei
 dokumentiert. Das Format folgt [Keep a Changelog](https://keepachangelog.com/de/1.1.0/),
 die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
+## [Unreleased]
+
+### Changed
+
+- **Die vendored Baseline steht auf `v6.13.0`** (Kurs-Welle 153 · 2026-09-28; slice-199). Delta
+  über 24 Wellen (`v6.6.0` → `v6.13.0`, 42 Dateien, +691/−325), Vendoring netzlos aus dem Tag mit
+  byte-gleicher Gegenprobe auf dem Vorgänger-Stand. Drei aktive Adaptionen trugen ihren
+  `Ersetzt-Baseline-Regel`-Zeiger in Abschnitte, die im Sprung **nicht wortgleich** blieben —
+  die Nachfolge-Einträge
+  [MR-025](harness/conventions/MR-025-referenzmatrix-grandfathering-v6130.md),
+  [MR-026](harness/conventions/MR-026-welle-closure-ohne-replay-v6130.md) und
+  [MR-027](harness/conventions/MR-027-verfeinerungs-form-v6130.md) tragen die gemessene Abweichung;
+  die Adaptionen sind inhaltlich unverändert.
+
 ## [0.20.0] - 2026-09-19
 
 ### Changed — BREAKING
