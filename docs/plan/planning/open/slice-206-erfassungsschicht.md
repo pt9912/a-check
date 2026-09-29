@@ -95,7 +95,7 @@ Lerneintrag.
 
 **Vorgelagert — Sub-Area-Wahl prüfen:** GATE (Achsen 1, 2, 3 ✓) und
 HARNESS (Achsen 1, 2, 3 ✓) — die Änderungen unter `harness/` (Feldliste,
-MR-014-Eintrag) liegen in der HARNESS-Pfad-Familie.
+[`MR-014`](../../../../harness/conventions.md#mr-014)-Eintrag) liegen in der HARNESS-Pfad-Familie.
 
 **Vorgelagert — offene Beobachtungen sichten:** das Register wurde durchgegangen
 (2026-09-29): keine Treffer in GATE für diesen Vorgang.
