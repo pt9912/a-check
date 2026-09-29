@@ -44,7 +44,7 @@ mit Kennung), nicht als Urteil über die Bedingung selbst.
       `MR`-Einträgen bleibt.
 - [x] **Gegenprobe in beiden Richtungen** im Selbsttest (mit Zeile grün,
       ohne rot; leere Aktiven-Menge grün gemeldet, nicht stumm).
-- [x] Unabhängiger Review, Report unter [`docs/reviews/`](../../../../docs/reviews/README.md).
+- [ ] Unabhängiger Review, Report unter [`docs/reviews/`](../../../../docs/reviews/README.md).
 - [x] Closure-Notiz mit Steering-Loop-Lerneintrag; Register fortgeschritten;
       jedes Risiko aus §6 trägt einen Ausgang.
 
