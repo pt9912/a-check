@@ -187,7 +187,45 @@ Lerneintrag.
 
 ## 8. Closure-Notiz
 
-*(bei Closure auszufüllen)*
+**Lerneintrag — Form: geschärfte Regel.** *Der Status eines vertraglich
+bindenden Dokuments ist eine Maintainer-Entscheid, keine Doku-Pflege — der
+Abgleich klassifiziert, er vollzieht nicht.* Gemessen: der Status-Flip
+„Draft" → „Accepted" wurde im Lauf vollzogen und vom Review als unbelegte
+Abnahme gemeldet (F-1); die Rücknahme und die CR-Formulierung (§3.1) waren die
+Korrektur. Zweitens galt die Aufmerksamkeit nur Vorlage → Repo — die
+Gegrichtung (Repo → Vorlage: Kopf-Version, Kopf-Status, Historie-Spalte,
+Architektur-„Aktiv") wurde erst durch den Review sichtbar (F-2, §3.2a).
+
+**Was hat funktioniert:** die Neu-Messung gegen `v6.13.0` vor der Arbeit
+(slice-192-Lektion); die CR-Trennung war sauber — die Randbedingungen-Reihe
+wurde benannt und an den Maintainer gereicht statt ausgeführt.
+
+**Was ging anders als geplant:** die Review-Report-Handhabung — der
+Erstlauf-Report blieb bis nach der Closure unvercommittet, und der
+CHANGELOG-Eintrag reproduzierte die falsche Fundstellen-Attribution
+(N-1). Beides behoben; die Klasse „falsche Fundstellen-Attribution" steht
+damit bei 2× (Nachlauf-Report) und wird in der Closure-Queue des
+Steering-Loops geführt.
+
+**Steering-Loop-Eintrag:** — *(nichts verkörpert; die falsche
+Fundstellen-Attribution steht bei 2× (slice-190-Erratum, slice-189-Nachlauf)
+und bleibt Beobachtung — siehe Nachlauf-Report.)*
+
+**Beobachtungs-Register (`../observations/`):**
+`evidence/slice-189.md` in `BEO-SPEC/spec-straten-vier-sektionen-fehlen/`
+ergänzt — die vier Sektionen fehlen weiterhin, die LH-RB-Reihe ist als CR
+benannt (Zähler +1); `BEO-HARNESS/adaption-korrigiert-repo-aussage` — Ausgang
+*verkörpert* durch [MR-029](../../../../harness/conventions/MR-029-id-schema-deklaration-gesamt.md)
+(seit slice-190).
+
+**Folge-Slices:** — *(keine; die LH-RB-CR wartet auf die Maintainer-
+Entscheidung.)*
+
+**Risiken aus §7:** jedes mit genau einem Ausgang — siehe §7.
+
+**Drei Paarungen:** Anker — nichts verkörpert · Folge-Slice — keine ·
+Register — adaption-korrigiert-repo-aussage verkörpert (MR-029,
+seit slice-190); maintainer-inhalt offen (1×).
 
 ## 9. Sub-Area-Prüfungen und Modus-Begründung
 
