@@ -168,7 +168,7 @@ einen Zeiger, **drei** ein `—` mit Begründung in der Zelle.
 
 | MR | Titel | Geltungsbereich | Ersetzt-Baseline-Regel |
 |---|---|---|---|
-| [MR-014](conventions/MR-014-keine-agenten-telemetrie.md) <a id="mr-014"></a> | Keine Agenten-Telemetrie | gesamtes Repo; Baseline-Modul `modul-15` | [`modul-15-observability.md` §Kernidee](../.harness/baseline/v6.13.0/regelwerk/modul-15-observability.md#kernidee-modul-15) |
+| [MR-030](conventions/MR-030-erfassung-lokal-kein-abfluss.md) <a id="mr-030"></a> | Keine Agenten-Telemetrie nach draußen (lokal ja; löst MR-014 auf) | gesamtes Repo; Baseline-Modul `modul-15` | [`modul-15-observability.md` §Kernidee](../.harness/baseline/v6.13.0/regelwerk/modul-15-observability.md#kernidee-modul-15) |
 | [MR-016](conventions/MR-016-validator-unbesetzt.md) <a id="mr-016"></a> | Validator-Rolle unbesetzt | gesamtes Repo; Baseline-Modul `modul-08` | [`modul-08-agentenrollen.md` §Die neun Übergaben](../.harness/baseline/v6.13.0/regelwerk/modul-08-agentenrollen.md#die-neun-übergaben-und-ihre-artefakte-modul-8) |
 | [MR-019](conventions/MR-019-review-dod-opt-in.md) <a id="mr-019"></a> | Review-DoD-Punkt bleibt Opt-in statt verpflichtend | [`AGENTS.md`](../AGENTS.md) §5, [`.d-check.yml`](../.d-check.yml) | — *(kein Baseline-Regel-Ersatz — der Treiber ist ein Template; Begründung und Rückbau-Bedingung stehen im Eintrag)* |
 | [MR-024](conventions/MR-024-historische-kern-drift-deklariert.md) <a id="mr-024"></a> | Historische Kern-Drift-Befunde aus dem Archiv-Sweep sind deklariert | `make doc-immutable`, Item 2 der [Freigabe-Checkliste](../docs/user/releasing.md); [`ADR-0017`](../docs/plan/adr/0017-relative-resolution-modus.md), [`ADR-0018`](../docs/plan/adr/0018-exclude-scan-scope.md), [`ADR-0038`](../docs/plan/adr/0038-dependabot-als-hebungskanal.md) | — *(deklariert eine Ausnahme im eigenen Bestand, kein Baseline-Regel-Ersatz; selbst-auflösend mit dem nächsten Release)* |
@@ -207,6 +207,7 @@ bricht.
 | [MR-026](conventions/done/MR-026-welle-closure-ohne-replay-v6130.md) <a id="mr-026"></a> | [MR-028](conventions/MR-028-welle-closure-ohne-replay-v6130-erratum.md) |
 | [MR-020](conventions/done/MR-020-adr-vorlage-generisch.md) <a id="mr-020"></a> | [MR-029](conventions/MR-029-id-schema-deklaration-gesamt.md) |
 | [MR-023](conventions/done/MR-023-id-schema-beobachtungs-kennung.md) <a id="mr-023"></a> | [MR-029](conventions/MR-029-id-schema-deklaration-gesamt.md) |
+| [MR-014](conventions/done/MR-014-keine-agenten-telemetrie.md) <a id="mr-014"></a> | [MR-030](conventions/MR-030-erfassung-lokal-kein-abfluss.md) |
 
 ## Anforderungs-Anlege-Prozess
 
