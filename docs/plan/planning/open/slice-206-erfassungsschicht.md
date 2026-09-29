@@ -6,7 +6,7 @@ Datei liegt. Er wechselt nur durch `git mv`.
 **Welle:** ohne Welle — die Closure-Bedingung wäre die eigene DoD.
 
 **Bezug:** Folge-Slice aus
-[slice-205](../done/slice-205-init-tool-vergleich.md) (Entscheidung
+[slice-205](../done/wellenlos/slice-205-init-tool-vergleich.md) (Entscheidung
 „Übernehmen"); [`MR-014`](../../../../harness/conventions.md#mr-014)
 (Abgrenzung nötig).
 [`AC-QA-02`](../../../../spec/lastenheft.md#ac-qa-02--hermetik-und-ehrliche-heuristik-grenze).
