@@ -172,8 +172,8 @@ einen Zeiger, **vier** ein `—` mit Begründung in der Zelle.
 | [MR-023](conventions/MR-023-id-schema-beobachtungs-kennung.md) <a id="mr-023"></a> | ID-Schema-Deklaration um die Beobachtungs-Kennung ergänzt (Pfad-Form, Kürzel generisch) | [`MR-000`](#mr-000) §ID-Schema, [`observations/`](../docs/plan/planning/observations/README.md) | — *(korrigiert eine Repo-Aussage, kein Baseline-Regel-Ersatz — wie [MR-020](#mr-020); Rückbau mit der Überarbeitung der Deklaration)* |
 | [MR-024](conventions/MR-024-historische-kern-drift-deklariert.md) <a id="mr-024"></a> | Historische Kern-Drift-Befunde aus dem Archiv-Sweep sind deklariert | `make doc-immutable`, Item 2 der [Freigabe-Checkliste](../docs/user/releasing.md); [`ADR-0017`](../docs/plan/adr/0017-relative-resolution-modus.md), [`ADR-0018`](../docs/plan/adr/0018-exclude-scan-scope.md), [`ADR-0038`](../docs/plan/adr/0038-dependabot-als-hebungskanal.md) | — *(deklariert eine Ausnahme im eigenen Bestand, kein Baseline-Regel-Ersatz; selbst-auflösend mit dem nächsten Release)* |
 | [MR-025](conventions/MR-025-referenzmatrix-grandfathering-v6130.md) <a id="mr-025"></a> | Referenz-Richtung maschinell, ADRs 0001–0020 grandfathered, Zeiger auf `v6.13.0` | [`.d-check.yml`](../.d-check.yml) (`matrix`), [`docs/plan/adr/`](../docs/plan/adr/) | [`grundlagen-referenz-richtung.md` §Referenz-Richtung (SDP)](../.harness/baseline/v6.13.0/regelwerk/grundlagen-referenz-richtung.md#referenz-richtung-sdp-wer-darf-wen-referenzieren) |
-| [MR-026](conventions/MR-026-welle-closure-ohne-replay-v6130.md) <a id="mr-026"></a> | Welle-Closure ohne Replay-Lauf (`make ci` grün), Zeiger auf `v6.13.0` | [`docs/plan/planning/`](../docs/plan/planning/README.md) | [`modul-06-roadmap.md` §Wellen-Closure-Prozedur](../.harness/baseline/v6.13.0/regelwerk/modul-06-roadmap.md#wellen-closure-prozedur-modul-6) |
 | [MR-027](conventions/MR-027-verfeinerungs-form-v6130.md) <a id="mr-027"></a> | Verfeinerungen tragen `SPEC-*` statt der Suffix-Form, Zeiger auf `v6.13.0` | [`spec/spezifikation.md`](../spec/spezifikation.md) | [`grundlagen-source-precedence.md` §ID-Schema als Klammer](../.harness/baseline/v6.13.0/regelwerk/grundlagen-source-precedence.md#id-schema-als-klammer) |
+| [MR-028](conventions/MR-028-welle-closure-ohne-replay-v6130-erratum.md) <a id="mr-028"></a> | Welle-Closure ohne Replay-Lauf (`make ci` grün), Erratum zur Schritt-Zuordnung | [`docs/plan/planning/`](../docs/plan/planning/README.md) | [`modul-06-roadmap.md` §Wellen-Closure-Prozedur](../.harness/baseline/v6.13.0/regelwerk/modul-06-roadmap.md#wellen-closure-prozedur-modul-6) |
 
 ### Aufgelöste Adaptionen
 
@@ -202,6 +202,7 @@ bricht.
 | [MR-012](conventions/done/MR-012-referenzmatrix-grandfathering.md) <a id="mr-012"></a> | [MR-025](conventions/MR-025-referenzmatrix-grandfathering-v6130.md) |
 | [MR-015](conventions/done/MR-015-welle-closure-ohne-replay.md) <a id="mr-015"></a> | [MR-026](conventions/MR-026-welle-closure-ohne-replay-v6130.md) |
 | [MR-022](conventions/done/MR-022-verfeinerungs-form.md) <a id="mr-022"></a> | [MR-027](conventions/MR-027-verfeinerungs-form-v6130.md) |
+| [MR-026](conventions/done/MR-026-welle-closure-ohne-replay-v6130.md) <a id="mr-026"></a> | [MR-028](conventions/MR-028-welle-closure-ohne-replay-v6130-erratum.md) |
 
 ## Anforderungs-Anlege-Prozess
 
