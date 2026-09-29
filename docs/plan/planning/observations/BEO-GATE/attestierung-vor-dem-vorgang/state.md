@@ -1,4 +1,4 @@
-**Stand:** verkörpert in [`tools/verify-review-haken.sh`](../../../../tools/verify-review-haken.sh)
+**Stand:** verkörpert in [`tools/verify-review-haken.sh`](../../../../../../tools/verify-review-haken.sh)
 (im `verify`-Aggregat) und in der structure-Bedingung 7 — `open/` — `seit
 slice-204`; `next/` bleibt durch keinen der beiden gedeckt (deklarierte
 Lücke, slice-202). Belege: [evidence/slice-191.md](evidence/slice-191.md)
