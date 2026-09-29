@@ -188,14 +188,14 @@ bricht.
 | [MR-002](conventions/done/MR-002-id-schema-bereichskuerzel.md) <a id="mr-002"></a><a id="mr-002--id-schema-mit-bereichskürzeln-ab-initialer-fassung"></a> | [MR-010](conventions/done/MR-010-rueckbau-drei-adaptionen.md) |
 | [MR-003](conventions/done/MR-003-source-precedence-ohne-docs-user.md) <a id="mr-003"></a><a id="mr-003--source-precedence-ohne-docsuser-rang"></a> | Ereignis am 2026-06-21 ([Benutzerhandbuch](../docs/user/benutzerhandbuch.md) angelegt), **kein** Nachfolge-Eintrag — die Auflösung datiert vor der Verzeichnis-Form |
 | [MR-004](conventions/done/MR-004-spec-strata-id-schemata.md) <a id="mr-004"></a><a id="mr-004--spezifikation-und-architektur-strata-und-id-schemata"></a> | [MR-011](conventions/done/MR-011-verfeinerungs-form.md) |
-| [MR-005](conventions/done/MR-005-referenzmatrix.md) <a id="mr-005"></a><a id="mr-005--referenzmatrix-intra-spec-richtung--adrslice-disziplin-d-check-angleichung"></a> | [MR-012](conventions/MR-012-referenzmatrix-grandfathering.md) |
+| [MR-005](conventions/done/MR-005-referenzmatrix.md) <a id="mr-005"></a><a id="mr-005--referenzmatrix-intra-spec-richtung--adrslice-disziplin-d-check-angleichung"></a> | [MR-012](conventions/done/MR-012-referenzmatrix-grandfathering.md) |
 | [MR-006](conventions/done/MR-006-baseline-vendored.md) <a id="mr-006"></a><a id="mr-006--baseline-committet-vendored-statt-per-url-referenziert"></a> | [MR-010](conventions/done/MR-010-rueckbau-drei-adaptionen.md) |
 | [MR-007](conventions/done/MR-007-adr-vorlagen-version.md) <a id="mr-007"></a><a id="mr-007--adr-vorlagen-version-v352-statt-v130"></a> | [MR-013](conventions/done/MR-013-adr-vorlagen-version.md) |
 | [MR-008](conventions/done/MR-008-kein-replay.md) <a id="mr-008"></a><a id="mr-008--kein-replay-keine-agenten-telemetrie"></a> | [MR-014](conventions/MR-014-keine-agenten-telemetrie.md) |
 | [MR-009](conventions/done/MR-009-validator-unbesetzt.md) <a id="mr-009"></a><a id="mr-009--validator-rolle-unbesetzt-zwei-übergaben-ohne-artefakt"></a> | [MR-016](conventions/MR-016-validator-unbesetzt.md) |
 | [MR-010](conventions/done/MR-010-rueckbau-drei-adaptionen.md) <a id="mr-010"></a> | — *(Rückbau-Eintrag; mit seiner Entstehung erledigt, siehe Datei)* |
 | [MR-011](conventions/done/MR-011-verfeinerungs-form.md) <a id="mr-011"></a> | [MR-021](conventions/done/MR-021-verfeinerungs-form.md) |
-| [MR-021](conventions/done/MR-021-verfeinerungs-form.md) <a id="mr-021"></a> | [MR-022](conventions/MR-022-verfeinerungs-form.md) |
+| [MR-021](conventions/done/MR-021-verfeinerungs-form.md) <a id="mr-021"></a> | [MR-022](conventions/done/MR-022-verfeinerungs-form.md) |
 | [MR-013](conventions/done/MR-013-adr-vorlagen-version.md) <a id="mr-013"></a> | [MR-017](conventions/done/MR-017-adr-vorlagen-version.md) |
 | [MR-017](conventions/done/MR-017-adr-vorlagen-version.md) <a id="mr-017"></a> | [MR-020](conventions/MR-020-adr-vorlage-generisch.md) |
 | [MR-018](conventions/done/MR-018-review-pflicht-v610-wortlaut.md) <a id="mr-018"></a> | Ereignis am 2026-09-06 (`v6.2.0` vendored — das Kurs-Template trägt den Rollenwechsel-Absatz jetzt selbst, [slice-170](../docs/plan/planning/done/wellenlos/slice-170-mr018-aufloesen.md)), **kein** Nachfolge-Eintrag |

@@ -1,8 +1,8 @@
-# MR-015 — Welle-Closure ohne Replay-Lauf (schärft [`MR-008`](../conventions.md#mr-008))
+# MR-015 — Welle-Closure ohne Replay-Lauf (schärft [`MR-008`](../../conventions.md#mr-008))
 
 - **Status:** Accepted
 - **Datum:** 2026-08-29
-- **Geltungsbereich:** [`docs/plan/planning/`](../../docs/plan/planning/README.md),
+- **Geltungsbereich:** [`docs/plan/planning/`](../../../docs/plan/planning/README.md),
   Closure-Kriterien einer Welle
 - **Ersetzt-Baseline-Regel:** `v6.6.0` · `regelwerk/modul-06-roadmap.md` §Wellen-Closure-Prozedur (Modul 6)
 - **Adaption:** Die Baseline nennt als beobachtbaren Closure-Trigger einer Welle *„alle Slices in
@@ -13,7 +13,7 @@
   *nicht-deterministischen Kern*, den dieses Repo nicht hat. Ohne diese Zeile bliebe **jedes**
   Wellen-Closure dauerhaft unvollständig, ohne dass jemand sagen könnte, warum. `make ci` ist der
   äquivalente repo-weite Beleg: `gates` plus `image-test` gegen das gebaute Image.
-- **Auflösungs-Trigger:** derselbe wie bei [`MR-014`](../conventions.md#mr-014) — sobald a-check eine
+- **Auflösungs-Trigger:** derselbe wie bei [`MR-014`](../../conventions.md#mr-014) — sobald a-check eine
   nicht-deterministische Komponente enthält, entsteht ein Golden Set und der Ersatz entfällt.
-- **Löst auf:** [`MR-008`](../conventions.md#mr-008)
+- **Löst auf:** [`MR-008`](../../conventions.md#mr-008)
 - **Ausgelöst durch Baseline-Stand:** `v5.12.0`
