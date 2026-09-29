@@ -41,10 +41,14 @@ sieht.
 
 ## 2. Definition of Done
 
-- [ ] Das `forbid-pattern` ist konfiguriert und im `gates`-Aggregat wirksam;
-      die Gegenprobe (eine `[x]`-Zeile in einem `open/`-Slice) ist **rot**
-      gesehen mit Meldung, dann zurückgenommen — beide Richtungen belegt.
-- [ ] `make gates` und `make verify` grün.
+- [x] Das `forbid-pattern` ist konfiguriert und im `gates`-Aggregat wirksam;
+      die Gegenprobe ist in **beiden** Richtungen belegt — Positiv (eine
+      `[x]`-Zeile in `open/` meldet `section-forbidden`) und Negativ (offenes
+      Häkchen meldet nicht) — plus Scoping-Kontrolle (`in-progress/` bleibt
+      grün) und Zitat-Kontexte nach SL-004 (Inline-Code und Code-Block bleiben
+      grün, empirisch gemessen); alles verankert in `dcheck-phrase-selftest`
+      als Muster 3.
+- [x] `make gates` und `make verify` grün.
 - [ ] Unabhängiger Review, Report unter [`docs/reviews/`](../../../../docs/reviews/README.md).
 - [ ] Closure-Notiz mit Steering-Loop-Lerneintrag; Register fortgeschritten;
       jedes Risiko aus §6 trägt einen Ausgang.
@@ -81,7 +85,42 @@ Lerneintrag.
 
 ## 7. Closure-Notiz
 
-*(wird vor dem `git mv` nach `done/` gefüllt)*
+**Lerneintrag — Form: neuer Sensor.** *Häkchen an die Lebenslage binden:* ein
+`- [x]` in einem Slice in `open/`/`next/` attestiert einen Vorgang, der noch
+aussteht — seit slice-169 drei Mal aufgetreten und hier mechanisch gefangen
+(struktur-Bedingung 7, `forbid-pattern`, Scoping auf `open/`/`next/`; die
+Häufig-Form in `in-progress/`/`done/` bleibt legitim).
+liegt in `.d-check.yml` (structure, Bedingung 7) plus
+`tools/dcheck-phrase-selftest.sh` (Muster 3, drei Kontrollen).
+Auslöser: `BEO-GATE/attestierung-vor-dem-vorgang`
+(slice-169, slice-197, slice-200 — 3×).
+
+**Was hat funktioniert:** die Mutations-Probe vor der Selbsttest-Erweiterung
+(der rote Lauf mit `section-forbidden` als Meldung) — sie lieferte den
+Grund-Code, bevor die Asserts geschrieben wurden, und die Zitat-Kontext-Probe
+(SL-004) zeigte, dass Inline-Code und Code-Blöcke natürliche Fixture-Fälle
+sind, die grün bleiben.
+
+**Was ging anders als geplant:** die Verdrahtung lief **vor dem Claim** — der
+`git mv` nach `in-progress/` folgte erst auf die fertige Umsetzung. Die
+Reihenfolge ist nachgezogen (Claim → Closure-Arbeit → done); die Lektion
+steht hier, statt still verschwiegen zu werden: der Claim ist die
+Arbeits-Reihenfolge, nicht ihre Nachschrift.
+
+**Steering-Loop-Eintrag:** Sensor neu: DoD-Häkchen an die Lebenslage binden
+— liegt in `.d-check.yml` (structure, Bedingung 7). Auslöser:
+`BEO-GATE/attestierung-vor-dem-vorgang` (slice-169, slice-197, slice-200 — 3×).
+
+**Beobachtungs-Register (`../observations/`):** `BEO-GATE/attestierung-vor-dem-vorgang/`
+— Ausgang *verkörpert* (seit slice-202, Sensor Bedingung 7).
+
+**Folge-Slices:** — *(keine.)*
+
+**Risiken aus §6:** jedes mit genau einem Ausgang — siehe §6.
+
+**Drei Paarungen:** Anker — der Steering-Loop-Eintrag liegt in
+`.d-check.yml` mit `seit slice-202` · Folge-Slice — keine · Register —
+attestierung-vor-dem-vorgang ist verkörpert, der Stand trägt den Anker.
 
 ## 8. Sub-Area-Prüfungen und Modus-Begründung
 

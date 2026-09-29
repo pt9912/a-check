@@ -1,1 +1,1 @@
-**Stand:** geplant → [slice-202](../../../in-progress/slice-202-dod-haekchen-lebenslage.md) (3×)
+**Stand:** verkörpert in [`.d-check.yml`](../../../../../.d-check.yml) (structure, Bedingung 7) `seit slice-202`
