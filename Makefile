@@ -50,7 +50,7 @@ NO_CACHE_FILTER_COV  := --no-cache-filter coverage
 .PHONY: help compile lint test coverage-gate build arch-check arch-graph \
         gate-consistency guard-selftest ci-range-selftest record-gates gates image-test ci preflight \
         trace-check hooks suppression-check symlink-check dcheck-phrase-selftest regelwerk-check commit-scope-check \
-        verify verify-risiko-ausgaenge verify-observations slice-mv image-scan \
+        verify verify-risiko-ausgaenge verify-observations verify-review-haken slice-mv image-scan \
         doc-workflows doc-reviews doc-mentions version-coherence archive-wave-test archive-wave
 
 # Gates seriell: unter `make -j` liefen die Sub-Gates sonst parallel und die
