@@ -6,7 +6,7 @@ Datei liegt. Er wechselt nur durch `git mv`.
 **Welle:** ohne Welle — die Closure-Bedingung wäre die eigene DoD.
 
 **Bezug:** Folge-Slice aus
-[slice-200](../in-progress/slice-200-adoption-v6130-agents-und-matrix.md)
+[slice-200](../done/slice-200-adoption-v6130-agents-und-matrix.md)
 §3.1 (Aspekt 2); Ziel-Form `AGENTS.template.md` §5 (`v6.13.0`, Welle 149).
 [`AC-QA-02`](../../../../spec/lastenheft.md#ac-qa-02--hermetik-und-ehrliche-heuristik-grenze).
 
