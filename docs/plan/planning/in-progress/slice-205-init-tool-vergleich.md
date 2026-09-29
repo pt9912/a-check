@@ -124,7 +124,7 @@ eine separate Datei — der Plan ist das einzige Artefakt neben den
 Entscheidungen.
 
 **Was ging anders als geplant:** der unabhängige Review fand vier
-HIGH-Befunde — die MR-014-Lesart (F-1), zwei falsche Tatsachenbehauptungen
+HIGH-Befunde — die [`MR-014`](../../../../harness/conventions.md#mr-014)-Lesart (F-1), zwei falsche Tatsachenbehauptungen
 (Werkzeug-Pfad F-2, Makefile-Zahl F-3) und den vorweg angehakten
 Review-DoD-Haken (F-4). Alle im Nachlauf korrigiert, bevor die Closure
 geschrieben wurde.
