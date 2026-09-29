@@ -1,4 +1,4 @@
-**Stand:** geplant → [slice-191](../../../open/slice-191-chronik-phrasen-sensor.md) (3×)
+**Stand:** geplant → [slice-191](../../../in-progress/slice-191-chronik-phrasen-sensor.md) (3×)
 
 **Bei 3× ist „besser aufpassen" keine Antwort** ([`AGENTS.md`](../../../../../../AGENTS.md) §5).
 Der Bestand ist behoben — `conventions.md` (slice-103), `harness/README.md` §Sensors und §Rollen
@@ -16,7 +16,7 @@ ist dreimal aufgetreten.
 Klasse; eine Umformulierung entkommt ihm. Wer ihn für den Wächter der Regel hält, hat einen halben
 Wächter für einen ganzen genommen — dieselbe Falle wie bei
 [`muster-trifft-nur-die-haeufige-schreibweise`](../../BEO-GATE/muster-trifft-nur-die-haeufige-schreibweise/observation.md).
-Geplant als [slice-191](../../../open/slice-191-chronik-phrasen-sensor.md).
+Geplant als [slice-191](../../../in-progress/slice-191-chronik-phrasen-sensor.md).
 
 **Der Moment, an dem es passiert, ist bekannt:** derselbe Commit, der eine Regel ändert. Das ist
 die Stelle, an der der Sensor feuern muss — und der Grund, warum ein Review-Guide allein dreimal
