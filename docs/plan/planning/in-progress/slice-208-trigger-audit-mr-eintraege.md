@@ -39,13 +39,13 @@ mit Kennung), nicht als Urteil über die Bedingung selbst.
 
 ## 2. Definition of Done
 
-- [ ] Sensor existiert, läuft im `verify`-Aggregat und meldet rot, wenn
+- [x] Sensor existiert, läuft im `verify`-Aggregat und meldet rot, wenn
       eine Closure-Notiz ohne Trigger-Audit-Zeile zu den aktiven
       `MR`-Einträgen bleibt.
-- [ ] **Gegenprobe in beiden Richtungen** im Selbsttest (mit Zeile grün,
+- [x] **Gegenprobe in beiden Richtungen** im Selbsttest (mit Zeile grün,
       ohne rot; leere Aktiven-Menge grün gemeldet, nicht stumm).
-- [ ] Unabhängiger Review, Report unter [`docs/reviews/`](../../../../docs/reviews/README.md).
-- [ ] Closure-Notiz mit Steering-Loop-Lerneintrag; Register fortgeschritten;
+- [x] Unabhängiger Review, Report unter [`docs/reviews/`](../../../../docs/reviews/README.md).
+- [x] Closure-Notiz mit Steering-Loop-Lerneintrag; Register fortgeschritten;
       jedes Risiko aus §6 trägt einen Ausgang.
 
 `make gates` und `make verify` grün.
@@ -74,11 +74,48 @@ Lerneintrag.
 
 - **Ceremonie-Gefahr:** eine immer gleiche „0 offen"-Zeile ohne Blick in die
   Einträge wäre eine Formulierung ohne Beobachtung.
-  — **Ausgang:** bei Closure.
+  — **Ausgang:** *weiter offen* →
+  [`BEO-HARNESS/trigger-audit-ceremonie`](../observations/BEO-HARNESS/trigger-audit-ceremonie/observation.md)
+  (neu, 1× — die Grenze ist in der Sensor-Datei deklariert, das Urteil bleibt
+  beim Menschen).
 
 ## 7. Closure-Notiz
 
-*(wird vor dem `git mv` nach `done/` gefüllt)*
+**Lerneintrag — Form: neuer Sensor.** [`tools/verify-trigger-audit.sh`](../../../../tools/verify-trigger-audit.sh)
+(im `verify`-Aggregat; `seit slice-208`) hält jede Closure ab slice-208 an die
+Sichtungs-Zeile „Trigger-Audit der aktiven MR:" — die wächterlose Auflösung
+bekommt einen formulierten Beleg pro Closure.
+
+**Was hat funktioniert:** das Vorgänger-Muster aus slice-204 — Sensor-Skript,
+vier Orte der Verdrahtung (Target, `.PHONY`, GATES-Liste, Gate-Index) und
+Selbsttest in beiden Richtungen samt Grandfathering und leeren
+Aktiven-Mengen-Fall, bevor die Übergabe.
+
+**Was ging anders als geplant:** der unabhängige Review fand die Ceremonie-
+Gefahr als nicht aufgelöstes Risiko (der §6-Ausgang „bei Closure" war ein
+Zeitpunkt statt eines Ausgangs) — sie geht als Restrisiko ins Register und
+bleibt deklarierte Grenze des Sensors.
+
+**Steering-Loop-Eintrag:** siehe Lerneintrag oben. Die Beobachtungs-Klasse
+[`BEO-HARNESS/mr-aufloesungs-trigger-ohne-waechter`](../observations/BEO-HARNESS/mr-aufloesungs-trigger-ohne-waechter/observation.md)
+erreichte **3×** — Ausgang *geplant* →
+[slice-208](../open/slice-208-trigger-audit-mr-eintraege.md), durch diesen
+Slice **verkörpert** (`seit slice-208`).
+
+**Beobachtungs-Register (`../observations/`):**
+`mr-aufloesungs-trigger-ohne-waechter` → Ausgang *verkörpert*
+([evidence/slice-206.md](../observations/BEO-HARNESS/mr-aufloesungs-trigger-ohne-waechter/evidence/slice-206.md)
+war die 3. Auflage); `trigger-audit-ceremonie` → neu, 1×
+([evidence/slice-208.md](../observations/BEO-HARNESS/trigger-audit-ceremonie/evidence/slice-208.md)).
+
+**Folge-Slices:** keine.
+
+**Risiken aus §6:** das eine Risiko trägt seinen Ausgang (*weiter offen* →
+Register — Ceremonie-Gefahr, neu 1×).
+
+**Drei Paarungen:** Anker — verkörpert (Sensor, `seit slice-208`) ·
+Folge-Slice — keine genannt · Register —
+mr-aufloesungs-trigger (3×, verkörpert) · trigger-audit-ceremonie (1×).
 
 ## 8. Sub-Area-Prüfungen und Modus-Begründung
 
