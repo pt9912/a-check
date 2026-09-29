@@ -204,151 +204,31 @@ oder `verify` (DoD-/Closure-Fragen). Welche Targets das sind, sagt das
 
 ## 5. Dokumentations-Regeln
 
-- Commits/PRs müssen mindestens eine `AC-*`- oder `ADR-*`-ID nennen
-  (auch `MR-*`/`slice-NNN` gelten). Durchgesetzt durch `make trace-check`
-  (d-check-Modul `commits`, [ADR-0021](docs/plan/adr/0021-commits-modul-trace-check.md))
-  — lokal über `HEAD~1..HEAD`, in der CI über den Commit-Range
-  ([`.github/workflows/ci.yml`](.github/workflows/ci.yml)). IDs werden nur
-  beim Spec-/ADR-Schreiben nach dem deklarierten Schema vergeben (siehe
-  [`harness/conventions.md`](harness/conventions.md)) — nie ad hoc im
-  Commit/PR; Agenten referenzieren IDs, sie erfinden keine.
-  **Struktur-IDs zählen nicht:** `SPEC-<NNN>` adressiert *innerhalb* der
-  Spezifikation und gehört nicht in die Commit-Message — die `id-patterns` in
-  [`.d-check.yml`](.d-check.yml) führen sie folgerichtig nicht.
-- **Commit-Scope `(planning)`:** ein Commit mit diesem Scope (`docs(planning)`,
-  `fix(planning)`, `chore(planning)`) berührt **ausschließlich**
-  `docs/plan/planning/`. Wandert Substanz eines anderen Bereichs mit, ist das ein
-  eigener Commit mit passendem Scope. Durchgesetzt durch `make commit-scope-check`;
-  jeder Commit wird an der Fassung gemessen, die zu **seinem** Zeitpunkt galt.
-  **Nur dieser Scope ist geregelt:** Bei `docs(spec)` und `docs(adr)` ist der
-  Fremd-Bereich legitim, und eine Regel, die den Bestand massenhaft bricht, wird
-  abgeschaltet statt befolgt. Ein weiterer Scope wird erst geregelt, wenn er
-  auffällt — und dann gemessen, nicht geraten.
-- **Wer eine Anforderung anlegt, nennt ihre Kennung in der Closure-Notiz.** Im **Plan** kann er es
-  nicht: IDs werden referenziert statt erfunden, die neue Kennung existiert dort noch nicht, und
-  jede genannte ist linkpflichtig — ein Link ins Leere macht `doc-check` rot. Also umschreibt der
-  Plan sie („eine neue `AC-FA-CLI`-Kennung"), und die Requirements-Matrix sieht den Slice **nicht**.
-  Bei der Closure ist die Anforderung geschrieben; dort steht die Kennung mit Link. Durchgesetzt
-  durch `make doc-complete` im `verify`-Aggregat — eine Anforderung ohne
-  referenzierenden Slice ist abschluss-blockierend.
-- Neue oder geänderte `AC-*`-Anforderungen entstehen nur in
-  [`spec/lastenheft.md`](spec/lastenheft.md) — nie per ADR (ADRs schärfen
-  die Spezifikation, nicht das Lastenheft).
-- Neue ADRs müssen den ADR-Index aktualisieren.
-- Roadmap/Status-Geschichte lebt in `docs/plan/planning/`, nicht in der
-  Architektur-Spec.
-- **Slice-Lifecycle** ist reine Datei-Bewegung — der Zustand ist das
-  Verzeichnis, kein Feld im Dokument. Die **sechs** Übergänge und ihre Trigger
-  stehen in `modul-05` §Trigger je Lifecycle-Übergang und WIP-Limit; a-check
-  fährt sie mit **`make slice-mv`**, das den `git mv` samt der Verweise **auf**
-  die Datei erledigt (§3.3).
-  **Repo-eigen daneben:** Der direkte Weg `open/ → in-progress/` ist zulässig;
-  `next/` ist ein Ort, keine Pflichtstation
-  ([`next/README.md`](docs/plan/planning/next/README.md)).
-- **WIP-Limit = 1 pro Lauf.** Die Baseline zählt pro Rolleninhaber und **Lauf**,
-  nicht pro Rolle — mehrere Läufe derselben Person zählen einzeln, wenn
-  `Verantwortlich:` sie per Zweig unterscheidet (`modul-05` §Trigger je
-  Lifecycle-Übergang und WIP-Limit). Auf dem Hauptzweig, wo der `git mv` den
-  Anspruch sichtbar macht, bedeutet das: **höchstens ein** Slice in
-  `in-progress/` (die Roadmap zählt nicht mit). Das ist eine harte Obergrenze,
-  kein Vorschlag: zwei aktive Slices teilen sich einen Gate-Nachweis und eine
-  Closure-Aufmerksamkeit, und beides trägt nur einmal. **Null ist zulässig** —
-  nach jedem Abschluss der Normalfall, bis der nächste Slice gezogen wird;
-  ein Maximum ist kein Minimum.
-- **AC-Form:** die Pflicht-Bausteine einer Anforderung stehen in
-  [`harness/conventions.md`](harness/conventions.md) §Anforderungs-Anlege-Prozess
-  — dort seit jeher die drei Pfade (Happy/Boundary/Negative im
-  Given/When/Then-Stil) plus Out-of-Scope. `make verify` prüft die Form für
-  **neue** `AC-*`; die **19** grandfatherten sind ausgenommen (vertraglich
-  bindend, Rand- und Negativfälle bereits in Prosa — ein Umbau träfe die Form
-  statt der Substanz), und die Liste wächst nicht mit.
-- **Diskrepanz-Trichter:** eine Ausnahme wird **nicht** ad hoc gesetzt. Die
-  Werkzeug-Wahl — BF-Sub-Area-Markierung, Carveout oder permanente ADR — steht
-  in `modul-07` §Werkzeug-Wahl bei Diskrepanz; die Ablageorte hier sind
-  [`harness/conventions.md`](harness/conventions.md#modus-deklaration-pro-sub-area)
-  bzw. [`docs/plan/carveouts/`](docs/plan/carveouts/README.md).
-- **Beobachtungs-Register:** Form und Zählregel stehen in `modul-06` §Das
-  Beobachtungs-Register; die **drei Ausgänge eines offenen Risikos**
-  — *eingetreten* ⇒ Carveout oder Folge-Slice · *entfallen* ⇒ gestrichen **mit
-  Begründung** · *weiter offen* ⇒ Register — in `modul-05` §Offene Risiken
-  werden bei Closure aufgelöst. Es sind **nicht** dieselben drei wie die
-  Register-Ausgänge (*verkörpert · geplant · gestrichen*), und
-  `make verify-risiko-ausgaenge` setzt genau die erste Menge durch.
-  **Repo-eigen ist der Ort und das Kürzel:** die stehende Ablage
-  [`docs/plan/planning/observations/`](docs/plan/planning/observations/README.md),
-  je Beobachtung ein Verzeichnis `BEO-<KUERZEL>/<slug>/`, und `<KUERZEL>` wird
-  in [`harness/conventions.md`](harness/conventions.md#modus-deklaration-pro-sub-area)
-  §Modus-Deklaration **nachgeschlagen, nicht erfunden**.
-- **Steering-Loop:** wiederkehrende Fehlermuster werden in
-  [`docs/plan/steering-loop.md`](docs/plan/planning/observations/README.md) gezählt. Ab dem
-  **zweiten** gleichartigen Vorfall entsteht ein Eintrag, ab dem **dritten** ist
-  es eine Harness-Lücke und verlangt einen Guide oder Sensor — „besser
-  aufpassen" ist keine Antwort. Ein Eintrag ohne Vorfallszahl ist unzulässig:
-  die Zahl ist das Einzige, was die Schwelle prüfbar macht.
-- **Zitier-Form in einfrierenden Artefakten** (`v6.6.0`, vier Ziel-Formen:
-  Review-Report, Welle-Ergebnisnotiz, beide Archiv-Stubs): Was einfriert,
-  zitiert **Kennung statt Adresse** — `slice-NNN` statt seines Lifecycle-Pfads,
-  `make <target>` statt eines Links auf die Sensor-Datei, eine Baseline-Stelle
-  als **Tag + Pfad in Inline-Code** statt als Link
-  (`` `v<X.Y.Z>` · `regelwerk/<datei>.md` §<Abschnitt> ``). Grund: Der vendored
-  Baum trägt genau einen Tag, der nächste Sprung löscht den alten, und ein Link
-  darauf färbt ein Artefakt rot, das niemand mehr anfassen darf. Verankert im
-  Reviewer-Skill; für Archiv-Stubs erzeugt `tools/archive-wave/` den Text, für
-  die Ergebnisnotiz gilt sie beim Schreiben.
-  **Ebenso ein Planungs-Dokument, das einen anderen als den adoptierten Stand
-  nennt** (`seit slice-192`): Ein Slice-Plan, der eine Migration vorbereitet oder
-  einen gehenden Stand beschreibt, nennt ihn als **Kennung** — `v<X.Y.Z>` als
-  Text, das Verzeichnis beschrieben statt als Pfad geschrieben. Ein Pfad dort
-  wäre ein Pin auf einen Stand, der (noch) nicht adoptiert ist, und `versions`
-  meldet ihn zu Recht.
-  **Nicht** betroffen: lebende Dokumente, die den **adoptierten** Stand nennen —
-  dort ist der Link richtig, und `versions` hält ihn aktuell.
-- **Slice-Form:** neue Slices entstehen aus der **vendorten Ziel-Form**
-  [`slice.template.md`](.harness/baseline/v6.13.0/templates/docs/plan/planning/slice.template.md) —
-  a-check führt keine eigene Kopie, sie würde gegen die Baseline driften. **Was
-  beim Kopieren anzupassen ist**, steht in
-  [`docs/plan/planning/README.md`](docs/plan/planning/README.md) §Beim Kopieren
-  der Slice-Ziel-Form.
-- **Drei Mess-Regeln binden jeden, der einen Beleg schreibt** — also auch den
-  Implementer- und den Planner-Lauf, nicht nur den Review:
-  1. *Geltungsbereich einer Messung* (`seit slice-179`): Wer eine Messung als
-     Beleg schreibt — Slice-Plan, Closure-Notiz, Review-Report —, **nennt ihren
-     Geltungsbereich** und sagt, ob er den Gegenstand deckt. Nicht *„22 Befunde,
-     keine weitere Klasse"*, sondern *„22 Befunde über Markdown-Links; Prosa
-     sieht das Instrument nicht"*.
-  2. *Eine Mutations-Probe belegt erst, wenn sie rot war* (`seit slice-181`):
-     Wer einen Prüfer mit einer Probe belegt, zeigt **beide** Richtungen und
-     nennt die **Meldung** der roten, nicht nur den Exit-Code. Grün beweist
-     nichts — ein Prüfer, der seinen Gegenstand nicht erreicht, ist grün.
+<!-- Index-Tabelle nach der Ziel-Form v6.13.0 (Welle 149): kurze Regeln
+     stehen vollstaendig in der Tabelle (Datei-Spalte "-"); waechst eine
+     Regel ueber einen Satz hinaus, wandert ihr Volltext nach
+     harness/rules/<name>.md und die Tabellenzeile bleibt der
+     Kurzform-Zeiger. Konversion: slice-201. -->
 
-  3. *Wer eine Menge zählt, zählt sie zweimal verschieden* (`seit slice-193`):
-     Eine Zählung, die einen Befund oder einen Umfang trägt, wird mit einem
-     **zweiten, anders gebauten** Zähler wiederholt. Weichen beide ab, ist der
-     Unterschied der Befund — nicht die erste Zahl.
-
-  **Kein Sensor:** alle drei sind ein Urteil über eine Absicht, einen Aufbau
-  oder eine Zuordnung (§3.7). Die **Herleitung** und die gemessenen Fälle stehen im Reviewer-Skill
-  ([`.harness/skills/reviewer.md`](.harness/skills/reviewer.md) §Mess-Regeln) —
-  dort urteilt, wer prüft; hier steht der Satz, an den sich bindet, wer
-  schreibt.
-- **CR-Texte an ein fremdes Werkzeug** leben im Slice, der sie erzeugt,
-  und gehen erst nach einem Prüf-Durchgang hinaus: der Skill
-  [`.harness/skills/cr-text-reviewer.md`](.harness/skills/cr-text-reviewer.md) markiert jeden Satz,
-  der eine **Tatsache** über ein System behauptet — das eigene oder das fremde —, und nennt den
-  Handgriff, der ihn belegt. Die Prüf-Frage
-  ist **nicht** „hast du gemessen?", sondern „hast du *das* gemessen, worüber du redest?" — die
-  zweite Ausprägung misst die eigene Menge und sagt über die fremde aus, sieht dabei aus wie ein
-  Beleg und kann sogar zutreffen. **Kein Sensor:** ob ein Satz gemessen wurde, ist ein Urteil über
-  seinen Entstehungsweg, kein Match (§3.7).
-- **Closure-Pflicht:** ein Slice in `done/` trägt **genau einen**
-  Closure-Abschnitt, und der ist ausgefüllt — kein Platzhalter, keine
-  Floskel. Inhaltlich mindestens eines von dreien: ein **Lernsignal mit
-  Ursache** („X, *weil* Y"), ein **konkretes Folge-Slice** oder eine
-  **beobachtbare Architektur-Aussage**. Ohne Lerneintrag ist ein Slice
-  nicht „fertig", sondern nur „weg". Die *strukturelle* Hälfte prüft
-  `make verify` maschinell, die *semantische* (Inhalt vs. Floskel) der
-  Skill [`.harness/skills/closure-note-reviewer.md`](.harness/skills/closure-note-reviewer.md)
-
+| # | Regel | Datei |
+|---|---|---|
+| 1 | Commit/PR-Traceability: jede Message nennt eine Kennung — Volltext: [`harness/rules/commits-pr-ids.md`](harness/rules/commits-pr-ids.md) | `harness/rules/commits-pr-ids.md` |
+| 2 | Commit-Scope `(planning)` berührt ausschließlich `docs/plan/planning/` — Volltext: [`harness/rules/commit-scope-planning.md`](harness/rules/commit-scope-planning.md) | `harness/rules/commit-scope-planning.md` |
+| 3 | Die neue Kennung steht in der Closure-Notiz — Volltext: [`harness/rules/anforderungs-kennung-closure.md`](harness/rules/anforderungs-kennung-closure.md) | `harness/rules/anforderungs-kennung-closure.md` |
+| 4 | Neue oder geänderte `AC-*`-Anforderungen entstehen nur in [`spec/lastenheft.md`](spec/lastenheft.md) — nie per ADR (ADRs schärfen die Spezifikation, nicht das Lastenheft). | — |
+| 5 | Neue ADRs müssen den ADR-Index aktualisieren. | — |
+| 6 | Roadmap/Status-Geschichte lebt in `docs/plan/planning/`, nicht in der Architektur-Spec. | — |
+| 7 | Slice-Lifecycle ist reine Datei-Bewegung — sechs Übergänge, gefahren mit `make slice-mv` — Volltext: [`harness/rules/slice-lifecycle.md`](harness/rules/slice-lifecycle.md) | `harness/rules/slice-lifecycle.md` |
+| 8 | WIP-Limit = 1 pro Lauf; auf dem Hauptzweig: höchstens ein Slice in `in-progress/` — Volltext: [`harness/rules/wip-limit.md`](harness/rules/wip-limit.md) | `harness/rules/wip-limit.md` |
+| 9 | AC-Form: drei Pflicht-Bausteine, geprüft für neue `AC-*` — Volltext: [`harness/rules/ac-form.md`](harness/rules/ac-form.md) | `harness/rules/ac-form.md` |
+| 10 | Diskrepanz-Trichter: die Werkzeug-Wahl steht in `modul-07` — Volltext: [`harness/rules/diskrepanz-trichter.md`](harness/rules/diskrepanz-trichter.md) | `harness/rules/diskrepanz-trichter.md` |
+| 11 | Beobachtungs-Register: Form, Zählregel und die drei Risiko-Ausgänge — Volltext: [`harness/rules/beobachtungs-register.md`](harness/rules/beobachtungs-register.md) | `harness/rules/beobachtungs-register.md` |
+| 12 | Steering-Loop: Vorfall → Eintrag, dritter Vorfall → Lücke — Volltext: [`harness/rules/steering-loop.md`](harness/rules/steering-loop.md) | `harness/rules/steering-loop.md` |
+| 13 | Zitier-Form in einfrierenden Artefakten: Kennung statt Adresse — Volltext: [`harness/rules/zitier-form-einfrierende.md`](harness/rules/zitier-form-einfrierende.md) | `harness/rules/zitier-form-einfrierende.md` |
+| 14 | Slice-Form: aus der vendorten Ziel-Form, Anpassungen laut Planning-README — Volltext: [`harness/rules/slice-form.md`](harness/rules/slice-form.md) | `harness/rules/slice-form.md` |
+| 15 | Drei Mess-Regeln binden jeden, der einen Beleg schreibt — Volltext: [`harness/rules/mess-regeln.md`](harness/rules/mess-regeln.md) | `harness/rules/mess-regeln.md` |
+| 16 | CR-Texte an ein fremdes Werkzeug gehen erst nach einem Prüf-Durchgang hinaus — Volltext: [`harness/rules/cr-texte-fremdwerkzeug.md`](harness/rules/cr-texte-fremdwerkzeug.md) | `harness/rules/cr-texte-fremdwerkzeug.md` |
+| 17 | Closure-Pflicht: genau ein Closure-Abschnitt, ausgefüllt, mit Lerneintrag — Volltext: [`harness/rules/closure-pflicht.md`](harness/rules/closure-pflicht.md) | `harness/rules/closure-pflicht.md` |
 
 ## 6. Minimal Agent Workflow
 
