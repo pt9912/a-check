@@ -117,9 +117,7 @@ Register — Ceremonie-Gefahr, neu 1×).
 Folge-Slice — keine genannt · Register —
 mr-aufloesungs-trigger (3×, verkörpert) · trigger-audit-ceremonie (1×).
 
-**Trigger-Audit der aktiven MR:** MR-016 MR-019 MR-024 MR-025 MR-027
-MR-028 MR-029 MR-030 — 0 offen (geprüft 2026-09-29, Konventions-Stand
-dieses Laufs).
+**Trigger-Audit der aktiven MR:** [`MR-016`](../../../../harness/conventions.md#mr-016) [`MR-019`](../../../../harness/conventions.md#mr-019) [`MR-024`](../../../../harness/conventions.md#mr-024) [`MR-025`](../../../../harness/conventions.md#mr-025) [`MR-027`](../../../../harness/conventions.md#mr-027) [`MR-028`](../../../../harness/conventions.md#mr-028) [`MR-029`](../../../../harness/conventions.md#mr-029) [`MR-030`](../../../../harness/conventions.md#mr-030) — 0 offen (geprüft 2026-09-29, Konventions-Stand dieses Laufs).
 
 ## 8. Sub-Area-Prüfungen und Modus-Begründung
 
