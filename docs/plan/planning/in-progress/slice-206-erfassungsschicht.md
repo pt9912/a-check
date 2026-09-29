@@ -112,7 +112,7 @@ MR-Tabellen scharf.
 unvollständig (F-2 — HARNESS und die 2×-Beobachtung
 `mr-aufloesungs-trigger-ohne-waechter` fehlten; der Slice selbst ist ihr
 drittes Auftreten) und das fehlende Pflichtfeld „Ausgelöst durch
-Baseline-Stand" in MR-030 (F-4). Die Probe der done/-Abgrenzung traf ihren
+Baseline-Stand" in [`MR-030`](../../../../harness/conventions.md#mr-030) (F-4). Die Probe der done/-Abgrenzung traf ihren
 Gegenstand nicht (F-3) und zwei Formgrößen (F-5, F-6). Alle korrigiert, bevor
 die Closure geschrieben wurde.
 
