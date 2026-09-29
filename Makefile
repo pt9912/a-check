@@ -50,7 +50,7 @@ NO_CACHE_FILTER_COV  := --no-cache-filter coverage
 .PHONY: help compile lint test coverage-gate build arch-check arch-graph \
         gate-consistency guard-selftest ci-range-selftest record-gates gates image-test ci preflight \
         trace-check hooks suppression-check symlink-check dcheck-phrase-selftest regelwerk-check commit-scope-check \
-        verify verify-risiko-ausgaenge verify-observations verify-review-haken slice-mv image-scan \
+        verify verify-risiko-ausgaenge verify-observations verify-review-haken verify-trigger-audit slice-mv image-scan \
         doc-workflows doc-reviews doc-mentions version-coherence archive-wave-test archive-wave
 
 # Gates seriell: unter `make -j` liefen die Sub-Gates sonst parallel und die
@@ -109,6 +109,9 @@ verify-risiko-ausgaenge: ## Jedes in §6 notierte Risiko traegt einen Ausgang au
 
 verify-observations: ## Deckung des Beobachtungs-Registers: zitierte BEO-Kennung hat eine Zeile, jede Zeile traegt formgebundene Belege.
 	@bash tools/verify-observations.sh
+
+verify-trigger-audit: ## Closure ab slice-208 belegt die Sichtung der aktiven MR-Eintraege (BEO-HARNESS/mr-aufloesungs-trigger-ohne-waechter).
+	@bash tools/verify-trigger-audit.sh
 
 verify-review-haken: ## Review-DoD-Haken in in-progress/ an Report-Existenz binden (AGENTS §5, ab slice-204).
 	@bash tools/verify-review-haken.sh
@@ -197,6 +200,7 @@ verify: ## Verifikations-Schicht: DoD-/Closure-Fragen (vor der "fertig"-Meldung;
 	bash tools/verify-risiko-ausgaenge.sh || fail=1; \
 	bash tools/verify-observations.sh  || fail=1; \
 	bash tools/verify-review-haken.sh  || fail=1; \
+	bash tools/verify-trigger-audit.sh || fail=1; \
 	$(MAKE) --no-print-directory doc-structure || fail=1; \
 	$(MAKE) --no-print-directory doc-complete  || fail=1; \
 	if [ "$$fail" -ne 0 ]; then \
