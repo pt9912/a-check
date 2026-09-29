@@ -62,7 +62,7 @@ Freigabe der Erfassung selbst ist die des Maintainers.
 | `.claude/hooks/span-emit.sh` | neu | Der committete Wrapper (aus der Generator-Ausgabe) |
 | `harness/erfassung-feldliste.md` | neu | Werkzeug-erzeugt, kanonisch |
 | `.claude/settings.json` | update | Hook-Verdrahtung span-emit |
-| [`harness/conventions/MR-014-…`](../../../../harness/conventions/MR-014-keine-agenten-telemetrie.md) | Nachfolge-Eintrag | [`MR-014`](../../../../harness/conventions.md#mr-014)-Abgrenzung explizit |
+| [`harness/conventions/MR-030-…`](../../../../harness/conventions/MR-030-erfassung-lokal-kein-abfluss.md) | Nachfolge-Eintrag ([`MR-030`](../../../../harness/conventions/MR-030-erfassung-lokal-kein-abfluss.md)) | [`MR-014`](../../../../harness/conventions.md#mr-014)-Abgrenzung explizit |
 
 ## 4. Trigger
 
@@ -85,7 +85,12 @@ Lerneintrag.
 
 - **Der Traeger ist ein Binärartikel** — Herkunft und Integrität sind zu
   belegen (Herkunft: `.harness/state/bin/` des Generators).
-  — **Ausgang:** bei Closure.
+  — **Ausgang:** *entfallen*, gestrichen mit Begründung: Herkunft und
+  Integrität sind belegt — Herkunft `/tmp/aih-v6.13.0/.harness/state/bin/`
+  (Generator-Ausgabe `v6.13.0`), sha256
+  `c6a6a171bef7c9eeb500ddc89ef6bfaf9ca52079454eabf450e94923e0ce9186`, gelegt
+  im Rahmen dieses Slices; der Bestand ist gitignored und trägt darum keinen
+  Integritäts-Zwang über den Lauf hinaus.
 
 ## 7. Closure-Notiz
 
