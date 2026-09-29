@@ -105,7 +105,9 @@ DoD vollständig, `make gates` und `make verify` grün, Closure-Notiz mit Lernei
 
 - **Die WIP-Limit-Umformulierung ändert die Semantik eines lebenden Sensors** — `doc-planning`
   zählt Verzeichnis-Inhalte; zählt das Limit künftig den Lauf, kann der Sensor nicht mehr die
-  Form-Aussage von [`AGENTS.md`](../../../../AGENTS.md) §5 sein. — **Ausgang:** bei Closure.
+  Form-Aussage von [`AGENTS.md`](../../../../AGENTS.md) §5 sein. — **Ausgang:** *entfallen*,
+  gestrichen mit Begründung: die neue Formulierung hält die **Hauptzweig-Folge** („höchstens
+  ein Slice in `in-progress/`") ausdrücklich fest — der Sensor und §5 bleiben kohärent (§3.1).
 
 ## 7. Closure-Notiz
 

@@ -1,4 +1,4 @@
-# Slice 201: AGENTS.md §5 als Index-Tabelle mit Regel-Auslagerung
+# slice-201 — AGENTS.md §5 als Index-Tabelle mit Regel-Auslagerung
 
 **Lifecycle:** Der Zustand dieses Slice ist das Verzeichnis, in dem diese
 Datei liegt. Er wechselt nur durch `git mv`.
