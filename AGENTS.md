@@ -220,10 +220,10 @@ oder `verify` (DoD-/Closure-Fragen). Welche Targets das sind, sagt das
 | 6 | Roadmap/Status-Geschichte lebt in `docs/plan/planning/`, nicht in der Architektur-Spec. | — |
 | 7 | Slice-Lifecycle ist reine Datei-Bewegung — sechs Übergänge, gefahren mit `make slice-mv` — Volltext: [`harness/rules/slice-lifecycle.md`](harness/rules/slice-lifecycle.md) | `harness/rules/slice-lifecycle.md` |
 | 8 | WIP-Limit = 1 pro Lauf; auf dem Hauptzweig: höchstens ein Slice in `in-progress/` — Volltext: [`harness/rules/wip-limit.md`](harness/rules/wip-limit.md) | `harness/rules/wip-limit.md` |
-| 9 | AC-Form: drei Pflicht-Bausteine, geprüft für neue `AC-*` — Volltext: [`harness/rules/ac-form.md`](harness/rules/ac-form.md) | `harness/rules/ac-form.md` |
+| 9 | AC-Form: drei Pfade plus Out-of-Scope, geprüft für neue `AC-*` — Volltext: [`harness/rules/ac-form.md`](harness/rules/ac-form.md) | `harness/rules/ac-form.md` |
 | 10 | Diskrepanz-Trichter: die Werkzeug-Wahl steht in `modul-07` — Volltext: [`harness/rules/diskrepanz-trichter.md`](harness/rules/diskrepanz-trichter.md) | `harness/rules/diskrepanz-trichter.md` |
 | 11 | Beobachtungs-Register: Form, Zählregel und die drei Risiko-Ausgänge — Volltext: [`harness/rules/beobachtungs-register.md`](harness/rules/beobachtungs-register.md) | `harness/rules/beobachtungs-register.md` |
-| 12 | Steering-Loop: Vorfall → Eintrag, dritter Vorfall → Lücke — Volltext: [`harness/rules/steering-loop.md`](harness/rules/steering-loop.md) | `harness/rules/steering-loop.md` |
+| 12 | Steering-Loop: ab dem zweiten Vorfall Eintrag, ab dem dritten Lücke — Volltext: [`harness/rules/steering-loop.md`](harness/rules/steering-loop.md) | `harness/rules/steering-loop.md` |
 | 13 | Zitier-Form in einfrierenden Artefakten: Kennung statt Adresse — Volltext: [`harness/rules/zitier-form-einfrierende.md`](harness/rules/zitier-form-einfrierende.md) | `harness/rules/zitier-form-einfrierende.md` |
 | 14 | Slice-Form: aus der vendorten Ziel-Form, Anpassungen laut Planning-README — Volltext: [`harness/rules/slice-form.md`](harness/rules/slice-form.md) | `harness/rules/slice-form.md` |
 | 15 | Drei Mess-Regeln binden jeden, der einen Beleg schreibt — Volltext: [`harness/rules/mess-regeln.md`](harness/rules/mess-regeln.md) | `harness/rules/mess-regeln.md` |
