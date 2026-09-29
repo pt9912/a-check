@@ -10,7 +10,7 @@ bei **3×** (*geplant*); ausgelöst durch
 
 **Berührte Spec-Stellen:** — · Der Slice berührt kein Spec-Stratum.
 
-**Verantwortlich:** —
+**Verantwortlich:** Claude — gesetzt beim Übergang nach `in-progress/`.
 
 **Autor:** Claude. **Datum:** 2026-09-08.
 
@@ -60,17 +60,19 @@ sauber, und ein Sensor, der auf null Treffern eingeschaltet wird, braucht eine
 
 ## 4. Definition of Done
 
-- [ ] Das Muster ist in [`.d-check.yml`](../../../../.d-check.yml) konfiguriert
-      und hängt im `gates`-Aggregat.
-- [ ] Die **Mutations-Probe** ist gefahren und war **rot**, mit genannter
-      Meldung: eine eingefügte Chronik-Zeile in einer lebenden Datei wird
-      gemeldet, dieselbe Zeile in einem Slice-Plan **nicht**.
-- [ ] Die Sensor-Datei unter [`harness/sensors/`](../../../../harness/sensors/)
+- [x] Das Muster ist in [`.d-check.yml`](../../../../.d-check.yml) konfiguriert
+      und hängt im `verify`-Aggregat (structure läuft dort, nicht in `gates` —
+      gemessen, siehe Closure „Was ging anders").
+- [x] Die **Mutations-Probe** ist gefahren und war **rot**, mit genannter
+      Meldung (`section-forbidden`): eine eingefügte Chronik-Zeile in einer
+      lebenden Datei wird gemeldet, dieselbe Zeile in einem Slice-Plan **nicht**
+      (Scoping-Kontrolle im Selbsttest, Muster 4).
+- [x] Die Sensor-Doku ([`harness/sensors/dcheck-phrase-selftest.md`](../../../../harness/sensors/dcheck-phrase-selftest.md))
       nennt die Grenze: Phrase statt Klasse, und welche Umformulierung entkommt.
-- [ ] Unabhängiger Review durchgeführt (Report unter [`docs/reviews/`](../../../reviews/README.md)).
-- [ ] Closure-Notiz mit Steering-Loop-Lerneintrag.
-- [ ] Beobachtungs-Register fortgeschrieben.
-- [ ] Jedes Risiko aus §7 trägt einen Ausgang.
+- [x] Unabhängiger Review durchgeführt (Report unter [`docs/reviews/`](../../../reviews/README.md)).
+- [x] Closure-Notiz mit Steering-Loop-Lerneintrag.
+- [x] Beobachtungs-Register fortgeschrieben.
+- [x] Jedes Risiko aus §7 trägt einen Ausgang.
 
 `make gates` und `make verify` grün.
 
@@ -97,18 +99,62 @@ Lerneintrag.
 
 - **Ein Phrasen-Sensor kann für den Wächter der Regel gehalten werden.** Genau
   das ist die Klasse, die er nur zur Hälfte fängt — und die Verwechslung ist im
-  Repo belegt. — **Ausgang:** <offen bis Closure>
+  Repo belegt. — **Ausgang:** *entfallen*, gestrichen mit Begründung: die Grenze
+  steht am Sensor selbst (GRENZE-Kommentar der Bedingung 8 und Sensor-Doku
+  dcheck-phrase-selftest.md, Muster 4) — der Sensor prüft eine Phrase, nicht
+  die Klasse, und die Beobachtung sagt genau das.
 - **Das Muster kann in Zitaten feuern.** Ein Slice-Plan, der die Regel
   *erklärt*, zitiert die verbotene Wendung; liegt er im Geltungsbereich, meldet
-  der Lauf gegen einen legitimen Satz. — **Ausgang:** <offen bis Closure>
+  der Lauf gegen einen legitimen Satz. — **Ausgang:** *entfallen*, gestrichen
+  mit Begründung: die ZITAT-Kontrolle (Muster 4) bleibt grün — Inline-Code-
+  Nennungen werden nicht getroffen (gemessen gegen den gepinnten Digest).
 - **Der Bestand ist sauber, die Prüfmenge also leer.** Ein Prüfer mit leerer
   Prüfmenge meldet grün und ist damit nicht „unbenutzt", sondern unkalibriert —
   deshalb die Mutations-Probe in der DoD.
-  — **Ausgang:** <offen bis Closure>
+  — **Ausgang:** *entfallen*, gestrichen mit Begründung: die Positiv-Kontrolle
+  (Muster 4) belegt, dass das Muster feuert; der Bestand ist sauber (0 Befunde
+  über 609 Dateien) — die Korpus-Leere ist der Normalfall des behobenen
+  Bestands, der stille Null-Lauf ist durch die Mutations-Probe verhindert.
 
 ## 8. Closure-Notiz
 
-*(bei Closure auszufüllen)*
+**Lerneintrag — Form: neuer Sensor.** *Die Grenze gehört an den Sensor, nicht
+in die Fußnote.* Die Beobachtung selbst forderte es („die Grenze gehört an den
+Sensor, nicht in die Fußnote"), und die Bedingung 8 trägt sie am Ort der
+Wirkung: `forbid-pattern` auf die drei Chronik-Phrasen in den gelesenen
+Dateien, mit GRENZE-Kommentar (Phrase statt Klasse, Umformulierung entkommt).
+liegt in `.d-check.yml` (structure, Bedingung 8) plus
+`tools/dcheck-phrase-selftest.sh` (Muster 4, vier Kontrollen).
+Auslöser: `BEO-HARNESS/chronik-in-gelesenen-dateien`
+(slice-103, slice-182, slice-187 — 3×).
+
+**Was hat funktioniert:** die Sollform war im Beobachtungs-Eintrag vollständig
+vorbereitet (drei Phrasen, Ziel-Dateien, Grenze) — der Sensor war die
+Umsetzung eines abgestimmten Entscheids, keine Neuentdeckung.
+
+**Was ging anders als geplant:** der DoD-Punkt „hängt im `gates`-Aggregat"
+war ein Überbleibsel — `structure` läuft im `verify`-Aggregat (gemessen, wie
+schon slice-202 F-3). Die Scoping-Kontrolle (Chronik in einem Slice-Plan)
+wurde erst falsch gebaut (die Fixture bekam die Slice-Plan-Regel, die es so
+nicht gibt) und dann auf den echten Geltungsbereich zurückgebaut.
+
+**Steering-Loop-Eintrag:** Sensor neu: Chronik-Phrasen in gelesenen Dateien
+— liegt in `.d-check.yml` (structure, Bedingung 8) plus
+`tools/dcheck-phrase-selftest.sh` (Muster 4). Auslöser:
+`BEO-HARNESS/chronik-in-gelesenen-dateien`
+(slice-103, slice-182, slice-187 — 3×).
+
+**Beobachtungs-Register (`../observations/`):**
+`BEO-HARNESS/chronik-in-gelesenen-dateien/` — Ausgang *verkörpert*
+(`seit slice-191`, Sensor Bedingung 8).
+
+**Folge-Slices:** — *(keine.)*
+
+**Risiken aus §6:** jedes mit genau einem Ausgang — siehe §6.
+
+**Drei Paarungen:** Anker — der Steering-Loop-Eintrag liegt in `.d-check.yml`
+(Bedingung 8) mit `seit slice-191` · Folge-Slice — keine · Register —
+chronik-in-gelesenen-dateien ist verkörpert, der Stand trägt den Anker.
 
 ## 9. Sub-Area-Prüfungen und Modus-Begründung
 
