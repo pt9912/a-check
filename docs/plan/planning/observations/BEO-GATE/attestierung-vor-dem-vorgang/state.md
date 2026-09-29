@@ -4,4 +4,4 @@
 dieselbe Gestalt, erneut aus `in-progress/` — der Review-DoD „unabhängiger
 Review" war vor der Existenz des Reports angehakt (slice-205). Die Erweiterung
 um diese Gestalt trägt
-[slice-204](../../../open/slice-204-review-haken-an-report-binden.md).
+[slice-204](../../../in-progress/slice-204-review-haken-an-report-binden.md).
