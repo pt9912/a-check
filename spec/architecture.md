@@ -4,6 +4,8 @@
 
 **Status:** Draft
 
+**Letzte Änderung:** 2026-09-29 (Änderungsgeschichte: `git log -- spec/architecture.md`)
+
 **Stratum:** Sicht (derivativ; **keine eigenen Anforderungen**)
 
 **Datum:** 2026-06-21.
@@ -177,12 +179,3 @@ Dogfooding) und spiegeln die Regel-Semantik aus
 [SPEC-RULE-001](spezifikation.md#spec-rule-001--regel-auswertung): Kern-Reinheit,
 Port-Disziplin und Schicht-Richtung gelten für `a-check` selbst wie für die
 geprüften Repos.
-
-## 8. Historie
-
-| Version | Datum | Änderung |
-|---|---|---|
-| 0.1.0 | 2026-06-21 | Erstfassung (Sicht-Stratum): Hexagon-Komponenten `ARC-001…006` (Kern/Ports/Extraktions-/Config-/Report-Adapter/Composition Root), Schicht-Richtung und Scan-Sequenz; sprach-/meilensteinfrei, visualisiert Lastenheft + Spezifikation. |
-| 0.2.0 | 2026-06-22 | ARC-002 nachgezogen: Ports sind eigene `ports`-Schicht, die Domänentypen referenziert (statt Co-Location im Kern-Paket); §2-Abhängigkeitsrichtung Ports→Kern korrigiert. |
-| 0.3.0 | 2026-07-09 | Graph-Ausgabe additiv eingeordnet: neues **ARC-007** (Graph-Präsentationsadapter, pur, implementiert `GraphPort`); **ARC-002** um `GraphPort` ergänzt; **ARC-003** um den validation-only `Validate`-Einstieg (Sprach-Backends ohne Walk); **ARC-006** bedient zusätzlich `--print-graph`; §4 um die no-scan-Sequenz (`Config.Load → Extraktion.Validate → GraphPort.Render → stdout`) erweitert. Sprach-/meilensteinfrei; visualisiert [SPEC-CLI-002](spezifikation.md#spec-cli-002--graph-renderer-vertrag). |
-| 0.4.0 | 2026-09-05 | Zwei gegen die v6.0.0-Baseline-Ziel-Form nachgezogene Abschnitte: neues **§4 Externe Abhängigkeiten** (**ARC-008** GHCR, **ARC-009** Docker-Hub-Spiegel — beide reine Distributions-Berührungspunkte, kein Laufzeit-Bezug) und neues **§6 Fehlermodelle und Resilienz** (Exit-Code-Vertrag aus [AC-FA-CLI-001](lastenheft.md#ac-fa-cli-001--aufruf-scan-wurzel-und-exit-codes) je Behandlung-Schicht aufgeschlüsselt). Folge-Sektionen §5/§7/§8 rücken nach; kein Cross-Referenz-Bruch (nur §2 ist von außen zitiert, unverändert). Kein neuer Fakt — beide Abschnitte fassen bereits an anderer Stelle belegte Aussagen an der von der Ziel-Form vorgesehenen Stelle zusammen. |
