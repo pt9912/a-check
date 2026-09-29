@@ -158,18 +158,18 @@ geführt:
 
 | MR | Zielabschnitt im Delta? | Abschnitt | Ausgang |
 |---|---|---|---|
-| [`MR-012`](../../../../harness/conventions.md#mr-012) | ja (alle 23 geändert) | **Abweichung** (23 242 → 23 083 Z., 4 Hunks) | *bleibt gültig* → **MR-025** |
+| [`MR-012`](../../../../harness/conventions.md#mr-012) | ja (alle 23 geändert) | **Abweichung** (23 242 → 23 083 Z., 4 Hunks) | *bleibt gültig* → **[MR-025](../../../../harness/conventions.md#mr-025)** |
 | [`MR-014`](../../../../harness/conventions.md#mr-014) | ja | **wortgleich** (566 Z.) | Zeiger wandert |
-| [`MR-015`](../../../../harness/conventions.md#mr-015) | ja | **Abweichung** (10 552 → 13 522 Z.) | *bleibt gültig* → **MR-026** |
+| [`MR-015`](../../../../harness/conventions.md#mr-015) | ja | **Abweichung** (10 552 → 13 522 Z.) | *bleibt gültig* → **[MR-026](../../../../harness/conventions.md#mr-026)** |
 | [`MR-016`](../../../../harness/conventions.md#mr-016) | ja | **wortgleich** (1 417 Z.) | Zeiger wandert |
 | [`MR-019`](../../../../harness/conventions.md#mr-019) | — (kein Zeiger) | — | *bleibt gültig*: Treiber ist die Report-Vorlage; deren Strukturänderung (Tabelle statt F-1-Blöcke) berührt die Opt-in-Entscheidung nicht |
 | [`MR-020`](../../../../harness/conventions.md#mr-020) | — (kein Zeiger) | — | *bleibt gültig*: die Referenz auf den generischen Stand gilt unverändert weiter |
-| [`MR-022`](../../../../harness/conventions.md#mr-022) | ja | **Abweichung** (10 942 → 6 574 Z.) | *bleibt gültig* → **MR-027** (Suffix-Passage Zeile 17 wortgleich) |
+| [`MR-022`](../../../../harness/conventions.md#mr-022) | ja | **Abweichung** (10 942 → 6 574 Z.) | *bleibt gültig* → **[MR-027](../../../../harness/conventions.md#mr-027)** (Suffix-Passage Zeile 17 wortgleich) |
 | [`MR-023`](../../../../harness/conventions.md#mr-023) | — (kein Zeiger) | — | *bleibt gültig*: die neue Fassung lässt die Kennungs-Form ausdrücklich als Repo-Deklaration |
 | [`MR-024`](../../../../harness/conventions.md#mr-024) | — (kein Zeiger) | — | *bleibt gültig*: der selbst-auflösende Trigger (nächstes Release) ist nicht eingetreten |
 
-Erratum: [**MR-028**](../../../../harness/conventions/MR-028-welle-closure-ohne-replay-v6130-erratum.md)
-korrigiert MR-026s Schritt-Zuordnung (Review-Fund M3 — Accepted-Einträge
+Erratum: [MR-028](../../../../harness/conventions.md#mr-028)
+korrigiert [MR-026](../../../../harness/conventions.md#mr-026)s Schritt-Zuordnung (Review-Fund M3 — Accepted-Einträge
 korrigiert man nur über einen Nachfolger).
 
 ### 3.4 Voll-Abgleich und Stichprobe
@@ -183,7 +183,7 @@ korrigiert man nur über einen Nachfolger).
 [ADR-Index](../../../../docs/plan/adr/README.md),
 [Carveouts](../../../../docs/plan/carveouts/README.md),
 [Planning-README](../../../../docs/plan/planning/README.md),
-[Roadmap](roadmap.md), [Reviewer-Skill](../../../../.harness/skills/reviewer.md),
+[Roadmap](../in-progress/roadmap.md), [Reviewer-Skill](../../../../.harness/skills/reviewer.md),
 [Closure-Note-Reviewer-Skill](../../../../.harness/skills/closure-note-reviewer.md),
 [`.d-check.yml`](../../../../.d-check.yml), Sensor-Vorlage. **Kein fehlendes
 Pflicht-Feld außerhalb der Spec-Straten**; die Abweichungen sind additiv oder
@@ -260,7 +260,7 @@ Lerneintrag.
   steht bei **2×**. Wird hier ein drittes Auftreten benannt, ist die Klasse eine
   Lücke und braucht einen eigenen Folge-Slice. — **Ausgang:** *entfallen*,
   gestrichen mit Begründung: der Durchgang hat die Auflösungs-Trigger aller
-  neun Einträge abgefragt; **keiner war eingetreten** (MR-024s
+  neun Einträge abgefragt; **keiner war eingetreten** ([MR-024](../../../../harness/conventions.md#mr-024)s
   Release-Trigger inklusive) — die Beobachtung bleibt bei 2×.
 - **Zwischenstand-Widerspruch:** Die Baseline gilt in der neuen Fassung, während
   die Adoption lebender Artefakte (WIP-Limit-Formulierung, `AGENTS.md` §5-Form,
@@ -271,7 +271,7 @@ Lerneintrag.
   [slice-189](../open/slice-189-voll-abgleich-spec-straten.md).
 - **Neue Pflicht-Felder an vertraglich gebundenen Artefakten** (Welle 144
   berührt die Lastenheft-Vorlage): eine Pflicht-Form-Änderung am Lastenheft ist
-  ein Change Request, kein Doku-Bump. — **Ausgang:** *eingetreten* →
+  ein Change Request, kein Doku-Bump. — **Ausgang:** *eingetreten* → Folge-Slice
   [slice-189](../open/slice-189-voll-abgleich-spec-straten.md), wo der
   Lastenheft-Abgleich mit der Trennung Doku-Pflege/CR liegt.
 
@@ -284,7 +284,7 @@ Gemessen an diesem Slice: die Bump-Message meldete „17 Dateien/42 Nennungen";
 am Claim-Commit messen die beiden anders gebauten Zähler 49 Zeilen bzw. 63
 Vorkommen (die 17 stimmt). Dieselbe Ursache machte den einzigen
 Inhaltsfehler eines Accepted-Eintrags teuer: die unbedlockte Schrittzahl in
-MR-026 erzwang das Erratum MR-028 — die Immutabilität ist genau dafür da.
+[MR-026](../../../../harness/conventions.md#mr-026) erzwang das Erratum [MR-028](../../../../harness/conventions.md#mr-028) — die Immutabilität ist genau dafür da.
 Beide Fälle hängen am selben Muster und sind gezählt:
 [`BEO-HARNESS/messung-ohne-abgelegten-beleg`](../observations/BEO-HARNESS/messung-ohne-abgelegten-beleg/observation.md)
 (1×).
@@ -299,7 +299,7 @@ einen stillschweigenden Zeiger zu ziehen.
 Plan-Schritte 5–7 (Durchgangs-Listen, Voll-Abgleich, Stichprobe) wuchsen über
 die Schätzung; die Belege lagen zunächst nur im Lauf, nicht im Repo, und der
 unabhängige Review meldete sie als fehlend (M1–M3). Behoben durch Nachtrag in
-§3 und das Erratum MR-028 — die Beobachtungs-Zeile oben ist der Nachlauf.
+§3 und das Erratum [MR-028](../../../../harness/conventions.md#mr-028) — die Beobachtungs-Zeile oben ist der Nachlauf.
 
 **Steering-Loop-Eintrag:** — *(nichts verkörpert; der Lerneintrag ist gezählt,
 nicht verkörpert — die bestehenden Mess-Regeln in [`AGENTS.md`](../../../../AGENTS.md) §5
