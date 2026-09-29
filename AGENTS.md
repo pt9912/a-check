@@ -238,18 +238,23 @@ oder `verify` (DoD-/Closure-Fragen). Welche Targets das sind, sagt das
 - Roadmap/Status-Geschichte lebt in `docs/plan/planning/`, nicht in der
   Architektur-Spec.
 - **Slice-Lifecycle** ist reine Datei-Bewegung — der Zustand ist das
-  Verzeichnis, kein Feld im Dokument. Die **fünf** Übergänge und ihre Trigger
+  Verzeichnis, kein Feld im Dokument. Die **sechs** Übergänge und ihre Trigger
   stehen in `modul-05` §Trigger je Lifecycle-Übergang und WIP-Limit; a-check
   fährt sie mit **`make slice-mv`**, das den `git mv` samt der Verweise **auf**
   die Datei erledigt (§3.3).
   **Repo-eigen daneben:** Der direkte Weg `open/ → in-progress/` ist zulässig;
   `next/` ist ein Ort, keine Pflichtstation
   ([`next/README.md`](docs/plan/planning/next/README.md)).
-- **WIP-Limit = 1.** Es liegt **höchstens ein** Slice in `in-progress/` (die Roadmap
-  zählt nicht mit). Das ist eine harte Obergrenze, kein Vorschlag: zwei aktive Slices
-  teilen sich einen Gate-Nachweis und eine Closure-Aufmerksamkeit, und beides
-  trägt nur einmal. **Null ist zulässig** — nach jedem Abschluss der Normalfall,
-  bis der nächste Slice gezogen wird; ein Maximum ist kein Minimum.
+- **WIP-Limit = 1 pro Lauf.** Die Baseline zählt pro Rolleninhaber und **Lauf**,
+  nicht pro Rolle — mehrere Läufe derselben Person zählen einzeln, wenn
+  `Verantwortlich:` sie per Zweig unterscheidet (`modul-05` §Trigger je
+  Lifecycle-Übergang und WIP-Limit). Auf dem Hauptzweig, wo der `git mv` den
+  Anspruch sichtbar macht, bedeutet das: **höchstens ein** Slice in
+  `in-progress/` (die Roadmap zählt nicht mit). Das ist eine harte Obergrenze,
+  kein Vorschlag: zwei aktive Slices teilen sich einen Gate-Nachweis und eine
+  Closure-Aufmerksamkeit, und beides trägt nur einmal. **Null ist zulässig** —
+  nach jedem Abschluss der Normalfall, bis der nächste Slice gezogen wird;
+  ein Maximum ist kein Minimum.
 - **AC-Form:** die Pflicht-Bausteine einer Anforderung stehen in
   [`harness/conventions.md`](harness/conventions.md) §Anforderungs-Anlege-Prozess
   — dort seit jeher die drei Pfade (Happy/Boundary/Negative im
