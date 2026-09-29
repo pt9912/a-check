@@ -82,10 +82,10 @@ Lerneintrag.
 
 **Lerneintrag — Form: geschärfte Regel.** *Der Claim eines Slice entfernt den
 Ruhe-Marker aus der Roadmap; er kommt mit der Archivierung zurück.* Verkörpert
-im Eingang-Absatz des [`implement-slice`](../../.claude/commands/implement-slice.md)-Commands
-(`seit slice-207`). Gemessen: zweimal `doc-planning` rot nach forgetful Claim am
-2026-09-29 (slice-205, slice-207) — beide Vorfälle maschinell vom Sensor gefangen,
-darum ist die Klasse nicht zusätzlich ins Register gelegt.
+im Eingang-Absatz des [`implement-slice`](../../../../.claude/commands/implement-slice.md)-Commands
+(`seit slice-207`). Gemessen: zweimal `doc-planning` rot nach Claim ohne
+Ruhe-Marker am 2026-09-29 (slice-205, slice-207) — beide Vorfälle maschinell
+vom Sensor gefangen, darum ist die Klasse nicht zusätzlich ins Register gelegt.
 
 **Was hat funktioniert:** die Zeiger-Form — der Generator-Wortlaut (25 Schritte
 Implementer, 8 Schritte Closure) bleibt außen vor, `AGENTS.md` §6 und der
