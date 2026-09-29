@@ -20,9 +20,15 @@
 # - Der DATEINAME-Match ist Form: ein Report mit der Kennung im Namen kann
 #   leer oder zum falschen Lauf sein; ob er TRAEGT, ist Urteil (Modul 10).
 # - Nur ABGEHAKTE Zeilen sind eine Zusage; ein unabgehakter DoD-Punkt ist
-#   keine (Opt-in pro Slice, MR-019). open//next/-Slices scanned dieses
-#   Skript nicht — dort deckt die structure-Bedingung 7 die unchecked-Haelfte
-#   (.d-check.yml, seit slice-202), done/ das Modul `reviews` (doc-reviews).
+#   keine (Opt-in pro Slice, MR-019). open/-Slices scanned dieses Skript
+#   nicht — dort deckt die structure-Bedingung 7 die unchecked-Haelfte
+#   (.d-check.yml, seit slice-202, Geltungsbereich open/), done/ das Modul
+#   `reviews` (doc-reviews). next/ ist durch KEINEN von beiden gedeckt —
+#   deklarierte Luecke (slice-202), keine Ausrede dieses Skripts.
+# - Die Phrase wird gross-form geprueft ("Unabhaengiger Review" — die
+#   deployte Form, Bestand 2:0); MR-019 zitiert sie kleingeschrieben.
+# - Bereichs-Namen in Report-Dateinamen (slice135-157) bedienen nur die
+#   ENDpunkte der Spanne.
 # - Ein Report unter docs/reviews/ kann von einem FRUEHEREN Lauf desselben
 #   Slice stammen (Folge-Review); die Kennung im Dateinamen ist die Bindung,
 #   nicht das Datum.
@@ -43,10 +49,14 @@ hat_report() {  # $1 = Slice-Nummer -> 0, wenn ein Report-Dateiname sie traegt
 }
 
 check_file() {  # $1 = Datei; Befunde auf stdout, Rueckgabe 1 bei Befund
-  local f="$1" num
+  local f="$1" num hit
   num="$(slice_num "$f")"
   [ -n "$num" ] || return 0
-  if grep -E '^[[:space:]]*- \[x\]' "$f" | grep -qF "$PHRASE"; then
+  # Rechter grep OHNE -q: er liest die ganze Eingabe, und die Pipeline kann
+  # an grep-qs Fruehausstieg keinen SIGPIPE-Exit (141) unter pipefail
+  # umdrehen — ein Treffer wuerde sonst zum Nicht-Treffer (Review F-2).
+  hit="$(grep -E '^[[:space:]]*- \[x\]' "$f" | grep -F "$PHRASE" || true)"
+  if [ -n "$hit" ]; then
     if ! hat_report "$num"; then
       echo "$f: Review-DoD abgehakt ($PHRASE), aber kein Report mit der Kennung slice-$num unter $REVIEWS_DIR/"
       return 1
@@ -86,59 +96,82 @@ run() {
 # zuerst). Die done/-Fixture praefiert die Abgrenzung: ein Haken dort ist
 # Sache des Moduls `reviews`, nicht dieses Skripts.
 self_test() {
-  local tmp PD_SAVE RD_SAVE
+  local tmp PD_SAVE RD_SAVE out
   tmp="$(mktemp -d)"
   PD_SAVE="$PROGRESS_DIR"; RD_SAVE="$REVIEWS_DIR"
 
-  mkdir -p "$tmp/pd" "$tmp/rd" "$tmp/done"
+  # Spiegel der Repo-Lage: in-progress/ und done/ sind Geschwister — die
+  # done/-Fixture LIEGT im Baum, den der Lauf umgeht, sie ist nicht nur
+  # nebenbei vorhanden (BEO-GATE/probe-liefert-den-gegenstand-mit).
+  mkdir -p "$tmp/repo/$PROGRESS_DIR" "$tmp/repo/$REVIEWS_DIR" \
+    "$tmp/repo/docs/plan/planning/done"
   printf '# slice-999\n- [x] Unabhängiger Review, Report unter docs/reviews/.\n' \
-    > "$tmp/pd/slice-999-rot.md"
+    > "$tmp/repo/$PROGRESS_DIR/slice-999-rot.md"
   printf '# slice-998\n- [x] Unabhängiger Review, Report unter docs/reviews/.\n' \
-    > "$tmp/pd/slice-998-gruen.md"
-  printf 'report\n' > "$tmp/rd/2026-01-01-slice-998-gruen.md"
+    > "$tmp/repo/$PROGRESS_DIR/slice-998-gruen.md"
+  printf 'report\n' > "$tmp/repo/$REVIEWS_DIR/2026-01-01-slice-998-gruen.md"
   printf '# slice-997\n- [ ] Unabhängiger Review, Report unter docs/reviews/.\n' \
-    > "$tmp/pd/slice-997-opt-in.md"
+    > "$tmp/repo/$PROGRESS_DIR/slice-997-opt-in.md"
   printf '# slice-205\n- [x] Unabhängiger Review, Report unter docs/reviews/.\n' \
-    > "$tmp/pd/slice-205-teils.md"
-  printf 'report\n' > "$tmp/rd/2026-01-01-slice-2050-falsch.md"
+    > "$tmp/repo/$PROGRESS_DIR/slice-205-teils.md"
+  printf 'report\n' > "$tmp/repo/$REVIEWS_DIR/2026-01-01-slice-2050-falsch.md"
   printf '# slice-996\n- [x] Unabhängiger Review, Report unter docs/reviews/.\n' \
-    > "$tmp/done/slice-996-done.md"
+    > "$tmp/repo/docs/plan/planning/done/slice-996-done.md"
 
-  PROGRESS_DIR="$tmp/pd"; REVIEWS_DIR="$tmp/rd"
+  PROGRESS_DIR="$tmp/repo/$PROGRESS_DIR"
+  REVIEWS_DIR="$tmp/repo/$REVIEWS_DIR"
 
   # ROT: Haken ohne Report.
-  if check_file "$tmp/pd/slice-999-rot.md" >/dev/null 2>&1; then
+  if check_file "$PROGRESS_DIR/slice-999-rot.md" >/dev/null 2>&1; then
     echo "verify-review-haken: Selbsttest FEHLGESCHLAGEN — Haken ohne Report blieb gruen" >&2
     PROGRESS_DIR="$PD_SAVE"; REVIEWS_DIR="$RD_SAVE"; rm -rf "$tmp"; exit 2
   fi
   echo "selftest: Haken ohne Report -> rot (gefiret)"
 
   # GRUEN: Haken mit Report.
-  if ! check_file "$tmp/pd/slice-998-gruen.md" >/dev/null 2>&1; then
+  if ! check_file "$PROGRESS_DIR/slice-998-gruen.md" >/dev/null 2>&1; then
     echo "verify-review-haken: Selbsttest FEHLGESCHLAGEN — Haken mit Report meldete rot" >&2
     PROGRESS_DIR="$PD_SAVE"; REVIEWS_DIR="$RD_SAVE"; rm -rf "$tmp"; exit 2
   fi
 
   # GRUEN: unabgehakter Punkt ist keine Zusage (Opt-in, MR-019).
-  if ! check_file "$tmp/pd/slice-997-opt-in.md" >/dev/null 2>&1; then
+  if ! check_file "$PROGRESS_DIR/slice-997-opt-in.md" >/dev/null 2>&1; then
     echo "verify-review-haken: Selbsttest FEHLGESCHLAGEN — unabgehakter Punkt meldete rot" >&2
     PROGRESS_DIR="$PD_SAVE"; REVIEWS_DIR="$RD_SAVE"; rm -rf "$tmp"; exit 2
   fi
 
   # ROT: slice-2050 ist NICHT slice-205 (Kennungs-Grenze des Dateinamens).
-  if check_file "$tmp/pd/slice-205-teils.md" >/dev/null 2>&1; then
+  if check_file "$PROGRESS_DIR/slice-205-teils.md" >/dev/null 2>&1; then
     echo "verify-review-haken: Selbsttest FEHLGESCHLAGEN — slice-2050 bediente slice-205" >&2
     PROGRESS_DIR="$PD_SAVE"; REVIEWS_DIR="$RD_SAVE"; rm -rf "$tmp"; exit 2
   fi
   echo "selftest: Kennungs-Grenze slice-205 vs slice-2050 -> getrennt"
 
-  # ABGRENZUNG: ein Haken in done/ ist hier unsichtbar (Modul reviews).
-  PROGRESS_DIR="$tmp/leer"; mkdir -p "$PROGRESS_DIR"
-  PROGRESS_DIR="$tmp/leer"
-  if ! run >/dev/null 2>&1; then
-    echo "verify-review-haken: Selbsttest FEHLGESCHLAGEN — leerer in-progress-Stand meldete rot" >&2
+  # ROT auf der RUN-Ebene, mit der done/-Fixture im Baum: run() faellt an
+  # slice-999 und nennt sie.
+  if out="$(run 2>&1)"; then
+    echo "verify-review-haken: Selbsttest FEHLGESCHLAGEN — run blieb gruen trotz Haken ohne Report" >&2
     PROGRESS_DIR="$PD_SAVE"; REVIEWS_DIR="$RD_SAVE"; rm -rf "$tmp"; exit 2
   fi
+  case "$out" in
+    *slice-999*) : ;;
+    *) echo "verify-review-haken: Selbsttest FEHLGESCHLAGEN — run nannte slice-999 nicht" >&2
+       PROGRESS_DIR="$PD_SAVE"; REVIEWS_DIR="$RD_SAVE"; rm -rf "$tmp"; exit 2 ;;
+  esac
+
+  # GRUEN mit der done/-Fixture on disk: der beseitigte Haken laesst run()
+  # gruen laufen — die done/-Datei bleibt ungelesen (Modul `reviews`).
+  rm "$PROGRESS_DIR/slice-999-rot.md" "$PROGRESS_DIR/slice-205-teils.md"
+  if ! out="$(run 2>&1)"; then
+    echo "verify-review-haken: Selbsttest FEHLGESCHLAGEN — run meldete rot nach Beseitigung" >&2
+    PROGRESS_DIR="$PD_SAVE"; REVIEWS_DIR="$RD_SAVE"; rm -rf "$tmp"; exit 2
+  fi
+  case "$out" in
+    *slice-996*) echo "verify-review-haken: Selbsttest FEHLGESCHLAGEN — run las done/" >&2
+                 PROGRESS_DIR="$PD_SAVE"; REVIEWS_DIR="$RD_SAVE"; rm -rf "$tmp"; exit 2 ;;
+    *) : ;;
+  esac
+
   PROGRESS_DIR="$PD_SAVE"; REVIEWS_DIR="$RD_SAVE"; rm -rf "$tmp"
 }
 

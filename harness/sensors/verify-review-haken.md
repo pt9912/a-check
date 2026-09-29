@@ -13,13 +13,15 @@ structure (1) als konstanten Posten auszählt.
 
 ## Grenze — was das Grün nicht abdeckt
 
-1. **Der Dateinamen-Match ist Form** — ob der Report zum Lauf passt und trägt,
-   ist Urteil (Modul 10). Ein Report eines früheren Laufs desselben Slice
-   genügt dem Sensor.
+1. **Der Dateinamen-Match ist Form** — ob der Report zum Lauf passt und
+   trägt, ist Urteil (Modul 10). Ein Report eines früheren Laufs desselben
+   Slice genügt dem Sensor; Bereichs-Namen (`slice135-157`) bedienen nur die
+   Endpunkte. Die Phrase wird in Großform geprüft (die deployte Form).
 2. **Nur abgehakte Zeilen sind eine Zusage** (Opt-in pro Slice,
    [`MR-019`](../conventions/MR-019-review-dod-opt-in.md)) — ein
    unabgehakter DoD-Punkt läuft grün durch; dafür deckt die
-   structure-Bedingung 7 die unchecked-Hälfte in `open/`/`next/`.
+   structure-Bedingung 7 die unchecked-Hälfte in `open/`. `next/` ist durch
+   keinen der beiden Wächter gedeckt — deklarierte Lücke (slice-202).
 3. **done/ wird nicht gescannt** — dort urteilt das Modul `reviews`
    (`doc-reviews`, done/-Geltungsbereich); die beiden Wächter überlappen
    nicht. Permanent: das Modul scannt genau ein `done-dir` (d-check v0.79.0),

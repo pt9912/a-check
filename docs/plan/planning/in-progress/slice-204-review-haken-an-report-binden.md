@@ -5,9 +5,10 @@ Datei liegt. Er wechselt nur durch `git mv`.
 
 **Welle:** ohne Welle — die Closure-Bedingung wäre die eigene DoD.
 
-**Bezug:** 4. Auflage von
+**Bezug:** 5. Auflage von
 [`BEO-GATE/attestierung-vor-dem-vorgang`](../observations/BEO-GATE/attestierung-vor-dem-vorgang/observation.md)
-(slice-169, slice-197, slice-200, slice-191 — Beleg im evidence-Verzeichnis).
+(slice-169, slice-197, slice-200, slice-191, slice-205 — Beleg im
+evidence-Verzeichnis).
 [`AC-QA-02`](../../../../spec/lastenheft.md#ac-qa-02--hermetik-und-ehrliche-heuristik-grenze).
 
 **Berührte Spec-Stellen:** — · Der Slice berührt kein Spec-Stratum.
@@ -23,10 +24,10 @@ Datei liegt. Er wechselt nur durch `git mv`.
 ## 1. Ziel und Abgrenzung
 
 **Ziel:** Der DoD-Punkt „Unabhängiger Review durchgeführt" wird in
-`in-progress/` an die Existenz des Reports gebunden — der vierte Vorfall
-(slice-191: der Closure-Commit attestierte den Review, der Report entstand
-erst danach) zeigte, dass Bedingung 7 (Häkchen in `open/`/`next/`) diese
-Gestalt nicht fängt: sie entsteht im `in-progress/`-Stand.
+`in-progress/` an die Existenz des Reports gebunden — der fünfte Vorfall
+(slice-205: der Closure-Commit attestierte den Review, der Report entstand
+erst danach) zeigte, dass Bedingung 7 (Häkchen in `open/`) diese Gestalt
+nicht fängt: sie entsteht im `in-progress/`-Stand.
 
 **Ausdrücklich NICHT in diesem Slice** — je Punkt mit Begründung:
 
@@ -38,15 +39,15 @@ Gestalt nicht fängt: sie entsteht im `in-progress/`-Stand.
 
 ## 2. Definition of Done
 
-- [ ] Der Haken ist an die Report-Existenz gebunden: ein abgehakter
+- [x] Der Haken ist an die Report-Existenz gebunden: ein abgehakter
       DoD-Punkt „Unabhängiger Review" in einem `in-progress/`-Slice ohne
       Report unter `docs/reviews/` meldet rot
       (`tools/verify-review-haken.sh`, im `verify`-Aggregat).
-- [ ] **Gegenprobe in beiden Richtungen** im Selbsttest: mit Report bleibt
+- [x] **Gegenprobe in beiden Richtungen** im Selbsttest: mit Report bleibt
       die Stelle grün, ohne Report rot; die `doc-reviews`-Bedeutung
       (done/-Geltungsbereich) bleibt unberührt.
-- [ ] Unabhängiger Review, Report unter [`docs/reviews/`](../../../../docs/reviews/README.md).
-- [ ] Closure-Notiz mit Steering-Loop-Lerneintrag; Register fortgeschritten;
+- [x] Unabhängiger Review, Report unter [`docs/reviews/`](../../../../docs/reviews/README.md).
+- [x] Closure-Notiz mit Steering-Loop-Lerneintrag; Register fortgeschritten;
       jedes Risiko aus §6 trägt einen Ausgang.
 
 `make gates` und `make verify` grün.
@@ -67,8 +68,8 @@ Datei-Existenz-Bedingung, und das `reviews`-Modul scannt genau ein `done-dir`
 
 **Start** (`open` → `in-progress`): das WIP-Limit ist frei.
 
-**Rückführungen:** `in-progress` → `next` (zu groß): entfällt — zwei
-Konfigurations-Blöcke. `in-progress` → `open` (blockiert): bietet das Modul
+**Rückführungen:** `in-progress` → `next` (zu groß): entfällt — ein
+Sensor-Skript samt Verdrahtung. `in-progress` → `open` (blockiert): bietet das Modul
 keine Existenz-Prüfung für Dateien außerhalb des Repos... (entfällt, das
 Repo ist die Wurzel).
 
@@ -89,7 +90,46 @@ Lerneintrag.
 
 ## 7. Closure-Notiz
 
-*(wird vor dem `git mv` nach `done/` gefüllt)*
+**Lerneintrag — Form: neuer Sensor.** [`tools/verify-review-haken.sh`](../../../../tools/verify-review-haken.sh)
+(im `verify`-Aggregat; `seit slice-204`) hält den abgehakten Review-DoD an
+die Report-Existenz: die attestierte Gestalt wird jetzt im Moment ihres
+Entstehens gefangen, nicht erst bei der des nächsten Slice.
+
+**Was hat funktioniert:** die §6-Schalung — der Plan sonderte voraus, dass
+`structure` keine Datei-Existenz prüft, und der Umweg über die
+Verifikations-Schicht sparte einen CR an das Fremdwerkzeug; `doc-targets`
+und `gate-consistency` hielten die Verdrahtung in beiden Richtungen scharf
+(Target, `.PHONY`, GATES-Liste, Index-Zeile).
+
+**Was ging anders als geplant:** der unabhängige Review fand einen
+merge-blockierenden Deckungsfehler (F-1 — die Grenze behauptete
+`next/`-Coverage durch Bedingung 7, die nur `open/` bindet), einen
+False-Green-Pfad in der Prüfpipeline (F-2 — `grep -q` unter `pipefail` dreht
+SIGPIPE-Treffer um) und eine Probe, die ihren Gegenstand nicht trug (F-3 —
+die done/-Fixture lag im Baum und wurde nie gelesen). Alle korrigiert,
+bevor die Closure geschrieben wurde.
+
+**Steering-Loop-Eintrag:** siehe Lerneintrag oben. Die
+attestierungs-Klasse ([`BEO-GATE/attestierung-vor-dem-vorgang`](../observations/BEO-GATE/attestierung-vor-dem-vorgang/observation.md))
+ist damit **verkörpert** (Lese-Schritt dieser Closure). Die
+Probe-Klasse ([`BEO-GATE/probe-liefert-den-gegenstand-mit`](../observations/BEO-GATE/probe-liefert-den-gegenstand-mit/observation.md))
+erreichte **4×** (F-3) — kein mechanischer Sensor nachgeschaltet: ob eine
+Probe ihren Gegenstand trifft, ist Urteil über ihren Aufbau (§3.7); die
+Begründung steht im Eintrag.
+
+**Beobachtungs-Register (`../observations/`):**
+`attestierung-vor-dem-vorgang` → Ausgang **verkörpert** (`seit slice-204`);
+`probe-liefert-den-gegenstand-mit` → 4. Auflage belegt
+([evidence/slice-204.md](../observations/BEO-GATE/probe-liefert-den-gegenstand-mit/evidence/slice-204.md)).
+
+**Folge-Slices:** keine.
+
+**Risiken aus §6:** das eine Risiko trägt seinen Ausgang (*entfallen*, mit
+Begründung — die eigene Schalung ist gebaut).
+
+**Drei Paarungen:** Anker — verkörpert (Sensor, `seit slice-204`) ·
+Folge-Slice — keine genannt · Register — attestierung (verkörpert) ·
+probe-liefert (4×, Beleg ergänzt).
 
 ## 8. Sub-Area-Prüfungen und Modus-Begründung
 
