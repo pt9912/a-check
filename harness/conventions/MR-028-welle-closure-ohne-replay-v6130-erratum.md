@@ -16,7 +16,7 @@
   tragen den Planungs-Bestand-Lese-Schritt (Welle 150) und die Prosa-Erschöpfungs-Regel
   (Welle 152)"* enden. Gemessen tragen **beide** neuen Blöcke in Schritt 3 der Prozedur;
   **Schritt 4 ist zwischen `v6.6.0` und `v6.13.0` unverändert** — gefunden im unabhängigen Review
-  zu [slice-199](../../docs/plan/planning/in-progress/slice-199-baseline-v6130-migration.md).
+  zu [slice-199](../../docs/plan/planning/done/slice-199-baseline-v6130-migration.md).
   Die tragende Aussage des Eintrags — die Replay-Forderung in Schritt 1 ist wortgleich geblieben,
   der Ausgang *bleibt gültig* — ist von dem Fehler nicht berührt.
 - **Gemessene Abweichung des Zielabschnitts** (`v6.6.0` → `v6.13.0`, 10 552 → 13 522 Zeichen, ohne
