@@ -106,7 +106,7 @@ Lerneintrag.
   trägt [`BEO-GATE/init-tool-drift`](../observations/BEO-GATE/init-tool-drift/observation.md).
 - **Der Vergleich vergreist sich an einer Snapshot-Version** — der Generator
   entwickelt sich mit dem Kurs weiter. — **Ausgang:** *weiter offen* →
-  Beobachtung: beim nächsten Init-Tool-Release neu vergleichen
+  Beobachtungs-Register: beim nächsten Init-Tool-Release neu vergleichen
   ([`BEO-GATE/init-tool-drift`](../observations/BEO-GATE/init-tool-drift/observation.md),
   neu, 1×).
 
