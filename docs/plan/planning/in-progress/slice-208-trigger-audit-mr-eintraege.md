@@ -99,7 +99,7 @@ bleibt deklarierte Grenze des Sensors.
 **Steering-Loop-Eintrag:** siehe Lerneintrag oben. Die Beobachtungs-Klasse
 [`BEO-HARNESS/mr-aufloesungs-trigger-ohne-waechter`](../observations/BEO-HARNESS/mr-aufloesungs-trigger-ohne-waechter/observation.md)
 erreichte **3×** — Ausgang *geplant* →
-[slice-208](../open/slice-208-trigger-audit-mr-eintraege.md), durch diesen
+slice-208, durch diesen
 Slice **verkörpert** (`seit slice-208`).
 
 **Beobachtungs-Register (`../observations/`):**

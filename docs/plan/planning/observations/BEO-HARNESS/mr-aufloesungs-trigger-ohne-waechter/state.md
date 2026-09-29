@@ -9,4 +9,4 @@ Belege: [evidence/slice-170.md](evidence/slice-170.md),
 Die „dass"-Hälfte (eine Closure hat die aktiven Einträge angesehen) ist seit
 slice-208 mechanisiert; die „ob"-Hälfte bleibt Prosa — die Ceremonie-Gefahr
 dafür trägt
-[`BEO-HARNESS/trigger-audit-ceremonie`](../../trigger-audit-ceremonie/observation.md).
+[`BEO-HARNESS/trigger-audit-ceremonie`](../trigger-audit-ceremonie/observation.md).
