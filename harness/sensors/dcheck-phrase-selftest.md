@@ -7,7 +7,7 @@ ausfallen kann:
 
 | Hälfte | Frage | Kontrollen |
 |---|---|---|
-| **Werkzeug** | Reagiert `d-check` noch auf die Formulierung? | 7 — drei Muster (reviews-Phrase, tasks-ignore-pattern, DoD-Häkchen in `open/`) mit Positiv-/Negativ-/Scoping-/Zitat-Kontrollen, gegen eigene Fixtures und den gepinnten Digest |
+| **Werkzeug** | Reagiert `d-check` noch auf die Formulierung? | 8 — drei Muster (reviews-Phrase, tasks-ignore-pattern, DoD-Häkchen in `open/`) mit Positiv-/Negativ-/Scoping-/Zitat-Kontrollen, gegen eigene Fixtures und den gepinnten Digest |
 | **Korpus** | Trägt a-checks eigener `done/`-Bestand sie noch? | 1 — **Nichtleerheit** der `reviews`-Kandidatenmenge |
 
 Die Werkzeug-Seite prüft **zwei** Muster: die `reviews`-Trigger-Phrase
