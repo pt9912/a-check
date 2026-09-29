@@ -59,7 +59,10 @@ Schritte, und die Anker lauten `seit slice-<NNN>` statt `seit welle-<NN>`.
    Results-Notiz bleibt vollständig und flach, Review-Reports bekommen keinen Stub.
 5. **Wave-Self-Close-Commit** — Results-Notiz + Welle-Datei §7 +
    Roadmap-Fortschreibung in einem Commit; **danach** der reine `git mv` der
-   Welle-Datei nach `done/` als eigener Commit.
+   Welle-Datei nach `done/` als eigener Commit. Direkt nach dem Move-Commit
+   `make gates` grün bestätigen — der Stempel muss auf den aktuellen Tree
+   passen — und `make doc-check`: die ausgehenden Verweise der wandernden
+   Welle-Datei ändern sich mit der Ebene.
 6. **Roadmap fortschreiben** — Zeile unter *Abgeschlossene Wellen* (Zeiger auf die
    Results-Notiz), der Zeiger verlässt *Offene Wellen*; Umplanungen stehen in
    *Historische Trigger-Verschiebungen* — eine Schließung ist keine Umplanung.

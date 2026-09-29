@@ -23,8 +23,9 @@ Datei liegt. Er wechselt nur durch `git mv`.
 ## 1. Ziel und Abgrenzung
 
 **Ziel:** Die Rollen- und Command-Verdrahtung des Generators ist übernommen —
-`.claude/agents/` (sechs Rollen-Subagents, die per Zeiger auf die Commands
-verweisen) und `.claude/commands/` (`plan-welle`, `implement-slice`,
+`.claude/agents/` (sechs Rollen-Subagents, die per Zeiger auf ihre
+Anweisungsquelle verweisen: Commands, Skill oder Werkzeug) und
+`.claude/commands/` (`plan-welle`, `implement-slice`,
 `close-welle`). **Die Inhalte der Commands werden an a-checks Prozess
 angepasst** (`AGENTS.md` §6 8-Schritt-Workflow statt des Generators-Wortlauts;
 a-checks Adaptionen sind im AGENTS.md-Träger verankert, den die Commands
@@ -37,12 +38,13 @@ referenzieren).
 
 ## 2. Definition of Done
 
-- [ ] `.claude/agents/` (sechs Rollen) und `.claude/commands/` (drei
+- [x] `.claude/agents/` (sechs Rollen) und `.claude/commands/` (drei
       Lifecycle-Commands) existieren, an a-checks Prozess angepasst.
-- [ ] Die Zeiger-Kette ist geprüft: jeder Agent verweist auf seinen Command,
-      jeder Command auf die kanonischen Quellen; `make doc-check` grün.
-- [ ] Unabhängiger Review, Report unter [`docs/reviews/`](../../../../docs/reviews/README.md).
-- [ ] Closure-Notiz mit Steering-Loop-Lerneintrag; Register fortgeschritten;
+- [x] Die Zeiger-Kette ist geprüft: jeder Agent verweist auf seine
+      Anweisungsquelle, jeder Command auf die kanonischen Quellen;
+      `make doc-check` grün (644/645 Dateien, 0 Befunde).
+- [x] Unabhängiger Review, Report unter [`docs/reviews/`](../../../../docs/reviews/README.md).
+- [x] Closure-Notiz mit Steering-Loop-Lerneintrag; Register fortgeschritten;
       jedes Risiko aus §6 trägt einen Ausgang.
 
 `make gates` und `make verify` grün.
@@ -72,18 +74,55 @@ Lerneintrag.
 ## 6. Risiken und offene Punkte
 
 - **Die Commands frieren den Prozess** — eine AGENTS.md-Änderung veraltet die
-  Command-Kopien. — **Ausgang:** bei Closure (die Commands referenzieren
-  AGENTS.md statt es zu kopieren — Zeiger, nicht Kopie).
+  Command-Kopien. — **Ausgang:** *entfallen*, gestrichen mit Begründung: die
+  Commands referenzieren `AGENTS.md` als Zeiger statt es zu kopieren; veralten
+  kann damit keine Kopie.
 
 ## 7. Closure-Notiz
 
-*(wird vor dem `git mv` nach `done/` gefüllt)*
+**Lerneintrag — Form: geschärfte Regel.** *Der Claim eines Slice entfernt den
+Ruhe-Marker aus der Roadmap; er kommt mit der Archivierung zurück.* Verkörpert
+im Eingang-Absatz des [`implement-slice`](../../.claude/commands/implement-slice.md)-Commands
+(`seit slice-207`). Gemessen: zweimal `doc-planning` rot nach forgetful Claim am
+2026-09-29 (slice-205, slice-207) — beide Vorfälle maschinell vom Sensor gefangen,
+darum ist die Klasse nicht zusätzlich ins Register gelegt.
+
+**Was hat funktioniert:** die Zeiger-Form — der Generator-Wortlaut (25 Schritte
+Implementer, 8 Schritte Closure) bleibt außen vor, `AGENTS.md` §6 und der
+`/slice`-Command tragen den Prozess; `doc-check` belegte die Zeiger-Kette in
+beiden Richtungen.
+
+**Was ging anders als geplant:** der unabhängige Review fand einen
+merge-blockierenden Risiko-Ausgang (F-1 — „bei Closure" ist ein Zeitpunkt, kein
+Ausgang aus der geschlossenen Menge) — maschinell von `verify-risiko-ausgaenge`
+bestätigt und im Nachlauf korrigiert; daneben drei LOW (Adaptions-Verlust beim
+Abschluss-Gate, verallgemeinerte Plan-Aussage, Zähler-Stand der Sichtung),
+ebenfalls korrigiert.
+
+**Steering-Loop-Eintrag:** siehe Lerneintrag oben. **Kein neuer Sensor:** die
+zwei Findings-Klassen dieses Laufs (Risiko-Ausgang als Zeitpunkt; Ruhe-Marker
+vergessen) sind beide von bestehenden Sensoren maschinell gefangen worden
+(`verify-risiko-ausgaenge`, `doc-planning`) — ein Zähler für Wächter-bedeckte
+Klassen zählt doppelt.
+
+**Beobachtungs-Register (`../observations/`):** keine neue Beobachtung
+angefallen — GATE trug 15 offene Einträge bei Sichtung (§8), keiner davon
+reicht an diesen Vorgang heran.
+
+**Folge-Slices:** keine.
+
+**Risiken aus §6:** das eine Risiko trägt seinen Ausgang (*entfallen*, mit
+Begründung — Zeiger statt Kopie).
+
+**Drei Paarungen:** Anker — nichts verkörpert jenseits des Lerneintrags oben ·
+Folge-Slice — keine genannt · Register — keine neue Zeile.
 
 ## 8. Sub-Area-Prüfungen und Modus-Begründung
 
 **Vorgelagert — Sub-Area-Wahl prüfen:** GATE (Achsen 1, 2, 3 ✓).
 
 **Vorgelagert — offene Beobachtungen sichten:** das Register wurde durchgegangen
-(2026-09-29): keine Treffer in GATE für diesen Vorgang.
+(2026-09-29): GATE trägt 15 offene Einträge (Zählung über die `state.md`-Köpfe),
+keiner betrifft die Sub-Area-Berührung dieses Vorgangs.
 
 **Modus-Begründungsblock:** alle berührte Sub-Areas GF.

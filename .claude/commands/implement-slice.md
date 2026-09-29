@@ -12,7 +12,9 @@ die Rollen-Rahmung, die über den Workflow hinausgeht.
 **Eingang:** der Slice in `docs/plan/planning/in-progress/` — der Claim (`open →
 next → in-progress`) ist per `make slice-mv SLICE=… TO=in-progress` auf dem
 Hauptzweig geleistet, **vor** der Arbeit; das Kopf-Feld `Verantwortlich:` nennt den
-Lauf.
+Lauf. **Der Claim entfernt den Ruhe-Marker aus der Roadmap** — er steht genau
+dann, wenn `in-progress/` leer ist, und kommt mit der Archivierung zurück
+(`doc-planning` prüft beide Richtungen; `seit slice-207`).
 
 **Ausgang:** Commit-Range plus Slice-Plan-Verweis an den Reviewer — in **frischem
 Kontext**, kein Selbst-Review; ein `fork`-Subagent erbt den Kontext und zählt nicht.
