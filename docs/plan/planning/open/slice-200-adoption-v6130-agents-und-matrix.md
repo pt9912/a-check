@@ -3,7 +3,7 @@
 **Welle:** ohne Welle.
 
 **Bezug:** Folge-Slice aus
-[slice-199](../in-progress/slice-199-baseline-v6130-migration.md) §3 (MR-Durchgang,
+[slice-199](../done/slice-199-baseline-v6130-migration.md) §3 (MR-Durchgang,
 Schritt 5) und [MR-025](../../../../harness/conventions/MR-025-referenzmatrix-grandfathering-v6130.md)
 §Offener Adoption-Aspekt.
 [`AC-QA-02`](../../../../spec/lastenheft.md#ac-qa-02--hermetik-und-ehrliche-heuristik-grenze).
