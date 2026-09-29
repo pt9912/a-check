@@ -1,4 +1,4 @@
-# slice-202 — DoD-Häkchen an die Lebenslage binden
+# slice-202 — Attestierungs-Sensor für vorgezogene Häkchen
 
 **Lifecycle:** Der Zustand dieses Slice ist das Verzeichnis, in dem diese
 Datei liegt. Er wechselt nur durch `git mv`.
