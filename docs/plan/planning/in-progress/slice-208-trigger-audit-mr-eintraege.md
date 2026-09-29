@@ -74,7 +74,7 @@ Lerneintrag.
 
 - **Ceremonie-Gefahr:** eine immer gleiche „0 offen"-Zeile ohne Blick in die
   Einträge wäre eine Formulierung ohne Beobachtung.
-  — **Ausgang:** *weiter offen* →
+  — **Ausgang:** *weiter offen* → Beobachtungs-Register:
   [`BEO-HARNESS/trigger-audit-ceremonie`](../observations/BEO-HARNESS/trigger-audit-ceremonie/observation.md)
   (neu, 1× — die Grenze ist in der Sensor-Datei deklariert, das Urteil bleibt
   beim Menschen).
