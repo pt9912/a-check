@@ -11,7 +11,7 @@
 und [`spec/spezifikation.md`](../../../../spec/spezifikation.md) sind der
 Gegenstand — **welche** Kennungen berührt sind, benennt die Umsetzung.
 
-**Verantwortlich:** —
+**Verantwortlich:** Claude — gesetzt beim Übergang nach `in-progress/`.
 
 **Autor:** Claude. **Datum:** 2026-09-08.
 
