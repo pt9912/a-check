@@ -142,3 +142,69 @@ bleiben **F-3** (die Wirk-Angabe „gates-Aggregat“ steht noch in §1 und DoD)
 behauptet, in Erfolgs-Zeile, Sensor-Doku und Gate-Index). N-1 ist vor der
 Closure mitzunehmen: eine Kontrolle, die nicht fehl schlagen kann, trägt die
 §6-Ausgangs-Begründung nicht.
+
+---
+
+# Verifikations-Lauf 2 — 2026-09-29, Stand `bf68069`
+
+**Gegenstand:** die drei Nachzugs-Commits `fb128dd` (build/harness),
+`0855afd` (docs/planning), `bf68069` (docs/harness; nimmt zugleich die
+Erstfassung dieses Reports in den Bestand). **Eigene Läufe (gemessen):**
+`make gates` **Exit 0** · `make verify` **Exit 0** · `make doc-structure`
+Exit 0 (610 Dateien, 0 Befunde) · Selbsttest Exit 0 („8 Werkzeug-Kontrollen
+(3 Muster)“) · acht Kontroll-Matrix-Proben gegen den gepinnten Digest
+(`m1–m6`, `d1`, `d2`, unten).
+
+## Status je Finding
+
+| Finding | Status | Beleg |
+|---|---|---|
+| F-1 (DoD attestiert grün) | **erledigt (bleibt)** | `make gates` Exit 0, `make verify` Exit 0, beide gemessen bei `bf68069` |
+| F-2 (Sensor rot gegen Bestand) | **erledigt (bleibt)** | `make doc-structure` Exit 0, 0 Befunde; GRENZE-Kommentar jetzt auch für den `open/`-Fall (Rest: F-N-2-Wording) |
+| F-3 (gates-Aggregat-Claim) | **erledigt** | §1 (Zeile 27) und DoD-Punkt 1 (Zeile 44) nennen jetzt das `verify`-Aggregat — deckungsgleich mit `Makefile:196` |
+| F-4 (Zählung) | **erledigt, Rest LOW (F-N-4)** | Erfolgs-Zeile „8 Werkzeug-Kontrollen (3 Muster)“ stimmt mit den acht `run_dcheck`-Aufrufen überein; Sensor-Doku-Tabelle „8 — drei Muster“, `harness/README.md:81` „acht Werkzeug-Kontrollen (drei Muster)“, Skript-Kopf „MEHRERE KONTROLLEN JE MUSTER“ nachgezogen; Rest: die Prosa-Sätze in der Sensor-Doku (Zeile 13 f.) sagen weiterhin „zwei Muster“ |
+| F-5 / N-1 (Zitat-Fixture) | **erledigt** | die Fixture wird jetzt aus einer Body-Datei mit echten Newlines gebaut (`tools/dcheck-phrase-selftest.sh:216–224`) — der Code-Block mit `[x]` am Zeilenanfang ist real; Lauf rc=0, 0 Befunde gemessen; die Sensitivität ist strukturell über die Positiv-Kontrolle verankert (dieselbe Zeile außerhalb des Blocks feuert, Probe p1/m1) |
+| F-6 („bleibt grün“) | **offen (MEDIUM)** | die Scoping-Fixture erzeugt weiterhin nur `in-progress/`; die `open/`-Regel matcht keine Datei → gemessen rc=1 mit `section-missing` (Probe a). Die im Nachzug angekündigte Bestands-Spiegelung („`open/` mit offenem Slice belegt“) ist im Skript nicht enthalten; DoD-Zeile 47 unverändert |
+| F-7 / F-10 / F-11 | **erledigt (bleibt)** | unverändert auf `bf68069` nachgemessen (Extraktion, Anker-Form, Linktiefe) |
+| F-8, F-9, F-12 | unverändert | historisch bzw. Range-Notiz |
+
+## Neues Finding
+
+| ID | Kategorie | Befund | Quelle | Pfad | Verifizierbar | Klasse |
+|---|---|---|---|---|---|---|
+| N-3 | HIGH | Das `forbid-pattern` feuert nur, wenn die `[x]`-Zeile die **erste Inhaltszeile** der DoD-Sektion ist — gemessen an acht Varianten: allein (m1), zwei `[x]`-Zeilen (m6) und `[x]`-Zeile mit nachfolgender Prosa (d1) feuern; `[x]` nach Prosa (m3), nach Listitem (m4), nach unchecked `- [ ]` (m5) und im Code-Block (m2) bleiben grün. Damit fängt der Sensor die beobachtete Gestalt („alle Häkchen gesetzt“, slice-200-Klasse), aber **nicht** die gemischte DoD-Gestalt — ein Slice in `open/` mit einem einzigen unchecked Punkt vor dem attestierenden Häkchen läuft durch; genau diese Gestalt trägt der Plan des slice-202 selbst. §1/DoD und Lerneintrag behaupten den Fang ungequalifiziert („Ein DoD-Häkchen … ist mechanisch gefangen“). | `v6.13.0` · `regelwerk/modul-10-review-harness.md` §Klassifikation; `AC-QA-02` (ehrliche Heuristik-Grenze — auszuweisen, nicht als Vollständigkeit auszugeben) | `.d-check.yml:421–426`, `docs/plan/planning/in-progress/slice-202-dod-haekchen-lebenslage.md:25–31` | ja — Kontroll-Matrix m1–m6/d1/d2 gegen den gepinnten Digest; Positiv/Negativ-Wechsel allein über die Vor-Zeile | Geltungsbereich enger als die Claim |
+
+Zusatz-Befund zur Einordnung (kein eigenes Finding): die Zitat-Kontrolle kann
+dieses Verhalten nicht testen — ein `[x]` **im** Code-Block steht stets hinter
+der Fence-Zeile, ist also unter der „erste Inhaltszeile“-Semantik nie ein
+Feuerfall; die Kontrolle bleibt als Regressions-Anker gültig, ihr Szenario ist
+aber vom selben Verhalten überdeckt.
+
+## Rest-Befunde (LOW)
+
+- **F-N-4 (LOW):** die Prosa-Sätze der Sensor-Doku (Zeile 13 f.: „Die
+  Werkzeug-Seite prüft **zwei** Muster …“) widersprechen der korrigierten
+  Tabelle im selben Dokument („8 — drei Muster“) — Rest aus F-4.
+- **F-N-2-Wording (LOW):** die neue GRENZE-Formulierung „dann entfällt diese
+  Bedingung mit“ beschreibt nicht das gemessene Verhalten — bei leerem
+  `open/` (oder nur `slice-045` nach Abzug von `exempt-paths`) läuft die
+  Bedingung fail-closed **rot** (`section-missing`, Probe c: rc=1, „kein
+  Abschnitt passt auf den Selektor“).
+
+## Schluss-Summary und Verdikt
+
+**Erledigt (gemessen):** F-1, F-2, F-3, F-4, F-5/N-1, F-7, F-10, F-11.
+**Offen:** N-3 (HIGH), F-6 (MEDIUM), F-8 (MEDIUM, historisch-disclosed),
+F-N-4/F-N-2-Wording/F-9 (LOW), F-12 (INFO).
+
+**Verdikt:** die Form-Bedenken des Erst- und Nachprüf-Laufs sind abgetragen —
+gates und verify sind grün, die Aggregat-Angabe stimmt, die Zählung stimmt,
+die Zitat-Kontrolle prüft ihr Szenario. Blockierend bleibt **N-3**: der
+Geltungsbereich des Sensors ist enger als die Claim in §1, DoD und
+Lerneintrag — er fängt die All-haken-Gestalt, nicht jede vorgezogene
+Attestierung. Die ehrliche Heuristik-Grenze (`AC-QA-02`) verlangt, die Grenze
+auszuweisen: die Claim in Plan und Closure-Notiz auf die gemessene Gestalt
+einschränken (und die gemischte Gestalt als benannte Grenze führen),
+oder — als Modul-Erweiterung im d-check — die Sektion-zentrierte Auswertung
+zu schärfen. F-6 ist vor der Closure zu klären (Fixture-Spiegelung oder
+DoD-Formulierung).
