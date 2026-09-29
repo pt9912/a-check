@@ -48,27 +48,24 @@ notiz_offen() {  # $1 = Datei; 0 = Platzhalter (in Arbeit), 1 = ausgefuellt
 }
 
 check_file() {  # $1 = Datei; Befunde auf stdout, Rueckgabe 1 bei Befund
-  local f="$1" num line id fehlt=""
+  local f="$1" num id ids all_present
   num="$(basename "$f" | sed -nE 's/^slice-0*([0-9]+)-.*/\1/p')"
   [ -n "$num" ] || return 0
   [ "$num" -ge "$AUDIT_FROM" ] || return 0
-  line="$(grep -F "$PHRASE" "$f" | head -1 || true)"
-  if [ -z "$line" ]; then
-    echo "$f: Closure-Notiz ohne $PHRASE-Zeile — die Sichtung der aktiven MR-Eintraege ist nicht belegt"
-    return 1
-  fi
-  while IFS= read -r id; do
-    [ -n "$id" ] || continue
-    case "$line" in
-      *"$id"*) : ;;
-      *) fehlt="$fehlt $id" ;;
-    esac
-  done < <(aktive_mr)
-  if [ -n "$fehlt" ]; then
-    echo "$f: Audit-Zeile nennt die aktiven MR-Kennungen nicht:$fehlt"
-    return 1
-  fi
-  return 0
+  ids="$(aktive_mr)"
+  # Genau EINE Phrase-Zeile muss ALLE aktiven Kennungen tragen — die Phrase
+  # allein (etwa im DoD-Text) genuegt nicht; Ceremonie-Grenze des Sensors.
+  while IFS= read -r line; do
+    [ -n "$line" ] || continue
+    all_present=1
+    while IFS= read -r id; do
+      [ -n "$id" ] || continue
+      case "$line" in *"$id"*) : ;; *) all_present=0; break ;; esac
+    done < <(printf '%s\n' "$ids")
+    if [ "$all_present" -eq 1 ]; then return 0; fi
+  done < <(grep -F "$PHRASE" "$f" || true)
+  echo "$f: Closure-Notiz ohne $PHRASE-Zeile mit allen aktiven MR-Kennungen ($ids) — die Sichtung ist nicht belegt"
+  return 1
 }
 
 # Der Lauf erreicht beide Beleg-Momente: die abschlussbereite Closure in
