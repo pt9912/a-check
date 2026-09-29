@@ -413,15 +413,20 @@ structure:
   # (7) DoD-Haekchen an die Lebenslage binden (seit slice-202): ein [x] in
   #     einem Slice in open/ attestiert einen Vorgang, der noch aussteht —
   #     die Attestierungs-Klasse (BEO-GATE/attestierung-vor-dem-vorgang,
-  #     3x: slice-169, slice-197, slice-200). Abgehaekt wird erst in
-  #     in-progress/ (mit der Arbeit) und in done/ (nach ihr) — dort gilt
-  #     die Regel nicht.
+  #     3x: slice-169, slice-197, slice-200). GRENZE (gemessen slice-202,
+  #     Nachpruef-Lauf): das Muster greift nur, wenn die [x]-Zeile die erste
+  #     Inhaltszeile der DoD-Sektion ist — eine gemischte Gestalt (unchecked
+  #     Punkt VOR dem attestierenden Haekchen) laeuft durch. Abgehaekt wird
+  #     erst in in-progress/ (mit der Arbeit) und in done/ (nach ihr) — dort
+  #     gilt die Regel nicht.
   #     GRENZE: next/ ist NICHT gedeckt — die Kandidatenmenge ist leer
   #     (nur README.md), und die Bedingung laeuft bei leerer Menge
   #     fail-closed rot (section-missing, gemessen slice-202). Wird next/
   #     belegt, zieht eine zweite Bedingung mit gleicher Form nach.
-  #     Dasselbe gilt fuer open/ selbst, sobald sie leer wird oder nur den
-  #     grandfathered slice-045 traegt — dann entfaellt diese Bedingung mit.
+  #     Dasselbe fail-closed-Verhalten hat open/ selbst, sobald sie leer
+  #     wird oder nur den grandfathered slice-045 traegt — dann laeuft diese
+  #     Bedingung rot (gemessen slice-202, Nachpruef-Lauf); die Antwort ist
+  #     das Entfernen oder die Nachbesetzung, nicht das Stehenlassen.
   - files: "docs/plan/planning/open/**/slice-*.md"
     section-pattern: '^#+ .*(DoD|Definition of Done)'
     forbid-pattern: '^\s*- \[x\]'
