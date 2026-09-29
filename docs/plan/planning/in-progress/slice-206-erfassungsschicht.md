@@ -148,7 +148,8 @@ HARNESS (Achsen 1, 2, 3 ✓) — die Änderungen unter `harness/` (Feldliste,
 durchgegangen (2026-09-29): GATE trägt 15 offene Einträge (Zählung über die
 `state.md`-Köpfe), keiner betrifft die Sub-Area-Berührung dieses Vorgangs.
 HARNESS trägt [`mr-aufloesungs-trigger-ohne-waechter`](../observations/BEO-HARNESS/mr-aufloesungs-trigger-ohne-waechter/observation.md)
-bei 2× — und **dieser Slice ist ihr drittes Auftreten**: die MR-014-Auflösung
+bei 2× — und **dieser Slice ist ihr drittes Auftreten**: die
+[`MR-014`](../../../../harness/conventions.md#mr-014)-Auflösung
 vollzog genau jenen Gegenstand. Der Ausgang ist im Lese-Schritt der Closure
 gelegt — *geplant* →
 [slice-208](../open/slice-208-trigger-audit-mr-eintraege.md).
