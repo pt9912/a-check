@@ -17,7 +17,7 @@ Datei liegt. Er wechselt nur durch `git mv`.
 
 **Autor:** Claude. **Datum:** 2026-09-29.
 
-**Lerneintrag — Form:** neuer Sensor.
+**Lerneintrag — Form:** geschärfte Regel.
 
 ---
 
@@ -43,14 +43,14 @@ Freigabe der Erfassung selbst ist die des Maintainers.
 
 ## 2. Definition of Done
 
-- [ ] Wrapper, Traeger-Handling und Feldliste sind übernommen; die
+- [x] Wrapper, Traeger-Handling und Feldliste sind übernommen; die
       Hook-Verdrahtung ist in `.claude/settings.json` (span-emit auf
       PostToolUse, PostToolUseFailure, SubagentStart, je Exit 0).
-- [ ] Die [`MR-014`](../../../../harness/conventions.md#mr-014)-Abgrenzung ist als Nachfolge-Eintrag oder Zusatz explizit.
-- [ ] Die Gegenprobe: ein Testlauf mit dem Traeger erzeugt Erfassungs-Zeilen,
+- [x] Die [`MR-014`](../../../../harness/conventions.md#mr-014)-Abgrenzung ist als Nachfolge-Eintrag oder Zusatz explizit.
+- [x] Die Gegenprobe: ein Testlauf mit dem Traeger erzeugt Erfassungs-Zeilen,
       ein Lauf ohne Traeger bleibt stumm und bricht nicht (Wrapper-Exit 0).
-- [ ] Unabhängiger Review, Report unter [`docs/reviews/`](../../../../docs/reviews/README.md).
-- [ ] Closure-Notiz mit Steering-Loop-Lerneintrag; Register fortgeschritten;
+- [x] Unabhängiger Review, Report unter [`docs/reviews/`](../../../../docs/reviews/README.md).
+- [x] Closure-Notiz mit Steering-Loop-Lerneintrag; Register fortgeschritten;
       jedes Risiko aus §6 trägt einen Ausgang.
 
 `make gates` und `make verify` grün.
@@ -94,7 +94,49 @@ Lerneintrag.
 
 ## 7. Closure-Notiz
 
-*(wird vor dem `git mv` nach `done/` gefüllt)*
+**Lerneintrag — Form: geschärfte Regel.** *Ein MR-Nachfolge-Durchgang umfasst
+fünf Handgriffe: Nachfolge-Datei · `git mv` des Vorgängers nach
+`conventions/done/` · beide Tabellen · Anker-Erhalt · interne Link-Tiefen.*
+Verkörpert in [`harness/conventions.md`](../../../../harness/conventions.md)
+§Adaptions-Block (`seit slice-206`). Gemessen: der Durchgang verlor drei
+ interne Links und eine Tabellen-Zeile an die neue Tiefe — erst
+`doc-check` hielt beide Richtungen gegen die Tabellen.
+
+**Was hat funktioniert:** die Gegenprobe in beiden Richtungen vor der
+Übergabe — der Lauf mit Traeger erzeugte die Schema-Zeile (inkl. automatischer
+Slice-Ableitung aus dem Lifecycle-Verzeichnis), der Lauf ohne Traeger blieb
+stumm mit Exit 0; `doc-check` und `gate-consistency` hielten Verdrahtung und
+MR-Tabellen scharf.
+
+**Was ging anders als geplant:** der unabhängige Review fand die Sichtung
+unvollständig (F-2 — HARNESS und die 2×-Beobachtung
+`mr-aufloesungs-trigger-ohne-waechter` fehlten; der Slice selbst ist ihr
+drittes Auftreten) und das fehlende Pflichtfeld „Ausgelöst durch
+Baseline-Stand" in MR-030 (F-4). Die Probe der done/-Abgrenzung traf ihren
+Gegenstand nicht (F-3) und zwei Formgrößen (F-5, F-6). Alle korrigiert, bevor
+die Closure geschrieben wurde.
+
+**Steering-Loop-Eintrag:** siehe Lerneintrag oben (MR-Durchgang-Checkliste).
+Die Beobachtungs-Klasse `mr-aufloesungs-trigger-ohne-waechter` erreichte
+**3×** — Ausgang *geplant* →
+[slice-208](../open/slice-208-trigger-audit-mr-eintraege.md) (die „dass"-Hälfte
+mechanisiert: eine Closure belegt die Sichtung der aktiven Einträge).
+
+**Beobachtungs-Register (`../observations/`):**
+`mr-aufloesungs-trigger-ohne-waechter` → 3. Auflage belegt, Ausgang *geplant*
+([evidence/slice-206.md](../observations/BEO-HARNESS/mr-aufloesungs-trigger-ohne-waechter/evidence/slice-206.md));
+GATE 15 offene Einträge, keiner betrifft diesen Vorgang.
+
+**Folge-Slices:** [slice-208](../open/slice-208-trigger-audit-mr-eintraege.md)
+(Trigger-Audit für MR-Einträge mechanisieren) — ist Datei in `open/`.
+
+**Risiken aus §6:** das eine Risiko trägt seinen Ausgang (*entfallen*, mit
+Begründung — Herkunft und sha256 des Traegers sind belegt).
+
+**Drei Paarungen:** Anker — verkörpert (MR-Durchgang-Checkliste,
+`seit slice-206`) · Folge-Slice — slice-208 existiert als Datei in `open/` ·
+Register — mr-aufloesungs-trigger (3×, geplant) · attestierung/probe-liefert
+durch slice-204/207 bereits besetzt.
 
 ## 8. Sub-Area-Prüfungen und Modus-Begründung
 
@@ -102,7 +144,13 @@ Lerneintrag.
 HARNESS (Achsen 1, 2, 3 ✓) — die Änderungen unter `harness/` (Feldliste,
 [`MR-014`](../../../../harness/conventions.md#mr-014)-Eintrag) liegen in der HARNESS-Pfad-Familie.
 
-**Vorgelagert — offene Beobachtungen sichten:** das Register wurde durchgegangen
-(2026-09-29): keine Treffer in GATE für diesen Vorgang.
+**Vorgelagert — offene Beobachtungen sichten:** das Register wurde
+durchgegangen (2026-09-29): GATE trägt 15 offene Einträge (Zählung über die
+`state.md`-Köpfe), keiner betrifft die Sub-Area-Berührung dieses Vorgangs.
+HARNESS trägt [`mr-aufloesungs-trigger-ohne-waechter`](../observations/BEO-HARNESS/mr-aufloesungs-trigger-ohne-waechter/observation.md)
+bei 2× — und **dieser Slice ist ihr drittes Auftreten**: die MR-014-Auflösung
+vollzog genau jenen Gegenstand. Der Ausgang ist im Lese-Schritt der Closure
+gelegt — *geplant* →
+[slice-208](../open/slice-208-trigger-audit-mr-eintraege.md).
 
 **Modus-Begründungsblock:** alle berührten Sub-Areas GF.

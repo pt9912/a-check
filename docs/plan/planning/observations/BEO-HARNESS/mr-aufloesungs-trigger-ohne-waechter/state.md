@@ -1,6 +1,10 @@
-**Stand:** offen (2×)
+**Stand:** geplant → [slice-208](../../../open/slice-208-trigger-audit-mr-eintraege.md) (3×)
 
-Unterhalb der Schwelle. Ein Sensor wäre denkbar — das Feld `Auflösungs-Trigger` ist in jedem
-Eintrag vorhanden, seine *Bedingung* ist aber Prosa und maschinell nicht auswertbar; prüfbar wäre
-allenfalls, **dass** eine Closure die aktiven Einträge angesehen hat, nicht **ob** das Urteil
-stimmt.
+Belege: [evidence/slice-170.md](evidence/slice-170.md),
+[evidence/slice-197.md](evidence/slice-197.md),
+[evidence/slice-206.md](evidence/slice-206.md) — der dritte Vorgang vollzog die
+MR-014-Auflösung, während ihr Trigger unbeobachtet blieb.
+
+Ein Sensor für die „dass"-Hälfte (eine Closure hat die aktiven Einträge angesehen) ist
+denkbar; ob das Urteil stimmt, bleibt Prosa (siehe oben). Die mechanisierende Hälfte
+trägt der Nachfolge-Slice.

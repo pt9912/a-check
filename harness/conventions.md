@@ -99,6 +99,13 @@ akzeptierten Eintrag wird **nichts nachträglich inhaltlich geändert** —
 Korrekturen entstehen als neuer `MR` oder als ausdrückliche Aufhebung,
 analog zur ADR-Immutabilität ([`AGENTS.md`](../AGENTS.md) §3.5).
 
+**Nachfolge-Durchgang** (`seit slice-206`): eine Auflösung umfasst fünf
+Handgriffe — Nachfolge-Datei anlegen · den Vorgänger per `git mv` nach
+[`conventions/done/`](conventions/done/) ziehen · **beide** Tabellen dieser
+Datei nachziehen (aktive Zeile heraus, aufgelöste Zeile hinein) · den Anker
+`mr-<NNN>` mitführen · die internen Links der gezogenen Datei an die neue
+Tiefe anpassen.
+
 **Benannte Grenze, gemessen (slice-187):** *analog* meint die Regel, nicht ihre
 Durchsetzung. `make doc-immutable` prüft ausschließlich
 `docs/plan/adr/[0-9]*.md` — die `paths`-Liste des Moduls `vcs` in
