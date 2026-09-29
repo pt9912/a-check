@@ -15,7 +15,7 @@
   Bestand ist **nicht verschlüsselt** und **nicht zugriffsbeschränkt**.
 - **Begründung:** [`MR-014`](../conventions.md#mr-014) verbot Tool-Call-Spans
   uneingeschränkt — gerechtfertigt aus dem Observability-Modell des Baseline-Moduls,
-  nicht aus der Lage dieses Repos. MR-014s eigener Auflösungs-Trigger („sobald
+  nicht aus der Lage dieses Repos. [`MR-014`](../conventions.md#mr-014)s eigener Auflösungs-Trigger („sobald
   Agenten-Läufe **im Repo selbst** abrechenbar werden") ist mit der Token-Erfassung
   dieser Schicht eingetreten; die Maintainer-Freigabe (2026-09-29) stellt die Zusage
   auf die Lokal/Draußen-Grenze um: beobachten ja, abfließen lassen nein.
