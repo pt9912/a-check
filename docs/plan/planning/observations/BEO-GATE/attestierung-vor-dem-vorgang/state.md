@@ -6,4 +6,4 @@ Lücke, slice-202). Belege: [evidence/slice-191.md](evidence/slice-191.md)
 
 *Geplant* war die Erweiterung vor slice-204 —
 [slice-202](../../../done/wellenlos/slice-202-dod-haekchen-lebenslage.md) und
-[slice-204](../../../in-progress/slice-204-review-haken-an-report-binden.md).
+[slice-204](../../../done/slice-204-review-haken-an-report-binden.md).
