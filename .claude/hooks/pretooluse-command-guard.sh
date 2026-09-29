@@ -75,7 +75,7 @@ guard_verdict() {
     const GATES = new Set(["gates","verify","ci","preflight","lint","test","coverage-gate",
       "arch-check","doc-check","image-test","trace-check","suppression-check",
       "gate-consistency","verify-risiko-ausgaenge",
-      "verify-observations","commit-scope-check","guard-selftest","doc-complete","doc-immutable",
+      "verify-observations","verify-review-haken","commit-scope-check","guard-selftest","doc-complete","doc-immutable",
       "doc-commits","doc-planning","doc-tracked","doc-targets","doc-structure","doc-workflows",
       "doc-reviews","doc-mentions",
       "version-coherence","ci-range-selftest","dcheck-phrase-selftest","symlink-check",
