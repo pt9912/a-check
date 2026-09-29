@@ -6,16 +6,17 @@
 - **Ersetzt-Baseline-Regel:** — *(keine — wie [`MR-020`](done/MR-020-adr-vorlage-generisch.md)/[`MR-023`](done/MR-023-id-schema-beobachtungs-kennung.md) korrigiert dieser Eintrag eine **Repo**-Aussage, keine Baseline-Regel; er ist generisch formuliert und überlebt Baseline-Migrationen.)*
 - **Adaption (die vollständige, aktuelle Deklaration):**
   - **Funktionale Anforderungen:** `AC-FA-<BEREICH>-<NNN>`; das Bereichskürzel
-    ist aus der Modus-Deklaration abgeleitet ( [`MR-002`](done/MR-002-id-schema-bereichskuerzel.md)).
+    wird im Lastenheft §3 deklariert (bereits
+    [`MR-002`](done/MR-002-id-schema-bereichskuerzel.md)).
   - **Nichtfunktionale Anforderungen:** `AC-QA-<NN>`.
   - **ADRs:** `ADR-NNNN`, vierstellig, chronologisch über den ADR-Index; die
     maßgebliche ADR-Vorlage ist **die jeweils aktuell vendorte Fassung**
     (bereits [`MR-020`](done/MR-020-adr-vorlage-generisch.md)).
   - **Konventions-Adaptionen:** `MR-NNN`.
   - **Carveouts:** `CO-<NNN>` (bisher ungenutzt).
-  - **Slices:** `slice-<NNN>`, numerisch — a-checks deklarierte Form; die
-    Baseline (Welle 130/131, „Kennungen sind Namen") lässt die Form ausdrücklich
-    als Repo-Deklaration ([`MR-000`](../conventions.md#mr-000) §ID-Schema-Deklaration).
+  - **Slices:** `slice-<NNN>`, numerisch — a-checks deklarierte Form; der
+    Kurs lässt die Form ausdrücklich als Repo-Deklaration
+    ([`MR-000`](../conventions.md#mr-000) §ID-Schema-Deklaration).
   - **Beobachtungen:** Pfad-Form `BEO-<KUERZEL>/<slug>`; das Kürzel ist das
     Sub-Area-Kürzel aus der Modus-Deklaration (bereits
     [`MR-023`](done/MR-023-id-schema-beobachtungs-kennung.md)).

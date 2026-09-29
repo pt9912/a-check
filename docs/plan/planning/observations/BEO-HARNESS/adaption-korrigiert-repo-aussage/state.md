@@ -1,4 +1,4 @@
-**Stand:** geplant → [slice-190](../../../in-progress/slice-190-id-schema-deklaration-ueberarbeiten.md) (3×)
+**Stand:** verkörpert in [`harness/conventions/MR-029-id-schema-deklaration-gesamt.md`](../../../../../../harness/conventions/MR-029-id-schema-deklaration-gesamt.md) `seit slice-190`
 
 **Der Trigger, den dieser Eintrag selbst nannte, ist eingetreten:** Mit
 [`MR-023`](../../../../../../harness/conventions.md#mr-023) repariert zum **zweiten** Mal ein

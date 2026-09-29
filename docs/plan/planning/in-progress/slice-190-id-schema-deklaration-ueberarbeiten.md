@@ -73,8 +73,9 @@ ID-Schema-Korrekturen der aktiven Menge).
 
 ## 4. Definition of Done
 
-- [x] Die ID-Schema-Deklaration steht als **eine** aktuelle Aussage; wer sie
-      nachschlägt, findet keinen Verweis auf eine Korrektur-Kette.
+- [x] Die ID-Schema-Deklaration steht als **eine** aktuelle Aussage; die
+      Deklaration selbst nennt keine Korrektur-Kette mehr — ihre Entstehung
+      dokumentiert [MR-029](../../../../harness/conventions/MR-029-id-schema-deklaration-gesamt.md)s Begründung (historischer Kontext).
 - [x] [`MR-020`](../../../../harness/conventions.md#mr-020) und
       [`MR-023`](../../../../harness/conventions.md#mr-023) sind aufgelöst
       (`git mv` nach `conventions/done/`) oder ihre Fortgeltung ist begründet.
@@ -155,9 +156,10 @@ Korrektur-Einträge an ihr messen wird.)*
 
 **Folge-Slices:** — *(keine.)*
 
-**Risiken aus §6:** jedes mit genau einem Ausgang — siehe §6.
+**Risiken aus §7:** jedes mit genau einem Ausgang — siehe §7.
 
-**Drei Paarungen:** Anker — der Steering-Loop-Eintrag liegt in
+**Drei Paarungen:** Anker — nichts verkörpert, kein `liegt in`-Feld; die
+Deklaration selbst liegt in
 [`harness/conventions/MR-029-id-schema-deklaration-gesamt.md`](../../../../harness/conventions/MR-029-id-schema-deklaration-gesamt.md) ·
 Folge-Slice — keine · Register —
 `BEO-HARNESS/adaption-korrigiert-repo-aussage` ist verkörpert (Anker am
@@ -165,8 +167,7 @@ state.md), die 3×-Kette ist geschlossen.
 
 ## 9. Sub-Area-Prüfungen und Modus-Begründung
 
-**Vorgelagert — Sub-Area-Wahl prüfen:** *(beim Übergang nach `in-progress/`
-auszufüllen — berührt ist `HARNESS`.)*
+**Vorgelagert — Sub-Area-Wahl prüfen:** berührt ist **HARNESS** (Achsen 1, 2, 3 ✓).
 
 **Vorgelagert — offene Beobachtungen sichten:** *(ebenso — **zwei** Quellen:
 Register und der Review-Report des Vorgänger-Slice; und das Register ist hier
