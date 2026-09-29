@@ -200,7 +200,7 @@ bricht.
 | [MR-017](conventions/done/MR-017-adr-vorlagen-version.md) <a id="mr-017"></a> | [MR-020](conventions/MR-020-adr-vorlage-generisch.md) |
 | [MR-018](conventions/done/MR-018-review-pflicht-v610-wortlaut.md) <a id="mr-018"></a> | Ereignis am 2026-09-06 (`v6.2.0` vendored — das Kurs-Template trägt den Rollenwechsel-Absatz jetzt selbst, [slice-170](../docs/plan/planning/done/wellenlos/slice-170-mr018-aufloesen.md)), **kein** Nachfolge-Eintrag |
 | [MR-012](conventions/done/MR-012-referenzmatrix-grandfathering.md) <a id="mr-012"></a> | [MR-025](conventions/MR-025-referenzmatrix-grandfathering-v6130.md) |
-| [MR-015](conventions/done/MR-015-welle-closure-ohne-replay.md) <a id="mr-015"></a> | [MR-026](conventions/MR-026-welle-closure-ohne-replay-v6130.md) |
+| [MR-015](conventions/done/MR-015-welle-closure-ohne-replay.md) <a id="mr-015"></a> | [MR-026](conventions/done/MR-026-welle-closure-ohne-replay-v6130.md) |
 | [MR-022](conventions/done/MR-022-verfeinerungs-form.md) <a id="mr-022"></a> | [MR-027](conventions/MR-027-verfeinerungs-form-v6130.md) |
 | [MR-026](conventions/done/MR-026-welle-closure-ohne-replay-v6130.md) <a id="mr-026"></a> | [MR-028](conventions/MR-028-welle-closure-ohne-replay-v6130-erratum.md) |
 

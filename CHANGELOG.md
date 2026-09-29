@@ -14,7 +14,7 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
   `Ersetzt-Baseline-Regel`-Zeiger in Abschnitte, die im Sprung **nicht wortgleich** blieben —
   die Nachfolge-Einträge
   [MR-025](harness/conventions/MR-025-referenzmatrix-grandfathering-v6130.md),
-  [MR-026](harness/conventions/MR-026-welle-closure-ohne-replay-v6130.md) und
+  [MR-026](harness/conventions/done/MR-026-welle-closure-ohne-replay-v6130.md) und
   [MR-027](harness/conventions/MR-027-verfeinerungs-form-v6130.md) tragen die gemessene Abweichung;
   die Adaptionen sind inhaltlich unverändert.
 
