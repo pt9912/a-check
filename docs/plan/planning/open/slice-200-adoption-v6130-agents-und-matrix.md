@@ -10,7 +10,7 @@ Schritt 5) und [MR-025](../../../../harness/conventions/MR-025-referenzmatrix-gr
 
 **Berührte Spec-Stellen:** — · Der Slice berührt kein Spec-Stratum.
 
-**Verantwortlich:** —
+**Verantwortlich:** Claude — gesetzt beim Übergang nach `in-progress/`.
 
 **Autor:** Claude. **Datum:** 2026-09-29.
 
