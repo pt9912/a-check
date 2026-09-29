@@ -24,7 +24,7 @@ bei **3×** (*geplant*; slice-169, slice-197, slice-200).
 
 **Ziel:** Ein DoD-Häkchen in einem Slice-Plan, der in `open/` oder `next/`
 liegt, ist mechanisch gefangen — ein `forbid-pattern` (Modul `structure`,
-konfiguriert in [`.d-check.yml`](../../../../.d-check.yml), im `gates`-Aggregat)
+konfiguriert in [`.d-check.yml`](../../../../.d-check.yml), im `verify`-Aggregat)
 meldet `- [x]` auf `docs/plan/planning/{open,next}/**/slice-*.md`. Damit ist
 die Attestierungs-Lücke (drei Auftreten: slice-169, slice-197, slice-200)
 geschlossen: das Häkchen entsteht nicht mehr davor, ohne dass ein Lauf es
@@ -41,7 +41,7 @@ sieht.
 
 ## 2. Definition of Done
 
-- [x] Das `forbid-pattern` ist konfiguriert und im `gates`-Aggregat wirksam;
+- [x] Das `forbid-pattern` ist konfiguriert und im `verify`-Aggregat wirksam;
       die Gegenprobe ist in **beiden** Richtungen belegt — Positiv (eine
       `[x]`-Zeile in `open/` meldet `section-forbidden`) und Negativ (offenes
       Häkchen meldet nicht) — plus Scoping-Kontrolle (`in-progress/` bleibt
