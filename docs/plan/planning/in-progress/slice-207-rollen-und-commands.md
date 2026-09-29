@@ -12,7 +12,7 @@ Datei liegt. Er wechselt nur durch `git mv`.
 
 **Berührte Spec-Stellen:** — · Der Slice berührt kein Spec-Stratum.
 
-**Verantwortlich:** — bis zur Priorisierung.
+**Verantwortlich:** Claude — gesetzt beim Übergang nach `in-progress/`.
 
 **Autor:** Claude. **Datum:** 2026-09-29.
 
