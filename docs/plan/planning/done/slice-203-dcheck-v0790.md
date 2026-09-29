@@ -86,6 +86,13 @@ Lerneintrag.
 
 ## 7. Closure-Notiz
 
+**Lerneintrag — Form: geschärfte Regel.** *Fremd-Provenanz mit fremder
+Vorgangs-Kennung zitieren.* Das Modul `file` stammt aus dem d-check-CHANGELOG
+(dort `slice-236`); meine Vorversion attribuierte es auf „Welle 147" — eine
+Nummer aus dem Baseline-Delta, die im geprüften d-check-Bestand nicht
+existiert (Review-F-2). Zwei Zählräume, zwei Kennungssysteme: die Kennung
+stammt aus dem Zählraum des geprüften Artefakts, nicht aus dem eigenen.
+
 **Was hat funktioniert:** der Pin-Bump ist ein Zwei-Zeilen-Vorgang geblieben —
 `DCHECK_DIGEST` heben, `d-check.mk` mit `--print-mk` der neuen Fassung
 regenerieren, die a-check-Pin-Anpassung nachführen. Der Diff ist minimal und
