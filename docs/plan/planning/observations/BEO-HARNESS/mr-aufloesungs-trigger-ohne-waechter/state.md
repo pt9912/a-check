@@ -1,4 +1,4 @@
-**Stand:** geplant → [slice-208](../../../open/slice-208-trigger-audit-mr-eintraege.md) (3×)
+**Stand:** geplant → [slice-208](../../../in-progress/slice-208-trigger-audit-mr-eintraege.md) (3×)
 
 Belege: [evidence/slice-170.md](evidence/slice-170.md),
 [evidence/slice-197.md](evidence/slice-197.md),
