@@ -147,6 +147,65 @@ if ! printf '%s' "$out" | grep -q "section-oversized"; then
   fail=1
 fi
 
+# --- Muster 3: `structure`-Modul, forbid-pattern "DoD-Haekchen in open/next" --
+
+# Slice-202: ein [x] in einem open/- oder next/-Slice attestiert einen
+# Vorgang, der noch aussteht (BEO-GATE/attestierung-vor-dem-vorgang, 3x:
+# slice-169, slice-197, slice-200). DREI Kontrollen: POSITIV (ein [x] in
+# open/ feuert) · NEGATIV (ein [ ] in open/ feuert nicht) · SCOPING (ein [x]
+# in in-progress/ feuert nicht — dort sind Haekchen der Normalfall).
+# Zitat-Kontexte geprueft (SL-004, empirisch in slice-202): Inline-Code- und
+# Code-Block-Nennungen des Musters bleiben gruen.
+
+setup_haekchen_fixture() {  # $1 = Zielverz., $2 = Lebenslage (open|next|in-progress), $3 = DoD-Zeile
+  local dir="$1" stage="$2" line="$3"
+  rm -rf "$dir"
+  mkdir -p "$dir/docs/plan/planning/$stage"
+  cat > "$dir/.d-check.yml" <<'YAML'
+modules: [structure]
+structure:
+  - files: "docs/plan/planning/open/**/slice-*.md"
+    section-pattern: '^#+ .*(DoD|Definition of Done)'
+    forbid-pattern: '^\s*- \[x\]'
+  - files: "docs/plan/planning/next/**/slice-*.md"
+    section-pattern: '^#+ .*(DoD|Definition of Done)'
+    forbid-pattern: '^\s*- \[x\]'
+YAML
+  cat > "$dir/docs/plan/planning/$stage/slice-902-fixture.md" <<EOF
+# slice-902 fixture
+
+## DoD
+
+${line}
+EOF
+  git_init_fixture "$dir"
+}
+
+setup_haekchen_fixture "$TMP/haekchen-pos" "open" \
+  "- [x] Attestierter Vorgang, der noch aussteht."
+out="$(run_dcheck "$TMP/haekchen-pos")"
+if ! printf '%s' "$out" | grep -q "section-forbidden"; then
+  echo "dcheck-phrase-selftest: FAIL — ein [x] in open/ feuert das forbid-pattern nicht mehr (Positiv-Kontrolle, attestierung-vor-dem-vorgang 3x)." >&2
+  printf '%s\n' "$out" >&2
+  fail=1
+fi
+
+setup_haekchen_fixture "$TMP/haekchen-neg" "open" \
+  "- [ ] Echte offene Aufgabe."
+out="$(run_dcheck "$TMP/haekchen-neg")"
+if printf '%s' "$out" | grep -q "section-forbidden"; then
+  echo "dcheck-phrase-selftest: FAIL — das forbid-pattern greift bei offenem Haekchen (Negativ-Kontrolle)." >&2
+  fail=1
+fi
+
+setup_haekchen_fixture "$TMP/haekchen-scope" "in-progress" \
+  "- [x] Mit der Arbeit abgehakt — hier legitim."
+out="$(run_dcheck "$TMP/haekchen-scope")"
+if printf '%s' "$out" | grep -q "section-forbidden"; then
+  echo "dcheck-phrase-selftest: FAIL — das forbid-pattern greift in in-progress/, wo Haekchen legitim sind (Scoping-Kontrolle)." >&2
+  fail=1
+fi
+
 # --- KORPUS-SEITE: traegt der echte Bestand die Trigger-Phrase noch? -------
 #
 # Geprueft ist NICHTLEERHEIT: der Lauf ist rot, wenn die Kandidatenmenge des
