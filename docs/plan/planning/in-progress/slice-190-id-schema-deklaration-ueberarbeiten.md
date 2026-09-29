@@ -52,22 +52,32 @@ an derselben Zeile-Familie: der ID-Schema-Deklaration in
 
 ## 2. Ausgangsmessung
 
-*(beim Übergang nach `in-progress/` zu erheben — mindestens: wie viele aktive
-`MR`-Einträge tragen `Ersetzt-Baseline-Regel: —`, und welche davon hängen an der
-ID-Schema-Deklaration.)*
+**Vier** aktive `MR`-Einträge tragen `Ersetzt-Baseline-Regel: —`:
+[`MR-019`](../../../../harness/conventions/MR-019-review-dod-opt-in.md),
+[`MR-020`](../../../../harness/conventions/done/MR-020-adr-vorlage-generisch.md),
+[`MR-023`](../../../../harness/conventions/done/MR-023-id-schema-beobachtungs-kennung.md),
+[`MR-024`](../../../../harness/conventions/MR-024-historische-kern-drift-deklariert.md).
+Davon hängen **zwei** an der ID-Schema-Deklaration: MR-020 und MR-023
+(gegreppt über `id-schema` in den Eintrags-Dateien — zweimal verschieden
+gezählt: Anker-Suche in conventions.md findet MR-020/MR-023 als die einzigen
+ID-Schema-Korrekturen der aktiven Menge).
 
 ## 3. Umsetzung
 
-*(entsteht mit der Arbeit)*
+| Datei / Komponente | Änderungs-Art | Begründung |
+|---|---|---|
+| [`harness/conventions/MR-029-id-schema-deklaration-gesamt.md`](../../../../harness/conventions/MR-029-id-schema-deklaration-gesamt.md) | neu | Die vollständige, generisch formulierte Deklaration — löst MR-020/MR-023 ab |
+| [`harness/conventions.md`](../../../../harness/conventions.md) | update | Aktive/aufgelöste Tabellen; Zu-MR-000-Zeiger auf die aktuelle Fassung |
+| [`harness/conventions/done/MR-020…`](../../../../harness/conventions/done/), `MR-023` | refactor | Reine `git mv`-Moves; interne Links auf die done/-Lage nachgezogen |
 
 ## 4. Definition of Done
 
-- [ ] Die ID-Schema-Deklaration steht als **eine** aktuelle Aussage; wer sie
+- [x] Die ID-Schema-Deklaration steht als **eine** aktuelle Aussage; wer sie
       nachschlägt, findet keinen Verweis auf eine Korrektur-Kette.
-- [ ] [`MR-020`](../../../../harness/conventions.md#mr-020) und
+- [x] [`MR-020`](../../../../harness/conventions.md#mr-020) und
       [`MR-023`](../../../../harness/conventions.md#mr-023) sind aufgelöst
       (`git mv` nach `conventions/done/`) oder ihre Fortgeltung ist begründet.
-- [ ] [`BEO-HARNESS/adaption-korrigiert-repo-aussage`](../observations/BEO-HARNESS/adaption-korrigiert-repo-aussage/observation.md)
+- [x] [`BEO-HARNESS/adaption-korrigiert-repo-aussage`](../observations/BEO-HARNESS/adaption-korrigiert-repo-aussage/observation.md)
       trägt seinen Ausgang.
 - [ ] Unabhängiger Review durchgeführt (Report unter [`docs/reviews/`](../../../reviews/README.md)).
 - [ ] Closure-Notiz mit Steering-Loop-Lerneintrag.
@@ -104,11 +114,49 @@ Lerneintrag.
   wieder veraltet. — **Ausgang:** <offen bis Closure>
 - **Die Kennungen stehen in Commit-Messages und in `.d-check.yml`.** Eine
   geänderte Form bräche `make trace-check` rückwirkend.
-  — **Ausgang:** <offen bis Closure>
+  — **Ausgang:** *entfallen*, gestrichen mit Begründung: die Formen wurden
+  nicht geändert — die Konversion konsolidiert die Deklaration, die Kennungen
+  (inkl. `slice-NNN` numerisch) bleiben wie deklariert.
 
 ## 8. Closure-Notiz
 
-*(bei Closure auszufüllen)*
+**Lerneintrag — Form: geschärfte Regel.** *Eine Deklaration, die über
+Korrektur-Einträge gepflegt wird, wird durch einen Ablöse-Eintrag geschlossen,
+der sie als Ganzes und generisch formuliert — die Korrektur-Kette selbst ist
+das Symptom, dass die Deklaration ihren Ort gewechselt hat.* Gemessen:
+zweimal korrigierte Einträge an einer Zeilen-Familie (MR-020/MR-023), beide
+unter dem Fork-Test; MR-029 fasst sie als Ganzes. Die generische Formulierung
+(„die jeweils aktuell vendorte Fassung") statt einer Versionsnummer ist die
+Maßnahme gegen die Wiederholung.
+
+**Was hat funktioniert:** die Ausgangsmessung (§2) trennte die ID-Schema-Familie
+(MR-020/023) von den übrigen Zeiger-freien Einträgen (MR-019/024) — die
+Ablösung blieb auf die Familie beschränkt.
+
+**Was ging anders als geplant:** die Link-Tiefen der bewegten Einträge — drei
+Nachzugs-Runden, gefangen von `doc-check` (`repo-escape`, `target-missing`).
+Die Tiefe der Auslagerungs-Orte (harness/rules/ bzw. conventions/done/) ist
+nicht die Herkunfts-Tiefe; die Regeln stehen im Selbsttest-Flow, nicht in der
+Vorab-Prüfung.
+
+**Steering-Loop-Eintrag:** — *(nichts verkörpert; die Deklaration selbst ist
+das Artefakt, und der Fork-Test bleibt das Instrument, das künftige
+Korrektur-Einträge an ihr messen wird.)*
+
+**Beobachtungs-Register (`../observations/`):**
+`BEO-HARNESS/adaption-korrigiert-repo-aussage/` — Ausgang *verkörpert*
+(`seit slice-190`, MR-029 als die Deklaration): die drei Vorfälle
+(slice-097, slice-162, slice-187) sind durch die Ablösung gegenstandslos.
+
+**Folge-Slices:** — *(keine.)*
+
+**Risiken aus §6:** jedes mit genau einem Ausgang — siehe §6.
+
+**Drei Paarungen:** Anker — der Steering-Loop-Eintrag liegt in
+`harness/conventions/MR-029-id-schema-deklaration-gesamt.md` ·
+Folge-Slice — keine · Register —
+`BEO-HARNESS/adaption-korrigiert-repo-aussage` ist verkörpert (Anker am
+state.md), die 3×-Kette ist geschlossen.
 
 ## 9. Sub-Area-Prüfungen und Modus-Begründung
 
