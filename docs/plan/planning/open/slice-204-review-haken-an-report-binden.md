@@ -30,10 +30,11 @@ Gestalt nicht fängt: sie entsteht im `in-progress/`-Stand.
 
 **Ausdrücklich NICHT in diesem Slice** — je Punkt mit Begründung:
 
-- **Änderungen am `reviews`-Modul oder an MR-019.** *Es wäre ein anderer
-  Vorgang*: MR-019 (Opt-in) und der done/-Geltungsbereich von `doc-reviews`
-  sind deklarierte Entscheidungen; die Bindung hier läuft über das
-  `structure`-Modul, nicht über `doc-reviews`.
+- **Änderungen am `reviews`-Modul oder an
+  [`MR-019`](../../../../harness/conventions/MR-019-review-dod-opt-in.md).**
+  *Es wäre ein anderer Vorgang*: [`MR-019`](../../../../harness/conventions.md#mr-019) (Opt-in) und der done/-Geltungsbereich
+  von `doc-reviews` sind deklarierte Entscheidungen; die Bindung hier läuft über
+  das `structure`-Modul, nicht über `doc-reviews`.
 
 ## 2. Definition of Done
 
