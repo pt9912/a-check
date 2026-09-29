@@ -445,7 +445,7 @@ structure:
   # weil ihr Gegenstand weg ist; die Zellengrenze der Sensors-Tabelle oben deckt
   # ihn jetzt allein.
 
-  # (8) Chronik-Phrasen in gelesenen Dateien (slice-202... nein: slice-191).
+  # (8) Chronik-Phrasen in gelesenen Dateien (slice-191).
   #     Die haeufige Schreibweise von Chronik ist greppbar, die Klasse nicht
   #     (BEO-HARNESS/chronik-in-gelesenen-dateien, 3x: slice-103, slice-182,
   #     slice-187). GRENZE: der Sensor prueft eine Phrase, nicht die Klasse --

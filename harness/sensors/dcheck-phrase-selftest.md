@@ -7,11 +7,16 @@ ausfallen kann:
 
 | Hälfte | Frage | Kontrollen |
 |---|---|---|
-| **Werkzeug** | Reagiert `d-check` noch auf die Formulierung? | 11 — vier Muster (reviews-Phrase, tasks-ignore-pattern, DoD-Häkchen in `open/`) mit Positiv-/Negativ-/Scoping-/Zitat-Kontrollen, gegen eigene Fixtures und den gepinnten Digest |
+| **Werkzeug** | Reagiert `d-check` noch auf die Formulierung? | 12 — vier Muster (reviews-Phrase, tasks-ignore-pattern, DoD-Häkchen in `open/`) mit Positiv-/Negativ-/Scoping-/Zitat-Kontrollen, gegen eigene Fixtures und den gepinnten Digest |
 | **Korpus** | Trägt a-checks eigener `done/`-Bestand sie noch? | 1 — **Nichtleerheit** der `reviews`-Kandidatenmenge |
 
-Die Werkzeug-Seite prüft **zwei** Muster: die `reviews`-Trigger-Phrase
-„unabhängiger Review" und `structure`s `tasks-ignore-pattern`. Die Korpus-Seite
+Die Werkzeug-Seite prüft **vier** Muster: die `reviews`-Trigger-Phrase
+„unabhängiger Review", `structure`s `tasks-ignore-pattern`, `structure`s
+`forbid-pattern` gegen DoD-Häkchen in `open/` (slice-202, Attestierungs-Klasse;
+Grenze: greift nur bei der gemessenen Gestalt „[x] als erste Inhaltszeile der
+DoD-Sektion") und `structure`s Chronik-Phrasen in gelesenen Dateien
+(slice-191; Grenze: prüft eine Phrase, nicht die Klasse — Umformulierungen
+entkommen). Die Korpus-Seite
 prüft **eines** — nur die `reviews`-Phrase. Der Unterschied ist die Ausfall-Art:
 Verliert `reviews` seine Kandidaten, meldet `doc-reviews` **grün, ohne etwas zu
 prüfen**. Verliert `tasks-ignore-pattern` seine Treffer, zählen die konstanten

@@ -243,9 +243,11 @@ fi
 # Slice-191: die haeufige Schreibweise von Chronik in AGENTS.md / harness/
 # docs/plan/planning/README.md ist greppbar (BEO-HARNESS/
 # chronik-in-gelesenen-dateien, 3x: slice-103, slice-182, slice-187).
-# DREI Kontrollen: POSITIV (die Phrase in AGENTS.md feuert) · NEGATIV (eine
+# VIER Kontrollen: POSITIV (die Phrase in AGENTS.md feuert) · NEGATIV (eine
 # saubere Datei bleibt gruen) · ZITAT (Inline-Code-Nennung bleibt gruen,
-# SL-004). GRENZE: der Sensor prueft eine Phrase, nicht die Klasse.
+# SL-004) · SCOPING (Chronik in einem Slice-Plan bleibt gruen — der
+# Geltungsbereich ist AGENTS.md, harness/*.md und Planning-README).
+# GRENZE: der Sensor prueft eine Phrase, nicht die Klasse.
 
 CHRONIK_PATTERN="$(grep -B2 'forbid-pattern.*Bis slice' .d-check.yml | grep -m1 'forbid-pattern' | sed -e "s/.*forbid-pattern: '//" -e "s/'.*//")"
 if [ -z "$CHRONIK_PATTERN" ]; then
@@ -270,13 +272,13 @@ YAML
 
 ## Sektion
 
-${body}
+$(cat "$body")
 EOF
   git_init_fixture "$dir"
 }
 
-setup_chronik_fixture "$TMP/chronik-pos" \
-  "Bis slice-99 stand hier etwas."
+printf '%s\n' "Bis slice-99 stand hier etwas." > "$TMP/body-chronik-pos.txt"
+setup_chronik_fixture "$TMP/chronik-pos" "$TMP/body-chronik-pos.txt"
 out="$(run_dcheck "$TMP/chronik-pos")"
 if ! printf '%s' "$out" | grep -q "section-forbidden"; then
   echo "dcheck-phrase-selftest: FAIL — die Chronik-Phrase feuert nicht mehr (Positiv-Kontrolle, chronik-in-gelesenen-dateien 3x)." >&2
@@ -284,8 +286,8 @@ if ! printf '%s' "$out" | grep -q "section-forbidden"; then
   fail=1
 fi
 
-setup_chronik_fixture "$TMP/chronik-neg" \
-  "Eine saubere Aussage ueber den Zustand."
+printf '%s\n' "Eine saubere Aussage ueber den Zustand." > "$TMP/body-chronik-neg.txt"
+setup_chronik_fixture "$TMP/chronik-neg" "$TMP/body-chronik-neg.txt"
 out="$(run_dcheck "$TMP/chronik-neg")"
 if printf '%s' "$out" | grep -q "section-forbidden"; then
   echo "dcheck-phrase-selftest: FAIL — das Chronik-Muster greift bei sauberer Aussage (Negativ-Kontrolle)." >&2
@@ -293,7 +295,7 @@ if printf '%s' "$out" | grep -q "section-forbidden"; then
 fi
 
 cat > "$TMP/body-chronik-zitat.txt" <<'BODY'
-Die Form `- [x]` und der Satz "Bis slice-99 stand hier etwas" sind in
+Die Form `- [x]` und der Satz `Bis slice-99 stand hier etwas` sind in
 Inline-Code zitiert.
 BODY
 setup_chronik_fixture "$TMP/chronik-zitat" "$TMP/body-chronik-zitat.txt"
@@ -309,11 +311,23 @@ fi
 # Historie-Texte). Die Fixture nutzt die echte Konfigurationsform (nur die
 # AGENTS.md-Regel) — der Plan mit Chronik-Zeile liegt ausserhalb des Geltungs-
 # bereichs und bleibt gruen.
-mkdir -p "$TMP/chronik-scope/docs/plan/planning/open"
+mkdir -p "$TMP/chronik-scope/docs/plan/planning/open" "$TMP/chronik-scope/harness"
+# Die Fixture spiegelt die ECHTEN drei Regeln (AGENTS.md, harness/*.md,
+# Planning-README) -- ein Chronik-Slice-Plan bleibt trotzdem gruen: er liegt
+# ausserhalb aller drei Geltungsbereiche. Nur so pinnt die Kontrolle den
+# echten Geltungsbereich; eine spaeter verbreiterte files:-Glob wuerde rot.
 cat > "$TMP/chronik-scope/.d-check.yml" <<YAML
 modules: [structure]
 structure:
   - files: "AGENTS.md"
+    section-pattern: '^#'
+    sections: each
+    forbid-pattern: '${CHRONIK_PATTERN}'
+  - files: "harness/*.md"
+    section-pattern: '^#'
+    sections: each
+    forbid-pattern: '${CHRONIK_PATTERN}'
+  - files: "docs/plan/planning/README.md"
     section-pattern: '^#'
     sections: each
     forbid-pattern: '${CHRONIK_PATTERN}'
@@ -322,6 +336,17 @@ cat > "$TMP/chronik-scope/AGENTS.md" <<'BODY'
 # test
 
 ## Sektion
+
+Sauber.
+BODY
+mkdir -p "$TMP/chronik-scope/harness" "$TMP/chronik-scope/docs/plan/planning"
+cat > "$TMP/chronik-scope/harness/conventions.md" <<'BODY'
+# Konventionen (Fixture)
+
+Sauber.
+BODY
+cat > "$TMP/chronik-scope/docs/plan/planning/README.md" <<'BODY'
+# Planning (Fixture)
 
 Sauber.
 BODY
