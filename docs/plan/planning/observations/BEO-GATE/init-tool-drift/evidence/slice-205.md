@@ -1,0 +1,2 @@
+**Vorgang:** slice-205
+**Fund:** Der Bootstrap-Vergleich gegen die Generator-Ausgabe (`ai-harness-init`, `v6.13.0`) ist **Snapshot-gebunden**: sieben Deltas gemessen am 2026-09-29, davon drei als Übernahme entschieden — die Erfassungsschicht kam nicht durch die Maintainer-Frage, sondern aus der Werkzeug-Ausgabe. Beim nächsten Kurs-Release ändert sich der Vergleichsgegenstand; der Bestand driftet vom Generator auseinander, nicht umgekehrt.
