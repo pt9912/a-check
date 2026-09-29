@@ -10,7 +10,7 @@ bei **3×** (*geplant*); ausgelöst durch
 
 **Berührte Spec-Stellen:** — · Der Slice berührt kein Spec-Stratum.
 
-**Verantwortlich:** —
+**Verantwortlich:** Claude — gesetzt beim Übergang nach `in-progress/`.
 
 **Autor:** Claude. **Datum:** 2026-09-08.
 

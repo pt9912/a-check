@@ -35,7 +35,7 @@
   nächsten Nachfolge-Eintrag.
 - **Auflösungs-Trigger:** permanent für die Form. Der Eintrag wird **entbehrlich**, sobald die
   ID-Schema-Deklaration als Ganzes überarbeitet ist statt durch Nachfolge-Einträge geflickt —
-  dieser Rückbau ist als [slice-190](../../docs/plan/planning/open/slice-190-id-schema-deklaration-ueberarbeiten.md)
+  dieser Rückbau ist als [slice-190](../../docs/plan/planning/in-progress/slice-190-id-schema-deklaration-ueberarbeiten.md)
   geplant und ist der Ausgang von
   [`BEO-HARNESS/adaption-korrigiert-repo-aussage`](../../docs/plan/planning/observations/BEO-HARNESS/adaption-korrigiert-repo-aussage/observation.md)
   bei 3×.
