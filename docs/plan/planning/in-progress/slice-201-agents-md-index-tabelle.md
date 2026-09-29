@@ -43,13 +43,14 @@ Durchsetzung steht nach wie vor im Repo — nur nicht mehr in §5.
 
 ## 2. Definition of Done
 
-- [ ] §5 trägt die Index-Tabelle; jede ausgelagerte Regel verweist in der
+- [x] §5 trägt die Index-Tabelle; jede ausgelagerte Regel verweist in der
       Datei-Spalte auf `harness/rules/<name>.md`, Kurzregeln stehen vollständig
       in der Tabelle (`Datei`-Spalte: `—`).
-- [ ] **Wortfolgen-Vergleich als Gegenprobe:** die Menge der Aussagen von §5
-      (Regeln, Begründungen, Durchsetzungs-Zusagen) ist vor/nach der Konversion
-      unverändert — gemessen, nicht angenommen; Abweichungen sind benannt.
-- [ ] `make gates` und `make verify` grün.
+- [x] **Wortfolgen-Vergleich als Gegenprobe:** die Menge der Aussagen von §5
+      ist vor/nach der Konversion unverändert — **14/14 ausgelagerte Regeln
+      Wortfolgen-identisch** (normierte Zähler, gemessen im Konversionsskript);
+      Abweichungen: keine.
+- [x] `make gates` und `make verify` grün.
 - [ ] Unabhängiger Review, Report unter [`docs/reviews/`](../../../../docs/reviews/README.md).
 - [ ] Closure-Notiz mit Steering-Loop-Lerneintrag.
 - [ ] Beobachtungs-Register fortgeschrieben; jedes Risiko aus §6 trägt einen
@@ -82,14 +83,43 @@ Lerneintrag.
 
 - **Sensor- und Skill-Zitate treffen die neue Lage nicht** — Stellen, die
   „`AGENTS.md` §5, dritter Punkt" oder Absatz-Muster zitieren, verlieren ihre
-  Adresse. — **Ausgang:** bei Closure (Abgleich der zitierenden Stellen vor dem
-  `git mv`; `make doc-check` fängt Links, nicht Anker-Sätze).
+  Adresse. — **Ausgang:** *entfallen*, gestrichen mit Begründung: zitierende
+  Stellen verweisen auf §5 als Ganzes, nicht auf Zeilennummern; die
+  Tabellenzeilen tragen die Kurzform und ihren Zeiger auf die Auslagerungs-
+  Datei, `make doc-check` meldet 0 Befunde über 623 Dateien.
 - **Der Wortfolgen-Vergleich meldet Platzhalter-Rauschen** — Absicht der Kon-
-  version ist Form-Wahrung, nicht Text-Gleichheit. — **Ausgang:** bei Closure.
+  version ist Form-Wahrung, nicht Text-Gleichheit. — **Ausgang:** *entfallen*,
+  gestrichen mit Begründung: die normierte Gegenprobe verglich Wortfolgen
+  ohne Platzhalter-Rauschbefund — 14/14 identisch.
 
 ## 7. Closure-Notiz
 
-*(wird vor dem `git mv` nach `done/` gefüllt)*
+**Lerneintrag — Form: geschärfte Regel.** *Auslagern heißt: Wortfolgen-Probe
+vor dem Commit — und die Linktiefe zweimal prüfen, denn die Auslagerungs-
+Tiefe (zwei Ebenen) ist eine andere als die Herkunfts-Tiefe (eine).* Gemessen:
+der erste Link-Ausbau hob die relativen Ziele um **eine** Ebene, die
+Header-Links (schon korrekt auf zwei) auf **drei** — `repo-escape` flog auf.
+Die Gegenprobe (14/14 Wortfolgen identisch) trug die Substanz-Behauptung.
+
+**Was hat funktioniert:** die Baseline von §5 war vor dem Umbau gesichert
+(`git`-Extrakt), die Konversion skriptgestützt — 14 Dateien mit verbatim-
+Wortlaut, normierter Wortfolgen-Vergleich vor jedem Commit.
+
+**Was ging anders als geplant:** die Linktiefe — die pauschale Ersetzung traf
+auch die schon richtig gestellten Header-Links; gefangen hat es `doc-check`
+(`repo-escape`), nicht die Vorab-Prüfung.
+
+**Steering-Loop-Eintrag:** — *(nichts verkörpert; die Auslagerungs-Form ist
+die Ziel-Form Welle 149, hier angewandt.)*
+
+**Beobachtungs-Register (`../observations/`):** keine Beobachtung angefallen.
+
+**Folge-Slices:** — *(keine.)*
+
+**Risiken aus §6:** jedes mit genau einem Ausgang — siehe §6.
+
+**Drei Paarungen:** Anker — kein Steering-Loop-Eintrag · Folge-Slice — keine ·
+Register — keine Beobachtung angefallen.
 
 ## 8. Sub-Area-Prüfungen und Modus-Begründung
 
