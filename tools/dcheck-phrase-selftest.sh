@@ -147,29 +147,36 @@ if ! printf '%s' "$out" | grep -q "section-oversized"; then
   fail=1
 fi
 
-# --- Muster 3: `structure`-Modul, forbid-pattern "DoD-Haekchen in open/next" --
+# --- Muster 3: `structure`-Modul, forbid-pattern "DoD-Haekchen in open/" ----
 
-# Slice-202: ein [x] in einem open/- oder next/-Slice attestiert einen
-# Vorgang, der noch aussteht (BEO-GATE/attestierung-vor-dem-vorgang, 3x:
-# slice-169, slice-197, slice-200). DREI Kontrollen: POSITIV (ein [x] in
-# open/ feuert) · NEGATIV (ein [ ] in open/ feuert nicht) · SCOPING (ein [x]
-# in in-progress/ feuert nicht — dort sind Haekchen der Normalfall).
-# Zitat-Kontexte geprueft (SL-004, empirisch in slice-202): Inline-Code- und
-# Code-Block-Nennungen des Musters bleiben gruen.
+# Slice-202: ein [x] in einem open/-Slice attestiert einen Vorgang, der noch
+# aussteht (BEO-GATE/attestierung-vor-dem-vorgang, 3x: slice-169, slice-197,
+# slice-200). VIER Kontrollen: POSITIV (ein [x] in open/ feuert) · NEGATIV
+# (ein [ ] in open/ feuert nicht) · SCOPING (ein [x] in in-progress/ feuert
+# nicht — dort sind Haekchen der Normalfall) · ZITAT (Code-Block- und
+# Inline-Code-Nennungen des Musters bleiben gruen, SL-004). GRENZE: next/ ist
+# in .d-check.yml nicht gedeckt (leere Kandidatenmenge laeuft fail-closed
+# rot, gemessen slice-202) — die Fixture spiegelt genau diesen Zustand.
+
+# Das Muster wird aus .d-check.yml gelesen, nicht kopiert (Review slice-202,
+# F-7: eine Kopie neben dem Original bleibt gruen, nachdem das Original
+# gebrochen wurde). Der Auszug ist fail-closed.
+HAEKCHEN_PATTERN="$(grep -A6 'planning/open/\*\*/slice-' .d-check.yml | grep -m1 'forbid-pattern' | sed -e "s/.*forbid-pattern: '//" -e "s/'.*//")"
+if [ -z "$HAEKCHEN_PATTERN" ]; then
+  echo "dcheck-phrase-selftest: FAIL — forbid-pattern der open/-Bedingung nicht in .d-check.yml gefunden (fail-closed)." >&2
+  exit 2
+fi
 
 setup_haekchen_fixture() {  # $1 = Zielverz., $2 = Lebenslage (open|next|in-progress), $3 = DoD-Zeile
   local dir="$1" stage="$2" line="$3"
   rm -rf "$dir"
   mkdir -p "$dir/docs/plan/planning/$stage"
-  cat > "$dir/.d-check.yml" <<'YAML'
+  cat > "$dir/.d-check.yml" <<YAML
 modules: [structure]
 structure:
   - files: "docs/plan/planning/open/**/slice-*.md"
     section-pattern: '^#+ .*(DoD|Definition of Done)'
-    forbid-pattern: '^\s*- \[x\]'
-  - files: "docs/plan/planning/next/**/slice-*.md"
-    section-pattern: '^#+ .*(DoD|Definition of Done)'
-    forbid-pattern: '^\s*- \[x\]'
+    forbid-pattern: '${HAEKCHEN_PATTERN}'
 YAML
   cat > "$dir/docs/plan/planning/$stage/slice-902-fixture.md" <<EOF
 # slice-902 fixture
@@ -203,6 +210,14 @@ setup_haekchen_fixture "$TMP/haekchen-scope" "in-progress" \
 out="$(run_dcheck "$TMP/haekchen-scope")"
 if printf '%s' "$out" | grep -q "section-forbidden"; then
   echo "dcheck-phrase-selftest: FAIL — das forbid-pattern greift in in-progress/, wo Haekchen legitim sind (Scoping-Kontrolle)." >&2
+  fail=1
+fi
+
+setup_haekchen_fixture "$TMP/haekchen-zitat" "open" \
+  "- Zitat des Musters im Code-Block unten.\n\n\`\`\`\n- [x] zitiertes Muster\n\`\`\`"
+out="$(run_dcheck "$TMP/haekchen-zitat")"
+if printf '%s' "$out" | grep -q "section-forbidden"; then
+  echo "dcheck-phrase-selftest: FAIL — das forbid-pattern trifft das zitierte Muster im Code-Block (Zitat-Kontext, SL-004)." >&2
   fail=1
 fi
 
@@ -257,7 +272,7 @@ if [ "$fail" -ne 0 ]; then
   exit 1
 fi
 
-echo "dcheck-phrase-selftest ok: 4 Werkzeug-Kontrollen (2 Muster × 2 Richtungen) und 1 Korpus-Kontrolle"
+echo "dcheck-phrase-selftest ok: 7 Werkzeug-Kontrollen (3 Muster) und 1 Korpus-Kontrolle"
 echo "  (reviews-Phrase auf einem DoD-Haken: ${korpus_reviews} flache(r) Slice(s) in ${done_dir})."
 echo "  NICHT geprueft: die uebrigen phrasen-basierten Felder in .d-check.yml — fuer sie gibt es"
 echo "  keinen belegten Ausfall, und ein Sensor ohne Anlass ist selbst eine Behauptung."

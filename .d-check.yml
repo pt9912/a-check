@@ -410,20 +410,25 @@ structure:
           cell-min-chars: 1
     hint: "Zellengrenze der Adaptions-Uebersicht (max 250 Zeichen, nicht leer): die Begruendung gehoert in den MR-Eintrag, die Tabelle traegt nur, was ohne Oeffnen entscheidbar sein muss"
 
-  # (7) DoD-Haekchen an die Lebenslage binden (slice-202): ein [x] in einem
-  #     Slice in open/ oder next/ attestiert einen Vorgang, der noch
-  #     aussteht — die Attestierungs-Klasse
-  #     (BEO-GATE/attestierung-vor-dem-vorgang, 3x: slice-169, slice-197,
-  #     slice-200). Abgehaekt wird erst in in-progress/ (mit der Arbeit) und
-  #     in done/ (nach ihr) — dort gilt die Regel nicht.
+  # (7) DoD-Haekchen an die Lebenslage binden (seit slice-202): ein [x] in
+  #     einem Slice in open/ attestiert einen Vorgang, der noch aussteht —
+  #     die Attestierungs-Klasse (BEO-GATE/attestierung-vor-dem-vorgang,
+  #     3x: slice-169, slice-197, slice-200). Abgehaekt wird erst in
+  #     in-progress/ (mit der Arbeit) und in done/ (nach ihr) — dort gilt
+  #     die Regel nicht.
+  #     GRENZE: next/ ist NICHT gedeckt — die Kandidatenmenge ist leer
+  #     (nur README.md), und die Bedingung laeuft bei leerer Menge
+  #     fail-closed rot (section-missing, gemessen slice-202). Wird next/
+  #     belegt, zieht eine zweite Bedingung mit gleicher Form nach.
   - files: "docs/plan/planning/open/**/slice-*.md"
     section-pattern: '^#+ .*(DoD|Definition of Done)'
     forbid-pattern: '^\s*- \[x\]'
+    # Bestand ohne DoD-Gliederung: slice-045 ist 2026-07-25 entschieden
+    # ("jetzt nicht bauen") und traegt seine Entscheide in Prosa — eine
+    # Nachkonvertierung des Altbstands waere Form-Kosmetik (slice-202).
+    exempt-paths:
+      - "docs/plan/planning/open/slice-045-*.md"
     hint: "Haekchen in open/ attestieren Zukunft (BEO-GATE/attestierung-vor-dem-vorgang, 3x) — abhaken erst ab in-progress"
-  - files: "docs/plan/planning/next/**/slice-*.md"
-    section-pattern: '^#+ .*(DoD|Definition of Done)'
-    forbid-pattern: '^\s*- \[x\]'
-    hint: "Haekchen in next/ attestieren Zukunft (BEO-GATE/attestierung-vor-dem-vorgang, 3x) — abhaken erst ab in-progress"
 
   # ENTFALLEN mit slice-193: die Zellengrenze der Zweck-Spalte in AGENTS.md §4
   # hatte ihren Gegenstand verloren, als der Gate-Index nach harness/README.md
