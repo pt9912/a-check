@@ -2,12 +2,12 @@
 
 ## Vertrag
 
-Jede Closure-Notiz eines Slices ab `slice-208` in `docs/plan/planning/done/`
-trägt eine Zeile **„Trigger-Audit der aktiven MR:"** — den Beleg, dass die
-Closure die aktiven `MR`-Einträge aus
-[`harness/conventions.md`](../../harness/conventions.md) §Aktive Adaptionen
-angesehen hat. Die leere Aktiven-Menge wird **gemeldet**, nicht still
-übersprungen.
+Jede Closure-Notiz eines Slices ab `slice-208` — in `in-progress/`
+(abschlussbereit) wie in `docs/plan/planning/done/` — trägt eine Zeile
+**„Trigger-Audit der aktiven MR:"**, die **jede aktive `MR`-Kennung** nennt
+(gelesen aus [`harness/conventions.md`](../../harness/conventions.md)
+§Aktive Adaptionen, Tabellenzeilen). Die leere Aktiven-Menge wird
+**gemeldet**, nicht still übersprungen.
 
 ## Grenze — was das Grün nicht abdeckt
 
@@ -17,9 +17,10 @@ angesehen hat. Die leere Aktiven-Menge wird **gemeldet**, nicht still
 2. **Grandfathering** — Closures vor slice-208 entstanden, bevor die Zusage
    stand; sie werden nicht geadelt, sie sind ausgenommen. Der Grenzstand
    wandert mit (`AUDIT_FROM`).
-3. **Welle-Closures in `done/welle-*/`** werden nicht gescannt — deren Form
-   ist eine andere (Baseline `modul-06` Closure-Schritt 2); dieses Repo läuft
-   wellenlos. Permanent.
+3. **Archivierte Stubs** unter `done/wellenlos/` und `done/welle-*/` tragen
+   per Ziel-Form keine Closure-Abschnitte — ihr Beleg-Moment liegt in
+   `in-progress/` (abschlussbereit) bzw. `done/` (zwischen `git mv` und
+   Archivierung) und ist durchlaufen, bevor der Stub entsteht. Permanent.
 4. **Der Scan-Ersatz ist die Klasse** — `structure` hat keine Datei-Existenz-
    Bedingung, das `reviews`-Modul scannt genau ein `done-dir` (d-check
    v0.79.0); darum ein eigenes `verify`-Skript statt eines CR an das
