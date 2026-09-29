@@ -56,6 +56,12 @@ sauber, und ein Sensor, der auf null Treffern eingeschaltet wird, braucht eine
 
 ## 3. Umsetzung
 
+| Datei / Komponente | Änderungs-Art | Begründung |
+|---|---|---|
+| [`.d-check.yml`](../../../../.d-check.yml) (structure, Bedingung 8) | neu | drei Chronik-Phrasen als `forbid-pattern` auf `AGENTS.md`, `harness/*.md`, Planning-README |
+| `tools/dcheck-phrase-selftest.sh` (Muster 4) | neu | Positiv/Negativ/Zitat/Scoping-Kontrollen gegen eigene Fixtures |
+| [`harness/sensors/dcheck-phrase-selftest.md`](../../../../harness/sensors/dcheck-phrase-selftest.md), [`harness/README.md`](../../../../harness/README.md) | update | Zählung und Muster-4-Grenze dokumentiert |
+
 *(entsteht mit der Arbeit)*
 
 ## 4. Definition of Done
