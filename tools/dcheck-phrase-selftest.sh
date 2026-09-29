@@ -238,6 +238,108 @@ if printf '%s' "$out" | grep -q "section-forbidden"; then
   fail=1
 fi
 
+# --- Muster 4: `structure`-Modul, Chronik-Phrasen in gelesenen Dateien ------
+
+# Slice-191: die haeufige Schreibweise von Chronik in AGENTS.md / harness/
+# docs/plan/planning/README.md ist greppbar (BEO-HARNESS/
+# chronik-in-gelesenen-dateien, 3x: slice-103, slice-182, slice-187).
+# DREI Kontrollen: POSITIV (die Phrase in AGENTS.md feuert) · NEGATIV (eine
+# saubere Datei bleibt gruen) · ZITAT (Inline-Code-Nennung bleibt gruen,
+# SL-004). GRENZE: der Sensor prueft eine Phrase, nicht die Klasse.
+
+CHRONIK_PATTERN="$(grep -B2 'forbid-pattern.*Bis slice' .d-check.yml | grep -m1 'forbid-pattern' | sed -e "s/.*forbid-pattern: '//" -e "s/'.*//")"
+if [ -z "$CHRONIK_PATTERN" ]; then
+  echo "dcheck-phrase-selftest: FAIL — Chronik-forbid-pattern nicht in .d-check.yml gefunden (fail-closed)." >&2
+  exit 2
+fi
+
+setup_chronik_fixture() {  # $1 = Zielverz., $2 = Datei-Body
+  local dir="$1" body="$2"
+  rm -rf "$dir"
+  mkdir -p "$dir/harness"
+  cat > "$dir/.d-check.yml" <<YAML
+modules: [structure]
+structure:
+  - files: "AGENTS.md"
+    section-pattern: '^#'
+    sections: each
+    forbid-pattern: '${CHRONIK_PATTERN}'
+YAML
+  cat > "$dir/AGENTS.md" <<EOF
+# test
+
+## Sektion
+
+${body}
+EOF
+  git_init_fixture "$dir"
+}
+
+setup_chronik_fixture "$TMP/chronik-pos" \
+  "Bis slice-99 stand hier etwas."
+out="$(run_dcheck "$TMP/chronik-pos")"
+if ! printf '%s' "$out" | grep -q "section-forbidden"; then
+  echo "dcheck-phrase-selftest: FAIL — die Chronik-Phrase feuert nicht mehr (Positiv-Kontrolle, chronik-in-gelesenen-dateien 3x)." >&2
+  printf '%s\n' "$out" >&2
+  fail=1
+fi
+
+setup_chronik_fixture "$TMP/chronik-neg" \
+  "Eine saubere Aussage ueber den Zustand."
+out="$(run_dcheck "$TMP/chronik-neg")"
+if printf '%s' "$out" | grep -q "section-forbidden"; then
+  echo "dcheck-phrase-selftest: FAIL — das Chronik-Muster greift bei sauberer Aussage (Negativ-Kontrolle)." >&2
+  fail=1
+fi
+
+cat > "$TMP/body-chronik-zitat.txt" <<'BODY'
+Die Form `- [x]` und der Satz "Bis slice-99 stand hier etwas" sind in
+Inline-Code zitiert.
+BODY
+setup_chronik_fixture "$TMP/chronik-zitat" "$TMP/body-chronik-zitat.txt"
+out="$(run_dcheck "$TMP/chronik-zitat")"
+if printf '%s' "$out" | grep -q "section-forbidden"; then
+  echo "dcheck-phrase-selftest: FAIL — das Chronik-Muster trifft die zitierte Phrase (Zitat-Kontext, SL-004)." >&2
+  fail=1
+fi
+
+# SCOPING: eine Chronik-Zeile in einem Slice-PLAN bleibt gruen — der
+# Geltungsbereich ist auf AGENTS.md, harness/*.md und Planning-README
+# beschraenkt; Slice-Plaene erzaehlen Chronik legitime (Idee- und
+# Historie-Texte). Die Fixture nutzt die echte Konfigurationsform (nur die
+# AGENTS.md-Regel) — der Plan mit Chronik-Zeile liegt ausserhalb des Geltungs-
+# bereichs und bleibt gruen.
+mkdir -p "$TMP/chronik-scope/docs/plan/planning/open"
+cat > "$TMP/chronik-scope/.d-check.yml" <<YAML
+modules: [structure]
+structure:
+  - files: "AGENTS.md"
+    section-pattern: '^#'
+    sections: each
+    forbid-pattern: '${CHRONIK_PATTERN}'
+YAML
+cat > "$TMP/chronik-scope/AGENTS.md" <<'BODY'
+# test
+
+## Sektion
+
+Sauber.
+BODY
+cat > "$TMP/chronik-scope/docs/plan/planning/open/slice-903-fixture.md" <<'BODY'
+# slice-903 fixture
+
+## Idee
+
+Bis slice-99 stand hier etwas anderes — Chronik in einem Plan ist legitim.
+BODY
+git_init_fixture "$TMP/chronik-scope"
+out="$(run_dcheck "$TMP/chronik-scope")"
+if printf '%s' "$out" | grep -qE "section-forbidden|section-missing"; then
+  echo "dcheck-phrase-selftest: FAIL — Scoping-Kontrolle rot: Chronik in einem Slice-Plan feuert oder die AGENTS.md-Kandidatenmenge ist leer." >&2
+  printf '%s\n' "$out" >&2
+  fail=1
+fi
+
 # --- KORPUS-SEITE: traegt der echte Bestand die Trigger-Phrase noch? -------
 #
 # Geprueft ist NICHTLEERHEIT: der Lauf ist rot, wenn die Kandidatenmenge des
@@ -289,7 +391,7 @@ if [ "$fail" -ne 0 ]; then
   exit 1
 fi
 
-echo "dcheck-phrase-selftest ok: 8 Werkzeug-Kontrollen (3 Muster) und 1 Korpus-Kontrolle"
+echo "dcheck-phrase-selftest ok: 12 Werkzeug-Kontrollen (4 Muster) und 1 Korpus-Kontrolle"
 echo "  (reviews-Phrase auf einem DoD-Haken: ${korpus_reviews} flache(r) Slice(s) in ${done_dir})."
 echo "  NICHT geprueft: die uebrigen phrasen-basierten Felder in .d-check.yml — fuer sie gibt es"
 echo "  keinen belegten Ausfall, und ein Sensor ohne Anlass ist selbst eine Behauptung."

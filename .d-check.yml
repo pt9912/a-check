@@ -445,6 +445,27 @@ structure:
   # weil ihr Gegenstand weg ist; die Zellengrenze der Sensors-Tabelle oben deckt
   # ihn jetzt allein.
 
+  # (8) Chronik-Phrasen in gelesenen Dateien (slice-202... nein: slice-191).
+  #     Die haeufige Schreibweise von Chronik ist greppbar, die Klasse nicht
+  #     (BEO-HARNESS/chronik-in-gelesenen-dateien, 3x: slice-103, slice-182,
+  #     slice-187). GRENZE: der Sensor prueft eine Phrase, nicht die Klasse --
+  #     eine Umformulierung entkommt ihm (siehe die Beobachtung selbst).
+  - files: "AGENTS.md"
+    section-pattern: '^#'
+    sections: each
+    forbid-pattern: '(Bis slice-[0-9]+ stand hier|bis slice-[0-9]+ tat das|Vorher stand hier)'
+    hint: "Chronik in lebenden Dateien (BEO-HARNESS/chronik-in-gelesenen-dateien, 3x) — die Aussage gehoert in git, nicht in den Lauf-Kontext"
+  - files: "harness/*.md"
+    section-pattern: '^#'
+    sections: each
+    forbid-pattern: '(Bis slice-[0-9]+ stand hier|bis slice-[0-9]+ tat das|Vorher stand hier)'
+    hint: "Chronik in lebenden Dateien (BEO-HARNESS/chronik-in-gelesenen-dateien, 3x)"
+  - files: "docs/plan/planning/README.md"
+    section-pattern: '^#'
+    sections: each
+    forbid-pattern: '(Bis slice-[0-9]+ stand hier|bis slice-[0-9]+ tat das|Vorher stand hier)'
+    hint: "Chronik in lebenden Dateien (BEO-HARNESS/chronik-in-gelesenen-dateien, 3x)"
+
 # Modul `planning` (DC-FA-PLAN-001): Lifecycle-Konsistenz Roadmap <-> in-progress/.
 # Ohne diesen Block lief `make doc-planning` WIRKUNGSLOS — d-check aktiviert das
 # Modul per --enable, findet keine Konfiguration und meldet 0 Befunde, Exit 0
