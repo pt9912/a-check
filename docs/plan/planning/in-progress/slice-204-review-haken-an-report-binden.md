@@ -12,7 +12,7 @@ Datei liegt. Er wechselt nur durch `git mv`.
 
 **Berührte Spec-Stellen:** — · Der Slice berührt kein Spec-Stratum.
 
-**Verantwortlich:** — bis zur Priorisierung.
+**Verantwortlich:** Claude — gesetzt beim Übergang nach `in-progress/`.
 
 **Autor:** Claude. **Datum:** 2026-09-29.
 
@@ -38,9 +38,10 @@ Gestalt nicht fängt: sie entsteht im `in-progress/`-Stand.
 
 ## 2. Definition of Done
 
-- [ ] Die `structure`-Bedingung ist konfiguriert: der DoD-Punkt „Unabhängiger
-      Review durchgeführt" in einem `in-progress/`-Slice ohne vorhandenen
-      Report meldet `section-forbidden` bzw. den passenden Grund-Code.
+- [ ] Der Haken ist an die Report-Existenz gebunden: ein abgehakter
+      DoD-Punkt „Unabhängiger Review" in einem `in-progress/`-Slice ohne
+      Report unter `docs/reviews/` meldet rot
+      (`tools/verify-review-haken.sh`, im `verify`-Aggregat).
 - [ ] **Gegenprobe in beiden Richtungen** im Selbsttest: mit Report bleibt
       die Stelle grün, ohne Report rot; die `doc-reviews`-Bedeutung
       (done/-Geltungsbereich) bleibt unberührt.
@@ -52,10 +53,15 @@ Gestalt nicht fängt: sie entsteht im `in-progress/`-Stand.
 
 ## 3. Plan (vor Code)
 
+Gebaut über die §6-Schalung — das `structure`-Modul hat keine
+Datei-Existenz-Bedingung, und das `reviews`-Modul scannt genau ein `done-dir`
+(d-check v0.79.0); ein CR an das Fremdwerkzeug ist Out-of-Scope (§1):
+
 | Datei / Komponente | Änderungs-Art | Begründung |
 |---|---|---|
-| [`.d-check.yml`](../../../../.d-check.yml) (structure, Bedingung 9) | neu | Bedingung auf `in-progress/**/slice-*.md` mit Abschnitts-Selektor und Report-Existenz-Prüfung |
-| `tools/dcheck-phrase-selftest.sh` (Muster 5) | neu | Positiv (ohne Report rot) / Negativ (mit Report grün) |
+| `tools/verify-review-haken.sh` | neu | Scannt `in-progress/` nach abgehakten „Unabhängiger Review"-Punkten und verlangt die Kennung im Report-Dateinamen; Selbsttest in beiden Richtungen samt Kennungs-Grenze (slice-205 vs. slice-2050) und done/-Abgrenzung |
+| `Makefile` | neu | Eigenes Target + Anschluss an das `verify`-Aggregat |
+| [`harness/README.md`](../../../../harness/README.md) §Sensors | neu | Gate-Index-Zeile — `make doc-targets` hält beide Richtungen |
 
 ## 4. Trigger
 
@@ -76,7 +82,10 @@ Lerneintrag.
 - **Die Existenz-Prüfung braucht mehr als ein Pattern** — `forbid-pattern`
   prüft Text, nicht Datei-Existenz; der Weg führt über das `reviews`-Modul
   mit `done-dir`-Äquivalent für in-progress oder eine eigene Schalung.
-  — **Ausgang:** bei Closure (Umsetzungs-Entscheid mit Beleg).
+  — **Ausgang:** *entfallen*, gestrichen mit Begründung: die eigene Schalung
+  ist in diesem Slice gebaut (`tools/verify-review-haken.sh`, im
+  `verify`-Aggregat) — der befürchtete Umweg über ein Folge-Slice trat nicht
+  ein.
 
 ## 7. Closure-Notiz
 

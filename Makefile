@@ -110,6 +110,9 @@ verify-risiko-ausgaenge: ## Jedes in §6 notierte Risiko traegt einen Ausgang au
 verify-observations: ## Deckung des Beobachtungs-Registers: zitierte BEO-Kennung hat eine Zeile, jede Zeile traegt formgebundene Belege.
 	@bash tools/verify-observations.sh
 
+verify-review-haken: ## Review-DoD-Haken in in-progress/ an Report-Existenz binden (AGENTS §5, ab slice-204).
+	@bash tools/verify-review-haken.sh
+
 commit-scope-check: ## Commit-Scope (planning) beruehrt nur docs/plan/planning/ (AGENTS §5, SL-003). MSGFILE=<datei> (Hook, prueft den Index VOR dem Commit), RANGE=a..b (CI), sonst HEAD~1..HEAD.
 	@MSGFILE="$(MSGFILE)" RANGE="$(RANGE)" bash tools/commit-scope-check.sh
 
@@ -193,6 +196,7 @@ verify: ## Verifikations-Schicht: DoD-/Closure-Fragen (vor der "fertig"-Meldung;
 	@fail=0; \
 	bash tools/verify-risiko-ausgaenge.sh || fail=1; \
 	bash tools/verify-observations.sh  || fail=1; \
+	bash tools/verify-review-haken.sh  || fail=1; \
 	$(MAKE) --no-print-directory doc-structure || fail=1; \
 	$(MAKE) --no-print-directory doc-complete  || fail=1; \
 	if [ "$$fail" -ne 0 ]; then \
