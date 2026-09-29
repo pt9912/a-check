@@ -66,15 +66,44 @@ nicht erneut geprüft.
 
 ## 2. Ausgangsmessung
 
-Instrument, Parameter und Vorgehen: siehe
-[slice-187](../done/wellenlos/slice-187-voll-abgleich-erstdurchgang-rest.md) §2 —
-zitiert statt wiederholt, derselbe Aufruf, derselbe Lauf.
+Neu gemessen gegen `v6.13.0` (slice-192-Lektion: der alte Stand zählt nicht):
+Heading-Abgleich je Stratum (Vorlage vs. Artefakt, `grep -E "^#{1,3} "`), dazu
+die Inhalte der Vorlagen-Sektionen gegen die Artefakt-Inhalte.
 
 **Was die Zahl hier nicht sagt:** Ein Kandidat im Lastenheft kann drei sehr
 verschiedene Dinge sein — eine fehlende **Form**-Regel (Doku-Pflege), eine
 fehlende **Zusage** (Change Request), oder eine Stelle, an der a-check bewusst
 schärfer ist als die Vorlage. Die Sortierung in diese drei ist die eigentliche
-Arbeit; 56 Kandidaten sind ihre Reihenfolge.
+Arbeit; die 56 Kandidaten der Ausgangsmessung (slice-187, Stand `v6.5.0`) sind
+neu sortiert.
+
+## 3. Umsetzung
+
+### 3.1 Lastenheft (Rang 1)
+
+| Vorlagen-Element | Befund | Ausgang |
+|---|---|---|
+| `LH-FA-NN`/`LH-QA-NN`-Schema | a-check nutzt `AC-FA-*/AC-QA-*` | *bewusst schärfer*: das Schema ist in [`MR-000`](../../../../harness/conventions.md#mr-000) deklariert |
+| **`LH-RB-NN`-Randbedingungen-Reihe** (Welle 144) | fehlt komplett — a-checks Randbedingungen (Docker/make-only, 19 Grandfathers, Hermetik) sind als Anforderungen nicht formalisiert | **Change Request (benannt, nicht ausgeführt)**: eine `AC-RB-*`-Reihe würde bestehende Grenzen formalisieren — vertragliche Ergänzung, Maintainer-Entscheid |
+| `Status:`-Feld (Draft \| In Review \| Accepted) | trägt „Draft" — das Dokument ist abnahmebindend, alle 21 Anforderungen geprüft | **Doku-Pflege (hier ausgeführt)**: auf „Accepted" korrigiert |
+| §7 Historie | vorhanden ✓ | — |
+
+### 3.2 Spezifikation (Rang 2)
+
+| Vorlagen-Element | Befund | Ausgang |
+|---|---|---|
+| Kategorie-Gliederung (Algorithmen/Datenstrukturen/Defaults/Fehler-Codes/Metriken/Externe Verträge) | a-check gliedert nach Vertrags-Kennungen ([`SPEC-CONF-001`](../../../../spec/spezifikation.md#spec-conf-001--konfigurationsschema), [`SPEC-EXTRACT-001`](../../../../spec/spezifikation.md#spec-extract-001--import-extraktion), …) | *bewusst schärfer*: die Vertrags-Orientierung ist die deklarierte Form ([`MR-000`](../../../../harness/conventions.md#mr-000)/[`MR-027`](../../../../harness/conventions/MR-027-verfeinerungs-form-v6130.md)); die Inhalte liegen in den `SPEC-*`-Sektionen |
+| Suffix-Form `LH-FA-01.a` (Verfeinerung) | a-check nutzt `SPEC-<BEREICH>-<NNN>` | *bewusst schärfer*: [`MR-027`](../../../../harness/conventions/MR-027-verfeinerungs-form-v6130.md) |
+| Metriken- und Tracing-Felder | a-check hat keine Metriken ([`MR-014`](../../../../harness/conventions/MR-014-keine-agenten-telemetrie.md)) | *bewusst schärfer* |
+| §7 Historie | vorhanden ✓ | — |
+
+### 3.3 Architektur (Rang 3) — die dritte Klausel
+
+**Entscheidung (§1: kein dritter Weg):** der Historie-Abschnitt (§8,
+Versions-Tabelle mit vier Einträgen) ist **gestrichen**; die Änderungsgeschichte
+liegt in `git` (`git log -- spec/architecture.md`), der Frische-Marker
+(„Letzte Änderung") steht am Kopf. Damit ist die dritte Klausel der Hard Rule
+§3.4 erfüllt — die zwei übrigen Klauseln bleiben wie in slice-185 belegt.
 
 ## 3. Umsetzung
 
@@ -124,19 +153,26 @@ Lerneintrag.
 - **Der Slice kann in einen Change Request kippen.** Eine Ziel-Form-Regel, die
   eine bestehende `AC-*` berührt, ist keine Doku-Pflege — und die Rückführung ist
   dann der richtige Ausgang, nicht ein stiller Nachtrag.
-  — **Ausgang:** <offen bis Closure>
+  — **Ausgang:** *entfallen*, gestrichen mit Begründung: kein Kandidat
+  erforderte eine AC-Änderung; die CR-Kandidaten (die `AC-RB-*`-Reihe) sind
+  benannt und an den Maintainer gereicht — der Slice hat sie nicht ausgeführt.
 - **`doc-immutable` deckt die Spec-Straten nicht.** Das Modul `vcs` führt
   ausschließlich `docs/plan/adr/[0-9]*.md` (gemessen in slice-187 §3.5); eine
   unbeabsichtigte Änderung an einer `AC-*` meldet **kein** Lauf.
-  — **Ausgang:** <offen bis Closure>
+  — **Ausgang:** *entfallen*, gestrichen mit Begründung: alle Stratum-Änderungen
+  dieses Slices sind absichtlich, im Review geprüft und im Diff sichtbar; die
+  allgemeine Lücke (vcs deckt nur ADRs) bleibt benannt — slice-187 §3.5.
 - **Der Historie-Abschnitt könnte an anderen Stellen zitiert sein.** Ein
   Streichen bricht dann Anker; die Antwort ist dieselbe wie unten.
-  — **Ausgang:** <offen bis Closure>
+  — **Ausgang:** *entfallen*, gestrichen mit Begründung: nach dem Streichen
+  meldet `make doc-check` 0 Befunde — keine Stelle zitiert §8.
 - **Ein umbenannter `AC-*`-Anker bricht eine `Accepted`-ADR.** Der Fall ist im
   Repo belegt und die Antwort steht in
   [`harness/conventions.md`](../../../../harness/conventions.md)
   §Anforderungs-Anlege-Prozess (zwei Anker, alter Slug bleibt).
-  — **Ausgang:** <offen bis Closure>
+  — **Ausgang:** *entfallen*, gestrichen mit Begründung: es wurde kein
+  `AC-*`-Anker umbenannt — die Konversion änderte Status-Wert und Historie,
+  nicht die Anker.
 
 ## 8. Closure-Notiz
 
