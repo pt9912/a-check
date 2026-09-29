@@ -56,6 +56,36 @@ umgesetzt** — umsetzen oder als Bestand mit Begründung deklarieren:
 | [`AGENTS.md`](../../../../AGENTS.md) | update | WIP-Limit-Formulierung (Aspekt 1), §5-Form (Aspekt 2) |
 | [`.d-check.yml`](../../../../.d-check.yml) | update | Matrix-Klassen (Aspekt 3) |
 
+### 3.1 Umsetzung — je Aspekt die Entscheidung
+
+**Aspekt 1 (WIP-Limit) — umgesetzt.** [`AGENTS.md`](../../../../AGENTS.md) §5
+zählt jetzt **pro Lauf** (Welle 148: mehrere Läufe derselben Person zählen
+einzeln, wenn `Verantwortlich:` sie per Zweig unterscheidet) und hält als
+Hauptzweig-Folge fest: **höchstens ein** Slice in `in-progress/`. Damit bleibt
+`doc-planning` (DC-FA-PLAN-001), der Verzeichnis-Inhalte zählt, mit §5
+kohärent — der Sensor behält seine Form-Aussage. Nachgezogen hat dieselbe
+Stelle die **Übergangs-Zahl**: die Baseline (Welle 137/150) kennt **sechs**
+Übergänge inklusive `open|next → done` (Konsolidierung), a-check schrieb
+bisher „fünf".
+
+**Aspekt 2 (§5-Form) — entschieden, Auslagerung ausgelagert.** Die
+Tabellenform mit Regel-Auslagerung (Welle 149) ist **Ziel**: die Liste ist
+über die Vier-Regel-Größe der Ziel-Form längst hinausgewachsen. Die Konversion
+fasst **15 Regeln** samt Begründungs- und Durchsetzungstexten und legt bis zu
+eine `harness/rules/<name>.md`-Datei je langen Regel an — das ist ein eigener,
+reviewbarer Vorgang und geht als [**slice-201**](../open/slice-201-agents-md-index-tabelle.md)
+in `open/`, wie der Rückführungs-Vorbehalt in §4 es vorschneidet.
+
+**Aspekt 3 (Matrix-Klassen) — umgesetzt.** [`.d-check.yml`](../../../../.d-check.yml)
+führt die Klassen `welle` (Token `welle-[a-z0-9]+…`), `carveout`
+(`CO-\d{3}`) und `roadmap` (ohne Token — nur über Links erreichbar) und die
+sechs Regeln `spec-straten|adr → welle|carveout|roadmap` (Welle 138). Der
+Slice-Token bleibt numerisch (`slice-\d{3}`) — a-checks Schema deklariert
+`slice-NNN` ([`MR-000`](../../../../harness/conventions.md#mr-000)); der
+Slug-Token der Vorlage träfe hier keine Kennung. `make doc-check` mit den
+sechs neuen Regeln: **0 Befunde** — die Kanten waren ungeprüft, nicht
+verletzt.
+
 ## 4. Trigger
 
 **Start** (`open` → `next` → `in-progress`): das WIP-Limit ist frei.
