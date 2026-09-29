@@ -111,7 +111,10 @@ eine ADR (kein `Status:`-Feld, an dem `immutable-when` greifen könnte).
 
 **Zu [`MR-000`](#mr-000) — Kommentar *über* den Eintrag, nicht in ihm.** Er
 **bleibt in dieser Datei** statt in einer eigenen: Er ist keine Adaption,
-sondern die Adoptions-Erklärung, und er gilt für jeden Lauf. Sein Pflichtfeld
+sondern die Adoptions-Erklärung, und er gilt für jeden Lauf. **Die aktuelle
+Fassung der ID-Schema-Deklaration trägt
+[`MR-029`](conventions/MR-029-id-schema-deklaration-gesamt.md)** (seit
+slice-190); der Wortlaut in MR-000 ist historisch. Sein Pflichtfeld
 *Ersetzt-Baseline-Regel* fehlt aus dem Grund, den §Aktive Adaptionen für die
 Tabellenspalte nennt. Beides ist eine Aussage **über** den Eintrag und ändert
 ihn nicht.
@@ -160,20 +163,19 @@ Eintrag alt genug.
 
 Die Spalte *Ersetzt-Baseline-Regel* ist das Pflichtfeld des neuen Stands. Sie kann in einen
 akzeptierten Eintrag **nicht nachgetragen** werden (Einträge werden nie überschrieben); sie
-entsteht in den Nachfolge-Einträgen. Gemessen tragen heute **fünf** der **neun** aktiven Zeilen
-einen Zeiger, **vier** ein `—` mit Begründung in der Zelle.
+entsteht in den Nachfolge-Einträgen. Gemessen tragen heute **fünf** der **acht** aktiven Zeilen
+einen Zeiger, **drei** ein `—` mit Begründung in der Zelle.
 
 | MR | Titel | Geltungsbereich | Ersetzt-Baseline-Regel |
 |---|---|---|---|
 | [MR-014](conventions/MR-014-keine-agenten-telemetrie.md) <a id="mr-014"></a> | Keine Agenten-Telemetrie | gesamtes Repo; Baseline-Modul `modul-15` | [`modul-15-observability.md` §Kernidee](../.harness/baseline/v6.13.0/regelwerk/modul-15-observability.md#kernidee-modul-15) |
 | [MR-016](conventions/MR-016-validator-unbesetzt.md) <a id="mr-016"></a> | Validator-Rolle unbesetzt | gesamtes Repo; Baseline-Modul `modul-08` | [`modul-08-agentenrollen.md` §Die neun Übergaben](../.harness/baseline/v6.13.0/regelwerk/modul-08-agentenrollen.md#die-neun-übergaben-und-ihre-artefakte-modul-8) |
 | [MR-019](conventions/MR-019-review-dod-opt-in.md) <a id="mr-019"></a> | Review-DoD-Punkt bleibt Opt-in statt verpflichtend | [`AGENTS.md`](../AGENTS.md) §5, [`.d-check.yml`](../.d-check.yml) | — *(kein Baseline-Regel-Ersatz — der Treiber ist ein Template; Begründung und Rückbau-Bedingung stehen im Eintrag)* |
-| [MR-020](conventions/MR-020-adr-vorlage-generisch.md) <a id="mr-020"></a> | ADR-Vorlagen-Referenz zeigt generisch auf den vendorten Stand | [`MR-000`](#mr-000) §ID-Schema, Zeile zu `ADR-NNNN` | — *(korrigiert eine Repo-Aussage, kein Baseline-Regel-Ersatz; permanent, kein Rückbau-Kandidat)* |
-| [MR-023](conventions/MR-023-id-schema-beobachtungs-kennung.md) <a id="mr-023"></a> | ID-Schema-Deklaration um die Beobachtungs-Kennung ergänzt (Pfad-Form, Kürzel generisch) | [`MR-000`](#mr-000) §ID-Schema, [`observations/`](../docs/plan/planning/observations/README.md) | — *(korrigiert eine Repo-Aussage, kein Baseline-Regel-Ersatz — wie [MR-020](#mr-020); Rückbau mit der Überarbeitung der Deklaration)* |
 | [MR-024](conventions/MR-024-historische-kern-drift-deklariert.md) <a id="mr-024"></a> | Historische Kern-Drift-Befunde aus dem Archiv-Sweep sind deklariert | `make doc-immutable`, Item 2 der [Freigabe-Checkliste](../docs/user/releasing.md); [`ADR-0017`](../docs/plan/adr/0017-relative-resolution-modus.md), [`ADR-0018`](../docs/plan/adr/0018-exclude-scan-scope.md), [`ADR-0038`](../docs/plan/adr/0038-dependabot-als-hebungskanal.md) | — *(deklariert eine Ausnahme im eigenen Bestand, kein Baseline-Regel-Ersatz; selbst-auflösend mit dem nächsten Release)* |
 | [MR-025](conventions/MR-025-referenzmatrix-grandfathering-v6130.md) <a id="mr-025"></a> | Referenz-Richtung maschinell, ADRs 0001–0020 grandfathered, Zeiger auf `v6.13.0` | [`.d-check.yml`](../.d-check.yml) (`matrix`), [`docs/plan/adr/`](../docs/plan/adr/) | [`grundlagen-referenz-richtung.md` §Referenz-Richtung (SDP)](../.harness/baseline/v6.13.0/regelwerk/grundlagen-referenz-richtung.md#referenz-richtung-sdp-wer-darf-wen-referenzieren) |
 | [MR-027](conventions/MR-027-verfeinerungs-form-v6130.md) <a id="mr-027"></a> | Verfeinerungen tragen `SPEC-*` statt der Suffix-Form, Zeiger auf `v6.13.0` | [`spec/spezifikation.md`](../spec/spezifikation.md) | [`grundlagen-source-precedence.md` §ID-Schema als Klammer](../.harness/baseline/v6.13.0/regelwerk/grundlagen-source-precedence.md#id-schema-als-klammer) |
 | [MR-028](conventions/MR-028-welle-closure-ohne-replay-v6130-erratum.md) <a id="mr-028"></a> | Welle-Closure ohne Replay-Lauf (`make ci` grün), Erratum zur Schritt-Zuordnung | [`docs/plan/planning/`](../docs/plan/planning/README.md) | [`modul-06-roadmap.md` §Wellen-Closure-Prozedur](../.harness/baseline/v6.13.0/regelwerk/modul-06-roadmap.md#wellen-closure-prozedur-modul-6) |
+| [MR-029](conventions/MR-029-id-schema-deklaration-gesamt.md) <a id="mr-029"></a> | ID-Schema-Deklaration als Ganzes (generisch, löst die Korrektur-Kette ab) | [`MR-000`](#mr-000) §ID-Schema-Deklaration | — *(korrigiert Repo-Aussagen, keine Baseline-Regel — generisch formuliert, permanent)* |
 
 ### Aufgelöste Adaptionen
 
@@ -197,12 +199,14 @@ bricht.
 | [MR-011](conventions/done/MR-011-verfeinerungs-form.md) <a id="mr-011"></a> | [MR-021](conventions/done/MR-021-verfeinerungs-form.md) |
 | [MR-021](conventions/done/MR-021-verfeinerungs-form.md) <a id="mr-021"></a> | [MR-022](conventions/done/MR-022-verfeinerungs-form.md) |
 | [MR-013](conventions/done/MR-013-adr-vorlagen-version.md) <a id="mr-013"></a> | [MR-017](conventions/done/MR-017-adr-vorlagen-version.md) |
-| [MR-017](conventions/done/MR-017-adr-vorlagen-version.md) <a id="mr-017"></a> | [MR-020](conventions/MR-020-adr-vorlage-generisch.md) |
+| [MR-017](conventions/done/MR-017-adr-vorlagen-version.md) <a id="mr-017"></a> | [MR-020](conventions/done/MR-020-adr-vorlage-generisch.md) |
 | [MR-018](conventions/done/MR-018-review-pflicht-v610-wortlaut.md) <a id="mr-018"></a> | Ereignis am 2026-09-06 (`v6.2.0` vendored — das Kurs-Template trägt den Rollenwechsel-Absatz jetzt selbst, [slice-170](../docs/plan/planning/done/wellenlos/slice-170-mr018-aufloesen.md)), **kein** Nachfolge-Eintrag |
 | [MR-012](conventions/done/MR-012-referenzmatrix-grandfathering.md) <a id="mr-012"></a> | [MR-025](conventions/MR-025-referenzmatrix-grandfathering-v6130.md) |
 | [MR-015](conventions/done/MR-015-welle-closure-ohne-replay.md) <a id="mr-015"></a> | [MR-026](conventions/done/MR-026-welle-closure-ohne-replay-v6130.md) |
 | [MR-022](conventions/done/MR-022-verfeinerungs-form.md) <a id="mr-022"></a> | [MR-027](conventions/MR-027-verfeinerungs-form-v6130.md) |
 | [MR-026](conventions/done/MR-026-welle-closure-ohne-replay-v6130.md) <a id="mr-026"></a> | [MR-028](conventions/MR-028-welle-closure-ohne-replay-v6130-erratum.md) |
+| [MR-020](conventions/done/MR-020-adr-vorlage-generisch.md) <a id="mr-020"></a> | [MR-029](conventions/MR-029-id-schema-deklaration-gesamt.md) |
+| [MR-023](conventions/done/MR-023-id-schema-beobachtungs-kennung.md) <a id="mr-023"></a> | [MR-029](conventions/MR-029-id-schema-deklaration-gesamt.md) |
 
 ## Anforderungs-Anlege-Prozess
 
