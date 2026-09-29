@@ -201,11 +201,26 @@ if printf '%s' "$out" | grep -q "section-forbidden"; then
   fail=1
 fi
 
+# Scoping spiegelnden Bestand: open/ ist mit einem OFFENEN Slice belegt (die
+# open/-Regel hat ihre Kandidatenmenge), der gepruefte Slice liegt in
+# in-progress/ mit [x] — legitim, er darf nicht melden.
+printf '%s\n' "- [ ] Echte offene Aufgabe." > "$TMP/body-scope-open.txt"
 printf '%s\n' "- [x] Mit der Arbeit abgehakt — hier legitim." > "$TMP/body-scope.txt"
-setup_haekchen_fixture "$TMP/haekchen-scope" "in-progress" "$TMP/body-scope.txt"
+mkdir -p "$TMP/haekchen-scope/docs/plan/planning/open" "$TMP/haekchen-scope/docs/plan/planning/in-progress"
+cat > "$TMP/haekchen-scope/.d-check.yml" <<YAML
+modules: [structure]
+structure:
+  - files: "docs/plan/planning/open/**/slice-*.md"
+    section-pattern: '^#+ .*(DoD|Definition of Done)'
+    forbid-pattern: '${HAEKCHEN_PATTERN}'
+YAML
+{ echo "# slice-901 fixture"; echo; echo "## DoD"; echo; cat "$TMP/body-scope-open.txt"; } > "$TMP/haekchen-scope/docs/plan/planning/open/slice-901-fixture.md"
+{ echo "# slice-902 fixture"; echo; echo "## DoD"; echo; cat "$TMP/body-scope.txt"; } > "$TMP/haekchen-scope/docs/plan/planning/in-progress/slice-902-fixture.md"
+git_init_fixture "$TMP/haekchen-scope"
 out="$(run_dcheck "$TMP/haekchen-scope")"
-if printf '%s' "$out" | grep -q "section-forbidden"; then
-  echo "dcheck-phrase-selftest: FAIL — das forbid-pattern greift in in-progress/, wo Haekchen legitim sind (Scoping-Kontrolle)." >&2
+if printf '%s' "$out" | grep -qE "section-forbidden|section-missing"; then
+  echo "dcheck-phrase-selftest: FAIL — Scoping-Kontrolle rot: das forbid-pattern greift in in-progress/ oder die open/-Kandidatenmenge ist leer." >&2
+  printf '%s\n' "$out" >&2
   fail=1
 fi
 
