@@ -43,17 +43,17 @@ Durchsetzung steht nach wie vor im Repo — nur nicht mehr in §5.
 
 ## 2. Definition of Done
 
-- [x] §5 trägt die Index-Tabelle; jede ausgelagerte Regel verweist in der
+- [ ] §5 trägt die Index-Tabelle; jede ausgelagerte Regel verweist in der
       Datei-Spalte auf `harness/rules/<name>.md`, Kurzregeln stehen vollständig
       in der Tabelle (`Datei`-Spalte: `—`).
-- [x] **Wortfolgen-Vergleich als Gegenprobe:** die Menge der Aussagen von §5
+- [ ] **Wortfolgen-Vergleich als Gegenprobe:** die Menge der Aussagen von §5
       (Regeln, Begründungen, Durchsetzungs-Zusagen) ist vor/nach der Konversion
       unverändert — gemessen, nicht angenommen; Abweichungen sind benannt.
-- [x] Unabhängiger Review, Report unter [`docs/reviews/`](../../../../docs/reviews/README.md);
-      Closure-Notiz mit Lerneintrag; Register fortgeschritten; jedes Risiko
-      trägt einen Ausgang.
-
-`make gates` und `make verify` grün.
+- [ ] `make gates` und `make verify` grün.
+- [ ] Unabhängiger Review, Report unter [`docs/reviews/`](../../../../docs/reviews/README.md).
+- [ ] Closure-Notiz mit Steering-Loop-Lerneintrag.
+- [ ] Beobachtungs-Register fortgeschrieben; jedes Risiko aus §6 trägt einen
+      Ausgang.
 
 ## 3. Plan (vor Code)
 

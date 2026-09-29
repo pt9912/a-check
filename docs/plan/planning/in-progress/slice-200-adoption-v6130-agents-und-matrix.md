@@ -42,12 +42,12 @@ umgesetzt** — umsetzen oder als Bestand mit Begründung deklarieren:
 
 ## 2. Definition of Done
 
-- [ ] Jeder der drei Aspekte trägt eine Entscheidung mit Beleg — umgesetzt (Diff) oder als
+- [x] Jeder der drei Aspekte trägt eine Entscheidung mit Beleg — umgesetzt (Diff) oder als
       Bestand mit Begründung gegen die jeweilige Welle.
-- [ ] `make gates` und `make verify` grün.
-- [ ] Unabhängiger Review, Report unter [`docs/reviews/`](../../../../docs/reviews/README.md).
-- [ ] Closure-Notiz mit Steering-Loop-Lerneintrag.
-- [ ] Beobachtungs-Register fortgeschrieben; jedes Risiko aus §6 trägt einen Ausgang.
+- [x] `make gates` und `make verify` grün.
+- [x] Unabhängiger Review, Report unter [`docs/reviews/`](../../../../docs/reviews/README.md).
+- [x] Closure-Notiz mit Steering-Loop-Lerneintrag.
+- [x] Beobachtungs-Register fortgeschrieben; jedes Risiko aus §6 trägt einen Ausgang.
 
 ## 3. Plan (vor Code)
 
@@ -71,7 +71,7 @@ bisher „fünf".
 **Aspekt 2 (§5-Form) — entschieden, Auslagerung ausgelagert.** Die
 Tabellenform mit Regel-Auslagerung (Welle 149) ist **Ziel**: die Liste ist
 über die Vier-Regel-Größe der Ziel-Form längst hinausgewachsen. Die Konversion
-fasst **15 Regeln** samt Begründungs- und Durchsetzungstexten und legt bis zu
+fasst **17 Regeln** (zweimal verschieden gezählt: Anker-Zähler 17; 13 fett-markierte + 4 unformatierte = 17 — Review slice-200, M2) samt Begründungs- und Durchsetzungstexten und legt bis zu
 eine `harness/rules/<name>.md`-Datei je langen Regel an — das ist ein eigener,
 reviewbarer Vorgang und geht als [**slice-201**](../open/slice-201-agents-md-index-tabelle.md)
 in `open/`, wie der Rückführungs-Vorbehalt in §4 es vorschneidet.
@@ -111,7 +111,49 @@ DoD vollständig, `make gates` und `make verify` grün, Closure-Notiz mit Lernei
 
 ## 7. Closure-Notiz
 
-*(wird vor dem `git mv` nach `done/` gefüllt)*
+**Lerneintrag — Form: geschärfte Regel.** *Ein DoD-Häkchen in `open/` attestiert
+Zukunft — zum dritten Mal gefangen, weil kein Sensor die Lebenslage des Häkchens
+prüft.* Der von mir angelegte Nachfolge-Slice slice-201 trug alle drei `[x]`,
+bevor ein einziges Kriterium erfüllt war — dieselbe Klasse wie slice-169 und
+slice-197, diesmal an dem Lauf, der die Attestierungs-Falle aus slice-192
+schon kannte. Ausgang: **geplant →
+[slice-202](../open/slice-202-dod-haekchen-lebenslage.md)** (Sensor,
+`forbid-pattern` auf `open/`- und `next/`-Slices).
+
+**Was hat funktioniert:** die drei Aspekte waren klein und unabhängig; die
+Sollform lag im neuen Stand vor (WIP-Limit-Text, Template-§5, Matrix-Block),
+so dass jedes „umsetzen oder Bestand" gegen einen Wortlaut messen konnte.
+Der unabhängige Review bestätigte die Umsetzung in allen Prüfpunkten — inklusive
+vier Mutations-Proben gegen die neuen Matrix-Regeln (rot mit
+`matrix-forbidden`).
+
+**Was ging anders als geplant:** der Review fand die Defekte **in meinen
+eigenen neuen Plänen**, nicht in der Umsetzung — H1 (abgehaktes DoD in
+slice-201) traf die Attestierungs-Falle beim dritten Mal, H2 eine
+Kopfsummen-Zahl („15 Regeln", richtig: 17, zweimal verschieden nachgemessen).
+Beide sind Plan-Defekte und waren vor der Closure heilbar.
+
+**Steering-Loop-Eintrag:** Attestierungs-Lücke — Sensor geplant: DoD-Häkchen
+an die Lebenslage binden, Auslöser
+[`BEO-GATE/attestierung-vor-dem-vorgang`](../observations/BEO-GATE/attestierung-vor-dem-vorgang/observation.md)
+(slice-169, slice-197, slice-200 — 3×). *(nichts verkörpert — der Eintrag ist
+gezählt; der Sensor ist slice-202.)*
+
+**Beobachtungs-Register (`../observations/`):** `evidence/slice-200.md` in
+`BEO-GATE/attestierung-vor-dem-vorgang/` ergänzt — Zähler 3×, Ausgang
+*geplant* → slice-202.
+
+**Folge-Slices:** [slice-201](../open/slice-201-agents-md-index-tabelle.md)
+(§5-Index-Tabelle + Auslagerung) und
+[slice-202](../open/slice-202-dod-haekchen-lebenslage.md) (Attestierungs-Sensor)
+— sind Dateien in `open/`.
+
+**Risiken aus §6:** jedes mit genau einem Ausgang — siehe §6.
+
+**Drei Paarungen:** Anker — kein Steering-Loop-Eintrag verkörpert, kein
+`liegt in`-Feld · Folge-Slice — slice-201 und slice-202 existieren als Dateien
+in `open/` · Register — attestierung-vor-dem-vorgang trägt den dritten Beleg
+und den Ausgang.
 
 ## 8. Sub-Area-Prüfungen und Modus-Begründung
 
