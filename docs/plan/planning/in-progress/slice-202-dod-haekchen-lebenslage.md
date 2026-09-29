@@ -79,9 +79,10 @@ Lerneintrag.
 ## 6. Risiken und offene Punkte
 
 - **Das Muster trifft legitime Häkchen** — z. B. Plan-Stellen, die eine
-  `[x]`-Form *zitieren*. — **Ausgang:** bei Closure (Fixture mit zitiertem
-  Muster in den Selbsttest, wie [`SL-004`](../observations/README.md) es
-  verlangt).
+  `[x]`-Form *zitieren*. — **Ausgang:** *entfallen*, gestrichen mit
+  Begründung: die Zitat-Kontext-Fixture ist im Selbsttest (Muster 3, vierte
+  Kontrolle) — Code-Block und Inline-Code-Nennungen bleiben grün, gemessen
+  gegen den gepinnten Digest; der erste Lauf der Fixture meldete 0 Befunde.
 
 ## 7. Closure-Notiz
 
