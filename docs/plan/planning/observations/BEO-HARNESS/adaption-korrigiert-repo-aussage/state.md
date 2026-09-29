@@ -8,7 +8,7 @@ Nachfolge-Eintrag dieselbe Zeile-Familie — die ID-Schema-Deklaration in
 
 **Der Ausgang ist die Überarbeitung, nicht ein weiterer Eintrag:** Die Deklaration wird als Ganzes
 abgelöst, generisch statt aufzählend, sodass [`MR-020`](../../../../../../harness/conventions.md#mr-020) und [`MR-023`](../../../../../../harness/conventions.md#mr-023) entbehrlich werden. Geplant als
-[slice-190](../../../done/slice-190-id-schema-deklaration-ueberarbeiten.md); dort steht auch,
+[slice-190](../../../done/wellenlos/slice-190-id-schema-deklaration-ueberarbeiten.md); dort steht auch,
 warum das nicht in einer Closure nebenbei geht — die abzulösenden Kennungen stehen repo-weit in
 Commit-Messages.
 
