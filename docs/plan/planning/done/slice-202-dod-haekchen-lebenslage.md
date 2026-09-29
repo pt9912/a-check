@@ -51,8 +51,8 @@ sieht.
       grün, empirisch gemessen); alles verankert in `dcheck-phrase-selftest`
       als Muster 3.
 - [x] `make gates` und `make verify` grün.
-- [ ] Unabhängiger Review, Report unter [`docs/reviews/`](../../../../docs/reviews/README.md).
-- [ ] Closure-Notiz mit Steering-Loop-Lerneintrag; Register fortgeschritten;
+- [x] Unabhängiger Review, Report unter [`docs/reviews/`](../../../../docs/reviews/README.md).
+- [x] Closure-Notiz mit Steering-Loop-Lerneintrag. Register fortgeschritten;
       jedes Risiko aus §6 trägt einen Ausgang.
 
 ## 3. Plan (vor Code)
