@@ -2,7 +2,7 @@
 
 **Version:** 0.27.0
 
-**Status:** Accepted
+**Status:** Draft
 
 **Autor:** pt9912, **Datum:** 2026-06-20.
 

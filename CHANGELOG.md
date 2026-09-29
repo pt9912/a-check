@@ -17,6 +17,11 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
   [MR-026](harness/conventions/done/MR-026-welle-closure-ohne-replay-v6130.md) und
   [MR-027](harness/conventions/MR-027-verfeinerungs-form-v6130.md) tragen die gemessene Abweichung;
   die Adaptionen sind inhaltlich unverändert.
+- **Spec-Straten gegen die Ziel-Form `v6.13.0` abgeglichen** (slice-189): der
+  Architektur-Historie-Abschnitt (§8, Versions-Tabelle) ist gestrichen — Hard Rule §3.4, „keine
+  Historie", die Änderungsgeschichte liegt in `git`; der Frische-Marker steht am Kopf. Die
+  fehlende Randbedingungen-Reihe im Lastenheft (`LH-RB-NN`, Welle 144) ist als Change Request
+  benannt und wartet auf die Maintainer-Entscheidung.
 
 ## [0.20.0] - 2026-09-19
 
