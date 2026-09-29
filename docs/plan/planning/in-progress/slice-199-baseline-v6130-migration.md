@@ -114,26 +114,114 @@ ist thematisch, der Durchgang ist normativ.
 | 8 | Gates und Verifikation: `make regelwerk-check`, `make gates`, `make verify` | Ausgaben in Datei, Exit-Codes getrennt |
 | 9 | Unabhängiger Review, Closure, `make slice-mv`, Archivierung | Report unter `docs/reviews/`; Schritte 7–10 des Workflow |
 
+### 3.1 Vendoring — belegt, nicht angenommen
+
+Gebaut aus `git archive v6.13.0` in ein Wegwerf-Verzeichnis, dort
+`tools/build-bundle.sh`; der Kurs-Checkout war sauber, der Arbeitsbaum wurde
+nie gelesen. **Gegenprobe:** dasselbe Verfahren auf `v6.6.0` reproduziert den
+bisher vendorten Baum byte-gleich (`diff -rq`: null Unterschiede) und das
+nachgebaute Manifest stimmt mit dem committeten `SHA256SUMS` überein —
+**54 Dateien** in beiden Ständen. Der unabhängige Review hat beide Bundles
+neu gebaut und beide byte-gleich bestätigt.
+
+### 3.2 Pin-Messung — Instrument und Zähler
+
+**Instrument:** `git grep -c 'v6\.6\.0' <Pfadscope>` am Claim-Commit `2ce5da8`
+(Pfadscope: alle getrackten Dateien außer `docs/plan/planning/done`,
+`docs/reviews`, `harness/conventions/done`, `.harness/baseline` — die
+eingefrorenen Klassen). **Zwei Zähler, verschieden gebaut** (Mess-Regel,
+[`AGENTS.md`](../../../../AGENTS.md) §5):
+
+| Zähler | Frage | Ergebnis |
+|---|---|---|
+| A — Zeilen je Datei (`grep -c`) | Wie viele Zeilen tragen den alten Stand? | **17 Dateien, 49 Zeilen** |
+| B — Vorkommen (`grep -o`) | Wie oft steht das Token? | **63 Vorkommen** |
+
+Die Differenz 49↔63: mehrfach genannte Tokens in Zitat-Blöcken und
+Pfad+Kennung-Zeilen. **Erratum:** die Commit-Message des Bump-Commits meldet
+„17 Dateien/42 Nennungen" — die 17 stimmen, die 42 war ein Summierfehler aus
+dem Verlauf; die korrekte Messung steht hier, nachgetragen im Beobachtungs-
+Register ([`BEO-HARNESS/messung-ohne-abgelegten-beleg`](../observations/BEO-HARNESS/messung-ohne-abgelegten-beleg/observation.md), 1×).
+Ersetzt wurde ausschließlich über das **Pfad-Muster** (`baseline/v6.6.0` →
+`baseline/v6.13.0`), nie über die nackte Kennung. **Rest am Lauf-Ende:** 9
+Dateien/24 Zeilen nennen `v6.6.0` — jede beabsichtigt: historische Fakten
+(CHANGELOG, [`AGENTS.md`](../../../../AGENTS.md) §5 Zitier-Form-Anker,
+doc-mentions), Kennung-Zeiger der frozen Einträge, Fakten im Delta dieses
+Plans, Provenance-Kommentare in [`.d-check.yml`](../../../../.d-check.yml) und
+die beabsichtigten Nennungen der Nachfolge-Einträge.
+
+### 3.3 MR-Durchgang — je Eintrag ein Ausgang
+
+Gemessen zweistufig (Datei im Delta? dann Abschnitt), Quelle-Zeile
+ausgenommen; die Zielabschnitts-Diffs wurden gegen die beiden Bundle-Stände
+geführt:
+
+| MR | Zielabschnitt im Delta? | Abschnitt | Ausgang |
+|---|---|---|---|
+| [`MR-012`](../../../../harness/conventions.md#mr-012) | ja (alle 23 geändert) | **Abweichung** (23 242 → 23 083 Z., 4 Hunks) | *bleibt gültig* → **MR-025** |
+| [`MR-014`](../../../../harness/conventions.md#mr-014) | ja | **wortgleich** (566 Z.) | Zeiger wandert |
+| [`MR-015`](../../../../harness/conventions.md#mr-015) | ja | **Abweichung** (10 552 → 13 522 Z.) | *bleibt gültig* → **MR-026** |
+| [`MR-016`](../../../../harness/conventions.md#mr-016) | ja | **wortgleich** (1 417 Z.) | Zeiger wandert |
+| [`MR-019`](../../../../harness/conventions.md#mr-019) | — (kein Zeiger) | — | *bleibt gültig*: Treiber ist die Report-Vorlage; deren Strukturänderung (Tabelle statt F-1-Blöcke) berührt die Opt-in-Entscheidung nicht |
+| [`MR-020`](../../../../harness/conventions.md#mr-020) | — (kein Zeiger) | — | *bleibt gültig*: die Referenz auf den generischen Stand gilt unverändert weiter |
+| [`MR-022`](../../../../harness/conventions.md#mr-022) | ja | **Abweichung** (10 942 → 6 574 Z.) | *bleibt gültig* → **MR-027** (Suffix-Passage Zeile 17 wortgleich) |
+| [`MR-023`](../../../../harness/conventions.md#mr-023) | — (kein Zeiger) | — | *bleibt gültig*: die neue Fassung lässt die Kennungs-Form ausdrücklich als Repo-Deklaration |
+| [`MR-024`](../../../../harness/conventions.md#mr-024) | — (kein Zeiger) | — | *bleibt gültig*: der selbst-auflösende Trigger (nächstes Release) ist nicht eingetreten |
+
+Erratum: [**MR-028**](../../../../harness/conventions/MR-028-welle-closure-ohne-replay-v6130-erratum.md)
+korrigiert MR-026s Schritt-Zuordnung (Review-Fund M3 — Accepted-Einträge
+korrigiert man nur über einen Nachfolger).
+
+### 3.4 Voll-Abgleich und Stichprobe
+
+**Voll-Abgleich** (Singleton-Paare, Heading-Struktur gegen die Ziel-Form):
+15 Paare abgeglichen — [`AGENTS.md`](../../../../AGENTS.md),
+[`harness/README.md`](../../../../harness/README.md),
+[`harness/conventions.md`](../../../../harness/conventions.md),
+[Lastenheft](../../../../spec/lastenheft.md), [Spezifikation](../../../../spec/spezifikation.md),
+[Architektur](../../../../spec/architecture.md), [Projekt-README](../../../../README.md),
+[ADR-Index](../../../../docs/plan/adr/README.md),
+[Carveouts](../../../../docs/plan/carveouts/README.md),
+[Planning-README](../../../../docs/plan/planning/README.md),
+[Roadmap](roadmap.md), [Reviewer-Skill](../../../../.harness/skills/reviewer.md),
+[Closure-Note-Reviewer-Skill](../../../../.harness/skills/closure-note-reviewer.md),
+[`.d-check.yml`](../../../../.d-check.yml), Sensor-Vorlage. **Kein fehlendes
+Pflicht-Feld außerhalb der Spec-Straten**; die Abweichungen sind additiv oder
+Titel-Wortlaut. Die Spec-Straten tragen die zwei echten Befunde: die neue
+`LH-RB`-Reihe (Welle 144) und die Suffix-Form im
+Spezifikations-Template — **beide gehören in
+[slice-189](../open/slice-189-voll-abgleich-spec-straten.md)**, den
+ausdrücklich nicht ausgeführten Abgleich. Die Roadmap ist heading-gleich,
+die `.d-check.yml`-Modul-Menge Obermenge des Template-Starters.
+
+**Stichprobe gegen den Bestand** (Komplementärmenge: Abschnitte ohne Delta
+zwischen `v6.6.0` und `v6.13.0`): gezogen wurde
+`grundlagen-durchsetzungsschicht.md` §„Die Lücke: aspirativ vs. bindend" —
+die Frage pro Regel: steht sie im ausgefüllten Artefakt? **Beide Regelfälle
+sind verkörpert:** „make/Docker-only" durch den PreToolUse-Command-Guard
+([`AGENTS.md`](../../../../AGENTS.md) §3.1), „Gates vor dem Handoff" durch
+den Stop-Hook mit [`make record-gates`](../../../../Makefile). **Kein Fund.**
+
 ## 4. Definition of Done
 
-- [ ] Das Bundle (`regelwerk/` + `templates/`) liegt vendored unter dem Tag
-      `v6.13.0` mit `SHA256SUMS`; `v6.6.0` ist entfernt; `make regelwerk-check`
-      grün; die Gegenprobe (alter Tag byte-gleich reproduziert) ist im Slice
-      belegt.
-- [ ] **Jede** Nennung des alten Standes außerhalb der eingefrorenen Artefakte
-      ist behandelt — Messung dokumentiert —, und die vier Baseline-Symlinks
-      zeigen auf den neuen Stand; `make symlink-check` und `make doc-check`
-      grün.
-- [ ] **MR-Durchgang:** für **jeden** aktiven `MR`-Eintrag ist der Ausgang aus
-      den fünf Klassen benannt und der Zeiger-Messung unterzogen — nicht
-      angenommen.
-- [ ] **Voll-Abgleich** und **Stichprobe** sind gefahren; die Befunde sind
-      benannt, Adoption-Aspekte tragen Folge-Slice-Kennungen oder eine
-      Begründung, warum sie hier nicht entstehen.
-- [ ] Unabhängiger Review durchgeführt, Report unter [`docs/reviews/`](../../../../docs/reviews/README.md).
-- [ ] Closure-Notiz mit Steering-Loop-Lerneintrag; Beobachtungs-Register
+- [x] Das Bundle (`regelwerk/` + `templates/`) liegt vendored unter dem Tag
+      `v6.13.0` mit `SHA256SUMS`; `v6.6.0` ist entfernt; die Gegenprobe (alter
+      Tag byte-gleich reproduziert, Manifest eingeschlossen) ist belegt
+      (§3.1); `make regelwerk-check` und `make symlink-check` grün.
+- [x] Die Pin-Messung trägt Instrument und Zähler (§3.2), **jede** Nennung des
+      alten Standes außerhalb der eingefrorenen Artefakte ist behandelt; die
+      vier Baseline-Symlinks zeigen auf den neuen Stand; **der MR-Durchgang**
+      ist je Eintrag mit Ausgang belegt (§3.3); `make doc-check` grün.
+- [x] **Voll-Abgleich** und **Stichprobe** sind gefahren; die Befunde sind
+      benannt (§3.4), Adoption-Aspekte tragen Folge-Slice-Kennungen
+      ([slice-200](../open/slice-200-adoption-v6130-agents-und-matrix.md),
+      [slice-189](../open/slice-189-voll-abgleich-spec-straten.md)).
+- [x] Unabhängiger Review durchgeführt, Report unter [`docs/reviews/`](../../../../docs/reviews/README.md)
+      — 0 HIGH · 4 MEDIUM · 3 LOW · 1 INFO; die vier MEDIUM sind im Lauf
+      behoben (§7).
+- [x] Closure-Notiz mit Steering-Loop-Lerneintrag; Beobachtungs-Register
       fortgeschrieben.
-- [ ] Jedes Risiko aus §7 trägt einen Ausgang.
+- [x] Jedes Risiko aus §7 trägt einen Ausgang.
 
 `make gates` und `make verify` grün. Ein öffentlicher Vertrag ist berührt:
 [`harness/conventions.md`](../../../../harness/conventions.md) §Baseline
@@ -163,26 +251,74 @@ Lerneintrag.
 - **Massen-Ersetzung trifft historische Aussagen** — die Klasse aus
   [`BEO-HARNESS/massen-ersetzung-trifft-die-historische-aussage`](../observations/BEO-HARNESS/massen-ersetzung-trifft-die-historische-aussage/observation.md)
   (1×): Ersetzt man mit der nackten Kennung, treffen alle Nennungen, auch die
-  historischen. — **Ausgang:** *weiter offen* → Register; Prävention ist
-  eingeplant (Schritt 3: Pfad-Muster statt Kennung), die Klasse bleibt lebendig
-  für den Review.
+  historischen. — **Ausgang:** *entfallen*, gestrichen mit Begründung: ersetzt
+  wurde ausschließlich über das Pfad-Muster; die Abgleiche nach dem Bump
+  zeigen die verbliebenen Nennungen nur noch an beabsichtigten Stellen (§3.2).
+  Die Beobachtung bleibt im Register bei 1×.
 - **Der MR-Durchgang ist der Wächter für Auflösungs-Trigger** —
   [`BEO-HARNESS/mr-aufloesungs-trigger-ohne-waechter`](../observations/BEO-HARNESS/mr-aufloesungs-trigger-ohne-waechter/observation.md)
   steht bei **2×**. Wird hier ein drittes Auftreten benannt, ist die Klasse eine
-  Lücke und braucht einen eigenen Folge-Slice. — **Ausgang:** bei Closure.
+  Lücke und braucht einen eigenen Folge-Slice. — **Ausgang:** *entfallen*,
+  gestrichen mit Begründung: der Durchgang hat die Auflösungs-Trigger aller
+  neun Einträge abgefragt; **keiner war eingetreten** (MR-024s
+  Release-Trigger inklusive) — die Beobachtung bleibt bei 2×.
 - **Zwischenstand-Widerspruch:** Die Baseline gilt in der neuen Fassung, während
   die Adoption lebender Artefakte (WIP-Limit-Formulierung, `AGENTS.md` §5-Form,
   Lastenheft-Randbedingungen) Folge-Slices braucht — a-check folgt dann kurzfristig
   einer Regel, die seine Dokumente nicht tragen. — **Ausgang:** *eingetreten* →
-  Folge-Slices aus Schritt 5/6, benannt und befristet wie bei slice-192; die
-  Alternative — alles in einem Slice — war in Schritt `next` geblieben.
+  Folge-Slice [slice-200](../open/slice-200-adoption-v6130-agents-und-matrix.md)
+  (WIP-Limit, §5-Form, Matrix-Klassen); die Spec-Straten trägt
+  [slice-189](../open/slice-189-voll-abgleich-spec-straten.md).
 - **Neue Pflicht-Felder an vertraglich gebundenen Artefakten** (Welle 144
   berührt die Lastenheft-Vorlage): eine Pflicht-Form-Änderung am Lastenheft ist
-  ein Change Request, kein Doku-Bump. — **Ausgang:** bei Closure.
+  ein Change Request, kein Doku-Bump. — **Ausgang:** *eingetreten* →
+  [slice-189](../open/slice-189-voll-abgleich-spec-straten.md), wo der
+  Lastenheft-Abgleich mit der Trennung Doku-Pflege/CR liegt.
 
 ## 8. Closure-Notiz
 
-*(wird vor dem `git mv` nach `done/` gefüllt)*
+**Lerneintrag — Form: geschärfte Regel.** *Beleg-first: Wer eine Mess-Zahl
+berichtet, legt Instrument und Lauf-Beleg im selben Zug ab — weil die aus dem
+Verlauf summierte Zahl die einzige Quelle wurde und sich als falsch erwies.*
+Gemessen an diesem Slice: die Bump-Message meldete „17 Dateien/42 Nennungen";
+am Claim-Commit messen die beiden anders gebauten Zähler 49 Zeilen bzw. 63
+Vorkommen (die 17 stimmt). Dieselbe Ursache machte den einzigen
+Inhaltsfehler eines Accepted-Eintrags teuer: die unbedlockte Schrittzahl in
+MR-026 erzwang das Erratum MR-028 — die Immutabilität ist genau dafür da.
+Beide Fälle hängen am selben Muster und sind gezählt:
+[`BEO-HARNESS/messung-ohne-abgelegten-beleg`](../observations/BEO-HARNESS/messung-ohne-abgelegten-beleg/observation.md)
+(1×).
+
+**Was hat funktioniert:** das slice-192-Verfahren hält auch bei rund vierfachem
+Delta (24 Wellen, 42 Dateien) — netzloser Bundle-Bau mit byte-gleicher
+Gegenprobe, zweistufige Zeiger-Messung, Pfad-Muster-Ersatz. Der MR-Durchgang
+mit der fünf-Ausgänge-Vokabel ließ sich auf alle neun Einträge anwenden, ohne
+einen stillschweigenden Zeiger zu ziehen.
+
+**Was ging anders als geplant:** 19 von 20 Vorlagen änderten sich — die
+Plan-Schritte 5–7 (Durchgangs-Listen, Voll-Abgleich, Stichprobe) wuchsen über
+die Schätzung; die Belege lagen zunächst nur im Lauf, nicht im Repo, und der
+unabhängige Review meldete sie als fehlend (M1–M3). Behoben durch Nachtrag in
+§3 und das Erratum MR-028 — die Beobachtungs-Zeile oben ist der Nachlauf.
+
+**Steering-Loop-Eintrag:** — *(nichts verkörpert; der Lerneintrag ist gezählt,
+nicht verkörpert — die bestehenden Mess-Regeln in [`AGENTS.md`](../../../../AGENTS.md) §5
+decken die Klasse bereits, was fehlte, war ihre Befolgung im Lauf.)*
+
+**Beobachtungs-Register (`../observations/`):** `BEO-HARNESS/messung-ohne-abgelegten-beleg/`
+neu angelegt, Beleg `evidence/slice-199.md` — Zähler 1×.
+
+**Folge-Slices:** [slice-200](../open/slice-200-adoption-v6130-agents-und-matrix.md)
+(Adoption `v6.13.0`: WIP-Limit, §5-Form, Matrix-Klassen) — ist eine Datei in
+`open/`; die Spec-Straten trägt
+[slice-189](../open/slice-189-voll-abgleich-spec-straten.md) (schon da).
+
+**Risiken aus §6:** jedes mit genau einem Ausgang — siehe §6.
+
+**Drei Paarungen:** Anker — kein Steering-Loop-Eintrag verkörpert, kein
+`liegt in`-Feld · Folge-Slice — slice-200 und slice-189 existieren als Dateien
+in `open/` · Register — die neue Beobachtung trägt ihr `evidence/`-Verzeichnis;
+`make verify-observations` deckt die Zitate.
 
 ## 9. Sub-Area-Prüfungen und Modus-Begründung
 
