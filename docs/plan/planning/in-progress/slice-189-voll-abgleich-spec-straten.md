@@ -84,8 +84,8 @@ neu sortiert.
 | Vorlagen-Element | Befund | Ausgang |
 |---|---|---|
 | `LH-FA-NN`/`LH-QA-NN`-Schema | a-check nutzt `AC-FA-*/AC-QA-*` | *bewusst schärfer*: das Schema ist in [`MR-000`](../../../../harness/conventions.md#mr-000) deklariert |
-| **`LH-RB-NN`-Randbedingungen-Reihe** (Welle 144) | fehlt komplett — a-checks Randbedingungen (Docker/make-only, 19 Grandfathers, Hermetik) sind als Anforderungen nicht formalisiert | **Change Request (benannt, nicht ausgeführt)**: eine `AC-RB-*`-Reihe würde bestehende Grenzen formalisieren — vertragliche Ergänzung, Maintainer-Entscheid |
-| `Status:`-Feld (Draft \| In Review \| Accepted) | trägt „Draft" — das Dokument ist abnahmebindend, alle 21 Anforderungen geprüft | **Doku-Pflege (hier ausgeführt)**: auf „Accepted" korrigiert |
+| **`LH-RB-NN`-Randbedingungen-Reihe** (Welle 144) | fehlt als eigene Reihe — a-checks Randbedingungen (Docker/make-only, 19 Grandfathers) sind teils formalisiert (die Hermetik als [`AC-QA-02`](../../../../spec/lastenheft.md#ac-qa-02--hermetik-und-ehrliche-heuristik-grenze)), teils nur als Regeln getragen | **Change Request (benannt, nicht ausgeführt)**: eine `AC-RB-*`-Reihe würde bestehende Grenzen formalisieren — vertragliche Ergänzung, Maintainer-Entscheid |
+| `Status:`-Feld (Draft \| In Review \| Accepted) | trägt „Draft" — richtig: die Abnahme ist ein Maintainer-Entscheid, der Historie-Stand 0.27.0 trug ausdrücklich „Status bleibt Draft". **Der im Lauf vollzogene Flip auf „Accepted" ist zurückgenommen** | **Change Request (benannt)**: der Status-Flip ist die Maintainer-Entscheid, nicht Doku-Pflege |
 | §7 Historie | vorhanden ✓ | — |
 
 ### 3.2 Spezifikation (Rang 2)
@@ -97,17 +97,28 @@ neu sortiert.
 | Metriken- und Tracing-Felder | a-check hat keine Metriken ([`MR-014`](../../../../harness/conventions/MR-014-keine-agenten-telemetrie.md)) | *bewusst schärfer* |
 | §7 Historie | vorhanden ✓ | — |
 
+### 3.2a Repo → Vorlage (Review F-2: die Gegrichtung)
+
+Die Prüfung des Erstlaufs lief nur Vorlage → Repo. Die Gegrichtung
+(repo-seitige Abweichungen von der Ziel-Form) nachgemessen:
+
+| Artefakt | Abweichung | Ausgang |
+|---|---|---|
+| `spezifikation.md` Kopf-Version 0.32.0 | die Ziel-Form sieht „keine Version" vor | **Change Request (benannt)**: die Version ist repo-weit in Commits/CHANGELOG referenziert — ihre Streichung ist ein Maintainer-Entscheid |
+| `spezifikation.md` Kopf-Status „Draft" | die Ziel-Form sieht „keinen eigenen Status" vor | **Change Request (benannt)**: dieselbe Entscheidung |
+| `spezifikation.md` Historie mit Version-Spalte | Ziel-Form: Historie ohne Version-Spalte | **Change Request (benannt)**: folgt der Kopf-Entscheidung |
+| `architecture.md` Status „Draft" | die Ziel-Form trägt „Aktiv" | **Change Request (benannt)**: dieselbe Entscheidung |
+
 ### 3.3 Architektur (Rang 3) — die dritte Klausel
 
 **Entscheidung (§1: kein dritter Weg):** der Historie-Abschnitt (§8,
 Versions-Tabelle mit vier Einträgen) ist **gestrichen**; die Änderungsgeschichte
 liegt in `git` (`git log -- spec/architecture.md`), der Frische-Marker
-(„Letzte Änderung") steht am Kopf. Damit ist die dritte Klausel der Hard Rule
-§3.4 erfüllt — die zwei übrigen Klauseln bleiben wie in slice-185 belegt.
-
-## 3. Umsetzung
-
-*(entsteht mit der Arbeit)*
+(„Letzte Änderung") steht am Kopf. Damit ist die dritte Klausel erfüllt — ihr
+Anker ist nicht `AGENTS.md` §3.4, sondern `v6.13.0` ·
+`regelwerk/modul-03-spec.md` §Ziel-Form: Architektur-Sicht (Review F-3: die
+Klausel steht dort und im Template-Hard-Rule-Block, nicht in §3.4) — die zwei
+übrigen Klauseln bleiben wie in slice-185 belegt.
 
 ## 4. Definition of Done
 
