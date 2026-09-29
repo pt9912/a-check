@@ -420,6 +420,8 @@ structure:
   #     (nur README.md), und die Bedingung laeuft bei leerer Menge
   #     fail-closed rot (section-missing, gemessen slice-202). Wird next/
   #     belegt, zieht eine zweite Bedingung mit gleicher Form nach.
+  #     Dasselbe gilt fuer open/ selbst, sobald sie leer wird oder nur den
+  #     grandfathered slice-045 traegt — dann entfaellt diese Bedingung mit.
   - files: "docs/plan/planning/open/**/slice-*.md"
     section-pattern: '^#+ .*(DoD|Definition of Done)'
     forbid-pattern: '^\s*- \[x\]'

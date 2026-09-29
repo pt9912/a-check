@@ -13,7 +13,8 @@
 # d-check-Digest gegen eigene Fixtures und prueft, ob die HEUTE in AGENTS.md
 # empfohlene Formulierung ("unabhängiger Review") tatsaechlich noch feuert.
 #
-# ZWEI KONTROLLEN JE MUSTER, wie bei verify-risiko-ausgaenge.sh: POSITIV (die
+# MEHRERE KONTROLLEN JE MUSTER (Positiv/Negativ, bei Muster 3 zusaetzlich
+# Scoping und Zitat), wie bei verify-risiko-ausgaenge.sh: POSITIV (die
 # empfohlene Phrase loest aus) und NEGATIV (eine Phrase, die es nicht sollte,
 # loest NICHT aus) -- ohne die zweite waere ein Muster, das alles durchlaesst,
 # von einem korrekten nicht zu unterscheiden.
@@ -33,9 +34,10 @@
 #  - ob HERUNTERGENOMMENE Formulierungen (die der Kurs kuenftig einfuehrt)
 #    ebenfalls greifen wuerden -- nur die AKTUELL empfohlene. Ein neuer Nachzug
 #    bei jeder Formulierungs-Aenderung bleibt Handarbeit.
-#  - die uebrigen ZWOELF phrasen-basierten Felder in .d-check.yml. Geprueft
-#    sind die zwei, deren Ausfall BELEGT ist; fuer die anderen gibt es keinen
-#    Vorfall, und ein Sensor ohne Anlass ist selbst eine Behauptung.
+#  - die uebrigen phrasen-basierten Felder in .d-check.yml. Geprueft sind die
+#    drei, deren Ausfall BELEGT ist oder deren Anlass im Slice-202-Review lag;
+#    fuer die anderen gibt es keinen Vorfall, und ein Sensor ohne Anlass ist
+#    selbst eine Behauptung.
 set -euo pipefail
 
 DCHECK_REF="${DCHECK_REF:?DCHECK_REF muss gesetzt sein (Makefile uebergibt es)}"
@@ -167,8 +169,8 @@ if [ -z "$HAEKCHEN_PATTERN" ]; then
   exit 2
 fi
 
-setup_haekchen_fixture() {  # $1 = Zielverz., $2 = Lebenslage (open|next|in-progress), $3 = DoD-Zeile
-  local dir="$1" stage="$2" line="$3"
+setup_haekchen_fixture() {  # $1 = Zielverz., $2 = Lebenslage (open|next|in-progress), $3 = DoD-Body-Datei
+  local dir="$1" stage="$2" body="$3"
   rm -rf "$dir"
   mkdir -p "$dir/docs/plan/planning/$stage"
   cat > "$dir/.d-check.yml" <<YAML
@@ -178,18 +180,12 @@ structure:
     section-pattern: '^#+ .*(DoD|Definition of Done)'
     forbid-pattern: '${HAEKCHEN_PATTERN}'
 YAML
-  cat > "$dir/docs/plan/planning/$stage/slice-902-fixture.md" <<EOF
-# slice-902 fixture
-
-## DoD
-
-${line}
-EOF
+  { echo "# slice-902 fixture"; echo; echo "## DoD"; echo; cat "$body"; } > "$dir/docs/plan/planning/$stage/slice-902-fixture.md"
   git_init_fixture "$dir"
 }
 
-setup_haekchen_fixture "$TMP/haekchen-pos" "open" \
-  "- [x] Attestierter Vorgang, der noch aussteht."
+printf '%s\n' "- [x] Attestierter Vorgang, der noch aussteht." > "$TMP/body-pos.txt"
+setup_haekchen_fixture "$TMP/haekchen-pos" "open" "$TMP/body-pos.txt"
 out="$(run_dcheck "$TMP/haekchen-pos")"
 if ! printf '%s' "$out" | grep -q "section-forbidden"; then
   echo "dcheck-phrase-selftest: FAIL — ein [x] in open/ feuert das forbid-pattern nicht mehr (Positiv-Kontrolle, attestierung-vor-dem-vorgang 3x)." >&2
@@ -197,24 +193,30 @@ if ! printf '%s' "$out" | grep -q "section-forbidden"; then
   fail=1
 fi
 
-setup_haekchen_fixture "$TMP/haekchen-neg" "open" \
-  "- [ ] Echte offene Aufgabe."
+printf '%s\n' "- [ ] Echte offene Aufgabe." > "$TMP/body-neg.txt"
+setup_haekchen_fixture "$TMP/haekchen-neg" "open" "$TMP/body-neg.txt"
 out="$(run_dcheck "$TMP/haekchen-neg")"
 if printf '%s' "$out" | grep -q "section-forbidden"; then
   echo "dcheck-phrase-selftest: FAIL — das forbid-pattern greift bei offenem Haekchen (Negativ-Kontrolle)." >&2
   fail=1
 fi
 
-setup_haekchen_fixture "$TMP/haekchen-scope" "in-progress" \
-  "- [x] Mit der Arbeit abgehakt — hier legitim."
+printf '%s\n' "- [x] Mit der Arbeit abgehakt — hier legitim." > "$TMP/body-scope.txt"
+setup_haekchen_fixture "$TMP/haekchen-scope" "in-progress" "$TMP/body-scope.txt"
 out="$(run_dcheck "$TMP/haekchen-scope")"
 if printf '%s' "$out" | grep -q "section-forbidden"; then
   echo "dcheck-phrase-selftest: FAIL — das forbid-pattern greift in in-progress/, wo Haekchen legitim sind (Scoping-Kontrolle)." >&2
   fail=1
 fi
 
-setup_haekchen_fixture "$TMP/haekchen-zitat" "open" \
-  "- Zitat des Musters im Code-Block unten.\n\n\`\`\`\n- [x] zitiertes Muster\n\`\`\`"
+cat > "$TMP/body-zitat.txt" <<'BODY'
+- Zitat des Musters im Code-Block unten.
+
+```
+- [x] zitiertes Muster
+```
+BODY
+setup_haekchen_fixture "$TMP/haekchen-zitat" "open" "$TMP/body-zitat.txt"
 out="$(run_dcheck "$TMP/haekchen-zitat")"
 if printf '%s' "$out" | grep -q "section-forbidden"; then
   echo "dcheck-phrase-selftest: FAIL — das forbid-pattern trifft das zitierte Muster im Code-Block (Zitat-Kontext, SL-004)." >&2
@@ -272,7 +274,7 @@ if [ "$fail" -ne 0 ]; then
   exit 1
 fi
 
-echo "dcheck-phrase-selftest ok: 7 Werkzeug-Kontrollen (3 Muster) und 1 Korpus-Kontrolle"
+echo "dcheck-phrase-selftest ok: 8 Werkzeug-Kontrollen (3 Muster) und 1 Korpus-Kontrolle"
 echo "  (reviews-Phrase auf einem DoD-Haken: ${korpus_reviews} flache(r) Slice(s) in ${done_dir})."
 echo "  NICHT geprueft: die uebrigen phrasen-basierten Felder in .d-check.yml — fuer sie gibt es"
 echo "  keinen belegten Ausfall, und ein Sensor ohne Anlass ist selbst eine Behauptung."
