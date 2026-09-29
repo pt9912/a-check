@@ -25,9 +25,11 @@ bei **3×** (*geplant*; slice-169, slice-197, slice-200).
 **Ziel:** Ein DoD-Häkchen in einem Slice-Plan, der in `open/` oder `next/`
 liegt, ist mechanisch gefangen — ein `forbid-pattern` (Modul `structure`,
 konfiguriert in [`.d-check.yml`](../../../../.d-check.yml), im `verify`-Aggregat)
-meldet `- [x]` auf `docs/plan/planning/{open,next}/**/slice-*.md`. Damit ist
-die Attestierungs-Lücke (drei Auftreten: slice-169, slice-197, slice-200)
-geschlossen: das Häkchen entsteht nicht mehr davor, ohne dass ein Lauf es
+meldet `- [x]` auf `docs/plan/planning/open/**/slice-*.md` (next/ bleibt
+grenz-deklariert ungedeckt — leere Kandidatenmenge läuft fail-closed rot).
+Damit ist die Attestierungs-Lücke (drei Auftreten: slice-169, slice-197,
+slice-200) geschlossen: das Häkchen entsteht nicht mehr davor, ohne dass ein
+Lauf es
 sieht.
 
 **Ausdrücklich NICHT in diesem Slice** — je Punkt mit Begründung:
@@ -89,10 +91,13 @@ Lerneintrag.
 **Lerneintrag — Form: neuer Sensor.** *Häkchen an die Lebenslage binden:* ein
 `- [x]` in einem Slice in `open/`/`next/` attestiert einen Vorgang, der noch
 aussteht — seit slice-169 drei Mal aufgetreten und hier mechanisch gefangen
-(struktur-Bedingung 7, `forbid-pattern`, Scoping auf `open/`/`next/`; die
-Häufig-Form in `in-progress/`/`done/` bleibt legitim).
+(struktur-Bedingung 7, `forbid-pattern`, Scoping auf `open/`; die
+Häufig-Form in `in-progress/`/`done/` bleibt legitim). **GRENZE (gemessen,
+Nachprüf-Lauf):** das Muster greift nur, wenn die `[x]`-Zeile die erste
+Inhaltszeile der DoD-Sektion ist — gemischte Gestalten (unchecked Punkt vor
+dem attestierenden Häkchen) laufen durch; das Upstream-Thema ist benannt.
 liegt in `.d-check.yml` (structure, Bedingung 7) plus
-`tools/dcheck-phrase-selftest.sh` (Muster 3, drei Kontrollen).
+`tools/dcheck-phrase-selftest.sh` (Muster 3, vier Kontrollen).
 Auslöser: `BEO-GATE/attestierung-vor-dem-vorgang`
 (slice-169, slice-197, slice-200 — 3×).
 
