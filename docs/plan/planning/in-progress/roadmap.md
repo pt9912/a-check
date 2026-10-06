@@ -21,6 +21,8 @@ Welle-Datei, nicht hier.
 
 - [welle-16-shapes-sollform](../welle-16-shapes-sollform.md) — Sollform je Datei (`shapes:`)
 
+**Nichts in Arbeit.**
+
 **Woran gerade gearbeitet wird, sagt `ls docs/plan/planning/in-progress/` — nicht diese
 Datei.** Wellenlose Arbeit erscheint in der Roadmap nicht; ihr Zustand ist die
 Verzeichnis-Position (Baseline-Regelwerk `modul-06-roadmap.md` §Wann Arbeit eine Welle
