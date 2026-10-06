@@ -60,7 +60,7 @@ DoD.
 |---|---|---|
 | [slice-209](done/slice-209-shapes-spec-first.md) | Spec-first: Anforderung, ADR, Spezifikation für `shapes:` — zur Abnahme | [AC-FA-RULE-011](../../../spec/lastenheft.md#ac-fa-rule-011--konstrukt-monopol-regel-construct-leak) (Abgrenzung), [AC-FA-CONF-001](../../../spec/lastenheft.md#ac-fa-conf-001--konfigurationsdatei-a-checkyml) |
 | [slice-210](done/slice-210-shapes-kotlin-allow-statements.md) | Dialekt `kotlin` + `mode: allow-statements` | neue Regel-Anforderung aus slice-209 |
-| [slice-211](open/slice-211-shapes-exact-und-unused.md) | `mode: exact` (`expect:`) + Opt-in-Befund für nie treffende Einträge | neue Regel-Anforderung aus slice-209 |
+| [slice-211](next/slice-211-shapes-exact-und-unused.md) | `mode: exact` (`expect:`) + Opt-in-Befund für nie treffende Einträge | neue Regel-Anforderung aus slice-209 |
 
 **Reihenfolge ist Abhängigkeit:** slice-210 und slice-211 starten erst, wenn
 slice-209 in `done/` liegt und der Maintainer die Anforderung abgenommen hat —
