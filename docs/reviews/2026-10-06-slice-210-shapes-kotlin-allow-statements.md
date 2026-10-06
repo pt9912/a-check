@@ -115,3 +115,82 @@ Sache eines still erweiterten Code-Pfads. Die LOW-Findings blockieren für sich 
 §1 benannten Weg (Plan-Änderung, Planner/Architect). Die Finding-Klassen gehen zusätzlich in die
 Closure-Notiz §7 von slice-210 und von dort in den Zähler. Dieser Report ist Lauf-Beleg und
 ersetzt keine Verifikation (DoD, bewusstes Brechen der Gegenprobe-Tests: Verifier, Modul 11).
+
+## Delta-Re-Review (Nachlauf)
+
+**Review-Art:** Code — unabhängiger Lauf, derselbe Reviewer-Kontext wie oben (kein Autor des
+Fixes). **Gegenstand:** die Commits nach diesem Report, `de26d83` (Plan-Änderung slice-210 §1),
+`0618eb0` (Spezifikation 0.34.0) und `7d5d410` (Code, Tests, Handbuch). **Skill:**
+`.harness/skills/reviewer.md` @ `a6d19b6` · **Modell:** `claude-opus-5-5` · **Datum:** 2026-10-06.
+
+**Messungen** (Geltungsbereich je Messung):
+
+- Auf `7d5d410` liefen `make test`, `make lint`, `make arch-check`, `make coverage-gate` und
+  `make doc-check`, alle mit Exit 0. Die Coverage liegt bei 96,40 %.
+- 14 Sonden liefen in einer **neuen Kopie** außerhalb des Repos über `make test` und
+  protokollieren die Ausgabe von `normalizeKotlin`. **Geltungsbereich:** belegt ist das Verhalten
+  von a-check. Wie Kotlin dieselbe Eingabe liest, ist aus der Lexer-Grammatik hergeleitet
+  (Kurz-Vorlage `$`{n} + Bezeichner, Backtick-Bezeichner `` `[^`\n]+` ``) und nicht ausgeführt.
+
+### Stand je Finding
+
+| ID | Stand | Beleg |
+|---|---|---|
+| F-1 | behoben | `docs/user/benutzerhandbuch.md:937` nennt elf Namen samt `shape-unlisted` und „die elf geprüften Regeln“. Das passt zu den elf Zeilen in §3.4. |
+| F-2 | behoben | Die Spezifikation trägt die Backtick-Vorlage (`spec/spezifikation.md:279` ff., Version 0.34.0). Die Plan-Änderung steht in §1 vor dem Code (`de26d83`). Der Code dazu: `internal/adapter/driven/extract/kotlin_shape.go:270-274` (`dollarRun` → `lexBacktick`), Test `kotlin_shape_test.go:183`. Die Sonde mit dem Original-Fall aus F-2 liefert jetzt vier Anweisungen, `dependencies{implementation("com.evil:lib:1.0")}` ist sichtbar. |
+| F-3 | behoben | `internal/adapter/driven/extract/shapes.go:93`, `:114`, `:118` nennen `shapes[%d]`; ebenso die Validate-Meldungen `:41`, `:50`, `:53`. |
+| F-4 | behoben über den Vertrag | Laut Spezifikation 0.34.0 (SPEC-CONF-001 und SPEC-RULE-001) werden byte-gleiche `shape-*`-Befundzeilen generell einmal ausgegeben; die Plan-Änderung nennt das. Das Verhalten war schon so. Rest siehe D-1. |
+| F-5 | behoben | `kotlin_shape_test.go:206` deckt `++`, `--` und `>` ab (`listOf<A>`). |
+| F-6 | behoben | `internal/cli/cli_shapes_test.go:63` (`TestShapesGreen`): Das Muster steht jetzt in einem Kommentar (Zeile 1) und in der Zeichenkette einer **erlaubten** Anweisung (neuer `allow`-Eintrag). Erwartet wird Exit 0, und die Gegenprobe mit `val other` meldet. |
+| F-7 | behoben | `internal/hexagon/core/shapes.go:91`, `:143` (`trimDotSlash`), Test `shapes_test.go:128`. Die Spezifikation nennt das Entfernen. `./../x` wird nach dem Kürzen weiter abgewiesen, weil `InsideRoot` auf dem gekürzten Wert läuft. |
+| F-8 | behoben | Das `# resolution:` in `internal/cli/cli.go:340` steht wieder in Spalte 35, gleich mit `:326`. |
+| F-9 | behoben | `kotlin_shape.go:315-317`, Test `kotlin_shape_test.go:198`. Die Sonde `'\` + CR ergibt ebenfalls Exit 2. |
+| F-10 | behoben | `docs/user/benutzerhandbuch.md:597-600` nennt jetzt die Ausnahme: Ein Zeilenende nach einem Operator setzt die Anweisung fort, das ergibt einen Fehlalarm und macht die Prüfung nie durchlässiger. |
+| F-11 | unverändert (INFO, wie vereinbart) | — |
+| F-12 | unverändert (INFO, wie vereinbart) | — |
+| F-13 | behoben | `internal/cli/cli_shapes_test.go:135` (`TestPrintConfigShowsShapes`) prüft, dass das Gerüst den Block und die sichere Klasse enthält und kein `".*"`. |
+
+### Adversarial: öffnet die Backtick-Vorlage neue Desyncs?
+
+Jede Sonde ist unten gegen das hergeleitete Kotlin-Verhalten gestellt. **Fail-closed** heißt:
+Exit 2 auf einer Datei, die Kotlin ohnehin ablehnt oder die a-check strenger liest; das ist
+**kein** Verschlucken.
+
+| Eingabe (Kern) | a-check | Kotlin (hergeleitet) | Urteil |
+|---|---|---|---|
+| `$` vor Backtick **außerhalb** einer Zeichenkette: `x($`a`)` | `$` ist ein Code-Zeichen, der Backtick ein Bezeichner; zwei Anweisungen | `$` ist im Code ungültig | kein Desync; `dollarRun` läuft nur in Zeichenketten |
+| `$$"$`x"y`"` (n = 2, Folge 1) | Backtick ist Inhalt, das `"` schließt, der spätere Backtick ist offen ⇒ Exit 2 | dasselbe: keine Vorlage, offener Bezeichner ⇒ Compile-Fehler | übereinstimmend |
+| `$$"$$`x"y`"` (n = 2, Folge 2) | Vorlage, eine Zeichenkette | Vorlage | übereinstimmend |
+| `"$$`a"b`"` (n = 1, Folge 2) | Vorlage aus dem letzten `$` | `$` ist Inhalt, danach Vorlage | übereinstimmend |
+| `$$$"$$`a"b`"` (n = 3, Folge 2) | keine Vorlage ⇒ Exit 2 | keine Vorlage ⇒ Compile-Fehler | übereinstimmend |
+| `"\$`a"b`"` (maskiertes `$`) | keine Vorlage ⇒ Exit 2 | keine Vorlage ⇒ Compile-Fehler | übereinstimmend |
+| Bezeichner mit `$`/`{`: `"$`a${b`"`, `"$`a{`" + "}"` | Bezeichner bis zum nächsten Backtick; `${` darin öffnet nichts | `` `[^`\n]+` `` | übereinstimmend |
+| Roh-String: `"""$`a"""b`"""` | Vorlage; das `"""` im Bezeichner schließt nicht | Kurz-Vorlage ist der längere Treffer | übereinstimmend |
+| Roh-String, Zeilenende im Bezeichner: `"""$`a⏎b`"""` | Exit 2 | keine Vorlage, gültiger Inhalt | **fail-closed** Exit 2 auf gültigem Kotlin; die Spezifikation sagt es ausdrücklich zu (D-2) |
+| leerer Bezeichner: `"$``" + "x"` | zwei Backticks verbraucht, Zeichenkette endet am selben `"` | keine Vorlage (leer), beide Backticks sind Inhalt | Ende gleich ⇒ kein Desync |
+| Vorlage in `${…}`: `"${ "$`q"r`" }"` | rekursiv korrekt | dasselbe | übereinstimmend |
+
+Keine Sonde fand eine Eingabe, bei der a-check Code als Kommentar oder Zeichenkette liest, den
+Kotlin als Code liest. Die einzige neue Abweichung ist fail-closed (D-2). Kotlins Bezeichner-Klasse
+`[^`\n]` lässt ein einzelnes `CR` zu, `lexBacktick` lehnt es ab: ebenfalls nur fail-closed.
+
+### Neue Findings des Nachlaufs
+
+| ID | Kategorie | Befund | Quelle | Pfad | Verifizierbar | Klasse |
+|---|---|---|---|---|---|---|
+| D-1 | LOW | Laut Spezifikation 0.34.0 werden byte-gleiche Befundzeilen **generell** einmal ausgegeben. Die Kommentare an `EvaluateShapes` und `dedupeSorted` nennen als Fall weiter nur „one file matched by two entries“. Für den Fall „zwei gleiche Anweisungen auf einer Zeile“, den die Präzisierung neu zusagt, gibt es keinen Test. | SPEC-CONF-001/SPEC-RULE-001 0.34.0; `AGENTS.md` §3.7 | `internal/hexagon/core/shapes.go:194-195`, `:232-234`; `internal/hexagon/core/shapes_test.go:79` | ja — Kern-Test mit zwei gleichen Anweisungen einer Zeile | Kommentar-Zusage enger als der Vertrag |
+| D-2 | INFO | Ein Zeilenende in einem Backtick-Bezeichner nach `$` ist laut Spezifikation ein Fehler. In einem **Roh**-String ist dieselbe Folge gültiges Kotlin (Inhalt), a-check meldet Exit 2. Das ist fail-closed und durch den Vertrag gedeckt; benannt, weil es ein Fehlalarm-Anlass im Sinn der Re-Evaluierungs-Trigger von ADR-0041 ist. | SPEC-EXTRACT-001 Schritt 1 (0.34.0); ADR-0041 §Re-Evaluierungs-Trigger | `internal/adapter/driven/extract/kotlin_shape.go:270-274`, `:330` ff. | ja — Sonde | — (Hinweis, keine Klasse) |
+
+**Negativbefunde des Nachlaufs:** Plan-Änderung vor dem Code und als Änderung kenntlich, ohne
+Befund. Spec-Delta ohne Abwärts-Referenz (`AGENTS.md` §3.4) und mit Historie-Zeile, ohne Befund.
+ADR-0041 unberührt (§3.5), ohne Befund. `templateExpr`-Ausgliederung verhaltensgleich (Sonden P4,
+P12), ohne Befund. Handbuch-Delta gegen den Code, ohne Befund. Kein `//nolint`, Lint und
+Architektur grün.
+
+**Summary des Nachlaufs:** F-1 bis F-10 und F-13 sind behoben, F-4 davon über den Vertrag.
+F-11 und F-12 bleiben INFO. Neu: 0 HIGH · 0 MEDIUM · 1 LOW (D-1) · 1 INFO (D-2).
+**Finding-Klassen:** Kommentar-Zusage enger als der Vertrag.
+
+**Merge-Urteil:** **nicht blockierend.** Das HIGH (F-1) und das MEDIUM (F-2) sind behoben und
+belegt. D-1 ist LOW und blockiert für sich nicht. Der Report ersetzt keine Verifikation; DoD und
+bewusstes Brechen der neuen Tests prüft der Verifier.
