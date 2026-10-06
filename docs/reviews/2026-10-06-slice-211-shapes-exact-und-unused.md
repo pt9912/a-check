@@ -111,3 +111,84 @@ Vertragsfragen und gehen an den Planner (F-9 ggf. an den Architect, falls ein ne
 entsteht). Die Finding-Klassen gehen in die Closure-Notiz §7 von slice-211 und von dort in den
 Zähler. Dieser Report ist Lauf-Beleg und ersetzt keine Verifikation (DoD, bewusstes Brechen der
 Testbehauptungen: Verifier, Modul 11).
+
+## Delta-Re-Review (Nachlauf)
+
+**Gegenstand:** Range `9fc2c4d..5909911`. Darin `b5980ec` (Spezifikation 0.35.0) und `5909911`
+(`fix(shapes): slice-211 Nachlauf`); `9fc2c4d` ist dieser Report selbst. Derselbe unabhängige
+Kontext, derselbe Skill-Stand `a6d19b6`, Modell `claude-opus-5-5`, Datum 2026-10-06.
+
+**Messungen** (Geltungsbereich je Messung genannt):
+
+- `make test`, `make lint`, `make coverage-gate` auf `5909911`: alle Exit 0; Coverage gesamt
+  96,5 %. In den Funktionen, die F-4 betraf: `expected` 92,3 %, `unusedFindings` 100 %.
+- Sonden in einer zweiten **Kopie** (`git archive HEAD`, Scratch-Verzeichnis), über `cli.Run`.
+  Sieben Fälle, gezielt gegen die beiden neuen Exit-2-Zusagen:
+  1. Symlink-**Verzeichnis** im `expect`-Pfad
+  2. `expect` gleich einer geprüften Datei in vier Schreibweisen (`d//b.kts`, `x/../d/b.kts`,
+     `d/./b.kts`, `./d/b.kts`)
+  3. `files` als Glob
+  4. Hardlink
+
+  **Geltungsbereich:** belegt ist das Verhalten auf diesen Eingaben. Weitere Pfad-Aliase (z. B.
+  Groß-/Kleinschreibung auf nicht unterscheidenden Dateisystemen) sind nicht sondiert.
+
+### Status der Findings F-1 bis F-9
+
+| ID | Status | Beleg |
+|---|---|---|
+| F-1 | behoben | SPEC-RULE-001 (0.35.0) legt die `shape-unused`-Meldung jetzt fest: einzeilig, Zeilenenden als `\n`, Zusatz ` (regex)` (`spec/spezifikation.md`, Zeile `shape-unused`). Der Code entspricht dem (`internal/hexagon/core/shapes.go:285-289`) |
+| F-2 | behoben | `CRLF` und `CR` werden vor der Schreibung zu `LF` (`internal/hexagon/core/shapes.go:285`); der Kommentar `:271-274` nennt alle drei Zeilenenden. Test `TestEvaluateShapesUnusedFormAndFiles` (`internal/hexagon/core/shapes_test.go:225`) |
+| F-3 | **teilweise** | Ein Datei-Symlink als letzte Pfadkomponente ist jetzt Exit 2 (`internal/adapter/driven/extract/shapes.go:129-135`, Test `TestShapesExactExit2`). Ein Symlink **weiter vorn** im Pfad wird weiter verfolgt — siehe N-1 |
+| F-4 | behoben | Nicht zerlegbare Sollform, Regex-Zusatz, Zählung über zwei Dateien und Gerüst sind jetzt getestet (`internal/cli/cli_shapes_test.go:194`, `:229`; `internal/hexagon/core/shapes_test.go:225`). Rest: `TestPrintConfigShowsExactAndUnused` prüft den Exit-Code nicht (geringfügig, kein eigenes Finding) |
+| F-5 | behoben | Die erwartete Zeile wird aus der Konfiguration abgezählt und im Präfix geprüft (`internal/cli/cli_shapes_test.go:186-187`) |
+| F-6 | behoben | Die Exit-2-Aufzählung nennt die Lade-Fälle für Schlüssel und Modus sowie die vier Sollform-Fälle (`docs/user/benutzerhandbuch.md:651-658`). Die Aussage zum Symlink darin ist N-1 |
+| F-7 | behoben | Der Glossar-Eintrag nennt beide Modi (`docs/user/benutzerhandbuch.md:972`) |
+| F-8 | behoben | SPEC-RULE-001: „Genau ein Befund je Eintrag und Datei“ (`spec/spezifikation.md`, Zeile `shape-differs`) |
+| F-9 | **teilweise** | Spezifikation (SPEC-CONF-001, 0.35.0) und Handbuch erheben den Fall zu Exit 2. Der Code vergleicht aber nur die **Zeichenkette** (`rel == sh.Expect`, `internal/adapter/driven/extract/shapes.go:108`), und `expect` ist nur von `./` befreit, nicht normalisiert (`internal/hexagon/core/shapes.go:132`) — siehe N-2 |
+
+### Neue Findings
+
+| ID | Kategorie | Befund | Quelle | Pfad | Verifizierbar | Klasse |
+|---|---|---|---|---|---|---|
+| N-1 | HIGH | SPEC-CONF-001 (0.35.0) und Handbuch §4 sagen zu, dass bei der Sollform-Datei „ein Symlink nicht verfolgt wird — er könnte aus der Scan-Wurzel hinauszeigen“. `os.Lstat` prüft aber nur die **letzte** Pfadkomponente. Sonde: `expect: link/b.kts` mit `link` → Verzeichnis außerhalb der Wurzel ⇒ die fremde Datei wird gelesen und verglichen. Exit 1 mit `d/b.kts:1: shape-differs: evil() (erwartet: a())`: Der Inhalt der Datei außerhalb erscheint auf stdout. Adversarisch gegen das Binary geprüft. Der Code-Kommentar `:134` trägt dieselbe Zusage. | SPEC-CONF-001 (Fail-closed beim Scan, Symlink-Satz); AC-QA-02 (Hermetik); Reviewer-Skill HIGH „nachweislich falsche Tatsachenbehauptung“ | `internal/adapter/driven/extract/shapes.go:128-135`; `docs/user/benutzerhandbuch.md:657`; `spec/spezifikation.md:94` | ja — Sonde mit Verzeichnis-Symlink | Wurzel-Grenze nur lexikalisch, Pfad-Arten ungleich behandelt |
+| N-2 | HIGH | SPEC-CONF-001 (0.35.0) und Handbuch §4 sagen zu, dass eine Sollform-Datei, die von den eigenen `files` getroffen wird, Exit 2 ist („der Eintrag könnte nie melden“). Der Vergleich ist reine Zeichenketten-Gleichheit gegen den nicht normalisierten `expect`-Wert. Sonde, `files: ["d/b.kts"]`, Datei `evil()`: `expect: d//b.kts`, `x/../d/b.kts`, `d/./b.kts` ⇒ jeweils **Exit 0, kein Befund** — genau das stille Grün, das die Zusage ausschließt. `./d/b.kts` und der Glob `d/*.kts` werden richtig abgewiesen. Adversarisch gegen das Binary geprüft. | SPEC-CONF-001 (Fail-closed beim Scan); AC-FA-RULE-012 („nie ein stilles Grün“); Reviewer-Skill HIGH „nachweislich falsche Tatsachenbehauptung“ | `internal/adapter/driven/extract/shapes.go:108`; `internal/hexagon/core/shapes.go:132`; `docs/user/benutzerhandbuch.md:657-658` | ja — Sonde mit drei Schreibweisen | Gleichheit über die Schreibweise statt über das Ziel |
+| N-3 | LOW | Der Kopf des Slice-Plans sagt bei den berührten Spec-Stellen „keine Spec-Änderung“. Der Slice ändert die Spezifikation jetzt (0.35.0, `b5980ec`); der Plan ist nicht nachgezogen. | `AGENTS.md` §6 Schritt 4 (Plan-Änderung vor dem Code); Slice-Plan slice-211 Kopf | `docs/plan/planning/in-progress/slice-211-shapes-exact-und-unused.md:14-15` | ja — Plan-Kopf gegen `git log -- spec/` | Plan-Kopf nicht mit dem Vorgang nachgezogen |
+| N-4 | LOW | Der CHANGELOG-Eintrag in `[Unreleased]` nennt als Exit-2-Fälle noch „Fehlende Datei oder Sollform-Datei, Widerspruch zu `exclude` und nicht zerlegbare Datei“. Die zwei neuen Vertragsfälle aus 0.35.0 fehlen: Sollform keine reguläre Datei, Sollform von den eigenen `files` getroffen. | `AGENTS.md` §6 Schritt 7 (CHANGELOG trägt die Vertragsänderung) | `CHANGELOG.md:20-21` | nein — Doku-Abgleich | Aufzählung neben ihrer Quelle nicht nachgezogen |
+| N-5 | INFO | Ein **Hardlink** der geprüften Datei als Sollform bleibt still grün (Sonde: Exit 0). Er ist ein anderer Pfad, wird also nach dem Wortlaut nicht „von den files getroffen“, und ohne Inode-Vergleich ist er nicht erkennbar. Eine benannte Grenze dazu fehlt in Spezifikation und Handbuch. | AC-FA-RULE-012 („nie ein stilles Grün“); AC-QA-02 (ehrliche Grenze) | `internal/adapter/driven/extract/shapes.go:108` | ja — Sonde | — (Hinweis an Planner, keine Klasse) |
+
+### Negativbefunde (Nachlauf)
+
+| Bereich | Ergebnis |
+|---|---|
+| `b5980ec`: Spec-Stratum, Referenz-Richtung | geprüft, ohne Befund — keine ADR-, Slice- oder Review-Kennung im Spec-Text oder in der Historien-Zeile 0.35.0; Lastenheft unberührt |
+| Aufteilung `Shapes` → `entryFiles`, Fehlerreihenfolge | geprüft, ohne Befund — Sollform vor den Globs, Einträge in Deklarationsreihenfolge, stdout leer bei Exit 2 |
+| Kommentar-Regel `AGENTS.md` §3.7 (neue Kommentare) | geprüft, ohne Befund außer N-1 (Zusage `:134` zu weit) |
+| Neue Tests auf Tautologie | geprüft, ohne Befund — Symlink-Test baut einen echten Datei-Symlink; der Zeilen-Test zählt die Zeile aus der Konfiguration statt sie zu setzen; der Mehrdatei-Test bräche, wenn `b()` nur in der ersten Datei gezählt würde |
+| Hard Rules §3.1–§3.6 | geprüft, ohne Befund — kein `//nolint`, keine ADR berührt, Coverage-Schwelle unverändert |
+
+### Summary (Nachlauf)
+
+| Kategorie | Anzahl |
+|---|---|
+| HIGH | 2 |
+| MEDIUM | 0 |
+| LOW | 2 |
+| INFO | 1 |
+
+**Finding-Klassen des Nachlaufs:** Wurzel-Grenze nur lexikalisch, Pfad-Arten ungleich behandelt
+(Wiederholung von F-3 im selben Vorgang — zählt nicht neu) · Gleichheit über die Schreibweise statt
+über das Ziel · Plan-Kopf nicht mit dem Vorgang nachgezogen · Aufzählung neben ihrer Quelle nicht
+nachgezogen (wie F-6/F-7, selber Vorgang)
+
+### Verdikt (Nachlauf)
+
+**Merge-blockierend:** ja — N-1 und N-2 (HIGH). Beide sind adversarisch gegen das Binary
+verifiziert, nicht nur gelesen. In beiden Fällen sagt der neu geschriebene Vertrag (Spezifikation
+0.35.0, Handbuch §4) mehr zu, als der Code einlöst. Der Eingriff ist klein und auf die zwei Zeilen
+begrenzt, die die Pfade vergleichen bzw. prüfen. F-1, F-2 und F-4 bis F-8 sind behoben, F-3 und F-9
+nur teilweise; die Restlücken sind N-1 und N-2. N-3 und N-4 blockieren für sich nicht.
+
+**Übergabe:** N-1 bis N-4 an den Implementer; N-5 an den Planner (benannte Grenze oder nicht).
+Ein Rollen-Widerspruch liegt nicht vor; die Konflikt-Sequenz (Modul 8) greift erst, wenn der
+Implementer einem der HIGH-Findings widerspricht.
