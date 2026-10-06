@@ -42,6 +42,17 @@ Exit 1 — alle Gegenprobe-Fälle des CR sind Tests.
   Spezifikation stehen nach slice-209; wer hier eine Vertragslücke findet,
   hält an und geht über eine Plan-Änderung, nicht über einen still
   erweiterten Code-Pfad.
+
+  **Plan-Änderung 2026-10-06 (nach dem Review, vor dem Code):** Der Review
+  fand eine solche Lücke (F-2): In Kotlin ist `$` vor einem
+  Backtick-Bezeichner auch **innerhalb** einer Zeichenkette eine Vorlage;
+  [SPEC-EXTRACT-001](../../../../spec/spezifikation.md#spec-extract-001--import-extraktion) Schritt 1 kannte nur `${`. Ein `"` im Bezeichner beendete
+  die Zeichenkette zu früh, ein späteres `/*` schluckte Code. Dieser Slice
+  nimmt die Spec-Präzisierung mit (Spezifikation 0.34.0, Schritt 1 um die
+  Backtick-Vorlage ergänzt) — sie schärft die Lexik, ändert keine Zusage des
+  Lastenhefts und berührt [ADR-0041](../../adr/0041-shapes-sollform-je-datei.md) nicht (die nennt „vollständige Lexik"
+  als Gegenmittel). Ebenso mit: die Präzisierung, dass byte-gleiche
+  Befundzeilen generell einmal ausgegeben werden (F-4).
 - **Graph-Ausgabe.** *Bestand bleibt bewusst stehen*: `--print-graph` zeigt
   Schichten und Kanten; eine Datei-Sollform ist keine Kante (dieselbe
   Begründung wie bei `constructs`).
