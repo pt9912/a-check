@@ -4,7 +4,7 @@
 Datei liegt — eines von `open/`, `next/`, `in-progress/`, `done/`. Er
 wechselt nur durch `git mv` (`make slice-mv`).
 
-**Welle:** welle-16 — [Welle-Plan](../welle-16-shapes-sollform.md).
+**Welle:** welle-16 — [Welle-Plan](welle-16-shapes-sollform.md).
 
 **Bezug:** Change Request „Positivliste von Anweisungen je Datei (Sollform)"
 (Maintainer, 2026-10-06). Abgrenzung zu

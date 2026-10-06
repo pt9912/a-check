@@ -4,7 +4,7 @@
 Datei liegt — eines von `open/`, `next/`, `in-progress/`, `done/`. Er
 wechselt nur durch `git mv` (`make slice-mv`).
 
-**Welle:** welle-16 — [Welle-Plan](../welle-16-shapes-sollform.md).
+**Welle:** welle-16 — [Welle-Plan](welle-16-shapes-sollform.md).
 
 **Bezug:** [AC-FA-RULE-012](../../../../spec/lastenheft.md#ac-fa-rule-012),
 [ADR-0041](../../adr/0041-shapes-sollform-je-datei.md) (beide aus slice-209);
