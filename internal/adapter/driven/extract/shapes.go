@@ -96,6 +96,29 @@ func (a Adapter) Shapes(root string, m core.Model) (core.ShapeScan, error) {
 	return scan, nil
 }
 
+// regularNoSymlink checks every component of rel below root with Lstat: no
+// component may be a symlink — a link anywhere in the path could lead out of
+// the scan root (Review slice-211 N-1) — and the last one must be a regular
+// file.
+func regularNoSymlink(root, rel string) error {
+	cur := root
+	segs := strings.Split(rel, "/")
+	for i, s := range segs {
+		cur = filepath.Join(cur, s)
+		info, err := os.Lstat(cur)
+		if err != nil {
+			return fmt.Errorf("fehlt oder ist nicht lesbar: %w", err)
+		}
+		if info.Mode()&os.ModeSymlink != 0 {
+			return fmt.Errorf("der Pfad enthält einen Symlink (%s) — er wird nicht verfolgt", path.Join(segs[:i+1]...))
+		}
+		if i == len(segs)-1 && !info.Mode().IsRegular() {
+			return fmt.Errorf("ist keine reguläre Datei")
+		}
+	}
+	return nil
+}
+
 // entryFiles reads and normalizes the files of one entry. In exact mode the
 // Sollform file must not be one of them — the entry could never report.
 func (a Adapter) entryFiles(e int, root string, sh core.Shape, exclude []string) ([]core.ShapeFile, error) {
@@ -105,8 +128,8 @@ func (a Adapter) entryFiles(e int, root string, sh core.Shape, exclude []string)
 	}
 	out := make([]core.ShapeFile, 0, len(paths))
 	for _, rel := range paths {
-		if sh.Mode == "exact" && rel == sh.Expect {
-			return nil, fmt.Errorf("shapes[%d]: expect-Datei %s wird von den eigenen files getroffen — der Eintrag könnte nie melden", e, rel)
+		if sh.Mode == "exact" && sameFile(root, rel, sh.Expect) {
+			return nil, fmt.Errorf("shapes[%d]: expect-Datei %s ist zugleich die geprüfte Datei %s — der Eintrag könnte nie melden", e, sh.Expect, rel)
 		}
 		data, rerr := os.ReadFile(filepath.Join(root, filepath.FromSlash(rel)))
 		if rerr != nil {
@@ -126,13 +149,8 @@ func (a Adapter) entryFiles(e int, root string, sh core.Shape, exclude []string)
 // (SPEC-CONF-001).
 func (a Adapter) expected(e int, root string, sh core.Shape) ([]core.Statement, error) {
 	p := filepath.Join(root, filepath.FromSlash(sh.Expect))
-	info, err := os.Lstat(p)
-	if err != nil {
-		return nil, fmt.Errorf("shapes[%d]: expect-Datei %q fehlt oder ist nicht lesbar: %w", e, sh.Expect, err)
-	}
-	if !info.Mode().IsRegular() {
-		// a symlink is not followed: it could point out of the scan root
-		return nil, fmt.Errorf("shapes[%d]: expect-Datei %q ist keine reguläre Datei", e, sh.Expect)
+	if err := regularNoSymlink(root, sh.Expect); err != nil {
+		return nil, fmt.Errorf("shapes[%d]: expect-Datei %q: %w", e, sh.Expect, err)
 	}
 	data, err := os.ReadFile(p)
 	if err != nil {
@@ -143,6 +161,18 @@ func (a Adapter) expected(e int, root string, sh core.Shape) ([]core.Statement, 
 		return nil, fmt.Errorf("shapes[%d]: expect-Datei %s lässt sich nicht zerlegen: %w", e, sh.Expect, nerr)
 	}
 	return want, nil
+}
+
+// sameFile reports whether two paths below root name the same file — by
+// name, and by identity (os.SameFile), so a hard link of the checked file as
+// Sollform is caught too (Review slice-211 N-5).
+func sameFile(root, a, b string) bool {
+	if a == b {
+		return true
+	}
+	ia, ea := os.Stat(filepath.Join(root, filepath.FromSlash(a)))
+	ib, eb := os.Stat(filepath.Join(root, filepath.FromSlash(b)))
+	return ea == nil && eb == nil && os.SameFile(ia, ib)
 }
 
 // shapePaths resolves one entry's globs to the sorted, deduplicated set of

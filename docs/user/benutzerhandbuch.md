@@ -654,8 +654,8 @@ hinauszeigt; der `dialect` unbekannt ist; ein `allow`-Eintrag sich nicht zerlege
 mehr als eine Anweisung ergibt; eine Regex nicht kompiliert; Schlüssel und Modus nicht
 zusammenpassen (`allow`/`unused` bei `exact`, `expect` fehlt bei `exact` oder steht bei
 `allow-statements`, ein `unused`-Wert außer `fail`); die Sollform-Datei fehlt, aus der Scan-Wurzel
-hinauszeigt, keine reguläre Datei ist (ein Symlink wird nicht verfolgt) oder von den eigenen
-`files` getroffen wird; oder eine geprüfte Datei bzw. die Sollform-Datei sich nicht zerlegen lässt (offener Block, offene Zeichenkette). a-check prüft **Text nach Normalisierung**,
+hinauszeigt, keine reguläre Datei ist, einen Symlink irgendwo im Pfad hat (er wird nicht
+verfolgt) oder dieselbe Datei ist wie eine geprüfte (auch über einen Hardlink); oder eine geprüfte Datei bzw. die Sollform-Datei sich nicht zerlegen lässt (offener Block, offene Zeichenkette). a-check prüft **Text nach Normalisierung**,
 nicht die Gradle-Semantik: Was ein erlaubtes Plugin selbst einträgt, sieht es nicht — dafür
 braucht es eine Prüfung im Build.
 

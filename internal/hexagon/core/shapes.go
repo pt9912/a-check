@@ -129,10 +129,12 @@ func newExactShape(files []string, dialect string, allow []ShapeAllowSpec, unuse
 	if expect == "" {
 		return Shape{}, fmt.Errorf("shapes: expect fehlt (mode exact)")
 	}
-	expect = trimDotSlash([]string{expect})[0]
 	if err := InsideRoot("expect", expect); err != nil {
 		return Shape{}, err
 	}
+	// lexically cleaned, so `d//b.kts`, `x/../d/b.kts` and `./d/b.kts` name the
+	// same file as the scan paths do (Review slice-211 N-2)
+	expect = path.Clean(expect)
 	return Shape{Files: files, Dialect: dialect, Mode: "exact", Expect: expect}, nil
 }
 

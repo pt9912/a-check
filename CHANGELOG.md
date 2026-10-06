@@ -17,8 +17,9 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
   Dialekt `kotlin`; `allow`-Einträge literal oder als voll verankerte RE2. Zwei Modi:
   `allow-statements` (Befund `shape-unlisted`; mit `unused: fail` zusätzlich `shape-unused` für
   jeden Eintrag ohne Treffer) und `exact` gegen eine Sollform-Datei (`expect`; Befund
-  `shape-differs` mit der ersten Abweichung). Fehlende Datei oder Sollform-Datei, Widerspruch zu
-  `exclude` und nicht zerlegbare Datei sind Exit 2. `--print-config` zeigt den Block, das
+  `shape-differs` mit der ersten Abweichung). Exit 2 statt stillem Grün: fehlende Datei oder
+  Sollform-Datei, Widerspruch zu `exclude`, nicht zerlegbare Datei, eine Sollform-Datei mit Symlink
+  im Pfad oder eine, die zugleich die geprüfte Datei ist. `--print-config` zeigt den Block, das
   Benutzerhandbuch §4 erklärt ihn.
 
 ### Changed

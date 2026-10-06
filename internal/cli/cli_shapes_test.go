@@ -220,7 +220,7 @@ func TestShapesExactExit2(t *testing.T) {
 		t.Fatal(err)
 	}
 	var out, errb bytes.Buffer
-	if code := cli.Run([]string{dir}, &out, &errb); code != 2 || !strings.Contains(errb.String(), "keine reguläre Datei") {
+	if code := cli.Run([]string{dir}, &out, &errb); code != 2 || !strings.Contains(errb.String(), "Symlink") {
 		t.Fatalf("Symlink: code=%d err=%q", code, errb.String())
 	}
 }
@@ -228,8 +228,53 @@ func TestShapesExactExit2(t *testing.T) {
 // Review slice-211 F-4: das Gerüst zeigt auch exact und unused.
 func TestPrintConfigShowsExactAndUnused(t *testing.T) {
 	var out, errb bytes.Buffer
-	cli.Run([]string{"--print-config"}, &out, &errb)
+	if code := cli.Run([]string{"--print-config"}, &out, &errb); code != 0 {
+		t.Fatalf("code=%d", code)
+	}
 	if s := out.String(); !strings.Contains(s, "mode: exact") || !strings.Contains(s, "expect:") || !strings.Contains(s, "unused: fail") {
 		t.Fatalf("Gerüst: %q", s)
+	}
+}
+
+// Review slice-211 N-1/N-2/N-5: ein Symlink-VERZEICHNIS im expect-Pfad, andere
+// Schreibweisen desselben Pfads und ein Hardlink der geprüften Datei — jeweils
+// Exit 2, nie fremder Inhalt auf stdout, nie still grün.
+func TestShapesExactPathForms(t *testing.T) {
+	mk := func(expect string) (string, string) {
+		c := cfg + "shapes:\n  - files: [\"d/b.kts\"]\n    dialect: kotlin\n    mode: exact\n    expect: " + expect + "\n"
+		dir := writeRepo(t, map[string]string{".a-check.yml": c, "d/b.kts": "evil()\n", "internal/core/c.go": "package core\n"})
+		return dir, c
+	}
+	for _, e := range []string{"d//b.kts", "x/../d/b.kts", "d/./b.kts"} {
+		dir, _ := mk(e)
+		var out, errb bytes.Buffer
+		if code := cli.Run([]string{dir}, &out, &errb); code != 2 || out.String() != "" {
+			t.Errorf("expect %q: code=%d out=%q err=%q", e, code, out.String(), errb.String())
+		}
+	}
+	// Hardlink der geprüften Datei als Sollform
+	dir, _ := mk("s/b.kts")
+	if err := os.MkdirAll(filepath.Join(dir, "s"), 0o755); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.Link(filepath.Join(dir, "d", "b.kts"), filepath.Join(dir, "s", "b.kts")); err != nil {
+		t.Fatal(err)
+	}
+	var out, errb bytes.Buffer
+	if code := cli.Run([]string{dir}, &out, &errb); code != 2 || !strings.Contains(errb.String(), "zugleich die geprüfte Datei") {
+		t.Fatalf("Hardlink: code=%d err=%q", code, errb.String())
+	}
+	// Symlink-Verzeichnis im Pfad, das aus der Wurzel hinauszeigt
+	outside := t.TempDir()
+	if err := os.WriteFile(filepath.Join(outside, "b.kts"), []byte("a()\n"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	dir2, _ := mk("link/b.kts")
+	if err := os.Symlink(outside, filepath.Join(dir2, "link")); err != nil {
+		t.Fatal(err)
+	}
+	var out2, errb2 bytes.Buffer
+	if code := cli.Run([]string{dir2}, &out2, &errb2); code != 2 || out2.String() != "" || !strings.Contains(errb2.String(), "Symlink (link)") {
+		t.Fatalf("Symlink-Verzeichnis: code=%d out=%q err=%q", code, out2.String(), errb2.String())
 	}
 }
