@@ -192,3 +192,68 @@ nur teilweise; die Restlücken sind N-1 und N-2. N-3 und N-4 blockieren für sic
 **Übergabe:** N-1 bis N-4 an den Implementer; N-5 an den Planner (benannte Grenze oder nicht).
 Ein Rollen-Widerspruch liegt nicht vor; die Konflikt-Sequenz (Modul 8) greift erst, wenn der
 Implementer einem der HIGH-Findings widerspricht.
+
+## Kurz-Gegenprüfung
+
+**Gegenstand:** `beb04a8` (Plan-Kopf), `6bf7634` (Spezifikation 0.35.0, Wortlaut) und `00b87db`
+(Code, Tests, Handbuch, CHANGELOG). Derselbe unabhängige Kontext, Skill-Stand `a6d19b6`, Modell
+`claude-opus-5-5`, Datum 2026-10-06.
+
+**Messungen** (Geltungsbereich je Messung genannt):
+
+- `make test`, `make lint`, `make arch-check`, `make coverage-gate` auf `00b87db`: alle Exit 0;
+  Coverage gesamt 96,4 % (`regularNoSymlink` 91,7 %, `expected` 90,0 %, `sameFile` 100 %).
+- Zehn Sonden in einer dritten **Kopie** (`git archive HEAD`, Scratch-Verzeichnis), über `cli.Run`:
+  - Symlink im `expect`-Pfad an erster und an mittlerer Stelle
+  - `x/../d/b.kts` und `d//b.kts`
+  - Hardlink
+  - Scan-Wurzel selbst ein Symlink
+  - vier `files`-Globs über ein Symlink-Verzeichnis: tiefer Literal-Präfix `link/sub/*.kts`,
+    vollständig literal `link/sub/geheim.kts`, `link/**` und `*/sub/*.kts`
+
+  **Geltungsbereich:** belegt ist das Verhalten auf diesen Eingaben. Wettläufe zwischen Prüfung und
+  Lesen sind auftragsgemäß ausgenommen.
+
+### Status
+
+| ID | Status | Beleg |
+|---|---|---|
+| N-1 / F-3-Rest | behoben | `regularNoSymlink` prüft jeden Pfadbestandteil unterhalb der Wurzel per `Lstat` (`internal/adapter/driven/extract/shapes.go:99-120`), aufgerufen in `expected` (`:152`). Sonde: Symlink an erster (`link/b.kts`) und mittlerer Stelle (`s/link/b.kts`) ⇒ Exit 2, stdout leer, stderr nennt den Bestandteil. Test `TestShapesExactPathForms` (`internal/cli/cli_shapes_test.go:267-279`) |
+| N-2 / F-9-Rest | behoben | `expect` wird nach der Wurzel-Prüfung mit `path.Clean` normalisiert (`internal/hexagon/core/shapes.go:137`), der Vergleich läuft über `sameFile` (`internal/adapter/driven/extract/shapes.go:131`, `:169-177`). Sonde: `x/../d/b.kts`, `d//b.kts` ⇒ Exit 2. Test `internal/cli/cli_shapes_test.go:248-254` |
+| N-3 | behoben | Der Plan-Kopf nennt die Präzisierung der Spezifikation (`docs/plan/planning/in-progress/slice-211-shapes-exact-und-unused.md:15-18`) |
+| N-4 | behoben | Der CHANGELOG nennt beide neuen Exit-2-Fälle (`CHANGELOG.md:20-22`) |
+| N-5 | behoben (über den Hinweis hinaus) | `os.SameFile` erkennt den Hardlink (`internal/adapter/driven/extract/shapes.go:169-177`). Sonde und Test (`internal/cli/cli_shapes_test.go:255-266`) ⇒ Exit 2. Spezifikation 0.35.0 nennt den Hardlink-Fall ausdrücklich |
+| F-4-Rest | behoben | `TestPrintConfigShowsExactAndUnused` prüft den Exit-Code (`internal/cli/cli_shapes_test.go:231-233`) |
+
+### Adversariale Fragen
+
+| Frage | Ergebnis |
+|---|---|
+| Ist die Scan-Wurzel selbst ein Symlink? | ohne Befund — `regularNoSymlink` prüft nur Bestandteile **unterhalb** der Wurzel. Die Wurzel ist Eingabe des Aufrufers und wird aufgelöst. Sonde: Wurzel als Symlink ⇒ regulärer Lauf, Exit 1 mit dem erwarteten `shape-differs` |
+| Folgt ein `files`-Glob über ein Symlink-Verzeichnis im Präfix hinaus? | **ja, wenn der Symlink nicht der letzte Bestandteil des Literal-Präfixes ist** — siehe G-1. Ist der Symlink der ganze Präfix (`link/**`) oder liegt er unter einem Wildcard-Segment (`*/sub/*.kts`), wird er nicht verfolgt (Exit 2, „trifft keine Datei“): `WalkDir` liest seinen Start mit `Lstat`, und ein Symlink als Start ist kein Verzeichnis |
+
+### Neues Finding
+
+| ID | Kategorie | Befund | Quelle | Pfad | Verifizierbar | Klasse |
+|---|---|---|---|---|---|---|
+| G-1 | MEDIUM | `globFiles` startet den Walk am Literal-Präfix des Globs. Liegt ein Symlink-Verzeichnis **vor** dessen letztem Bestandteil (`files: ["link/sub/*.kts"]` oder `["link/sub/geheim.kts"]`, `link` → Verzeichnis außerhalb der Wurzel), löst das Betriebssystem den Symlink beim Pfad-Zugriff auf. Der Walk läuft dann im fremden Baum, und die Datei dort wird gelesen und bewertet. Sonde: Exit 1, `link/sub/geheim.kts:1: shape-unlisted: secretToken()` — fremder Inhalt auf stdout. Für `expect` schließt 0.35.0 genau diesen Weg mit der Begründung „er könnte aus der Scan-Wurzel hinauszeigen“; für `files` gilt dieselbe Begründung, aber die Spezifikation sagt nur die **lexikalische** Grenze zu. Der Code stammt aus slice-210, nicht aus diesem Diff. Der Negativbefund „Hermetik der Dateisuche“ im slice-210-Report („Symlinks werden weder als Start-Verzeichnis verfolgt …“) gilt damit nur für den Symlink als ganzen Start, nicht für einen Symlink vor dem letzten Bestandteil. | SPEC-CONF-001 (Wurzel-Grenze für `files` und `expect`, Begründung Hermetik); AC-QA-02 | `internal/adapter/driven/extract/shapes.go` (`globFiles`: `os.Stat` auf den Präfix, `filepath.WalkDir` ab dort) | ja — Sonde mit Symlink-Verzeichnis vor dem letzten Präfix-Bestandteil | Wurzel-Grenze nur lexikalisch, Pfad-Arten ungleich behandelt |
+
+### Negativbefunde (Kurz-Gegenprüfung)
+
+| Bereich | Ergebnis |
+|---|---|
+| `6bf7634`: Spec-Stratum | geprüft, ohne Befund — keine Kennung von Slice, Review oder ADR im Spec-Text. Die Zeile 0.35.0 ist innerhalb desselben Slice nachgeschärft, ohne Versions-Sprung; kein Release dazwischen |
+| Neue Kommentare (`AGENTS.md` §3.7) | geprüft, ohne Befund — Zusagen. Der Zusatz „(Review slice-211 N-…)“ folgt dem Bestand (`kotlin_shape.go:272`, „Review slice-210 F-2“) |
+| Neue Tests auf Tautologie | geprüft, ohne Befund — Schreibweisen, Hardlink und Symlink-Verzeichnis bauen echte Dateisystem-Zustände; die Assertions prüfen Exit-Code, leeres stdout und die Ursache auf stderr |
+| Reihenfolge der Prüfungen | geprüft, ohne Befund — `expected` (Symlink-Prüfung) läuft vor `entryFiles`; `sameFile` folgt mit `os.Stat` nur noch einem Pfad, der als symlinkfrei geprüft ist |
+
+### Verdikt (Kurz-Gegenprüfung)
+
+**Merge-blockierend für slice-211:** nein. N-1 bis N-5 sind behoben, ebenso die Reste von F-3,
+F-4 und F-9; alle sind per Sonde gegen das Binary nachgeprüft. G-1 ist MEDIUM: Es verlangt vor der
+Closure einen **Ausgang** — Aufnahme in diesen Slice oder ein Folge-Slice mit Kennung —, aber keine
+Änderung am Diff dieses Slice, aus dem es nicht stammt. Bleibt es ohne Ausgang, wäre die
+Hermetik-Zusage für `expect` strenger als für `files`, ohne dass die Asymmetrie benannt ist.
+
+**Übergabe:** G-1 an den Planner (Ausgang zuweisen). Die Klasse von G-1 gehört zu F-3 und N-1 —
+derselbe Vorgang slice-211, zählt im Register einmal.
