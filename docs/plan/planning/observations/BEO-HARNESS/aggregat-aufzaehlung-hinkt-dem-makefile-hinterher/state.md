@@ -2,13 +2,17 @@
 (*„Dieselbe Regel gilt für jede abschließende Aufzählung neben einer maschinenlesbaren Quelle"*)
 `seit slice-188`.
 
-Drei Ausprägungen, alle drei belegt: die `doc-*`-Aufzählung in `AGENTS.md` §4 gegen das
-`Makefile` (Anlass, behoben) · die `gates`-Zelle in
+Vier Ausprägungen belegt: die `doc-*`-Aufzählung in `AGENTS.md` §4 gegen das `Makefile`
+(Anlass, behoben) · die `gates`-Zelle in
 [`harness/README.md`](../../../../../../harness/README.md), die auf das `Makefile` zeigt statt
 zu zählen (slice-181) · die `Aktiv:`-Zeile in `.d-check.yml` gegen die `modules:`-Zeile
-derselben Datei (slice-188) — die dritte hat den Ausgang ausgelöst.
+derselben Datei (slice-188) — die dritte hat den Ausgang ausgelöst · die Regelzahl im Glossar des
+Benutzerhandbuchs gegen dessen Regel-Tabelle (slice-210, nach der Verkörperung).
 
-**Kein Sensor**, und das ist benannt statt verschwiegen: Ob eine Aufzählung abschließend ist,
-ist ein Urteil über ihren Anspruch ([`AGENTS.md`](../../../../../../AGENTS.md) §3.7). Die
-mechanische Hälfte — „existiert das genannte Target überhaupt?" — deckt `make doc-targets` für
-die zwei Gate-**Tabellen**; für Prosa und YAML-Kommentare gibt es sie nicht.
+**Viertes Auftreten nach der Verkörperung — kein Sensor, begründet:** Ob eine Zahl in Prosa eine
+**abschließende** Aufzählung behauptet, ist ein Urteil über ihren Anspruch
+([`AGENTS.md`](../../../../../../AGENTS.md) §3.7); ein Muster auf „die N …" träfe jede Zahlangabe
+und kennte die Bezugsmenge nicht. Die Regel wirkt, wo sie angewandt wird: der Fund kam aus dem
+Review, und behoben wurde er durch einen Zeiger statt einer neuen Zahl. Die Prosa-Form ist damit
+**nicht** ausgeschöpft im Sinne eines unwirksamen Textes — sie lag nur nicht im Blick des
+Schreibenden, der eine Tabelle erweiterte, ohne nach Zählungen ihrer Zeilen zu suchen.

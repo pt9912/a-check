@@ -20,7 +20,7 @@ wechselt nur durch `git mv` (`make slice-mv`).
 
 **Autor:** Claude. **Datum:** 2026-10-06.
 
-**Lerneintrag — Form:** wird bei Closure benannt.
+**Lerneintrag — Form:** benannte Spec-Lücke.
 
 ---
 
@@ -59,22 +59,22 @@ Exit 1 — alle Gegenprobe-Fälle des CR sind Tests.
 
 ## 2. Definition of Done
 
-- [ ] Normalisierer und Anweisungs-Zerleger `kotlin` (Kommentare inkl.
+- [x] Normalisierer und Anweisungs-Zerleger `kotlin` (Kommentare inkl.
       verschachtelter Block-Kommentare, Zeichenketten inkl. Roh-Strings,
       Dollar-Präfix und `${…}`-Vorlagen samt maskiertem `\$`, Leerraum-Faltung, Anweisungsgrenze, Zeilen-Mapping),
       Exit 2 bei offener Klammer/Zeichenkette/Kommentar — mit Tests je Fall.
-- [ ] Regel `shape-unlisted` und Config-Dekodierung (`files`, `dialect`,
+- [x] Regel `shape-unlisted` und Config-Dekodierung (`files`, `dialect`,
       `mode`, `allow` literal/regex voll verankert; strikt, Exit-2-Fälle aus
       der Spezifikation), alle Gegenprobe-Fälle des CR als Tests, deterministische
       Ausgabe.
-- [ ] `--print-config` zeigt den Block im Gerüst; Benutzerhandbuch-Abschnitt
+- [x] `--print-config` zeigt den Block im Gerüst; Benutzerhandbuch-Abschnitt
       und Regel-Tabelle — beide zeigen für Zeichenketten-Inhalt nur die sichere Klasse
       `"[^"$\\]*"`, nie `.*`; den CHANGELOG-Eintrag aus slice-209 („nicht implementiert") in
       `[Unreleased]` umschreiben.
-- [ ] Unabhängiger Review, Report unter [`docs/reviews/`](../../../reviews/README.md).
-- [ ] Closure-Notiz mit Steering-Loop-Lerneintrag.
-- [ ] Beobachtungs-Register fortgeschrieben (oder „keine Beobachtung" notiert).
-- [ ] Jedes Risiko aus §6 trägt einen Ausgang.
+- [x] Unabhängiger Review, Report unter [`docs/reviews/`](../../../reviews/README.md).
+- [x] Closure-Notiz mit Steering-Loop-Lerneintrag.
+- [x] Beobachtungs-Register fortgeschrieben (oder „keine Beobachtung" notiert).
+- [x] Jedes Risiko aus §6 trägt einen Ausgang.
 
 `make gates` grün, inklusive `make coverage-gate` (Schwelle unverändert).
 
@@ -114,17 +114,66 @@ Closure-Notiz mit Lerneintrag.
 - **Kotlin-Lexik ist reicher als die Heuristik** (`"""…"""` mit `$`-Vorlagen,
   verschachtelte `${ "}" }`, `/* /* */ */`). Ein Lexer-Fehler, der eine
   Zeichenkette zu früh schließt, kann Code als String behandeln. — **Ausgang:**
-  *(bei Closure zuzuweisen: eingetreten / entfallen / weiter offen)*
+  *weiter offen* → Beobachtungs-Register:
+  [`BEO-SPEC/lexik-vertrag-ohne-sprach-gegenprobe`](../observations/BEO-SPEC/lexik-vertrag-ohne-sprach-gegenprobe/observation.md)
+  (jetzt 2×). Der Review fand mit der Backtick-Vorlage einen weiteren Fall (behoben); dass die
+  Lexik nun vollständig ist, ist nicht belegt.
 - **Fehlalarm bei legitimen Dateien** durch die Anweisungsgrenze. Bekannte Quelle aus dem Review von slice-209: ein Zeilenende nach Postfix `!!`/`++`/`--` oder nach `>` verbindet zwei Anweisungen — fail-safe, aber rot; als Testfall aufnehmen. —
-  **Ausgang:** *(bei Closure zuzuweisen)*
+  **Ausgang:** *entfallen* — gestrichen mit Begründung: als benannte Grenze ins Benutzerhandbuch
+  §4 und als Tests (`!!`, `++`, `--`, `>`) überführt; die Wache über echte Fehlalarme trägt der
+  Re-Evaluierungs-Trigger von [ADR-0041](../../adr/0041-shapes-sollform-je-datei.md).
 - **Handbuch führt neue Vokabeln** (`shape-*`) neben `construct-leak`;
   verwandt mit
   [`BEO-USER/handbuch-vokabel-der-adapter-rolle`](../observations/BEO-USER/handbuch-vokabel-der-adapter-rolle/observation.md)
-  (1×). — **Ausgang:** *(bei Closure zuzuweisen)*
+  (1×). — **Ausgang:** *entfallen* — gestrichen mit Begründung: es entstand kein zweites
+  Vokabular; `shape-unlisted` steht in Regel-Tabelle, Abschnitt und Glossar gleich, und der
+  Review prüfte das Handbuch gegen den Code (ohne Vokabel-Befund).
 
 ## 7. Closure-Notiz
 
-*(folgt bei Closure)*
+**Lerneintrag — Form: benannte Spec-Lücke.** [SPEC-EXTRACT-001](../../../../spec/spezifikation.md#spec-extract-001--import-extraktion)
+kannte die Vorlage mit Backtick-Bezeichner in Zeichenketten nicht (`$` vor `` ` `` ist auch dort eine
+Vorlage); ein `"` im Bezeichner schloss die Zeichenkette zu früh, und ein späteres `/*` verschluckte
+Code. Benannt und geschlossen in Spezifikation 0.34.0 — als Plan-Änderung vor dem Code, wie §1 es
+für eine Vertragslücke verlangt.
+
+**Geliefert:** `shapes` mit Dialekt `kotlin` und `mode: allow-statements`
+([AC-FA-RULE-012](../../../../spec/lastenheft.md#ac-fa-rule-012),
+[ADR-0041](../../adr/0041-shapes-sollform-je-datei.md)): Kern-Modell und Auswertung, Kotlin-Lexer und
+Zerleger, Dateisuche mit den Exit-2-Fällen, strikte Dekodierung, Prüfung im validierenden Einstieg
+(auch `--print-graph`), `--print-config`-Gerüst, Handbuch 1.42, CHANGELOG. Alle Gegenprobe-Fälle des
+CR sind Tests; Coverage 96,4 %.
+
+**Was hat funktioniert:** Die Regressionsfälle aus dem Review von slice-209 standen vor dem Code
+als Tests da, und jede Fix-Behauptung bekam eine Mutations-Gegenprobe (Dollar-Präfix, Regex-Verankerung,
+Backtick-Vorlage) — rot aus dem richtigen Grund, nicht nur grün.
+
+**Was ging anders als geplant:** Der Review fand eine Vertragslücke (F-2) und damit den vierten
+Lexik-Fall in zwei Slices; der Slice nahm die Spec-Präzisierung per Plan-Änderung mit. Die
+Glossar-Zahl „zehn Regeln" war ein viertes Auftreten einer schon verkörperten Klasse; behoben durch
+einen Zeiger statt einer neuen Zahl. Und eine versehentlich geschriebene Inline-Suppression fiel
+beim Durchsehen vor dem ersten Lauf auf, nicht erst im Gate.
+
+**Steering-Loop-Eintrag:** benannte Spec-Lücke, siehe Lerneintrag. Viertes Auftreten von
+[`BEO-HARNESS/aggregat-aufzaehlung-hinkt-dem-makefile-hinterher`](../observations/BEO-HARNESS/aggregat-aufzaehlung-hinkt-dem-makefile-hinterher/observation.md)
+nach der Verkörperung: **kein Sensor**, begründet im `state.md` des Eintrags — ob eine Zahl in Prosa
+eine abschließende Aufzählung behauptet, ist ein Urteil; ein Muster auf „die N …" kennte die
+Bezugsmenge nicht.
+
+**Beobachtungs-Register (`../observations/`):**
+[`BEO-SPEC/lexik-vertrag-ohne-sprach-gegenprobe`](../observations/BEO-SPEC/lexik-vertrag-ohne-sprach-gegenprobe/observation.md)
+→ 2× (`evidence/slice-210.md`);
+[`BEO-HARNESS/aggregat-aufzaehlung-hinkt-dem-makefile-hinterher`](../observations/BEO-HARNESS/aggregat-aufzaehlung-hinkt-dem-makefile-hinterher/observation.md)
+→ 4×, bleibt *verkörpert* mit Begründung ohne Sensor.
+
+**Folge-Slices:** keine neuen; slice-211 liefert `exact` und `unused`.
+
+**Risiken aus §6:** alle drei mit Ausgang — eines *weiter offen* im Register, zwei *entfallen* mit
+Begründung.
+
+**Drei Paarungen:** getragen von der Closure von welle-16.
+
+**Trigger-Audit der aktiven MR:** [`MR-016`](../../../../harness/conventions.md#mr-016) [`MR-019`](../../../../harness/conventions.md#mr-019) [`MR-024`](../../../../harness/conventions.md#mr-024) [`MR-025`](../../../../harness/conventions.md#mr-025) [`MR-027`](../../../../harness/conventions.md#mr-027) [`MR-028`](../../../../harness/conventions.md#mr-028) [`MR-029`](../../../../harness/conventions.md#mr-029) [`MR-030`](../../../../harness/conventions.md#mr-030) — 0 offen (geprüft 2026-10-06; kein Release seit `v0.20.0`; der Auflösungs-Trigger des dritten Eintrags ist das nächste Release, das noch aussteht).
 
 ## 8. Sub-Area-Prüfungen und Modus-Begründung
 
