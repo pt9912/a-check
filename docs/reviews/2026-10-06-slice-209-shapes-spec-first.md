@@ -106,3 +106,117 @@ findet nicht statt.
 denn §1 des Slice-Plans und der Vertrag sagen Verschiedenes. Die Finding-Klassen gehen zusätzlich
 in die Closure-Notiz §7 von slice-209 und von dort in den Zähler. Dieser Report ist Lauf-Beleg
 und ersetzt keine Verifikation.
+
+## Delta-Re-Review (Fix-Range f83a68c..919e3b3)
+
+**Gegenstand:** `6149b53` (docs(spec) Nachlauf) und `919e3b3` (docs(planning)), geprüft gegen
+F-1 bis F-14 dieses Reports. Dazu adversarisch: Öffnen die Fixes neue Lücken? **Gleicher Lauf,
+gleicher Kontext, gleiches Modell** (`claude-opus-5-5`), Skill @ `a6d19b6`, Datum 2026-10-06.
+Die Zeilenangaben beziehen sich auf den Stand `919e3b3`.
+
+### Status je Finding
+
+| ID | Status | Beleg |
+|---|---|---|
+| F-1 | behoben | `CHANGELOG.md:17-19` — „Vorgeschlagen, noch nicht abgenommen und nicht implementiert: die ADR steht auf `Proposed`“. |
+| F-2 | behoben | `docs/plan/adr/0041-shapes-sollform-je-datei.md:79-84` — die Schärfung gegenüber Entscheid 5 ist ausgewiesen, der alte Wortlaut wird zitiert. In `docs/plan/planning/in-progress/slice-209-shapes-spec-first.md:72-84` steht ein eigener Block „mit der ADR zur Abnahme vorgelegt, nicht abgenommen“, die zehn Entscheide bleiben im Abnahme-Wortlaut. Die Abnahme bekommt die Abweichung damit zu sehen. |
+| F-3 | behoben, mit neuer Restlücke N-1 | `spec/spezifikation.md:266-283` — Dollar-Präfix `n ≥ 2` für beide Zeichenketten-Formen; eine Vorlage öffnet erst ab `n` Zeichen `$` vor `{`, die letzten `n` gehören zur Vorlage. Der F-3-Fall ist durchgespielt (siehe unten). |
+| F-4 | behoben als benannte Grenze — trägt, kein HIGH | `spec/spezifikation.md:94` (Grenze der Regex-Einträge, sichere Klasse `"[^"$\\]*"`), `spec/lastenheft.md:424`, ADR-0041 Punkt 5 und §Konsequenzen. Begründung unten. Die Verdrahtung der „sicheren Form“ in den Folge-Slice fehlt: N-3. |
+| F-5 | behoben | `spec/spezifikation.md:94` — der Konfigurations-Adapter prüft nur Schlüssel, Werte und Regex. Die Zerlegbarkeit der `literal`-Einträge prüft der validierende Einstieg der Extraktion „vor jedem Dateizugriff“, Exit 2 auch in `--print-graph`. Die Gegenstücke stehen in `spec/spezifikation.md:312-315`, ARC-003 (`spec/architecture.md:73`) und ADR-0041 Punkt 9. Eine laterale Adapter-Kante ist ausgeschlossen. |
+| F-6 | behoben, mit Rest N-2 | `spec/spezifikation.md:94` — ein Regex „muss für sich kompilieren“, danach wird er zu `^(?:<pattern>)$`; `a)\|(.*` ist als Beispiel genannt. |
+| F-7 | behoben | `spec/spezifikation.md:94` — „der Dialekt wird erklärt, nicht erraten“, die Endung wird nicht geprüft. |
+| F-8 | behoben | `spec/spezifikation.md:266-268` (UTF-8, BOM, `LF`/`CRLF`/`CR`, Leerraum-Menge), `spec/spezifikation.md:299-302` (erstes Zeichen, das weder Leerraum noch Kommentar ist; Zeichenkette, Zeichen-Literal und Backtick zählen dazu; Zeilenzahl ≥ 1). |
+| F-9 | behoben | `spec/lastenheft.md:397-398` und `:416` — Form `pfad:zeile: <klasse>: <meldung>`, `shape-differs` nennt die Sollform-Anweisung. DoD von slice-209 ist mitgezogen. |
+| F-10 | behoben | `spec/spezifikation.md:94` — byte-gleiche Befundzeilen werden einmal ausgegeben. Das deckt auch zwei Globs **eines** Eintrags, die dieselbe Datei treffen, denn die Ausgabe ist dann identisch. |
+| F-11 | behoben | `spec/architecture.md:71` (ARC-001 ohne Zahl, drei Modelle), `spec/spezifikation.md:319` („Präzisiert die Regel-Anforderungen“). |
+| F-12 | behoben | `spec/spezifikation.md:94` und ADR-0041 Punkt 8 — ein absoluter Pfad oder einer, der nach lexikalischer Normalisierung mit `..` beginnt, ist Exit 2 beim Laden. Symlinks im Baum, die hinauszeigen, behandelt die Regel nicht eigens — das ist dieselbe Frage wie beim bestehenden Walk, kein neuer Befund. |
+| F-13 | behoben | `docs/plan/planning/open/slice-210-shapes-kotlin-allow-statements.md:106` — als bekannte Fehlalarm-Quelle und Testfall im Risiko. |
+| F-14 | behoben | slice-210 DoD (`…/slice-210-shapes-kotlin-allow-statements.md:59-61`) schreibt den CHANGELOG-Eintrag ausdrücklich um. |
+
+### Adversarisch: Dollar-Präfix-Regel (F-3-Nachspiel)
+
+Gegen `spec/spezifikation.md:266-283` durchgespielt, Kotlin-Semantik der Multi-Dollar-Interpolation
+als Vergleich:
+
+- **F-3-Eingabe** `version = "x" + $$"${" + '"' + '}' + "// "; dependencies.add(…)`: Mit `n = 2`
+  ist `${` (nur ein `$`) Inhalt, die Zeichenkette schließt am nächsten `"`. Lexer und Kotlin
+  bleiben synchron, `dependencies.add(…)` wird eine eigene Anweisung und damit `shape-unlisted`.
+  **Geschlossen.**
+- **`$$$"…$${…"`** (`n = 3`, zwei `$`): Inhalt — wie Kotlin. **`$$$"…$$$${x}…"`**: vier `$`, das
+  letzte Trio öffnet die Vorlage, das erste `$` ist Inhalt — wie Kotlin.
+- **`$$"""…"""`** und **`$$$"""…$$${ "}" }…"""`**: Prefix gilt für die Roh-Form, die Vorlage endet
+  über die Klammer-Tiefe, die innere `"}"` ist rekursiv gelext — synchron.
+- **`$$"a$"`**, **`$$"$name"`**: `$` vor `"` bzw. vor einem Bezeichner ist Inhalt — synchron.
+- **Präfix-Erkennung außerhalb von Zeichenketten** („eine Folge von `$` direkt vor `"` … ist immer
+  ein Präfix“): `$` kommt in Kotlin-Code sonst nicht vor (Backtick-Bezeichner werden vorher als
+  Token gelesen) — keine Fehlerkennung gefunden.
+- **Restlücke N-1 — Backslash-Escape gegen die `$`-Folge.** In einer Zeichenkette mit Escape ist
+  `\$` in Kotlin ein **wörtliches** `$`: `"\${"` ist der Text `${`, keine Vorlage. Der Vertrag
+  formuliert die Vorlage über „eine Folge von mindestens `n` Zeichen `$` vor `{`“ und sagt nicht,
+  ob ein escaptes `$` zu dieser Folge zählt. Wer die Folge rückwärts vom `{` aus zählt, öffnet bei
+  `"\${"` eine Vorlage, die Kotlin nicht sieht — dieselbe Desynchronisation wie in F-3, mit
+  derselben Folge: `version = "x" + "\${" + '"' + '}' + "// "; dependencies.add(…)` lässt den
+  `add`-Aufruf als Kommentar verschwinden. Ebenso `$$"\$${x}"` (Kotlin: `$` wörtlich, dann `${`
+  mit nur einem `$` → Inhalt). Wer zuerst das Escape verbraucht, liegt richtig — der Vertrag legt
+  die Reihenfolge aber nicht fest, und das ist laut ADR-0041 §Konsequenzen „die eine Fehlrichtung,
+  die nicht fail-safe ist“. In Roh-Zeichenketten gibt es kein Escape; `"""\${x}"""` ist in Kotlin
+  wie im Vertrag eine Vorlage — synchron.
+
+### Beurteilung F-4 (benannte Grenze statt Verbot)
+
+**Trägt — kein HIGH.** Das ursprüngliche Finding war nicht „der Regex ist unsicher“, sondern
+„die fail-safe-Zusage nennt ihre Grenze nicht“ (Klasse *fail-safe-Zusage ohne benannte Grenze*).
+Die Grenze steht jetzt an allen drei Stellen, an denen der Zweck behauptet wird: Lastenheft
+Out-of-Scope, SPEC-CONF-001 und ADR-0041 (Punkt 5 und §Konsequenzen). Ein Verbot wäre nur mit
+token-bewusstem Regex durchsetzbar, und das liegt außerhalb der Text-Heuristik
+(AC-QA-02). Die dokumentierte Klasse `"[^"$\\]*"` hält gegen die Prüffälle: Sie verlässt die
+Zeichenkette nicht (`"` ausgeschlossen), trifft kein `\"` (Backslash ausgeschlossen), keine Vorlage
+(`$` ausgeschlossen), keine Roh-Zeichenkette `"""…"""` (die Verankerung scheitert am Rest) und
+kein Dollar-Präfix (`$$"…"` hat `$` vor `"`). Was bleibt: Die sichere Form erreicht den Adopter
+nur über Handbuch und `--print-config`, und dort ist sie nicht verdrahtet (N-3).
+
+### Adversarisch: literal-Normalisierung im validierenden Einstieg (F-5)
+
+Ohne neue Lücke. Die Normalisierung läuft vor jedem Dateizugriff. Damit hat `--print-graph` die
+Ladezeit-Parität aus SPEC-CLI-002, und die Scan-zeitigen Fälle (Glob ohne Treffer,
+`exclude`-Widerspruch, nicht zerlegbare Datei) bleiben scanzeitig. Der Kern bekommt die
+Einträge fertig und liest nichts. Eine neue Kante Konfigurations-Adapter → Extraktion entsteht
+nicht, weil der Konfigurations-Adapter den Normalisierer laut ADR-0041 Punkt 9 nicht kennt.
+
+### Neue Findings
+
+| ID | Kategorie | Befund | Quelle | Pfad | Verifizierbar | Klasse |
+|---|---|---|---|---|---|---|
+| N-1 | MEDIUM | Ob ein escaptes `$` (`\$`) zur „Folge von mindestens `n` Zeichen `$` vor `{`“ zählt, legt die Lexik nicht fest. Wer rückwärts zählt, öffnet bei `"\${"` eine Vorlage, die Kotlin nicht sieht. Mit `version = "x" + "\${" + '"' + '}' + "// "; dependencies.add(…)` verschwindet der `add`-Aufruf dann als Kommentar — die nicht fail-safe Richtung, die ADR-0041 §Konsequenzen selbst benennt. | AC-FA-RULE-012 (fail-safe); ADR-0041 §Konsequenzen (Fehl-Lexik) | `spec/spezifikation.md:266-283` | ja — Testfall `"\${"` in `make test`, sobald slice-210 läuft | Lexik-Aufzählung behauptet Vollständigkeit, die die Zielsprache nicht trägt |
+| N-2 | LOW | Ein Muster kann für sich kompilieren und umhüllt nicht: `\Qfoo` quotiert bis zum Ende, also scheitert `^(?:\Qfoo)$` an der offenen Gruppe. Der Vertrag nennt den Exit-Code für einen Kompilier-Fehler erst nach dem Umhüllen nicht. Die naheliegende Implementierung endet in Exit 2, aber der Fall ist unbenannt. | SPEC-CONF-001 (Exit-2-Fälle) | `spec/spezifikation.md:94` | ja — Testfall in `make test` | Verankerungs-Zusage ohne Kompilier-Reihenfolge |
+| N-3 | LOW | Drei Folgepflichten aus ADR-0041 stehen nicht in der DoD von slice-210: „Benutzerhandbuch und `--print-config` zeigen nur die sichere Form“ (§Konsequenzen), „vollständige Lexik, belegt durch Tests je Form“ und das Dollar-Präfix. Die Lexik-Aufzählung dort nennt Roh-Strings und `${…}`, aber weder Dollar-Präfix noch Escape-gegen-`$`. | ADR-0041 §Konsequenzen; slice-209 §1 Ziel (Folge-Slices ohne eigene Vertragsentscheidung) | `docs/plan/planning/open/slice-210-shapes-kotlin-allow-statements.md:51-61` | nein | ADR-Folgepflicht ohne Träger im Folge-Slice |
+
+### Negativbefunde des Deltas
+
+| Bereich | Ergebnis |
+|---|---|
+| Spec-Straten-Richtung (`AGENTS.md` §3.4) im Delta | geprüft, ohne Befund — die hinzugefügten Zeilen unter `spec/` nennen kein ADR, keinen Slice, keine Welle. Die Historie-Zeile 0.33.0 ist fortgeschrieben, ohne Verweis nach unten. |
+| ADR-0041 noch `Proposed` (§3.5 greift erst bei `Accepted`) | geprüft, ohne Befund — inhaltliche Änderung zulässig. |
+| Lastenheft-Text im Delta geändert, Version bleibt 0.28.0 | geprüft, ohne Befund — dieselbe unveröffentlichte CR-Fassung im selben Slice, Status `Draft`. |
+| Plan-Änderung slice-209 §1 (Kommentar-/Zustandsregel §3.7) | geprüft, ohne Befund — Zeitdokument, der Block nennt Zustand („vorgelegt, nicht abgenommen“), keine Chronik in einem Zustandsfeld. |
+| `make doc-check` | Exit 0, „660 Datei(en) geprüft, 0 Befund(e)“ — Geltungsbereich: Links, Anker, Kennungs-Linkpflicht. |
+
+### Summary des Deltas
+
+| Kategorie | offen aus Erstlauf | neu |
+|---|---|---|
+| HIGH | 0 (F-1 behoben) | 0 |
+| MEDIUM | 0 (F-2 bis F-6 behoben) | 1 (N-1) |
+| LOW | 0 (F-7 bis F-12 behoben) | 2 (N-2, N-3) |
+| INFO | 0 (F-13, F-14 behoben) | 0 |
+
+**Finding-Klassen des Deltas:** Lexik-Aufzählung behauptet Vollständigkeit, die die Zielsprache
+nicht trägt (zweites Auftreten in diesem Slice — **ein** Vorgang, zählt einmal) · Verankerungs-Zusage
+ohne Kompilier-Reihenfolge (ebenso) · ADR-Folgepflicht ohne Träger im Folge-Slice
+
+### Verdikt des Deltas
+
+**Merge-blockierend:** ja, wegen N-1 (MEDIUM). Es ist derselbe Mechanismus wie F-3, eine Stufe
+tiefer: Die Fehl-Lexik verschluckt Code als Kommentar, und das ist die einzige nicht fail-safe
+Fehlrichtung des Vertrags. N-2 und N-3 blockieren nicht. Alle 14 Findings des Erstlaufs sind
+behoben; F-4 ist als benannte Grenze tragfähig.
