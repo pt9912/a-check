@@ -6,6 +6,8 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
+## [0.21.0] - 2026-10-06
+
 ### Added
 
 - **Sollform je Datei (`shapes`)** — neuer Optionalblock und Befund `shape-unlisted`
