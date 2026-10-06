@@ -21,7 +21,7 @@ Lastenhefts ändert sich.
 
 **Autor:** Claude. **Datum:** 2026-10-06.
 
-**Lerneintrag — Form:** wird bei Closure benannt.
+**Lerneintrag — Form:** benannte Spec-Lücke.
 
 ---
 
@@ -54,17 +54,17 @@ Lastenhefts ändert sich.
 
 ## 2. Definition of Done
 
-- [ ] `mode: exact` mit `expect:` (Exit 2 bei fehlender Sollform-Datei oder
+- [x] `mode: exact` mit `expect:` (Exit 2 bei fehlender Sollform-Datei oder
       `allow` neben `exact`); `shape-differs` für eine Anweisung anders,
       zusätzlich oder fehlend, jeweils mit der ersten Abweichung — als Tests.
-- [ ] `unused: fail` und Befund `shape-unused` (Eintrag ohne Treffer über alle
+- [x] `unused: fail` und Befund `shape-unused` (Eintrag ohne Treffer über alle
       Dateien des Blocks), deterministisch sortiert — als Tests.
-- [ ] `--print-config`, Benutzerhandbuch und CHANGELOG `[Unreleased]`
+- [x] `--print-config`, Benutzerhandbuch und CHANGELOG `[Unreleased]`
       nachgezogen.
-- [ ] Unabhängiger Review, Report unter [`docs/reviews/`](../../../reviews/README.md).
-- [ ] Closure-Notiz mit Steering-Loop-Lerneintrag.
-- [ ] Beobachtungs-Register fortgeschrieben (oder „keine Beobachtung" notiert).
-- [ ] Jedes Risiko aus §6 trägt einen Ausgang.
+- [x] Unabhängiger Review, Report unter [`docs/reviews/`](../../../reviews/README.md).
+- [x] Closure-Notiz mit Steering-Loop-Lerneintrag.
+- [x] Beobachtungs-Register fortgeschrieben (oder „keine Beobachtung" notiert).
+- [x] Jedes Risiko aus §6 trägt einen Ausgang.
 
 `make gates` grün.
 
@@ -99,12 +99,54 @@ Exit 0; Closure-Notiz mit Lerneintrag.
 
 - **`exact` ist spröde:** jede Formatierungs-unabhängige, aber inhaltliche
   Änderung (Versions-Bump) macht die Sollform-Datei nötig — Adopter könnten
-  `exact` meiden. — **Ausgang:** *(bei Closure zuzuweisen: eingetreten /
-  entfallen / weiter offen)*
+  `exact` meiden. — **Ausgang:** *entfallen* — gestrichen mit Begründung: die
+  Sprödigkeit ist eine benannte Eigenschaft des Modus (Handbuch §4: „strenger, aber auch spröder“),
+  und `allow-statements` mit Regex-Einträgen ist die dokumentierte Alternative für Versions-Literale;
+  ob Adopter `exact` meiden, ist eine Wahl, kein Risiko des Vertrags.
 
 ## 7. Closure-Notiz
 
-*(folgt bei Closure)*
+**Lerneintrag — Form: benannte Spec-Lücke.** „Zeigt nicht aus der Scan-Wurzel hinaus“ stand in
+[SPEC-CONF-001](../../../../spec/spezifikation.md#spec-conf-001--konfigurationsschema) nur
+**lexikalisch** — kein `/`, kein `..` —, während der Lesezugriff dem Dateisystem folgt. Ein Symlink
+im Pfad führte trotzdem hinaus, und fremder Inhalt erschien als Befund. Benannt und geschlossen in
+Spezifikation 0.35.0: kein Bestandteil eines `expect`-Pfads und kein Bestandteil des literalen
+Präfixes eines `files`-Globs darf ein Symlink sein; die Sollform-Datei darf nicht dieselbe Datei
+sein wie eine geprüfte (lexikalisch normalisiert oder als Hardlink).
+
+**Geliefert:** `mode: exact` mit `expect` und Befund `shape-differs` (erste Abweichung: anders,
+zusätzlich, fehlend) sowie `unused: fail` mit Befund `shape-unused` an der Zeile des Eintrags in der
+`.a-check.yml` ([AC-FA-RULE-012](../../../../spec/lastenheft.md#ac-fa-rule-012),
+[ADR-0041](../../adr/0041-shapes-sollform-je-datei.md)); Gerüst, Handbuch 1.43, CHANGELOG. Damit ist
+der Vertrag aus slice-209 vollständig implementiert.
+
+**Was hat funktioniert:** Jeder Fix bekam eine Mutations-Gegenprobe, die aus dem richtigen Grund rot
+wurde — so trennte der Lauf „Test grün“ von „Test belegt die Zusage“. Und der Reviewer bekam meine
+Vermutungen als **Sonden** mit, nicht als Feststellungen: Genau eine davon (die `files`-Suche sei
+sicher) war falsch und wurde so gefunden.
+
+**Was ging anders als geplant:** Vier Review-Runden statt einer. Die Hermetik-Lücke zeigte sich an
+drei Stellen nacheinander (F-3, N-1, G-1), weil jeder Fix nur die gemeldete Stelle schloss; die
+letzte lag in Code aus slice-210 und kam per Plan-Änderung in diesen Slice. Spezifikation 0.35.0
+entstand dadurch in drei Schritten.
+
+**Steering-Loop-Eintrag:** benannte Spec-Lücke, siehe Lerneintrag — gezählt, nicht verkörpert.
+
+**Beobachtungs-Register (`../observations/`):** neu
+[`BEO-ADAPT/hermetik-lexikalisch-statt-am-dateisystem`](../observations/BEO-ADAPT/hermetik-lexikalisch-statt-am-dateisystem/observation.md)
+(1×, drei Funde in einem Vorgang); neu mit zwei Belegen (slice-210, slice-211)
+[`BEO-GATE/testbeschreibung-weiter-als-assertion`](../observations/BEO-GATE/testbeschreibung-weiter-als-assertion/observation.md)
+und
+[`BEO-SPEC/ausgabe-einzeilig-nicht-zugesichert`](../observations/BEO-SPEC/ausgabe-einzeilig-nicht-zugesichert/observation.md)
+— beide Klassen hatte der Review von slice-211 als wiederkehrend aus slice-210 benannt.
+
+**Folge-Slices:** keine.
+
+**Risiken aus §6:** das eine Risiko trägt seinen Ausgang (*entfallen* mit Begründung).
+
+**Drei Paarungen:** getragen von der Closure von welle-16.
+
+**Trigger-Audit der aktiven MR:** [`MR-016`](../../../../harness/conventions.md#mr-016) [`MR-019`](../../../../harness/conventions.md#mr-019) [`MR-024`](../../../../harness/conventions.md#mr-024) [`MR-025`](../../../../harness/conventions.md#mr-025) [`MR-027`](../../../../harness/conventions.md#mr-027) [`MR-028`](../../../../harness/conventions.md#mr-028) [`MR-029`](../../../../harness/conventions.md#mr-029) [`MR-030`](../../../../harness/conventions.md#mr-030) — 0 offen (geprüft 2026-10-06; kein Release seit `v0.20.0` — der Auflösungs-Trigger des dritten Eintrags tritt mit dem bevorstehenden Release ein).
 
 ## 8. Sub-Area-Prüfungen und Modus-Begründung
 

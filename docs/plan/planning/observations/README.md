@@ -29,7 +29,7 @@ Nummer (Prosa wird nicht umgeschrieben, [`AGENTS.md`](../../../../AGENTS.md) §3
 
 **Ist nichts offen**, steht hier nur diese Datei — ein leeres Verzeichnis führt `git` nicht.
 Welche Beobachtungen es gibt und wie viele, sagen die **Verzeichnisse**: je Sub-Area ein
-`BEO-<KUERZEL>/` ([`BEO-GATE/`](BEO-GATE), [`BEO-HARNESS/`](BEO-HARNESS), [`BEO-KERN/`](BEO-KERN),
+`BEO-<KUERZEL>/` ([`BEO-ADAPT/`](BEO-ADAPT), [`BEO-GATE/`](BEO-GATE), [`BEO-HARNESS/`](BEO-HARNESS), [`BEO-KERN/`](BEO-KERN),
 [`BEO-PLAN/`](BEO-PLAN), [`BEO-SPEC/`](BEO-SPEC), [`BEO-USER/`](BEO-USER)), darunter je
 Beobachtung ein Verzeichnis. Eine Aufzählung mit Zahl daneben driftet gegen die Verzeichnisse —
 die Zahl ist der `ls`-Aufruf, nicht diese Zeile. Eine gestrichene Beobachtung bleibt als
