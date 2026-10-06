@@ -270,3 +270,41 @@ Kotlin-Annahme.
 **Merge-blockierend: ja**, wegen K-1 (HIGH). N-1 bis N-3 sind in der Regel bzw. Planung behoben.
 Offen bleibt allein das falsche Beispiel, und es liegt genau auf der nicht fail-safe Fehlrichtung,
 die die ADR selbst benennt.
+
+## K-1-Bestätigung (ea8e99d)
+
+**Gegenstand:** nur K-1, Commit `ea8e99d` (`spec/spezifikation.md`). Gleicher Lauf, gleiches Modell
+(`claude-opus-5-5`), Skill @ `a6d19b6`, Datum 2026-10-06.
+
+**Bytes** (`od -c`, je Beispiel direkt aus der Datei gelesen):
+
+| Beispiel | Bytes | Zählung nach der Regel (vorwärts, `\` maskiert das nächste Zeichen) | Vertrag sagt | Kotlin |
+|---|---|---|---|---|
+| `"\${x}"` | `" \ $ { x } "` | `\$` maskiert, vor `{` keine Folge | Text | Text |
+| `$$"\$${x}"` | `$ $ " \ $ $ { x } "` | `\$` maskiert, danach Folge 1 < n = 2 | Text | Text |
+| `$$"\$$${x}"` | `$ $ " \ $ $ $ { x } "` | `\$` maskiert, danach Folge 2 = n | Vorlage, maskiertes `$` davor Inhalt | Vorlage `$${x}` nach wörtlichem `$` |
+
+Regel und Beispiele widersprechen sich nicht mehr (`spec/spezifikation.md:278-283`).
+
+**Andere Fundstellen der falschen Lesart:** Ich habe gesucht nach
+- „Länge 2“,
+- „beginnt also doch“,
+- „rückwärts“,
+- dem Muster `$$"\$$`.
+
+Durchsucht wurden `spec/spezifikation.md`, `spec/lastenheft.md`, ADR-0041, `CHANGELOG.md`, die
+Slice-Pläne in `open/` und `in-progress/` (darunter slice-210) sowie die Historie-Zeile 0.33.0.
+Keine Treffer zur Dollar-Zählung, außer der korrigierten Stelle selbst. Die einzigen anderen
+„rückwärts“-Treffer sind „rückwärtskompatibel“ in `spec/spezifikation.md:88` und `:95` — ein
+anderer Gegenstand. Die Historie-Zeile 0.33.0 sagt „vorwärts gezählte `$`-Folge (maskiertes `\$`
+ist Inhalt)“, das stimmt. ADR-0041 und slice-210 nennen nur „Dollar-Präfix“ bzw. „maskiertes
+`\$`“, ohne Zählbeispiel.
+
+Geltungsbereich der Suche: diese Dateien, Text-Muster. Eine anders formulierte Fehl-Lesart sähe
+die Suche nicht; die Stellen zur Dollar-Zählung wurden darum zusätzlich gelesen.
+
+**K-1: behoben.**
+
+**Merge-Urteil:** **nicht mehr merge-blockierend.** Alle Findings aus Erstlauf, Delta-Re-Review
+und Kurz-Gegenprüfung sind behoben, keines ist offen. Die DoD prüft wie immer der Verifier
+separat.
