@@ -257,3 +257,63 @@ Hermetik-Zusage für `expect` strenger als für `files`, ohne dass die Asymmetri
 
 **Übergabe:** G-1 an den Planner (Ausgang zuweisen). Die Klasse von G-1 gehört zu F-3 und N-1 —
 derselbe Vorgang slice-211, zählt im Register einmal.
+
+## G-1-Bestätigung
+
+**Gegenstand:** `abc4f50` (Plan-Änderung), `55dbfd2` (Spezifikation 0.35.0, `files`-Satz) und
+`1d63905` (Code, Test, Handbuch, CHANGELOG). Derselbe unabhängige Kontext, Skill-Stand `a6d19b6`,
+Modell `claude-opus-5-5`, Datum 2026-10-06.
+
+**Messungen** (Geltungsbereich je Messung genannt):
+
+- `make test`, `make lint`, `make coverage-gate` auf `1d63905`: alle Exit 0; Coverage 96,4 %.
+- **Mutations-Gegenprobe** in einer vierten Kopie: `dirNoSymlink` gibt immer `true, nil` zurück ⇒
+  `TestShapesFilesGlobSymlinkPrefix` ist **rot**, und zwar aus dem richtigen Grund. Meldung
+  `link/sub/geheim.kts:1: shape-unlisted: secretToken()` für die Globs `link/sub/*.kts` und
+  `link/sub/geheim.kts`. Der dritte Glob `link/**` bleibt unter der Mutation grün — er war nie
+  verwundbar.
+- Elf Sonden in derselben Kopie, über `cli.Run`. Jede prüft Exit-Code und ob der fremde Inhalt
+  (`secretToken`) auf stdout oder stderr erscheint. **Geltungsbereich:** Pfade über
+  `files`/`expect`; Wettläufe zwischen Prüfung und Lesen sind auftragsgemäß ausgenommen.
+
+### Status G-1
+
+**Behoben.**
+
+- `globFiles` prüft den literalen Präfix vor dem Walk mit `dirNoSymlink`
+  (`internal/adapter/driven/extract/shapes.go:211-221`).
+- `dirNoSymlink` liest jeden Bestandteil per `Lstat`; ein Symlink ist ein Fehler
+  (`internal/adapter/driven/extract/shapes.go:253-272`).
+- Unterhalb des Präfixes folgt `WalkDir` keinem Symlink und nimmt nur reguläre Dateien (`:241`).
+- Test: `TestShapesFilesGlobSymlinkPrefix` (`internal/cli/cli_shapes_test.go:285`).
+- Spezifikation 0.35.0 (SPEC-CONF-001) und Handbuch §4 (`docs/user/benutzerhandbuch.md:652`)
+  nennen den Fall.
+
+### Adversariale Sonden
+
+| Weg | Ergebnis |
+|---|---|
+| Glob ohne Wildcard, Symlink-Datei an der Wurzel (`link.kts` → Datei außerhalb) | Exit 2 („trifft keine Datei“), kein Austritt |
+| `..` im Präfix (`d/../link/sub/*.kts`) | Exit 2 — `filepath.Join` löst `..` auf, `link` wird als Symlink erkannt |
+| `.` im Präfix (`x/./link/sub/*.kts`) | Exit 2, Symlink `x/link` erkannt |
+| `**` am Anfang (`**/geheim.kts`, `**/*.kts`) | kein Austritt — Start an der Wurzel, `WalkDir` folgt keinem Symlink; Exit 2 bzw. Exit 0 je nach übrigen Treffern |
+| Symlink-Verzeichnis unterhalb des Präfixes (`x/**`, `x/link` → außerhalb) | kein Austritt, Exit 0 über die reguläre Datei |
+| Symlink-**Datei** unterhalb des Präfixes (`x/*.kts`, `x/l.kts` → Datei außerhalb) | kein Austritt; die Datei wird **still übergangen**, siehe H-1 |
+| Klammer- und Mengen-Syntax im Präfix (`lin[k]/…`, `{link,y}/…`) | Exit 2 („trifft keine Datei“) — der Präfix wird wörtlich gesucht und fehlt; fail-closed |
+| `exclude` | ohne Dateisystem-Zugriff (reiner Glob-Vergleich auf `rel`), kein Weg hinaus |
+| `expect` mit `..` vor dem Symlink (`d/../link/b.kts`) | Exit 2 — `path.Clean` ergibt `link/b.kts`, Symlink erkannt |
+
+In keiner der elf Sonden erscheint der fremde Inhalt auf stdout oder stderr.
+
+### Neues Finding
+
+| ID | Kategorie | Befund | Quelle | Pfad | Verifizierbar | Klasse |
+|---|---|---|---|---|---|---|
+| H-1 | INFO | Eine **Symlink-Datei**, die ein `files`-Glob unterhalb des Präfixes trifft, wird nicht geprüft und nicht gemeldet. Sonde: `x/*.kts` mit `x/l.kts` als Symlink ⇒ Exit 0 über die übrigen Treffer. Ist sie der einzige Treffer, kommt Exit 2 „trifft keine Datei“, obwohl eine Datei dieses Namens existiert (Sonde `link.kts`). SPEC-CONF-001 (0.35.0) benennt die Grenze („nimmt nur reguläre Dateien“); das Handbuch nennt sie nur für den Präfix, nicht für den Treffer selbst. Kein Hermetik-Bruch — fail-closed bzw. benannt —, aber ein Glob kann eine Build-Datei, die als Symlink abgelegt ist, still auslassen. | SPEC-CONF-001 (0.35.0, `files`-Satz); AC-FA-RULE-012 („nie ein stilles Grün“) | `internal/adapter/driven/extract/shapes.go:241`; `docs/user/benutzerhandbuch.md:651-653` | ja — Sonde | — (Hinweis an Planner, keine Klasse) |
+
+### Verdikt (G-1-Bestätigung)
+
+**Merge-blockierend:** nein. G-1 ist behoben; der Test ist per Mutation rot aus dem richtigen
+Grund. Über `files` und `expect` führt in keiner sondierten Form ein Weg aus der Scan-Wurzel.
+H-1 ist ein Hinweis ohne erwartete Aktion im Code. Ob das Handbuch die im Vertrag schon benannte
+Grenze auch für den Treffer selbst nennt, entscheidet der Planner.
