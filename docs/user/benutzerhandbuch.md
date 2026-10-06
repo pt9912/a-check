@@ -648,7 +648,8 @@ Klasse, die keinen Begrenzer durchquert — `"[^"$\\]*"` —, **nie** als `".*"`
 auch Code, `version=".*"` träfe `version="1"+run{dependencies.add(…)}+""`. Diese Grenze ist
 benannt, nicht abgefangen.
 
-**Exit-Code 2** statt eines stillen Grüns, wenn: ein `files`-Glob keine Datei trifft; eine
+**Exit-Code 2** statt eines stillen Grüns, wenn: ein `files`-Glob keine Datei trifft oder sein
+Verzeichnis-Präfix einen Symlink enthält (a-check folgt keinem Symlink aus der Scan-Wurzel); eine
 getroffene Datei zugleich in `exclude` steht (Widerspruch); ein Glob aus der Scan-Wurzel
 hinauszeigt; der `dialect` unbekannt ist; ein `allow`-Eintrag sich nicht zerlegen lässt oder
 mehr als eine Anweisung ergibt; eine Regex nicht kompiliert; Schlüssel und Modus nicht

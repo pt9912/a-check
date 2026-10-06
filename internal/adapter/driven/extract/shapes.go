@@ -185,7 +185,7 @@ func shapePaths(entry int, root string, globs, exclude []string) ([]string, erro
 	for _, g := range globs {
 		matches, err := globFiles(root, g)
 		if err != nil {
-			return nil, err
+			return nil, fmt.Errorf("shapes[%d]: %w", entry, err)
 		}
 		if len(matches) == 0 {
 			return nil, fmt.Errorf("shapes[%d]: files-Glob %q trifft keine Datei", entry, g)
@@ -211,11 +211,16 @@ func shapePaths(entry int, root string, globs, exclude []string) ([]string, erro
 func globFiles(root, g string) ([]string, error) {
 	base := literalPrefixDir(g)
 	start := filepath.Join(root, filepath.FromSlash(base))
-	info, err := os.Stat(start)
-	if err != nil || !info.IsDir() {
-		// no such directory: the glob matches nothing, which the caller
-		// reports as exit 2 — not an I/O error of its own
-		return nil, nil
+	if base != "." {
+		exists, err := dirNoSymlink(root, base)
+		if err != nil {
+			return nil, fmt.Errorf("files-Glob %q: %w", g, err)
+		}
+		if !exists {
+			// no such directory: the glob matches nothing, which the caller
+			// reports as exit 2 — not an I/O error of its own
+			return nil, nil
+		}
 	}
 	var out []string
 	werr := filepath.WalkDir(start, func(p string, d fs.DirEntry, walkErr error) error {
@@ -239,6 +244,29 @@ func globFiles(root, g string) ([]string, error) {
 		return nil
 	})
 	return out, werr
+}
+
+// dirNoSymlink walks the components of the directory rel below root with Lstat.
+// A symlink among them is an error — os.Stat on the prefix would follow it out
+// of the scan root (Review slice-211 G-1); below the prefix WalkDir follows no
+// symlink anyway. exists is false when a component is missing or no directory.
+func dirNoSymlink(root, rel string) (bool, error) {
+	cur := root
+	segs := strings.Split(rel, "/")
+	for i, s := range segs {
+		cur = filepath.Join(cur, s)
+		info, err := os.Lstat(cur)
+		if err != nil {
+			return false, nil
+		}
+		if info.Mode()&os.ModeSymlink != 0 {
+			return false, fmt.Errorf("der Pfad enthält einen Symlink (%s) — er wird nicht verfolgt", path.Join(segs[:i+1]...))
+		}
+		if !info.IsDir() {
+			return false, nil
+		}
+	}
+	return true, nil
 }
 
 // literalPrefixDir returns the directory part of g before its first wildcard

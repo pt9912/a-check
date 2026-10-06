@@ -278,3 +278,27 @@ func TestShapesExactPathForms(t *testing.T) {
 		t.Fatalf("Symlink-Verzeichnis: code=%d out=%q err=%q", code, out2.String(), errb2.String())
 	}
 }
+
+// Review slice-211 G-1: ein files-Glob, dessen literaler Präfix über ein
+// Symlink-Verzeichnis aus der Wurzel hinausführt, ist Exit 2 — die fremde Datei
+// wird nie gelesen, nichts davon erscheint auf stdout.
+func TestShapesFilesGlobSymlinkPrefix(t *testing.T) {
+	outside := t.TempDir()
+	if err := os.MkdirAll(filepath.Join(outside, "sub"), 0o755); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(filepath.Join(outside, "sub", "geheim.kts"), []byte("secretToken()\n"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	for _, glob := range []string{"link/sub/*.kts", "link/sub/geheim.kts", "link/**"} {
+		c := cfg + "shapes:\n  - files: [\"" + glob + "\"]\n    dialect: kotlin\n    mode: allow-statements\n    allow: ['a()']\n"
+		dir := writeRepo(t, map[string]string{".a-check.yml": c, "internal/core/c.go": "package core\n"})
+		if err := os.Symlink(outside, filepath.Join(dir, "link")); err != nil {
+			t.Fatal(err)
+		}
+		var out, errb bytes.Buffer
+		if code := cli.Run([]string{dir}, &out, &errb); code != 2 || out.String() != "" || strings.Contains(errb.String(), "secretToken") {
+			t.Errorf("%s: code=%d out=%q err=%q", glob, code, out.String(), errb.String())
+		}
+	}
+}
