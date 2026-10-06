@@ -270,8 +270,8 @@ func firstDifference(f ShapeFile, want []Statement) (Finding, bool) {
 
 // unusedFindings reports every allow entry of an `unused: fail` entry that
 // matched in none of its files (Opt-in, no warn level — ADR-0041 point 7). The
-// message is the entry in its declared form; a line end in it is written as
-// `\n` so the finding stays one record per line.
+// message is the entry in its declared form on ONE line: trailing line ends
+// drop, every inner one (LF, CRLF, CR) is written as `\n` (SPEC-RULE-001).
 func unusedFindings(m Model, hit [][]bool, configPath string) []Finding {
 	var fs []Finding
 	for e, sh := range m.Shapes {
@@ -282,7 +282,8 @@ func unusedFindings(m Model, hit [][]bool, configPath string) []Finding {
 			if hit[e][i] {
 				continue
 			}
-			msg := strings.ReplaceAll(strings.TrimRight(a.Pattern, "\n"), "\n", `\n`)
+			lf := strings.ReplaceAll(strings.ReplaceAll(a.Pattern, "\r\n", "\n"), "\r", "\n")
+			msg := strings.ReplaceAll(strings.TrimRight(lf, "\n"), "\n", `\n`)
 			if a.Regex {
 				msg += " (regex)"
 			}

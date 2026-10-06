@@ -2,6 +2,9 @@ package cli_test
 
 import (
 	"bytes"
+	"fmt"
+	"os"
+	"path/filepath"
 	"strings"
 	"testing"
 
@@ -180,7 +183,53 @@ func TestShapesUnusedEndToEnd(t *testing.T) {
 	c := strings.Replace(shapesCfg, "    mode: allow-statements\n", "    mode: allow-statements\n    unused: fail\n", 1) +
 		"      - 'apply(plugin = \"nie-benutzt\")'\n"
 	code, out, errs := runShapes(t, goodGradle, map[string]string{".a-check.yml": c})
-	if code != 1 || !strings.HasPrefix(out, ".a-check.yml:") || !strings.Contains(out, `shape-unused: apply(plugin = "nie-benutzt")`) || strings.Count(out, "\n") != 1 {
+	want := strings.Count(c[:strings.Index(c, "nie-benutzt")], "\n") + 1 // Zeile des Eintrags
+	if code != 1 || !strings.HasPrefix(out, fmt.Sprintf(".a-check.yml:%d: ", want)) || !strings.Contains(out, `shape-unused: apply(plugin = "nie-benutzt")`) || strings.Count(out, "\n") != 1 {
 		t.Fatalf("code=%d out=%q err=%q", code, out, errs)
+	}
+}
+
+// Review slice-211 F-3/F-4/F-9: Sollform-Datei nicht zerlegbar, als Symlink oder
+// zugleich von files getroffen — jeweils Exit 2, nie still grün.
+func TestShapesExactExit2(t *testing.T) {
+	base := cfg + "shapes:\n  - files: [\"domain/build.gradle.kts\"]\n    dialect: kotlin\n    mode: exact\n    expect: sollform/b.kts\n"
+	cases := map[string]map[string]string{
+		"unzerlegbar":  {"sollform/b.kts": "plugins {\n"},
+		"selbst geprueft": {".a-check.yml": strings.Replace(base, "sollform/b.kts", "domain/build.gradle.kts", 1)},
+	}
+	for name, extra := range cases {
+		files := map[string]string{".a-check.yml": base, "domain/build.gradle.kts": "a()\n", "sollform/b.kts": "a()\n", "internal/core/c.go": "package core\n"}
+		for k, v := range extra {
+			files[k] = v
+		}
+		var out, errb bytes.Buffer
+		if code := cli.Run([]string{writeRepo(t, files)}, &out, &errb); code != 2 || out.String() != "" || !strings.Contains(errb.String(), "expect-Datei") {
+			t.Errorf("%s: code=%d out=%q err=%q", name, code, out.String(), errb.String())
+		}
+	}
+	// Symlink auf eine Datei AUSSERHALB der Scan-Wurzel wird nicht verfolgt
+	outside := filepath.Join(t.TempDir(), "fremd.kts")
+	if err := os.WriteFile(outside, []byte("a()\n"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	dir := writeRepo(t, map[string]string{".a-check.yml": base, "domain/build.gradle.kts": "a()\n", "internal/core/c.go": "package core\n"})
+	if err := os.MkdirAll(filepath.Join(dir, "sollform"), 0o755); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.Symlink(outside, filepath.Join(dir, "sollform", "b.kts")); err != nil {
+		t.Fatal(err)
+	}
+	var out, errb bytes.Buffer
+	if code := cli.Run([]string{dir}, &out, &errb); code != 2 || !strings.Contains(errb.String(), "keine reguläre Datei") {
+		t.Fatalf("Symlink: code=%d err=%q", code, errb.String())
+	}
+}
+
+// Review slice-211 F-4: das Gerüst zeigt auch exact und unused.
+func TestPrintConfigShowsExactAndUnused(t *testing.T) {
+	var out, errb bytes.Buffer
+	cli.Run([]string{"--print-config"}, &out, &errb)
+	if s := out.String(); !strings.Contains(s, "mode: exact") || !strings.Contains(s, "expect:") || !strings.Contains(s, "unused: fail") {
+		t.Fatalf("Gerüst: %q", s)
 	}
 }

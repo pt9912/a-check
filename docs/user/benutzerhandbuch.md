@@ -651,8 +651,11 @@ benannt, nicht abgefangen.
 **Exit-Code 2** statt eines stillen Grüns, wenn: ein `files`-Glob keine Datei trifft; eine
 getroffene Datei zugleich in `exclude` steht (Widerspruch); ein Glob aus der Scan-Wurzel
 hinauszeigt; der `dialect` unbekannt ist; ein `allow`-Eintrag sich nicht zerlegen lässt oder
-mehr als eine Anweisung ergibt; eine Regex nicht kompiliert; bei `mode: exact` die Sollform-Datei
-fehlt; oder eine geprüfte Datei bzw. die Sollform-Datei sich nicht zerlegen lässt (offener Block, offene Zeichenkette). a-check prüft **Text nach Normalisierung**,
+mehr als eine Anweisung ergibt; eine Regex nicht kompiliert; Schlüssel und Modus nicht
+zusammenpassen (`allow`/`unused` bei `exact`, `expect` fehlt bei `exact` oder steht bei
+`allow-statements`, ein `unused`-Wert außer `fail`); die Sollform-Datei fehlt, aus der Scan-Wurzel
+hinauszeigt, keine reguläre Datei ist (ein Symlink wird nicht verfolgt) oder von den eigenen
+`files` getroffen wird; oder eine geprüfte Datei bzw. die Sollform-Datei sich nicht zerlegen lässt (offener Block, offene Zeichenkette). a-check prüft **Text nach Normalisierung**,
 nicht die Gradle-Semantik: Was ein erlaubtes Plugin selbst einträgt, sieht es nicht — dafür
 braucht es eine Prüfung im Build.
 
@@ -966,7 +969,7 @@ siehe „Dateien vom Scan ausnehmen" in Abschnitt 4.
 - **Befund:** eine gemeldete Regelverletzung (Datei, Zeile, Regel, Meldung).
 - **`core-impurity` / `app-impurity` / `lateral-adapter` / `lateral-slice` / `tech-leak` / `port-impurity` / `port-direction-mismatch` / `port-locality` / `construct-leak` / `shape-unlisted` / `shape-differs` / `shape-unused` / `wrong-direction`:** die geprüften Regeln — welche genau, sagt die Tabelle in Abschnitt 3.4.
 - **Zone (`constructs`):** das Pfad-Fragment (oder die Liste), in dem ein Roh-Text-Muster allein vorkommen darf; alles außerhalb ist `construct-leak`. Anders als eine **Schicht** ist eine Zone nicht an `layers` gebunden — sie gilt scan-weit.
-- **Sollform (`shapes`):** die ausdrücklich erlaubte Anweisungsfolge einer benannten Datei; alles, was nach Normalisierung nicht auf der Liste steht, ist `shape-unlisted`.
+- **Sollform (`shapes`):** die ausdrücklich erlaubte Anweisungsfolge einer benannten Datei — als Liste erlaubter Anweisungen (`mode: allow-statements`; was nach Normalisierung nicht darauf steht, ist `shape-unlisted`) oder als Sollform-Datei, der die Datei gleichen muss (`mode: exact`; die erste Abweichung ist `shape-differs`).
 - **Use-Case-Slice:** eine über ein eigenes `app`-Glob abgegrenzte Vertical Slice; `lateral-slice` isoliert sie gegeneinander (Verträge laufen über Ports). **Port-Scope:** das Verzeichnis, das den Port-Ordner besitzt (use-case-lokal ⊂ business-area ⊂ app-weit); `port-locality` erzwingt ihn.
 - **Heuristik-Grenze:** a-check erkennt Importe per Textmuster, nicht per Parser; seltene Fehltreffer sind konfigurierbar ausnehmbar.
 - **Digest-Pin:** ein `@sha256:`-Verweis auf eine exakte Image-Version für reproduzierbare Läufe.

@@ -70,8 +70,9 @@ func (a Adapter) dialectList() string {
 // Shapes reads every file a shapes entry names and returns their statement
 // sequences plus the normalized literal entries (AC-FA-RULE-012). It is
 // independent of the languages/layers walk. Fail-closed (exit 2): a glob that
-// matches no file, a matched file that exclude removes, and a file that cannot
-// be split — checked per entry in declaration order (SPEC-DET-001).
+// matches no file, a matched file that exclude removes, a file that cannot be
+// split, and the exact-mode cases of the Sollform file — checked per entry in
+// declaration order (SPEC-DET-001).
 func (a Adapter) Shapes(root string, m core.Model) (core.ShapeScan, error) {
 	lits, err := a.shapeLiterals(m)
 	if err != nil {
@@ -86,29 +87,54 @@ func (a Adapter) Shapes(root string, m core.Model) (core.ShapeScan, error) {
 			}
 			scan.Expected[e] = want
 		}
-		paths, err := shapePaths(e, root, sh.Files, m.Exclude)
+		files, err := a.entryFiles(e, root, sh, m.Exclude)
 		if err != nil {
 			return core.ShapeScan{}, err
 		}
-		for _, rel := range paths {
-			data, rerr := os.ReadFile(filepath.Join(root, filepath.FromSlash(rel)))
-			if rerr != nil {
-				return core.ShapeScan{}, rerr
-			}
-			stmts, lines, nerr := a.dialects[sh.Dialect](string(data))
-			if nerr != nil {
-				return core.ShapeScan{}, fmt.Errorf("shapes[%d]: %s lässt sich nicht zerlegen: %w", e, rel, nerr)
-			}
-			scan.Files = append(scan.Files, core.ShapeFile{Entry: e, Path: rel, Statements: stmts, Lines: lines})
-		}
+		scan.Files = append(scan.Files, files...)
 	}
 	return scan, nil
 }
 
+// entryFiles reads and normalizes the files of one entry. In exact mode the
+// Sollform file must not be one of them — the entry could never report.
+func (a Adapter) entryFiles(e int, root string, sh core.Shape, exclude []string) ([]core.ShapeFile, error) {
+	paths, err := shapePaths(e, root, sh.Files, exclude)
+	if err != nil {
+		return nil, err
+	}
+	out := make([]core.ShapeFile, 0, len(paths))
+	for _, rel := range paths {
+		if sh.Mode == "exact" && rel == sh.Expect {
+			return nil, fmt.Errorf("shapes[%d]: expect-Datei %s wird von den eigenen files getroffen — der Eintrag könnte nie melden", e, rel)
+		}
+		data, rerr := os.ReadFile(filepath.Join(root, filepath.FromSlash(rel)))
+		if rerr != nil {
+			return nil, rerr
+		}
+		stmts, lines, nerr := a.dialects[sh.Dialect](string(data))
+		if nerr != nil {
+			return nil, fmt.Errorf("shapes[%d]: %s lässt sich nicht zerlegen: %w", e, rel, nerr)
+		}
+		out = append(out, core.ShapeFile{Entry: e, Path: rel, Statements: stmts, Lines: lines})
+	}
+	return out, nil
+}
+
 // expected reads and normalizes the Sollform file of an exact entry. A missing
-// file and an unsplittable one are exit 2 (SPEC-CONF-001).
+// file, one that is no regular file and an unsplittable one are exit 2
+// (SPEC-CONF-001).
 func (a Adapter) expected(e int, root string, sh core.Shape) ([]core.Statement, error) {
-	data, err := os.ReadFile(filepath.Join(root, filepath.FromSlash(sh.Expect)))
+	p := filepath.Join(root, filepath.FromSlash(sh.Expect))
+	info, err := os.Lstat(p)
+	if err != nil {
+		return nil, fmt.Errorf("shapes[%d]: expect-Datei %q fehlt oder ist nicht lesbar: %w", e, sh.Expect, err)
+	}
+	if !info.Mode().IsRegular() {
+		// a symlink is not followed: it could point out of the scan root
+		return nil, fmt.Errorf("shapes[%d]: expect-Datei %q ist keine reguläre Datei", e, sh.Expect)
+	}
+	data, err := os.ReadFile(p)
 	if err != nil {
 		return nil, fmt.Errorf("shapes[%d]: expect-Datei %q fehlt oder ist nicht lesbar: %w", e, sh.Expect, err)
 	}

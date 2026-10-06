@@ -219,3 +219,26 @@ func TestNewShapeExactFailClosed(t *testing.T) {
 		}
 	}
 }
+
+// Review slice-211 F-1/F-2/F-4: shape-unused-Meldung einzeilig (auch bei CR),
+// Regex-Zusatz, und Zählung über mehrere Dateien eines Eintrags.
+func TestEvaluateShapesUnusedFormAndFiles(t *testing.T) {
+	allow := []ShapeAllowSpec{{Pattern: "q()\r", Line: 3}, {Pattern: `r\(\)`, Match: "regex", Line: 4}, {Pattern: "b()", Line: 5}}
+	sh, err := NewShape([]string{"*.kts"}, "kotlin", "allow-statements", allow, "fail", "")
+	if err != nil {
+		t.Fatal(err)
+	}
+	f1 := ShapeFile{Entry: 0, Path: "a.kts", Lines: 1, Statements: []Statement{{Text: "x()", Line: 1}}}
+	f2 := ShapeFile{Entry: 0, Path: "b.kts", Lines: 1, Statements: []Statement{{Text: "b()", Line: 1}}}
+	fs := EvaluateShapes(Model{Shapes: []Shape{sh}}, ShapeScan{Literals: [][]string{{"q()", "", "b()"}}, Files: []ShapeFile{f1, f2}}, ".a-check.yml")
+	var unused []string
+	for _, f := range fs {
+		if f.Rule == "shape-unused" {
+			unused = append(unused, f.Msg)
+		}
+	}
+	// b() trifft nur in der ZWEITEN Datei und gilt als getroffen; q() ohne CR, r mit (regex)
+	if strings.Join(unused, "|") != `q()|r\(\) (regex)` {
+		t.Fatalf("unused=%q all=%+v", unused, fs)
+	}
+}
