@@ -18,7 +18,8 @@ Determinismus nach
 
 **Berührte Spec-Stellen:** `spec/lastenheft.md` §3 (neue Regel-Anforderung),
 §5 (Globale Out-of-Scope-Punkte), Schema in [AC-FA-CONF-001](../../../../spec/lastenheft.md#ac-fa-conf-001--konfigurationsdatei-a-checkyml) ·
-`spezifikation.md` §[SPEC-CONF-001](../../../../spec/spezifikation.md#spec-conf-001--konfigurationsschema), §[SPEC-RULE-001](../../../../spec/spezifikation.md#spec-rule-001--regel-auswertung).
+`spezifikation.md` §[SPEC-CONF-001](../../../../spec/spezifikation.md#spec-conf-001--konfigurationsschema), §[SPEC-RULE-001](../../../../spec/spezifikation.md#spec-rule-001--regel-auswertung), §[SPEC-EXTRACT-001](../../../../spec/spezifikation.md#spec-extract-001--import-extraktion) ·
+`architecture.md` [ARC-003](../../../../spec/architecture.md#2-komponenten) (Extraktions-Adapter liefert die Anweisungen).
 
 **Verantwortlich:** Claude — gesetzt beim Übergang nach `next/` (Abnahme der zehn Entscheide durch den Maintainer, 2026-10-06).
 
@@ -96,8 +97,9 @@ vom Maintainer mit der Welle-Anweisung übernommen):
       Import-Allowlist, Platz der Normalisierung im Hexagon — `Accepted` erst
       nach Maintainer-Abnahme.
 - [ ] Spezifikation: Schema-Abschnitt in §[SPEC-CONF-001](../../../../spec/spezifikation.md#spec-conf-001--konfigurationsschema) (Schlüssel, Werte,
-      strikte Dekodierung, Fehlerfälle) und Regel-Semantik in §[SPEC-RULE-001](../../../../spec/spezifikation.md#spec-rule-001--regel-auswertung)
-      (Normalisierung, Zerlegung, Vergleich, Befund-Format
+      strikte Dekodierung, Fehlerfälle), Normalisierung und Zerlegung in
+      §[SPEC-EXTRACT-001](../../../../spec/spezifikation.md#spec-extract-001--import-extraktion), Regel-Semantik in §[SPEC-RULE-001](../../../../spec/spezifikation.md#spec-rule-001--regel-auswertung)
+      (Vergleich, Befund-Format
       `datei:zeile: <klasse>: <anweisung>`, Sortierung).
 - [ ] Unabhängiger Review, Report unter [`docs/reviews/`](../../../reviews/README.md).
 - [ ] Closure-Notiz mit Steering-Loop-Lerneintrag.
@@ -112,7 +114,8 @@ vom Maintainer mit der Welle-Anweisung übernommen):
 |---|---|---|
 | `spec/lastenheft.md` | update | neue Regel-Anforderung, §5, [AC-FA-CONF-001](../../../../spec/lastenheft.md#ac-fa-conf-001--konfigurationsdatei-a-checkyml), Kopf-Version, Historie |
 | `docs/plan/adr/<NNNN>-shapes-sollform-je-datei.md` + ADR-Index | neu / update | Entscheidung und verglichene Alternativen (Verbotsliste in `constructs`, Import-Allowlist, `exact` allein) |
-| `spec/spezifikation.md` | update | §[SPEC-CONF-001](../../../../spec/spezifikation.md#spec-conf-001--konfigurationsschema) und §[SPEC-RULE-001](../../../../spec/spezifikation.md#spec-rule-001--regel-auswertung) |
+| `spec/spezifikation.md` | update | §[SPEC-CONF-001](../../../../spec/spezifikation.md#spec-conf-001--konfigurationsschema) und §[SPEC-RULE-001](../../../../spec/spezifikation.md#spec-rule-001--regel-auswertung), §[SPEC-EXTRACT-001](../../../../spec/spezifikation.md#spec-extract-001--import-extraktion) |
+| `spec/architecture.md` | update | [ARC-003](../../../../spec/architecture.md#2-komponenten): die Extraktion liefert zusätzlich die normalisierten Anweisungen der `shapes`-Dateien — **Plan-Änderung vor dem Schreiben** (2026-10-06): die Zerlegung ist Extraktion, nicht Regel-Auswertung |
 | `CHANGELOG.md` | update | `[Unreleased]`, Vertrag berührt (`AGENTS.md` §6 Schritt 7) |
 
 ## 4. Trigger
