@@ -1,6 +1,6 @@
 # ADR-0041: Sollform je Datei — Anweisungsvergleich nach Normalisierung statt Verbotsliste
 
-**Status:** Proposed
+**Status:** Accepted
 
 **Datum:** 2026-10-06
 
@@ -172,6 +172,7 @@ Regelart `shapes` neben `constructs`, mit zwei Modi.
 | Datum | Ereignis | Verweis |
 |---|---|---|
 | 2026-10-06 | Proposed | Change Request „Positivliste von Anweisungen je Datei (Sollform)" (Maintainer) |
+| 2026-10-06 | Accepted | Abnahme durch den Maintainer, einschließlich der vier Schärfungen gegenüber den Entscheiden aus dem Change Request |
 
 Nach `Accepted` wird diese Datei **nicht mehr inhaltlich überschrieben**.
 Spätere Korrekturen oder Schärfungen entstehen als neue ADR mit
