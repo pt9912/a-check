@@ -25,7 +25,7 @@ Determinismus nach
 
 **Autor:** Claude. **Datum:** 2026-10-06.
 
-**Lerneintrag — Form:** wird bei Closure benannt (erwartet: benannte Spec-Lücke).
+**Lerneintrag — Form:** benannte Spec-Lücke.
 
 ---
 
@@ -100,25 +100,25 @@ Abnahme stehen):
 
 ## 2. Definition of Done
 
-- [ ] Lastenheft: neue Regel-Anforderung (nächste freie `AC-FA-RULE`-Kennung)
+- [x] Lastenheft: neue Regel-Anforderung (nächste freie `AC-FA-RULE`-Kennung)
       mit **explizitem Anker**, Beschreibung, Happy/Boundary/Negative aus den
       Gegenprobe-Fällen des CR, Out-of-Scope; §5 präzisiert (Text-Prüfung
       benannter Dateien neben der Import-Ebene); [AC-FA-CONF-001](../../../../spec/lastenheft.md#ac-fa-conf-001--konfigurationsdatei-a-checkyml) um den Block
       und dessen Exit-2-Fälle; Versions-Bump, Historie-Zeile, CHANGELOG
       `[Unreleased]`.
-- [ ] ADR (nächste freie Nummer, Index nachgezogen): Regelart neben
+- [x] ADR (nächste freie Nummer, Index nachgezogen): Regelart neben
       `constructs`, Normalisierungsvertrag (Entscheide 3–6), Abgrenzung zur
       Import-Allowlist, Platz der Normalisierung im Hexagon — `Accepted` erst
       nach Maintainer-Abnahme.
-- [ ] Spezifikation: Schema-Abschnitt in §[SPEC-CONF-001](../../../../spec/spezifikation.md#spec-conf-001--konfigurationsschema) (Schlüssel, Werte,
+- [x] Spezifikation: Schema-Abschnitt in §[SPEC-CONF-001](../../../../spec/spezifikation.md#spec-conf-001--konfigurationsschema) (Schlüssel, Werte,
       strikte Dekodierung, Fehlerfälle), Normalisierung und Zerlegung in
       §[SPEC-EXTRACT-001](../../../../spec/spezifikation.md#spec-extract-001--import-extraktion), Regel-Semantik in §[SPEC-RULE-001](../../../../spec/spezifikation.md#spec-rule-001--regel-auswertung)
       (Vergleich, Befund-Format
       `pfad:zeile: <klasse>: <meldung>`, Sortierung).
-- [ ] Unabhängiger Review, Report unter [`docs/reviews/`](../../../reviews/README.md).
-- [ ] Closure-Notiz mit Steering-Loop-Lerneintrag.
-- [ ] Beobachtungs-Register fortgeschrieben (oder „keine Beobachtung" notiert).
-- [ ] Jedes Risiko aus §6 trägt einen Ausgang.
+- [x] Unabhängiger Review, Report unter [`docs/reviews/`](../../../reviews/README.md).
+- [x] Closure-Notiz mit Steering-Loop-Lerneintrag.
+- [x] Beobachtungs-Register fortgeschrieben (oder „keine Beobachtung" notiert).
+- [x] Jedes Risiko aus §6 trägt einen Ausgang.
 
 `make gates` und `make verify` grün.
 
@@ -156,17 +156,73 @@ Closure-Notiz mit Lerneintrag.
 - **Statement-Grenze in Kotlin ist heuristisch.** Eine Gradle-Schreibweise,
   die Entscheid 5 falsch zerlegt, wird rot statt grün (fail-safe) — aber eine
   Regel, die bei legitimen Dateien rot ist, wird abgeschaltet. — **Ausgang:**
-  *(bei Closure zuzuweisen: eingetreten / entfallen / weiter offen)*
+  *entfallen* — gestrichen mit Begründung: als Risiko des **Vertrags** ist es mit der Fassung
+  entfallen, die beide Fehlrichtungen der Zerlegung als fail-safe festschreibt
+  ([SPEC-EXTRACT-001](../../../../spec/spezifikation.md#spec-extract-001--import-extraktion)
+  Schritt 3); die Wache über echte Fehlalarme trägt der Re-Evaluierungs-Trigger von
+  [ADR-0041](../../adr/0041-shapes-sollform-je-datei.md), den
+  Testfall (Postfix `!!`/`++`/`--`, `>`) §6 von slice-210.
 - **Nur ein Adopter belegt.** Der Vertrag könnte an dessen Datei überangepasst
-  sein. — **Ausgang:** *(bei Closure zuzuweisen)*
+  sein. — **Ausgang:** *weiter offen* → Beobachtungs-Register:
+  [`BEO-SPEC/vertrag-auf-einen-konsumenten-belegt`](../observations/BEO-SPEC/vertrag-auf-einen-konsumenten-belegt/observation.md)
+  (neu, 1×).
 - **§5-Erweiterung verschiebt den Produkt-Umfang.** „Heuristik auf
   Import-Ebene" ist seit `constructs` schon nicht mehr wörtlich wahr; die
-  Präzisierung muss das benennen, nicht kaschieren. — **Ausgang:** *(bei
-  Closure zuzuweisen)*
+  Präzisierung muss das benennen, nicht kaschieren. — **Ausgang:** *entfallen* —
+  gestrichen mit Begründung: §5 des Lastenhefts nennt jetzt ausdrücklich drei Prüf-Ebenen
+  (Importe, Roh-Text, normalisierte Anweisungsfolge) und dass keine Semantik auswertet; die
+  Erweiterung ist benannt, nicht kaschiert.
 
 ## 7. Closure-Notiz
 
-*(folgt bei Closure)*
+**Lerneintrag — Form: benannte Spec-Lücke.** Ein Regex-Eintrag sieht die normalisierte Anweisung
+als Text, nicht als Token-Folge: ein `.*` für Zeichenketten-Inhalt überspannt auch Code. Die Lücke
+ist benannt in [SPEC-CONF-001](../../../../spec/spezifikation.md#spec-conf-001--konfigurationsschema),
+im Out-of-Scope von [AC-FA-RULE-012](../../../../spec/lastenheft.md#ac-fa-rule-012) und als
+Konsequenz in [ADR-0041](../../adr/0041-shapes-sollform-je-datei.md); dokumentiert ist die sichere
+Klasse `"[^"$\\]*"`, erzwungen wird sie nicht. Ein Platzhalter für „genau eine Zeichenkette" würde
+sie schließen und ist als eigener Umfang benannt, nicht geplant.
+
+**Geliefert:** neue Anforderung [AC-FA-RULE-012](../../../../spec/lastenheft.md#ac-fa-rule-012)
+(Lastenheft 0.28.0, mit §5 und Glossar), Schema in
+[AC-FA-CONF-001](../../../../spec/lastenheft.md#ac-fa-conf-001--konfigurationsdatei-a-checkyml),
+Spezifikation 0.33.0, Architektur 0.5.0, [ADR-0041](../../adr/0041-shapes-sollform-je-datei.md)
+`Accepted` nach Maintainer-Abnahme einschließlich der vier Schärfungen aus §1.
+
+**Was hat funktioniert:** Spec-first mit unabhängigem Review vor jeder Zeile Code. Vier Runden
+fanden zusammen 17 Befunde, darunter drei, mit denen sich eine Abhängigkeit als Kommentar hätte
+verstecken lassen — im Vertrag gefunden kosten sie einen Satz, im Lexer einen Rückbau. Die
+Schärfungen gegenüber den abgenommenen Entscheiden standen dabei offen als Plan-Änderung in §1,
+statt still in der ADR.
+
+**Was ging anders als geplant:** Der Lexik-Vertrag brauchte drei Korrektur-Runden, die letzte
+wegen eines Beispiels, das ich aus dem Kopf statt Byte für Byte gezählt hatte. Und
+`make doc-structure` lehnte die erste neue Anforderung seit Einführung der AC-Form-Regel ab, weil
+die Regel `Boundary:` wörtlich verlangt, der grandfathered Bestand aber `Boundary (…):` schreibt.
+Die Plan-Änderung (§[SPEC-EXTRACT-001](../../../../spec/spezifikation.md#spec-extract-001--import-extraktion)
+und [ARC-003](../../../../spec/architecture.md#2-komponenten) zusätzlich) lag als eigener Commit vor dem Schreiben.
+
+**Steering-Loop-Eintrag:** benannte Spec-Lücke, siehe Lerneintrag — gezählt, nicht verkörpert
+(kein Register-Eintrag hat mit diesem Slice 3× erreicht).
+
+**Beobachtungs-Register (`../observations/`):** drei neu angelegt, je 1× —
+[`BEO-GATE/marke-enger-als-bestandsform`](../observations/BEO-GATE/marke-enger-als-bestandsform/observation.md),
+[`BEO-SPEC/lexik-vertrag-ohne-sprach-gegenprobe`](../observations/BEO-SPEC/lexik-vertrag-ohne-sprach-gegenprobe/observation.md)
+(drei Funde, ein Vorgang),
+[`BEO-SPEC/vertrag-auf-einen-konsumenten-belegt`](../observations/BEO-SPEC/vertrag-auf-einen-konsumenten-belegt/observation.md)
+(Risiko 2).
+
+**Folge-Slices:** keine neuen; slice-210 und slice-211 führen den Vertrag aus und tragen die
+Folgepflichten aus dem Review (Tests je Lexik-Form, sichere Regex-Klasse in Handbuch und Gerüst,
+CHANGELOG umschreiben).
+
+**Risiken aus §6:** alle drei mit Ausgang — zwei *entfallen* mit Begründung, eines *weiter offen*
+im Register.
+
+**Drei Paarungen:** getragen von der Closure von welle-16 (offene Welle, `docs/plan/planning/README.md`
+§Beim Kopieren, Punkt 3).
+
+**Trigger-Audit der aktiven MR:** [`MR-016`](../../../../harness/conventions.md#mr-016) [`MR-019`](../../../../harness/conventions.md#mr-019) [`MR-024`](../../../../harness/conventions.md#mr-024) [`MR-025`](../../../../harness/conventions.md#mr-025) [`MR-027`](../../../../harness/conventions.md#mr-027) [`MR-028`](../../../../harness/conventions.md#mr-028) [`MR-029`](../../../../harness/conventions.md#mr-029) [`MR-030`](../../../../harness/conventions.md#mr-030) — 0 offen (geprüft 2026-10-06, Konventions-Stand dieses Laufs; kein Release seit `v0.20.0`, kein Golden Set).
 
 ## 8. Sub-Area-Prüfungen und Modus-Begründung
 
