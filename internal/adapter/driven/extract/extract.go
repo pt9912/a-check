@@ -45,6 +45,9 @@ type Adapter struct {
 	// backends: a language may have a backend and no counter-pattern (C++,
 	// whose limit is resolution-side and derived in core.HeuristicLimits).
 	limits map[string][]limitPattern
+	// dialects maps a shapes dialect to its normalizer (AC-FA-RULE-012); its
+	// keys are the supported dialect set, like backends for languages.
+	dialects map[string]dialectFn
 }
 
 // limitPattern is one counter-pattern naming a heuristic limit (ADR-0031). It is
@@ -97,6 +100,7 @@ func newAdapter() Adapter {
 	}
 	a.ktDecls = kotlinDeclPatterns()
 	a.limits = limitPatterns()
+	a.dialects = dialects()
 	a.backends = map[string]extractFn{
 		"go":     func(src string) []core.Import { return dedupeSort(a.goImports(src)) },
 		"cpp":    func(src string) []core.Import { return dedupeSort(lineMatches(src, a.cppInclude)) },
@@ -117,7 +121,10 @@ func newAdapter() Adapter {
 // exact backend validation of a scan without reading sources. Extract runs the
 // same check, so there is no duplicated language logic.
 func (a Adapter) Validate(m core.Model) error {
-	return a.checkLanguages(m.Languages)
+	if err := a.checkLanguages(m.Languages); err != nil {
+		return err
+	}
+	return a.checkShapes(m)
 }
 
 // Extract walks root and returns the imports per source file, stably ordered.

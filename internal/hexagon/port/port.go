@@ -20,6 +20,11 @@ type ExtractionPort interface {
 	// WITHOUT walking any file — the validation-only entry the no-scan
 	// --print-graph path uses (SPEC-CLI-002); Extract runs the same check.
 	Validate(m core.Model) error
+	// Shapes reads the files named in the shapes block and yields their
+	// normalized statements plus the normalized literal allow entries
+	// (AC-FA-RULE-012); a glob without a file, an excluded match or an
+	// unsplittable file is an error (exit 2).
+	Shapes(root string, m core.Model) (core.ShapeScan, error)
 }
 
 // ReportPort renders findings and yields the finding exit code 0/1 (ARC-005).

@@ -149,6 +149,7 @@ type Model struct {
 	IgnoreSymbols   []string                    // heuristic-boundary allowlist (markers)
 	Resolution      map[string]ResolutionConfig // language -> import resolution (ADR-0016)
 	Exclude         []string                    // file globs removed from the scan before extraction (ADR-0018)
+	Shapes          []Shape                     // per-file statement allowlists (AC-FA-RULE-012, ADR-0041)
 }
 
 // Finding is one rule violation. Its fields define the TOTAL sort order

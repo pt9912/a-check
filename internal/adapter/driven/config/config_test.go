@@ -714,3 +714,39 @@ func TestForbiddenAbsentBlockUnchanged(t *testing.T) {
 		t.Fatalf("Config ohne den Block muss laden: %v", err)
 	}
 }
+
+const shapesBase = valid + `shapes:
+  - files: ["mod/build.gradle.kts"]
+    dialect: kotlin
+    mode: allow-statements
+    allow:
+      - 'plugins { kotlin("jvm") }'
+      - {pattern: 'kotlin\{jvmToolchain\(\d+\)\}', match: regex}
+`
+
+func TestShapesDecode(t *testing.T) { // AC-FA-RULE-012, SPEC-CONF-001
+	m, err := New().Load(write(t, shapesBase))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(m.Shapes) != 1 || len(m.Shapes[0].Allow) != 2 || !m.Shapes[0].Allow[1].Regex || m.Shapes[0].Allow[0].Line == 0 {
+		t.Fatalf("shapes: %+v", m.Shapes)
+	}
+}
+
+func TestShapesDecodeFailClosed(t *testing.T) { // AC-FA-RULE-012 negative: Exit 2
+	cases := map[string]string{
+		"unbekannter Schluessel": strings.Replace(shapesBase, "mode: allow-statements", "mode: allow-statements\n    ignore: [version-literals]", 1),
+		"allow-Objekt-Schluessel": strings.Replace(shapesBase, "match: regex}", "match: regex, flags: i}", 1),
+		"allow-Liste statt String": strings.Replace(shapesBase, `- 'plugins { kotlin("jvm") }'`, `- [a, b]`, 1),
+		"expect aus der Wurzel": strings.Replace(shapesBase, "mode: allow-statements", "mode: allow-statements\n    expect: ../x.kts", 1),
+		"exact noch nicht":      strings.Replace(shapesBase, "mode: allow-statements", "mode: exact", 1),
+		"unused noch nicht":     strings.Replace(shapesBase, "mode: allow-statements", "mode: allow-statements\n    unused: fail", 1),
+		"leeres files":          strings.Replace(shapesBase, `files: ["mod/build.gradle.kts"]`, `files: []`, 1),
+	}
+	for name, body := range cases {
+		if _, err := New().Load(write(t, body)); err == nil {
+			t.Errorf("%s: Exit-2-Fehler erwartet", name)
+		}
+	}
+}

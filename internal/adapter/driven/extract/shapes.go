@@ -1,0 +1,182 @@
+package extract
+
+import (
+	"fmt"
+	"io/fs"
+	"os"
+	"path"
+	"path/filepath"
+	"sort"
+	"strings"
+
+	"github.com/pt9912/a-check/internal/hexagon/core"
+)
+
+// dialectFn normalizes one source of a shapes dialect into its top-level
+// statements and line count (SPEC-EXTRACT-001), or fails if it cannot be split.
+type dialectFn func(src string) ([]core.Statement, int, error)
+
+// dialects is the registry of shapes dialects — the single source of the
+// supported set, like backends for languages. A new dialect is one entry.
+func dialects() map[string]dialectFn {
+	return map[string]dialectFn{"kotlin": normalizeKotlin}
+}
+
+// checkShapes validates the shapes block without reading a file: every dialect
+// is registered, and every literal allow entry normalizes to exactly ONE
+// statement (SPEC-CONF-001). It runs in Validate, so the no-scan --print-graph
+// path fails on a broken entry exactly as a scan does.
+func (a Adapter) checkShapes(m core.Model) error {
+	_, err := a.shapeLiterals(m)
+	return err
+}
+
+// shapeLiterals normalizes the literal allow entries, per shapes entry in
+// declaration order; a regex entry keeps "" (it is matched, not compared).
+func (a Adapter) shapeLiterals(m core.Model) ([][]string, error) {
+	out := make([][]string, len(m.Shapes))
+	for e, sh := range m.Shapes {
+		norm, ok := a.dialects[sh.Dialect]
+		if !ok {
+			return nil, fmt.Errorf("shapes: unbekannter dialect %q (%s)", sh.Dialect, a.dialectList())
+		}
+		out[e] = make([]string, len(sh.Allow))
+		for i, al := range sh.Allow {
+			if al.Regex {
+				continue
+			}
+			stmts, _, err := norm(al.Pattern)
+			if err != nil {
+				return nil, fmt.Errorf("shapes: allow %q lässt sich nicht zerlegen: %w", al.Pattern, err)
+			}
+			if len(stmts) != 1 {
+				return nil, fmt.Errorf("shapes: allow %q ergibt %d Anweisungen, erwartet genau eine", al.Pattern, len(stmts))
+			}
+			out[e][i] = stmts[0].Text
+		}
+	}
+	return out, nil
+}
+
+func (a Adapter) dialectList() string {
+	names := make([]string, 0, len(a.dialects))
+	for n := range a.dialects {
+		names = append(names, n)
+	}
+	sort.Strings(names)
+	return strings.Join(names, "|")
+}
+
+// Shapes reads every file a shapes entry names and returns their statement
+// sequences plus the normalized literal entries (AC-FA-RULE-012). It is
+// independent of the languages/layers walk. Fail-closed (exit 2): a glob that
+// matches no file, a matched file that exclude removes, and a file that cannot
+// be split — checked per entry in declaration order (SPEC-DET-001).
+func (a Adapter) Shapes(root string, m core.Model) (core.ShapeScan, error) {
+	lits, err := a.shapeLiterals(m)
+	if err != nil {
+		return core.ShapeScan{}, err
+	}
+	scan := core.ShapeScan{Literals: lits}
+	for e, sh := range m.Shapes {
+		paths, err := shapePaths(root, sh.Files, m.Exclude)
+		if err != nil {
+			return core.ShapeScan{}, err
+		}
+		for _, rel := range paths {
+			data, rerr := os.ReadFile(filepath.Join(root, filepath.FromSlash(rel)))
+			if rerr != nil {
+				return core.ShapeScan{}, rerr
+			}
+			stmts, lines, nerr := a.dialects[sh.Dialect](string(data))
+			if nerr != nil {
+				return core.ShapeScan{}, fmt.Errorf("shapes: %s lässt sich nicht zerlegen: %w", rel, nerr)
+			}
+			scan.Files = append(scan.Files, core.ShapeFile{Entry: e, Path: rel, Statements: stmts, Lines: lines})
+		}
+	}
+	return scan, nil
+}
+
+// shapePaths resolves one entry's globs to the sorted, deduplicated set of
+// matching files. Each glob must match at least one file, and no match may lie
+// under exclude — a file named in shapes and removed by exclude is a
+// contradiction of the configuration, not a silent skip.
+func shapePaths(root string, globs, exclude []string) ([]string, error) {
+	seen := map[string]bool{}
+	var out []string
+	for _, g := range globs {
+		matches, err := globFiles(root, g)
+		if err != nil {
+			return nil, err
+		}
+		if len(matches) == 0 {
+			return nil, fmt.Errorf("shapes: files-Glob %q trifft keine Datei", g)
+		}
+		for _, rel := range matches {
+			if core.MatchGlobs(rel, exclude) {
+				return nil, fmt.Errorf("shapes: %s ist in shapes genannt und durch exclude ausgenommen (Widerspruch)", rel)
+			}
+			if !seen[rel] {
+				seen[rel] = true
+				out = append(out, rel)
+			}
+		}
+	}
+	sort.Strings(out)
+	return out, nil
+}
+
+// globFiles lists the regular files matching glob g, walking only the glob's
+// literal directory prefix (the segments before the first wildcard). It does not
+// prune by exclude: an excluded match must be SEEN to be reported as a
+// contradiction. .git is skipped.
+func globFiles(root, g string) ([]string, error) {
+	base := literalPrefixDir(g)
+	start := filepath.Join(root, filepath.FromSlash(base))
+	info, err := os.Stat(start)
+	if err != nil || !info.IsDir() {
+		// no such directory: the glob matches nothing, which the caller
+		// reports as exit 2 — not an I/O error of its own
+		return nil, nil
+	}
+	var out []string
+	werr := filepath.WalkDir(start, func(p string, d fs.DirEntry, walkErr error) error {
+		if walkErr != nil {
+			return walkErr
+		}
+		if d.IsDir() {
+			if d.Name() == ".git" {
+				return filepath.SkipDir
+			}
+			return nil
+		}
+		rel, rerr := filepath.Rel(root, p)
+		if rerr != nil {
+			return rerr
+		}
+		rel = filepath.ToSlash(rel)
+		if d.Type().IsRegular() && core.MatchGlobs(rel, []string{g}) {
+			out = append(out, rel)
+		}
+		return nil
+	})
+	return out, werr
+}
+
+// literalPrefixDir returns the directory part of g before its first wildcard
+// segment ("." when the first segment already holds one).
+func literalPrefixDir(g string) string {
+	segs := strings.Split(g, "/")
+	var lit []string
+	for _, s := range segs[:len(segs)-1] {
+		if strings.ContainsAny(s, "*?") {
+			break
+		}
+		lit = append(lit, s)
+	}
+	if len(lit) == 0 {
+		return "."
+	}
+	return path.Join(lit...)
+}

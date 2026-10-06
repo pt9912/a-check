@@ -114,12 +114,7 @@ func Run(args []string, out, errw io.Writer) int {
 		_, _ = fmt.Fprintf(errw, "a-check: %v\n", err)
 		return 2
 	}
-	files, err := extract.New().Extract(root, m)
-	if err != nil {
-		_, _ = fmt.Fprintf(errw, "a-check: %v\n", err)
-		return 2
-	}
-	findings, err := core.Evaluate(m, files)
+	files, findings, err := scan(root, m)
 	if err != nil {
 		_, _ = fmt.Fprintf(errw, "a-check: %v\n", err)
 		return 2
@@ -130,6 +125,30 @@ func Run(args []string, out, errw io.Writer) int {
 	writeResolutionNotice(errw, core.LayerResolutions(m, files))
 	writePortScopeNotice(errw, core.InertPortScopes(m))
 	return code
+}
+
+// scan extracts, reads the shapes files and evaluates both rule families. Every
+// error is exit 2 (config, unreadable tree, resolution ambiguity, a shapes file
+// that is missing, excluded or unsplittable). shapes judges named files, not
+// imports (AC-FA-RULE-012): its findings join the import-rule findings, and the
+// merged list gets the one total order (SPEC-DET-001).
+func scan(root string, m core.Model) ([]core.FileImports, []core.Finding, error) {
+	ext := extract.New()
+	files, err := ext.Extract(root, m)
+	if err != nil {
+		return nil, nil, err
+	}
+	shapes, err := ext.Shapes(root, m)
+	if err != nil {
+		return nil, nil, err
+	}
+	findings, err := core.Evaluate(m, files)
+	if err != nil {
+		return nil, nil, err
+	}
+	findings = append(findings, core.EvaluateShapes(m, shapes)...)
+	core.SortFindings(findings)
+	return files, findings, nil
 }
 
 // writePortScopeNotice reports the port globs that leave port-locality silent
@@ -309,9 +328,16 @@ forbidden_constructs:
 #     match: regex                #   ausserhalb ist ein Befund construct-leak. Greift auch
 #     adapter: adapters/plugin    #   in Dateien ohne Schicht; Kommentare zaehlen nicht.
 #     composition_root: forbid    #   Default allow (Composition Root ausgenommen).
+# shapes:                         # optional: Sollform je Datei (AC-FA-RULE-012/ADR-0041) — in der
+#   - files: ["domain/build.gradle.kts"]  # Datei steht nur, was allow nennt; jede andere Anweisung
+#     dialect: kotlin             #   ist ein Befund shape-unlisted. Kommentare, Leerraum und
+#     mode: allow-statements      #   Umbrueche zaehlen nicht; ein Block ist EINE Anweisung.
+#     allow:
+#       - 'plugins { kotlin("jvm") }'
+#       - {pattern: 'version="[^"$\\]*"', match: regex}  # Zeichenketten-Inhalt als Klasse, nie .*
 markers:
   ignore_symbols: []
-# resolution:                     # optional: Import-Symbol -> Schicht je Sprache (ADR-0016/ADR-0023)
+# resolution:                    # optional: Import-Symbol -> Schicht je Sprache (ADR-0016/ADR-0023)
 #   kotlin:                       # Multi-Modul (KMP/Gradle): mehrere Module, geteiltes package_base;
 #     mode: fixed-root            #   der interne FQN wird gegen die REALEN Dateien unter roots aufgeloest
 #     package_base: dev.example   #   (nicht am Wurzel-Praefix). Split-Package (dasselbe Paket ueber zwei

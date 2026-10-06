@@ -38,6 +38,19 @@ type yamlConstruct struct {
 	CompositionRoot string    `yaml:"composition_root"` // "allow" (default) or "forbid"
 }
 
+// yamlShape is one `shapes` entry (AC-FA-RULE-012, ADR-0041). allow entries are
+// raw nodes: each is a string (literal) or an object {pattern, match} — the
+// object form is decoded strictly by hand, because KnownFields does not reach
+// into yaml.Node.Decode.
+type yamlShape struct {
+	Files   []string    `yaml:"files"`
+	Dialect string      `yaml:"dialect"`
+	Mode    string      `yaml:"mode"`
+	Allow   []yaml.Node `yaml:"allow"`
+	Unused  string      `yaml:"unused"`
+	Expect  string      `yaml:"expect"`
+}
+
 type yamlMarkers struct {
 	IgnoreSymbols []string `yaml:"ignore_symbols"`
 }
@@ -72,6 +85,7 @@ type yamlConfig struct {
 	Forbidden       map[string][]string       `yaml:"forbidden_constructs"`
 	Resolution      map[string]yamlResolution `yaml:"resolution"`
 	Exclude         []string                  `yaml:"exclude"` // Scan-Scope (ADR-0018)
+	Shapes          []yamlShape               `yaml:"shapes"`  // Sollform je Datei (ADR-0041)
 }
 
 // Adapter implements port.ConfigPort.
@@ -153,7 +167,79 @@ func decodeOptionalBlocks(m *core.Model, yc yamlConfig, path string) error {
 		return rerr
 	}
 	m.Resolution = res
+	shapes, serr := decodeShapes(yc.Shapes, path)
+	if serr != nil {
+		return serr
+	}
+	m.Shapes = shapes
 	return nil
+}
+
+// decodeShapes builds the shapes list (AC-FA-RULE-012): keys, values and regex
+// are checked here and in core.NewShape; dialect membership and the
+// parseability of literal entries are the extraction's part (its Validate),
+// because only it knows the dialects (ADR-0041 point 9). Entries are checked in
+// declaration order, so the first error is always the same one (SPEC-DET-001).
+func decodeShapes(entries []yamlShape, path string) ([]core.Shape, error) {
+	var out []core.Shape
+	for i, s := range entries {
+		allow, aerr := decodeShapeAllow(s.Allow, i, path)
+		if aerr != nil {
+			return nil, aerr
+		}
+		if s.Expect != "" {
+			if err := core.InsideRoot("expect", s.Expect); err != nil {
+				return nil, fmt.Errorf("%s: shapes[%d]: %w", path, i, err)
+			}
+		}
+		sh, err := core.NewShape(s.Files, s.Dialect, s.Mode, allow, s.Unused, s.Expect)
+		if err != nil {
+			return nil, fmt.Errorf("%s: shapes[%d]: %w", path, i, err)
+		}
+		out = append(out, sh)
+	}
+	return out, nil
+}
+
+// decodeShapeAllow reads the allow list: a scalar is a literal entry, a mapping
+// is {pattern, match} with no other key. The node line is kept for the
+// shape-unused location.
+func decodeShapeAllow(nodes []yaml.Node, entry int, path string) ([]core.ShapeAllowSpec, error) {
+	out := make([]core.ShapeAllowSpec, 0, len(nodes))
+	for _, n := range nodes {
+		switch n.Kind {
+		case yaml.ScalarNode:
+			out = append(out, core.ShapeAllowSpec{Pattern: n.Value, Line: n.Line})
+		case yaml.MappingNode:
+			spec, err := decodeShapeAllowObject(n)
+			if err != nil {
+				return nil, fmt.Errorf("%s: shapes[%d]: allow: %w", path, entry, err)
+			}
+			out = append(out, spec)
+		default:
+			return nil, fmt.Errorf("%s: shapes[%d]: allow-Eintrag muss String oder {pattern, match} sein", path, entry)
+		}
+	}
+	return out, nil
+}
+
+func decodeShapeAllowObject(n yaml.Node) (core.ShapeAllowSpec, error) {
+	spec := core.ShapeAllowSpec{Line: n.Line}
+	for i := 0; i+1 < len(n.Content); i += 2 {
+		k, v := n.Content[i].Value, n.Content[i+1]
+		if v.Kind != yaml.ScalarNode {
+			return spec, fmt.Errorf("%q muss ein String sein", k)
+		}
+		switch k {
+		case "pattern":
+			spec.Pattern = v.Value
+		case "match":
+			spec.Match = v.Value
+		default:
+			return spec, fmt.Errorf("unbekannter Schlüssel %q", k)
+		}
+	}
+	return spec, nil
 }
 
 // forbiddenHint names the sibling block in every message. constructs is the

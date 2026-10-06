@@ -8,14 +8,15 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
 ### Added
 
-- **Vertrag für die Sollform je Datei (`shapes`)** — Lastenheft 0.28.0 mit der neuen Anforderung
-  [AC-FA-RULE-012](spec/lastenheft.md#ac-fa-rule-012), Spezifikation 0.33.0 und
-  [ADR-0041](docs/plan/adr/0041-shapes-sollform-je-datei.md) (`Accepted`). In einer benannten Datei
-  (Leitfall `build.gradle.kts` eines Fachkern-Moduls) steht nur, was ausdrücklich erlaubt ist;
-  alles Unbekannte ist ein Befund — fail-safe statt Verbotsliste. Dialekt `kotlin`, Modi
-  `allow-statements` und `exact`, Befunde `shape-unlisted`, `shape-differs` und — auf Wunsch —
-  `shape-unused`. **Abgenommen, noch nicht implementiert:** bis zur Implementierung lehnt das Werkzeug den Block `shapes` als unbekannten
-  Schlüssel ab (Exit 2). Dieser Eintrag wird mit der Implementierung umgeschrieben.
+- **Sollform je Datei (`shapes`)** — neuer Optionalblock und Befund `shape-unlisted`
+  ([AC-FA-RULE-012](spec/lastenheft.md#ac-fa-rule-012), Lastenheft 0.28.0, Spezifikation 0.33.0,
+  [ADR-0041](docs/plan/adr/0041-shapes-sollform-je-datei.md)). In einer benannten Datei (Leitfall
+  `build.gradle.kts` eines Fachkern-Moduls) steht nur, was ausdrücklich erlaubt ist; jede andere
+  Anweisung ist ein Befund — gleich in welcher Schreibweise, weil Kommentare, Leerraum und
+  Zeilenumbrüche vor dem Vergleich wegnormalisiert werden und ein Block als Ganzes verglichen wird.
+  Dialekt `kotlin`, Modus `allow-statements`; `allow`-Einträge literal oder als voll verankerte
+  RE2. Fehlende Datei, Widerspruch zu `exclude` und nicht zerlegbare Datei sind Exit 2.
+  `--print-config` zeigt den Block, das Benutzerhandbuch §4 erklärt ihn.
 
 ### Changed
 
