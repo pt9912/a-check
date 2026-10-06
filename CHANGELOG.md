@@ -14,9 +14,9 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
   (Leitfall `build.gradle.kts` eines Fachkern-Moduls) steht nur, was ausdrücklich erlaubt ist;
   alles Unbekannte ist ein Befund — fail-safe statt Verbotsliste. Dialekt `kotlin`, Modi
   `allow-statements` und `exact`, Befunde `shape-unlisted`, `shape-differs` und — auf Wunsch —
-  `shape-unused`. **Noch nicht implementiert:** dieser Eintrag beschreibt den abgenommenen
-  Vertrag; das Werkzeug kennt den Block `shapes` erst mit den folgenden Implementierungs-Schritten
-  und lehnt ihn bis dahin als unbekannten Schlüssel ab (Exit 2).
+  `shape-unused`. **Vorgeschlagen, noch nicht abgenommen und nicht implementiert:** die ADR steht
+  auf `Proposed`; bis zur Implementierung lehnt das Werkzeug den Block `shapes` als unbekannten
+  Schlüssel ab (Exit 2). Dieser Eintrag wird mit der Implementierung umgeschrieben.
 
 ### Changed
 

@@ -394,8 +394,8 @@ seinem gesamten Inhalt als **eine** Anweisung und wird als Ganzes verglichen. Zw
   oder fehlend) ist ein Befund `shape-differs`.
 
 Jeder Befund nennt Datei, die Zeile, an der die Anweisung im Original beginnt, die Befundklasse
-und die normalisierte Anweisung (`shape-unused` nennt stattdessen die Konfigurationsdatei und den
-Eintrag dort); ≥ 1 Befund ⇒ Exit-Code 1. Die Regel ist **unabhängig** von
+und eine Meldung mit der normalisierten Anweisung (`shape-differs` nennt dazu die erwartete
+Sollform-Anweisung; `shape-unused` nennt stattdessen die Konfigurationsdatei und den Eintrag dort); ≥ 1 Befund ⇒ Exit-Code 1. Die Regel ist **unabhängig** von
 `layers` und `languages`: sie greift auch für Dateien, die keiner Schicht und keiner Sprache
 angehören. Unterstützt ist der Dialekt **`kotlin`** (`*.kt`, `*.kts`). **Fail-closed (Exit 2):**
 ein `files`-Glob, der keine Datei trifft; eine Datei, die zugleich von `exclude` ausgenommen ist
@@ -413,7 +413,7 @@ Kommentar; schließende Klammer ohne Gegenstück) — eine solche Datei wird nie
 - **Boundary (`exact`):** Given `mode: exact` mit einer Sollform-Datei, when die geprüfte Datei sich nur in Leerraum, Zeilenumbrüchen und Kommentaren unterscheidet, then kein Befund; when eine Anweisung anders, zusätzlich oder fehlend ist, then genau ein Befund `shape-differs` mit der **ersten** Abweichung und Exit-Code 1.
 - **Boundary (`unused`):** Given `unused: fail` und ein `allow`-Eintrag, der in keiner Datei des Eintrags trifft, when `a-check` läuft, then ein Befund `shape-unused`; ohne `unused: fail` kein Befund für denselben Eintrag.
 - **Negative:** Given eine fehlende Datei (Glob ohne Treffer), ein unbekannter Schlüssel im Eintrag, ein unbekannter `dialect`, eine Datei mit offenem Block oder offener Zeichenkette, eine fehlende `expect`-Datei **oder** eine Datei, die `shapes` nennt und `exclude` ausnimmt, when `a-check` lädt bzw. läuft, then Exit-Code 2 — nie ein stilles Grün.
-- **Determinismus:** Given mehrere Befunde in einer oder mehreren Dateien, when `a-check` zweimal auf demselben Stand läuft, then byte-identische Ausgabe in der Form `pfad:zeile: <klasse>: <anweisung>` ([AC-QA-01](#ac-qa-01--determinismus)).
+- **Determinismus:** Given mehrere Befunde in einer oder mehreren Dateien, when `a-check` zweimal auf demselben Stand läuft, then byte-identische Ausgabe in der Form `pfad:zeile: <klasse>: <meldung>` ([AC-QA-01](#ac-qa-01--determinismus)).
 
 **Out-of-Scope:** Auflösung von Abhängigkeitsgraphen und Aufruf eines Build-Werkzeugs — was ein
 erlaubtes Plugin selbst einträgt, bleibt außerhalb und gehört in eine Prüfung im Build
@@ -421,7 +421,7 @@ erlaubtes Plugin selbst einträgt, bleibt außerhalb und gehört in eine Prüfun
 geprüft wird Text nach Normalisierung, nicht, was das Werkzeug daraus macht; ein **generischer**
 Dialekt mit konfigurierbaren Kommentar-, Zeichenketten- und Trennzeichen (`go.mod`,
 `package.json`, …) und weitere Dialekte als `kotlin`; ein Ausschluss von Literal-Klassen aus dem
-Vergleich (etwa Versions-Literale) — den Zweck deckt ein `allow`-Eintrag mit `match: regex`; ein
+Vergleich (etwa Versions-Literale) — den Zweck deckt ein `allow`-Eintrag mit `match: regex`, dessen Zeichenketten-Inhalt als Klasse ohne Begrenzer geschrieben ist (ein `.*` überspannt auch Code — ausgewiesene Grenze); ein
 vollständiger Diff aller Abweichungen bei `exact` (gemeldet wird die erste); ein Warn-Level für
 `shape-unused` (a-check kennt keines); eine Graph-Kante für `shapes`
 ([AC-FA-CLI-002](#ac-fa-cli-002--architektur-graph-ausgabe)); die fail-closed Import-Allowlist je

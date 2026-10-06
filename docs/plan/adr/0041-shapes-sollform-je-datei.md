@@ -63,7 +63,7 @@ Regelart `shapes` neben `constructs`, mit zwei Modi.
    erlaubten Block als Ganzes vergleicht, kann keine weitere Anweisung in ihn schmuggeln — die
    Liste muss den Blockinhalt vollständig nennen.
 3. **Normalisierung je Dialekt, fest im Werkzeug.** Kommentare fallen weg (Zeile, Block,
-   verschachtelt), Zeichenketten bleiben **byte-genau** stehen (inklusive Roh-Strings und
+   verschachtelt), Zeichenketten bleiben **byte-genau** stehen (inklusive Roh-Strings, Zeichenketten mit Dollar-Präfix `$$"…"` und
    `${…}`-Vorlagen, deren Ende über die Klammer-Tiefe gefunden wird), Leerraum außerhalb von
    Zeichenketten fällt weg — **außer** er trennt zwei Wortzeichen oder zwei Operatorzeichen; dann
    wird er zu genau einem Leerzeichen. Die zweite Hälfte schärft den abgenommenen Entscheid
@@ -72,15 +72,23 @@ Regelart `shapes` neben `constructs`, mit zwei Modi.
 4. **Die Anweisungsgrenze ist eine Fortsetzungsregel, keine Grammatik.** Auf oberster Ebene und
    innerhalb von `{…}` trennt `;` immer und ein Zeilenende, sofern keine `(`/`[` offen ist, die
    nächste Nicht-Leer-Zeile nicht mit `{`, `.` oder `?.` beginnt und die vorige nicht auf ein
-   Operatorzeichen oder `,` endet. Innerhalb eines Blocks wird jede Grenze zu `;` normalisiert —
-   sonst fielen `a()` und `b()` auf zwei Zeilen mit `a()b()` zusammen. **Beide Fehlrichtungen
-   sind fail-safe:** zu fein getrennt heißt, jedes Stück muss erlaubt sein; zu grob getrennt
-   heißt, das Ganze muss erlaubt sein. Ein Fehler der Regel kann eine Datei rot färben, nie
-   eine unerlaubte Anweisung grün.
+   Operatorzeichen, `,` oder `.` endet. Innerhalb eines Blocks wird jede Grenze zu `;`
+   normalisiert — sonst fielen `a()` und `b()` auf zwei Zeilen mit `a()b()` zusammen. **Beide
+   Fehlrichtungen sind fail-safe:** zu fein getrennt heißt, jedes Stück muss erlaubt sein; zu grob
+   getrennt heißt, das Ganze muss erlaubt sein. Ein Fehler der Regel kann eine Datei rot färben,
+   nie eine unerlaubte Anweisung grün. **Gegenüber dem abgenommenen Entscheid geschärft**
+   (dort: ein Zeilenende trennt nur auf oberster Ebene, wenn die nächste Zeile nicht mit `{`, `.`
+   oder `?.` beginnt): die Grenze gilt auch **innerhalb** eines Blocks, als `;`, und ein
+   Zeilenende nach Operator, `,` oder `.` setzt fort. Beides ändert, *wo* getrennt wird, nicht,
+   *dass* ein Block als Ganzes verglichen wird.
 5. **Literal-Einträge werden wie die Datei normalisiert, Regex-Einträge sind voll verankert.**
-   Eine Liste darf darum lesbar, mehrzeilig, mit Leerraum geschrieben werden. Ein Regex trifft
-   die **ganze** normalisierte Anweisung (implizit `^…$`); ein unverankertes `dependencies\{.*`
-   erlaubte sonst jeden Blockinhalt.
+   Eine Liste darf darum lesbar, mehrzeilig, mit Leerraum geschrieben werden. Ein Regex muss
+   **für sich** kompilieren und trifft dann die **ganze** normalisierte Anweisung (`^(?:…)$`); ein
+   unverankertes `dependencies\{.*` erlaubte sonst jeden Blockinhalt, ein erst umhüllt
+   kompilierendes `a)|(.*` jede Anweisung. **Benannte Grenze:** der Regex sieht Text, keine
+   Token — ein `.*`, das für Zeichenketten-Inhalt gemeint ist, überspannt auch Code
+   (`version=".*"` trifft `version="1"+run{…}+""`). Dokumentiert ist die Klasse `"[^"$\\]*"`,
+   erzwungen wird sie nicht.
 6. **Zwei Modi, eine Normalisierung.** `allow-statements` vergleicht als **Menge** (Reihenfolge
    und Wiederholung gleichgültig); `exact` vergleicht die Anweisungsfolge mit einer
    Sollform-Datei desselben Dialekts und meldet die **erste** Abweichung.
@@ -90,11 +98,17 @@ Regelart `shapes` neben `constructs`, mit zwei Modi.
 8. **Fail-closed, wo das Werkzeug nichts prüfen kann.** Ein Glob ohne Treffer, eine Datei, die
    zugleich `exclude` ausnimmt, und eine Datei, die sich nicht zerlegen lässt (offene Klammer,
    Zeichenkette, Kommentar; schließende Klammer ohne Gegenstück), sind Exit 2. Eine nicht
-   zerlegbare Datei still grün zu lassen wäre genau die Lücke, gegen die die Regel steht.
+   zerlegbare Datei still grün zu lassen wäre genau die Lücke, gegen die die Regel steht. Ein
+   `files`-Glob oder `expect`-Pfad, der aus der Scan-Wurzel hinauszeigt (absolut oder mit
+   führendem `..`), ist ein Konfigurationsfehler — die Regel liest nur den geprüften Baum.
 9. **Platz im Hexagon:** Lesen, Normalisieren und Zerlegen leistet die **Extraktion**
    ([ARC-003](../../../spec/architecture.md#2-komponenten)) — sie ist Text-Heuristik je Dialekt,
    wie die Sprach-Backends je Sprache, und kennt Dateien. Sie liefert dem Kern je Datei die
-   Anweisungen mit Original-Zeile und die normalisierten Literal-Einträge. Der **Kern** vergleicht
+   Anweisungen mit Original-Zeile und die normalisierten Literal-Einträge; diese normalisiert sie
+   schon im validierenden Einstieg ohne Walk, sodass ein nicht zerlegbarer Eintrag auch im
+   no-scan-Pfad `--print-graph` Exit 2 ist. Der Konfigurations-Adapter
+   ([ARC-004](../../../spec/architecture.md#2-komponenten)) prüft nur Schlüssel, Werte und Regex
+   und kennt den Normalisierer nicht — sonst wäre er eine laterale Adapter-Kante. Der **Kern** vergleicht
    und erzeugt die Befunde — rein, ohne I/O. Ein Zerlegungsfehler ist ein Fehler der Extraktion
    und erreicht die Composition Root als Exit 2, wie die Mehrdeutigkeit der Mehr-Wurzel-Auflösung.
 10. **Ein Dialekt: `kotlin`.** Der generische Dialekt (Kommentar-, Zeichenketten- und
@@ -122,6 +136,13 @@ Regelart `shapes` neben `constructs`, mit zwei Modi.
 - **Negativ:** Ein Fehlalarm der heuristischen Anweisungsgrenze an einer legitimen Datei kostet
   Vertrauen; eine Regel, die zu oft rot ist, wird abgeschaltet. Die Gegenprobe-Fälle des CR
   werden darum Tests, und jeder gemeldete Fehlalarm ist ein Re-Evaluierungs-Anlass.
+- **Negativ:** Ein Regex-Eintrag ist so sicher wie sein Muster. Das gestrichene
+  `ignore: [version-literals]` ersetzt er nur, wenn der Zeichenketten-Inhalt als Klasse
+  geschrieben ist; ein naheliegendes `.*` hat dieselbe Lücke wie der gestrichene Ausschluss.
+  Benutzerhandbuch und `--print-config` zeigen darum nur die sichere Form.
+- **Negativ:** Eine Fehl-Lexik — etwa eine Zeichenketten-Form, die der Dialekt nicht kennt — kann
+  Code für Kommentar halten und damit **verschlucken**; das ist die eine Fehlrichtung, die nicht
+  fail-safe ist. Gegenmittel ist die vollständige Lexik des Dialekts, belegt durch Tests je Form.
 - **Negativ:** Die Liste muss einen erlaubten Block vollständig nennen; ein neues erlaubtes Detail
   im Block ist eine Listen-Änderung, keine Zeile mehr.
 - **Folgepflicht:** Spezifikation (Schema, Normalisierungsvertrag, Befundklassen), Architektur
@@ -139,6 +160,8 @@ Regelart `shapes` neben `constructs`, mit zwei Modi.
 
 - Ein **zweiter Konsument** will eine Nicht-Kotlin-Datei prüfen (`go.mod`, `package.json`, …) —
   dann generischer Dialekt, als Folge-ADR, die Punkt 10 ablöst.
+- Eine **Kotlin-Version** führt eine neue Zeichenketten- oder Kommentar-Form ein — dann Lexik
+  nachziehen, bevor die Form in geprüften Dateien auftaucht.
 - Ein **gemeldeter Fehlalarm** an einer legitimen Datei, den die Fortsetzungsregel (Punkt 4)
   verursacht — dann Grenze schärfen oder ausweisen.
 - Ein Adopter braucht die **Semantik** dessen, was ein erlaubtes Plugin einträgt — dann ist die
