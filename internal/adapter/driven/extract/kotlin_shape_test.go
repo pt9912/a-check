@@ -176,3 +176,35 @@ func TestKotlinLinesAndStatementLines(t *testing.T) {
 		t.Fatalf("Datei ohne Code: %+v", st)
 	}
 }
+
+// Review slice-210 F-2: $`name` ist auch in einer Zeichenkette eine Vorlage — ein
+// `"` im Backtick-Bezeichner beendet die Zeichenkette nicht, sonst schluckt ein
+// späteres /* echten Code.
+func TestKotlinBacktickTemplateInString(t *testing.T) {
+	// ohne Backtick-Vorlage schlösse der erste String nach `$`, der Backtick
+	// liefe bis in den zweiten String, und `/*` schluckte evil() bis zum */
+	src := "val s = \"$`\"`\" + \"`/*\"\nevil()\nx() // */\n"
+	st := mustNorm(t, src)
+	if got := texts(st); len(got) != 3 || got[1] != "evil()" {
+		t.Fatalf("Code verschluckt: %q", got)
+	}
+	eqTexts(t, "a($$\"$`x`\")", "a($$\"$`x`\")") // n=2: ein $ ist Inhalt, kein Backtick-Template
+	if _, _, err := normalizeKotlin("a(\"$`offen\n`\")"); err == nil {
+		t.Fatal("Zeilenende im Backtick-Bezeichner: Fehler erwartet")
+	}
+}
+
+// Review slice-210 F-9: Backslash vor Zeilenende im Zeichen-Literal ist ein Fehler.
+func TestKotlinCharEscapeBeforeLineEnd(t *testing.T) {
+	if _, _, err := normalizeKotlin("a('\\\n')"); err == nil {
+		t.Fatal("Fehler erwartet")
+	}
+}
+
+// Review slice-210 F-5: Zeilenende nach Postfix/Operator verbindet zwei
+// Anweisungen — fail-safe (rot), als bekannte Fehlalarm-Quelle belegt.
+func TestKotlinOperatorLineEndJoins(t *testing.T) {
+	eqTexts(t, "i++\nj()\n", "i++j()")
+	eqTexts(t, "i--\nj()\n", "i--j()")
+	eqTexts(t, "listOf<A>\nj()\n", "listOf<A>j()")
+}

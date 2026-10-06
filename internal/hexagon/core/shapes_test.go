@@ -98,7 +98,7 @@ func TestSortFindingsKeepsDuplicates(t *testing.T) {
 }
 
 func TestInsideRoot(t *testing.T) {
-	for _, p := range []string{"a/b", "**/x.kts", "./a"} {
+	for _, p := range []string{"a/b", "**/x.kts", "a/./b"} {
 		if err := InsideRoot("files", p); err != nil {
 			t.Errorf("%q: %v", p, err)
 		}
@@ -121,5 +121,13 @@ func TestShapeRegexSafeClass(t *testing.T) {
 	loose := mustShape(t, ShapeAllowSpec{Pattern: `version=".*"`, Match: "regex"})
 	if !loose.Allow[0].match(smuggled) {
 		t.Fatal("benannte Grenze: .* überspannt Code — trifft sie nicht mehr, ist die Doku zu korrigieren")
+	}
+}
+
+// Review slice-210 F-7: ein führendes ./ wird entfernt, sonst träfe der Glob nie.
+func TestNewShapeTrimsDotSlash(t *testing.T) {
+	sh, err := NewShape([]string{"./mod/b.kts", "././c.kts"}, "kotlin", "allow-statements", []ShapeAllowSpec{{Pattern: "a()"}}, "", "")
+	if err != nil || sh.Files[0] != "mod/b.kts" || sh.Files[1] != "c.kts" {
+		t.Fatalf("files=%v err=%v", sh.Files, err)
 	}
 }

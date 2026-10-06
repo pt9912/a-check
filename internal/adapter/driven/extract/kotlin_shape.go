@@ -267,9 +267,20 @@ func (l *ktLexer) dollarRun(n int) error {
 		run++
 		l.i++
 	}
+	if run >= n && l.i < len(l.src) && l.src[l.i] == '`' {
+		// $`name` is a template too: a `"` inside the backtick identifier does
+		// not end the string (Review slice-210 F-2, SPEC-EXTRACT-001)
+		return l.lexBacktick()
+	}
 	if run < n || l.i >= len(l.src) || l.src[l.i] != '{' {
 		return nil
 	}
+	return l.templateExpr()
+}
+
+// templateExpr scans a ${…} expression from its opening brace to the matching
+// closing one; the expression may hold strings, comments and braces of its own.
+func (l *ktLexer) templateExpr() error {
 	startLine := l.line
 	l.i++
 	for depth := 1; ; {
@@ -301,6 +312,9 @@ func (l *ktLexer) lexChar() error {
 	for l.i++; l.i < len(l.src); l.i++ {
 		switch l.src[l.i] {
 		case '\\':
+			if l.i+1 >= len(l.src) || l.src[l.i+1] == '\n' || l.src[l.i+1] == '\r' {
+				return fmt.Errorf("in Zeile %d: Zeichen-Literal nicht geschlossen", startLine)
+			}
 			l.i++
 		case '\'':
 			l.i++

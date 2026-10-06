@@ -88,6 +88,7 @@ func shapeModeKnown(mode string) (implemented, known bool) {
 // combinations. Dialect membership and the parseability of literal entries are
 // the extraction's part (its Validate), because only it knows the dialects.
 func NewShape(files []string, dialect, mode string, allow []ShapeAllowSpec, unused, expect string) (Shape, error) {
+	files = trimDotSlash(files)
 	if err := validateShapeFiles(files); err != nil {
 		return Shape{}, err
 	}
@@ -134,6 +135,20 @@ func validateShapeFiles(files []string) error {
 		}
 	}
 	return nil
+}
+
+// trimDotSlash removes a leading `./` from each glob: scan paths are relative
+// without it, so `./a` would never match and end in a misleading "trifft keine
+// Datei" (SPEC-CONF-001).
+func trimDotSlash(globs []string) []string {
+	out := make([]string, len(globs))
+	for i, g := range globs {
+		for strings.HasPrefix(g, "./") {
+			g = g[2:]
+		}
+		out[i] = g
+	}
+	return out
 }
 
 // InsideRoot rejects an empty path/glob and one that leaves the scan root:

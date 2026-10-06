@@ -38,7 +38,7 @@ func (a Adapter) shapeLiterals(m core.Model) ([][]string, error) {
 	for e, sh := range m.Shapes {
 		norm, ok := a.dialects[sh.Dialect]
 		if !ok {
-			return nil, fmt.Errorf("shapes: unbekannter dialect %q (%s)", sh.Dialect, a.dialectList())
+			return nil, fmt.Errorf("shapes[%d]: unbekannter dialect %q (%s)", e, sh.Dialect, a.dialectList())
 		}
 		out[e] = make([]string, len(sh.Allow))
 		for i, al := range sh.Allow {
@@ -47,10 +47,10 @@ func (a Adapter) shapeLiterals(m core.Model) ([][]string, error) {
 			}
 			stmts, _, err := norm(al.Pattern)
 			if err != nil {
-				return nil, fmt.Errorf("shapes: allow %q lässt sich nicht zerlegen: %w", al.Pattern, err)
+				return nil, fmt.Errorf("shapes[%d]: allow %q lässt sich nicht zerlegen: %w", e, al.Pattern, err)
 			}
 			if len(stmts) != 1 {
-				return nil, fmt.Errorf("shapes: allow %q ergibt %d Anweisungen, erwartet genau eine", al.Pattern, len(stmts))
+				return nil, fmt.Errorf("shapes[%d]: allow %q ergibt %d Anweisungen, erwartet genau eine", e, al.Pattern, len(stmts))
 			}
 			out[e][i] = stmts[0].Text
 		}
@@ -79,7 +79,7 @@ func (a Adapter) Shapes(root string, m core.Model) (core.ShapeScan, error) {
 	}
 	scan := core.ShapeScan{Literals: lits}
 	for e, sh := range m.Shapes {
-		paths, err := shapePaths(root, sh.Files, m.Exclude)
+		paths, err := shapePaths(e, root, sh.Files, m.Exclude)
 		if err != nil {
 			return core.ShapeScan{}, err
 		}
@@ -90,7 +90,7 @@ func (a Adapter) Shapes(root string, m core.Model) (core.ShapeScan, error) {
 			}
 			stmts, lines, nerr := a.dialects[sh.Dialect](string(data))
 			if nerr != nil {
-				return core.ShapeScan{}, fmt.Errorf("shapes: %s lässt sich nicht zerlegen: %w", rel, nerr)
+				return core.ShapeScan{}, fmt.Errorf("shapes[%d]: %s lässt sich nicht zerlegen: %w", e, rel, nerr)
 			}
 			scan.Files = append(scan.Files, core.ShapeFile{Entry: e, Path: rel, Statements: stmts, Lines: lines})
 		}
@@ -102,7 +102,7 @@ func (a Adapter) Shapes(root string, m core.Model) (core.ShapeScan, error) {
 // matching files. Each glob must match at least one file, and no match may lie
 // under exclude — a file named in shapes and removed by exclude is a
 // contradiction of the configuration, not a silent skip.
-func shapePaths(root string, globs, exclude []string) ([]string, error) {
+func shapePaths(entry int, root string, globs, exclude []string) ([]string, error) {
 	seen := map[string]bool{}
 	var out []string
 	for _, g := range globs {
@@ -111,11 +111,11 @@ func shapePaths(root string, globs, exclude []string) ([]string, error) {
 			return nil, err
 		}
 		if len(matches) == 0 {
-			return nil, fmt.Errorf("shapes: files-Glob %q trifft keine Datei", g)
+			return nil, fmt.Errorf("shapes[%d]: files-Glob %q trifft keine Datei", entry, g)
 		}
 		for _, rel := range matches {
 			if core.MatchGlobs(rel, exclude) {
-				return nil, fmt.Errorf("shapes: %s ist in shapes genannt und durch exclude ausgenommen (Widerspruch)", rel)
+				return nil, fmt.Errorf("shapes[%d]: %s ist in shapes genannt und durch exclude ausgenommen (Widerspruch)", entry, rel)
 			}
 			if !seen[rel] {
 				seen[rel] = true

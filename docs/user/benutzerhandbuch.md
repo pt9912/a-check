@@ -594,7 +594,10 @@ shapes:
 So prüft a-check die Datei:
 
 - **Normalisiert.** Kommentare fallen weg, Zeichenketten bleiben unverändert, Leerraum und
-  Zeilenumbrüche spielen keine Rolle — `plugins\n{` ist dasselbe wie `plugins {`. Ihre
+  Zeilenumbrüche spielen keine Rolle — `plugins\n{` ist dasselbe wie `plugins {`. **Eine**
+  Ausnahme: Ein Zeilenende nach einem Operator (`!!`, `++`, `>`, `=` …) setzt die Anweisung fort;
+  `x!!` und `y()` auf zwei Zeilen werden zu **einer** Anweisung. Das macht die Prüfung strenger
+  (ein Fehlalarm), nie durchlässiger. Ihre
   `allow`-Einträge dürfen darum lesbar und mehrzeilig sein; sie werden genauso normalisiert.
 - **Je Anweisung auf oberster Ebene.** Ein Block zählt **mit seinem ganzen Inhalt** als eine
   Anweisung. Wer einen Block erlaubt, muss ihn vollständig nennen — eine weitere Zeile im
@@ -931,7 +934,7 @@ siehe „Dateien vom Scan ausnehmen" in Abschnitt 4.
 - **Sub-Einheit:** ein Unterverzeichnis innerhalb einer Adapter-Schicht — `lateral-adapter` trennt Sub-Einheiten, nie Dateinamen; Dateien direkt im Schicht-Root bilden eine gemeinsame Root-Einheit (eigene `.cpp`/`.h`-Paare melden nicht). Endungslose Importe (z. B. TypeScript `./b` oder Go-Paket-Pfade) gelten als eigene Einheit.
 - **`forbidden_constructs`:** je Schicht konfigurierte verbotene Text-Muster (für `port-impurity`). Nur für Schichten mit der Rolle `port`; ein Eintrag, der nie melden könnte (unbekannte Schicht, andere Rolle, leeres Muster, leere Liste), bricht mit Exit-Code 2 statt still zu wirken.
 - **Befund:** eine gemeldete Regelverletzung (Datei, Zeile, Regel, Meldung).
-- **`core-impurity` / `app-impurity` / `lateral-adapter` / `lateral-slice` / `tech-leak` / `port-impurity` / `port-direction-mismatch` / `port-locality` / `construct-leak` / `wrong-direction`:** die zehn geprüften Regeln (Abschnitt 3.4).
+- **`core-impurity` / `app-impurity` / `lateral-adapter` / `lateral-slice` / `tech-leak` / `port-impurity` / `port-direction-mismatch` / `port-locality` / `construct-leak` / `shape-unlisted` / `wrong-direction`:** die elf geprüften Regeln (Abschnitt 3.4).
 - **Zone (`constructs`):** das Pfad-Fragment (oder die Liste), in dem ein Roh-Text-Muster allein vorkommen darf; alles außerhalb ist `construct-leak`. Anders als eine **Schicht** ist eine Zone nicht an `layers` gebunden — sie gilt scan-weit.
 - **Sollform (`shapes`):** die ausdrücklich erlaubte Anweisungsfolge einer benannten Datei; alles, was nach Normalisierung nicht auf der Liste steht, ist `shape-unlisted`.
 - **Use-Case-Slice:** eine über ein eigenes `app`-Glob abgegrenzte Vertical Slice; `lateral-slice` isoliert sie gegeneinander (Verträge laufen über Ports). **Port-Scope:** das Verzeichnis, das den Port-Ordner besitzt (use-case-lokal ⊂ business-area ⊂ app-weit); `port-locality` erzwingt ihn.

@@ -337,7 +337,7 @@ forbidden_constructs:
 #       - {pattern: 'version="[^"$\\]*"', match: regex}  # Zeichenketten-Inhalt als Klasse, nie .*
 markers:
   ignore_symbols: []
-# resolution:                    # optional: Import-Symbol -> Schicht je Sprache (ADR-0016/ADR-0023)
+# resolution:                     # optional: Import-Symbol -> Schicht je Sprache (ADR-0016/ADR-0023)
 #   kotlin:                       # Multi-Modul (KMP/Gradle): mehrere Module, geteiltes package_base;
 #     mode: fixed-root            #   der interne FQN wird gegen die REALEN Dateien unter roots aufgeloest
 #     package_base: dev.example   #   (nicht am Wurzel-Praefix). Split-Package (dasselbe Paket ueber zwei

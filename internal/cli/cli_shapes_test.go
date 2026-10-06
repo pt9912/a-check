@@ -23,9 +23,10 @@ const shapesCfg = cfg + `shapes:
           testImplementation(kotlin("test"))
         }
       - {pattern: 'tasks\.test\{useJUnitPlatform\(\)\}', match: regex}
+      - 'val note = "implementation(\"com.evil:lib:1.0\") steht nur im String"'
 `
 
-const goodGradle = `// Fachkern: keine Fremdabhängigkeit
+const goodGradle = `// Fachkern: keine Fremdabhängigkeit — implementation("com.evil:lib:1.0") nur im Kommentar
 plugins
 {
     kotlin("jvm")   // nur das
@@ -57,17 +58,16 @@ func runShapes(t *testing.T, gradle string, extra map[string]string) (int, strin
 }
 
 // AC-FA-RULE-012 happy: die Datei entspricht der Liste — Leerraum, Kommentare,
-// Zeilenumbrüche egal; ein verbotenes Muster nur im Kommentar oder in der
-// Zeichenkette einer Anweisung ist kein eigener Befund. Die String-Zeile selbst
-// ist nicht gelistet und muss darum gemeldet werden — als ganze Anweisung.
-func TestShapesGreenExceptListedNote(t *testing.T) {
-	code, out, errs := runShapes(t, goodGradle, nil)
-	if code != 1 || strings.Count(out, "shape-unlisted") != 1 || !strings.Contains(out, "domain/build.gradle.kts:13: shape-unlisted: val note=") {
+// Zeilenumbrüche egal; das verbotene Muster steht nur im Kommentar (Zeile 1) und
+// in der Zeichenkette einer ERLAUBTEN Anweisung (val note) und meldet nicht.
+func TestShapesGreen(t *testing.T) {
+	if code, out, errs := runShapes(t, goodGradle, nil); code != 0 || out != "" {
 		t.Fatalf("code=%d out=%q err=%q", code, out, errs)
 	}
-	clean := strings.Replace(goodGradle, `val note = "implementation(\"com.evil:lib:1.0\") steht nur im String"`, "", 1)
-	if code, out, errs := runShapes(t, clean, nil); code != 0 || out != "" {
-		t.Fatalf("clean: code=%d out=%q err=%q", code, out, errs)
+	// Gegenprobe: dieselbe Zeichenkette in einer NICHT gelisteten Anweisung meldet
+	src := strings.Replace(goodGradle, "val note =", "val other =", 1)
+	if code, out, _ := runShapes(t, src, nil); code != 1 || !strings.Contains(out, "domain/build.gradle.kts:13: shape-unlisted: val other=") {
+		t.Fatalf("Gegenprobe: code=%d out=%q", code, out)
 	}
 }
 
@@ -125,7 +125,20 @@ func TestShapesDeterministic(t *testing.T) {
 	src := goodGradle + "b()\na()\n"
 	_, out1, _ := runShapes(t, src, nil)
 	_, out2, _ := runShapes(t, src, nil)
-	if out1 != out2 || strings.Count(out1, "\n") != 3 {
+	if out1 != out2 || strings.Count(out1, "\n") != 2 {
 		t.Fatalf("out1=%q out2=%q", out1, out2)
+	}
+}
+
+// Review slice-210 F-13: das --print-config-Gerüst zeigt den shapes-Block, und
+// für Zeichenketten-Inhalt nur die sichere Klasse, nie `.*` (ADR-0041 Punkt 5).
+func TestPrintConfigShowsShapes(t *testing.T) {
+	var out, errb bytes.Buffer
+	if code := cli.Run([]string{"--print-config"}, &out, &errb); code != 0 {
+		t.Fatalf("code=%d", code)
+	}
+	s := out.String()
+	if !strings.Contains(s, "# shapes:") || !strings.Contains(s, "mode: allow-statements") || !strings.Contains(s, `"[^"$\\]*"`) || strings.Contains(s, `".*"`) {
+		t.Fatalf("Gerüst ohne shapes-Block oder mit .*: %q", s)
 	}
 }
