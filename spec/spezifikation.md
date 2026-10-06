@@ -277,9 +277,11 @@ Klammer in einer Zeichenkette sonst die Zerlegung verschöbe. Dialekt **`kotlin`
    letzten `n` gehören zur Vorlage, davor stehende sind Inhalt; eine kürzere Folge ist Inhalt, ebenso
    `$` vor einem Bezeichner. Gezählt wird **vorwärts** beim Lexen, nicht rückwärts vom `{`: ein
    Backslash in `"…"` maskiert das **nächste** Zeichen, und ein maskiertes `\$` ist Inhalt und
-   **beendet** eine laufende `$`-Folge (`"\${"` ist Text, `$$"\$${x}"` hat vor `{` nur eine
-   unmaskierte Folge der Länge 2 — die Vorlage beginnt also doch, mit dem maskierten `$` davor als
-   Inhalt); in `"""…"""` gibt es keine Maskierung. Das Ende einer Vorlage wird über die
+   **beendet** eine laufende `$`-Folge. Beispiele, Zeichen für Zeichen gezählt: `"\${x}"` —
+   `\$` maskiert, vor `{` keine Folge, **Text**; `$$"\$${x}"` (Zeichen `\ $ $ {`) — das erste `$`
+   ist maskiert, vor `{` steht eine Folge der Länge **1** < `n = 2`, **Text**; `$$"\$$${x}"`
+   (Zeichen `\ $ $ $ {`) — vor `{` eine Folge der Länge **2**, **Vorlage**, das maskierte `$`
+   davor ist Inhalt. In `"""…"""` gibt es keine Maskierung. Das Ende einer Vorlage wird über die
    **Klammer-Tiefe** des eingebetteten Ausdrucks gefunden (der Ausdruck kann selbst Zeichenketten,
    Kommentare und `{}` enthalten und wird dafür rekursiv gelext); eine Folge von `$` direkt vor
    `"`, die nicht in einer Zeichenkette steht, ist immer ein Präfix; Zeichen-Literal `'…'` mit Backslash-Escape (`'{'` ist kein Block);
