@@ -45,6 +45,13 @@ Lastenhefts ändert sich.
   slice-210s Liefer-Punkt; wer hier einen Fehler darin findet, schließt ihn als
   Risiko *eingetreten* mit eigener Kennung, nicht still nebenbei.
 
+  **Plan-Änderung 2026-10-06 (Review G-1, vor dem Code):** Die Dateisuche für
+  `files` (aus slice-210, nicht der Normalisierer) folgte einem Symlink im
+  literalen Präfix eines Globs aus der Scan-Wurzel hinaus und las fremde
+  Dateien. Dieselbe Klasse wie der `expect`-Fund N-1 und vor dem Release zu
+  schließen: der Slice nimmt die Regel „kein Bestandteil eines geprüften Pfads
+  ist ein Symlink" für `files` mit (Spezifikation 0.35.0, Code, Test).
+
 ## 2. Definition of Done
 
 - [ ] `mode: exact` mit `expect:` (Exit 2 bei fehlender Sollform-Datei oder
