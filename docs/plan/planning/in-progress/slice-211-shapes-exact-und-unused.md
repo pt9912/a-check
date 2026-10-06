@@ -12,7 +12,10 @@ wechselt nur durch `git mv` (`make slice-mv`).
 [AC-QA-01](../../../../spec/lastenheft.md#ac-qa-01--determinismus).
 
 **Berührte Spec-Stellen:** `spezifikation.md` §[SPEC-CONF-001](../../../../spec/spezifikation.md#spec-conf-001--konfigurationsschema), §[SPEC-RULE-001](../../../../spec/spezifikation.md#spec-rule-001--regel-auswertung)
-(in slice-209 geschrieben, hier umgesetzt — keine Spec-Änderung).
+(in slice-209 geschrieben, hier umgesetzt). **Plan-Änderung nach dem Review (2026-10-06):** die
+Funde zur Sollform-Datei (Symlink, Pfad-Schreibweisen, Hardlink, einzeilige `shape-unused`-Meldung)
+waren Vertragslücken; der Slice präzisiert dafür Spezifikation 0.35.0 — keine Zusage des
+Lastenhefts ändert sich.
 
 **Verantwortlich:** Claude — gesetzt beim Übergang nach `next/` (Maintainer: „ja alles machen", 2026-10-06).
 
