@@ -1,6 +1,6 @@
 # Benutzerhandbuch: a-check
 
-**Handbuch-Version:** 1.42 · **Software-Version:** [aktuelles Release](../../version.md#aktuell) · **Stand:** 2026-10-06 ·
+**Handbuch-Version:** 1.43 · **Software-Version:** [aktuelles Release](../../version.md#aktuell) · **Stand:** 2026-10-06 ·
 **Autor:** pt9912 (Maintainer)
 
 ---
@@ -258,6 +258,8 @@ Jeder Befund nennt die Regel. Die Regeln und ihre Behebung:
 | `port-locality` | Eine `app`-Datei importiert einen **im App-Baum geschachtelten** Port **außerhalb dessen Scope-Verzeichnis** — use-case-lokal (`…/createorder/ports`) ⊂ business-area (`…/order/ports`) ⊂ app-weit (`…/ports`). **Kategorisch.** Nur `app`-Importeure. Bei **klassischem Hexagonal** (Ports als Geschwister der App, `…/ports` neben `…/services`) ist die Regel **inert**. | Den Port auf die passende Ebene heben („so gemeinsam wie nötig") oder den fremden slice-lokalen Port nicht importieren. |
 | `construct-leak` | Ein per `constructs` (Abschnitt 4) deklariertes **Roh-Text-Muster** steht außerhalb seiner erlaubten Zone — z. B. ein `dlopen(`-**Aufruf** außerhalb des Plugin-Adapters. Gilt **scan-weit**, auch in Dateien ohne Schicht; Treffer in Kommentaren zählen nicht. | Das Konstrukt in seine Zone verlagern (oder hinter einen Port führen). Ist die Stelle legitim, die Zone im `constructs`-Eintrag erweitern (`adapter` nimmt auch eine Liste). |
 | `shape-unlisted` | Eine per `shapes` (Abschnitt 4) geprüfte Datei enthält eine Anweisung, die keinem `allow`-Eintrag entspricht — etwa eine zusätzliche Abhängigkeit in der Build-Datei des Fachkern-Moduls, gleich in welcher Schreibweise. Geprüft wird nach Normalisierung (Kommentare, Leerraum und Umbrüche zählen nicht); ein Block ist eine Anweisung. | Die Anweisung entfernen. Ist sie legitim, den `allow`-Eintrag ergänzen — bei einem Block den ganzen Block in seiner neuen Form. |
+| `shape-differs` | Eine per `shapes` mit `mode: exact` geprüfte Datei weicht von ihrer Sollform-Datei ab; gemeldet wird die **erste** abweichende, zusätzliche oder fehlende Anweisung. | Die Datei an die Sollform angleichen — oder, wenn die Änderung gewollt ist, die Sollform-Datei mitziehen. |
+| `shape-unused` | Ein `allow`-Eintrag eines `shapes`-Eintrags mit `unused: fail` trifft in keiner Datei; der Befund zeigt auf seine Zeile in der `.a-check.yml`. | Den Eintrag streichen — er erlaubt etwas, das nicht mehr vorkommt. |
 | `wrong-direction` | Ein Import läuft entgegen einer erlaubten Schicht-Kante. | Die Kante in `edges` aufnehmen (falls legitim) oder den Import umdrehen. |
 
 > **Vertical-Slice-Regeln (`lateral-slice`/`port-locality`) — Config-Disziplin.** Beide leiten
@@ -612,6 +614,34 @@ Ein Befund nennt Datei, Zeile und die normalisierte Anweisung:
 domain/build.gradle.kts:14: shape-unlisted: compileClasspath+=files("evil.jar")
 ```
 
+**Nie benutzte Einträge melden (`unused: fail`).** Eine Positivliste veraltet still: Ein Eintrag,
+der nichts mehr trifft, erlaubt weiter etwas, das niemand mehr braucht. Mit `unused: fail` im
+Eintrag meldet a-check jeden `allow`-Eintrag, der in **keiner** Datei des Eintrags trifft, als
+Befund `shape-unused` — verortet an seiner Zeile in der `.a-check.yml`:
+
+```text
+.a-check.yml:14: shape-unused: apply(plugin = "nie-benutzt")
+```
+
+Ohne `unused: fail` bleibt ein solcher Eintrag still; ein Warn-Level gibt es nicht.
+
+**Die ganze Datei festschreiben (`mode: exact`).** Statt einer Liste kann eine Datei auch einer
+**Sollform-Datei** gleichen müssen — Anweisung für Anweisung, in derselben Reihenfolge, nach
+derselben Normalisierung:
+
+```yaml
+shapes:
+  - files: ["app/build.gradle.kts"]
+    dialect: kotlin
+    mode: exact
+    expect: sollform/app.build.gradle.kts   # relativ zur Scan-Wurzel
+```
+
+Gemeldet wird die **erste** Abweichung als `shape-differs` — eine Anweisung anders
+(`… (erwartet: …)`), zusätzlich (`… (nicht in der Sollform)`) oder fehlend (`fehlt: …`). `exact`
+ist strenger als eine Liste, aber auch spröder: Jede inhaltliche Änderung braucht eine neue
+Sollform-Datei. Eine fehlende Sollform-Datei ist Exit-Code 2.
+
 **Regex-Einträge sehen Text, keine Bestandteile.** Ein Regex trifft die **ganze** normalisierte
 Anweisung (er ist automatisch verankert). Schreiben Sie variablen Zeichenketten-Inhalt als
 Klasse, die keinen Begrenzer durchquert — `"[^"$\\]*"` —, **nie** als `".*"`: ein `.*` überspannt
@@ -621,8 +651,8 @@ benannt, nicht abgefangen.
 **Exit-Code 2** statt eines stillen Grüns, wenn: ein `files`-Glob keine Datei trifft; eine
 getroffene Datei zugleich in `exclude` steht (Widerspruch); ein Glob aus der Scan-Wurzel
 hinauszeigt; der `dialect` unbekannt ist; ein `allow`-Eintrag sich nicht zerlegen lässt oder
-mehr als eine Anweisung ergibt; eine Regex nicht kompiliert; oder die geprüfte Datei sich nicht
-zerlegen lässt (offener Block, offene Zeichenkette). a-check prüft **Text nach Normalisierung**,
+mehr als eine Anweisung ergibt; eine Regex nicht kompiliert; bei `mode: exact` die Sollform-Datei
+fehlt; oder eine geprüfte Datei bzw. die Sollform-Datei sich nicht zerlegen lässt (offener Block, offene Zeichenkette). a-check prüft **Text nach Normalisierung**,
 nicht die Gradle-Semantik: Was ein erlaubtes Plugin selbst einträgt, sieht es nicht — dafür
 braucht es eine Prüfung im Build.
 
@@ -934,7 +964,7 @@ siehe „Dateien vom Scan ausnehmen" in Abschnitt 4.
 - **Sub-Einheit:** ein Unterverzeichnis innerhalb einer Adapter-Schicht — `lateral-adapter` trennt Sub-Einheiten, nie Dateinamen; Dateien direkt im Schicht-Root bilden eine gemeinsame Root-Einheit (eigene `.cpp`/`.h`-Paare melden nicht). Endungslose Importe (z. B. TypeScript `./b` oder Go-Paket-Pfade) gelten als eigene Einheit.
 - **`forbidden_constructs`:** je Schicht konfigurierte verbotene Text-Muster (für `port-impurity`). Nur für Schichten mit der Rolle `port`; ein Eintrag, der nie melden könnte (unbekannte Schicht, andere Rolle, leeres Muster, leere Liste), bricht mit Exit-Code 2 statt still zu wirken.
 - **Befund:** eine gemeldete Regelverletzung (Datei, Zeile, Regel, Meldung).
-- **`core-impurity` / `app-impurity` / `lateral-adapter` / `lateral-slice` / `tech-leak` / `port-impurity` / `port-direction-mismatch` / `port-locality` / `construct-leak` / `shape-unlisted` / `wrong-direction`:** die geprüften Regeln — welche genau, sagt die Tabelle in Abschnitt 3.4.
+- **`core-impurity` / `app-impurity` / `lateral-adapter` / `lateral-slice` / `tech-leak` / `port-impurity` / `port-direction-mismatch` / `port-locality` / `construct-leak` / `shape-unlisted` / `shape-differs` / `shape-unused` / `wrong-direction`:** die geprüften Regeln — welche genau, sagt die Tabelle in Abschnitt 3.4.
 - **Zone (`constructs`):** das Pfad-Fragment (oder die Liste), in dem ein Roh-Text-Muster allein vorkommen darf; alles außerhalb ist `construct-leak`. Anders als eine **Schicht** ist eine Zone nicht an `layers` gebunden — sie gilt scan-weit.
 - **Sollform (`shapes`):** die ausdrücklich erlaubte Anweisungsfolge einer benannten Datei; alles, was nach Normalisierung nicht auf der Liste steht, ist `shape-unlisted`.
 - **Use-Case-Slice:** eine über ein eigenes `app`-Glob abgegrenzte Vertical Slice; `lateral-slice` isoliert sie gegeneinander (Verträge laufen über Ports). **Port-Scope:** das Verzeichnis, das den Port-Ordner besitzt (use-case-lokal ⊂ business-area ⊂ app-weit); `port-locality` erzwingt ihn.
@@ -996,3 +1026,4 @@ und die [Spezifikation](../../spec/spezifikation.md); ein Überblick steht in de
 | 1.40 | 2026-09-19 | §3.7 und §4: **ein Richtungssegment im Port-Glob schaltet `port-locality` nicht mehr ab.** Trennt eine Port-Schicht ihre Richtung (`inbound`/`outbound` — was §4 für `port-direction-mismatch` verlangt), endet ihr Glob naturgemäß auf dem Richtungssegment. Die Scope-Ableitung zog es als „Port-Ordner-Marker" ab, der Scope fiel auf `…/ports`, und die Regel **schwieg**: kein Befund, Exit 0, bei einem echten slice-übergreifenden Import. Die Ableitung zieht das Segment jetzt zusätzlich ab, sofern die Schicht ihre `direction` trägt und der Port im Application-Baum liegt; die Restfälle meldet der Lauf als **advisory Hinweis**. Dritter Fallstrick in §3.7. Spez 0.32.0, [ADR-0040](../plan/adr/0040-portscope-richtungssegment.md), slice-194. |
 | 1.41 | 2026-09-19 | §3.7: die Beispielstruktur nennt die Adapter-Rolle in **ihrem** Vokabular — `internal/adapters/{driving,driven}/…` statt `{inbound,outbound}`. `inbound`/`outbound` sind seit [ADR-0036](../plan/adr/0036-port-richtung-inbound-outbound.md) das **Port**-Vokabular; das Dokument führte für dieselbe Rolle zwei. Eine Stelle, mit zwei verschieden gebauten Zählern gemessen; die beiden anderen Dokumente unter `docs/user/` führen das Vokabular nicht. slice-195. |
 | 1.42 | 2026-10-06 | Lastenheft 0.28.0: neuer Optionalblock **`shapes`** und Befund **`shape-unlisted`** — in einer benannten Datei (Leitfall `build.gradle.kts` des Fachkern-Moduls) steht nur, was ausdrücklich erlaubt ist; alles andere ist ein Befund, gleich in welcher Schreibweise. Dialekt `kotlin`, Modus `allow-statements`. §4 um den Abschnitt „Sollform je Datei (`shapes`)" mit Beispiel, Normalisierungs-Regeln, der Regex-Grenze (Zeichenketten-Inhalt als Klasse, nie `.*`) und den Exit-2-Fällen; §3.4-Regeltabelle und Glossar. [ADR-0041](../plan/adr/0041-shapes-sollform-je-datei.md), slice-210. |
+| 1.43 | 2026-10-06 | §4 „Sollform je Datei“ um **`unused: fail`** (Befund `shape-unused`, verortet an der Zeile des Eintrags in der `.a-check.yml`; ohne Opt-in still, kein Warn-Level) und **`mode: exact`** (Datei gleich einer Sollform-Datei nach Normalisierung; erste Abweichung als `shape-differs`, fehlende Sollform-Datei Exit 2) ergänzt; §3.4-Regeltabelle und Glossar. [ADR-0041](../plan/adr/0041-shapes-sollform-je-datei.md), slice-211. |

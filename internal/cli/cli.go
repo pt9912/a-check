@@ -146,7 +146,7 @@ func scan(root string, m core.Model) ([]core.FileImports, []core.Finding, error)
 	if err != nil {
 		return nil, nil, err
 	}
-	findings = append(findings, core.EvaluateShapes(m, shapes)...)
+	findings = append(findings, core.EvaluateShapes(m, shapes, ".a-check.yml")...)
 	core.SortFindings(findings)
 	return files, findings, nil
 }
@@ -335,6 +335,11 @@ forbidden_constructs:
 #     allow:
 #       - 'plugins { kotlin("jvm") }'
 #       - {pattern: 'version="[^"$\\]*"', match: regex}  # Zeichenketten-Inhalt als Klasse, nie .*
+#     # unused: fail              #   optional: ein allow-Eintrag ohne Treffer ist ein Befund
+#   - files: ["app/build.gradle.kts"]   # Alternative: die Datei muss einer Sollform-Datei
+#     dialect: kotlin             #   gleichen (nach Normalisierung); die erste Abweichung
+#     mode: exact                 #   ist ein Befund shape-differs.
+#     expect: sollform/app.build.gradle.kts
 markers:
   ignore_symbols: []
 # resolution:                     # optional: Import-Symbol -> Schicht je Sprache (ADR-0016/ADR-0023)

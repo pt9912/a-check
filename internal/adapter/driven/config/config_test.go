@@ -740,8 +740,8 @@ func TestShapesDecodeFailClosed(t *testing.T) { // AC-FA-RULE-012 negative: Exit
 		"allow-Objekt-Schluessel": strings.Replace(shapesBase, "match: regex}", "match: regex, flags: i}", 1),
 		"allow-Liste statt String": strings.Replace(shapesBase, `- 'plugins { kotlin("jvm") }'`, `- [a, b]`, 1),
 		"expect aus der Wurzel": strings.Replace(shapesBase, "mode: allow-statements", "mode: allow-statements\n    expect: ../x.kts", 1),
-		"exact noch nicht":      strings.Replace(shapesBase, "mode: allow-statements", "mode: exact", 1),
-		"unused noch nicht":     strings.Replace(shapesBase, "mode: allow-statements", "mode: allow-statements\n    unused: fail", 1),
+		"exact mit allow":       strings.Replace(shapesBase, "mode: allow-statements", "mode: exact\n    expect: s.kts", 1),
+		"unused unbekannt":      strings.Replace(shapesBase, "mode: allow-statements", "mode: allow-statements\n    unused: warn", 1),
 		"leeres files":          strings.Replace(shapesBase, `files: ["mod/build.gradle.kts"]`, `files: []`, 1),
 	}
 	for name, body := range cases {

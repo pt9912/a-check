@@ -69,7 +69,7 @@ func TestEvaluateShapesUnlisted(t *testing.T) {
 			{Text: `compileClasspath+=files("x")`, Line: 7},
 		}}},
 	}
-	fs := EvaluateShapes(m, scan)
+	fs := EvaluateShapes(m, scan, ".a-check.yml")
 	if len(fs) != 2 || fs[0].Line != 5 || fs[1].Line != 7 || fs[0].Rule != "shape-unlisted" || fs[1].Msg != `compileClasspath+=files("x")` {
 		t.Fatalf("findings: %+v", fs)
 	}
@@ -82,7 +82,7 @@ func TestEvaluateShapesDedupe(t *testing.T) {
 	f := func(e int) ShapeFile {
 		return ShapeFile{Entry: e, Path: "x.kts", Lines: 1, Statements: []Statement{{Text: "b()", Line: 1}}}
 	}
-	fs := EvaluateShapes(m, ShapeScan{Literals: [][]string{{"a()"}, {"a()"}}, Files: []ShapeFile{f(1), f(0)}})
+	fs := EvaluateShapes(m, ShapeScan{Literals: [][]string{{"a()"}, {"a()"}}, Files: []ShapeFile{f(1), f(0)}}, ".a-check.yml")
 	if len(fs) != 1 || !strings.Contains(fs[0].Msg, "b()") {
 		t.Fatalf("dedupe: %+v", fs)
 	}
@@ -137,8 +137,85 @@ func TestNewShapeTrimsDotSlash(t *testing.T) {
 func TestEvaluateShapesSameLineOnce(t *testing.T) {
 	m := Model{Shapes: []Shape{mustShape(t, ShapeAllowSpec{Pattern: "a()"})}}
 	f := ShapeFile{Entry: 0, Path: "x.kts", Lines: 1, Statements: []Statement{{Text: "b()", Line: 1}, {Text: "b()", Line: 1}, {Text: "c()", Line: 1}}}
-	fs := EvaluateShapes(m, ShapeScan{Literals: [][]string{{"a()"}}, Files: []ShapeFile{f}})
+	fs := EvaluateShapes(m, ShapeScan{Literals: [][]string{{"a()"}}, Files: []ShapeFile{f}}, ".a-check.yml")
 	if len(fs) != 2 || fs[0].Msg != "b()" || fs[1].Msg != "c()" {
 		t.Fatalf("%+v", fs)
+	}
+}
+
+func exactShape(t *testing.T) Shape {
+	t.Helper()
+	sh, err := NewShape([]string{"x.kts"}, "kotlin", "exact", nil, "", "./sollform/x.kts")
+	if err != nil || sh.Expect != "sollform/x.kts" {
+		t.Fatalf("sh=%+v err=%v", sh, err)
+	}
+	return sh
+}
+
+// AC-FA-RULE-012 boundary (exact): gleich ist grün; anders, zusätzlich, fehlend
+// ist je GENAU ein Befund shape-differs mit der ersten Abweichung.
+func TestEvaluateShapesExact(t *testing.T) {
+	m := Model{Shapes: []Shape{exactShape(t)}}
+	want := []Statement{{Text: "a()", Line: 1}, {Text: "b()", Line: 2}}
+	run := func(got ...Statement) []Finding {
+		f := ShapeFile{Entry: 0, Path: "x.kts", Lines: 7, Statements: got}
+		return EvaluateShapes(m, ShapeScan{Literals: [][]string{nil}, Expected: [][]Statement{want}, Files: []ShapeFile{f}}, ".a-check.yml")
+	}
+	if fs := run(Statement{"a()", 3}, Statement{"b()", 5}); len(fs) != 0 {
+		t.Fatalf("gleich: %+v", fs)
+	}
+	cases := []struct {
+		got  []Statement
+		line int
+		msg  string
+	}{
+		{[]Statement{{"a()", 1}, {"c()", 4}, {"d()", 6}}, 4, "c() (erwartet: b())"},
+		{[]Statement{{"a()", 1}, {"b()", 2}, {"evil()", 3}}, 3, "evil() (nicht in der Sollform)"},
+		{[]Statement{{"a()", 1}}, 7, "fehlt: b()"},
+	}
+	for _, c := range cases {
+		fs := run(c.got...)
+		if len(fs) != 1 || fs[0].Rule != "shape-differs" || fs[0].Line != c.line || fs[0].Msg != c.msg {
+			t.Errorf("got %+v, want line %d msg %q", fs, c.line, c.msg)
+		}
+	}
+}
+
+// AC-FA-RULE-012 boundary (unused): mit unused: fail meldet ein trefferloser
+// Eintrag an seiner Config-Zeile; ohne nicht. Ein Eintrag, der nur als zweiter
+// passt, gilt als getroffen.
+func TestEvaluateShapesUnused(t *testing.T) {
+	allow := []ShapeAllowSpec{{Pattern: "a()", Line: 10}, {Pattern: `a\(\)`, Match: "regex", Line: 11}, {Pattern: "x {\n  y()\n}\n", Line: 12}}
+	on, err := NewShape([]string{"x.kts"}, "kotlin", "allow-statements", allow, "fail", "")
+	if err != nil {
+		t.Fatal(err)
+	}
+	off, _ := NewShape([]string{"x.kts"}, "kotlin", "allow-statements", allow, "", "")
+	f := ShapeFile{Entry: 0, Path: "x.kts", Lines: 1, Statements: []Statement{{Text: "a()", Line: 1}}}
+	scan := ShapeScan{Literals: [][]string{{"a()", "", "x{y()}"}}, Files: []ShapeFile{f}}
+	fs := EvaluateShapes(Model{Shapes: []Shape{on}}, scan, ".a-check.yml")
+	if len(fs) != 1 || fs[0].Path != ".a-check.yml" || fs[0].Line != 12 || fs[0].Rule != "shape-unused" || fs[0].Msg != `x {\n  y()\n}` {
+		t.Fatalf("unused: %+v", fs)
+	}
+	if fs := EvaluateShapes(Model{Shapes: []Shape{off}}, scan, ".a-check.yml"); len(fs) != 0 {
+		t.Fatalf("ohne unused: %+v", fs)
+	}
+	if _, err := NewShape([]string{"x.kts"}, "kotlin", "allow-statements", allow, "warn", ""); err == nil {
+		t.Fatal("unused: warn — Fehler erwartet (kein Warn-Level)")
+	}
+}
+
+// exact-Kombinationen fail-closed.
+func TestNewShapeExactFailClosed(t *testing.T) {
+	ok := []ShapeAllowSpec{{Pattern: "a()"}}
+	for name, f := range map[string]func() error{
+		"expect fehlt":   func() error { _, e := NewShape([]string{"x"}, "kotlin", "exact", nil, "", ""); return e },
+		"allow bei exact": func() error { _, e := NewShape([]string{"x"}, "kotlin", "exact", ok, "", "s"); return e },
+		"unused bei exact": func() error { _, e := NewShape([]string{"x"}, "kotlin", "exact", nil, "fail", "s"); return e },
+		"expect hinaus":  func() error { _, e := NewShape([]string{"x"}, "kotlin", "exact", nil, "", "../s"); return e },
+	} {
+		if f() == nil {
+			t.Errorf("%s: Fehler erwartet", name)
+		}
 	}
 }

@@ -14,9 +14,12 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
   `build.gradle.kts` eines Fachkern-Moduls) steht nur, was ausdrücklich erlaubt ist; jede andere
   Anweisung ist ein Befund — gleich in welcher Schreibweise, weil Kommentare, Leerraum und
   Zeilenumbrüche vor dem Vergleich wegnormalisiert werden und ein Block als Ganzes verglichen wird.
-  Dialekt `kotlin`, Modus `allow-statements`; `allow`-Einträge literal oder als voll verankerte
-  RE2. Fehlende Datei, Widerspruch zu `exclude` und nicht zerlegbare Datei sind Exit 2.
-  `--print-config` zeigt den Block, das Benutzerhandbuch §4 erklärt ihn.
+  Dialekt `kotlin`; `allow`-Einträge literal oder als voll verankerte RE2. Zwei Modi:
+  `allow-statements` (Befund `shape-unlisted`; mit `unused: fail` zusätzlich `shape-unused` für
+  jeden Eintrag ohne Treffer) und `exact` gegen eine Sollform-Datei (`expect`; Befund
+  `shape-differs` mit der ersten Abweichung). Fehlende Datei oder Sollform-Datei, Widerspruch zu
+  `exclude` und nicht zerlegbare Datei sind Exit 2. `--print-config` zeigt den Block, das
+  Benutzerhandbuch §4 erklärt ihn.
 
 ### Changed
 

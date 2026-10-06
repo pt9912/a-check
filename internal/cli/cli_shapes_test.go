@@ -142,3 +142,45 @@ func TestPrintConfigShowsShapes(t *testing.T) {
 		t.Fatalf("Gerüst ohne shapes-Block oder mit .*: %q", s)
 	}
 }
+
+// AC-FA-RULE-012 boundary (exact) end-to-end: gleich bis auf Leerraum und
+// Kommentare ist grün; eine zusätzliche Anweisung ist genau ein shape-differs.
+func TestShapesExactEndToEnd(t *testing.T) {
+	exactCfg := cfg + `shapes:
+  - files: ["domain/build.gradle.kts"]
+    dialect: kotlin
+    mode: exact
+    expect: sollform/build.gradle.kts
+`
+	sollform := "plugins { kotlin(\"jvm\") }\nkotlin { jvmToolchain(25) }\n"
+	run := func(gradle string, withSollform bool) (int, string, string) {
+		files := map[string]string{".a-check.yml": exactCfg, "domain/build.gradle.kts": gradle, "internal/core/c.go": "package core\n"}
+		if withSollform {
+			files["sollform/build.gradle.kts"] = sollform
+		}
+		var out, errb bytes.Buffer
+		code := cli.Run([]string{writeRepo(t, files)}, &out, &errb)
+		return code, out.String(), errb.String()
+	}
+	if code, out, errs := run("// Kopf\nplugins\n{\n  kotlin(\"jvm\")\n}\n\nkotlin {\n  jvmToolchain(25)\n}\n", true); code != 0 || out != "" {
+		t.Fatalf("gleich: code=%d out=%q err=%q", code, out, errs)
+	}
+	code, out, _ := run(sollform+"dependencies { implementation(\"evil\") }\n", true)
+	if code != 1 || out != "domain/build.gradle.kts:3: shape-differs: dependencies{implementation(\"evil\")} (nicht in der Sollform)\n" {
+		t.Fatalf("zusätzlich: code=%d out=%q", code, out)
+	}
+	if code, out, errs := run(sollform, false); code != 2 || out != "" || !strings.Contains(errs, "expect-Datei") {
+		t.Fatalf("fehlende Sollform: code=%d out=%q err=%q", code, out, errs)
+	}
+}
+
+// AC-FA-RULE-012 boundary (unused) end-to-end: der Befund zeigt auf die Zeile
+// des Eintrags in der .a-check.yml.
+func TestShapesUnusedEndToEnd(t *testing.T) {
+	c := strings.Replace(shapesCfg, "    mode: allow-statements\n", "    mode: allow-statements\n    unused: fail\n", 1) +
+		"      - 'apply(plugin = \"nie-benutzt\")'\n"
+	code, out, errs := runShapes(t, goodGradle, map[string]string{".a-check.yml": c})
+	if code != 1 || !strings.HasPrefix(out, ".a-check.yml:") || !strings.Contains(out, `shape-unused: apply(plugin = "nie-benutzt")`) || strings.Count(out, "\n") != 1 {
+		t.Fatalf("code=%d out=%q err=%q", code, out, errs)
+	}
+}

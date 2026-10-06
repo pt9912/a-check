@@ -77,8 +77,15 @@ func (a Adapter) Shapes(root string, m core.Model) (core.ShapeScan, error) {
 	if err != nil {
 		return core.ShapeScan{}, err
 	}
-	scan := core.ShapeScan{Literals: lits}
+	scan := core.ShapeScan{Literals: lits, Expected: make([][]core.Statement, len(m.Shapes))}
 	for e, sh := range m.Shapes {
+		if sh.Mode == "exact" {
+			want, err := a.expected(e, root, sh)
+			if err != nil {
+				return core.ShapeScan{}, err
+			}
+			scan.Expected[e] = want
+		}
 		paths, err := shapePaths(e, root, sh.Files, m.Exclude)
 		if err != nil {
 			return core.ShapeScan{}, err
@@ -96,6 +103,20 @@ func (a Adapter) Shapes(root string, m core.Model) (core.ShapeScan, error) {
 		}
 	}
 	return scan, nil
+}
+
+// expected reads and normalizes the Sollform file of an exact entry. A missing
+// file and an unsplittable one are exit 2 (SPEC-CONF-001).
+func (a Adapter) expected(e int, root string, sh core.Shape) ([]core.Statement, error) {
+	data, err := os.ReadFile(filepath.Join(root, filepath.FromSlash(sh.Expect)))
+	if err != nil {
+		return nil, fmt.Errorf("shapes[%d]: expect-Datei %q fehlt oder ist nicht lesbar: %w", e, sh.Expect, err)
+	}
+	want, _, nerr := a.dialects[sh.Dialect](string(data))
+	if nerr != nil {
+		return nil, fmt.Errorf("shapes[%d]: expect-Datei %s lässt sich nicht zerlegen: %w", e, sh.Expect, nerr)
+	}
+	return want, nil
 }
 
 // shapePaths resolves one entry's globs to the sorted, deduplicated set of

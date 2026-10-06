@@ -67,20 +67,9 @@ type ShapeFile struct {
 type ShapeScan struct {
 	Files    []ShapeFile
 	Literals [][]string
-}
-
-// shapeModeKnown classifies a `mode` value against the closed set. allow-statements is the one
-// implemented mode; exact follows with its own implementation step and is
-// rejected until then, loudly instead of as a silent no-op.
-func shapeModeKnown(mode string) (implemented, known bool) {
-	switch mode {
-	case "allow-statements":
-		return true, true
-	case "exact":
-		return false, true
-	default:
-		return false, false
-	}
+	// Expected[e] is the normalized statement sequence of entry e's `expect`
+	// file (mode exact); nil for an allow-statements entry.
+	Expected [][]Statement
 }
 
 // NewShape validates one shapes entry fail-closed (exit 2, SPEC-CONF-001): the
@@ -95,18 +84,24 @@ func NewShape(files []string, dialect, mode string, allow []ShapeAllowSpec, unus
 	if dialect == "" {
 		return Shape{}, fmt.Errorf("shapes: dialect fehlt")
 	}
-	implemented, known := shapeModeKnown(mode)
-	if !known {
+	switch mode {
+	case "allow-statements":
+		return newAllowShape(files, dialect, allow, unused, expect)
+	case "exact":
+		return newExactShape(files, dialect, allow, unused, expect)
+	default:
 		return Shape{}, fmt.Errorf("shapes: ungültiger mode %q (allow-statements|exact)", mode)
 	}
-	if !implemented {
-		return Shape{}, fmt.Errorf("shapes: mode %q ist in dieser Version noch nicht implementiert", mode)
-	}
+}
+
+// newAllowShape: allow is mandatory and non-empty, unused is "" or "fail",
+// expect belongs to exact.
+func newAllowShape(files []string, dialect string, allow []ShapeAllowSpec, unused, expect string) (Shape, error) {
 	if expect != "" {
-		return Shape{}, fmt.Errorf("shapes: expect gehört zu mode exact, nicht zu %q", mode)
+		return Shape{}, fmt.Errorf("shapes: expect gehört zu mode exact, nicht zu allow-statements")
 	}
-	if unused != "" {
-		return Shape{}, fmt.Errorf("shapes: unused ist in dieser Version noch nicht implementiert")
+	if unused != "" && unused != "fail" {
+		return Shape{}, fmt.Errorf("shapes: ungültiger unused-Wert %q (fail)", unused)
 	}
 	if len(allow) == 0 {
 		return Shape{}, fmt.Errorf("shapes: allow fehlt oder ist leer (mode allow-statements)")
@@ -119,7 +114,26 @@ func NewShape(files []string, dialect, mode string, allow []ShapeAllowSpec, unus
 		}
 		out = append(out, sa)
 	}
-	return Shape{Files: files, Dialect: dialect, Mode: mode, Allow: out}, nil
+	return Shape{Files: files, Dialect: dialect, Mode: "allow-statements", Allow: out, Unused: unused == "fail"}, nil
+}
+
+// newExactShape: expect is mandatory and inside the scan root; allow and unused
+// belong to allow-statements.
+func newExactShape(files []string, dialect string, allow []ShapeAllowSpec, unused, expect string) (Shape, error) {
+	if len(allow) > 0 {
+		return Shape{}, fmt.Errorf("shapes: allow gehört zu mode allow-statements, nicht zu exact")
+	}
+	if unused != "" {
+		return Shape{}, fmt.Errorf("shapes: unused gehört zu mode allow-statements, nicht zu exact")
+	}
+	if expect == "" {
+		return Shape{}, fmt.Errorf("shapes: expect fehlt (mode exact)")
+	}
+	expect = trimDotSlash([]string{expect})[0]
+	if err := InsideRoot("expect", expect); err != nil {
+		return Shape{}, err
+	}
+	return Shape{Files: files, Dialect: dialect, Mode: "exact", Expect: expect}, nil
 }
 
 // validateShapeFiles rejects an empty file list, an empty glob and every glob
@@ -190,40 +204,92 @@ func newShapeAllow(a ShapeAllowSpec) (ShapeAllow, error) {
 
 // EvaluateShapes applies the shapes rules (SPEC-RULE-001) to the extraction's
 // statement sequences and returns the findings, deduplicated and in the total
-// order of SPEC-DET-001. It stands outside the per-import first-match chain:
-// shape-unlisted judges statements of named files, independent of layer,
-// language and composition root. Byte-identical findings — the same file matched
-// by two entries, or two equal statements on one line — are reported once
-// (SPEC-CONF-001).
-func EvaluateShapes(m Model, s ShapeScan) []Finding {
+// order of SPEC-DET-001. It stands outside the per-import first-match chain: it
+// judges statements of named files, independent of layer, language and
+// composition root. Byte-identical findings — the same file matched by two
+// entries, or two equal statements on one line — are reported once
+// (SPEC-CONF-001). configPath locates shape-unused, which points at the entry
+// in the configuration, not at a checked file.
+func EvaluateShapes(m Model, s ShapeScan, configPath string) []Finding {
 	var fs []Finding
+	hit := make([][]bool, len(m.Shapes))
+	for e, sh := range m.Shapes {
+		hit[e] = make([]bool, len(sh.Allow))
+	}
 	for _, f := range s.Files {
 		sh := m.Shapes[f.Entry]
+		if sh.Mode == "exact" {
+			if d, ok := firstDifference(f, s.Expected[f.Entry]); ok {
+				fs = append(fs, d)
+			}
+			continue
+		}
 		for _, st := range f.Statements {
-			if !allowed(sh, s.Literals[f.Entry], st.Text) {
+			if !markAllowed(sh, s.Literals[f.Entry], st.Text, hit[f.Entry]) {
 				fs = append(fs, Finding{Path: f.Path, Line: st.Line, Rule: "shape-unlisted", Msg: st.Text})
 			}
 		}
 	}
+	fs = append(fs, unusedFindings(m, hit, configPath)...)
 	sortFindings(fs)
 	return dedupeSorted(fs)
 }
 
-// allowed reports whether a normalized statement equals a literal entry or fully
-// matches a regex entry. Set semantics: order and repetition do not matter.
-func allowed(sh Shape, literals []string, text string) bool {
+// markAllowed reports whether a normalized statement equals a literal entry or
+// fully matches a regex entry, and marks EVERY entry it matches as hit — so a
+// second entry that also matches is not reported as unused. Set semantics:
+// order and repetition do not matter.
+func markAllowed(sh Shape, literals []string, text string, hit []bool) bool {
+	ok := false
 	for i, a := range sh.Allow {
-		if a.Regex {
-			if a.match(text) {
-				return true
-			}
-			continue
-		}
-		if literals[i] == text {
-			return true
+		if (a.Regex && a.match(text)) || (!a.Regex && literals[i] == text) {
+			hit[i] = true
+			ok = true
 		}
 	}
-	return false
+	return ok
+}
+
+// firstDifference compares a file's statements with the expected sequence of
+// its exact entry and reports the FIRST position where they differ, or ok=false
+// if they are equal (SPEC-RULE-001 shape-differs).
+func firstDifference(f ShapeFile, want []Statement) (Finding, bool) {
+	got := f.Statements
+	for i := 0; i < len(got) || i < len(want); i++ {
+		switch {
+		case i >= len(got):
+			return Finding{Path: f.Path, Line: f.Lines, Rule: "shape-differs", Msg: "fehlt: " + want[i].Text}, true
+		case i >= len(want):
+			return Finding{Path: f.Path, Line: got[i].Line, Rule: "shape-differs", Msg: got[i].Text + " (nicht in der Sollform)"}, true
+		case got[i].Text != want[i].Text:
+			return Finding{Path: f.Path, Line: got[i].Line, Rule: "shape-differs", Msg: got[i].Text + " (erwartet: " + want[i].Text + ")"}, true
+		}
+	}
+	return Finding{}, false
+}
+
+// unusedFindings reports every allow entry of an `unused: fail` entry that
+// matched in none of its files (Opt-in, no warn level — ADR-0041 point 7). The
+// message is the entry in its declared form; a line end in it is written as
+// `\n` so the finding stays one record per line.
+func unusedFindings(m Model, hit [][]bool, configPath string) []Finding {
+	var fs []Finding
+	for e, sh := range m.Shapes {
+		if !sh.Unused {
+			continue
+		}
+		for i, a := range sh.Allow {
+			if hit[e][i] {
+				continue
+			}
+			msg := strings.ReplaceAll(strings.TrimRight(a.Pattern, "\n"), "\n", `\n`)
+			if a.Regex {
+				msg += " (regex)"
+			}
+			fs = append(fs, Finding{Path: configPath, Line: a.Line, Rule: "shape-unused", Msg: msg})
+		}
+	}
+	return fs
 }
 
 // SortFindings puts findings into the total order of SPEC-DET-001. The CLI uses
