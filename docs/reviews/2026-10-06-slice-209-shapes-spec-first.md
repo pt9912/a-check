@@ -220,3 +220,53 @@ ohne Kompilier-Reihenfolge (ebenso) · ADR-Folgepflicht ohne Träger im Folge-Sl
 tiefer: Die Fehl-Lexik verschluckt Code als Kommentar, und das ist die einzige nicht fail-safe
 Fehlrichtung des Vertrags. N-2 und N-3 blockieren nicht. Alle 14 Findings des Erstlaufs sind
 behoben; F-4 ist als benannte Grenze tragfähig.
+
+## Kurz-Gegenprüfung (bef7363..73a2b61)
+
+**Gegenstand:** `7e217f7` (docs(spec)) und `73a2b61` (docs(planning)). Bewertet werden nur N-1 bis
+N-3; dazu adversarisch die neue Vorwärts-Zählregel für `$` mit Backslash-Maskierung. Gleicher
+Lauf, gleiches Modell (`claude-opus-5-5`), Skill @ `a6d19b6`, Datum 2026-10-06. Die Zeilenangaben
+beziehen sich auf den Stand `73a2b61`.
+
+### Status
+
+| ID | Status | Beleg |
+|---|---|---|
+| N-1 | **Regel behoben, Beispiel falsch** — siehe K-1 | `spec/spezifikation.md:278-282`: Gezählt wird vorwärts; ein Backslash in `"…"` maskiert das nächste Zeichen; ein maskiertes `\$` ist Inhalt und beendet eine laufende `$`-Folge; in `"""…"""` gibt es keine Maskierung. Damit ist der N-1-Fall `"\${"` als Text festgelegt. |
+| N-2 | behoben | `spec/spezifikation.md:94`: Das Muster muss „für sich **und** umhüllt als `^(?:<pattern>)$`“ kompilieren und wird in der umhüllten Form geprüft. `\Qfoo` ist damit Exit 2. |
+| N-3 | behoben | `docs/plan/planning/open/slice-210-shapes-kotlin-allow-statements.md:51-53`: Die Lexik-Liste nennt Dollar-Präfix und maskiertes `\$`, mit Tests je Fall. Z. 59-60: Handbuch und `--print-config` zeigen für Zeichenketten-Inhalt nur `"[^"$\\]*"`, nie `.*`. |
+
+### Adversarisch: Vorwärts-Zählregel gegen Kotlin
+
+Kotlin-Semantik zum Vergleich: In `"…"` (auch mit Dollar-Präfix) ist `\$` ein wörtliches `$` und
+`\\` ein wörtlicher Backslash. In `"""…"""` gibt es kein Escape.
+
+| Eingabe | Kotlin | Vertrag (Regel, vorwärts) | Ergebnis |
+|---|---|---|---|
+| `"\${"` | Text `${` | `\$` maskiert → Inhalt, `{` Inhalt | synchron |
+| `"\\${x}"` | `\\` → `\`, dann Vorlage `${x}` | `\` maskiert `\`; Folge `$` (1 = n) vor `{` → Vorlage | synchron |
+| `$$"\\$${x}"` | `\`, dann Vorlage `$${x}` | `\` maskiert `\`; Folge `$$` (2 = n) → Vorlage | synchron |
+| `$$"\$${x}"` | `\$` → `$`, dann ein `$` vor `{` → **Inhalt** (n = 2) | `\$` maskiert; danach Folge `$` (1 < n) → **Inhalt** | synchron — **aber der Vertragstext sagt das Gegenteil (K-1)** |
+| `"""\${x}"""` | `\` wörtlich, Vorlage `${x}` | keine Maskierung; Folge `$` → Vorlage | synchron |
+| `$$"""\$${x}"""` | `\` wörtlich, Vorlage `$${x}` | keine Maskierung; Folge `$$` → Vorlage | synchron |
+| `"${x}"` | Zeichen `$` per Escape, `{x}` Text, keine Vorlage | `\` maskiert `u`; kein `$` vor `{` → Inhalt | synchron |
+
+Die **Regel** öffnet in diesen Fällen keinen neuen Desync. Das Beispiel im selben Satz widerspricht
+ihr.
+
+### Neues Finding
+
+| ID | Kategorie | Befund | Quelle | Pfad | Verifizierbar | Klasse |
+|---|---|---|---|---|---|---|
+| K-1 | HIGH | Das Beispiel behauptet, `$$"\$${x}"` habe „vor `{` nur eine unmaskierte Folge der Länge 2 — die Vorlage beginnt also doch“. Gezählt nach der Regel im selben Satz hat die Folge Länge **1**: Bytes laut `od -c` sind `\ $ $ {`, und das maskierte `\$` beendet die Folge. Bei `n = 2` ist das Inhalt, wie in Kotlin. Wer den Testfall aus dem Beispiel ableitet, baut genau den Desync aus N-1 ein: `version = "x" + $$"\$${" + '"' + '}' + "// "; dependencies.add(…)` — der `add`-Aufruf verschwindet als Kommentar. | Skill §HIGH „nachweislich falsche Tatsachenbehauptung“ (gegen dasselbe Artefakt verifiziert); ADR-0041 §Konsequenzen (Fehl-Lexik, nicht fail-safe) | `spec/spezifikation.md:280-282` | ja — Testfall `$$"\$${x}"` → kein Vorlagen-Beginn, in `make test` (slice-210) | Beispiel widerspricht der Regel, die es illustriert |
+
+**Adversarische Verifikation K-1:** Byte-Folge aus der Datei gelesen (`od -c`: `$ $ " \ $ $ { x }
+"`). Nach dem Präfix `$$"` folgen `\`, `$`, `$`, `{`. Die Regel lässt `\` das erste `$` maskieren,
+übrig bleibt eine Folge der Länge 1. Das Beispiel nennt 2. Der Widerspruch steht im Text, ohne
+Kotlin-Annahme.
+
+### Merge-Urteil
+
+**Merge-blockierend: ja**, wegen K-1 (HIGH). N-1 bis N-3 sind in der Regel bzw. Planung behoben.
+Offen bleibt allein das falsche Beispiel, und es liegt genau auf der nicht fail-safe Fehlrichtung,
+die die ADR selbst benennt.
