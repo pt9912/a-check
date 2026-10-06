@@ -19,7 +19,9 @@ ist **derivativ**: Der Zustand sind die flachen Welle-Dateien; woran gearbeitet 
 `Welle:`-Feld der Slices in `in-progress/`. Ziel, Trigger und Closure-Kriterien stehen in der
 Welle-Datei, nicht hier.
 
-*(Keine offene Welle.)* **Nichts in Arbeit.**
+- [welle-16-shapes-sollform](../welle-16-shapes-sollform.md) — Sollform je Datei (`shapes:`)
+
+**Nichts in Arbeit.**
 
 **Woran gerade gearbeitet wird, sagt `ls docs/plan/planning/in-progress/` — nicht diese
 Datei.** Wellenlose Arbeit erscheint in der Roadmap nicht; ihr Zustand ist die
@@ -39,6 +41,7 @@ wichtigste Slices und geschätzter Aufwand (S/M/L, kein Termin).
 | driving/driven-Vertiefung (Teil A) | ein Konsument mit Richtungs-**Namen**, die die Grammatik treffen, **plus** geklärte Verhaltens-Neutralität | [slice-013](../open/slice-013-driving-driven-vertiefung.md) | M |
 | Namespace-Auflösung (C#) | ein C#-Konsument, dessen Namespace ≠ Verzeichnis ist | Folge-ADR + Backend-Slice | M |
 | Ziel-seitige Abdeckung | eine der drei Bedingungen aus [slice-045 §0](../open/slice-045-intern-extern-dateimenge.md) tritt ein | [slice-045](../open/slice-045-intern-extern-dateimenge.md) | M |
+| Generischer `shapes`-Dialekt | ein zweiter Konsument mit Nicht-Kotlin-Manifest (`go.mod`, `package.json`, …) **plus** welle-16-shapes-sollform geschlossen | Folge-Slice nach Bedarf | M |
 
 _(Kein fixer Termin — Wellen feuern auf Trigger. Abgeschlossene Wellen stehen ausschließlich im
 Closure-Log.)_
