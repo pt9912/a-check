@@ -98,5 +98,5 @@ Spec führt, Code folgt (Sub-Area `SPEC` ist Greenfield).
 
 ## 7. Closure-Notiz
 
-Ergebnis: <folgt bei Closure — Zeiger auf `welle-16-results.md`>
-Zähler: <folgt bei Closure — Zeiger auf `../observations/`>
+Ergebnis: `welle-16-results.md` — Geschwister im Ruheort `done/`
+Zähler: `../observations/` — das Beobachtungs-Register, eine Ebene über dem Ruheort
