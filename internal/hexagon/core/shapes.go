@@ -193,7 +193,8 @@ func newShapeAllow(a ShapeAllowSpec) (ShapeAllow, error) {
 // order of SPEC-DET-001. It stands outside the per-import first-match chain:
 // shape-unlisted judges statements of named files, independent of layer,
 // language and composition root. Byte-identical findings — the same file matched
-// by two entries — are reported once (SPEC-CONF-001).
+// by two entries, or two equal statements on one line — are reported once
+// (SPEC-CONF-001).
 func EvaluateShapes(m Model, s ShapeScan) []Finding {
 	var fs []Finding
 	for _, f := range s.Files {
@@ -231,8 +232,9 @@ func allowed(sh Shape, literals []string, text string) bool {
 func SortFindings(fs []Finding) { sortFindings(fs) }
 
 // dedupeSorted collapses byte-identical neighbours of a SORTED list — only for
-// the shapes findings, where one file matched by two entries yields the same
-// line twice (SPEC-CONF-001).
+// the shapes findings, where two entries for one file or two equal statements on
+// one line yield the same line twice; the second line carries nothing new
+// (SPEC-CONF-001).
 func dedupeSorted(fs []Finding) []Finding {
 	out := fs[:0]
 	for i, f := range fs {

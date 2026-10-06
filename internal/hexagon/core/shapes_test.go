@@ -131,3 +131,14 @@ func TestNewShapeTrimsDotSlash(t *testing.T) {
 		t.Fatalf("files=%v err=%v", sh.Files, err)
 	}
 }
+
+// Review slice-210 D-1: zwei gleiche unerlaubte Anweisungen auf einer Zeile
+// ergeben eine Befundzeile (SPEC-CONF-001, byte-gleich einmal).
+func TestEvaluateShapesSameLineOnce(t *testing.T) {
+	m := Model{Shapes: []Shape{mustShape(t, ShapeAllowSpec{Pattern: "a()"})}}
+	f := ShapeFile{Entry: 0, Path: "x.kts", Lines: 1, Statements: []Statement{{Text: "b()", Line: 1}, {Text: "b()", Line: 1}, {Text: "c()", Line: 1}}}
+	fs := EvaluateShapes(m, ShapeScan{Literals: [][]string{{"a()"}}, Files: []ShapeFile{f}})
+	if len(fs) != 2 || fs[0].Msg != "b()" || fs[1].Msg != "c()" {
+		t.Fatalf("%+v", fs)
+	}
+}
