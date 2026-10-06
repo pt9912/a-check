@@ -14,7 +14,7 @@ wechselt nur durch `git mv` (`make slice-mv`).
 **Berührte Spec-Stellen:** `spezifikation.md` §[SPEC-CONF-001](../../../../spec/spezifikation.md#spec-conf-001--konfigurationsschema), §[SPEC-RULE-001](../../../../spec/spezifikation.md#spec-rule-001--regel-auswertung)
 (in slice-209 geschrieben, hier umgesetzt — keine Spec-Änderung).
 
-**Verantwortlich:** —
+**Verantwortlich:** Claude — gesetzt beim Übergang nach `next/` (Maintainer: „ja alles machen", 2026-10-06).
 
 **Autor:** Claude. **Datum:** 2026-10-06.
 
