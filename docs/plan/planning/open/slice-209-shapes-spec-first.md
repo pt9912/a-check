@@ -20,7 +20,7 @@ Determinismus nach
 §5 (Globale Out-of-Scope-Punkte), Schema in [AC-FA-CONF-001](../../../../spec/lastenheft.md#ac-fa-conf-001--konfigurationsdatei-a-checkyml) ·
 `spezifikation.md` §[SPEC-CONF-001](../../../../spec/spezifikation.md#spec-conf-001--konfigurationsschema), §[SPEC-RULE-001](../../../../spec/spezifikation.md#spec-rule-001--regel-auswertung).
 
-**Verantwortlich:** —
+**Verantwortlich:** Claude — gesetzt beim Übergang nach `next/` (Abnahme der zehn Entscheide durch den Maintainer, 2026-10-06).
 
 **Autor:** Claude. **Datum:** 2026-10-06.
 
