@@ -1,6 +1,6 @@
 # Lastenheft — a-check
 
-**Version:** 0.27.0
+**Version:** 0.28.0
 
 **Status:** Draft
 
@@ -365,6 +365,69 @@ allen Sprachen die dokumentierte Grenze
 
 **Out-of-Scope:** kein Parser — String-Literale bleiben Text-Heuristik ([AC-QA-02](#ac-qa-02--hermetik-und-ehrliche-heuristik-grenze)); keine RE2-fremden Features (Lookaround/Backreferences); keine Auto-Inferenz von Zonen; ein **Zonen-Verbot je Schicht** (`forbid_in`: Muster in bestimmten Schichten verboten, anderswo egal) — die Evidenz dafür deckt a-check bereits als Kante ab; eine fail-closed **Import-Allowlist** je Schicht (umgekehrte Beweislast auf Roh-Specifiern) — eigener, weiterhin gated Faden; eine eigene **Graph-Kante** für `constructs` ([AC-FA-CLI-002](#ac-fa-cli-002--architektur-graph-ausgabe) zeigt Nicht-Kanten-Semantik als Legende, nicht als Verbindung).
 
+### AC-FA-RULE-012 — Sollform je Datei (Regel `shapes`)
+
+<a id="ac-fa-rule-012"></a>
+
+**Umkehrung** der Beweislast von
+[AC-FA-RULE-011](#ac-fa-rule-011--konstrukt-monopol-regel-construct-leak): dort ist eine
+aufgeschriebene Form **nur in einer Zone erlaubt**, alles andere ungeprüft; hier ist in einer
+benannten Datei **nur die aufgeschriebene Liste erlaubt**, und alles Unbekannte ist ein Befund
+(fail-safe). Anlass sind Build-Manifeste (Leitfall: `build.gradle.kts` eines Fachkern-Moduls),
+deren Werkzeug viele gleichwertige Schreibweisen kennt, eine Abhängigkeit oder ein Plugin
+einzutragen — eine Verbotsliste solcher Formen wird nie vollständig.
+
+**Beschreibung:** Ein optionaler `shapes`-Block deklariert je Eintrag eine Datei-Menge
+(`files`, Globs relativ zur Scan-Wurzel), einen **Dialekt** (`dialect`) und einen **Modus**
+(`mode`). Jede Datei der Menge wird je Dialekt **normalisiert** — Kommentare entfernt,
+Zeichenketten unverändert, Leerraum außerhalb von Zeichenketten gefaltet, auch über
+Zeilenumbrüche hinweg — und in **Anweisungen auf oberster Ebene** zerlegt; ein Block zählt mit
+seinem gesamten Inhalt als **eine** Anweisung und wird als Ganzes verglichen. Zwei Modi:
+
+- `mode: allow-statements` — jede Anweisung muss einem Eintrag der Liste `allow` entsprechen
+  (literal nach derselben Normalisierung, oder `match: regex` über die **ganze** Anweisung);
+  Reihenfolge und Wiederholung sind gleichgültig. Jede andere Anweisung ist ein Befund
+  `shape-unlisted`. Mit `unused: fail` ist zusätzlich jeder `allow`-Eintrag, der in **keiner**
+  Datei des Eintrags trifft, ein Befund `shape-unused`.
+- `mode: exact` — die normalisierte Datei muss Anweisung für Anweisung gleich der
+  normalisierten **Sollform-Datei** `expect` sein; die **erste** Abweichung (anders, zusätzlich
+  oder fehlend) ist ein Befund `shape-differs`.
+
+Jeder Befund nennt Datei, die Zeile, an der die Anweisung im Original beginnt, die Befundklasse
+und die normalisierte Anweisung (`shape-unused` nennt stattdessen die Konfigurationsdatei und den
+Eintrag dort); ≥ 1 Befund ⇒ Exit-Code 1. Die Regel ist **unabhängig** von
+`layers` und `languages`: sie greift auch für Dateien, die keiner Schicht und keiner Sprache
+angehören. Unterstützt ist der Dialekt **`kotlin`** (`*.kt`, `*.kts`). **Fail-closed (Exit 2):**
+ein `files`-Glob, der keine Datei trifft; eine Datei, die zugleich von `exclude` ausgenommen ist
+(Widerspruch in der Konfiguration); ein unbekannter `dialect` oder `mode`; ein leeres `files`
+oder ein leeres `allow` bei `allow-statements`; `allow` bei `exact` oder `expect` bei
+`allow-statements`; eine fehlende `expect`-Datei; ein `allow`-Eintrag, dessen Regex nicht
+kompiliert; und **jede Datei, die sich nicht zerlegen lässt** (offene Klammer, Zeichenkette oder
+Kommentar; schließende Klammer ohne Gegenstück) — eine solche Datei wird nie still grün.
+
+**Akzeptanzkriterien:**
+
+- **Happy:** Given ein `shapes`-Eintrag `{files: [mod/build.gradle.kts], dialect: kotlin, mode: allow-statements}` mit den erlaubten Anweisungen `plugins{kotlin("jvm")}`, `kotlin{jvmToolchain(25)}` und `dependencies{testImplementation(kotlin("test"))}`, when die Datei genau diese drei Anweisungen enthält — mit zusätzlichem Leerraum, Zeilenumbrüchen und Kommentaren an beliebiger Stelle —, then kein Befund und Exit-Code 0.
+- **Boundary:** *(versteckte Anweisung)* Given dieselbe Konfiguration, when die Datei zusätzlich **eine** der folgenden Formen enthält — eine weitere Anweisung auf oberster Ebene; eine weitere Anweisung **in** einem erlaubten Block; `plugins` mit Zeilenumbruch vor `{` und einem weiteren Plugin; `compileClasspath += files(…)`; `add("x", run { … })`; eine Anweisung, die in einem Kommentar zu beginnen scheint und im Code fortgesetzt wird —, then je Form ein Befund `shape-unlisted` mit Datei und Zeile und Exit-Code 1.
+- **Boundary (Kommentar und Zeichenkette):** Given ein Muster, das eine Abhängigkeit einträgt, steht **nur** in einem Kommentar oder **nur** innerhalb einer Zeichenkette einer erlaubten Anweisung, when `a-check` läuft, then kein Befund für das Muster selbst — der Kommentar fällt bei der Normalisierung weg, die Zeichenkette ist Teil der erlaubten Anweisung.
+- **Boundary (`exact`):** Given `mode: exact` mit einer Sollform-Datei, when die geprüfte Datei sich nur in Leerraum, Zeilenumbrüchen und Kommentaren unterscheidet, then kein Befund; when eine Anweisung anders, zusätzlich oder fehlend ist, then genau ein Befund `shape-differs` mit der **ersten** Abweichung und Exit-Code 1.
+- **Boundary (`unused`):** Given `unused: fail` und ein `allow`-Eintrag, der in keiner Datei des Eintrags trifft, when `a-check` läuft, then ein Befund `shape-unused`; ohne `unused: fail` kein Befund für denselben Eintrag.
+- **Negative:** Given eine fehlende Datei (Glob ohne Treffer), ein unbekannter Schlüssel im Eintrag, ein unbekannter `dialect`, eine Datei mit offenem Block oder offener Zeichenkette, eine fehlende `expect`-Datei **oder** eine Datei, die `shapes` nennt und `exclude` ausnimmt, when `a-check` lädt bzw. läuft, then Exit-Code 2 — nie ein stilles Grün.
+- **Determinismus:** Given mehrere Befunde in einer oder mehreren Dateien, when `a-check` zweimal auf demselben Stand läuft, then byte-identische Ausgabe in der Form `pfad:zeile: <klasse>: <anweisung>` ([AC-QA-01](#ac-qa-01--determinismus)).
+
+**Out-of-Scope:** Auflösung von Abhängigkeitsgraphen und Aufruf eines Build-Werkzeugs — was ein
+erlaubtes Plugin selbst einträgt, bleibt außerhalb und gehört in eine Prüfung im Build
+([AC-QA-02](#ac-qa-02--hermetik-und-ehrliche-heuristik-grenze)); die **Semantik** des Dialekts —
+geprüft wird Text nach Normalisierung, nicht, was das Werkzeug daraus macht; ein **generischer**
+Dialekt mit konfigurierbaren Kommentar-, Zeichenketten- und Trennzeichen (`go.mod`,
+`package.json`, …) und weitere Dialekte als `kotlin`; ein Ausschluss von Literal-Klassen aus dem
+Vergleich (etwa Versions-Literale) — den Zweck deckt ein `allow`-Eintrag mit `match: regex`; ein
+vollständiger Diff aller Abweichungen bei `exact` (gemeldet wird die erste); ein Warn-Level für
+`shape-unused` (a-check kennt keines); eine Graph-Kante für `shapes`
+([AC-FA-CLI-002](#ac-fa-cli-002--architektur-graph-ausgabe)); die fail-closed Import-Allowlist je
+Schicht (eigener, weiterhin gated Faden aus
+[AC-FA-RULE-011](#ac-fa-rule-011--konstrukt-monopol-regel-construct-leak)).
+
 ### AC-FA-EXTRACT-001 — Sprach-Backends für die Import-Extraktion
 
 **Beschreibung:** Pro Sprache liefert ein Backend die Menge „welche
@@ -532,6 +595,10 @@ Ein optionaler **`constructs`**-Block deklariert Roh-Text-Muster mit ihrer erlau
 `match: substring|regex` und `composition_root: allow|forbid`, dieselbe Scoping-Mechanik wie
 `tech`, [AC-FA-RULE-011](#ac-fa-rule-011--konstrukt-monopol-regel-construct-leak)); fehlt er,
 entfällt die Regel `construct-leak`.
+Ein optionaler **`shapes`**-Block deklariert je Eintrag eine Datei-Menge mit ihrer **Sollform**
+(`{files, dialect, mode}` mit `allow` und optionalem `unused: fail` bei `mode: allow-statements`
+bzw. `expect` bei `mode: exact`, [AC-FA-RULE-012](#ac-fa-rule-012)); fehlt er, entfallen die
+Befunde `shape-unlisted`, `shape-differs` und `shape-unused`.
 Ein optionaler `resolution`-Block deklariert **je Sprache**, wie Import-Symbole auf Schichten
 aufgelöst werden — Map Sprache → `{mode, roots, package_base}`, `mode ∈ {path (Default),
 fixed-root, relative}` (`namespace` reserviert); fehlt er (oder eine Sprache darin), gilt
@@ -550,7 +617,8 @@ einem reservierten/unbekannten `resolution.mode` oder `roots`/`package_base` bei
 einer **leeren** `tech.adapter`-Liste oder einem leeren/fehlenden `tech.adapter`, einem `composition_root`-Wert außerhalb
 `{allow, forbid}`, einem ungültigen `exclude`-Glob oder einem `constructs`-Eintrag mit
 leerem/fehlendem `pattern`/`adapter`, unbekanntem `match`/`composition_root` bzw. nicht
-kompilierbarer Regex).
+kompilierbarer Regex oder einem `shapes`-Eintrag, der einen der fail-closed-Fälle aus
+[AC-FA-RULE-012](#ac-fa-rule-012) trifft).
 Bei `mode: fixed-root` mit **≥ 2** `roots` (geteiltes `package_base`, Paket-Namespaces über
 mehrere Module — Gradle-Multi-Modul, auch **Split-Packages**, bei denen dasselbe Paket real
 über mehrere Modul-Roots verteilt ist) wird der interne FQN **datei-mengen-bewusst** aufgelöst.
@@ -588,6 +656,7 @@ bleibt still extern; datei-tiefe Globs sind eine heuristische Grenze.
 - **Boundary (`exclude`):** Given eine Config **ohne** `exclude`, when `a-check` läuft, then byte-identische Ausgabe wie bisher.
 - **Negative (neue Schlüssel):** Given eine **leere** `tech.adapter`-Liste, ein leerer/fehlender `tech.adapter`, ein `composition_root` mit einem Wert außerhalb `{allow, forbid}` **oder** ein ungültiger `exclude`-Glob, when `a-check` lädt, then Exit-Code 2.
 - **Negative (`constructs`):** Given einen `constructs`-Eintrag mit leerem/fehlendem `pattern` oder `adapter`, unbekanntem `match`-/`composition_root`-Wert **oder** einer als Regex nicht kompilierbaren `pattern`, when `a-check` lädt, then Exit-Code 2 ([AC-FA-RULE-011](#ac-fa-rule-011--konstrukt-monopol-regel-construct-leak)).
+- **Negative (`shapes`):** Given einen `shapes`-Eintrag mit leerem `files`, unbekanntem `dialect`/`mode`, leerem `allow` bei `mode: allow-statements`, `allow` bei `mode: exact` **oder** einer als Regex nicht kompilierbaren `allow`-Angabe, when `a-check` lädt, then Exit-Code 2 ([AC-FA-RULE-012](#ac-fa-rule-012)).
 - **Happy (Multi-Modul disjunkt):** Given `mode: fixed-root` mit ≥ 2 `roots` + geteiltem `package_base` und disjunkten Paket-Sub-Namespaces je Modul (KMP: `mod-a/…/domain`, `mod-b/…/application` mit flachen Modul-Globs), when eine `domain`-Datei `com.ex.application.B` importiert, then löst der FQN datei-mengen-bewusst auf das reale Modul (Schicht `application`) auf und die verbotene Kante wird gemeldet (Exit 1) — **statt** stiller Fehlklassifikation (vor der datei-mengen-bewussten Auflösung: 0 Befunde, `AC-QA-02`).
 - **Happy (Split-Package / Top-Level-Symbol):** Given `mode: fixed-root` mit ≥ 2 `roots`, ein **Split-Package** über zwei Schicht-Roots (`ports`, `adapters`) und ein Kotlin-Top-Level-Symbol, dessen Datei **≠** Symbolname ist (Extension-Fun `asJdbc` bzw. Zweitklasse), **genau in einem** Root deklariert, when eine Datei es importiert, then löst der FQN über die reale Top-Level-Deklaration auf die Schicht dieses Roots auf — **kein Exit 2** (vor der deklarations-bewussten Auflösung: Exit 2). Trägt Root A eine gleichnamige Datei, die das Symbol **nicht** deklariert, und Root B die echte Deklaration, then löst er auf **Root B**.
 - **Boundary (Mehr-Wurzel, gleiche Schicht):** Given denselben FQN real unter ≥ 2 Roots, die **dieselbe** Schicht treffen (`expect`/`actual`), when `a-check` läuft, then löst er sauber auf — kein Exit 2.
@@ -698,8 +767,13 @@ je Anforderung in §3/§4, die nur den jeweiligen AC begrenzen.
 - `a-check` ersetzt keine sprach-eigene, compile-time durchgesetzte Modulgrenze (z. B. Gradle-Module
   in `d-migrate`), sondern ergänzt sie um die feingranularen Fitness-Functions, die der Compiler
   nicht abdeckt (laterale Adapter-Kanten, Port-Disziplin) — siehe §1.
-- `a-check` ist eine **Heuristik** auf Import-Ebene, kein vollständiger Sprach-Parser
-  ([AC-QA-02](#ac-qa-02--hermetik-und-ehrliche-heuristik-grenze)).
+- `a-check` ist eine **Heuristik**, kein vollständiger Sprach-Parser
+  ([AC-QA-02](#ac-qa-02--hermetik-und-ehrliche-heuristik-grenze)). Sie arbeitet auf drei Ebenen:
+  extrahierte **Importe** (Schicht-, Kanten- und Tech-Regeln), **Roh-Text** gescannter Quellen
+  ([AC-FA-RULE-011](#ac-fa-rule-011--konstrukt-monopol-regel-construct-leak)) und die
+  **normalisierte Anweisungsfolge** ausdrücklich benannter Dateien
+  ([AC-FA-RULE-012](#ac-fa-rule-012)). Auf keiner der drei Ebenen wertet sie die **Semantik**
+  der geprüften Sprache oder eines Build-Werkzeugs aus.
 - Kein Auto-Fix/keine Reparatur von Architekturverstößen — es gibt keinen deterministisch
   ableitbaren Fix (siehe [AC-FA-CLI-002](#ac-fa-cli-002--architektur-graph-ausgabe)).
 
@@ -715,6 +789,7 @@ Begriffe, die in diesem Lastenheft feststehend verwendet werden — Definitionen
 | **Composition Root** | Der konfigurierte Ort, an dem Verdrahtung (DI) stattfinden darf und der von der `tech`-Kapselung standardmäßig ausgenommen ist (`composition_root: allow` \| `forbid`, siehe [AC-FA-RULE-003](#ac-fa-rule-003--tech-kapselung-regel-tech-leak)). |
 | **driving / driven** | Die Betriebsrichtung eines `adapter` (`driving` = treibt die Anwendung an, `driven` = wird von ihr angesteuert) — orthogonal zur Rolle, nicht zu verwechseln mit `inbound`/`outbound` an einem `port` ([AC-FA-RULE-008](#ac-fa-rule-008--richtungs-dimension-regel-port-direction-mismatch)). |
 | **Heuristik-Grenze** | Eine dokumentierte, bewusste Lücke der text-basierten Extraktion (kein Sprach-Parser) — wird ausgewiesen statt verschwiegen ([AC-QA-02](#ac-qa-02--hermetik-und-ehrliche-heuristik-grenze)). |
+| **Sollform** | Die ausdrücklich erlaubte Anweisungsfolge einer benannten Datei — als Liste erlaubter Anweisungen oder als Sollform-Datei; geprüft wird nach Normalisierung, alles Unbekannte ist ein Befund ([AC-FA-RULE-012](#ac-fa-rule-012)). |
 
 ## 7. Historie
 
@@ -755,3 +830,4 @@ eine Zeile hier (Baseline-Regelwerk `grundlagen-source-precedence.md` §Spec-Str
 | 0.25.0 | 2026-08-30 | **`AC-FA-RULE-008` neu gefasst:** die Richtungs-Dimension trägt je Rolle **ihr eigenes Vokabular** — an `role: port` `inbound`/`outbound`, an `role: adapter` `driving`/`driven`. Ein Port *treibt* nichts, er wird benutzt; ein Adapter ist nicht *eingehend*, er treibt oder wird getrieben. Bisher galt `driving`/`driven` für **beide**, obwohl die Beschreibung die Äquivalenz („`driving` = primär/inbound") selbst nannte und nur die eine Hälfte als Wert zuließ. `port-direction-mismatch` prüft dadurch eine **Paarung** (`driving`↔`inbound`, `driven`↔`outbound`) statt einer String-Gleichheit; die Regel-Aussage ist unverändert. **Breaking:** die falsche Vokabel an einer Rolle ist Exit-Code 2 mit nennender Meldung — kein still akzeptiertes Alias, weil a-check kein Warn-Level kennt und die alte Schreibweise sonst unbemerkt bliebe. `AC-FA-CONF-001` im Schema nachgezogen. slice-121. |
 | 0.26.0 | 2026-08-30 | Neu **`AC-FA-DIST-002`** (Docker-Hub-Spiegel): das Release-Image wird zusätzlich nach `docker.io/pt9912/a-check` gespiegelt — **dasselbe Bild, nicht ein zweiter Bau**. Gleichheits-Größe ist der **Config-Digest** (der Manifest-Digest ist registry-lokal, er hängt an der Blob-Kompression); die Pipeline prüft ihn **nach** dem Push und **fail-closed**. Die Pin-Stellen dieses Repos bleiben **GHCR-gebunden** — wer vom Spiegel zieht, nimmt den Digest der Registry, aus der er zieht. Die **Darstellung** (Kurztext, Overview-Seite) ist ausdrücklich **nicht** Teil der Zusage: ein Fehlschlag dort macht kein Release rot, wird aber gemeldet. slice-127. |
 | 0.27.0 | 2026-09-05 | Gegen die v6.0.0-Baseline-Ziel-Form nachgezogen: neu **§5 Globale Out-of-Scope-Punkte** (das bisher in §1 stehende produktweite „Out of Scope" dorthin verschoben, §1 zeigt jetzt per Verweis) und **§6 Glossar** (fünf im Dokument bereits feststehend verwendete Begriffe: Schicht-Rolle, Sub-Einheit, Composition Root, driving/driven, Heuristik-Grenze). Kein neuer Fakt — beide Abschnitte konsolidieren bereits an anderer Stelle belegte Aussagen an der von der Ziel-Form vorgesehenen Stelle; Status bleibt `Draft`, daher keine Change-Request-Pflicht (§7). |
+| 0.28.0 | 2026-10-06 | **CR „Positivliste von Anweisungen je Datei (Sollform)"** — neu **`AC-FA-RULE-012`** (`shapes`): in einer benannten Datei steht nur, was ausdrücklich erlaubt ist; alles Unbekannte ist ein Befund (fail-safe statt Verbotsliste). Die Datei wird je Dialekt normalisiert (Kommentare weg, Zeichenketten unverändert, Leerraum gefaltet) und in Anweisungen auf oberster Ebene zerlegt; ein Block ist eine Anweisung und wird als Ganzes verglichen. Zwei Modi: `allow-statements` (Befund `shape-unlisted`, mit `unused: fail` zusätzlich `shape-unused`) und `exact` gegen eine Sollform-Datei (Befund `shape-differs`, erste Abweichung). Dialekt `kotlin`; unabhängig von `layers`/`languages`; fehlende Datei, Widerspruch zu `exclude` und nicht zerlegbare Datei sind Exit 2. `AC-FA-CONF-001` um den Block und seine fail-closed-Fälle erweitert. **§5 präzisiert:** die Heuristik arbeitet auf drei Ebenen — Importe, Roh-Text, normalisierte Anweisungsfolge benannter Dateien —, keine wertet Sprach- oder Build-Semantik aus. Anlass: ein Adopter will das Fachkern-Modul gegen Fremdabhängigkeiten und Plugins sichern; Gradle kennt zu viele gleichwertige Schreibweisen für eine Verbotsliste in `constructs`. |

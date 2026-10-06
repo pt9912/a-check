@@ -1,10 +1,10 @@
 # Architektur — a-check
 
-**Version:** 0.4.0
+**Version:** 0.5.0
 
 **Status:** Draft
 
-**Letzte Änderung:** 2026-09-29 (Änderungsgeschichte: `git log -- spec/architecture.md`)
+**Letzte Änderung:** 2026-10-06 (Änderungsgeschichte: `git log -- spec/architecture.md`)
 
 **Stratum:** Sicht (derivativ; **keine eigenen Anforderungen**)
 
@@ -70,7 +70,7 @@ flowchart TD
 |---|---|---|
 | **ARC-001** | Kern (Regel-Engine) | wertet die sieben Regeln auf einem abstrakten Import-/Schicht-Modell aus ([SPEC-RULE-001](spezifikation.md#spec-rule-001--regel-auswertung)); **rein** — keine I/O, kein Tech, keine Zielsprach-Kenntnis. |
 | **ARC-002** | Ports | reine Abstraktionen `ConfigPort` / `ExtractionPort` / `ReportPort` / `GraphPort`: sie **referenzieren Domänentypen** des Kerns (die Sprache des Kerns), importieren aber **keinen Adapter und kein Tech**. a-check führt sie als **eigene `ports`-Schicht** mit deklarierter `{from: ports, to: core}`-Kante (Eigen-[`.a-check.yml`](../.a-check.yml)). Ein Projekt mit reinen Ports (eigene DTOs, importiert nichts) lässt die Kante weg. |
-| **ARC-003** | Extraktions-Adapter (je Zielsprache) | implementieren `ExtractionPort` text-heuristisch ([SPEC-EXTRACT-001](spezifikation.md#spec-extract-001--import-extraktion)); je ein Adapter pro **Zielsprache** (C++/Go/Rust/Kotlin/Java/Python/C#/TypeScript — Problemdomäne, nicht Implementierungstechnik). `ExtractionPort` bietet neben `Extract` (Datei-Walk) einen **validation-only** `Validate`-Einstieg, der die Sprach-Backends **ohne** Walk prüft — genutzt vom no-scan-`--print-graph`-Pfad ([SPEC-CLI-002](spezifikation.md#spec-cli-002--graph-renderer-vertrag)); `Extract` ruft denselben Check intern. |
+| **ARC-003** | Extraktions-Adapter (je Zielsprache) | implementieren `ExtractionPort` text-heuristisch ([SPEC-EXTRACT-001](spezifikation.md#spec-extract-001--import-extraktion)); je ein Adapter pro **Zielsprache** (C++/Go/Rust/Kotlin/Java/Python/C#/TypeScript — Problemdomäne, nicht Implementierungstechnik). `ExtractionPort` bietet neben `Extract` (Datei-Walk) einen **validation-only** `Validate`-Einstieg, der die Sprach-Backends **ohne** Walk prüft — genutzt vom no-scan-`--print-graph`-Pfad ([SPEC-CLI-002](spezifikation.md#spec-cli-002--graph-renderer-vertrag)); `Extract` ruft denselben Check intern. Daneben liest die Extraktion die Dateien eines `shapes`-Eintrags — unabhängig vom Walk über `languages`/`layers` — und liefert dem Kern deren **normalisierte Anweisungen** mit Original-Zeile; Normalisierung und Zerlegung sind Text-Heuristik **je Dialekt**, wie die Import-Extraktion je Sprache ([SPEC-EXTRACT-001](spezifikation.md#spec-extract-001--import-extraktion)). |
 | **ARC-004** | Konfigurations-Adapter | lädt und dekodiert `.a-check.yml` strikt ([SPEC-CONF-001](spezifikation.md#spec-conf-001--konfigurationsschema)); implementiert `ConfigPort`. |
 | **ARC-005** | Report-Adapter | formatiert Befunde und Zusammenfassung und bestimmt den **Befund-Exit-Code** (`0`/`1`, [SPEC-CLI-001](spezifikation.md#spec-cli-001--aufruf-scan-wurzel-und-exit-codes)); implementiert `ReportPort`. |
 | **ARC-006** | Composition Root / CLI | parst Flags, verdrahtet Adapter an den Kern, bedient `--print-config`/`--print-mk` ([SPEC-DIST-001](spezifikation.md#spec-dist-001--laufzeitform-und-distribution)) und `--print-graph` (no-scan-Graph-Ausgabe: `Config.Load → Extraktion.Validate → GraphPort.Render → stdout`, [SPEC-CLI-002](spezifikation.md#spec-cli-002--graph-renderer-vertrag)) und meldet den **Nutzungs-/Konfigurationsfehler-Exit-Code** (`2`). Nicht zu verwechseln mit dem Config-Schlüssel `composition_root` des *geprüften* Repos ([SPEC-CONF-001](spezifikation.md#spec-conf-001--konfigurationsschema)). |

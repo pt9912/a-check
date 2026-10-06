@@ -6,6 +6,18 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
+### Added
+
+- **Vertrag für die Sollform je Datei (`shapes`)** — Lastenheft 0.28.0 mit der neuen Anforderung
+  [AC-FA-RULE-012](spec/lastenheft.md#ac-fa-rule-012), Spezifikation 0.33.0 und
+  [ADR-0041](docs/plan/adr/0041-shapes-sollform-je-datei.md) (`Proposed`). In einer benannten Datei
+  (Leitfall `build.gradle.kts` eines Fachkern-Moduls) steht nur, was ausdrücklich erlaubt ist;
+  alles Unbekannte ist ein Befund — fail-safe statt Verbotsliste. Dialekt `kotlin`, Modi
+  `allow-statements` und `exact`, Befunde `shape-unlisted`, `shape-differs` und — auf Wunsch —
+  `shape-unused`. **Noch nicht implementiert:** dieser Eintrag beschreibt den abgenommenen
+  Vertrag; das Werkzeug kennt den Block `shapes` erst mit den folgenden Implementierungs-Schritten
+  und lehnt ihn bis dahin als unbekannten Schlüssel ab (Exit 2).
+
 ### Changed
 
 - **Die vendored Baseline steht auf `v6.13.0`** (Kurs-Welle 153 · 2026-09-28; slice-199). Delta
