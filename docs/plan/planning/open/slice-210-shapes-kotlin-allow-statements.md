@@ -49,15 +49,16 @@ Exit 1 — alle Gegenprobe-Fälle des CR sind Tests.
 ## 2. Definition of Done
 
 - [ ] Normalisierer und Anweisungs-Zerleger `kotlin` (Kommentare inkl.
-      verschachtelter Block-Kommentare, Zeichenketten inkl. Roh-Strings und
-      `${…}`-Vorlagen, Leerraum-Faltung, Anweisungsgrenze, Zeilen-Mapping),
+      verschachtelter Block-Kommentare, Zeichenketten inkl. Roh-Strings,
+      Dollar-Präfix und `${…}`-Vorlagen samt maskiertem `\$`, Leerraum-Faltung, Anweisungsgrenze, Zeilen-Mapping),
       Exit 2 bei offener Klammer/Zeichenkette/Kommentar — mit Tests je Fall.
 - [ ] Regel `shape-unlisted` und Config-Dekodierung (`files`, `dialect`,
       `mode`, `allow` literal/regex voll verankert; strikt, Exit-2-Fälle aus
       der Spezifikation), alle Gegenprobe-Fälle des CR als Tests, deterministische
       Ausgabe.
 - [ ] `--print-config` zeigt den Block im Gerüst; Benutzerhandbuch-Abschnitt
-      und Regel-Tabelle; den CHANGELOG-Eintrag aus slice-209 („nicht implementiert") in
+      und Regel-Tabelle — beide zeigen für Zeichenketten-Inhalt nur die sichere Klasse
+      `"[^"$\\]*"`, nie `.*`; den CHANGELOG-Eintrag aus slice-209 („nicht implementiert") in
       `[Unreleased]` umschreiben.
 - [ ] Unabhängiger Review, Report unter [`docs/reviews/`](../../../reviews/README.md).
 - [ ] Closure-Notiz mit Steering-Loop-Lerneintrag.
