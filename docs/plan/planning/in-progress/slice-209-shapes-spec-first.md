@@ -69,6 +69,20 @@ vom Maintainer mit der Welle-Anweisung übernommen):
 10. **Schlüsselname** `shapes` bleibt, Befundklassen `shape-unlisted`,
     `shape-differs`, `shape-unused` wie im CR.
 
+**Schärfungen beim Schreiben — mit der ADR zur Abnahme vorgelegt, nicht abgenommen** (Plan-Änderung
+2026-10-06, nach dem unabhängigen Review; die zehn Entscheide oben bleiben im Wortlaut der
+Abnahme stehen):
+
+- zu 4: Leerraum bleibt auch zwischen **zwei Operatorzeichen** (`a - -b` ≠ `a--b`).
+- zu 5: Die Grenze gilt auch **innerhalb** von `{…}` und wird dort zu `;`; ein Zeilenende nach
+  Operator, `,` oder `.` setzt fort.
+- zu 3: Ein Regex muss **für sich** kompilieren, bevor er umhüllt wird; die Grenze „`.*` überspannt
+  auch Code" ist benannt, die sichere Form (`"[^"$\\]*"`) dokumentiert, nicht erzwungen.
+- neu: `match: literal` statt `substring`; Dollar-Präfix-Zeichenketten (`$$"…"`) in der Lexik;
+  `files`/`expect` dürfen die Scan-Wurzel nicht verlassen (Exit 2); `literal`-Einträge
+  normalisiert die Extraktion im validierenden Einstieg (auch `--print-graph` Exit 2);
+  byte-gleiche Befundzeilen einmal; Befund-Form `pfad:zeile: <klasse>: <meldung>`.
+
 **Ausdrücklich NICHT in diesem Slice** — je Punkt mit Begründung:
 
 - **Produkt-Code.** *Schicht-Abgrenzung*: der Slice ist Spec-first; Code
@@ -100,7 +114,7 @@ vom Maintainer mit der Welle-Anweisung übernommen):
       strikte Dekodierung, Fehlerfälle), Normalisierung und Zerlegung in
       §[SPEC-EXTRACT-001](../../../../spec/spezifikation.md#spec-extract-001--import-extraktion), Regel-Semantik in §[SPEC-RULE-001](../../../../spec/spezifikation.md#spec-rule-001--regel-auswertung)
       (Vergleich, Befund-Format
-      `datei:zeile: <klasse>: <anweisung>`, Sortierung).
+      `pfad:zeile: <klasse>: <meldung>`, Sortierung).
 - [ ] Unabhängiger Review, Report unter [`docs/reviews/`](../../../reviews/README.md).
 - [ ] Closure-Notiz mit Steering-Loop-Lerneintrag.
 - [ ] Beobachtungs-Register fortgeschrieben (oder „keine Beobachtung" notiert).

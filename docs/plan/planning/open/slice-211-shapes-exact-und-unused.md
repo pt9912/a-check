@@ -6,7 +6,8 @@ wechselt nur durch `git mv` (`make slice-mv`).
 
 **Welle:** welle-16 — [Welle-Plan](../welle-16-shapes-sollform.md).
 
-**Bezug:** die Regel-Anforderung und ADR aus slice-209;
+**Bezug:** [AC-FA-RULE-012](../../../../spec/lastenheft.md#ac-fa-rule-012),
+[ADR-0041](../../adr/0041-shapes-sollform-je-datei.md) (beide aus slice-209);
 [AC-FA-CONF-001](../../../../spec/lastenheft.md#ac-fa-conf-001--konfigurationsdatei-a-checkyml),
 [AC-QA-01](../../../../spec/lastenheft.md#ac-qa-01--determinismus).
 

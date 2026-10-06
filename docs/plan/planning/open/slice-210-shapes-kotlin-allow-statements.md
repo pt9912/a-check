@@ -6,8 +6,8 @@ wechselt nur durch `git mv` (`make slice-mv`).
 
 **Welle:** welle-16 — [Welle-Plan](../welle-16-shapes-sollform.md).
 
-**Bezug:** die Regel-Anforderung und ADR aus slice-209 (Kennungen werden dort
-vergeben und hier beim Übergang nach `next/` eingetragen);
+**Bezug:** [AC-FA-RULE-012](../../../../spec/lastenheft.md#ac-fa-rule-012),
+[ADR-0041](../../adr/0041-shapes-sollform-je-datei.md) (beide aus slice-209);
 [AC-FA-CONF-001](../../../../spec/lastenheft.md#ac-fa-conf-001--konfigurationsdatei-a-checkyml),
 [AC-FA-DIST-001](../../../../spec/lastenheft.md#ac-fa-dist-001--distribution-image---print-mk-a-checkmk)
 (`--print-config`-Gerüst),
@@ -57,7 +57,8 @@ Exit 1 — alle Gegenprobe-Fälle des CR sind Tests.
       der Spezifikation), alle Gegenprobe-Fälle des CR als Tests, deterministische
       Ausgabe.
 - [ ] `--print-config` zeigt den Block im Gerüst; Benutzerhandbuch-Abschnitt
-      und Regel-Tabelle; CHANGELOG `[Unreleased]`.
+      und Regel-Tabelle; den CHANGELOG-Eintrag aus slice-209 („nicht implementiert") in
+      `[Unreleased]` umschreiben.
 - [ ] Unabhängiger Review, Report unter [`docs/reviews/`](../../../reviews/README.md).
 - [ ] Closure-Notiz mit Steering-Loop-Lerneintrag.
 - [ ] Beobachtungs-Register fortgeschrieben (oder „keine Beobachtung" notiert).
@@ -102,7 +103,7 @@ Closure-Notiz mit Lerneintrag.
   verschachtelte `${ "}" }`, `/* /* */ */`). Ein Lexer-Fehler, der eine
   Zeichenkette zu früh schließt, kann Code als String behandeln. — **Ausgang:**
   *(bei Closure zuzuweisen: eingetreten / entfallen / weiter offen)*
-- **Fehlalarm bei legitimen Dateien** durch die Anweisungsgrenze. —
+- **Fehlalarm bei legitimen Dateien** durch die Anweisungsgrenze. Bekannte Quelle aus dem Review von slice-209: ein Zeilenende nach Postfix `!!`/`++`/`--` oder nach `>` verbindet zwei Anweisungen — fail-safe, aber rot; als Testfall aufnehmen. —
   **Ausgang:** *(bei Closure zuzuweisen)*
 - **Handbuch führt neue Vokabeln** (`shape-*`) neben `construct-leak`;
   verwandt mit
