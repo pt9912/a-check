@@ -21,8 +21,6 @@ Welle-Datei, nicht hier.
 
 - [welle-17-shapes-generischer-dialekt](../welle-17-shapes-generischer-dialekt.md) — Generischer `shapes`-Dialekt (`go.mod`, `package.json`)
 
-**Nichts in Arbeit.**
-
 **Woran gerade gearbeitet wird, sagt `ls docs/plan/planning/in-progress/` — nicht diese
 Datei.** Wellenlose Arbeit erscheint in der Roadmap nicht; ihr Zustand ist die
 Verzeichnis-Position (Baseline-Regelwerk `modul-06-roadmap.md` §Wann Arbeit eine Welle
