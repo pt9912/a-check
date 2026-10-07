@@ -15,3 +15,9 @@ dieselbe Verengung haben wie das erste.
 Messung als Beleg schreibt, nennt ihren **Geltungsbereich** und sagt, ob er den Gegenstand deckt.
 Bei slice-174 wäre das gewesen: *„bereinigt um Tabellen-Trennzeilen"* — und die Frage, ob das die
 einzige Formatierungs-Klasse ist, hätte sich beim Schreiben gestellt.
+
+**Vierter Beleg nach der Verkörperung (slice-216, Lese-Schritt der welle-18-Closure):** die
+Messung nannte ihren Geltungsbereich — die Folgerung hielt sich nicht an ihn. Die Prosa-Form gilt
+damit als ausgeschöpft; **kein Sensor ist möglich**: ob eine Folgerung über ihren Geltungsbereich
+hinausgeht, ist ein Urteil über die Reichweite eines Satzes, kein Match (AGENTS §3.7). Was den
+Fall fing, war die Gegenmessung im unabhängigen Review — sie bleibt die Antwort.

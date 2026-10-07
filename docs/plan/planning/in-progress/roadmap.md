@@ -19,9 +19,7 @@ ist **derivativ**: Der Zustand sind die flachen Welle-Dateien; woran gearbeitet 
 `Welle:`-Feld der Slices in `in-progress/`. Ziel, Trigger und Closure-Kriterien stehen in der
 Welle-Datei, nicht hier.
 
-- [welle-18-multi-arch-image](../welle-18-multi-arch-image.md) — Multi-Arch-Image (`linux/amd64` + `linux/arm64`)
-
-**Nichts in Arbeit.**
+*(Keine offene Welle.)* **Nichts in Arbeit.**
 
 **Woran gerade gearbeitet wird, sagt `ls docs/plan/planning/in-progress/` — nicht diese
 Datei.** Wellenlose Arbeit erscheint in der Roadmap nicht; ihr Zustand ist die
@@ -97,6 +95,7 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-06-roadmap.md` §Roadmap-Strukt
 | welle-14-regelwerk-v610-migration | 2026-09-06 | [`done/welle-14-results.md`](../done/welle-14-results.md) — Regelwerk-Migration `v6.0.0`→`v6.2.0`, während der Laufzeit auf `v6.2.0` retargeted. Sieben Slices ([slice-161](../done/slice-161-regelwerk-v610-delta-analyse.md)…[slice-167](../done/slice-167-etappe-a-vendoring-v620.md)), drei neue Adaptionen ([MR-018](../../../../harness/conventions.md#mr-018)/[MR-019](../../../../harness/conventions.md#mr-019)/[MR-020](../../../../harness/conventions.md#mr-020)). **Erster Durchlauf mit unabhängigem Review je Slice** statt Selbst-Review. Verifikation: `make ci` Exit 0, Carveout-Bestand null. `BEO-GATE/pruefer-ohne-gegenstand-oder-aufruf` erreichte 3× — Folge-Slice [slice-168](../done/wellenlos/slice-168-pruefer-kalibrierungs-selbsttest.md) |
 | welle-16-shapes-sollform | 2026-10-06 | [`done/welle-16-results.md`](../done/welle-16-results.md) — Change Request „Sollform je Datei“: [AC-FA-RULE-012](../../../../spec/lastenheft.md#ac-fa-rule-012) mit [ADR-0041](../../adr/0041-shapes-sollform-je-datei.md), drei Slices ([slice-209](../done/welle-16/slice-209-shapes-spec-first.md)…[slice-211](../done/welle-16/slice-211-shapes-exact-und-unused.md)), ausgeliefert mit `v0.21.0`. Verifikation: `make ci` Exit 0, Gegenprobe am Leitfall gegen das publizierte Image (grün → rot mit gesehenem Befund), Carveout-Bestand null; [MR-024](../../../../harness/conventions.md#mr-024) mit dem Release aufgelöst |
 | welle-17-shapes-generischer-dialekt | 2026-10-07 | [`done/welle-17-results.md`](../done/welle-17-results.md) — benannte `shapes`-Dialekte `gomod` und `json` für [AC-FA-RULE-012](../../../../spec/lastenheft.md#ac-fa-rule-012) mit [ADR-0042](../../adr/0042-shapes-benannte-dialekte-gomod-json.md), drei Slices (slice-212…slice-214), ausgeliefert mit `v0.22.0`. Verifikation: `make ci` Exit 0, Gegenprobe an Kopien realer `go.mod` und `package.json` gegen das publizierte Image (grün → rot mit gesehenem Befund), Carveout-Bestand null |
+| welle-18-multi-arch-image | 2026-10-07 | [`done/welle-18-results.md`](../done/welle-18-results.md) — Multi-Arch-Image `linux/amd64` + `linux/arm64` für [AC-FA-DIST-001](../../../../spec/lastenheft.md#ac-fa-dist-001--distribution-image---print-mk-a-checkmk)/[AC-FA-DIST-002](../../../../spec/lastenheft.md#ac-fa-dist-002) mit [ADR-0043](../../adr/0043-multi-arch-ein-bau-getestet-dann-getaggt.md), drei Slices (slice-216…slice-218), ausgeliefert mit `v0.23.0`. Verifikation: `make ci` Exit 0, Release-Pipeline mit nativem arm64-Test grün, derselbe Index-Digest auf GHCR und Docker Hub, Carveout-Bestand null |
 
 ## Historische Trigger-Verschiebungen
 
