@@ -223,15 +223,16 @@ gates: lint test coverage-gate arch-check doc-check doc-targets doc-planning doc
 # Mit IMAGE_REF (Tag oder Digest, auch ein Mehr-Plattform-Index) entfaellt der Bau,
 # und geprueft wird das Bild dahinter auf der Plattform des Hosts (ADR-0043). Das
 # gilt auch fuer `make ci IMAGE_REF=…`: die Gates laufen, getestet wird IMAGE_REF.
+# Das Versions-Label muss VERSION tragen; SCAN_OUT_DIR legt die Scan-Ausgabe ab.
 image-test: $(if $(IMAGE_REF),,build) ## AC-FA-DIST-001 + nativ==Container-Akzeptanz gegen das gebaute Image, oder gegen IMAGE_REF=<tag|digest> ohne Bau (Plattform des Hosts).
-	@IMAGE=$(IMAGE) IMAGE_REF=$(IMAGE_REF) bash tools/image-test.sh
+	@IMAGE=$(IMAGE) IMAGE_REF=$(IMAGE_REF) EXPECT_VERSION=$(VERSION) SCAN_OUT_DIR=$(SCAN_OUT_DIR) bash tools/image-test.sh
 
 # KEIN Bestandteil von `gates`/`ci`: die Gate-Stufen bleiben einplattformig, sie
 # pruefen Quelltext, nicht das Plattform-Bild (ADR-0043). Das Target baut den
 # Index fuer beide Plattformen und urteilt ueber das ARCHIV (Plattformen, Config,
 # ELF, Versions-Label) — ein Lauf auf arm64 ist es nicht.
-image-multiarch: ## Release-Bild fuer linux/amd64+linux/arm64 als EIN Image-Index (OCI-Archiv) bauen und pruefen (ADR-0043; nicht in gates). Ausgabe MULTIARCH_OUT.
-	@DOCKER=$(DOCKER) VERSION=$(VERSION) BUILDKIT_IMAGE=$(BUILDKIT_IMAGE) OUT=$(MULTIARCH_OUT) \
+image-multiarch: ## Release-Bild fuer linux/amd64+linux/arm64 als EIN Image-Index (OCI-Archiv) bauen und pruefen (ADR-0043; nicht in gates). Ausgabe MULTIARCH_OUT; mit PUSH_NAME=<repo> zusaetzlich Upload ohne Tag.
+	@DOCKER=$(DOCKER) VERSION=$(VERSION) BUILDKIT_IMAGE=$(BUILDKIT_IMAGE) OUT=$(MULTIARCH_OUT) PUSH_NAME=$(PUSH_NAME) \
 	  GO_VERSION=$(GO_VERSION) GOLANGCI_LINT_VERSION=$(GOLANGCI_LINT_VERSION) bash tools/image-multiarch.sh
 
 ci: gates image-test ## CI-äquivalenter Lauf: gates + image-test (AC-FA-DIST-001).

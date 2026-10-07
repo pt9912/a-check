@@ -12,6 +12,12 @@
 #
 # Attestierungen und SBOM sind abgeschaltet: der Index trägt genau die zwei
 # Plattform-Bilder (SPEC-DIST-001).
+#
+# Mit PUSH_NAME (z. B. ghcr.io/pt9912/a-check) schreibt DERSELBE Bau zusätzlich in
+# die Registry — nur per Digest, ohne Tag (push-by-digest). Das Skript verlangt,
+# dass der hochgeladene Index-Digest gleich dem geprüften im Archiv ist; den Tag
+# setzt erst die Pipeline nach den Tests (ADR-0043 Punkt 5). Den Index-Digest
+# schreibt es immer nach "$OUT.digest".
 set -euo pipefail
 
 : "${DOCKER:=docker}"
@@ -31,6 +37,12 @@ if ! "$DOCKER" buildx inspect "$BUILDER" >/dev/null 2>&1; then
 fi
 
 mkdir -p "$(dirname "$OUT")"
+push_out=()
+meta="$OUT.meta.json"
+rm -f "$meta" "$OUT.digest"
+if [ -n "${PUSH_NAME:-}" ]; then
+  push_out=(-o "type=image,name=$PUSH_NAME,push-by-digest=true,name-canonical=true,push=true" --metadata-file "$meta")
+fi
 "$DOCKER" buildx build --builder "$BUILDER" \
   --platform linux/amd64,linux/arm64 \
   --target runtime \
@@ -38,6 +50,17 @@ mkdir -p "$(dirname "$OUT")"
   --build-arg VERSION="$VERSION" \
   --build-arg GO_VERSION="$GO_VERSION" \
   --build-arg GOLANGCI_LINT_VERSION="$GOLANGCI_LINT_VERSION" \
-  -o "type=oci,dest=$OUT" .
+  -o "type=oci,dest=$OUT" "${push_out[@]}" .
 
 bash tools/multiarch-check.sh "$OUT" "$VERSION"
+
+# Index-Digest des geprüften Archivs. multiarch-check hat index.json oben schon
+# gelesen und ist ohne Digest rot — hier liegt also einer vor.
+idx="$(tar -xOf "$OUT" index.json | tr -d '\n\t ' | grep -oE 'sha256:[0-9a-f]{64}' | sed -n 1p)"
+echo "$idx" >"$OUT.digest"
+if [ -n "${PUSH_NAME:-}" ]; then
+  pushed="$(tr -d '\n\t ' <"$meta" | grep -oE '"containerimage\.digest":"sha256:[0-9a-f]{64}"' | sed -n 1p | sed 's/.*"\(sha256:[0-9a-f]*\)"/\1/' || true)"
+  [ -n "$pushed" ] || { echo "image-multiarch: FAIL — kein hochgeladener Digest in $meta" >&2; exit 1; }
+  [ "$pushed" = "$idx" ] || { echo "image-multiarch: FAIL — hochgeladen $pushed, geprüft $idx: nicht dasselbe Bild" >&2; exit 1; }
+  echo "image-multiarch: hochgeladen ohne Tag: $PUSH_NAME@$pushed (gleich dem geprüften Archiv)"
+fi

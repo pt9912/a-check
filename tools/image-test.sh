@@ -47,6 +47,14 @@ esac
 [ "$machine" = "$want" ] || fail "Binary aus $IMG hat ELF e_machine $machine, Host $(uname -m) erwartet $want"
 echo "image-test: Bild $IMG — Binary passt zur Host-Plattform $(uname -m)"
 
+# Versions-Label des gezogenen Bilds (Host-Plattform) gegen EXPECT_VERSION — leer
+# heißt: nicht geprüft. `make image-test` setzt es immer auf VERSION.
+if [ -n "${EXPECT_VERSION:-}" ]; then
+  lbl="$(docker image inspect --format '{{ index .Config.Labels "org.opencontainers.image.version" }}' "$IMG")"
+  [ "$lbl" = "$EXPECT_VERSION" ] || fail "Versions-Label von $IMG ist '$lbl', erwartet '$EXPECT_VERSION'"
+  echo "image-test: Versions-Label $lbl"
+fi
+
 # --- (1) Happy: --print-mk nativ vs. Container ------------------------------
 mk_n=0; "$WORK/a-check" --print-mk >"$WORK/mk.n.out" 2>"$WORK/mk.n.err" || mk_n=$?
 mk_c=0; docker run --rm --network none "$IMG" --print-mk >"$WORK/mk.c.out" 2>"$WORK/mk.c.err" || mk_c=$?
@@ -152,5 +160,14 @@ cmp -s "$WORK/sc.n.out" "$WORK/sc.c.out" || fail "Scan stdout nativ vs. Containe
 cmp -s "$WORK/sc.n.err" "$WORK/sc.c.err" || fail "Scan stderr nativ vs. Container nicht byte-identisch"
 grep -q 'core-impurity' "$WORK/sc.c.out" || fail "Scan: erwarteter core-impurity-Befund fehlt"
 echo "image-test: (4) Scan — Verstoß erkannt, nativ == Container, Exit 1"
+
+# SCAN_OUT_DIR: stdout, stderr und Exit-Code des Container-Scans dorthin — für den
+# Vergleich der Plattformen in der Release-Pipeline (SPEC-DIST-001).
+if [ -n "${SCAN_OUT_DIR:-}" ]; then
+  mkdir -p "$SCAN_OUT_DIR"
+  cp "$WORK/sc.c.out" "$SCAN_OUT_DIR/scan.stdout"
+  cp "$WORK/sc.c.err" "$SCAN_OUT_DIR/scan.stderr"
+  echo "$sc_c" >"$SCAN_OUT_DIR/scan.exit"
+fi
 
 echo "image-test: OK — AC-FA-DIST-001 + AC-FA-CLI-002 + AC-QA-02-Akzeptanz erfüllt"

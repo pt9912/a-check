@@ -30,16 +30,14 @@ docker run --rm pt9912/a-check:__VERSION__ --print-mk    > a-check.mk
 
 ## Reproducible runs
 
-For CI, pin to the **digest** rather than to a moving tag. This image is a
-**mirror** of `ghcr.io/pt9912/a-check` — the same image, not a second build:
-the **config** digest is identical on both registries, and the release pipeline
-verifies it after the push.
+For CI, pin to the **digest** rather than to a moving tag. The image is built for
+**`linux/amd64` and `linux/arm64`** (macOS with Apple Silicon runs it natively), and the
+digest is that of the **image index** — one pin for both platforms.
 
-**The manifest digest, in contrast, is registry-local** — it depends on each
-registry's blob compression. So take the digest **from the registry you pull
-from**; one copied from GHCR will not resolve here. The digest listed in this
-project's own documentation (`a-check.mk`, the READMEs, `version.md`) is the
-**GHCR** one.
+This repository is a **mirror** of `ghcr.io/pt9912/a-check` — the same image, not a second
+build: the index is copied unchanged, and the release pipeline verifies that its digest is
+**identical** on both registries. The digest listed in this project's own documentation
+(`a-check.mk`, the READMEs, `version.md`) therefore resolves here as well.
 
 ```bash
 docker run --rm -v "$PWD:/src:ro" pt9912/a-check@sha256:<digest> /src

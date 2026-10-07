@@ -1,16 +1,27 @@
 name: release
 
-# GHCR-Release-Pipeline (slice-007; AC-FA-DIST-001, AC-QA-03, ADR-0007;
-# Stack-Vorbild d-check release.yml).
+# GHCR-Release-Pipeline (AC-FA-DIST-001, AC-FA-DIST-002, AC-QA-03, ADR-0007,
+# ADR-0043; Stack-Vorbild d-check release.yml).
 #
 # Trigger: Push von Tags `v*`. Der Validate-Step verwirft alles, was nicht
 # `vMAJOR.MINOR.PATCH(-prerelease)?` ist, BEVOR eingeloggt, gebaut oder
 # gepusht wird. `:latest` wird ausschließlich für stabile Tags gesetzt
 # (ADR-0007); Konsumenten werden auf Digest-Pins verwiesen (docs/user/releasing.md).
 #
-# Docker-only-Pfad (AGENTS.md §3.1): `make ci` fährt die kompletten Gates inkl.
-# Image-Integrationstests und baut dabei das lokale Runtime-Image
-# (`a-check:dev`), das anschließend für GHCR umgetaggt und gepusht wird.
+# EIN BAU, GETESTET, DANN GETAGGT (ADR-0043, SPEC-DIST-001):
+#   build      — `make ci` (Gates, einplattformig), dann `make image-multiarch`:
+#                ein Bau für linux/amd64 + linux/arm64, geprüft als Archiv und
+#                OHNE Tag nach GHCR hochgeladen (nur per Digest).
+#   test-amd64 / test-arm64 — je ein nativer Runner zieht DIESEN Digest und fährt
+#                `make image-test` samt Versions-Label; jeder gibt einen SHA-256
+#                über Exit-Code, stdout und stderr seines Scans aus.
+#   publish    — verlangt beide Hashes gleich, setzt erst dann den Bild-Tag auf
+#                denselben Digest, kopiert den Index nach Docker Hub, prüft dort
+#                denselben Index-Digest und legt das GitHub-Release an.
+# Ein roter Job vor `publish` lässt den Index ohne Bild-Tag in GHCR zurück.
+#
+# Docker-only-Pfad (AGENTS.md §3.1): jeder Schritt läuft über `make` oder die
+# Docker-CLI.
 #
 # Action-Pinning (Supply-Chain-Härtung, Stack-Konvention): alle `uses:`-Einträge
 # sind SHA-gepinnt mit Tag-Kommentar.
@@ -20,28 +31,25 @@ on:
     tags:
       - 'v*'
 
-# Top-level: alles entziehen; der Job lockert nur, was er braucht.
+# Top-level: alles entziehen; jeder Job lockert nur, was er braucht.
 permissions: {}
 
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: pt9912/a-check
+
 jobs:
-  release:
-    name: release (ghcr.io image push)
+  build:
+    name: build (ein Bau, beide Plattformen, Upload ohne Tag)
     runs-on: ubuntu-latest
     timeout-minutes: 30
     outputs:
-      # Fuer den Folge-Job hub-description: dieselbe Version, die den
-      # Spiegel und das GitHub-Release traegt — keine zweite Ableitung.
       version: ${{ steps.tag.outputs.version }}
+      is_stable: ${{ steps.tag.outputs.is_stable }}
+      digest: ${{ steps.bau.outputs.digest }}
     permissions:
-      contents: write    # GitHub-Release mit Digest-Pin anlegen
-      packages: write
-    env:
-      DOCKER_BUILDKIT: '1'
-      REGISTRY: ghcr.io
-      IMAGE_NAME: pt9912/a-check
-      # LOCAL_IMAGE muss zum Makefile-Default `IMAGE ?= a-check` passen —
-      # `make ci`/`make build` taggt `$(IMAGE):dev` lokal.
-      LOCAL_IMAGE: a-check
+      contents: read
+      packages: write   # Upload ohne Tag
     steps:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -64,8 +72,8 @@ jobs:
           echo "is_stable=$IS_STABLE" >> "$GITHUB_OUTPUT"
           echo "Resolved version=$VERSION, is_stable=$IS_STABLE"
 
-      # Volle Gates + Image-Integrationstests (AC-FA-DIST-001-AKs); baut zugleich
-      # das Runtime-Image mit der Tag-Version (VERSION -> OCI-Label).
+      # Volle Gates + Image-Integrationstests auf dem einplattformigen Bau — die
+      # Code-Fragen. Das veröffentlichte Bild entsteht im nächsten Schritt.
       - name: Gates + Image-Integrationstests (make ci)
         env:
           VERSION: ${{ steps.tag.outputs.version }}
@@ -78,82 +86,147 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Tag image for GHCR
+      # Ein Bau, zwei Ausgaben: das geprüfte Archiv und der Upload ohne Tag.
+      # Das Target bricht ab, wenn beide nicht denselben Index-Digest tragen.
+      - name: Bau beider Plattformen, Prüfung, Upload ohne Tag (make image-multiarch)
+        id: bau
         env:
           VERSION: ${{ steps.tag.outputs.version }}
-          IS_STABLE: ${{ steps.tag.outputs.is_stable }}
         run: |
           set -euo pipefail
-          docker tag "$LOCAL_IMAGE:dev" "$REGISTRY/$IMAGE_NAME:v$VERSION"
-          if [[ "$IS_STABLE" == "true" ]]; then
-            docker tag "$LOCAL_IMAGE:dev" "$REGISTRY/$IMAGE_NAME:latest"
-          fi
+          make image-multiarch VERSION="$VERSION" PUSH_NAME="$REGISTRY/$IMAGE_NAME"
+          DIGEST="$(cat .build/a-check-multiarch.oci.tar.digest)"
+          [[ "$DIGEST" =~ ^sha256:[0-9a-f]{64}$ ]] || { echo "::error::kein Index-Digest ermittelt: '$DIGEST'"; exit 1; }
+          echo "digest=$DIGEST" >> "$GITHUB_OUTPUT"
+          echo "Index ohne Tag: $REGISTRY/$IMAGE_NAME@$DIGEST"
 
-      # OCI-Label-Pin: die Dockerfile-Labels müssen gesetzt sein, und
-      # org.opencontainers.image.version muss exakt der Tag-Version entsprechen
-      # — ein Build mit Version-Drift darf nicht shippen (ADR-0007).
-      - name: Verify OCI labels
+  # Zwei Jobs statt einer Matrix: jeder gibt seinen Scan-Hash unter EIGENEM Namen
+  # aus, und `publish` liest beide. Gleich bis auf `runs-on`.
+  test-amd64:
+    name: test (linux/amd64, nativ)
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    outputs:
+      scan: ${{ steps.test.outputs.scan }}
+    permissions:
+      contents: read
+      packages: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Log in to GHCR
+        uses: docker/login-action@dbcb813823bdd20940b903addbd779551569679f # v4.6.0
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Image-Test gegen den Digest (make image-test IMAGE_REF=…)
+        id: test
         env:
-          VERSION: ${{ steps.tag.outputs.version }}
+          VERSION: ${{ needs.build.outputs.version }}
+          DIGEST: ${{ needs.build.outputs.digest }}
         run: |
           set -euo pipefail
-          REF="$REGISTRY/$IMAGE_NAME:v$VERSION"
-          for LABEL in \
-            org.opencontainers.image.source \
-            org.opencontainers.image.description \
-            org.opencontainers.image.licenses \
-            org.opencontainers.image.title \
-            org.opencontainers.image.vendor
-          do
-            VALUE=$(docker image inspect --format "{{ index .Config.Labels \"$LABEL\" }}" "$REF")
-            if [[ -z "$VALUE" ]]; then
-              echo "::error::OCI-Label $LABEL ist leer auf $REF."
-              exit 1
-            fi
-            echo "$LABEL=$VALUE"
-          done
-          IMAGE_VERSION=$(docker image inspect --format \
-            '{{ index .Config.Labels "org.opencontainers.image.version" }}' "$REF")
-          if [[ "$IMAGE_VERSION" != "$VERSION" ]]; then
-            echo "::error::org.opencontainers.image.version=[$IMAGE_VERSION] entspricht nicht der Tag-Version [$VERSION]."
+          make image-test IMAGE_REF="$REGISTRY/$IMAGE_NAME@$DIGEST" VERSION="$VERSION" SCAN_OUT_DIR=scanout
+          cat scanout/scan.exit scanout/scan.stdout scanout/scan.stderr
+          SCAN="$(cat scanout/scan.exit scanout/scan.stdout scanout/scan.stderr | sha256sum | cut -c1-64)"
+          echo "scan=$SCAN" >> "$GITHUB_OUTPUT"
+          echo "Scan-Hash linux/amd64: $SCAN"
+
+  test-arm64:
+    name: test (linux/arm64, nativ)
+    needs: build
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 15
+    outputs:
+      scan: ${{ steps.test.outputs.scan }}
+    permissions:
+      contents: read
+      packages: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Log in to GHCR
+        uses: docker/login-action@dbcb813823bdd20940b903addbd779551569679f # v4.6.0
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Image-Test gegen den Digest (make image-test IMAGE_REF=…)
+        id: test
+        env:
+          VERSION: ${{ needs.build.outputs.version }}
+          DIGEST: ${{ needs.build.outputs.digest }}
+        run: |
+          set -euo pipefail
+          make image-test IMAGE_REF="$REGISTRY/$IMAGE_NAME@$DIGEST" VERSION="$VERSION" SCAN_OUT_DIR=scanout
+          cat scanout/scan.exit scanout/scan.stdout scanout/scan.stderr
+          SCAN="$(cat scanout/scan.exit scanout/scan.stdout scanout/scan.stderr | sha256sum | cut -c1-64)"
+          echo "scan=$SCAN" >> "$GITHUB_OUTPUT"
+          echo "Scan-Hash linux/arm64: $SCAN"
+
+  publish:
+    name: publish (Bild-Tag, Spiegel, GitHub-Release)
+    needs: [build, test-amd64, test-arm64]
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: write    # GitHub-Release mit Digest-Pin anlegen
+      packages: write    # Bild-Tag auf GHCR
+    env:
+      VERSION: ${{ needs.build.outputs.version }}
+      IS_STABLE: ${{ needs.build.outputs.is_stable }}
+      DIGEST: ${{ needs.build.outputs.digest }}
+    steps:
+      # Gleiche Ausgabe auf beiden Plattformen (AC-FA-DIST-001 Boundary) — vor
+      # jedem Tag. Ein leerer Hash ist ein Befund, keine Gleichheit.
+      - name: Scan-Ausgabe beider Plattformen vergleichen
+        env:
+          SCAN_AMD64: ${{ needs.test-amd64.outputs.scan }}
+          SCAN_ARM64: ${{ needs.test-arm64.outputs.scan }}
+        run: |
+          set -euo pipefail
+          [ -n "$SCAN_AMD64" ] && [ -n "$SCAN_ARM64" ] || { echo "::error::Scan-Hash fehlt (amd64='$SCAN_AMD64', arm64='$SCAN_ARM64')"; exit 1; }
+          if [ "$SCAN_AMD64" != "$SCAN_ARM64" ]; then
+            echo "::error::Scan-Ausgabe weicht ab: amd64=$SCAN_AMD64, arm64=$SCAN_ARM64 — kein Bild-Tag."
             exit 1
           fi
-          echo "org.opencontainers.image.version=$IMAGE_VERSION (matcht Tag)"
+          echo "Scan-Ausgabe auf beiden Plattformen gleich ($SCAN_AMD64)."
 
-      - name: Push to GHCR
-        id: push
-        env:
-          VERSION: ${{ steps.tag.outputs.version }}
-          IS_STABLE: ${{ steps.tag.outputs.is_stable }}
+      - name: Log in to GHCR
+        uses: docker/login-action@dbcb813823bdd20940b903addbd779551569679f # v4.6.0
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      # Bild-Tag auf DENSELBEN Digest — kein zweiter Bau. Danach wird
+      # nachgelesen, dass der Tag wirklich auf diesen Digest zeigt.
+      - name: Bild-Tag setzen
         run: |
           set -euo pipefail
-          docker push "$REGISTRY/$IMAGE_NAME:v$VERSION"
-          if [[ "$IS_STABLE" == "true" ]]; then
-            docker push "$REGISTRY/$IMAGE_NAME:latest"
-          fi
-          DIGEST=$(docker inspect --format '{{ index .RepoDigests 0 }}' "$REGISTRY/$IMAGE_NAME:v$VERSION")
-          echo "digest=$DIGEST" >> "$GITHUB_OUTPUT"
+          SRC="$REGISTRY/$IMAGE_NAME@$DIGEST"
+          TAGS=(-t "$REGISTRY/$IMAGE_NAME:v$VERSION")
+          if [[ "$IS_STABLE" == "true" ]]; then TAGS+=(-t "$REGISTRY/$IMAGE_NAME:latest"); fi
+          docker buildx imagetools create "${TAGS[@]}" "$SRC"
+          GOT="$(docker buildx imagetools inspect "$REGISTRY/$IMAGE_NAME:v$VERSION" --format '{{.Manifest.Digest}}')"
+          [ "$GOT" = "$DIGEST" ] || { echo "::error::v$VERSION zeigt auf $GOT, getestet war $DIGEST."; exit 1; }
           {
             echo "### a-check v$VERSION"
             echo ""
-            echo "Digest-Pin für Konsumenten:"
+            echo "Digest-Pin für Konsumenten (Image-Index, linux/amd64 + linux/arm64):"
             echo ""
             echo '```'
-            echo "$DIGEST"
+            echo "$REGISTRY/$IMAGE_NAME@$DIGEST"
             echo '```'
           } >> "$GITHUB_STEP_SUMMARY"
 
-      # Docker-Hub-Spiegel (AC-FA-DIST-002, ADR-0039). Zusage ist DASSELBE Bild,
-      # nicht ein zweiter Bau. Er steht NACH dem GHCR-Push, damit die Quelle nie
-      # hinter dem Spiegel zurueckliegt.
-      #
-      # GLEICHHEITS-GROESSE IST DER CONFIG-DIGEST, nicht der Manifest-Digest:
-      # letzterer ist registry-lokal (Blob-Kompression) und waere auf beiden
-      # Seiten verschieden, auch bei identischem Inhalt.
-      #
-      # FAIL-CLOSED: der Spiegel ist eine Zusage. Die Fehlermeldung nennt den
-      # bereits veroeffentlichten GHCR-Digest — der Teilstand ist gueltig, und
-      # wer aufraeumt, muss wissen, was schon draussen ist.
+      # Docker-Hub-Spiegel (AC-FA-DIST-002, ADR-0043 Punkt 7): der Index wird
+      # UNVERÄNDERT kopiert, nicht neu hochgeladen — ein Neu-Push aus dem lokalen
+      # Bildspeicher schriebe nur die Host-Plattform. Gleichheit = derselbe
+      # Index-Digest. FAIL-CLOSED: die Meldung nennt den bereits veröffentlichten
+      # GHCR-Digest.
       - name: Log in to Docker Hub
         uses: docker/login-action@dbcb813823bdd20940b903addbd779551569679f # v4.6.0
         with:
@@ -162,50 +235,24 @@ jobs:
 
       - name: Mirror to Docker Hub
         env:
-          VERSION: ${{ steps.tag.outputs.version }}
-          IS_STABLE: ${{ steps.tag.outputs.is_stable }}
-          GHCR_DIGEST: ${{ steps.push.outputs.digest }}
           HUB_IMAGE: ${{ vars.DOCKERHUB_IMAGE || 'pt9912/a-check' }}
         run: |
           set -euo pipefail
-          trap 'echo "::error::Docker-Hub-Spiegel fehlgeschlagen. BEREITS VEROEFFENTLICHT: ${GHCR_DIGEST} auf ghcr.io — das Release ist unvollstaendig, der GHCR-Stand aber gueltig."' ERR
-
-          SRC="$REGISTRY/$IMAGE_NAME:v$VERSION"
-          docker tag "$SRC" "$HUB_IMAGE:v$VERSION"
-          docker push "$HUB_IMAGE:v$VERSION"
-          if [[ "$IS_STABLE" == "true" ]]; then
-            docker tag "$SRC" "$HUB_IMAGE:latest"
-            docker push "$HUB_IMAGE:latest"
-          fi
-
-          # Der Config-Digest steht im Manifest; er beschreibt den INHALT und
-          # ist damit die Groesse, die auf beiden Registries gleich sein muss.
-          # GEMESSEN, nicht uebernommen: `docker manifest inspect` gibt
-          # MEHRZEILIGES, eingeruecktes JSON aus. Ein einzeiliges sed-Muster
-          # greift darauf NICHT -- es lieferte leer, und ein Vergleich zweier
-          # leerer Werte meldet faelschlich Gleichheit. Der Riegel unten faengt
-          # das (fail-closed), aber der Spiegel waere blockiert statt geprueft.
-          # Darum erst Whitespace entfernen, dann matchen (slice-127).
-          config_digest() {
-            docker manifest inspect "$1" \
-              | tr -d ' \n\t' \
-              | sed -n 's/.*"config":{[^}]*"digest":"\(sha256:[0-9a-f]\{64\}\)".*/\1/p' \
-              | head -1
-          }
-          C_GHCR="$(config_digest "$SRC")"
-          C_HUB="$(config_digest "$HUB_IMAGE:v$VERSION")"
-          [ -n "$C_GHCR" ] && [ -n "$C_HUB" ] || {
-            echo "::error::Config-Digest nicht ermittelbar (ghcr='$C_GHCR', hub='$C_HUB')."
-            exit 1
-          }
-          if [ "$C_GHCR" != "$C_HUB" ]; then
-            echo "::error::Spiegel-Ungleichheit: config ghcr=$C_GHCR, hub=$C_HUB — es sind nicht dieselben Bilder."
+          trap 'echo "::error::Docker-Hub-Spiegel fehlgeschlagen. BEREITS VEROEFFENTLICHT: $REGISTRY/$IMAGE_NAME@$DIGEST — das Release ist unvollstaendig, der GHCR-Stand aber gueltig."' ERR
+          SRC="$REGISTRY/$IMAGE_NAME@$DIGEST"
+          TAGS=(-t "docker.io/$HUB_IMAGE:v$VERSION")
+          if [[ "$IS_STABLE" == "true" ]]; then TAGS+=(-t "docker.io/$HUB_IMAGE:latest"); fi
+          docker buildx imagetools create "${TAGS[@]}" "$SRC"
+          HUB="$(docker buildx imagetools inspect "docker.io/$HUB_IMAGE:v$VERSION" --format '{{.Manifest.Digest}}')"
+          if [ "$HUB" != "$DIGEST" ]; then
+            echo "::error::Spiegel-Ungleichheit: Index-Digest ghcr=$DIGEST, hub=$HUB — es ist nicht derselbe Index."
             exit 1
           fi
-          echo "Spiegel geprueft: Config-Digest identisch ($C_GHCR)."
+          docker buildx imagetools inspect "docker.io/$HUB_IMAGE:v$VERSION"
+          echo "Spiegel geprueft: Index-Digest identisch ($DIGEST)."
           {
             echo ""
-            echo "Docker-Hub-Spiegel: \`$HUB_IMAGE:v$VERSION\` — Config-Digest identisch."
+            echo "Docker-Hub-Spiegel: \`$HUB_IMAGE:v$VERSION\` — derselbe Index-Digest."
           } >> "$GITHUB_STEP_SUMMARY"
 
       # GitHub-Release mit dem Digest-Pin in den Notes — der Pin ist die
@@ -213,9 +260,7 @@ jobs:
       - name: Create GitHub Release
         env:
           GH_TOKEN: ${{ github.token }}
-          VERSION: ${{ steps.tag.outputs.version }}
-          IS_STABLE: ${{ steps.tag.outputs.is_stable }}
-          DIGEST: ${{ steps.push.outputs.digest }}
+          GH_REPO: ${{ github.repository }}
         run: |
           set -euo pipefail
           TAG="v$VERSION"
@@ -226,27 +271,26 @@ jobs:
           else
             gh release create "$TAG" \
               --title "a-check $TAG" \
-              --notes "Siehe [CHANGELOG.md §[$VERSION]](https://github.com/${GITHUB_REPOSITORY}/blob/main/CHANGELOG.md). Digest-Pin: \`$DIGEST\`" \
+              --notes "Siehe [CHANGELOG.md §[$VERSION]](https://github.com/${GITHUB_REPOSITORY}/blob/main/CHANGELOG.md). Digest-Pin (linux/amd64 + linux/arm64): \`$REGISTRY/$IMAGE_NAME@$DIGEST\`" \
               --target "$GITHUB_SHA" \
               $PRERELEASE_FLAG
           fi
 
   # Die Hub-DARSTELLUNG, getrennt vom Spiegel und ausdruecklich NICHT
   # fail-closed (ADR-0039): das Bild ist die Zusage, der Beschreibungstext ist
-  # Praesentation. Der Job laeuft NACH dem Release-Job und nur, wenn dieser
-  # durch ist — eine Seite zu setzen, die auf ein nicht veroeffentlichtes Bild
-  # zeigt, waere eine Falschaussage.
+  # Praesentation. Der Job laeuft NACH `publish` und nur, wenn dieser durch ist —
+  # eine Seite zu setzen, die auf ein nicht veroeffentlichtes Bild zeigt, waere
+  # eine Falschaussage.
   hub-description:
     name: Hub-Darstellung
-    needs: release
+    needs: [build, publish]
     # Ein aufgerufener Workflow bekommt nur, was der aufrufende JOB fuehrt: der
     # Kopf oben ist `permissions: {}`, und was der Job nicht deklariert, kann er
     # nicht weitergeben. Ohne diese zwei Zeilen bricht GitHub den Lauf VOR dem
-    # ersten Job ab — ohne Log und ohne Hinweis auf die Zeile. Genau darum musste
-    # die Hub-Darstellung bei v0.18.0 von Hand gestartet werden (slice-130).
+    # ersten Job ab — ohne Log und ohne Hinweis auf die Zeile.
     permissions:
       contents: read     # das Ziel liest das Repo fuer den Beschreibungstext
     uses: ./.github/workflows/hub-description.yml
     with:
-      version: v${{ needs.release.outputs.version }}
+      version: v${{ needs.build.outputs.version }}
     secrets: inherit

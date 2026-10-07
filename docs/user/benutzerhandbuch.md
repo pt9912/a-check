@@ -1,6 +1,6 @@
 # Benutzerhandbuch: a-check
 
-**Handbuch-Version:** 1.45 · **Software-Version:** [aktuelles Release](../../version.md#aktuell) · **Stand:** 2026-10-07 ·
+**Handbuch-Version:** 1.46 · **Software-Version:** [aktuelles Release](../../version.md#aktuell) · **Stand:** 2026-10-07 ·
 **Autor:** pt9912 (Maintainer)
 
 ---
@@ -31,7 +31,9 @@ Docker und `make`; a-check-Interna müssen Sie nicht kennen.
 
 > **Hinweis zum Image.** Das veröffentlichte GHCR-Image ist **digest-gepinnt**
 > (`a-check.mk` / `a-check --print-mk`); Konsumenten pinnen den `@sha256:`-Digest
-> statt beweglicher Tags. Für lokale Entwicklung gegen einen ungetaggten Stand bauen
+> statt beweglicher Tags. Es gibt das Image für **`linux/amd64` und `linux/arm64`**
+> (Docker Desktop auf macOS mit Apple Silicon zieht `linux/arm64`); der Pin ist der
+> Digest des **Image-Index** und gilt für beide. Für lokale Entwicklung gegen einen ungetaggten Stand bauen
 > Sie es mit `make build` ([README](../../README.md)) — Tag **`a-check:dev`**. In allen
 > Beispielen steht `<a-check-image>` stellvertretend für beides (das digest-gepinnte
 > GHCR-Image oder lokal `a-check:dev`).
@@ -193,10 +195,11 @@ a-check prüft nie mit geratenen Standardwerten.
    ```makefile
    A_CHECK_IMAGE ?= ghcr.io/pt9912/a-check@sha256:SETZE-HIER-DEN-RELEASE-DIGEST-EIN
    ```
-   Ersetzen Sie ihn durch den Digest des Release, aus dem das Fragment stammt. Zwei Quellen:
+   Ersetzen Sie ihn durch den Digest des Release, aus dem das Fragment stammt — den Digest
+   des **Image-Index**, nicht den eines einzelnen Plattform-Bilds. Zwei Quellen:
    ```bash
-   # a) auf dem Host, der das Image gezogen hat:
-   docker image inspect --format '{{index .RepoDigests 0}}' <image>:<tag>
+   # a) aus der Registry:
+   docker buildx imagetools inspect --format '{{.Manifest.Digest}}' <image>:<tag>
    # b) die Release-Notes auf GitHub
    ```
 3. Binden Sie es in Ihr `Makefile` ein:
@@ -1097,3 +1100,4 @@ und die [Spezifikation](../../spec/spezifikation.md); ein Überblick steht in de
 | 1.43 | 2026-10-06 | §4 „Sollform je Datei“ um **`unused: fail`** (Befund `shape-unused`, verortet an der Zeile des Eintrags in der `.a-check.yml`; ohne Opt-in still, kein Warn-Level) und **`mode: exact`** (Datei gleich einer Sollform-Datei nach Normalisierung; erste Abweichung als `shape-differs`, fehlende Sollform-Datei Exit 2) ergänzt; §3.4-Regeltabelle und Glossar. [ADR-0041](../plan/adr/0041-shapes-sollform-je-datei.md), slice-211. |
 | 1.44 | 2026-10-07 | §4 „Sollform je Datei“: neuer Dialekt **`gomod`** (`go.mod`; Anweisung = Direktive, ein `require ( … )`-Block ist eine Anweisung; Zeilenumbrüche sind Grammatik; Exit 2 bei `/* */`, `;`, verklebtem `=>` u. a.) mit Beispiel; **Befundzeilen einzeilig und eindeutig** (`\\`, `\n`, `\r`); `shape-unused` mit Art-Präfix. Lastenheft 0.29.0, [ADR-0042](../plan/adr/0042-shapes-benannte-dialekte-gomod-json.md), slice-213. |
 | 1.45 | 2026-10-07 | §4 „Sollform je Datei“: neuer Dialekt **`json`** (`package.json` u. a.; Anweisung = Mitglied des Wurzel-Objekts, Einträge als Mitglied ohne äußere Klammern; die Datei muss gültiges JSON nach RFC 8259 sein, jede Abweichung ist Exit 2; ebenso eine Nicht-Objekt-Wurzel) mit Beispiel. Lastenheft 0.29.0, [ADR-0042](../plan/adr/0042-shapes-benannte-dialekte-gomod-json.md), slice-214. |
+| 1.46 | 2026-10-07 | §1 „Hinweis zum Image“: das Image gibt es für `linux/amd64` und `linux/arm64`, der Pin ist der Digest des Image-Index; §2 Schritt 2 nennt `imagetools inspect` als Quelle des Index-Digests. Lastenheft 0.30.0, [ADR-0043](../plan/adr/0043-multi-arch-ein-bau-getestet-dann-getaggt.md), slice-218. |

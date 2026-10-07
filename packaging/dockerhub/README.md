@@ -34,11 +34,16 @@ Der `workflow_dispatch`-Lauf las die Version korrekt aus
 **Damit ist der Token-Scope belegt** — der Punkt, an dem der erste Lauf im
 Schwester-Repo scheiterte. **Der Spiegel selbst ist seit demselben Tag belegt:** das
 Repository trägt `v0.18.0` und `latest` (von Hand gespiegelt, weil der Tag auf einem Commit
-sitzt, der den Spiegel-Schritt noch nicht kannte). **Gemessen:** der **Config**-Digest ist auf
-beiden Registries identisch (`sha256:e4f357f0…`), der **Manifest**-Digest nicht
-(`356aeaea…` gegen `5bdd40ca…`) — genau die Lage, die
-[ADR-0039](../../docs/plan/adr/0039-spiegel-gleichheit-ist-der-config-digest.md) zur
-Entscheidung macht.
+sitzt, der den Spiegel-Schritt noch nicht kannte). **Gemessen damals:** der **Config**-Digest
+war auf beiden Registries identisch (`sha256:e4f357f0…`), der **Manifest**-Digest nicht
+(`356aeaea…` gegen `5bdd40ca…`) — der Spiegel lud das Bild neu hoch.
+
+**Seit dem Multi-Arch-Image** kopiert die Pipeline den **Image-Index unverändert**
+(`docker buildx imagetools create`), und die Gleichheits-Größe ist der **Index-Digest**
+([ADR-0043](../../docs/plan/adr/0043-multi-arch-ein-bau-getestet-dann-getaggt.md), löst die
+Gleichheits-Größe von
+[ADR-0039](../../docs/plan/adr/0039-spiegel-gleichheit-ist-der-config-digest.md) ab). Ein
+Neu-Push aus dem lokalen Bildspeicher schriebe nur die Plattform des Runners.
 
 ## Was beim ersten Lauf schiefgehen kann — und woran man es erkennt
 
@@ -80,7 +85,7 @@ Docker Hubs Taxonomie ist eine feste Liste; freie Schlagworte gibt es nicht.
 
 Der **Spiegel** ist fail-closed
 ([`AC-FA-DIST-002`](../../spec/lastenheft.md#ac-fa-dist-002)): liegt das Bild
-nicht auf Docker Hub oder weicht sein Config-Digest ab, ist das Release
+nicht auf Docker Hub oder weicht sein Index-Digest ab, ist das Release
 fehlgeschlagen. Die **Darstellung** ist es nicht — sie läuft mit
 `continue-on-error`. Der Unterschied ist der Gegenstand: das Bild ist die
 Zusage, der Beschreibungstext ist Präsentation

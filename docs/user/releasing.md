@@ -30,7 +30,7 @@ make a-check A_CHECK_IMAGE=a-check:dev   # Konsum-Aufruf gegen das lokale Image
 
 Versionen folgen SemVer; die menschlich kuratierte Begründung jedes Releases ist
 der zugehörige Abschnitt in [`CHANGELOG.md`](../../CHANGELOG.md). Der
-`[Unreleased]`-Stand wird **beim Re-Pin nach dem Publish** (Schritt 6) unter die neue
+`[Unreleased]`-Stand wird **beim Re-Pin nach dem Publish** (Schritt 8) unter die neue
 Version geschnitten — **zusammen** mit dem `version.md#aktuell`-Bump: der Pin-Check
 (slice-018) verlangt `version.md#aktuell` == aktuellstes `CHANGELOG`-Release; ein
 CHANGELOG-Schnitt **vor** dem Tag (ohne version.md-Bump) macht `make ci` in der Pipeline
@@ -51,22 +51,33 @@ jedem `v*`-Tag-Push:
 1. **SemVer-Validate** (fail-fast): nur `vMAJOR.MINOR.PATCH` oder
    `…-PRERELEASE`; Build-Metadaten (`+`) werden abgelehnt — vor Login/Build/Push.
 2. **`make ci VERSION=<version>`** — alle Gates (`make gates`) **plus**
-   `image-test`; baut zugleich das Runtime-Image mit `VERSION` aus dem Tag
-   (→ OCI-Label `org.opencontainers.image.version`).
-3. **OCI-Label-Verify** — `org.opencontainers.image.version` muss exakt der
-   Tag-Version entsprechen (Version-Drift shippt nicht).
-4. **Push** nach `ghcr.io/pt9912/a-check:v<version>`; `:latest`
+   `image-test` auf dem einplattformigen Bau: die Code-Fragen.
+3. **Ein Bau, beide Plattformen** — `make image-multiarch VERSION=<version>
+   PUSH_NAME=ghcr.io/pt9912/a-check` baut den Image-Index für `linux/amd64` und
+   `linux/arm64` **einmal**, prüft das Archiv (genau zwei Plattformen, Config, ELF,
+   Versions-Label) und lädt **denselben** Bau **ohne Tag** nach GHCR — nur per Digest
+   ([ADR-0043](../plan/adr/0043-multi-arch-ein-bau-getestet-dann-getaggt.md)).
+4. **Test je Plattform, nativ** — je ein Runner `ubuntu-latest` und `ubuntu-24.04-arm`
+   zieht **diesen Digest** und fährt `make image-test IMAGE_REF=…@<digest>` samt
+   Versions-Label (Version-Drift shippt nicht). Jeder gibt einen Hash über Exit-Code,
+   stdout und stderr seines Scans aus; beide müssen gleich sein.
+5. **Bild-Tag** `ghcr.io/pt9912/a-check:v<version>` erst danach, per
+   `docker buildx imagetools create` auf **denselben** Digest; `:latest`
    **ausschließlich** für stabile Releases (kein Prerelease-Suffix) —
    [ADR-0007](../plan/adr/0007-latest-tag-politik.md). Konsumenten pinnen
-   Digests, nicht `:latest`.
-5. **Digest-Pin** im Job-Summary und in den Notes des angelegten GitHub-Releases.
+   Digests, nicht `:latest`. Ein roter Schritt davor lässt den Index **ohne Tag** in
+   GHCR zurück — er trägt keine Version und kann in der Paketliste gelöscht werden.
+6. **Spiegel** nach Docker Hub: der Index wird unverändert kopiert, die Pipeline verlangt
+   **denselben Index-Digest** auf beiden Registries ([AC-FA-DIST-002](../../spec/lastenheft.md#ac-fa-dist-002)).
+7. **Digest-Pin** — der Digest des **Image-Index**, gültig für beide Plattformen — im
+   Job-Summary und in den Notes des angelegten GitHub-Releases.
    Das ist **die** Bezugsquelle für Konsumenten: `a-check --print-mk` gibt einen
    **Platzhalter** aus, keinen Digest
    ([ADR-0030](../plan/adr/0030-kein-digest-im-generierten-fragment.md),
    [AC-QA-03](../../spec/lastenheft.md#ac-qa-03--reproduzierbarkeit)) — ein Binary kann den
    Digest des Image, in dem es läuft, nicht kennen. **Wer Konsumenten auf `--print-mk` als
    Digest-Quelle verweist, erzeugt einen Fehlpin auf das Vorgänger-Release.**
-6. **Register-Re-Pin + CHANGELOG-Schnitt** (slice-018): den CHANGELOG `[Unreleased]` →
+8. **Register-Re-Pin + CHANGELOG-Schnitt** (slice-018): den CHANGELOG `[Unreleased]` →
    `[X.Y.Z] - <Datum>` schneiden **und** — im **selben** Commit, sonst Versions-Drift —
    den neuen Digest + die neue Version an [`version.md#aktuell`](../../version.md#aktuell)
    (Version, Datum, voller `@sha256:`-Digest) plus eine neue
@@ -93,6 +104,7 @@ Repository sie erneut setzen muss — und weil ihr Fehlen **still** wirkt:
 | **Dependabot-Alerts** | keine Meldung über bekannte Schwachstellen in Abhängigkeiten | *Settings → Code security* |
 | **`dependabot_security_updates`** | ein CVE **ohne** neues Upstream-Release öffnet **keinen** PR — der Kanal aus [ADR-0038](../plan/adr/0038-dependabot-als-hebungskanal.md) erreicht die Fundklasse von `make image-scan` dann nur zur Hälfte | ebenda |
 | **`DOCKERHUB_USERNAME`** / **`DOCKERHUB_TOKEN`** | kein Docker-Hub-Spiegel — und das Release ist **fehlgeschlagen**, denn der Spiegel ist fail-closed ([AC-FA-DIST-002](../../spec/lastenheft.md#ac-fa-dist-002)) | *Settings → Secrets and variables → Actions* |
+| **arm64-Runner** (`ubuntu-24.04-arm`) | der Test-Job für `linux/arm64` startet nicht; das Release bleibt **ohne Bild-Tag** stehen — ein ungetesteter Index trägt keine Version ([ADR-0043](../plan/adr/0043-multi-arch-ein-bau-getestet-dann-getaggt.md)). Für öffentliche Repos stellt GitHub den Runner bereit | keine Einstellung im Repo — hängt an der Sichtbarkeit (*öffentlich*) und am Angebot von GitHub |
 | **Token-Scope `read/write/delete`** | der **Push** gelingt, der **Metadaten-`PATCH`** nicht: das Bild liegt auf Docker Hub, Kurztext und Overview bleiben leer. Der Lauf ist trotzdem grün (`continue-on-error`) und meldet es als **Warnung** — siehe [`packaging/dockerhub/README.md`](../../packaging/dockerhub/README.md) | am **bestehenden** Token änderbar; der Wert bleibt derselbe |
 
 **Warum das hier steht und nicht nur in der ADR:** eine Zusage, die an einem
@@ -115,7 +127,7 @@ Bürokratie verkommt. Ein Punkt je Phase (slice-051):
 | 3 | **Planung** — die gelieferten Slices liegen in `done/` und tragen eine ausgefüllte Closure-Notiz | `make verify`, Exit 0 |
 | 4 | **Agenten** — der Gate-Index (`harness/README.md` §Sensors) beschreibt nur real existierende Targets, und jede reale Gate-Regel steht dort | `make doc-targets` (in `gates`), Exit 0 |
 | 5 | **Qualität** — Gates grün auf **frischem Klon** *und* in der CI mit demselben Image | `make preflight`-Ausgabe (die **Push**-Range; ist sie leer, meldet der Lauf eine WARNUNG und die drei Range-Schritte prüfen nichts — dann trägt Item 2) + CI-Run-Link |
-| 6 | **Distribution** — OCI-Label `…image.version` == Tag; `--print-mk` gibt einen **Platzhalter**, keinen konkreten Digest ([ADR-0030](../plan/adr/0030-kein-digest-im-generierten-fragment.md)) | Job-Summary der Release-Pipeline + `docker inspect`-Zeile + `make image-test` Exit 0 (prüft beides mechanisch) |
+| 6 | **Distribution** — der Index nennt genau `linux/amd64` und `linux/arm64`; OCI-Label `…image.version` == Tag auf **beiden**; `--print-mk` gibt einen **Platzhalter**, keinen konkreten Digest ([ADR-0030](../plan/adr/0030-kein-digest-im-generierten-fragment.md)) | Job-Summary + `docker buildx imagetools inspect`-Ausgabe des Pins + die zwei Test-Jobs der Release-Pipeline grün (`make image-test` prüft Label und Platzhalter je Plattform) |
 | 7 | **Register** — Digest und Version in `version.md#aktuell`, CHANGELOG, beiden READMEs und `a-check.mk` identisch (`cli.go` trägt keinen Digest, sondern den Platzhalter) | `make gates` **nach** dem Re-Pin, Exit 0 |
 | 8 | **Betrieb** — die Incident-Klausel unten ist gelesen und gilt unverändert | Verweis auf diesen Abschnitt im Release-Eintrag |
 

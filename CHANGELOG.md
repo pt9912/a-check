@@ -6,13 +6,22 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
+### Added
+
+- **Multi-Arch-Image:** das Release-Image gibt es für `linux/amd64` **und** `linux/arm64`
+  (macOS mit Apple Silicon ohne Emulation), unter **einem** Pin — dem Digest des Image-Index.
+  Gebaut wird einmal per Cross-Compile; die Release-Pipeline testet genau diesen Digest auf je
+  einem nativen Runner beider Plattformen, vergleicht die Scan-Ausgabe beider und setzt den
+  Bild-Tag erst danach. Lokal: `make image-multiarch` (baut und prüft den Index als OCI-Archiv),
+  `make image-test IMAGE_REF=…` (Image-Test gegen ein Tag oder einen Digest, prüft auch das
+  Versions-Label).
+
 ### Changed
 
-- **Multi-Arch-Image (Vertrag, noch nicht implementiert):** das Release-Image soll es für
-  `linux/amd64` **und** `linux/arm64` geben (macOS mit Apple Silicon ohne Emulation), unter
-  **einem** Pin — dem Digest des Image-Index; veröffentlicht wird das auf jeder Plattform getestete
-  Bild. Der Docker-Hub-Spiegel kopiert den Index unverändert, die Gleichheits-Prüfung vergleicht den
-  Index-Digest statt des Config-Digests, und der GHCR-Digest löst damit auch auf Docker Hub auf.
+- **Docker-Hub-Spiegel:** der Index wird unverändert kopiert statt neu hochgeladen; die
+  Gleichheits-Prüfung vergleicht den Index-Digest statt des Config-Digests, und der GHCR-Digest
+  löst damit auch auf Docker Hub auf. **Für Konsumenten:** der Pin ab diesem Release ist ein
+  Index-Digest; ältere Pins bleiben gültig.
   Lastenheft 0.30.0
   ([AC-FA-DIST-001](spec/lastenheft.md#ac-fa-dist-001--distribution-image---print-mk-a-checkmk),
   [AC-FA-DIST-002](spec/lastenheft.md#ac-fa-dist-002)), Spezifikation 0.39.0,
