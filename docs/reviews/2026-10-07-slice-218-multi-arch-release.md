@@ -121,3 +121,72 @@ Plattform-Läufe — das ist das in §6 benannte Risiko „Erst am Tag geprüft"
 
 **Übergabe:** Findings an den Implementer; die Finding-Klassen zusätzlich in die Closure §7 von
 slice-218. Dieser Report ist Lauf-Beleg und ersetzt keine Verifikation gegen die DoD.
+
+---
+
+## Delta-Review
+
+**Gegenstand:** `a71622a..06e45c6` — ein Commit, `06e45c6` (Fixes zu F-1 bis F-12:
+`release.yml`, `Makefile`, `tools/multiarch-check.sh`, `releasing.md`, `overview.md`,
+`CHANGELOG.md`, Gate-Index). Derselbe Reviewer-Kontext wie oben, gleicher Skill-Stand.
+
+**Eigene Nachmessung** (Geltungsbereich: Host `x86_64`, ohne Registry und ohne GitHub; die
+Tag-Wächter und der Melde-Schritt sind **gelesen**, nicht gelaufen — Inspect auf ein fehlendes Tag
+endet mit Exit 1, gemessen im ersten Lauf):
+
+| Probe | Ergebnis (Meldung) |
+|---|---|
+| `make -n image-test IMAGE_REF=x` | rot, Exit 2 — „image-test: mit IMAGE_REF=… ist VERSION=<version> Pflicht (Versions-Label des Bilds)" |
+| `make -n image-test IMAGE_REF=x VERSION=1.2.3` · `VERSION` aus der Umgebung | Exit 0, kein `docker build` · Exit 0 |
+| `make -n image-test` ohne `IMAGE_REF` | Exit 0, mit Bau |
+| `make -n help IMAGE_REF=x` · `IMAGE_REF=x make -n gates` | **rot, Exit 2** — dieselbe `image-test`-Meldung (D-2) |
+| `multiarch-check.sh` auf das vorhandene Archiv (`0.0.0-ma`) | Exit 0 |
+| Mutation: `…image.vendor` bzw. `…image.source` im amd64-Config leer, Hash-Kette neu | rot — „linux/amd64: OCI-Label org.opencontainers.image.vendor ist leer" bzw. „…source ist leer" (Versions-Prüfung davor grün, die Kette also gültig) |
+| `make doc-check`, `make doc-structure`, `make doc-workflows`, `make version-coherence`, `make guard-selftest` | Exit 0 (Ausgabe in Datei, Exit-Code getrennt) |
+
+### Status der Findings
+
+| ID | Status | Beleg |
+|---|---|---|
+| F-1 | behoben — Kopfkommentar nennt `make`, Docker-CLI, `gh`, `sha256sum`; trifft die Schritte | `release.yml:23-25` |
+| F-2 | behoben — beide Kommentare im Indikativ (Zusage am Ort), kein Konjunktiv über eine Alternative | `release.yml:238-243`, `:300-303` |
+| F-3 | behoben — Aufruf ohne `VERSION` bricht beim Parsen mit Meldung ab; CHANGELOG und Gate-Index nennen `VERSION`. Nebenwirkung D-2 | Probe oben |
+| F-4 | behoben — die fünf Labels wieder geprüft, je Plattform; Mutation rot aus dem richtigen Grund. Damit keine Lockerung; die §3.6-Frage entfällt | Probe oben; `tools/multiarch-check.sh:86-88` |
+| F-5 | behoben — je Strom ein Hash, dann einer über die drei Zeilen | `release.yml:136-138`, `:170-172` |
+| F-6 | behoben — Versions-Tag auf GHCR und Docker Hub wird nie umgehängt; `releasing.md` beschreibt den Wiederanlauf. Grenze D-3 | `release.yml:220-222`, `:257-259`; `releasing.md` Schritt 5 |
+| F-7 | behoben — Re-Pin ist wieder Schritt 6; ADR-0030 trifft | `releasing.md` Schritt 6 |
+| F-8 | behoben — Grenze genannt („from v0.23.0 on"; ältere Tags tragen einen anderen Digest). Hinweis D-4 | `overview.md:40-42` |
+| F-9 | behoben — Zahl entfernt; Test-Job-Kommentar nennt Name und Log-Zeile | `releasing.md` §Vorbedingungen; `release.yml:105-107` |
+| F-10 | behoben — Kommentar sagt, warum die Plattform-Menge im Index-Digest steckt (sachlich richtig: der Index-Digest hasht die Manifest-Liste samt `platform`) | `release.yml:238-243` |
+| F-11 | teilweise — Pfad-Kopplung kommentiert; die zwei Extraktoren bleiben (INFO, gemessen gleich) | `release.yml:99` |
+| F-12 | behoben — Melde-Schritt mit `if: failure()` nennt den GHCR-Digest auch bei Login-Fehler. Grenze D-1 | `release.yml:275-277` |
+
+### Neue Findings
+
+| ID | Kategorie | Befund | Quelle | Pfad | Verifizierbar | Klasse |
+|---|---|---|---|---|---|---|
+| D-1 | LOW | Der Schritt heißt „Spiegel-Fehlschlag melden", läuft aber unter `if: failure()` nach **jedem** roten Schritt des Jobs — auch nach dem Scan-Vergleich oder dem Tag-Wächter, also bevor etwas veröffentlicht ist. Die Meldung sagt dann „Release unvollstaendig. BEREITS VEROEFFENTLICHT (falls der Bild-Tag gesetzt war)"; der Name verspricht einen engeren Auslöser als die Bedingung. | AC-FA-DIST-002 Negative | `.github/workflows/release.yml:275-277` | ja — Scan-Hashes ungleich setzen | Name eines Schritts enger als seine Bedingung |
+| D-2 | LOW | Der `$(error)` steht in der Voraussetzungsliste von `image-test` und wird beim **Einlesen** des Makefiles expandiert: Mit gesetztem `IMAGE_REF` (Kommandozeile oder Umgebung) und ohne `VERSION` bricht **jedes** Target ab — `make help`, `make gates` —, mit einer Meldung, die `image-test` nennt. Gemessen. Der Makefile-Kommentar sagt „Mit IMAGE_REF ist VERSION Pflicht" ohne diese Reichweite. | `AGENTS.md` §3.7 (Kommentar sagt weniger, als die Regel tut) | `Makefile:227-228` | ja — `make -n help IMAGE_REF=x` | Prüfung wirkt weiter als ihr Target |
+| D-3 | INFO | Die Tag-Wächter werten **jeden** Fehlschlag von `imagetools inspect` als „Tag existiert nicht" (`2>/dev/null` im `if`). Ein Auth- oder Netzfehler beim Lesen bei existierendem Tag führt darum zum Überschreiben — nur wenn das anschließende `imagetools create` gelingt, also unwahrscheinlich. | `releasing.md` §Incident-Klausel („nie überschrieben") | `.github/workflows/release.yml:220`, `:257` | nein (Fehler-Injektion in der Registry) | Fehlerklasse „nicht gefunden" nicht von „nicht lesbar" getrennt |
+| D-4 | INFO | `overview.md` nennt `v0.23.0` als erste Version beider Plattformen — eine Vorhersage über die nächste Versionsnummer (heute `v0.22.0` veröffentlicht, einplattformig). Wird die nächste Version anders gezählt, ist der Satz falsch; die Seite wird bei jedem Release neu gesetzt. | — | `packaging/dockerhub/overview.md:40-41` | ja — nach dem Release | Künftige Kennung als feste Angabe |
+
+### Summary (Delta)
+
+| Kategorie | Anzahl |
+|---|---|
+| HIGH | 0 |
+| MEDIUM | 0 |
+| LOW | 2 |
+| INFO | 2 |
+
+**Finding-Klassen des Delta:** Name eines Schritts enger als seine Bedingung · Prüfung wirkt weiter
+als ihr Target · Fehlerklasse „nicht gefunden" nicht von „nicht lesbar" getrennt · Künftige
+Kennung als feste Angabe
+
+### Verdikt (Delta)
+
+**Abnahme-blockierend:** nein. F-1 bis F-10 und F-12 sind behoben und, wo lokal messbar,
+nachgefahren (F-3, F-4 per Probe rot aus dem richtigen Grund); F-11 bleibt INFO. Die neuen
+Findings sind LOW/INFO und brauchen keinen Konflikt-Pfad — Annahme oder Begründung durch den
+Implementer genügt. Unverändert ungeprüft bleibt, was nur am Tag läuft (arm64-Runner,
+Auth-Weitergabe, Tag-Wächter gegen echte Registries) — das §6-Risiko „Erst am Tag geprüft".
