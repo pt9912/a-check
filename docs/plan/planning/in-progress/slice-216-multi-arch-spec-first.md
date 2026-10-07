@@ -19,7 +19,7 @@ wechselt nur durch `git mv` (`make slice-mv`).
 
 **Autor:** Claude. **Datum:** 2026-10-07.
 
-**Lerneintrag — Form:** wird bei Closure benannt.
+**Lerneintrag — Form:** benannte Spec-Lücke.
 
 ---
 
@@ -90,15 +90,15 @@ ob GHCR und Docker Hub ihn ebenfalls erhalten, zeigt erst der Tag (Risiko §6).
 
 ## 2. Definition of Done
 
-- [ ] Messung: Basis-Images als Index mit beiden Plattformen (Digest), Verfügbarkeit der
+- [x] Messung: Basis-Images als Index mit beiden Plattformen (Digest), Verfügbarkeit der
       arm64-Runner für dieses Repo, Stabilität von Index- und Config-Digest beim Kopieren zwischen
       Registries — je mit Geltungsbereich (Mess-Regel 1).
-- [ ] Lastenheft-CR an [AC-FA-DIST-001](../../../../spec/lastenheft.md#ac-fa-dist-001--distribution-image---print-mk-a-checkmk)/[AC-FA-DIST-002](../../../../spec/lastenheft.md#ac-fa-dist-002) (drei Pfade plus Out-of-Scope, Versions-Bump, Historie) und Folge-ADR zur Build-Strategie mit Index-Eintrag.
-- [ ] [SPEC-DIST-001](../../../../spec/spezifikation.md#spec-dist-001--laufzeitform-und-distribution) präzisiert (Plattformen, Index-Digest als Pin, getestetes = veröffentlichtes Bild).
-- [ ] Unabhängiger Review, Report unter [`docs/reviews/`](../../../reviews/README.md).
-- [ ] Closure-Notiz mit Steering-Loop-Lerneintrag.
-- [ ] Beobachtungs-Register fortgeschrieben (oder „keine Beobachtung" notiert).
-- [ ] Jedes Risiko aus §6 trägt einen Ausgang.
+- [x] Lastenheft-CR an [AC-FA-DIST-001](../../../../spec/lastenheft.md#ac-fa-dist-001--distribution-image---print-mk-a-checkmk)/[AC-FA-DIST-002](../../../../spec/lastenheft.md#ac-fa-dist-002) (drei Pfade plus Out-of-Scope, Versions-Bump, Historie) und Folge-ADR zur Build-Strategie mit Index-Eintrag.
+- [x] [SPEC-DIST-001](../../../../spec/spezifikation.md#spec-dist-001--laufzeitform-und-distribution) präzisiert (Plattformen, Index-Digest als Pin, getestetes = veröffentlichtes Bild).
+- [x] Unabhängiger Review, Report unter [`docs/reviews/`](../../../reviews/README.md).
+- [x] Closure-Notiz mit Steering-Loop-Lerneintrag.
+- [x] Beobachtungs-Register fortgeschrieben (oder „keine Beobachtung" notiert).
+- [x] Jedes Risiko aus §6 trägt einen Ausgang.
 
 `make gates` grün; Abnahme des Vertrags durch den Maintainer vor dem Closure-Commit.
 
@@ -130,14 +130,53 @@ DoD vollständig, Vertrag abgenommen, `make gates` Exit 0, Closure-Notiz mit Ler
 
 - **Mechanik, die nur am Tag läuft:** Push, Spiegel und arm64-Test laufen erst in der
   Release-Pipeline; der Vertrag kann Zusagen machen, die vorher kein Lauf prüft (vgl.
-  `BEO-GATE/ungelaufene-mechanik-docker-hub-spiegel`, 1×). — **Ausgang:** *(bei Closure zuzuweisen: eingetreten / entfallen / weiter offen)*
+  `BEO-GATE/ungelaufene-mechanik-docker-hub-spiegel`, 1×). — **Ausgang:** *weiter offen* — der
+  Vertrag ist geschrieben, die Mechanik läuft erst am Tag; slice-218 führt das Risiko in §6, und das
+  Beobachtungs-Register zählt es unter `BEO-GATE/ungelaufene-mechanik-docker-hub-spiegel`.
 - **Zusage weiter als ihre Durchsetzung:** „getestet = veröffentlicht" auf zwei Plattformen ist
   leicht zu schreiben und schwer zu belegen (vgl. `BEO-GATE/zusage-weiter-als-ihre-durchsetzung`,
-  2×). — **Ausgang:** *(bei Closure zuzuweisen: eingetreten / entfallen / weiter offen)*
+  2×). — **Ausgang:** *eingetreten* — Review F-1 (Reproduzierbarkeit) und F-3 (Plattform-Vergleich);
+  F-1 vor der Abnahme gestrichen, den Plattform-Vergleich trägt der Folge-Slice slice-218.
 
 ## 7. Closure-Notiz
 
-*(folgt bei Closure)*
+**Lerneintrag — Form: benannte Spec-Lücke.** Das Lastenheft regelte die Distribution für genau
+eine Plattform, ohne das zu sagen: „das Image", „der Digest", „dasselbe Bild" auf dem Spiegel.
+[AC-FA-DIST-001](../../../../spec/lastenheft.md#ac-fa-dist-001--distribution-image---print-mk-a-checkmk)
+und [AC-FA-DIST-002](../../../../spec/lastenheft.md#ac-fa-dist-002) nennen seit Lastenheft 0.30.0
+die Plattformen, den Index-Digest als Pin und den getesteten Digest als den veröffentlichten;
+[SPEC-DIST-001](../../../../spec/spezifikation.md#spec-dist-001--laufzeitform-und-distribution)
+(0.39.0) präzisiert den Ablauf, [ADR-0043](../../adr/0043-multi-arch-ein-bau-getestet-dann-getaggt.md)
+begründet ihn. Abgenommen vom Maintainer am 2026-10-07.
+
+**Geliefert:** Messung M1–M7, Lastenheft 0.30.0, Spezifikation 0.39.0, [ADR-0043](../../adr/0043-multi-arch-ein-bau-getestet-dann-getaggt.md) `Accepted` (löst die
+Gleichheits-Größe von [ADR-0039](../../adr/0039-spiegel-gleichheit-ist-der-config-digest.md) ab), CHANGELOG `[Unreleased]`; die Folgepflichten der ADR stehen im
+Plan von slice-217 und slice-218.
+
+**Was hat funktioniert:** Messen vor dem Entscheiden: der wichtigste Befund — der heutige
+Spiegel-Weg verlöre arm64 — kam aus einem lokalen Versuch mit zwei Registries, nicht aus einer
+Annahme. Er hat die Gleichheits-Größe des Spiegels verändert.
+
+**Was ging anders als geplant:** Die eigene Messung M4 trug eine Folgerung, die weiter reichte als
+ihr Geltungsbereich; erst die Gegenmessung des Reviews widerlegte die Reproduzierbarkeit. Und eine
+Lastenheft-Zusage (gleiche Ausgabe auf beiden Plattformen) hatte zunächst keinen Prüfer.
+
+**Steering-Loop-Eintrag:** benannte Spec-Lücke — verkörpert im Lastenheft 0.30.0, nicht an einem
+Zielort mit Herkunfts-Anker.
+
+**Beobachtungs-Register (`../observations/`):**
+`BEO-GATE/zusage-weiter-als-ihre-durchsetzung` → 3× (Ausgang beim Lese-Schritt der
+welle-18-Closure); `BEO-PLAN/review-geltungsbereich-zu-eng` → 4×, erster Beleg nach der
+Verkörperung als Mess-Regel 1 — der Lese-Schritt der welle-18-Closure entscheidet, ob die
+Prosa-Form ausgeschöpft ist (Sensor oder Begründung, warum keiner möglich ist).
+
+**Folge-Slices:** slice-217 und slice-218 — beide in `open/`, Welle welle-18.
+
+**Risiken aus §6:** beide tragen ihren Ausgang (*weiter offen* im Beobachtungs-Register, *eingetreten* mit Folge-Slice).
+
+**Drei Paarungen:** getragen von der Closure von welle-18.
+
+**Trigger-Audit der aktiven MR:** [`MR-016`](../../../../harness/conventions.md#mr-016) [`MR-019`](../../../../harness/conventions.md#mr-019) [`MR-025`](../../../../harness/conventions.md#mr-025) [`MR-027`](../../../../harness/conventions.md#mr-027) [`MR-028`](../../../../harness/conventions.md#mr-028) [`MR-029`](../../../../harness/conventions.md#mr-029) [`MR-030`](../../../../harness/conventions.md#mr-030) — 0 offen (geprüft 2026-10-07).
 
 ## 8. Sub-Area-Prüfungen und Modus-Begründung
 
