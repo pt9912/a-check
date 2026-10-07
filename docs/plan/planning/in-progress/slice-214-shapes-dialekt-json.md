@@ -11,7 +11,8 @@ wechselt nur durch `git mv` (`make slice-mv`).
 
 **Berührte Spec-Stellen:** `spezifikation.md`
 §[SPEC-EXTRACT-001](../../../../spec/spezifikation.md#spec-extract-001--import-extraktion)
-(Absatz „Dialekt `json`", `literal`-Einträge in Quellform) — umgesetzt, nicht geändert.
+(Absatz „Dialekt `json`", `literal`-Einträge in Quellform) — umgesetzt; Schritt 2 „Gültigkeit“
+geändert durch die Plan-Änderung in §1 (Spezifikation 0.38.0).
 
 **Verantwortlich:** Claude — gesetzt beim Übergang nach `next/` (Maintainer: „ja", 2026-10-07).
 
@@ -42,8 +43,8 @@ unabhängige Lexik tragen — §1 von slice-213 sah das vor).
 
 - **Die Ausgabe-Regel (einzeilige, umkehrbare Meldung, `shape-unused`-Präfix).** *Ein anderer
   Slice übernimmt es*: slice-213, weil sie dialekt-übergreifend ist und vor diesem Slice liegt.
-- **Vertragsänderungen.** *Schicht-Abgrenzung*: der Vertrag steht; eine Lücke geht als
-  Plan-Änderung vor den Code.
+- **Vertragsänderungen über die Plan-Änderung oben hinaus.** *Schicht-Abgrenzung*: der Vertrag
+  steht; eine weitere Lücke geht als eigene Plan-Änderung vor den Code.
 
 ## 2. Definition of Done
 
