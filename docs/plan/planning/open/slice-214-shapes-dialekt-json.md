@@ -13,7 +13,7 @@ wechselt nur durch `git mv` (`make slice-mv`).
 §[SPEC-EXTRACT-001](../../../../spec/spezifikation.md#spec-extract-001--import-extraktion)
 (Absatz „Dialekt `json`", `literal`-Einträge in Quellform) — umgesetzt, nicht geändert.
 
-**Verantwortlich:** —
+**Verantwortlich:** Claude — gesetzt beim Übergang nach `next/` (Maintainer: „ja", 2026-10-07).
 
 **Autor:** Claude. **Datum:** 2026-10-07.
 
