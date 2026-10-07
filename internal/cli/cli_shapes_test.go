@@ -335,7 +335,7 @@ func TestShapesGomodEndToEnd(t *testing.T) {
 	if code, out, _ := run(extra); code != 1 || out != "svc/go.mod:5: shape-unlisted: require (github.com/a/b v1.2.3;golang.org/x/c v0.1.0;github.com/evil/lib v1.0.0)\n" {
 		t.Fatalf("zusaetzliche require-Zeile: code=%d out=%q", code, out)
 	}
-	if code, out, _ := run(good + "replace github.com/a/b => github.com/evil/b v9.9.9\n"); code != 1 || !strings.Contains(out, "svc/go.mod:9: shape-unlisted: replace github.com/a/b => github.com/evil/b v9.9.9\n") {
+	if code, out, _ := run(good + "replace github.com/a/b => github.com/evil/b v9.9.9\n"); code != 1 || out != "svc/go.mod:9: shape-unlisted: replace github.com/a/b => github.com/evil/b v9.9.9\n" {
 		t.Fatalf("zusaetzliche replace-Direktive: code=%d out=%q", code, out)
 	}
 	if code, out, errs := run(good + "/* versteckt */\n"); code != 2 || out != "" || !strings.Contains(errs, "nicht erlaubt") {

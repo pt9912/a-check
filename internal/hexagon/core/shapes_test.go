@@ -286,6 +286,14 @@ func TestEvaluateShapesMessagesOneLine(t *testing.T) {
 	}
 	d, ok := firstDifference(ShapeFile{Path: "x", Lines: 1, Statements: []Statement{{Text: "a\nb", Line: 1}}}, []Statement{{Text: `a\nb`, Line: 1}})
 	if !ok || d.Msg != `a\nb (erwartet: a\\nb)` {
-		t.Fatalf("shape-differs: %+v", d)
+		t.Fatalf("shape-differs (anders): %+v", d)
+	}
+	d, ok = firstDifference(ShapeFile{Path: "x", Lines: 2, Statements: []Statement{{Text: "a", Line: 1}, {Text: "b\nc", Line: 2}}}, []Statement{{Text: "a", Line: 1}})
+	if !ok || d.Msg != `b\nc (nicht in der Sollform)` {
+		t.Fatalf("shape-differs (zusätzlich): %+v", d)
+	}
+	d, ok = firstDifference(ShapeFile{Path: "x", Lines: 1, Statements: nil}, []Statement{{Text: "x\\y\rz", Line: 1}})
+	if !ok || d.Msg != `fehlt: x\\y\rz` {
+		t.Fatalf("shape-differs (fehlend): %+v", d)
 	}
 }

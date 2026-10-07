@@ -73,6 +73,9 @@ func TestGomodUnsplittable(t *testing.T) {
 		"module \"a\\\n\"\n",           // Zeilenende direkt nach Backslash
 		"module a;b\n",                 // `;` außerhalb einer Zeichenkette
 		"module a\"b\"\n",              // Zeichenkette mitten im Token
+		"module a`b`\n",                // rohe Zeichenkette mitten im Token
+		"module ( x\n",                 // `(` als Token mitten in der Zeile
+		"()\n",                         // leerer Block ohne Kopf
 		"module \"a\"\"b\"\n",          // zweite Zeichenkette direkt hinter der ersten
 		"module a//b\n",                // `//` direkt hinter einem Zeichen
 		"module a(b\n",                 // Klammer im Token

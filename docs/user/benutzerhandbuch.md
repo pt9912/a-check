@@ -1,6 +1,6 @@
 # Benutzerhandbuch: a-check
 
-**Handbuch-Version:** 1.44 · **Software-Version:** [aktuelles Release](../../version.md#aktuell) · **Stand:** 2026-10-06 ·
+**Handbuch-Version:** 1.44 · **Software-Version:** [aktuelles Release](../../version.md#aktuell) · **Stand:** 2026-10-07 ·
 **Autor:** pt9912 (Maintainer)
 
 ---
@@ -257,7 +257,7 @@ Jeder Befund nennt die Regel. Die Regeln und ihre Behebung:
 | `port-direction-mismatch` | Ein Adapter importiert einen Port der *nicht passenden* Seite (beide Richtungen deklariert). Das Vokabular hängt an der Rolle: Ports sind `inbound`/`outbound`, Adapter `driving`/`driven`. Zusammen gehören `driving`↔`inbound` und `driven`↔`outbound` — ein treibender Adapter spricht nur eingehende Ports. **Kategorisch** (Kante hebt nicht auf). | Den Import über die passende Seite führen (z. B. über die `app`-Schicht), oder die Schicht-`direction` korrigieren. Ohne `direction` greift die Regel nicht. |
 | `port-locality` | Eine `app`-Datei importiert einen **im App-Baum geschachtelten** Port **außerhalb dessen Scope-Verzeichnis** — use-case-lokal (`…/createorder/ports`) ⊂ business-area (`…/order/ports`) ⊂ app-weit (`…/ports`). **Kategorisch.** Nur `app`-Importeure. Bei **klassischem Hexagonal** (Ports als Geschwister der App, `…/ports` neben `…/services`) ist die Regel **inert**. | Den Port auf die passende Ebene heben („so gemeinsam wie nötig") oder den fremden slice-lokalen Port nicht importieren. |
 | `construct-leak` | Ein per `constructs` (Abschnitt 4) deklariertes **Roh-Text-Muster** steht außerhalb seiner erlaubten Zone — z. B. ein `dlopen(`-**Aufruf** außerhalb des Plugin-Adapters. Gilt **scan-weit**, auch in Dateien ohne Schicht; Treffer in Kommentaren zählen nicht. | Das Konstrukt in seine Zone verlagern (oder hinter einen Port führen). Ist die Stelle legitim, die Zone im `constructs`-Eintrag erweitern (`adapter` nimmt auch eine Liste). |
-| `shape-unlisted` | Eine per `shapes` (Abschnitt 4) geprüfte Datei enthält eine Anweisung, die keinem `allow`-Eintrag entspricht — etwa eine zusätzliche Abhängigkeit in der Build-Datei des Fachkern-Moduls, gleich in welcher Schreibweise. Geprüft wird nach Normalisierung (Kommentare, Leerraum und Umbrüche zählen nicht); ein Block ist eine Anweisung. | Die Anweisung entfernen. Ist sie legitim, den `allow`-Eintrag ergänzen — bei einem Block den ganzen Block in seiner neuen Form. |
+| `shape-unlisted` | Eine per `shapes` (Abschnitt 4) geprüfte Datei enthält eine Anweisung, die keinem `allow`-Eintrag entspricht — etwa eine zusätzliche Abhängigkeit in der Build-Datei des Fachkern-Moduls, gleich in welcher Schreibweise. Geprüft wird nach der Normalisierung des Dialekts — bei `kotlin` zählen Kommentare, Leerraum und Umbrüche nicht, bei `gomod` trennt ein Zeilenumbruch Anweisungen —; ein Block ist eine Anweisung. | Die Anweisung entfernen. Ist sie legitim, den `allow`-Eintrag ergänzen — bei einem Block den ganzen Block in seiner neuen Form. |
 | `shape-differs` | Eine per `shapes` mit `mode: exact` geprüfte Datei weicht von ihrer Sollform-Datei ab; gemeldet wird die **erste** abweichende, zusätzliche oder fehlende Anweisung. | Die Datei an die Sollform angleichen — oder, wenn die Änderung gewollt ist, die Sollform-Datei mitziehen. |
 | `shape-unused` | Ein `allow`-Eintrag eines `shapes`-Eintrags mit `unused: fail` trifft in keiner Datei; der Befund zeigt auf seine Zeile in der `.a-check.yml`. | Den Eintrag streichen — er erlaubt etwas, das nicht mehr vorkommt. |
 | `wrong-direction` | Ein Import läuft entgegen einer erlaubten Schicht-Kante. | Die Kante in `edges` aufnehmen (falls legitim) oder den Import umdrehen. |
@@ -650,7 +650,11 @@ Eine weitere `require`-Zeile ändert den Block und meldet `shape-unlisted`, eben
 `replace`-Direktive. Exit-Code 2 statt eines stillen Grüns, wenn die Datei etwas enthält, das die
 Referenz verbietet oder das sich nicht eindeutig lesen lässt: `/* */`, ein `;` außerhalb einer
 Zeichenkette, ein Zeilenende in einer Zeichenkette, ein an Zeichen geklebtes `=>`, eine Klammer
-innerhalb eines Tokens, ein offener oder geschachtelter Block.
+innerhalb eines Tokens, ein offener oder geschachtelter Block — die vollständige Liste steht in der
+[Spezifikation](../../spec/spezifikation.md#spec-extract-001--import-extraktion). Einen erlaubten
+Block schreiben Sie in der `allow`-Liste **mehrzeilig** wie in der Datei: Die einzeilige
+Befund-Meldung (`require (a v1;b v2)`) ist keine gültige `go.mod`-Zeile und lässt sich nicht als
+Eintrag übernehmen.
 
 **Befundzeilen sind einzeilig.** Jede `shape-*`-Meldung steht auf **einer** Zeile: ein Backslash
 erscheint als `\\`, ein Zeilenende als `\n`, ein Wagenrücklauf als `\r` — eindeutig, zwei
