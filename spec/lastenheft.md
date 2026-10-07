@@ -1,6 +1,6 @@
 # Lastenheft — a-check
 
-**Version:** 0.29.0
+**Version:** 0.30.0
 
 **Status:** Draft
 
@@ -681,7 +681,11 @@ Grenzen (`AC-QA-02`).
 ### AC-FA-DIST-001 — Distribution: Image, `--print-mk`, `a-check.mk`
 
 **Beschreibung:** `a-check` wird als GHCR-Image (distroless/static,
-digest-gepinnt) verteilt. `a-check --print-config` gibt ein kommentiertes
+digest-gepinnt) verteilt — für die Plattformen **`linux/amd64` und `linux/arm64`**. Der
+veröffentlichte Digest ist der des **Image-Index**: **ein** Pin, der auf beiden Plattformen
+auflöst; Docker Desktop auf macOS mit Apple Silicon zieht daraus `linux/arm64`. Veröffentlicht
+wird das Bild, das **getestet** wurde — auf jeder Plattform dasselbe, nicht ein zweiter Bau.
+`a-check --print-config` gibt ein kommentiertes
 `.a-check.yml`-Gerüst aus; `a-check --print-mk` gibt ein `a-check.mk` mit dem
 **aktuell digest-gepinnten** Image, einem `a-check`-Scan-Target **und** einem
 `a-check-graph`-Target aus. Konsumenten `include a-check.mk` und liefern
@@ -696,8 +700,12 @@ digest-gepinnte `A_CHECK_IMAGE`-Variable — kein zweiter Digest, keine Skript-K
 - **Happy (Graph-Target):** Given das erzeugte `a-check.mk` in einem Konsumenten-`Makefile` eingebunden, when `make a-check-graph` läuft, then ein Mermaid-`flowchart` auf stdout (read-only, kein Scan), Exit-Code 0 — dasselbe `A_CHECK_IMAGE` wie das `a-check`-Scan-Target, kein Schreibzugriff auf den Baum.
 - **Boundary:** Given `a-check --print-config`, when es läuft, then ein dekodierbares `.a-check.yml`-Gerüst, **schreibt nichts** (read-only).
 - **Negative:** Given `--print-mk` mit einem zusätzlichen unbekannten Flag, when aufgerufen, then Exit-Code 2.
+- **Boundary (Plattformen):** Given der veröffentlichte Index-Digest, when ihn ein Host mit `linux/amd64` und einer mit `linux/arm64` ziehen und denselben Scan ausführen, then läuft auf beiden dasselbe Release mit byte-identischer Ausgabe und gleichem Exit-Code; der Index nennt genau diese zwei Plattformen.
+- **Negative (Plattform-Test):** Given der Image-Test schlägt auf einer der zwei Plattformen fehl, when die Release-Pipeline läuft, then wird **kein** Versions-Tag gesetzt und das Release ist fehlgeschlagen — ein auf einer Plattform ungetestetes Bild trägt keine Version.
 
-**Out-of-Scope:** Nicht-Docker-Distribution (Binary-Releases) in 0.1.0; ein Datei-schreibendes oder Browser-öffnendes Graph-Target (`a-check-graph` schreibt nur nach stdout, Umleiten ist Nutzer-Sache); weitere Ausgabeformate (`--graph-format` DOT/Graphviz) — eigener Folge-Slice.
+**Out-of-Scope:** Nicht-Docker-Distribution (Binary-Releases, auch native macOS- oder
+Windows-Binaries); weitere Plattformen (`linux/arm/v7`, `s390x`, `ppc64le`); Signaturen und
+Herkunfts-Attestierungen am Bild; ein Datei-schreibendes oder Browser-öffnendes Graph-Target (`a-check-graph` schreibt nur nach stdout, Umleiten ist Nutzer-Sache); weitere Ausgabeformate (`--graph-format` DOT/Graphviz) — eigener Folge-Slice.
 
 ### AC-FA-DIST-002 — Docker-Hub-Spiegel
 
@@ -705,20 +713,22 @@ digest-gepinnte `A_CHECK_IMAGE`-Variable — kein zweiter Digest, keine Skript-K
 
 **Beschreibung:** Das Release-Image wird zusätzlich nach `docker.io/pt9912/a-check`
 gespiegelt. **Zusage ist dasselbe Bild, nicht ein zweiter Bau:** gespiegelt wird
-der Inhalt, der bereits auf GHCR liegt. Die Gleichheits-Größe ist der
-**Config-Digest** — er ist bei identischem Inhalt auf beiden Registries gleich;
-der **Manifest-Digest** ist es **nicht**, weil er von der Blob-Kompression der
-jeweiligen Registry abhängt. Die Pipeline prüft die Config-Gleichheit **nach**
-dem Push und **fail-closed**: schlägt sie fehl, ist das Release fehlgeschlagen.
+der Inhalt, der bereits auf GHCR liegt — der **Image-Index unverändert kopiert**, mit allen
+Plattformen aus [AC-FA-DIST-001](#ac-fa-dist-001--distribution-image---print-mk-a-checkmk).
+Die Gleichheits-Größe ist der **Index-Digest**: Ein unverändert kopierter Index trägt auf beiden
+Registries denselben Digest, und dieser Digest deckt jede Plattform mit ab. Ein Neu-Push aus dem
+lokalen Bildspeicher hält das nicht — er schreibt die Bilder neu und kann Plattformen verlieren.
+Die Pipeline prüft die Gleichheit **nach** dem Spiegeln und **fail-closed**: schlägt sie fehl,
+ist das Release fehlgeschlagen.
 
 **Der Spiegel steht nach dem GHCR-Push**, damit die Quelle nie hinter dem
 Spiegel zurückliegt.
 
 **Die Pin-Stellen dieses Repos bleiben GHCR-gebunden**
 ([AC-QA-03](#ac-qa-03--reproduzierbarkeit)): `a-check.mk`, beide READMEs und
-`version.md#aktuell` nennen den GHCR-Digest. Wer vom Spiegel zieht, nimmt den
-Digest **der Registry, aus der er zieht** — ein von GHCR kopierter löst dort
-nicht auf. Die Hub-Seite sagt das.
+`version.md#aktuell` nennen den GHCR-Digest. Weil der Spiegel den Index unverändert kopiert
+und die Pipeline die Gleichheit des Index-Digests prüft, löst **derselbe** Digest auch auf dem
+Spiegel auf. Die Hub-Seite sagt das.
 
 **Die Darstellung ist nicht Teil der Zusage.** Kurztext und Overview-Seite
 werden gesetzt, aber ein Fehlschlag macht kein Release rot: das Bild ist die
@@ -726,9 +736,9 @@ Zusage, der Beschreibungstext ist Präsentation.
 
 **Akzeptanzkriterien:**
 
-- **Happy:** Given ein stabiles Release, when die Pipeline läuft, then liegt dasselbe Bild auf beiden Registries und der **Config-Digest** ist identisch — geprüft nach dem Push, Exit 0.
+- **Happy:** Given ein stabiles Release, when die Pipeline läuft, then liegt derselbe Image-Index auf beiden Registries: der **Index-Digest** ist identisch und nennt beide Plattformen — geprüft nach dem Spiegeln, Exit 0.
 - **Boundary:** Given ein Prerelease, when die Pipeline läuft, then wird gespiegelt, aber **kein** `:latest` gesetzt — wie auf GHCR ([AC-FA-DIST-001](#ac-fa-dist-001--distribution-image---print-mk-a-checkmk)).
-- **Negative:** Given ein Spiegel-Push, der fehlschlägt oder dessen Config-Digest abweicht, when die Pipeline läuft, then **Exit ≠ 0** und das Release gilt als fehlgeschlagen; die Meldung nennt den bereits veröffentlichten GHCR-Digest, damit der gültige Teilstand sichtbar bleibt.
+- **Negative:** Given ein Spiegeln, das fehlschlägt oder dessen Index-Digest abweicht, when die Pipeline läuft, then **Exit ≠ 0** und das Release gilt als fehlgeschlagen; die Meldung nennt den bereits veröffentlichten GHCR-Digest, damit der gültige Teilstand sichtbar bleibt.
 - **Negative (Darstellung):** Given der Metadaten-Upload wird abgelehnt (Token-Scope zu eng), when die Pipeline läuft, then bleibt das Release **grün**, und der Fehlschlag wird als Warnung mit wahrscheinlicher Ursache gemeldet — nicht verschwiegen.
 
 **Out-of-Scope:** Eine Docker-Hub-Kategorie per Automatik (die Upload-Action hat dafür keinen Input; sie bleibt eine Entscheidung im Web-UI und steht als Text im `packaging/`-README); ein Spiegel auf weitere Registries; Pin-Stellen dieses Repos auf den Hub-Digest umzustellen.
@@ -841,3 +851,4 @@ eine Zeile hier (Baseline-Regelwerk `grundlagen-source-precedence.md` §Spec-Str
 | 0.27.0 | 2026-09-05 | Gegen die v6.0.0-Baseline-Ziel-Form nachgezogen: neu **§5 Globale Out-of-Scope-Punkte** (das bisher in §1 stehende produktweite „Out of Scope" dorthin verschoben, §1 zeigt jetzt per Verweis) und **§6 Glossar** (fünf im Dokument bereits feststehend verwendete Begriffe: Schicht-Rolle, Sub-Einheit, Composition Root, driving/driven, Heuristik-Grenze). Kein neuer Fakt — beide Abschnitte konsolidieren bereits an anderer Stelle belegte Aussagen an der von der Ziel-Form vorgesehenen Stelle; Status bleibt `Draft`, daher keine Change-Request-Pflicht (§7). |
 | 0.28.0 | 2026-10-06 | **CR „Positivliste von Anweisungen je Datei (Sollform)"** — neu **`AC-FA-RULE-012`** (`shapes`): in einer benannten Datei steht nur, was ausdrücklich erlaubt ist; alles Unbekannte ist ein Befund (fail-safe statt Verbotsliste). Die Datei wird je Dialekt normalisiert (Kommentare weg, Zeichenketten unverändert, Leerraum gefaltet) und in Anweisungen auf oberster Ebene zerlegt; ein Block ist eine Anweisung und wird als Ganzes verglichen. Zwei Modi: `allow-statements` (Befund `shape-unlisted`, mit `unused: fail` zusätzlich `shape-unused`) und `exact` gegen eine Sollform-Datei (Befund `shape-differs`, erste Abweichung). Dialekt `kotlin`; unabhängig von `layers`/`languages`; fehlende Datei, Widerspruch zu `exclude` und nicht zerlegbare Datei sind Exit 2. `AC-FA-CONF-001` um den Block und seine fail-closed-Fälle erweitert. **§5 präzisiert:** die Heuristik arbeitet auf drei Ebenen — Importe, Roh-Text, normalisierte Anweisungsfolge benannter Dateien —, keine wertet Sprach- oder Build-Semantik aus. Anlass: ein Adopter will das Fachkern-Modul gegen Fremdabhängigkeiten und Plugins sichern; Gradle kennt zu viele gleichwertige Schreibweisen für eine Verbotsliste in `constructs`. |
 | 0.29.0 | 2026-10-07 | `AC-FA-RULE-012` um zwei **benannte** Dialekte erweitert: **`gomod`** (Anweisung = Direktive; ein Block `verb ( … )` ist eine Anweisung, seine Zeilen darin getrennt) und **`json`** (Anweisung = Mitglied des Wurzel-Objekts; Wurzel kein Objekt ⇒ Exit 2). Die Lexik ist fest im Werkzeug und aus der Grammatik der Formate abgeleitet, **nicht** vom Konsumenten konfigurierbar — das Out-of-Scope nennt die konfigurierbare Lexik jetzt ausdrücklich, statt „generischer Dialekt“. Die Meldung jedes `shape-*`-Befunds ist einzeilig und umkehrbar (Backslash, Zeilenende, Wagenrücklauf maskiert). Zwei neue Akzeptanzkriterien (Boundary `gomod`, Boundary `json`). Anlass: Maintainer-Anweisung; gemessen an den `go.mod`- und `package.json`-Dateien realer a-check-Konsumenten. |
+| 0.30.0 | 2026-10-07 | **Multi-Arch-Image:** `AC-FA-DIST-001` verteilt das Bild für **`linux/amd64` und `linux/arm64`**; der veröffentlichte Digest ist der des **Image-Index** (ein Pin, beide Plattformen), und veröffentlicht wird das auf jeder Plattform getestete Bild. Zwei neue Akzeptanzkriterien (Boundary Plattformen, Negative Plattform-Test); Out-of-Scope um weitere Plattformen, native Binaries und Attestierungen geschärft. `AC-FA-DIST-002`: der Spiegel kopiert den Index unverändert, die Gleichheits-Größe ist der **Index-Digest** statt des Config-Digests — er deckt alle Plattformen, und der GHCR-Digest löst damit auch auf dem Spiegel auf. Anlass: Maintainer-Anweisung (macOS mit Apple Silicon); gemessen an lokalen Builds und zwei lokalen Registries. |

@@ -1,6 +1,6 @@
 # Spezifikation — a-check
 
-**Version:** 0.38.0
+**Version:** 0.39.0
 
 **Status:** Draft
 
@@ -686,6 +686,7 @@ Zufalls- oder locale-abhängige Reihenfolgen in der Ausgabe.
 ## SPEC-DIST-001 — Laufzeitform und Distribution
 
 Präzisiert [AC-FA-DIST-001](lastenheft.md#ac-fa-dist-001--distribution-image---print-mk-a-checkmk),
+[AC-FA-DIST-002](lastenheft.md#ac-fa-dist-002),
 [AC-QA-02](lastenheft.md#ac-qa-02--hermetik-und-ehrliche-heuristik-grenze)
 und [AC-QA-03](lastenheft.md#ac-qa-03--reproduzierbarkeit).
 
@@ -694,8 +695,22 @@ und [AC-QA-03](lastenheft.md#ac-qa-03--reproduzierbarkeit).
   **netzlos** (`--network none`) mit read-only gemountetem Prüfbaum. (Diese
   Form ist sprachneutral spezifiziert; die Implementierungssprache, die sie
   realisiert, ist eine ADR-Entscheidung.)
-- **Image** ist `@sha256:`-digest-gepinnt; Pin-Hebung ist ein bewusster
-  Commit.
+- **Plattformen:** genau `linux/amd64` und `linux/arm64`. Das Artefakt wird für beide aus
+  demselben Quellstand **cross-kompiliert**; die Laufzeit-Stufe führt keinen Befehl aus, ein
+  Emulator ist für den Bau nicht nötig. Der Index trägt nur diese zwei Plattform-Bilder — keine
+  Attestierungs- oder SBOM-Einträge.
+- **Image** ist `@sha256:`-digest-gepinnt; der Pin ist der Digest des **Image-Index** und löst auf
+  beiden Plattformen auf. Pin-Hebung ist ein bewusster Commit.
+- **Reproduzierbar:** alle Zeitstempel im Bild stehen auf der Commit-Zeit des Release-Commits;
+  derselbe Commit ergibt denselben Index-Digest.
+- **Getestet = veröffentlicht:** der Index wird **einmal** gebaut und ohne Versions-Tag
+  hochgeladen; der Image-Test läuft je Plattform auf einem Rechner **dieser** Plattform gegen
+  **diesen** Digest, einschließlich des Versions-Labels. Erst wenn beide Tests grün sind, erhält
+  derselbe Digest den Versions-Tag (und bei stabilen Releases `latest`). Ein roter Test lässt den
+  Index ohne Versions-Tag.
+- **Spiegel:** der Index wird **unverändert kopiert**, nicht neu hochgeladen. Gleichheit heißt:
+  derselbe Index-Digest auf Quelle und Spiegel und dieselbe Plattform-Menge; geprüft nach dem
+  Kopieren, fail-closed.
 - `--print-config`: gibt ein **kommentiertes** `.a-check.yml`-Gerüst auf
   stdout aus; schreibt nichts.
 - `--print-mk`: gibt ein include-bares Makefile-Fragment auf stdout aus —
@@ -745,6 +760,7 @@ Spec-Straten — welche ADR eine Festlegung schärft, deklariert die ADR aufwär
 | 0.17.0 | 2026-07-05 | `SPEC-CONF-001`: **datei-mengen-bewusste Mehr-Wurzel-Auflösung** (Stufe 2) — `fixed-root` mit ≥ 2 `roots` löst den FQN gegen die real gescannten Dateien auf (endungs-agnostisch, package==directory); Schicht am realen Kandidaten-Pfad, Phantom bleibt extern; der Ladezeit-Guard aus 0.16.0 entfällt. Gleicher FQN real in ≥ 2 Roots + **verschiedene** Schichten → Exit 2 **nach dem Scan** (distinct-layer; `expect`/`actual` same-layer löst sauber). Folgt [`AC-FA-CONF-001`](lastenheft.md#ac-fa-conf-001--konfigurationsdatei-a-checkyml) 0.17.0. |
 | 0.18.0 | 2026-07-06 | `SPEC-CONF-001`/`SPEC-EXTRACT-001`: **deklarations-bewusste Mehr-Wurzel-Auflösung** (Stufe 3) — bei `fixed-root` mit ≥ 2 `roots` gewinnt für ein deklarations-bewusstes Backend (Kotlin) die **reale Top-Level-Deklaration** über den bloßen Datei-Namens-Match (Evidenz-Rangfolge deklariert > Paketverzeichnis > keine); genau ein deklarierender Root ⇒ eindeutig, ≥ 2 deklarierende Roots verschiedener Schichten ⇒ Exit 2, kein Treffer ⇒ extern (fail-open). `SPEC-EXTRACT-001`: **Kotlin** liefert zusätzlich Top-Level-Deklarationen (`fun`/Extension/`val`/`class`/`object`/`interface`/`typealias`), übrige Backends no-op (leeres Set). Folgt [`AC-FA-CONF-001`](lastenheft.md#ac-fa-conf-001--konfigurationsdatei-a-checkyml)/[`AC-FA-EXTRACT-001`](lastenheft.md#ac-fa-extract-001--sprach-backends-für-die-import-extraktion) 0.18.0. |
 | 0.19.0 | 2026-07-09 | Neu `SPEC-CLI-002` (Graph-Renderer-Vertrag: Config-Modell→Mermaid **pur**; stabile interne IDs + escaptes Label je nutzergesteuertem Text; Kante je `edges`, abgesetzte `allow`-Kante; Dangling-/Composition-Root-/Adapter-Sink-Sonderknoten; `classDef` je effektiver Rolle via geteiltem Resolver; `direction`-Subgraphs; implizite Regeln als Legende; Escaping-Vertrag; Determinismus-Ordnung; `tech` v1 deferred). `SPEC-CLI-001` um den no-scan-`--print-graph`-Modus präzisiert (load-time/config-validation-Parität inkl. unbekannter Sprache; Restargument nach dem Pfad → Exit 2; **keine** scanzeitige Fehler-Parität). Folgt [`AC-FA-CLI-002`](lastenheft.md#ac-fa-cli-002--architektur-graph-ausgabe) 0.19.0. |
+| 0.39.0 | 2026-10-07 | `SPEC-DIST-001`: **Multi-Arch** — Plattformen `linux/amd64` und `linux/arm64` per Cross-Compile, der Pin ist der **Index-Digest**, Zeitstempel auf der Commit-Zeit (reproduzierbar), getestet je Plattform nativ gegen den hochgeladenen Digest und erst danach getaggt; der Spiegel kopiert den Index unverändert, Gleichheit = Index-Digest und Plattform-Menge. Präzisiert die Lastenheft-Fassung 0.30.0 von [AC-FA-DIST-001](lastenheft.md#ac-fa-dist-001--distribution-image---print-mk-a-checkmk) und [AC-FA-DIST-002](lastenheft.md#ac-fa-dist-002). |
 | 0.38.0 | 2026-10-07 | `SPEC-EXTRACT-001` (`json`): die Datei muss **gültiges JSON** nach RFC 8259 sein (Wert-Grammatik, Zahlen, Literale, Escape-Folgen, UTF-8); jede Abweichung ist ein Fehler — die bisher aufgezählten Fälle sind Beispiele dieser Regel. Vorher wurden etwa `tru`, `01`, `"\x"` und ein fehlendes Komma angenommen. |
 | 0.37.0 | 2026-10-07 | `SPEC-EXTRACT-001` (`gomod`): die Fehlerliste nennt ausdrücklich ein `(`, `)` oder `()` als Token an jeder anderen als den beschriebenen Stellen und einen leeren Block ohne Kopf — beides war über die Generalklausel schon fail-closed. |
 | 0.36.0 | 2026-10-07 | `SPEC-CONF-001`/`SPEC-EXTRACT-001`/`SPEC-RULE-001` (`shapes`): zwei benannte Dialekte — **`gomod`** (Lexik nach der Go-Modulreferenz: nur `LF` signifikant, `//` nur am Token-Anfang; fail-closed bei `/*`, `;`, verklebtem `=>`, Klammer im Token, Zeilenende in Zeichenkette; Anweisung = Zeile, ein Block `Kopf ( … )` ist eine Anweisung mit `;`-getrennten Einträgen, `()` leerer Block) und **`json`** (Lexik nach RFC 8259, keine Kommentare, Leerraum entfällt, Leerraum zwischen Zahl-/Literal-Zeichen ist ein Fehler; Anweisung = Mitglied des Wurzel-Objekts). `literal`-Einträge in Quellform (`json`-Mitglied wird in `{ }` eingeschlossen). Die Meldung jedes `shape-*`-Befunds ist einzeilig und umkehrbar (`\\`, `\n`, `\r`); verglichen wird unverändert. `shape-unused` nennt die Art des Eintrags als Präfix (`literal: `/`regex: `) statt des Zusatzes ` (regex)`. JSON: Leerraum zwischen zwei Nicht-Strukturzeichen-Tokens ist ein Fehler; `()` nur als leerer Block am Ende einer Zeile auf oberster Ebene. |
