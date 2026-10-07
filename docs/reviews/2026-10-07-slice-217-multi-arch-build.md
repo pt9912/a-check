@@ -112,3 +112,80 @@ Architect. Die übrigen Behauptungen der Übergabe (Gegenproben) sind nachgefahr
 
 **Übergabe:** Findings an den Implementer; die Finding-Klassen zusätzlich in die Closure §7 von
 slice-217. Dieser Report ist Lauf-Beleg und ersetzt keine Verifikation gegen die DoD.
+
+---
+
+## Delta-Review
+
+**Gegenstand:** `3962a6d..5131de5` — die Range beginnt beim Elternteil von `3962a6d`, umfasst
+also beide Commits: `3962a6d` (Plan-Änderung: Bewertung von F-3, Weg für F-4/F-6, Plan-Tabelle
+F-7), `5131de5` (Fixes). Derselbe Reviewer-Kontext wie oben, gleicher Skill-Stand.
+
+**Eigene Nachmessung** (Geltungsbereich wie oben: Host `x86_64`, BuildKit-Archiv aus
+`make image-multiarch`, handgebaute Mutationen, eigene Registry auf Port 5187, danach entfernt):
+
+| Probe | Ergebnis (Meldung) |
+|---|---|
+| `make image-multiarch VERSION=9.9.9-rev` | Exit 0 |
+| nur amd64 · amd64 doppelt · Attestierung · `urls`-Array + s390x · `os.features` + s390x · `subject`-Feld im Index | rot — „der Index führt n Digest(s) und n Manifest-Medientyp(en) — erwartet genau 2 und 2" |
+| arm64-Eintrag zeigt auf das amd64-Manifest | rot — „Plattformen 'linux/amd64 linux/amd64'" |
+| Layer unkomprimiert · Binary nicht im letzten Layer | rot — „linux/arm64: der letzte Layer ist kein gzip-tar mit /a-check" |
+| arm64-Manifest mit amd64-Binary-Layer | rot — „ELF e_machine '62', erwartet '183'" |
+| Feldreihenfolge `digest` vor `mediaType` · eingerückter Index | grün — korrekt |
+| **Plattform-Felder der zwei Index-Einträge vertauscht** | **grün** (D-1) |
+| **Index-Einträge mit `linux/s390x` und `windows/386` beschriftet**, Manifeste unverändert | **grün** (D-1) |
+| `make -n image-test IMAGE_REF=foo` / ohne `IMAGE_REF` | ohne bzw. mit `docker build` |
+| `make image-test IMAGE_REF=<Index-Digest>` | Exit 0, kein Bau |
+| `make image-test IMAGE_REF=<arm64-Manifest-Digest>` | rot — „ELF e_machine 183, Host x86_64 erwartet 62" |
+| `make guard-selftest`, `make doc-targets`, `make doc-structure`, `make doc-check` | Exit 0 (Ausgabe in Datei, Exit-Code getrennt) |
+
+### Status der Findings
+
+| ID | Status | Beleg |
+|---|---|---|
+| F-1 | behoben — Pipeline-Satz aus Gate-Index und Makefile entfernt; `image-test-ref` entfällt | `harness/README.md` Zeile `make image-test`; `Makefile` vor `image-test:` |
+| F-2 | behoben für die gemeldete Klasse — Array-Feld + dritter Eintrag jetzt rot, zwei verschieden gebaute Zähler; der Umbau öffnet aber D-1 | Probe oben |
+| F-3 | beantwortet — Bewertung in §4 vor dem Fix (`3962a6d`): eingetreten ist die Builder-Instanz, nicht die Emulation; nicht geteilt mit Begründung. Ob die Begründung trägt, ist ein Planner-Urteil; als Review-Befund ohne weitere Aktion | slice-217 §4 |
+| F-4 | behoben — `make image-test IMAGE_REF=…` ohne Bau; Fitness Function von ADR-0043 stimmt mit dem Target überein | Probe oben; Plan-Änderung `3962a6d` liegt vor `5131de5` |
+| F-5 | behoben — `make doc-structure` Exit 0 | Probe oben |
+| F-6 | behoben — `IMAGE_REF` wirkt jetzt bestimmungsgemäß, auch unter `make ci`; der Makefile-Kommentar sagt es | `Makefile` vor `image-test:` |
+| F-7 | behoben — Plan-Tabelle führt Skripte, Guard, `.gitignore` | slice-217 §3 |
+| F-8 | behoben — Skript-Kopf nennt beide Bild-Quellen | `tools/image-test.sh:2-4` |
+| F-9 | behoben — tar-Fehler mit eigener Meldung | Probe oben |
+| F-10, F-11 | offen, vom Implementer in Closure bzw. slice-218 übernommen | — |
+
+### Neue Findings
+
+| ID | Kategorie | Befund | Quelle | Pfad | Verifizierbar | Klasse |
+|---|---|---|---|---|---|---|
+| D-1 | MEDIUM | Der Prüfer liest die `platform`-Felder des Index nicht mehr; die Plattform eines Eintrags kommt nur aus seiner Config. Ein Index, dessen Einträge vertauscht oder als `linux/s390x`/`windows/386` beschriftet sind, meldet „ok — mit genau: linux/amd64 linux/arm64" (gemessen). Docker wählt beim Ziehen nach genau diesen Feldern — ein amd64-Rechner bekäme im ersten Fall das arm64-Bild, im zweiten keines. Der Kopfkommentar (1) sagt „der Index führt GENAU zwei Einträge: linux/amd64 und linux/arm64"; geprüft ist die Zahl der Einträge und die Plattform der Configs, nicht die Beschriftung im Index. Die erste Fassung hatte diese Prüfung („Config sagt …"); der Umbau für F-2 hat sie entfernt. BuildKit erzeugt eine solche Beschriftung nicht — der Pfad ist erreichbar, aber nicht vom aktuellen Erzeuger. | SPEC-DIST-001 (Pin löst auf beiden Plattformen auf); Mess-Regel „Testkommentar sagt nicht mehr zu, als seine Assertion prüft" | `tools/multiarch-check.sh:4-6`, `:16`, `:59-70` | ja — Mutations-Probe (Plattform-Felder vertauschen) | Prüfer-Zusage weiter als seine Prüfung |
+
+### Negativbefunde (Delta)
+
+| Bereich | Ergebnis |
+|---|---|
+| `Makefile` — `image-test: $(if $(IMAGE_REF),,build)`, Rezept reicht `IMAGE_REF` durch; Kommentar Indikativ über den Zustand | geprüft, ohne Befund |
+| Guard-Liste, `.PHONY`, Gate-Index und „Nicht hier"-Absatz nach Wegfall von `image-test-ref` | geprüft; `make guard-selftest`, `make doc-targets` Exit 0; ohne Befund |
+| `multiarch-check.sh` — Zähler über `"digest"`-Schlüssel und Manifest-Medientypen, `subject`-Feld, Annotationen | geprüft per Mutation; Befund nur D-1 |
+| Kommentare `AGENTS.md` §3.7 im Delta (Kopf von `multiarch-check.sh`, `image-test.sh`, Makefile) | geprüft; der Satz „ein Array-Feld … schnitte sie falsch" zeigt als Abgrenzung auf einen Fallstrick für den Ändernden; ohne Befund außer D-1 (Zusage-Umfang) |
+| Plan-Änderung vor dem Fix (`AGENTS.md` §6 Schritt 4) | geprüft: `3962a6d` liegt vor `5131de5`; ohne Befund |
+| `release.yml` im Delta | unberührt; ohne Befund |
+| Hard Rules §3.1–§3.6 im Delta | geprüft, ohne Befund |
+
+### Summary (Delta)
+
+| Kategorie | Anzahl |
+|---|---|
+| HIGH | 0 |
+| MEDIUM | 1 |
+| LOW | 0 |
+| INFO | 0 |
+
+F-1 bis F-9 sind behoben oder beantwortet, F-10/F-11 übergeben. Neue Finding-Klasse: keine — D-1
+trägt dieselbe Klasse wie F-2 (*Prüfer-Zusage weiter als seine Prüfung*), im selben Prüfer zum
+zweiten Mal in diesem Slice. Gezählt wird das bei der Closure, nicht hier.
+
+### Verdikt (Delta)
+
+**Abnahme-blockierend:** ja, wegen D-1 (MEDIUM) — vor der Closure zu klären. Sonst ist die
+Übergabe nachgefahren und bestätigt.
