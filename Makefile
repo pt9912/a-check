@@ -57,7 +57,7 @@ NO_CACHE_FILTER_COV  := --no-cache-filter coverage
         trace-check hooks suppression-check symlink-check dcheck-phrase-selftest regelwerk-check commit-scope-check \
         verify verify-risiko-ausgaenge verify-observations verify-review-haken verify-trigger-audit slice-mv image-scan \
         doc-workflows doc-reviews doc-mentions version-coherence archive-wave-test archive-wave \
-        image-multiarch image-test-ref
+        image-multiarch
 
 # Gates seriell: unter `make -j` liefen die Sub-Gates sonst parallel und die
 # Reihenfolge/der Abbruch bei rotem Gate wären nicht garantiert.
@@ -220,15 +220,11 @@ record-gates: ## Gate-Nachweis (Working-Tree-Hash) für den Stop-Hook schreiben.
 
 gates: lint test coverage-gate arch-check doc-check doc-targets doc-planning doc-workflows doc-reviews doc-mentions gate-consistency version-coherence suppression-check symlink-check dcheck-phrase-selftest guard-selftest ci-range-selftest record-gates ## alle inneren Gates (mandatory vor Handoff).
 
-image-test: build ## AC-FA-DIST-001 + nativ==Container-Akzeptanz gegen das gebaute Image.
-	@IMAGE=$(IMAGE) bash tools/image-test.sh
-
-# Ohne `build`: geprüft wird das Bild hinter IMAGE_REF (Tag oder Digest, auch ein
-# Mehr-Plattform-Index), auf der Plattform des Hosts. So testet die Release-Pipeline
-# den einmal gebauten Digest auf jeder Plattform (ADR-0043).
-image-test-ref: ## image-test gegen eine uebergebene Bild-Referenz, ohne Bau, Plattform des Hosts (ADR-0043). IMAGE_REF=<tag|digest>
-	@test -n "$(IMAGE_REF)" || { echo "image-test-ref: IMAGE_REF=<tag|digest> fehlt" >&2; exit 2; }
-	@IMAGE_REF=$(IMAGE_REF) bash tools/image-test.sh
+# Mit IMAGE_REF (Tag oder Digest, auch ein Mehr-Plattform-Index) entfaellt der Bau,
+# und geprueft wird das Bild dahinter auf der Plattform des Hosts (ADR-0043). Das
+# gilt auch fuer `make ci IMAGE_REF=…`: die Gates laufen, getestet wird IMAGE_REF.
+image-test: $(if $(IMAGE_REF),,build) ## AC-FA-DIST-001 + nativ==Container-Akzeptanz gegen das gebaute Image, oder gegen IMAGE_REF=<tag|digest> ohne Bau (Plattform des Hosts).
+	@IMAGE=$(IMAGE) IMAGE_REF=$(IMAGE_REF) bash tools/image-test.sh
 
 # KEIN Bestandteil von `gates`/`ci`: die Gate-Stufen bleiben einplattformig, sie
 # pruefen Quelltext, nicht das Plattform-Bild (ADR-0043). Das Target baut den

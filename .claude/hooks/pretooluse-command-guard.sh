@@ -79,7 +79,7 @@ guard_verdict() {
       "doc-commits","doc-planning","doc-tracked","doc-targets","doc-structure","doc-workflows",
       "doc-reviews","doc-mentions",
       "version-coherence","ci-range-selftest","dcheck-phrase-selftest","symlink-check",
-      "regelwerk-check","archive-wave-test","image-multiarch","image-test-ref"]);
+      "regelwerk-check","archive-wave-test","image-multiarch"]);
 
     function hasGateMake(seg) {
       const t = seg.trim().split(/\s+/).filter(Boolean).map(stripQuotes);

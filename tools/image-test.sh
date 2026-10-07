@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
-# image-test.sh — AC-FA-DIST-001 + AC-QA-02-Akzeptanz gegen das lokal gebaute
-# Runtime-Image (slice-006). Stack-Vorbild d-check tools/image-test.sh.
+# image-test.sh — AC-FA-DIST-001 + AC-QA-02-Akzeptanz gegen das Runtime-Image:
+# das lokal gebaute oder das hinter IMAGE_REF (slice-006; Bild-Referenz seit
+# slice-217). Stack-Vorbild d-check tools/image-test.sh.
 #
 #   (1) Happy:    `--print-mk` → includebares Fragment (A_CHECK_IMAGE +
 #                 a-check/a-check-graph-Targets); nativ == Container == die
