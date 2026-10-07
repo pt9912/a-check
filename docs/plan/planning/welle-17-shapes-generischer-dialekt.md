@@ -1,4 +1,4 @@
-# Welle welle-17: Generischer `shapes`-Dialekt
+# Welle welle-17: Benannte `shapes`-Dialekte `gomod` und `json`
 
 **Lifecycle:** Diese Datei entsteht bei der **Eröffnung** der Welle und liegt
 flach unter `docs/plan/planning/`; bei Closure wandert sie per `git mv` nach
@@ -87,14 +87,12 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-06-roadmap.md`
 - **Änderungen an der Lexik und Zerlegung des Kotlin-Dialekts.** Er ist geliefert und reviewt; die
   neuen Dialekte stehen neben ihm. Die **Ausgabeform** der Befunde (einzeilige Meldung) betrifft
   ihn dagegen mit — sie gilt für alle `shape-*`-Befunde.
-
-**Plan-Änderung 2026-10-07 (nach dem Review von slice-212, F-7):** Das Ziel hieß zuerst „ohne für
-jede Sprache einen eigenen Lexer im Code zu führen" und schloss Änderungen am Kotlin-Dialekt
-pauschal aus. Die Messung in slice-212 hat das Gegenteil begründet — **benannte** Dialekte mit je
-eigener, aus der Grammatik abgeleiteter Lexik, und eine einzeilige Meldung für alle Befunde. Ziel
-und Abgrenzung sind darauf nachgezogen.
 - **Ein Platzhalter für „genau eine Zeichenkette"** in Literal-Einträgen — in welle-16 als
   möglicher eigener Umfang benannt, nicht beauftragt.
+
+**Plan-Änderung 2026-10-07 (Review slice-212, F-7):** Ziel und Abgrenzung folgen der Messung in
+slice-212 — benannte Dialekte mit je eigener, aus der Grammatik abgeleiteter Lexik; die einzeilige,
+umkehrbare Meldung gilt für alle `shape-*`-Befunde.
 
 ## 7. Closure-Notiz
 

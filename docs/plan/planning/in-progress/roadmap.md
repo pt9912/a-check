@@ -19,7 +19,7 @@ ist **derivativ**: Der Zustand sind die flachen Welle-Dateien; woran gearbeitet 
 `Welle:`-Feld der Slices in `in-progress/`. Ziel, Trigger und Closure-Kriterien stehen in der
 Welle-Datei, nicht hier.
 
-- [welle-17-shapes-generischer-dialekt](../welle-17-shapes-generischer-dialekt.md) — Generischer `shapes`-Dialekt (`go.mod`, `package.json`)
+- [welle-17-shapes-generischer-dialekt](../welle-17-shapes-generischer-dialekt.md) — Benannte `shapes`-Dialekte `gomod` und `json`
 
 **Woran gerade gearbeitet wird, sagt `ls docs/plan/planning/in-progress/` — nicht diese
 Datei.** Wellenlose Arbeit erscheint in der Roadmap nicht; ihr Zustand ist die

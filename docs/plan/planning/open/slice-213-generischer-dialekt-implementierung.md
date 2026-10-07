@@ -1,4 +1,4 @@
-# slice-213 — Generischer `shapes`-Dialekt: Implementierung
+# slice-213 — `shapes`-Dialekte `gomod` und `json`: Implementierung
 
 **Lifecycle:** Der Zustand dieses Slice ist das Verzeichnis, in dem diese
 Datei liegt — eines von `open/`, `next/`, `in-progress/`, `done/`. Er

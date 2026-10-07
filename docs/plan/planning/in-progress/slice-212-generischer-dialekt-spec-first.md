@@ -1,4 +1,4 @@
-# slice-212 — Spec-first: generischer `shapes`-Dialekt
+# slice-212 — Spec-first: `shapes`-Dialekte `gomod` und `json`
 
 **Lifecycle:** Der Zustand dieses Slice ist das Verzeichnis, in dem diese
 Datei liegt — eines von `open/`, `next/`, `in-progress/`, `done/`. Er
@@ -63,9 +63,7 @@ nachweislich a-check-Konsumenten sind) — gefunden mit
 Originale wurden nur gelesen.
 
 **`go.mod` — 8 Dateien** (a-check ×2, d-check ×2, m-trace/apps/api, pg-change-feed,
-pgwire-recorder, claude-ai-harness-init). *Korrigiert nach Review F-1:* die erste Zählung schloss
-a-check selbst aus (`-not -path ./a-check/*`), obwohl es eine `.a-check.yml` trägt — 6 statt 8
-Dateien, und die einzige einzeilige `require`-Direktive fehlte.
+pgwire-recorder, claude-ai-harness-init) — a-check selbst eingeschlossen, es trägt eine `.a-check.yml` (Korrektur nach Review F-1).
 
 | Merkmal | Befund |
 |---|---|
