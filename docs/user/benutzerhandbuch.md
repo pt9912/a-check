@@ -674,12 +674,13 @@ shapes:
 ```
 
 Eine weitere Abhängigkeit ändert das Mitglied `dependencies` und meldet `shape-unlisted`, ebenso
-ein neues Mitglied wie `"scripts": { "postinstall": … }`. Exit-Code 2, wenn die Wurzel kein Objekt
-ist, die Datei Kommentare oder JSON5-Schreibweisen (`//`, `#`, `'`) enthält, zwei Werte nur durch
-Leerraum getrennt sind, eine Zeichenkette ein unmaskiertes Steuerzeichen trägt, Klammern nicht
-passen oder ein Mitglied leer ist (abschließendes Komma) — und wenn ein `allow`-Eintrag selbst
-schon in `{ }` steht. Die Meldung eines Befunds lässt sich nach dem Entmaskieren (`\\` → `\`)
-als Eintrag übernehmen.
+ein neues Mitglied wie `"scripts": { "postinstall": … }`. Die Datei muss **gültiges JSON** nach
+RFC 8259 sein; Exit-Code 2 bei jeder Abweichung — etwa Kommentare (`//`, `/* */`, `#`),
+JSON5-Schreibweisen (einfache Anführungszeichen, abschließendes Komma, `+1`, `.5`), ein fehlendes
+Komma, ein ungültiges Literal (`tru`), eine ungültige Escape-Folge (`"\x"`), ein unmaskiertes
+Steuerzeichen oder ungültiges UTF-8. Ebenso Exit 2, wenn die Wurzel kein Objekt ist, und wenn ein
+`allow`-Eintrag selbst schon in `{ }` steht oder in `{ }` gesetzt kein gültiges JSON ergibt.
+Die Meldung eines Befunds lässt sich nach dem Entmaskieren (`\\` → `\`) als Eintrag übernehmen.
 
 **Befundzeilen sind einzeilig.** Jede `shape-*`-Meldung steht auf **einer** Zeile: ein Backslash
 erscheint als `\\`, ein Zeilenende als `\n`, ein Wagenrücklauf als `\r` — eindeutig, zwei
@@ -1095,4 +1096,4 @@ und die [Spezifikation](../../spec/spezifikation.md); ein Überblick steht in de
 | 1.42 | 2026-10-06 | Lastenheft 0.28.0: neuer Optionalblock **`shapes`** und Befund **`shape-unlisted`** — in einer benannten Datei (Leitfall `build.gradle.kts` des Fachkern-Moduls) steht nur, was ausdrücklich erlaubt ist; alles andere ist ein Befund, gleich in welcher Schreibweise. Dialekt `kotlin`, Modus `allow-statements`. §4 um den Abschnitt „Sollform je Datei (`shapes`)" mit Beispiel, Normalisierungs-Regeln, der Regex-Grenze (Zeichenketten-Inhalt als Klasse, nie `.*`) und den Exit-2-Fällen; §3.4-Regeltabelle und Glossar. [ADR-0041](../plan/adr/0041-shapes-sollform-je-datei.md), slice-210. |
 | 1.43 | 2026-10-06 | §4 „Sollform je Datei“ um **`unused: fail`** (Befund `shape-unused`, verortet an der Zeile des Eintrags in der `.a-check.yml`; ohne Opt-in still, kein Warn-Level) und **`mode: exact`** (Datei gleich einer Sollform-Datei nach Normalisierung; erste Abweichung als `shape-differs`, fehlende Sollform-Datei Exit 2) ergänzt; §3.4-Regeltabelle und Glossar. [ADR-0041](../plan/adr/0041-shapes-sollform-je-datei.md), slice-211. |
 | 1.44 | 2026-10-07 | §4 „Sollform je Datei“: neuer Dialekt **`gomod`** (`go.mod`; Anweisung = Direktive, ein `require ( … )`-Block ist eine Anweisung; Zeilenumbrüche sind Grammatik; Exit 2 bei `/* */`, `;`, verklebtem `=>` u. a.) mit Beispiel; **Befundzeilen einzeilig und eindeutig** (`\\`, `\n`, `\r`); `shape-unused` mit Art-Präfix. Lastenheft 0.29.0, [ADR-0042](../plan/adr/0042-shapes-benannte-dialekte-gomod-json.md), slice-213. |
-| 1.45 | 2026-10-07 | §4 „Sollform je Datei“: neuer Dialekt **`json`** (`package.json` u. a.; Anweisung = Mitglied des Wurzel-Objekts, Einträge als Mitglied ohne äußere Klammern; Exit 2 bei Nicht-Objekt-Wurzel, Kommentaren, JSON5, Werten nur durch Leerraum getrennt u. a.) mit Beispiel. Lastenheft 0.29.0, [ADR-0042](../plan/adr/0042-shapes-benannte-dialekte-gomod-json.md), slice-214. |
+| 1.45 | 2026-10-07 | §4 „Sollform je Datei“: neuer Dialekt **`json`** (`package.json` u. a.; Anweisung = Mitglied des Wurzel-Objekts, Einträge als Mitglied ohne äußere Klammern; die Datei muss gültiges JSON nach RFC 8259 sein, jede Abweichung ist Exit 2; ebenso eine Nicht-Objekt-Wurzel) mit Beispiel. Lastenheft 0.29.0, [ADR-0042](../plan/adr/0042-shapes-benannte-dialekte-gomod-json.md), slice-214. |

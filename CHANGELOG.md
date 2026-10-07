@@ -14,10 +14,10 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
   Exit 2.
 - **`shapes`-Dialekt `json`** für `package.json` und andere JSON-Dateien — eine Anweisung ist ein
   Mitglied des Wurzel-Objekts; eine zusätzliche Abhängigkeit in `dependencies` oder ein neues
-  `scripts`-Mitglied ist ein Befund; Kommentare, JSON5-Schreibweisen, eine Wurzel ohne Objekt und
-  nur durch Leerraum getrennte Werte sind Exit 2. Einträge stehen als Mitglied ohne äußere
-  Klammern. Beide Dialekte: Lastenheft 0.29.0
-  ([AC-FA-RULE-012](spec/lastenheft.md#ac-fa-rule-012)), Spezifikation 0.36.0,
+  `scripts`-Mitglied ist ein Befund; die Datei muss gültiges JSON nach RFC 8259 sein —
+  Kommentare, JSON5-Schreibweisen und jede andere Abweichung sind Exit 2, ebenso eine Wurzel ohne
+  Objekt. Einträge stehen als Mitglied ohne äußere Klammern. Beide Dialekte: Lastenheft 0.29.0
+  ([AC-FA-RULE-012](spec/lastenheft.md#ac-fa-rule-012)), Spezifikation 0.36.0–0.38.0,
   [ADR-0042](docs/plan/adr/0042-shapes-benannte-dialekte-gomod-json.md) (`Accepted`). Benannte
   Dialekte mit aus der Grammatik abgeleiteter Lexik statt konfigurierbarer Zeichen; Einheit bei
   `go.mod` die Direktive bzw. der Block, bei JSON das Mitglied des Wurzel-Objekts.

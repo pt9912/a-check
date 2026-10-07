@@ -36,7 +36,8 @@ func TestJSONStringsAndNesting(t *testing.T) {
 	eqJSON(t, "\uFEFF{\"a\":1}", `"a":1`)
 }
 
-// Alle fail-closed-Fälle der Spezifikation: Exit 2, nie still grün.
+// Fehlerfälle der Lexik und der Zerlegung (Spezifikation Schritt 1 und 4): jeder
+// liefert einen Fehler (im Scan Exit 2), nie still grün.
 func TestJSONUnsplittable(t *testing.T) {
 	for _, src := range []string{
 		"{\"a\":1} // c",          // Kommentar: `/` außerhalb einer Zeichenkette
@@ -85,7 +86,44 @@ func TestJSONLiteralSource(t *testing.T) {
 	if _, _, err := normalizeJSON(literalSource("json", `{"a":1}`)); err == nil {
 		t.Fatal(`Eintrag {"a":1}: Fehler erwartet`)
 	}
+	if _, _, err := normalizeJSON(literalSource("json", `"a": tru`)); err == nil {
+		t.Fatal(`Eintrag "a": tru: Fehler erwartet`)
+	}
 	if literalSource("gomod", "x") != "x" || literalSource("kotlin", "x") != "x" {
 		t.Fatal("nur json wird eingeschlossen")
 	}
+}
+
+// Gültigkeit nach RFC 8259 (Spezifikation Schritt 2): jede Form, die die Quelle
+// verbietet, ist ein Fehler — auch die, die sonst fail-safe in eine Anweisung
+// fielen. Je Fall eine Zeile (Review slice-214 F-2/F-3/F-4/F-8/F-9).
+func TestJSONValidity(t *testing.T) {
+	for name, src := range map[string]string{
+		"tru":                    `{"a":tru}`,
+		"eee":                    `{"a":eee}`,
+		"fuehrende Null":         `{"a":01}`,
+		"plus am Anfang":         `{"a":+1}`,
+		"punkt am Anfang":        `{"a":.5}`,
+		"punkt am Ende":          `{"a":1.}`,
+		"exponent ohne Ziffer":   `{"a":1e}`,
+		"ungueltiges Escape":     `{"a":"\x"}`,
+		"kurzes u-Escape":        `{"a":"\u12"}`,
+		"u-Escape kein Hex":      `{"a":"\u12G4"}`,
+		"Backslash vor LF":       "{\"a\":\"x\\\ny\"}",
+		"Steuerzeichen U+0001":   "{\"a\":\"x\x01\"}",
+		"ungueltiges UTF-8":      "{\"a\":\"\xff\"}",
+		"fehlendes Komma":        `{"a":1"b":2}`,
+		"Zeichenkette Zahl":      `{"a":1 "b":2}`,
+		"doppeltes Array-Komma":  `{"a":[1,,2]}`,
+		"Komma am Array-Ende":    `{"a":[1,2,]}`,
+		"Komma verschachtelt":    `{"a":{"b":1,}}`,
+		"Mitglied ohne Doppelp.": `{"a","b":1}`,
+		"Schluessel keine Zeichenkette verschachtelt": `{"a":{1:2}}`,
+	} {
+		if _, _, err := normalizeJSON(src); err == nil {
+			t.Errorf("%s (%q): Fehler erwartet", name, src)
+		}
+	}
+	// gültige Grenzfälle bleiben gültig
+	eqJSON(t, `{"a":0,"b":-0.5e-3,"c":"\u00e4\n\/","d":[],"e":{}}`, `"a":0`, `"b":-0.5e-3`, `"c":"\u00e4\n\/"`, `"d":[]`, `"e":{}`)
 }

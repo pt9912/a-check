@@ -2,16 +2,18 @@ package extract
 
 import (
 	"fmt"
+	"regexp"
 	"strings"
+	"unicode/utf8"
 
 	"github.com/pt9912/a-check/internal/hexagon/core"
 )
 
 // This file is the `json` dialect of the shapes rule (AC-FA-RULE-012,
 // ADR-0042), derived from RFC 8259: no comments, whitespace outside strings is
-// dropped, a statement is one member of the root object. Where two sources
-// would fall on one normal form, or the input is no JSON at all, the file is
-// unsplittable (exit 2) — SPEC-EXTRACT-001, "Dialekt json".
+// dropped, a statement is one member of the root object. The file must be
+// valid JSON — value grammar, numbers, literals, escapes, UTF-8 —; every
+// deviation is an unsplittable file (exit 2), SPEC-EXTRACT-001 "Dialekt json".
 
 type jsonTokKind int
 
@@ -36,6 +38,9 @@ const jsonAtomChars = "0123456789+-.eEtrufalsn"
 func normalizeJSON(src string) ([]core.Statement, int, error) {
 	toks, err := jsonTokens(strings.TrimPrefix(src, "\uFEFF"))
 	if err != nil {
+		return nil, 0, err
+	}
+	if err := jsonValidate(toks); err != nil {
 		return nil, 0, err
 	}
 	stmts, err := jsonMembers(toks)
@@ -221,4 +226,190 @@ func jsonMember(m []jsonTok, line int) (core.Statement, error) {
 		return core.Statement{}, fmt.Errorf("in Zeile %d: ein Mitglied trägt kein `:`", m[0].line)
 	}
 	return core.Statement{Text: b.String(), Line: m[0].line}, nil
+}
+
+// jsonValidate checks the whole token stream against the RFC 8259 value
+// grammar; it accepts any root value — that the root is an object is the
+// split's rule (SPEC-EXTRACT-001, "Dialekt json" steps 2 and 4).
+func jsonValidate(toks []jsonTok) error {
+	// atom is the RFC 8259 grammar of an atom: exactly true, false, null, or a
+	// number (§6: no leading zero, no leading `+`, digits around `.`).
+	atom := regexp.MustCompile(`^(true|false|null|-?(0|[1-9][0-9]*)(\.[0-9]+)?([eE][+-]?[0-9]+)?)$`)
+	p := &jsonParser{toks: toks, atom: atom}
+	if len(toks) == 0 {
+		return fmt.Errorf("die Datei enthält keinen JSON-Wert")
+	}
+	if err := p.value(); err != nil {
+		return err
+	}
+	if p.i != len(toks) {
+		return fmt.Errorf("in Zeile %d: Inhalt nach dem Ende des Wurzel-Werts", toks[p.i].line)
+	}
+	return nil
+}
+
+// jsonParser is a recursive-descent check over the tokens; it builds nothing.
+type jsonParser struct {
+	toks []jsonTok
+	i    int
+	atom *regexp.Regexp
+}
+
+func (p *jsonParser) peek() (jsonTok, bool) {
+	if p.i >= len(p.toks) {
+		return jsonTok{}, false
+	}
+	return p.toks[p.i], true
+}
+
+// expect consumes the structural token s or fails.
+func (p *jsonParser) expect(s string) error {
+	t, ok := p.peek()
+	if !ok {
+		return fmt.Errorf("unerwartetes Dateiende, erwartet %q", s)
+	}
+	if t.kind != jtStruct || t.text != s {
+		return fmt.Errorf("in Zeile %d: erwartet %q, gefunden %q", t.line, s, t.text)
+	}
+	p.i++
+	return nil
+}
+
+func (p *jsonParser) value() error {
+	t, ok := p.peek()
+	if !ok {
+		return fmt.Errorf("unerwartetes Dateiende, erwartet ein Wert")
+	}
+	switch {
+	case t.kind == jtString:
+		p.i++
+		return jsonCheckString(t)
+	case t.kind == jtAtom:
+		p.i++
+		if !p.atom.MatchString(t.text) {
+			return fmt.Errorf("in Zeile %d: %q ist weder Zahl noch true/false/null", t.line, t.text)
+		}
+		return nil
+	case t.text == "{":
+		return p.object()
+	case t.text == "[":
+		return p.array()
+	default:
+		return fmt.Errorf("in Zeile %d: erwartet ein Wert, gefunden %q", t.line, t.text)
+	}
+}
+
+// object: `{` [ string `:` value { `,` string `:` value } ] `}` — no trailing comma.
+func (p *jsonParser) object() error {
+	p.i++
+	if t, ok := p.peek(); ok && t.kind == jtStruct && t.text == "}" {
+		p.i++
+		return nil
+	}
+	for {
+		t, ok := p.peek()
+		if !ok || t.kind != jtString {
+			return fmt.Errorf("in Zeile %d: erwartet ein Schlüssel (Zeichenkette)", p.lineAt())
+		}
+		if err := p.value(); err != nil {
+			return err
+		}
+		if err := p.expect(":"); err != nil {
+			return err
+		}
+		if err := p.value(); err != nil {
+			return err
+		}
+		if done, err := p.next("}"); done || err != nil {
+			return err
+		}
+	}
+}
+
+// array: `[` [ value { `,` value } ] `]` — no trailing comma.
+func (p *jsonParser) array() error {
+	p.i++
+	if t, ok := p.peek(); ok && t.kind == jtStruct && t.text == "]" {
+		p.i++
+		return nil
+	}
+	for {
+		if err := p.value(); err != nil {
+			return err
+		}
+		if done, err := p.next("]"); done || err != nil {
+			return err
+		}
+	}
+}
+
+// next consumes `,` (more follows, done=false) or the closing bracket
+// (done=true); anything else is an error.
+func (p *jsonParser) next(closing string) (bool, error) {
+	t, ok := p.peek()
+	if !ok {
+		return true, fmt.Errorf("unerwartetes Dateiende, erwartet %q oder \",\"", closing)
+	}
+	if t.kind == jtStruct && t.text == closing {
+		p.i++
+		return true, nil
+	}
+	if t.kind == jtStruct && t.text == "," {
+		p.i++
+		return false, nil
+	}
+	return true, fmt.Errorf("in Zeile %d: erwartet %q oder \",\", gefunden %q", t.line, closing, t.text)
+}
+
+func (p *jsonParser) lineAt() int {
+	if t, ok := p.peek(); ok {
+		return t.line
+	}
+	if len(p.toks) > 0 {
+		return p.toks[len(p.toks)-1].line
+	}
+	return 1
+}
+
+// jsonCheckString validates a string token: UTF-8 (§8.1) and the escape
+// sequences of §7; control characters were already rejected by the lexer.
+func jsonCheckString(t jsonTok) error {
+	s := t.text[1 : len(t.text)-1]
+	if !utf8.ValidString(s) {
+		return fmt.Errorf("in Zeile %d: Zeichenkette ist kein gültiges UTF-8", t.line)
+	}
+	for i := 0; i < len(s); i++ {
+		if s[i] != '\\' {
+			continue
+		}
+		if !jsonValidEscape(s[i+1:]) {
+			return fmt.Errorf("in Zeile %d: ungültige Escape-Folge in einer Zeichenkette", t.line)
+		}
+		if s[i+1] == 'u' {
+			i += 5
+		} else {
+			i++
+		}
+	}
+	return nil
+}
+
+// jsonValidEscape reports whether rest (after a backslash) starts a valid
+// RFC 8259 escape: one of "\/bfnrt, or u followed by four hex digits.
+func jsonValidEscape(rest string) bool {
+	if rest == "" {
+		return false
+	}
+	if strings.IndexByte(`"\/bfnrt`, rest[0]) >= 0 {
+		return true
+	}
+	if rest[0] != 'u' || len(rest) < 5 {
+		return false
+	}
+	for _, c := range rest[1:5] {
+		if !strings.ContainsRune("0123456789abcdefABCDEF", c) {
+			return false
+		}
+	}
+	return true
 }
