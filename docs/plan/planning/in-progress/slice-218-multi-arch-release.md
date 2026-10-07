@@ -29,6 +29,13 @@ Bild auf `linux/amd64` und `linux/arm64`, veröffentlicht den Index-Digest, prü
 Versions-Label je Plattform und spiegelt nach Docker Hub mit Gleichheits-Prüfung nach dem
 abgenommenen Vertrag; `releasing.md` beschreibt den Ablauf.
 
+**Plan-Änderung 2026-10-07 (vor dem Code):** Der eine Bau schreibt **zwei** Ausgaben — das
+OCI-Archiv, das `multiarch-check` prüft, und den Upload ohne Tag (`push-by-digest`); das
+Make-Target verlangt, dass beide denselben Index-Digest tragen (lokal gemessen: gleich, und der
+Upload legt kein Tag an). Der Image-Test prüft dazu das Versions-Label und legt die Scan-Ausgabe
+für den Plattform-Vergleich ab. Dafür berührt der Slice `tools/image-multiarch.sh`,
+`tools/image-test.sh` und das `Makefile` (Review slice-217 F-11).
+
 **Ausdrücklich NICHT in diesem Slice** — je Punkt mit Begründung:
 
 - **Das Release selbst und die Gegenprobe am veröffentlichten Image.** *Ein anderer Vorgang*: sie
@@ -61,6 +68,7 @@ abgenommenen Vertrag; `releasing.md` beschreibt den Ablauf.
 | Datei / Komponente | Änderungs-Art | Begründung |
 |---|---|---|
 | `.github/workflows/release.yml` | update | Multi-Arch-Release |
+| `tools/image-multiarch.sh`, `tools/image-test.sh`, `Makefile` | update | Upload ohne Tag mit Digest-Gleichheit; Versions-Label und Scan-Ausgabe im Image-Test |
 | `docs/user/releasing.md`, `docs/user/benutzerhandbuch.md`, `CHANGELOG.md` | update | öffentlicher Vertrag |
 | `packaging/dockerhub/overview.md`, `packaging/dockerhub/README.md` | update | Hub-Seite sagt Index-Digest und Auflösbarkeit des GHCR-Digests |
 
