@@ -15,7 +15,7 @@ wechselt nur durch `git mv` (`make slice-mv`).
 **Berührte Spec-Stellen:** `spezifikation.md`
 §[SPEC-DIST-001](../../../../spec/spezifikation.md#spec-dist-001--laufzeitform-und-distribution).
 
-**Verantwortlich:** —
+**Verantwortlich:** Claude — gesetzt beim Übergang nach `next/` (Maintainer: „ok machen wir so“, 2026-10-07).
 
 **Autor:** Claude. **Datum:** 2026-10-07.
 
