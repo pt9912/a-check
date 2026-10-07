@@ -10,14 +10,14 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
 - **Vertrag für zwei weitere `shapes`-Dialekte: `gomod` und `json`** — Lastenheft 0.29.0
   ([AC-FA-RULE-012](spec/lastenheft.md#ac-fa-rule-012)), Spezifikation 0.36.0,
-  [ADR-0042](docs/plan/adr/0042-shapes-benannte-dialekte-gomod-json.md) (`Proposed`). Benannte
+  [ADR-0042](docs/plan/adr/0042-shapes-benannte-dialekte-gomod-json.md) (`Accepted`). Benannte
   Dialekte mit aus der Grammatik abgeleiteter Lexik statt konfigurierbarer Zeichen; Einheit bei
   `go.mod` die Direktive bzw. der Block, bei JSON das Mitglied des Wurzel-Objekts.
-  **Vorgeschlagen, noch nicht abgenommen und nicht implementiert.**
+  **Abgenommen, noch nicht implementiert.**
 
 ### Changed
 
-- **Die Meldung jedes `shape-*`-Befunds wird einzeilig und umkehrbar** (Backslash, Zeilenende, Wagenrücklauf maskiert) — vorgeschlagen mit
+- **Die Meldung jedes `shape-*`-Befunds wird einzeilig und umkehrbar** (Backslash, Zeilenende, Wagenrücklauf maskiert) — festgelegt mit
   [ADR-0042](docs/plan/adr/0042-shapes-benannte-dialekte-gomod-json.md); betrifft bei `kotlin`
   Befunde mit Backslash oder mehrzeiligen Roh-Zeichenketten. Dazu nennt `shape-unused` die Art
   des Eintrags als Präfix (`literal: …` / `regex: …`) statt des Zusatzes ` (regex)` aus `0.21.0`.

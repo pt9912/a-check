@@ -1,6 +1,6 @@
 # ADR-0042: Benannte `shapes`-Dialekte `gomod` und `json` statt konfigurierbarer Lexik
 
-**Status:** Proposed
+**Status:** Accepted
 
 **Datum:** 2026-10-07
 
@@ -129,6 +129,7 @@ Wir wählen **benannte Dialekte mit fest verankerter, aus der Grammatik abgeleit
 | Datum | Ereignis | Verweis |
 |---|---|---|
 | 2026-10-07 | Proposed | Maintainer-Anweisung, Messung an realen Konsumenten-Manifesten |
+| 2026-10-07 | Accepted | Abnahme durch den Maintainer nach drei unabhängigen Review-Läufen |
 
 Nach `Accepted` wird diese Datei **nicht mehr inhaltlich überschrieben**.
 Spätere Korrekturen oder Schärfungen entstehen als neue ADR mit
