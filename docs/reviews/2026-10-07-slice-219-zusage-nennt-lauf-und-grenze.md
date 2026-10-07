@@ -181,3 +181,25 @@ Der Fix hat die Reichweite über das Ziel hinaus verschoben. Gezählt wird das b
 Spec-Straten gilt und mit welchem Zeiger, berührt `AGENTS.md` §3.4 und ist eine Architect-Frage.
 Widerspricht der Implementer, läuft der Konflikt-Pfad über den Architect. Die übrigen Fixes sind
 nachgefahren und bestätigt.
+
+### Delta-Review 2
+
+**Gegenstand:** `d6be258..5b349a7`. Darin `ad26b38` (Plan-Änderung zu D-1, vor dem Fix) und
+`5b349a7` (Regel 5 und Herleitung). Den Auftrag habe ich auf D-1 und D-2 beschränkt; D-3 bleibt
+als INFO stehen, wie übergeben.
+
+| ID | Status | Beleg |
+|---|---|---|
+| D-1 | behoben. Die Regel nimmt die Spec-Straten ausdrücklich in eine eigene Form: Die Zusage ist dort der Vertrag, den Lauf nennt der umsetzende Slice, und die Pflicht des Schreibenden lautet „keine Eigenschaft in den Vertrag, für die kein Lauf geplant ist". Das deckt sich mit der Beleg-Pflicht in `harness/conventions.md` §Anforderungs-Anlege-Prozess („folgt mit dem umsetzenden Slice"). Mit `AGENTS.md` §3.4 kollidiert die Form nicht, denn der Slice nennt den Lauf, das Spec-Stratum verweist nicht abwärts. slice-216 ist als Fall genannt, und dieser Beleg trägt die Form: Der Vertragsentwurf sagte Eigenschaften zu, für die kein Lauf geplant war. | `harness/rules/mess-regeln.md:34-38`; `.harness/skills/reviewer.md:230-232`; Plan-Änderung `ad26b38` |
+| D-2 | behoben. „sagt der Satz das — *„geplant mit …"* oder *„vom Review getragen, kein Sensor"* —, oder er entfällt" trennt den vorübergehenden vom dauerhaften Fall. `AGENTS.md` §3.7 („Durchsetzung: keine") und das „Kein Sensor" der Mess-Regeln fallen unter die zweite Form; die zeitliche Klammer ist weg. Die Herleitung kürzt die zweite Form auf *vom Review getragen*, ohne dass sich die Bedeutung ändert. | `harness/rules/mess-regeln.md:34-35`; `.harness/skills/reviewer.md:230` |
+
+**Sonden:** `make doc-check`: Exit 0, „726 Datei(en) geprüft, 0 Befund(e)" (Links und Anker). Für §3.7 und die Hard Rules
+§3.1–§3.6 habe ich die beiden Commits gelesen: Indikativ, keine Chronik, Commit-Scope
+`(planning)` in `ad26b38` nur unter `docs/plan/planning/`, beide Messages nennen slice-219, und
+die Plan-Änderung liegt vor dem Fix. Ohne Befund. Neue Findings: keine.
+
+### Verdikt (Delta 2)
+
+**Abnahme-blockierend:** nein. HIGH 0, MEDIUM 0; offen sind nur D-3 (INFO, bewusst stehen gelassen)
+und F-10 (an die Closure übergeben). Dieser Report ist Lauf-Beleg und ersetzt keine Verifikation
+gegen die DoD.
