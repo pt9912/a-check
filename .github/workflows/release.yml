@@ -217,8 +217,12 @@ jobs:
           # Ein Versions-Tag wird nie umgehängt: zeigt v$VERSION schon auf einen
           # ANDEREN Digest (etwa nach einem Wiederanlauf, der neu gebaut hat), bricht
           # der Schritt ab. Derselbe Digest ist ein gültiger Wiederanlauf.
-          if OLD="$(docker buildx imagetools inspect "$REGISTRY/$IMAGE_NAME:v$VERSION" --format '{{.Manifest.Digest}}' 2>/dev/null)"; then
+          # Nur ein „not found" heißt: der Tag fehlt. Jeder andere Fehler (Auth, Netz)
+          # bricht ab, statt als „frei" zu gelten.
+          if OLD="$(docker buildx imagetools inspect "$REGISTRY/$IMAGE_NAME:v$VERSION" --format '{{.Manifest.Digest}}' 2>inspect.err)"; then
             [ "$OLD" = "$DIGEST" ] || { echo "::error::v$VERSION existiert schon auf GHCR mit $OLD, dieser Lauf hat $DIGEST getestet — Tags werden nie umgehängt."; exit 1; }
+          elif ! grep -qi 'not found' inspect.err; then
+            echo "::error::Tag-Abfrage auf GHCR gescheitert: $(cat inspect.err)"; exit 1
           fi
           TAGS=(-t "$REGISTRY/$IMAGE_NAME:v$VERSION")
           if [[ "$IS_STABLE" == "true" ]]; then TAGS+=(-t "$REGISTRY/$IMAGE_NAME:latest"); fi
@@ -240,7 +244,7 @@ jobs:
       # Index-Digest; die Plattform-Menge ist darin enthalten, weil der Index-Digest
       # über die Liste der Plattform-Manifeste gebildet wird. FAIL-CLOSED: die
       # Meldung nennt den bereits veröffentlichten GHCR-Digest — auch bei einem
-      # Login-Fehler (Schritt „Spiegel-Fehlschlag melden").
+      # Login-Fehler (Schritt „Release-Fehlschlag melden").
       - name: Log in to Docker Hub
         uses: docker/login-action@dbcb813823bdd20940b903addbd779551569679f # v4.6.0
         with:
@@ -254,8 +258,10 @@ jobs:
           set -euo pipefail
           trap 'echo "::error::Docker-Hub-Spiegel fehlgeschlagen. BEREITS VEROEFFENTLICHT: $REGISTRY/$IMAGE_NAME@$DIGEST — das Release ist unvollstaendig, der GHCR-Stand aber gueltig."' ERR
           SRC="$REGISTRY/$IMAGE_NAME@$DIGEST"
-          if OLD="$(docker buildx imagetools inspect "docker.io/$HUB_IMAGE:v$VERSION" --format '{{.Manifest.Digest}}' 2>/dev/null)"; then
+          if OLD="$(docker buildx imagetools inspect "docker.io/$HUB_IMAGE:v$VERSION" --format '{{.Manifest.Digest}}' 2>inspect.err)"; then
             [ "$OLD" = "$DIGEST" ] || { echo "::error::v$VERSION existiert schon auf Docker Hub mit $OLD — Tags werden nie umgehängt."; exit 1; }
+          elif ! grep -qi 'not found' inspect.err; then
+            echo "::error::Tag-Abfrage auf Docker Hub gescheitert: $(cat inspect.err)"; exit 1
           fi
           TAGS=(-t "docker.io/$HUB_IMAGE:v$VERSION")
           if [[ "$IS_STABLE" == "true" ]]; then TAGS+=(-t "docker.io/$HUB_IMAGE:latest"); fi
@@ -272,9 +278,12 @@ jobs:
             echo "Docker-Hub-Spiegel: \`$HUB_IMAGE:v$VERSION\` — derselbe Index-Digest."
           } >> "$GITHUB_STEP_SUMMARY"
 
-      - name: Spiegel-Fehlschlag melden
+      # Läuft nach JEDEM roten Schritt von `publish`: vor dem Bild-Tag ist nichts
+      # veröffentlicht, danach liegt der GHCR-Digest schon draußen — die Meldung
+      # nennt beides, damit wer aufräumt weiß, was gilt.
+      - name: Release-Fehlschlag melden
         if: failure()
-        run: echo "::error::Release unvollstaendig. BEREITS VEROEFFENTLICHT (falls der Bild-Tag gesetzt war) — $REGISTRY/$IMAGE_NAME@$DIGEST auf GHCR."
+        run: echo "::error::publish fehlgeschlagen. Falls der Bild-Tag v$VERSION schon gesetzt war, ist $REGISTRY/$IMAGE_NAME@$DIGEST auf GHCR veroeffentlicht; sonst nur ungetaggt."
 
       # GitHub-Release mit dem Digest-Pin in den Notes — der Pin ist die
       # Referenz, die Konsumenten-Repos in a-check.mk eintragen.
