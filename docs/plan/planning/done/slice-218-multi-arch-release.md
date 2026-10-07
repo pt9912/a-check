@@ -4,7 +4,7 @@
 Datei liegt — eines von `open/`, `next/`, `in-progress/`, `done/`. Er
 wechselt nur durch `git mv` (`make slice-mv`).
 
-**Welle:** welle-18 — [Welle-Plan](../welle-18-multi-arch-image.md).
+**Welle:** welle-18 — [Welle-Plan](welle-18-multi-arch-image.md).
 
 **Bezug:** [AC-FA-DIST-001](../../../../spec/lastenheft.md#ac-fa-dist-001--distribution-image---print-mk-a-checkmk),
 [AC-FA-DIST-002](../../../../spec/lastenheft.md#ac-fa-dist-002),
