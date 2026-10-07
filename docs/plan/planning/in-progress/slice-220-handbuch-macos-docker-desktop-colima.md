@@ -16,7 +16,7 @@ wechselt nur durch `git mv` (`make slice-mv`).
 
 **Autor:** Claude. **Datum:** 2026-10-07.
 
-**Lerneintrag — Form:** wird bei Closure benannt.
+**Lerneintrag — Form:** geschärfte Regel.
 
 ---
 
@@ -62,13 +62,13 @@ leere Verzeichnis auf beide Laufzeiten; die Docker-Doku sagt für Docker Desktop
 
 ## 2. Definition of Done
 
-- [ ] Benutzerhandbuch: Abschnitt „macOS: Docker Desktop und Colima" (Plattform, Prüf-Kommando,
+- [x] Benutzerhandbuch: Abschnitt „macOS: Docker Desktop und Colima" (Plattform, Prüf-Kommando,
       freigegebene Verzeichnisse, Hinweis auf `colima start --arch`), Versions-Bump und
       Historie-Zeile; CHANGELOG `[Unreleased]`.
-- [ ] Unabhängiger Review, Report unter [`docs/reviews/`](../../../reviews/README.md).
-- [ ] Closure-Notiz mit Steering-Loop-Lerneintrag.
-- [ ] Beobachtungs-Register fortgeschrieben (oder „keine Beobachtung" notiert).
-- [ ] Jedes Risiko aus §6 trägt einen Ausgang.
+- [x] Unabhängiger Review, Report unter [`docs/reviews/`](../../../reviews/README.md).
+- [x] Closure-Notiz mit Steering-Loop-Lerneintrag.
+- [x] Beobachtungs-Register fortgeschrieben (oder „keine Beobachtung" notiert).
+- [x] Jedes Risiko aus §6 trägt einen Ausgang.
 
 `make gates` und `make verify` grün.
 
@@ -94,11 +94,47 @@ DoD vollständig, `make gates` und `make verify` grün, Closure-Notiz mit Lernei
 ## 6. Risiken und offene Punkte
 
 - **Fremde Voreinstellungen ändern sich:** Docker Desktop und Colima können ihre Defaults ändern;
-  der Text altert dann still. — **Ausgang:** *(bei Closure zuzuweisen: eingetreten / entfallen / weiter offen)*
+  der Text altert dann still. — **Ausgang:** *weiter offen* — der Abschnitt nennt seinen Stand
+  (2026-10-07); das Beobachtungs-Register führt die Klasse unter
+  `BEO-USER/werkzeug-aussage-weiter-als-die-quelle`.
 
 ## 7. Closure-Notiz
 
-*(folgt bei Closure)*
+**Lerneintrag — Form: geschärfte Regel.** Eine Aussage über ein fremdes Werkzeug im Handbuch steht
+erst, wenn sie Satz für Satz an dessen Quelle gelesen ist — einschließlich der Sätze **nach** dem
+zitierten: der Fehler dieses Slice (leeres Verzeichnis auch unter Docker Desktop) stand in der
+Docker-Doku einen Satz weiter. Die Quellen stehen im Plan neben der Aussage, die sie tragen, und
+der Text sagt, was das Projekt selbst geprüft hat und was nicht. Verkörpert ist die Regel hier im
+Plan und im Abschnitt selbst; allgemein trägt sie slice-219 (Zusage nennt Lauf und Grenze).
+
+**Geliefert:** Benutzerhandbuch 1.47, §1 „macOS: Docker Desktop und Colima" — gezogene Plattform
+und Prüf-Kommando, Prüfstand (Linux-arm64-Runner je Release; einmalige Maintainer-Probe unter
+Colima mit `arm64`), freigegebene Verzeichnisse, Verhalten außerhalb (Docker Desktop: Mount-Fehler;
+Colima: leerer Baum), Colima-Mounts und -Architektur; CHANGELOG `[Unreleased]`.
+
+**Was hat funktioniert:** Die Gegenprobe des Reviewers am Quelltext von Colima, nicht an meinen
+Zitaten — sie fand zwei Bedienfallen (Mount bei laufender VM, Mount-Liste ersetzt `$HOME`), die
+keine Dokumentationsseite nennt.
+
+**Was ging anders als geplant:** Ich hatte die eine Quelle gelesen und den nächsten Satz nicht —
+die Aussage war für Colima richtig und für Docker Desktop falsch. Und die Arbeitsdateien des
+Reviewers lagen kurz im Repo und machten `make lint` rot (Colima-Quelltext als `*.go`).
+
+**Steering-Loop-Eintrag:** geschärfte Regel — gezählt, nicht verkörpert; die allgemeine Form
+trägt slice-219.
+
+**Beobachtungs-Register (`../observations/`):**
+`BEO-USER/werkzeug-aussage-weiter-als-die-quelle` neu (1×);
+`BEO-GATE/zusage-weiter-als-ihre-durchsetzung` → 6× (Ausgang bleibt *geplant*, slice-219).
+
+**Folge-Slices:** keine neuen; slice-219 liegt in `open/`.
+
+**Risiken aus §6:** das eine Risiko trägt seinen Ausgang (*weiter offen*, Beobachtungs-Register).
+
+**Drei Paarungen:** Anker — kein `liegt in`-Feld, nichts zu paaren · Folge-Slice — slice-219
+existiert in `open/` · Register — beide genannten Pfade existieren mit nicht leerem `evidence/`.
+
+**Trigger-Audit der aktiven MR:** [`MR-016`](../../../../harness/conventions.md#mr-016) [`MR-019`](../../../../harness/conventions.md#mr-019) [`MR-025`](../../../../harness/conventions.md#mr-025) [`MR-027`](../../../../harness/conventions.md#mr-027) [`MR-028`](../../../../harness/conventions.md#mr-028) [`MR-029`](../../../../harness/conventions.md#mr-029) [`MR-030`](../../../../harness/conventions.md#mr-030) — 0 offen (geprüft 2026-10-07).
 
 ## 8. Sub-Area-Prüfungen und Modus-Begründung
 

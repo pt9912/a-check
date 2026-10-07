@@ -1,4 +1,4 @@
-**Stand:** geplant — slice-219 verkörpert die Regel (Lese-Schritt der welle-18-Closure).
+**Stand:** geplant — slice-219 verkörpert die Regel (Lese-Schritt der welle-18-Closure); 6× mit slice-220.
 
 Unterhalb der Schwelle. Ein Sensor darauf wäre selbst ein Exemplar der Klasse: Ob ein Prosa-Satz
 den Geltungsbereich eines Moduls trifft, ist ein Urteil über zwei Formulierungen, kein Match
