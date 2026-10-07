@@ -79,11 +79,13 @@ Wir wählen **benannte Dialekte mit fest verankerter, aus der Grammatik abgeleit
 5. **Einzeilige, umkehrbare Meldung für alle `shape-*`-Befunde:** Backslash als `\\`, `LF` als
    `\n`, `CR` als `\r`; verglichen wird die unveränderte Anweisung. Umkehrbar muss sie sein, weil
    sonst zwei verschiedene Anweisungen dieselbe Meldung trügen — `shape-differs` zeigte `X
-   (erwartet: X)`, und die Zusammenfassung byte-gleicher Befunde verschluckte einen. Das gilt auch
+   (erwartet: X)`, und die Zusammenfassung byte-gleicher Befunde verschluckte einen. Aus demselben
+   Grund trägt `shape-unused` die Art des Eintrags als Präfix (`literal: ` bzw. `regex: `) statt
+   eines Zusatzes, den ein Literal selbst enthalten könnte. Das gilt auch
    für `kotlin`: betroffen sind Anweisungen mit Backslash oder mehrzeiligen Roh-Zeichenketten.
 6. **`literal`-Einträge in Quellform:** ein `json`-Eintrag ist ein Mitglied und wird vor dem
-   Zerlegen in `{ }` eingeschlossen — so ist die Meldung eines `json`-Befunds wörtlich als Eintrag
-   übernehmbar; ein `gomod`-Block wird mehrzeilig geschrieben.
+   Zerlegen in `{ }` eingeschlossen — so ist die Meldung eines `json`-Befunds **nach dem
+   Entmaskieren** als Eintrag übernehmbar; ein `gomod`-Block wird mehrzeilig geschrieben.
 
 ## Verglichene Alternativen
 
