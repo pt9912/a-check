@@ -38,6 +38,14 @@ Zählstellen, mit drei verschieden gebauten Suchen gefunden: [`AGENTS.md`](../..
 §Mess-Regeln des Reviewer-Skills; der Zustand von
 `BEO-GATE/testbeschreibung-weiter-als-assertion` („den drei übrigen") — er verliert die Zahl.
 
+**Plan-Änderung 2026-10-07 (Review F-1/F-2/F-8, vor dem Fix):** Zwei der sechs Belege sagen
+keine Prüfung zu, sondern eine **Eigenschaft** (slice-216: derselbe Digest, gleiche Ausgabe;
+slice-218: woraus die Pipeline besteht). Die Regel fasst darum jede Zusage, dass etwas gilt oder
+geschieht, nicht nur die über eine Prüfung; ihr Titel und der Zeiger in `AGENTS.md` §5 nennen
+neben dem Beleg die Zusage. Ein **Zeiger am Satz** auf die Stelle, die die Grenze trägt (der
+Gate-Index: „Grenzen: siehe Datei", `AGENTS.md` §4), erfüllt die Regel; die Ausprägung „Grenze
+steht woanders" meint die Grenze **ohne** Zeiger.
+
 **Ausdrücklich NICHT in diesem Slice** — je Punkt mit Begründung:
 
 - **Ein Sensor.** *Bestand bleibt bewusst stehen*: ob ein Prosa-Satz den Geltungsbereich seines
@@ -78,7 +86,7 @@ DoD vollständig, `make gates` und `make verify` grün, Closure-Notiz mit Lernei
 
 ## 6. Risiken und offene Punkte
 
-- **Prosa ohne Wirkung:** die Regel wird gelesen oder nicht; drei der fünf Fälle fing der Review,
+- **Prosa ohne Wirkung:** die Regel wird gelesen oder nicht; fünf der sechs Fälle fing der Review,
   nicht der Schreibende. — **Ausgang:** *(bei Closure zuzuweisen: eingetreten / entfallen / weiter offen)*
 
 ## 7. Closure-Notiz
