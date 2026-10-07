@@ -3,7 +3,9 @@
 # SPEC-DIST-001 (ADR-0043):
 #   (1) der Index führt GENAU zwei Einträge: linux/amd64 und linux/arm64 — keine
 #       Attestierung, keine weitere Plattform;
-#   (2) je Eintrag nennt die Config os/architecture, und das Paar ist eine der zwei;
+#   (2) je Eintrag nennt die Config os/architecture, das Paar ist eine der zwei, und
+#       die platform-Beschriftung des Index-Eintrags sagt dasselbe — nach ihr wählt
+#       Docker beim Ziehen;
 #   (3) je Eintrag ist das Binary ein ELF dieser Plattform (e_machine 62 bzw. 183);
 #   (4) je Eintrag steht org.opencontainers.image.version auf der erwarteten Version.
 # Grenze: geprüft wird das ARCHIV, nicht ein Lauf — ob das arm64-Binary auf arm64
@@ -13,7 +15,10 @@
 # Manifest-Liste NICHT in Einträge zerschnitten (ein Array-Feld in einem Eintrag
 # schnitte sie falsch), sondern zweimal verschieden gezählt: die Digests unter dem
 # Schlüssel "digest" und die Manifest-Medientypen. Beide Zahlen müssen 2 sein. Die
-# Plattform eines Eintrags liest das Skript aus seiner Config, nicht aus dem Index.
+# Plattform eines Eintrags liest das Skript aus seiner Config und hält die
+# Beschriftung im Index dagegen. Die Beschriftung sucht es zwischen dem Digest des
+# Eintrags und dem nächsten Digest — BuildKit schreibt `platform` nach `digest`;
+# eine andere Schlüssel-Reihenfolge findet die falsche oder keine und ist rot.
 # Liefert ein Muster nichts, erreicht der leere Wert eine Prüfung mit Meldung.
 #
 # Aufruf: multiarch-check.sh <oci-archiv.tar> <version>
@@ -68,6 +73,12 @@ for d in $digests; do
     *) fail "Manifest $d hat die Plattform '$p' — erwartet ist eine aus '$WANT_PLATFORMS'" ;;
   esac
   gefunden="$gefunden $p"
+
+  seg="${liste#*\"digest\":\"$d\"}"
+  seg="${seg%%\"digest\":\"sha256:*}"
+  plat="$(feld "$seg" '"platform":\{[^}]*\}')"
+  label="$(wert "$plat" os)/$(wert "$plat" architecture)"
+  [ "$label" = "$p" ] || fail "der Index beschriftet $d als '$label', die Config sagt '$p'"
 
   ver="$(wert "$cfg" 'org\.opencontainers\.image\.version')"
   [ "$ver" = "$WANT_VERSION" ] || fail "$p: Versions-Label '$ver', erwartet '$WANT_VERSION'"
