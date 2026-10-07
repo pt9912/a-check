@@ -1,6 +1,6 @@
 # Lastenheft — a-check
 
-**Version:** 0.28.0
+**Version:** 0.29.0
 
 **Status:** Draft
 
@@ -397,7 +397,12 @@ Jeder Befund nennt Datei, die Zeile, an der die Anweisung im Original beginnt, d
 und eine Meldung mit der normalisierten Anweisung (`shape-differs` nennt dazu die erwartete
 Sollform-Anweisung; `shape-unused` nennt stattdessen die Konfigurationsdatei und den Eintrag dort); ≥ 1 Befund ⇒ Exit-Code 1. Die Regel ist **unabhängig** von
 `layers` und `languages`: sie greift auch für Dateien, die keiner Schicht und keiner Sprache
-angehören. Unterstützt ist der Dialekt **`kotlin`** (`*.kt`, `*.kts`). **Fail-closed (Exit 2):**
+angehören. Unterstützt sind drei **benannte** Dialekte mit fest im Werkzeug verankerter, aus der
+jeweiligen Grammatik abgeleiteter Lexik: **`kotlin`** (`*.kt`, `*.kts`; Anweisung auf oberster
+Ebene), **`gomod`** (`go.mod`; Anweisung = Direktive, ein Block `verb ( … )` mit seinen Zeilen ist
+eine Anweisung) und **`json`** (z. B. `package.json`; Anweisung = **Mitglied des Wurzel-Objekts**
+mit Schlüssel und ganzem Wert). Die **Meldung** jedes Befunds ist einzeilig — ein Zeilenende darin
+wird als `\n` geschrieben; verglichen wird unverändert. **Fail-closed (Exit 2):**
 ein `files`-Glob, der keine Datei trifft; eine Datei, die zugleich von `exclude` ausgenommen ist
 (Widerspruch in der Konfiguration); ein unbekannter `dialect` oder `mode`; ein leeres `files`
 oder ein leeres `allow` bei `allow-statements`; `allow` bei `exact` oder `expect` bei
@@ -412,15 +417,19 @@ Kommentar; schließende Klammer ohne Gegenstück) — eine solche Datei wird nie
 - **Boundary (Kommentar und Zeichenkette):** Given ein Muster, das eine Abhängigkeit einträgt, steht **nur** in einem Kommentar oder **nur** innerhalb einer Zeichenkette einer erlaubten Anweisung, when `a-check` läuft, then kein Befund für das Muster selbst — der Kommentar fällt bei der Normalisierung weg, die Zeichenkette ist Teil der erlaubten Anweisung.
 - **Boundary (`exact`):** Given `mode: exact` mit einer Sollform-Datei, when die geprüfte Datei sich nur in Leerraum, Zeilenumbrüchen und Kommentaren unterscheidet, then kein Befund; when eine Anweisung anders, zusätzlich oder fehlend ist, then genau ein Befund `shape-differs` mit der **ersten** Abweichung und Exit-Code 1.
 - **Boundary (`unused`):** Given `unused: fail` und ein `allow`-Eintrag, der in keiner Datei des Eintrags trifft, when `a-check` läuft, then ein Befund `shape-unused`; ohne `unused: fail` kein Befund für denselben Eintrag.
+- **Boundary (`gomod`):** Given `dialect: gomod` und eine Liste, die `module`, `go` und einen `require`-Block mit genau den vorhandenen Abhängigkeiten erlaubt, when ein `go.mod` sich nur in Leerraum, Zeilen-Kommentaren (`// indirect`) und Einrückung unterscheidet, then kein Befund; when der `require`-Block eine **zusätzliche** Zeile oder die Datei eine zusätzliche `replace`-Direktive enthält, then je ein Befund `shape-unlisted`.
+- **Boundary (`json`):** Given `dialect: json` und eine Liste, die die Mitglieder eines `package.json` (`"name"`, `"dependencies"`, …) erlaubt, when sich nur Leerraum und Einrückung unterscheiden, then kein Befund; when `dependencies` einen **zusätzlichen** Eintrag oder das Wurzel-Objekt ein zusätzliches Mitglied (`"scripts"` mit `postinstall`) enthält, then je ein Befund `shape-unlisted`; when die Wurzel kein Objekt ist, then Exit-Code 2.
 - **Negative:** Given eine fehlende Datei (Glob ohne Treffer), ein unbekannter Schlüssel im Eintrag, ein unbekannter `dialect`, eine Datei mit offenem Block oder offener Zeichenkette, eine fehlende `expect`-Datei **oder** eine Datei, die `shapes` nennt und `exclude` ausnimmt, when `a-check` lädt bzw. läuft, then Exit-Code 2 — nie ein stilles Grün.
 - **Determinismus:** Given mehrere Befunde in einer oder mehreren Dateien, when `a-check` zweimal auf demselben Stand läuft, then byte-identische Ausgabe in der Form `pfad:zeile: <klasse>: <meldung>` ([AC-QA-01](#ac-qa-01--determinismus)).
 
 **Out-of-Scope:** Auflösung von Abhängigkeitsgraphen und Aufruf eines Build-Werkzeugs — was ein
 erlaubtes Plugin selbst einträgt, bleibt außerhalb und gehört in eine Prüfung im Build
 ([AC-QA-02](#ac-qa-02--hermetik-und-ehrliche-heuristik-grenze)); die **Semantik** des Dialekts —
-geprüft wird Text nach Normalisierung, nicht, was das Werkzeug daraus macht; ein **generischer**
-Dialekt mit konfigurierbaren Kommentar-, Zeichenketten- und Trennzeichen (`go.mod`,
-`package.json`, …) und weitere Dialekte als `kotlin`; ein Ausschluss von Literal-Klassen aus dem
+geprüft wird Text nach Normalisierung, nicht, was das Werkzeug daraus macht (bei `gomod` etwa
+keine Versions-Auflösung, kein `go.sum`, bei `json` kein Lockfile, keine Paketmanager-Logik); eine
+vom Konsumenten **konfigurierbare** Lexik (Kommentar-, Zeichenketten-, Trennzeichen) und weitere
+Formate als die drei benannten — XML (`pom.xml`) und TOML (`Cargo.toml`, `pyproject.toml`) eingeschlossen;
+eine Zerlegung von JSON unterhalb der Wurzel-Mitglieder; ein Ausschluss von Literal-Klassen aus dem
 Vergleich (etwa Versions-Literale) — den Zweck deckt ein `allow`-Eintrag mit `match: regex`, dessen Zeichenketten-Inhalt als Klasse ohne Begrenzer geschrieben ist (ein `.*` überspannt auch Code — ausgewiesene Grenze); ein
 vollständiger Diff aller Abweichungen bei `exact` (gemeldet wird die erste); ein Warn-Level für
 `shape-unused` (a-check kennt keines); eine Graph-Kante für `shapes`
@@ -831,3 +840,4 @@ eine Zeile hier (Baseline-Regelwerk `grundlagen-source-precedence.md` §Spec-Str
 | 0.26.0 | 2026-08-30 | Neu **`AC-FA-DIST-002`** (Docker-Hub-Spiegel): das Release-Image wird zusätzlich nach `docker.io/pt9912/a-check` gespiegelt — **dasselbe Bild, nicht ein zweiter Bau**. Gleichheits-Größe ist der **Config-Digest** (der Manifest-Digest ist registry-lokal, er hängt an der Blob-Kompression); die Pipeline prüft ihn **nach** dem Push und **fail-closed**. Die Pin-Stellen dieses Repos bleiben **GHCR-gebunden** — wer vom Spiegel zieht, nimmt den Digest der Registry, aus der er zieht. Die **Darstellung** (Kurztext, Overview-Seite) ist ausdrücklich **nicht** Teil der Zusage: ein Fehlschlag dort macht kein Release rot, wird aber gemeldet. slice-127. |
 | 0.27.0 | 2026-09-05 | Gegen die v6.0.0-Baseline-Ziel-Form nachgezogen: neu **§5 Globale Out-of-Scope-Punkte** (das bisher in §1 stehende produktweite „Out of Scope" dorthin verschoben, §1 zeigt jetzt per Verweis) und **§6 Glossar** (fünf im Dokument bereits feststehend verwendete Begriffe: Schicht-Rolle, Sub-Einheit, Composition Root, driving/driven, Heuristik-Grenze). Kein neuer Fakt — beide Abschnitte konsolidieren bereits an anderer Stelle belegte Aussagen an der von der Ziel-Form vorgesehenen Stelle; Status bleibt `Draft`, daher keine Change-Request-Pflicht (§7). |
 | 0.28.0 | 2026-10-06 | **CR „Positivliste von Anweisungen je Datei (Sollform)"** — neu **`AC-FA-RULE-012`** (`shapes`): in einer benannten Datei steht nur, was ausdrücklich erlaubt ist; alles Unbekannte ist ein Befund (fail-safe statt Verbotsliste). Die Datei wird je Dialekt normalisiert (Kommentare weg, Zeichenketten unverändert, Leerraum gefaltet) und in Anweisungen auf oberster Ebene zerlegt; ein Block ist eine Anweisung und wird als Ganzes verglichen. Zwei Modi: `allow-statements` (Befund `shape-unlisted`, mit `unused: fail` zusätzlich `shape-unused`) und `exact` gegen eine Sollform-Datei (Befund `shape-differs`, erste Abweichung). Dialekt `kotlin`; unabhängig von `layers`/`languages`; fehlende Datei, Widerspruch zu `exclude` und nicht zerlegbare Datei sind Exit 2. `AC-FA-CONF-001` um den Block und seine fail-closed-Fälle erweitert. **§5 präzisiert:** die Heuristik arbeitet auf drei Ebenen — Importe, Roh-Text, normalisierte Anweisungsfolge benannter Dateien —, keine wertet Sprach- oder Build-Semantik aus. Anlass: ein Adopter will das Fachkern-Modul gegen Fremdabhängigkeiten und Plugins sichern; Gradle kennt zu viele gleichwertige Schreibweisen für eine Verbotsliste in `constructs`. |
+| 0.29.0 | 2026-10-07 | `AC-FA-RULE-012` um zwei **benannte** Dialekte erweitert: **`gomod`** (Anweisung = Direktive; ein Block `verb ( … )` ist eine Anweisung, seine Zeilen darin getrennt) und **`json`** (Anweisung = Mitglied des Wurzel-Objekts; Wurzel kein Objekt ⇒ Exit 2). Die Lexik ist fest im Werkzeug und aus der Grammatik der Formate abgeleitet, **nicht** vom Konsumenten konfigurierbar — das Out-of-Scope nennt die konfigurierbare Lexik jetzt ausdrücklich, statt „generischer Dialekt“. Die Meldung jedes `shape-*`-Befunds ist einzeilig (Zeilenende als `\n`). Zwei neue Akzeptanzkriterien (Boundary `gomod`, Boundary `json`). Anlass: Maintainer-Anweisung; gemessen an den `go.mod`- und `package.json`-Dateien realer a-check-Konsumenten. |
