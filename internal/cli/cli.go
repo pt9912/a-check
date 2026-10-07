@@ -349,6 +349,12 @@ forbidden_constructs:
 #         require (
 #           github.com/a/b v1.2.3
 #         )
+#   - files: ["package.json"]     # Dialekt json: Anweisung = Mitglied des Wurzel-Objekts;
+#     dialect: json               #   Eintraege als Mitglied ohne aeussere Klammern.
+#     mode: allow-statements
+#     allow:
+#       - '"name": "web"'
+#       - '"dependencies": { "react": "^18.2.0" }'
 markers:
   ignore_symbols: []
 # resolution:                     # optional: Import-Symbol -> Schicht je Sprache (ADR-0016/ADR-0023)

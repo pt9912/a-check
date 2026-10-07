@@ -19,7 +19,7 @@ type dialectFn func(src string) ([]core.Statement, int, error)
 // dialects is the registry of shapes dialects — the single source of the
 // supported set, like backends for languages. A new dialect is one entry.
 func dialects() map[string]dialectFn {
-	return map[string]dialectFn{"kotlin": normalizeKotlin, "gomod": normalizeGomod}
+	return map[string]dialectFn{"kotlin": normalizeKotlin, "gomod": normalizeGomod, "json": normalizeJSON}
 }
 
 // checkShapes validates the shapes block without reading a file: every dialect
@@ -45,7 +45,7 @@ func (a Adapter) shapeLiterals(m core.Model) ([][]string, error) {
 			if al.Regex {
 				continue
 			}
-			stmts, _, err := norm(al.Pattern)
+			stmts, _, err := norm(literalSource(sh.Dialect, al.Pattern))
 			if err != nil {
 				return nil, fmt.Errorf("shapes[%d]: allow %q lässt sich nicht zerlegen: %w", e, al.Pattern, err)
 			}
@@ -56,6 +56,16 @@ func (a Adapter) shapeLiterals(m core.Model) ([][]string, error) {
 		}
 	}
 	return out, nil
+}
+
+// literalSource is the source a literal entry is split from: a `json` entry is a
+// member and is enclosed in `{ }` first; every other dialect takes the entry as
+// written (SPEC-EXTRACT-001, `literal` entries in source form).
+func literalSource(dialect, pattern string) string {
+	if dialect == "json" {
+		return "{" + pattern + "}"
+	}
+	return pattern
 }
 
 func (a Adapter) dialectList() string {

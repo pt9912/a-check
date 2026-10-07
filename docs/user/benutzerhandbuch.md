@@ -1,6 +1,6 @@
 # Benutzerhandbuch: a-check
 
-**Handbuch-Version:** 1.44 · **Software-Version:** [aktuelles Release](../../version.md#aktuell) · **Stand:** 2026-10-07 ·
+**Handbuch-Version:** 1.45 · **Software-Version:** [aktuelles Release](../../version.md#aktuell) · **Stand:** 2026-10-07 ·
 **Autor:** pt9912 (Maintainer)
 
 ---
@@ -656,6 +656,31 @@ Block schreiben Sie in der `allow`-Liste **mehrzeilig** wie in der Datei: Die ei
 Befund-Meldung (`require (a v1;b v2)`) ist keine gültige `go.mod`-Zeile und lässt sich nicht als
 Eintrag übernehmen.
 
+**`package.json` und andere JSON-Dateien prüfen (`dialect: json`).** Die Lexik folgt RFC 8259:
+JSON kennt keine Kommentare, Leerraum außerhalb von Zeichenketten zählt nicht. Eine **Anweisung**
+ist ein **Mitglied des Wurzel-Objekts** — Schlüssel und ganzer Wert. Einen Eintrag schreiben Sie
+als Mitglied, ohne die äußeren Klammern; a-check schließt ihn zum Zerlegen selbst in `{ }` ein:
+
+```yaml
+shapes:
+  - files: ["package.json"]
+    dialect: json
+    mode: allow-statements
+    allow:
+      - '"name": "web"'
+      - '"private": true'
+      - '"dependencies": { "react": "^18.2.0" }'
+      - {pattern: '"version":"[^"$\\]*"', match: regex}
+```
+
+Eine weitere Abhängigkeit ändert das Mitglied `dependencies` und meldet `shape-unlisted`, ebenso
+ein neues Mitglied wie `"scripts": { "postinstall": … }`. Exit-Code 2, wenn die Wurzel kein Objekt
+ist, die Datei Kommentare oder JSON5-Schreibweisen (`//`, `#`, `'`) enthält, zwei Werte nur durch
+Leerraum getrennt sind, eine Zeichenkette ein unmaskiertes Steuerzeichen trägt, Klammern nicht
+passen oder ein Mitglied leer ist (abschließendes Komma) — und wenn ein `allow`-Eintrag selbst
+schon in `{ }` steht. Die Meldung eines Befunds lässt sich nach dem Entmaskieren (`\\` → `\`)
+als Eintrag übernehmen.
+
 **Befundzeilen sind einzeilig.** Jede `shape-*`-Meldung steht auf **einer** Zeile: ein Backslash
 erscheint als `\\`, ein Zeilenende als `\n`, ein Wagenrücklauf als `\r` — eindeutig, zwei
 verschiedene Anweisungen ergeben nie dieselbe Meldung. Verglichen wird immer der Originaltext.
@@ -1070,3 +1095,4 @@ und die [Spezifikation](../../spec/spezifikation.md); ein Überblick steht in de
 | 1.42 | 2026-10-06 | Lastenheft 0.28.0: neuer Optionalblock **`shapes`** und Befund **`shape-unlisted`** — in einer benannten Datei (Leitfall `build.gradle.kts` des Fachkern-Moduls) steht nur, was ausdrücklich erlaubt ist; alles andere ist ein Befund, gleich in welcher Schreibweise. Dialekt `kotlin`, Modus `allow-statements`. §4 um den Abschnitt „Sollform je Datei (`shapes`)" mit Beispiel, Normalisierungs-Regeln, der Regex-Grenze (Zeichenketten-Inhalt als Klasse, nie `.*`) und den Exit-2-Fällen; §3.4-Regeltabelle und Glossar. [ADR-0041](../plan/adr/0041-shapes-sollform-je-datei.md), slice-210. |
 | 1.43 | 2026-10-06 | §4 „Sollform je Datei“ um **`unused: fail`** (Befund `shape-unused`, verortet an der Zeile des Eintrags in der `.a-check.yml`; ohne Opt-in still, kein Warn-Level) und **`mode: exact`** (Datei gleich einer Sollform-Datei nach Normalisierung; erste Abweichung als `shape-differs`, fehlende Sollform-Datei Exit 2) ergänzt; §3.4-Regeltabelle und Glossar. [ADR-0041](../plan/adr/0041-shapes-sollform-je-datei.md), slice-211. |
 | 1.44 | 2026-10-07 | §4 „Sollform je Datei“: neuer Dialekt **`gomod`** (`go.mod`; Anweisung = Direktive, ein `require ( … )`-Block ist eine Anweisung; Zeilenumbrüche sind Grammatik; Exit 2 bei `/* */`, `;`, verklebtem `=>` u. a.) mit Beispiel; **Befundzeilen einzeilig und eindeutig** (`\\`, `\n`, `\r`); `shape-unused` mit Art-Präfix. Lastenheft 0.29.0, [ADR-0042](../plan/adr/0042-shapes-benannte-dialekte-gomod-json.md), slice-213. |
+| 1.45 | 2026-10-07 | §4 „Sollform je Datei“: neuer Dialekt **`json`** (`package.json` u. a.; Anweisung = Mitglied des Wurzel-Objekts, Einträge als Mitglied ohne äußere Klammern; Exit 2 bei Nicht-Objekt-Wurzel, Kommentaren, JSON5, Werten nur durch Leerraum getrennt u. a.) mit Beispiel. Lastenheft 0.29.0, [ADR-0042](../plan/adr/0042-shapes-benannte-dialekte-gomod-json.md), slice-214. |

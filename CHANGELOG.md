@@ -11,8 +11,12 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 - **`shapes`-Dialekt `gomod`** für `go.mod` — ein `require ( … )`-Block ist eine Anweisung, eine
   zusätzliche Abhängigkeit oder `replace`-Direktive ist ein Befund; Zeilenumbrüche sind Grammatik,
   Kommentare (`// indirect`) zählen nicht; `/* */`, `;`, verklebtes `=>` und ähnliche Formen sind
-  Exit 2. Der Dialekt **`json`** ist im selben Vertrag abgenommen, aber **noch nicht
-  implementiert**. Lastenheft 0.29.0
+  Exit 2.
+- **`shapes`-Dialekt `json`** für `package.json` und andere JSON-Dateien — eine Anweisung ist ein
+  Mitglied des Wurzel-Objekts; eine zusätzliche Abhängigkeit in `dependencies` oder ein neues
+  `scripts`-Mitglied ist ein Befund; Kommentare, JSON5-Schreibweisen, eine Wurzel ohne Objekt und
+  nur durch Leerraum getrennte Werte sind Exit 2. Einträge stehen als Mitglied ohne äußere
+  Klammern. Beide Dialekte: Lastenheft 0.29.0
   ([AC-FA-RULE-012](spec/lastenheft.md#ac-fa-rule-012)), Spezifikation 0.36.0,
   [ADR-0042](docs/plan/adr/0042-shapes-benannte-dialekte-gomod-json.md) (`Accepted`). Benannte
   Dialekte mit aus der Grammatik abgeleiteter Lexik statt konfigurierbarer Zeichen; Einheit bei
