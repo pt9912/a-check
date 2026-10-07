@@ -40,12 +40,14 @@ abgenommenen Vertrag; `releasing.md` beschreibt den Ablauf.
 ## 2. Definition of Done
 
 - [ ] `release.yml`: ein Bau für beide Plattformen, Test des gebauten Bilds auf beiden (arm64
-      nach ADR), Push des Index, Versions-Label je Plattform, Digest-Pin in Summary und
-      GitHub-Release.
+      nach ADR) samt Vergleich der Scan-Ausgabe beider Plattformen, Bild-Tag erst danach,
+      Versions-Label je Plattform, Digest-Pin in Summary und GitHub-Release.
 - [ ] Spiegel-Schritt prüft die Gleichheit nach
       [AC-FA-DIST-002](../../../../spec/lastenheft.md#ac-fa-dist-002) in der abgenommenen Fassung,
       fail-closed.
-- [ ] `docs/user/releasing.md` und Benutzerhandbuch (Plattformen, Pin), CHANGELOG `[Unreleased]`.
+- [ ] `docs/user/releasing.md` (Ablauf, arm64-Runner unter Vorbedingungen), Benutzerhandbuch
+      (Plattformen, Pin), Hub-Seite `packaging/dockerhub/` (der GHCR-Digest löst dort auf;
+      Index- statt Config-Digest), CHANGELOG `[Unreleased]`.
 - [ ] Unabhängiger Review, Report unter [`docs/reviews/`](../../../reviews/README.md).
 - [ ] Closure-Notiz mit Steering-Loop-Lerneintrag.
 - [ ] Beobachtungs-Register fortgeschrieben (oder „keine Beobachtung" notiert).
@@ -59,6 +61,7 @@ abgenommenen Vertrag; `releasing.md` beschreibt den Ablauf.
 |---|---|---|
 | `.github/workflows/release.yml` | update | Multi-Arch-Release |
 | `docs/user/releasing.md`, `docs/user/benutzerhandbuch.md`, `CHANGELOG.md` | update | öffentlicher Vertrag |
+| `packaging/dockerhub/overview.md`, `packaging/dockerhub/README.md` | update | Hub-Seite sagt Index-Digest und Auflösbarkeit des GHCR-Digests |
 
 ## 4. Trigger
 

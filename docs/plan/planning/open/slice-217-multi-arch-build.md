@@ -40,8 +40,9 @@ lokal als gebaut und als arm64-Binary belegt.
       Build-Argumenten; Laufzeit-Stufe ohne `RUN`.
 - [ ] Make-Target für den Multi-Arch-Bau nach der ADR aus slice-216, im Gate-Index
       (`harness/README.md` §Sensors oder §Nicht-Gates) eingetragen.
-- [ ] Lokaler Beleg: beide Plattform-Bilder gebaut, das arm64-Binary ist ein arm64-ELF, das
-      amd64-Bild besteht `make image-test` unverändert — mit Gegenprobe.
+- [ ] Image-Test gegen eine übergebene Bild-Referenz (Tag oder Digest) statt fest
+      `$(IMAGE):dev`, Plattform des Hosts geprüft; lokaler Beleg: beide Plattform-Bilder gebaut, das
+      arm64-Binary ist ein arm64-ELF, das amd64-Bild besteht den Image-Test — mit Gegenprobe.
 - [ ] Unabhängiger Review, Report unter [`docs/reviews/`](../../../reviews/README.md).
 - [ ] Closure-Notiz mit Steering-Loop-Lerneintrag.
 - [ ] Beobachtungs-Register fortgeschrieben (oder „keine Beobachtung" notiert).
@@ -55,6 +56,7 @@ lokal als gebaut und als arm64-Binary belegt.
 |---|---|---|
 | `Dockerfile` | update | Cross-Compile |
 | `Makefile`, `harness/README.md` | update | Multi-Arch-Target, Gate-Index |
+| `tools/image-test.sh` | update | Bild-Referenz von außen (ADR-Folgepflicht) |
 
 ## 4. Trigger
 

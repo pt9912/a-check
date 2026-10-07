@@ -45,9 +45,11 @@ das veröffentlichte Image; keine Slice-DoD kann ihn liefern, weil die Pipeline 
 - Ein Release-Tag ist veröffentlicht und nach [`docs/user/releasing.md`](../../user/releasing.md)
   re-gepinnt; die Release-Pipeline ist grün **einschließlich** des Tests auf `linux/arm64`.
 - **Gegenprobe am veröffentlichten Image:** `docker buildx imagetools inspect` des gepinnten
-  Digests nennt genau `linux/amd64` und `linux/arm64`; derselbe Digest läuft mit
-  `--platform linux/amd64` und mit `--platform linux/arm64` einen Scan mit identischer Ausgabe;
-  das Versions-Label stimmt auf beiden; der Docker-Hub-Spiegel trägt dieselben Plattform-Bilder.
+  Digests nennt genau `linux/amd64` und `linux/arm64`, auf GHCR **und** Docker Hub mit demselben
+  Index-Digest; der Scan läuft auf `linux/amd64` lokal und auf `linux/arm64` im nativen Test-Job
+  der Release-Pipeline mit identischer Ausgabe (Job-Log und Vergleichs-Schritt) — ein lokaler
+  arm64-Lauf ist auf diesem Host nicht möglich, ein Lauf auf einem Mac des Maintainers ist
+  willkommen, aber kein Kriterium; das Versions-Label stimmt auf beiden.
 - Ergebnis-Notiz `done/welle-18-results.md` geschrieben.
 
 ## 4. Slices in dieser Welle
@@ -87,6 +89,8 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-06-roadmap.md`
   Ziel; zwei Pin-Arten wären zwei Quellen für dieselbe Version.
 - **Multi-Arch für die Werkzeug-Images** (`archive-wave`, Gate-Stages). Sie laufen nur in der CI
   und lokal beim Entwickler — nicht beim Konsumenten.
+- **CVE-Scan des arm64-Bilds.** `make image-scan` prüft die Plattform des scannenden Rechners;
+  die Lücke ist in der ADR benannt, ihr Schließen ein eigener Vorgang.
 - **Signaturen und Provenance-Attestierungen** (cosign, SLSA). Ein eigener Vorgang; nur dann hier,
   wenn die Build-Werkzeugkette sie unabschaltbar mitbringt — das entscheidet die ADR.
 
