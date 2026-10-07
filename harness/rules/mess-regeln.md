@@ -31,8 +31,11 @@
      durchgesetzt wird **oder dass eine Eigenschaft gilt**, nennt den Lauf, der es
      hält, und dessen Grenze **am selben Satz** — als Text oder als Zeiger auf die
      Stelle, die sie trägt: nicht *„wird geprüft"*, sondern *„geprüft von X; Y nicht,
-     weil …"*. Gibt es keinen Lauf, sagt der Satz das (eine Absicht, noch nicht
-     gehalten), oder er entfällt.
+     weil …"*. Gibt es keinen Lauf, sagt der Satz das — *„geplant mit …"* oder
+     *„vom Review getragen, kein Sensor"* —, oder er entfällt. In den Spec-Straten
+     ist die Zusage der Vertrag selbst; ihren Lauf nennt der umsetzende Slice, und
+     die Regel verlangt dort: keine Eigenschaft in den Vertrag, für die kein Lauf
+     geplant ist.
 
   **Kein Sensor:** alle fünf sind ein Urteil über eine Absicht, einen Aufbau
   oder eine Zuordnung (§3.7). Die **Herleitung** und die gemessenen Fälle stehen im Reviewer-Skill

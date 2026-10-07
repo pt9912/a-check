@@ -227,7 +227,9 @@ braucht welche Artefaktklasse weist die **Urteilsgrundlage** der Skill-Datei zu.
   bei 6×): Wer zusagt, dass etwas geprüft, verglichen oder durchgesetzt wird oder
   dass eine Eigenschaft gilt, nennt den Lauf und seine Grenze am selben Satz — als
   Text oder als Zeiger auf die Stelle, die sie trägt; gibt es keinen Lauf, sagt der
-  Satz das, oder er entfällt. Die Regel ist weiter als der Titel des
+  Satz das (*geplant mit …*, *vom Review getragen*), oder er entfällt; in den
+  Spec-Straten nennt den Lauf der umsetzende Slice, und keine Eigenschaft kommt in den
+  Vertrag, für die keiner geplant ist (der Fall slice-216). Die Regel ist weiter als der Titel des
   Register-Eintrags: zwei der sechs Belege (slice-216, slice-218) sagen keine Prüfung
   zu, sondern eine Eigenschaft. Sie ist Regel 1 *(Geltungsbereich einer Messung)*,
   von der einmaligen Messung auf die stehende Zusage übertragen, und verlangt dazu
