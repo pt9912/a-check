@@ -145,3 +145,132 @@ Vertragsänderungen aus) und blockiert diesen Slice nicht.
 Finding-Klassen gehen in die Slice-Closure §7. F-2 und F-7 sind ein weiteres Auftreten von
 `BEO-GATE/testbeschreibung-weiter-als-assertion` (Stand: geplant, slice-215). Dieser Report
 ersetzt keine Verifikation.
+
+---
+
+## Delta-Review (Nachlauf 8868422..f778348)
+
+**Review-Art:** Code und Doku, unabhängiger Lauf, frischer Subagent ohne `fork`; der Kontext hat
+weder den Gegenstand noch den Erst-Review verfasst. Geprüft gegen Slice-Plan slice-214 (mit der
+Plan-Änderung), ADR-0042 Entscheidung 2, SPEC-EXTRACT-001 „Dialekt `json`“ (0.38.0),
+AC-FA-RULE-012 (Lastenheft 0.29.0, unverändert), `AGENTS.md` §3 und RFC 8259 als Primärquelle.
+Nicht gegen die DoD.
+
+**Gegenstand:** slice-214, Commit-Range `8868422..f778348` — `f25a894` (planning, Plan-Änderung),
+`268b185` (Spezifikation 0.38.0), `f778348` (Code, Tests, Handbuch, CHANGELOG).
+
+**Skill:** `.harness/skills/reviewer.md` @ `a6d19b6` (sha256 `4cc75e58…35cf4d9`) ·
+**Modell:** `claude-opus-5-5` · **Datum:** 2026-10-07
+
+**Sonden.** `make test` im Repo auf `f778348`: Exit 0. `make doc-check`: Exit 0, 694 Dateien,
+0 Befunde. Alle übrigen Sonden in Klonen außerhalb des Repos (`git archive f778348` ins
+Scratchpad, eigene Image-Tags, Lauf je über `make test`; kein Host-Go):
+
+- **Einzelproben** gegen `normalizeJSON`: 33 RFC-gültige und 57 RFC-ungültige Eingaben, je mit
+  `encoding/json` als zweitem, anders gebautem Zähler (gültig ⇔ `json.Valid` und Objekt-Wurzel).
+- **Differenzielles Fuzzing** gegen denselben Referenz-Zähler: 3 000 000 Zufalls-Eingaben (ASCII,
+  Länge 1–14, Alphabet aus Strukturzeichen, Atom-Zeichen, `"`, `\`, `u`, `x`, Leerraum, U+0001;
+  380 angenommen) und 1 000 000 Mutationen (1–3 Einfüge-/Lösch-/Ersetz-Schritte) eines gültigen
+  Objekts mit Zahlen, Literalen, Escapes und Verschachtelung (150 699 angenommen): **0
+  Abweichungen**. Geltungsbereich: ASCII-Eingaben — ungültiges UTF-8 liegt außerhalb, weil
+  `encoding/json` es annimmt (dort gesondert gemessen, unten); Tiefe und Länge sind durch die
+  Generatoren begrenzt.
+- **Korpus:** dieselben 233 realen `package.json` wie im Erst-Review: 231 zerlegt, 2 Exit 2
+  (Zeichenketten-Wurzel), 0 Abweichungen gegen `encoding/json` in Annahme **und**
+  Mitgliederzahl. Der strengere Prüfer kostet an realen Dateien nichts.
+- **End-to-End** über `cli.Run`: 9 Dateien, 4 `literal`-Einträge.
+- **Mutationen** an `json_shape.go`, je mit der vollen Bestands-Suite: die drei aus F-2 (M1–M3),
+  drei am neuen Prüfer (M4 Prüfer-Aufruf entfernt, M5 UTF-8-Prüfung aus, M6 Escape-Prüfung aus)
+  und drei an seinen Grenzen (V1 Exponent `[+-]*`, V2 `\b` aus der Escape-Menge, V5 `-*` vor der
+  Zahl); für die überlebenden je eine Gegenprobe, unmutiert grün, mutiert rot mit Meldung.
+- **Tiefe:** Arrays der Tiefe 10^5, 10^6, 3·10^6 im Wert eines Mitglieds.
+
+### Stand der Erst-Findings
+
+| ID | Stand | Messung |
+|---|---|---|
+| F-1 | erledigt | CHANGELOG sagt jetzt „gültiges JSON nach RFC 8259 … jede andere Abweichung sind Exit 2“. End-to-End: abschließendes Komma in `dependencies`, `+1`, `.5`, `{"s":{nul:1}}` je **Exit 2** (vorher Exit 1). |
+| F-2 | erledigt | Kommentar auf „Fehlerfälle der Lexik und der Zerlegung (Schritt 1 und 4)“ verengt. M2 (Steuerzeichen) ist jetzt **rot**: `TestJSONValidity` „Steuerzeichen U+0001 … Fehler erwartet“. M1 (`:` auf Tiefe 1) und M3 (Leerraum nur zwischen gleichen Token-Arten) überleben die Suite weiter, sind aber **äquivalente Mutanten**: Unter beiden lief das Fuzzing mit 0 Abweichungen, weil der Grammatik-Prüfer dieselben Fälle früher abweist. Die Eindeutigkeit der Normalform hängt damit an zwei Schichten, von denen jede für sich getestet ist (M4 rot in 17 Fällen plus `TestJSONLiteralSource`). Siehe D-6. |
+| F-3 | erledigt | Alle Formen aus F-3 sind Exit 2, je mit eigener Meldung: `tru`, `eee`, `nulll`, `truefalse`, `01`, `--1`, `1.`, `"\x"`, Backslash vor Steuerzeichen, `{"a":1"b":2}`, `[1,,2]`, `[,]`, `{1}` im Wert. Handbuch-Satz und Kopf-Kommentar sagen jetzt „gültiges JSON“; das Fuzzing deckt die Zusage im genannten Geltungsbereich. |
+| F-4 | erledigt (Gegenstand entfallen) | Ein maskiertes `LF` in einer Zeichenkette ist jetzt eine ungültige Escape-Folge, Exit 2 (gemessen mit der F-4-Eingabe). Eine falsche Zeilennummer kann nur noch an Eingaben entstehen, die nicht zerlegt werden. |
+| F-5 | erledigt | Spezifikation 0.38.0 Schritt 2 verlangt gültiges JSON; damit folgt der Vertrag ADR-0042 Entscheidung 2. Lastenheft unverändert und widerspruchsfrei (die Boundary `json` nennt nur die Objekt-Wurzel). Restfehler im neuen Satz: D-2. |
+| F-6 | erledigt | Handbuch zählt `//`, `/* */`, `#` als Kommentare, JSON5 getrennt. `// c` und `/*` gemessen Exit 2. |
+| F-7 | erledigt | Kommentar nennt „im Scan Exit 2“ als Folge in Klammern; die Assertion prüft den Fehler, der Weg zu Exit 2 ist End-to-End belegt (auch für die neuen Fälle, oben). |
+| F-8 | erledigt | `"\xff"`, abgeschnittene Folge `\xc3`, überlange Kodierung `\xc0\xaf`, UTF-8-kodiertes Surrogat `\xed\xa0\x80`: je Exit 2 („kein gültiges UTF-8“). `encoding/json` nimmt alle vier an; der Prüfer ist hier strenger als die Referenz und folgt RFC 8259 §8.1. |
+| F-9 | erledigt | `{"name":"web""scripts":{"postinstall":"x"}}` End-to-End **Exit 2** („erwartet "}" oder ",", gefunden "scripts"“), vorher Exit 1. |
+
+### Neue Findings
+
+| ID | Kategorie | Befund | Quelle | Pfad | Verifizierbar | Klasse |
+|---|---|---|---|---|---|---|
+| D-1 | HIGH | Der Kopf des Slice-Plans sagt zu SPEC-EXTRACT-001 „— umgesetzt, nicht geändert“. `268b185` ändert genau diesen Absatz (Spezifikation 0.37.0 → 0.38.0, Schritt 2 „Gültigkeit“ neu); die Plan-Änderung in §1 nennt das, das Kopffeld blieb stehen. Ebenso steht der Ausschluss „Vertragsänderungen … der Vertrag steht“ unverändert neben der Plan-Änderung, die eine Vertragsänderung aufnimmt. Adversarisch gegen `git diff 8868422..f778348 -- spec/` geprüft. | Skill §HIGH „nachweislich falsche Tatsachenbehauptung“; `modul-05` §Ziel-Form: Slice (Kopf nennt die berührten Spec-Stellen) | `docs/plan/planning/in-progress/slice-214-shapes-dialekt-json.md:14`, `:45-46` | nein — kein Gate liest das Kopffeld gegen den Diff | Zustandsangabe im Plan nach Plan-Änderung nicht nachgezogen |
+| D-2 | HIGH | Schritt 2 sagt: „Die Fehlerliste unter 1 und 4 sind Fälle dieser Regel“ (der Regel „gültiges JSON nach RFC 8259“). Für den ersten Fehler unter 4, „eine Wurzel, die kein Objekt ist“, stimmt das nicht: RFC 8259 §2 lässt jeden Wert als Wurzel zu (`JSON-text = ws value ws`). Der Code sagt es selbst richtig — `jsonValidate` „accepts any root value — that the root is an object is the split's rule“ —, ebenso das Handbuch („Ebenso Exit 2, wenn die Wurzel kein Objekt ist“). Das Verhalten (Exit 2) ist in Schritt 4 eigens festgelegt; falsch ist die Zuordnung, nicht die Folge. | Skill §HIGH „nachweislich falsche Tatsachenbehauptung“; RFC 8259 §2 | `spec/spezifikation.md:379-380` | nein | Vertrag ordnet eine eigene Regel der Quelle zu |
+| D-3 | MEDIUM | Der Kommentar von `TestJSONValidity` sagt „jede Form, die die Quelle verbietet, ist ein Fehler“ und, vor der letzten Assertion, „gültige Grenzfälle bleiben gültig“. Drei Mutationen überleben die ganze Suite (`ok` für alle sechs Pakete): V1 Exponent `[+-]*` nimmt `{"a":1e+-2}` an, V5 `-*` nimmt `{"a":--1}` an, V2 ohne `b` in der Escape-Menge lehnt das gültige `{"a":"\b"}` ab. Gegenprobe unmutiert grün, mutiert je rot („ROT ungueltig angenommen: {"a":1e+-2}“, „… {"a":--1}“, „ROT gueltig abgelehnt: … ungültige Escape-Folge“). Das Verhalten des Codes ist richtig (Fuzzing oben); die Beschreibung des Tests reicht weiter als seine 20 Fälle und den einen Gültig-Fall. Die Zusage „Je Fall eine Zeile“ allein stimmt. | `BEO-GATE/testbeschreibung-weiter-als-assertion`; SPEC-EXTRACT-001 `json` Schritt 2 | `internal/adapter/driven/extract/json_shape_test.go:97-99`, `:127`; Gegenstand `internal/adapter/driven/extract/json_shape.go:237`, `:403` | ja — die drei Mutationen in `make test` | Testbeschreibung sagt mehr zu als die Assertion |
+| D-4 | LOW | Der neue Prüfer steigt rekursiv ab (`value` → `array`/`object`); die Zerlegung davor hielt die Tiefe in einem Slice. Ein gültiges Array der Tiefe 3·10^6 (rund 6 MB) beendet den Prozess mit `fatal error: stack overflow` („goroutine stack exceeds 1000000000-byte limit“) statt mit einer Meldung; Tiefe 10^6 läuft in 0,69 s durch. RFC 8259 §9 erlaubt eine Grenze der Schachtelungstiefe; Spezifikation und Handbuch nennen keine. Der Exit-Code eines Go-Laufzeit-Abbruchs ist 2, über `cli.Run` nicht gemessen — fail-closed, aber nicht über den Vertragsweg. | AC-QA-02 (ehrliche Grenze); RFC 8259 §9; SPEC-EXTRACT-001 `json` Schritt 2 | `internal/adapter/driven/extract/json_shape.go:278-345` | ja — Eingabe gegen `normalizeJSON` | Implementierungsgrenze nicht benannt |
+| D-5 | LOW | Der Kommentar von `TestJSONValidity` begründet seinen Umfang mit dem Gegenfall im Konjunktiv: „auch die, die sonst fail-safe in eine Anweisung fielen“. Nicht HIGH, weil der Kommentar daneben eine Zusage trägt; der Nebensatz beschreibt, was ohne die Prüfung geschähe. | `AGENTS.md` §3.7 | `internal/adapter/driven/extract/json_shape_test.go:98-99` | nein | Kommentar beschreibt die verworfene Alternative |
+| D-6 | INFO | Hinter `jsonValidate` sind die Prüfungen „leeres Mitglied“, „Mitglied beginnt nicht mit einer Zeichenkette“, „kein `:` auf Tiefe 1“ (`jsonMember`) und die Leerraum-Regel (`jsonTokens`) für jede Eingabe redundant: M1 und M3 sind äquivalente Mutanten (oben). Die Kommentare dort bleiben wahr. Für die DoD-Behauptung „Mutations-Gegenprobe“ ist das die Frage des Verifiers, welche Schicht ein Fall erreicht. | `BEO-GATE/probe-liefert-den-gegenstand-mit` (Hinweis, kein Auftreten) | `internal/adapter/driven/extract/json_shape.go:73`, `:203-230` | ja — M1/M3 mit Fuzzing | Prüfung nach vorgelagertem Prüfer unerreichbar |
+
+### Adversariale Konstruktion
+
+- **Von RFC 8259 verbotene Form, die noch angenommen wird:** keine gefunden. Einzelproben (57,
+  alle Exit 2): Zahlen `-`, `-01`, `1.e2`, `1e+`, `1e5.5`, `-.5`, `1.5e`, `1-2`, `0x10`; Literale
+  `TRUE`, `NaN`, `Infinity`, `nulll`; Escapes `\U0041`, `\'`, `\a`, `\u` mit drei Hex-Ziffern, `\u`
+  mit `-`; Struktur `{"a"::1}`, `{"a":1:2}`, `{:1}`, `[1:2]`, `{"b"}` und `{,}` verschachtelt,
+  `[,1]`, `{"a":1,"b"}`, Leerraum statt Komma in Array und Objekt; zwei BOM; NUL nach der Wurzel;
+  geschütztes Leerzeichen U+00A0 als Leerraum; dazu das Fuzzing.
+- **Gültige Form, die fälschlich Exit 2 ist:** keine gefunden, außer D-4 (Tiefe ab 3·10^6). Einzeln
+  angenommen und byte-genau normalisiert: `-0`, `1E+2`, `1e-2`, `0.0`, `0e0`, `-0.0E-0`,
+  `1e999`, eine 29-stellige Ganzzahl; `\u0000`, ein Surrogat-Paar, ein **einzelnes**
+  Surrogat-Escape (RFC 8259 §8.2: von der ABNF erlaubt), groß- und kleingeschriebene Hex-Ziffern,
+  ein u-Escape im Schlüssel, `\/`, `\b \f \n \r \t`, `\\`, `\"`, DEL (U+007F) roh, `ä € 𝄞` roh;
+  leerer Schlüssel; doppelte Schlüssel (RFC: SHOULD, zwei Anweisungen); `[[],{}]`, zehnfach
+  geschachtelte leere Arrays, `{}`, ` {} `; Leerraum aus allen vier Zeichen vor und nach jedem
+  Strukturzeichen; ein BOM am Anfang (§8.1 MAY ignore; `encoding/json` lehnt ihn ab, die
+  Spezifikation lässt ihn ausdrücklich entfallen).
+- **`literal`-Einträge:** `"a": tru` und `"a": 01` Exit 2 beim Laden („lässt sich nicht
+  zerlegen“), `"a": -0` gegen `{"a":-0}` Exit 0.
+
+### Negativbefunde
+
+| Bereich | Ergebnis |
+|---|---|
+| `jsonValidate`/`jsonParser` gegen RFC 8259 §2–§8 | geprüft, ohne Befund außer D-4. Objekt- und Array-Grammatik ohne abschließendes Komma, Zahl-Regex = §6 (`int = zero / digit1-9 *DIGIT`, `frac`, `exp`), Literale exakt, Escape-Menge = §7, UTF-8 nur in Zeichenketten geprüft, außerhalb lässt die Lexik ohnehin nur ASCII zu. Kein Index-Fehler bei Backslash am Zeichenketten-Ende (die Lexik lässt keine solche Zeichenkette durch). |
+| Spezifikation 0.38.0 — Referenz-Richtung (`AGENTS.md` §3.4) | geprüft, ohne Befund. Der Diff nennt keine ADR-, Slice-, Wellen-Kennung und keinen Commit. Historie-Zeile beschreibt die Änderung, das ist ihre Aufgabe. |
+| Handbuch §4 `json` und Historie 1.45 | geprüft, ohne Befund. Jede genannte Exit-2-Form gemessen; „Ebenso Exit 2, wenn die Wurzel kein Objekt ist“ trennt die eigene Regel richtig von RFC 8259; Handbuch-Version 1.45 im Kopf, in der Historie in place fortgeschrieben (unveröffentlicht). |
+| CHANGELOG `[Unreleased]` | geprüft, ohne Befund. „Spezifikation 0.36.0–0.38.0“ deckt die drei berührten Stände. |
+| Code-Kommentare in `json_shape.go` | geprüft, ohne Befund. Kopf-, `jsonValidate`-, `jsonCheckString`- und `next`-Kommentare decken sich mit dem gemessenen Verhalten; keine Chronik. |
+| Test-Kommentare außer `TestJSONValidity` | geprüft, ohne Befund. `TestJSONUnsplittable` sagt nur noch, was die Schleife prüft. Review-Kennungen in Kommentaren sind im Bestand üblich (`shapes.go`, `shapes_test.go`, `kotlin_shape_test.go`). |
+| Reihenfolge Plan → Spezifikation → Code (`AGENTS.md` §6 Schritt 4) | geprüft, ohne Befund. `f25a894` vor `268b185` vor `f778348`; der Planning-Commit berührt nur `docs/plan/planning/`. |
+| Hard Rules `AGENTS.md` §3.1–§3.6 | geprüft, ohne Befund. Kein `//nolint`, keine ADR geändert, kein Move, keine Gate-Schwelle. |
+| Traceability der drei Commit-Messages | geprüft, ohne Befund. Jede nennt `slice-214`, zwei zusätzlich `AC-FA-RULE-012`/`ADR-0042`. |
+
+### Summary (Delta)
+
+| Kategorie | Anzahl |
+|---|---|
+| HIGH | 2 |
+| MEDIUM | 1 |
+| LOW | 2 |
+| INFO | 1 |
+
+Erst-Findings: 9 von 9 erledigt (F-4 durch Wegfall des Gegenstands).
+
+**Finding-Klassen dieses Laufs:** Zustandsangabe im Plan nach Plan-Änderung nicht nachgezogen ·
+Vertrag ordnet eine eigene Regel der Quelle zu · Testbeschreibung sagt mehr zu als die Assertion ·
+Implementierungsgrenze nicht benannt · Kommentar beschreibt die verworfene Alternative · Prüfung
+nach vorgelagertem Prüfer unerreichbar
+
+### Verdikt (Delta)
+
+**Merge-blockierend:** ja, wegen D-1, D-2 (HIGH) und D-3 (MEDIUM). Am Verhalten blockiert nichts:
+Der Prüfer nimmt in allen Messungen genau gültiges JSON mit Objekt-Wurzel an (4 000 000
+Fuzz-Eingaben, 90 Einzelproben, 233 reale Dateien, je gegen `encoding/json`, 0 ungewollte Abweichungen),
+strenger als die Referenz nur bei ungültigem UTF-8, nachsichtiger nur beim BOM am Anfang — beides spec-treu. Blockierend sind zwei
+Sätze, die nachweislich nicht stimmen (Plan-Kopf, Zuordnung in Schritt 2), und ein Testkommentar,
+dessen Zusage drei Mutationen grün überstehen. D-4 betrifft eine nicht benannte Grenze, nicht
+einen falschen Befund.
+
+**Übergabe:** Findings an den Implementer. D-3 ist innerhalb desselben Vorgangs (slice-214)
+wie F-2 aufgetreten und zählt für `BEO-GATE/testbeschreibung-weiter-als-assertion` nicht
+zusätzlich. D-4 gehört, falls eine Grenze in den Vertrag soll, als Frage an den Architect.
+Dieser Report ersetzt keine Verifikation.
