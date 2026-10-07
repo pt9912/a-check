@@ -7,7 +7,8 @@
 #       die platform-Beschriftung des Index-Eintrags sagt dasselbe — nach ihr wählt
 #       Docker beim Ziehen;
 #   (3) je Eintrag ist das Binary ein ELF dieser Plattform (e_machine 62 bzw. 183);
-#   (4) je Eintrag steht org.opencontainers.image.version auf der erwarteten Version.
+#   (4) je Eintrag steht org.opencontainers.image.version auf der erwarteten Version,
+#       und source, description, licenses, title, vendor sind nicht leer.
 # Grenze: geprüft wird das ARCHIV, nicht ein Lauf — ob das arm64-Binary auf arm64
 # ausführt, belegt der Image-Test auf einem arm64-Rechner, nicht dieses Skript.
 #
@@ -82,6 +83,9 @@ for d in $digests; do
 
   ver="$(wert "$cfg" 'org\.opencontainers\.image\.version')"
   [ "$ver" = "$WANT_VERSION" ] || fail "$p: Versions-Label '$ver', erwartet '$WANT_VERSION'"
+  for l in source description licenses title vendor; do
+    [ -n "$(wert "$cfg" "org\\.opencontainers\\.image\\.$l")" ] || fail "$p: OCI-Label org.opencontainers.image.$l ist leer"
+  done
 
   # Das Binary liegt im letzten Layer (COPY in der runtime-Stufe).
   layer="$(alle "$(printf '%s' "$man" | sed 's/.*"layers":\[//')" 'sha256:[0-9a-f]{64}' | tail -1)"

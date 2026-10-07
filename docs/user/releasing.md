@@ -30,7 +30,7 @@ make a-check A_CHECK_IMAGE=a-check:dev   # Konsum-Aufruf gegen das lokale Image
 
 Versionen folgen SemVer; die menschlich kuratierte Begründung jedes Releases ist
 der zugehörige Abschnitt in [`CHANGELOG.md`](../../CHANGELOG.md). Der
-`[Unreleased]`-Stand wird **beim Re-Pin nach dem Publish** (Schritt 8) unter die neue
+`[Unreleased]`-Stand wird **beim Re-Pin nach dem Publish** (Schritt 6) unter die neue
 Version geschnitten — **zusammen** mit dem `version.md#aktuell`-Bump: der Pin-Check
 (slice-018) verlangt `version.md#aktuell` == aktuellstes `CHANGELOG`-Release; ein
 CHANGELOG-Schnitt **vor** dem Tag (ohne version.md-Bump) macht `make ci` in der Pipeline
@@ -61,23 +61,28 @@ jedem `v*`-Tag-Push:
    zieht **diesen Digest** und fährt `make image-test IMAGE_REF=…@<digest>` samt
    Versions-Label (Version-Drift shippt nicht). Jeder gibt einen Hash über Exit-Code,
    stdout und stderr seines Scans aus; beide müssen gleich sein.
-5. **Bild-Tag** `ghcr.io/pt9912/a-check:v<version>` erst danach, per
-   `docker buildx imagetools create` auf **denselben** Digest; `:latest`
-   **ausschließlich** für stabile Releases (kein Prerelease-Suffix) —
-   [ADR-0007](../plan/adr/0007-latest-tag-politik.md). Konsumenten pinnen
-   Digests, nicht `:latest`. Ein roter Schritt davor lässt den Index **ohne Tag** in
-   GHCR zurück — er trägt keine Version und kann in der Paketliste gelöscht werden.
-6. **Spiegel** nach Docker Hub: der Index wird unverändert kopiert, die Pipeline verlangt
-   **denselben Index-Digest** auf beiden Registries ([AC-FA-DIST-002](../../spec/lastenheft.md#ac-fa-dist-002)).
-7. **Digest-Pin** — der Digest des **Image-Index**, gültig für beide Plattformen — im
-   Job-Summary und in den Notes des angelegten GitHub-Releases.
+5. **Veröffentlichen** — erst wenn beide Tests und der Vergleich grün sind:
+   - **Bild-Tag** `ghcr.io/pt9912/a-check:v<version>` per `docker buildx imagetools create`
+     auf **denselben** Digest; `:latest` **ausschließlich** für stabile Releases (kein
+     Prerelease-Suffix) — [ADR-0007](../plan/adr/0007-latest-tag-politik.md). Konsumenten
+     pinnen Digests, nicht `:latest`. Ein roter Schritt davor lässt den Index **ohne Tag** in
+     GHCR zurück — er trägt keine Version und kann in der Paketliste gelöscht werden.
+   - **Spiegel** nach Docker Hub: der Index wird unverändert kopiert, die Pipeline verlangt
+     **denselben Index-Digest** auf beiden Registries
+     ([AC-FA-DIST-002](../../spec/lastenheft.md#ac-fa-dist-002)).
+   - **Digest-Pin** — der Digest des **Image-Index**, gültig für beide Plattformen — im
+     Job-Summary und in den Notes des angelegten GitHub-Releases.
+   - **Wiederanlauf:** „Re-run failed jobs" setzt am roten Job fort und behält den Digest.
+     „Re-run all jobs" baut neu und erhält einen **anderen** Digest; zeigt der Versions-Tag
+     dann schon auf den alten, bricht der Tag-Schritt ab — ein Versions-Tag wird nie
+     umgehängt.
    Das ist **die** Bezugsquelle für Konsumenten: `a-check --print-mk` gibt einen
    **Platzhalter** aus, keinen Digest
    ([ADR-0030](../plan/adr/0030-kein-digest-im-generierten-fragment.md),
    [AC-QA-03](../../spec/lastenheft.md#ac-qa-03--reproduzierbarkeit)) — ein Binary kann den
    Digest des Image, in dem es läuft, nicht kennen. **Wer Konsumenten auf `--print-mk` als
    Digest-Quelle verweist, erzeugt einen Fehlpin auf das Vorgänger-Release.**
-8. **Register-Re-Pin + CHANGELOG-Schnitt** (slice-018): den CHANGELOG `[Unreleased]` →
+6. **Register-Re-Pin + CHANGELOG-Schnitt** (slice-018): den CHANGELOG `[Unreleased]` →
    `[X.Y.Z] - <Datum>` schneiden **und** — im **selben** Commit, sonst Versions-Drift —
    den neuen Digest + die neue Version an [`version.md#aktuell`](../../version.md#aktuell)
    (Version, Datum, voller `@sha256:`-Digest) plus eine neue
@@ -95,7 +100,7 @@ jedem `v*`-Tag-Push:
 
 ## Vorbedingungen (Repository-Schalter)
 
-Zwei Dinge dieses Betriebs leben **nicht im Repo**, sondern in der
+Die Schalter unten leben **nicht im Repo**, sondern in der
 GitHub-Oberfläche. Sie stehen hier, weil ein Fork oder ein neu aufgesetztes
 Repository sie erneut setzen muss — und weil ihr Fehlen **still** wirkt:
 

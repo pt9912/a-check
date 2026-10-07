@@ -20,8 +20,9 @@ name: release
 #                denselben Index-Digest und legt das GitHub-Release an.
 # Ein roter Job vor `publish` lässt den Index ohne Bild-Tag in GHCR zurück.
 #
-# Docker-only-Pfad (AGENTS.md §3.1): jeder Schritt läuft über `make` oder die
-# Docker-CLI.
+# Docker-only-Pfad (AGENTS.md §3.1): Bau und Tests laufen über `make`, Tag und
+# Spiegel über die Docker-CLI; das GitHub-Release legt `gh` an, Hash und Vergleich
+# rechnet Bash mit `sha256sum`. Keine Host-Toolchain.
 #
 # Action-Pinning (Supply-Chain-Härtung, Stack-Konvention): alle `uses:`-Einträge
 # sind SHA-gepinnt mit Tag-Kommentar.
@@ -95,13 +96,15 @@ jobs:
         run: |
           set -euo pipefail
           make image-multiarch VERSION="$VERSION" PUSH_NAME="$REGISTRY/$IMAGE_NAME"
+          # Pfad = Default von MULTIARCH_OUT im Makefile plus `.digest`.
           DIGEST="$(cat .build/a-check-multiarch.oci.tar.digest)"
           [[ "$DIGEST" =~ ^sha256:[0-9a-f]{64}$ ]] || { echo "::error::kein Index-Digest ermittelt: '$DIGEST'"; exit 1; }
           echo "digest=$DIGEST" >> "$GITHUB_OUTPUT"
           echo "Index ohne Tag: $REGISTRY/$IMAGE_NAME@$DIGEST"
 
   # Zwei Jobs statt einer Matrix: jeder gibt seinen Scan-Hash unter EIGENEM Namen
-  # aus, und `publish` liest beide. Gleich bis auf `runs-on`.
+  # aus, und `publish` liest beide. Gleich bis auf `runs-on`, Job-Name und die
+  # Plattform in der Log-Zeile.
   test-amd64:
     name: test (linux/amd64, nativ)
     needs: build
@@ -130,7 +133,9 @@ jobs:
           set -euo pipefail
           make image-test IMAGE_REF="$REGISTRY/$IMAGE_NAME@$DIGEST" VERSION="$VERSION" SCAN_OUT_DIR=scanout
           cat scanout/scan.exit scanout/scan.stdout scanout/scan.stderr
-          SCAN="$(cat scanout/scan.exit scanout/scan.stdout scanout/scan.stderr | sha256sum | cut -c1-64)"
+          # Je Strom ein Hash, dann einer über die drei: eine verschobene Grenze
+          # zwischen stdout und stderr ändert damit den Hash.
+          SCAN="$(for f in exit stdout stderr; do sha256sum <"scanout/scan.$f"; done | sha256sum | cut -c1-64)"
           echo "scan=$SCAN" >> "$GITHUB_OUTPUT"
           echo "Scan-Hash linux/amd64: $SCAN"
 
@@ -162,7 +167,9 @@ jobs:
           set -euo pipefail
           make image-test IMAGE_REF="$REGISTRY/$IMAGE_NAME@$DIGEST" VERSION="$VERSION" SCAN_OUT_DIR=scanout
           cat scanout/scan.exit scanout/scan.stdout scanout/scan.stderr
-          SCAN="$(cat scanout/scan.exit scanout/scan.stdout scanout/scan.stderr | sha256sum | cut -c1-64)"
+          # Je Strom ein Hash, dann einer über die drei: eine verschobene Grenze
+          # zwischen stdout und stderr ändert damit den Hash.
+          SCAN="$(for f in exit stdout stderr; do sha256sum <"scanout/scan.$f"; done | sha256sum | cut -c1-64)"
           echo "scan=$SCAN" >> "$GITHUB_OUTPUT"
           echo "Scan-Hash linux/arm64: $SCAN"
 
@@ -207,6 +214,12 @@ jobs:
         run: |
           set -euo pipefail
           SRC="$REGISTRY/$IMAGE_NAME@$DIGEST"
+          # Ein Versions-Tag wird nie umgehängt: zeigt v$VERSION schon auf einen
+          # ANDEREN Digest (etwa nach einem Wiederanlauf, der neu gebaut hat), bricht
+          # der Schritt ab. Derselbe Digest ist ein gültiger Wiederanlauf.
+          if OLD="$(docker buildx imagetools inspect "$REGISTRY/$IMAGE_NAME:v$VERSION" --format '{{.Manifest.Digest}}' 2>/dev/null)"; then
+            [ "$OLD" = "$DIGEST" ] || { echo "::error::v$VERSION existiert schon auf GHCR mit $OLD, dieser Lauf hat $DIGEST getestet — Tags werden nie umgehängt."; exit 1; }
+          fi
           TAGS=(-t "$REGISTRY/$IMAGE_NAME:v$VERSION")
           if [[ "$IS_STABLE" == "true" ]]; then TAGS+=(-t "$REGISTRY/$IMAGE_NAME:latest"); fi
           docker buildx imagetools create "${TAGS[@]}" "$SRC"
@@ -222,11 +235,12 @@ jobs:
             echo '```'
           } >> "$GITHUB_STEP_SUMMARY"
 
-      # Docker-Hub-Spiegel (AC-FA-DIST-002, ADR-0043 Punkt 7): der Index wird
-      # UNVERÄNDERT kopiert, nicht neu hochgeladen — ein Neu-Push aus dem lokalen
-      # Bildspeicher schriebe nur die Host-Plattform. Gleichheit = derselbe
-      # Index-Digest. FAIL-CLOSED: die Meldung nennt den bereits veröffentlichten
-      # GHCR-Digest.
+      # Docker-Hub-Spiegel (AC-FA-DIST-002, ADR-0043 Punkt 7): `imagetools create`
+      # kopiert den Index unverändert, mit allen Plattformen. Gleichheit = derselbe
+      # Index-Digest; die Plattform-Menge ist darin enthalten, weil der Index-Digest
+      # über die Liste der Plattform-Manifeste gebildet wird. FAIL-CLOSED: die
+      # Meldung nennt den bereits veröffentlichten GHCR-Digest — auch bei einem
+      # Login-Fehler (Schritt „Spiegel-Fehlschlag melden").
       - name: Log in to Docker Hub
         uses: docker/login-action@dbcb813823bdd20940b903addbd779551569679f # v4.6.0
         with:
@@ -240,6 +254,9 @@ jobs:
           set -euo pipefail
           trap 'echo "::error::Docker-Hub-Spiegel fehlgeschlagen. BEREITS VEROEFFENTLICHT: $REGISTRY/$IMAGE_NAME@$DIGEST — das Release ist unvollstaendig, der GHCR-Stand aber gueltig."' ERR
           SRC="$REGISTRY/$IMAGE_NAME@$DIGEST"
+          if OLD="$(docker buildx imagetools inspect "docker.io/$HUB_IMAGE:v$VERSION" --format '{{.Manifest.Digest}}' 2>/dev/null)"; then
+            [ "$OLD" = "$DIGEST" ] || { echo "::error::v$VERSION existiert schon auf Docker Hub mit $OLD — Tags werden nie umgehängt."; exit 1; }
+          fi
           TAGS=(-t "docker.io/$HUB_IMAGE:v$VERSION")
           if [[ "$IS_STABLE" == "true" ]]; then TAGS+=(-t "docker.io/$HUB_IMAGE:latest"); fi
           docker buildx imagetools create "${TAGS[@]}" "$SRC"
@@ -254,6 +271,10 @@ jobs:
             echo ""
             echo "Docker-Hub-Spiegel: \`$HUB_IMAGE:v$VERSION\` — derselbe Index-Digest."
           } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Spiegel-Fehlschlag melden
+        if: failure()
+        run: echo "::error::Release unvollstaendig. BEREITS VEROEFFENTLICHT (falls der Bild-Tag gesetzt war) — $REGISTRY/$IMAGE_NAME@$DIGEST auf GHCR."
 
       # GitHub-Release mit dem Digest-Pin in den Notes — der Pin ist die
       # Referenz, die Konsumenten-Repos in a-check.mk eintragen.
@@ -278,9 +299,8 @@ jobs:
 
   # Die Hub-DARSTELLUNG, getrennt vom Spiegel und ausdruecklich NICHT
   # fail-closed (ADR-0039): das Bild ist die Zusage, der Beschreibungstext ist
-  # Praesentation. Der Job laeuft NACH `publish` und nur, wenn dieser durch ist —
-  # eine Seite zu setzen, die auf ein nicht veroeffentlichtes Bild zeigt, waere
-  # eine Falschaussage.
+  # Praesentation. Der Job laeuft NACH `publish` und nur, wenn dieser durch ist:
+  # die Seite zeigt nur auf ein veroeffentlichtes Bild.
   hub-description:
     name: Hub-Darstellung
     needs: [build, publish]

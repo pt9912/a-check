@@ -13,8 +13,8 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
   Gebaut wird einmal per Cross-Compile; die Release-Pipeline testet genau diesen Digest auf je
   einem nativen Runner beider Plattformen, vergleicht die Scan-Ausgabe beider und setzt den
   Bild-Tag erst danach. Lokal: `make image-multiarch` (baut und prüft den Index als OCI-Archiv),
-  `make image-test IMAGE_REF=…` (Image-Test gegen ein Tag oder einen Digest, prüft auch das
-  Versions-Label).
+  `make image-test IMAGE_REF=… VERSION=…` (Image-Test gegen ein Tag oder einen Digest, prüft auch
+  das Versions-Label; ohne `VERSION` bricht der Aufruf ab).
 
 ### Changed
 

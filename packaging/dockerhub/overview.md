@@ -37,7 +37,9 @@ digest is that of the **image index** — one pin for both platforms.
 This repository is a **mirror** of `ghcr.io/pt9912/a-check` — the same image, not a second
 build: the index is copied unchanged, and the release pipeline verifies that its digest is
 **identical** on both registries. The digest listed in this project's own documentation
-(`a-check.mk`, the READMEs, `version.md`) therefore resolves here as well.
+(`a-check.mk`, the READMEs, `version.md`) therefore resolves here as well — for releases
+built for both platforms (from v0.23.0 on). For older tags, take the digest from this
+registry: they were pushed anew and carry a different manifest digest here.
 
 ```bash
 docker run --rm -v "$PWD:/src:ro" pt9912/a-check@sha256:<digest> /src

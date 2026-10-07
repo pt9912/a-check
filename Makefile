@@ -224,7 +224,8 @@ gates: lint test coverage-gate arch-check doc-check doc-targets doc-planning doc
 # und geprueft wird das Bild dahinter auf der Plattform des Hosts (ADR-0043). Das
 # gilt auch fuer `make ci IMAGE_REF=…`: die Gates laufen, getestet wird IMAGE_REF.
 # Das Versions-Label muss VERSION tragen; SCAN_OUT_DIR legt die Scan-Ausgabe ab.
-image-test: $(if $(IMAGE_REF),,build) ## AC-FA-DIST-001 + nativ==Container-Akzeptanz gegen das gebaute Image, oder gegen IMAGE_REF=<tag|digest> ohne Bau (Plattform des Hosts).
+# Mit IMAGE_REF ist VERSION Pflicht: der Default 0.0.0-dev passt nur zum lokalen Bau.
+image-test: $(if $(IMAGE_REF),$(if $(filter file default,$(origin VERSION)),$(error image-test: mit IMAGE_REF=… ist VERSION=<version> Pflicht (Versions-Label des Bilds))),build) ## AC-FA-DIST-001 + nativ==Container-Akzeptanz gegen das gebaute Image, oder gegen IMAGE_REF=<tag|digest> ohne Bau (Plattform des Hosts).
 	@IMAGE=$(IMAGE) IMAGE_REF=$(IMAGE_REF) EXPECT_VERSION=$(VERSION) SCAN_OUT_DIR=$(SCAN_OUT_DIR) bash tools/image-test.sh
 
 # KEIN Bestandteil von `gates`/`ci`: die Gate-Stufen bleiben einplattformig, sie
