@@ -1,8 +1,8 @@
-# Drei Mess-Regeln binden jeden, der einen Beleg schreibt
+# Vier Mess-Regeln binden jeden, der einen Beleg schreibt
 
-*Ausgelagert aus [`AGENTS.md`](../../AGENTS.md) §5, Regel 15 — seit slice-201. Der Wortlaut ist unverändert; die Links sind der neuen Tiefe nachgeführt.*
+*Ausgelagert aus [`AGENTS.md`](../../AGENTS.md) §5, Regel 15 — seit slice-201; die Regeln 1–3 tragen den Wortlaut von dort, die Links sind der neuen Tiefe nachgeführt. Regel 4 steht seit slice-215.*
 
-**Drei Mess-Regeln binden jeden, der einen Beleg schreibt** — also auch den
+**Vier Mess-Regeln binden jeden, der einen Beleg schreibt** — also auch den
   Implementer- und den Planner-Lauf, nicht nur den Review:
   1. *Geltungsbereich einer Messung* (`seit slice-179`): Wer eine Messung als
      Beleg schreibt — Slice-Plan, Closure-Notiz, Review-Report —, **nennt ihren
@@ -19,7 +19,14 @@
      **zweiten, anders gebauten** Zähler wiederholt. Weichen beide ab, ist der
      Unterschied der Befund — nicht die erste Zahl.
 
-  **Kein Sensor:** alle drei sind ein Urteil über eine Absicht, einen Aufbau
+  4. *Ein Testkommentar sagt nicht mehr zu, als seine Assertion prüft*
+     (`seit slice-215`): Jede Eigenschaft, die ein Testkommentar oder ein
+     Testname nennt, belegt eine Assertion — eine Mutation, die genau diese
+     Eigenschaft bricht, macht den Test rot. Ein Allquantor („alle Fälle",
+     „jede Form") gilt nur über eine Menge, die der Test aufzählt; sonst sagt
+     der Kommentar „die aufgeführten".
+
+  **Kein Sensor:** alle vier sind ein Urteil über eine Absicht, einen Aufbau
   oder eine Zuordnung (§3.7). Die **Herleitung** und die gemessenen Fälle stehen im Reviewer-Skill
   ([`.harness/skills/reviewer.md`](../../.harness/skills/reviewer.md) §Mess-Regeln) —
   dort urteilt, wer prüft; hier steht der Satz, an den sich bindet, wer

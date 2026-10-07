@@ -111,12 +111,13 @@ im selben Kontextfenster (Modul 8). Report-Ablage: ein Report pro Lauf unter
 
 ## Mess-Regeln (umgezogen aus `AGENTS.md` §5, slice-186)
 
-Zwei Urteilsregeln über **Belege**: hier steht ihre **Herleitung** und der
+Vier Urteilsregeln über **Belege**: hier steht ihre **Herleitung** und der
 gemessene Bestand, an dem sie hängen — die **Zusage** selbst steht in
-[`AGENTS.md`](../../AGENTS.md) §5, weil sie den *Schreibenden* bindet und der
+[`harness/rules/mess-regeln.md`](../../harness/rules/mess-regeln.md) (Zeiger aus
+[`AGENTS.md`](../../AGENTS.md) §5), weil sie den *Schreibenden* bindet und der
 diese Datei nicht liest ([`harness/README.md`](../../harness/README.md) §Guides:
 *„nicht Teil der Implementer-Eingabe"*). Zwei Adressaten, zwei Orte: Wer eine
-Messung schreibt, braucht den Satz; wer sie prüft, die Fälle darunter. Beide
+Messung schreibt, braucht den Satz; wer sie prüft, die Fälle darunter. Alle vier
 sagen selbst „kein Sensor" — sie hängen am Review, und `modul-08` §Welche Rolle
 braucht welche Artefaktklasse weist die **Urteilsgrundlage** der Skill-Datei zu.
 
@@ -198,6 +199,28 @@ braucht welche Artefaktklasse weist die **Urteilsgrundlage** der Skill-Datei zu.
   einen Handgriff und hätte alle drei Fälle gefangen.
   Auslöser: [`BEO-GATE/probe-liefert-den-gegenstand-mit`](../../docs/plan/planning/observations/BEO-GATE/probe-liefert-den-gegenstand-mit/observation.md)
   (slice-169, slice-180, slice-181 — 3×).
+- **Ein Testkommentar sagt nicht mehr zu, als seine Assertion prüft**
+  (`seit slice-215`, Register-Eintrag bei 4×): Jede Eigenschaft, die ein
+  Testkommentar oder Testname nennt, belegt eine Assertion; eine Mutation, die
+  genau diese Eigenschaft bricht, macht den Test rot.
+  **Drei Ausprägungen, alle belegt:** Die **Fixture enthält den Fall nicht**
+  (slice-210: „verbotenes Muster in Kommentar und Zeichenkette wird
+  mitgeprüft" — die Fixture hatte keines) · die **Assertion ist schwächer als
+  die Zusage** (slice-211: Präfix statt Zeilennummer; slice-213: `Contains`
+  statt Anzahl; slice-214: Fehler statt Exit-Code) · der **Allquantor geht
+  über eine offene Menge** (slice-213 und slice-214: „alle fail-closed-Fälle
+  der Spezifikation", „jede Form, die die Quelle verbietet" — je drei Fälle
+  fehlten, Mutationen überlebten die ganze Suite).
+  **Die Prüf-Frage ist nicht „was sagt der Kommentar?", sondern „welche
+  Mutation bricht genau diese Eigenschaft — und ist der Test dann rot?"** Sie
+  ist die Mess-Regel über Mutations-Proben, auf den Kommentar statt auf den
+  Prüfer angewandt.
+  **Kein Sensor:** Ob ein Kommentar mehr behauptet als seine Assertion prüft,
+  ist ein Urteil über Text ([`AGENTS.md`](../../AGENTS.md) §3.7). Die vierte
+  Auflage kam vor der Verkörperung — die Prosa-Form ist damit nicht
+  ausgeschöpft, sondern erst jetzt geschrieben.
+  Auslöser: [`BEO-GATE/testbeschreibung-weiter-als-assertion`](../../docs/plan/planning/observations/BEO-GATE/testbeschreibung-weiter-als-assertion/observation.md)
+  (slice-210, slice-211, slice-213, slice-214 — 4×).
 
 ## Pflege (Steering-Loop)
 
