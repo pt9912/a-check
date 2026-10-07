@@ -46,6 +46,15 @@ Build-Strategie und in
 6. **Cross-Compile:** die Build-Stufe läuft auf der Plattform des Runners und kompiliert für die
    Ziel-Plattform; die Laufzeit-Stufe führt keinen Befehl aus.
 
+**Plan-Änderung 2026-10-07 (Review F-1 bis F-13, vor dem Fix):** Die Reproduzierbarkeit ist
+**keine** Zusage mehr — die Gegenmessung des Reviews widerlegt M4 in der Allgemeinheit (ein
+warmer Cache mit älterer mtime ergibt einen anderen Index-Digest); „getestet = veröffentlicht"
+hängt an *einmal bauen*, nicht an ihr. Die Ausgabe-Gleichheit beider Plattformen
+([AC-FA-DIST-001](../../../../spec/lastenheft.md#ac-fa-dist-001--distribution-image---print-mk-a-checkmk)
+Boundary) bekommt einen Träger in jedem Release (ADR und slice-218). Der Slice nimmt außerdem die
+CHANGELOG-Zeile für die Vertragsänderung mit; die Folge-Slices nehmen den Image-Test mit
+Bild-Referenz (slice-217) und die Hub-Seite (slice-218) in ihren Plan auf.
+
 **Ausdrücklich NICHT in diesem Slice** — je Punkt mit Begründung:
 
 - **Code, Dockerfile, Pipeline.** *Schicht-Abgrenzung*: slice-217 und slice-218 setzen den
@@ -100,6 +109,8 @@ ob GHCR und Docker Hub ihn ebenfalls erhalten, zeigt erst der Tag (Risiko §6).
 | `spec/lastenheft.md` | update | CR an DIST-001/002 |
 | `docs/plan/adr/0043-…md`, `docs/plan/adr/README.md` | neu / update | Build-Strategie |
 | `spec/spezifikation.md` | update | Laufzeitform und Distribution |
+| `CHANGELOG.md` | update | Vertragsänderung in `[Unreleased]` (Review F-5) |
+| `slice-217`, `slice-218`, Welle-Plan | update | Folgepflichten der ADR (Review F-4, F-13) |
 
 ## 4. Trigger
 
