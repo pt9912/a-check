@@ -6,6 +6,8 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
+## [0.22.0] - 2026-10-07
+
 ### Added
 
 - **`shapes`-Dialekt `gomod`** für `go.mod` — ein `require ( … )`-Block ist eine Anweisung, eine
