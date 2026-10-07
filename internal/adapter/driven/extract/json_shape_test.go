@@ -128,7 +128,7 @@ func TestJSONValidity(t *testing.T) {
 	}
 	// gültige Grenzfälle bleiben gültig
 	eqJSON(t, `{"a":0,"b":-0.5e-3,"c":"\u00e4\n\/","d":[],"e":{}}`, `"a":0`, `"b":-0.5e-3`, `"c":"\u00e4\n\/"`, `"d":[]`, `"e":{}`)
-	// jede Escape-Folge aus \u00a77 und jede Exponent-Form aus \u00a76
+	// jede Escape-Folge aus RFC 8259 Abschnitt 7 und jede Exponent-Form aus Abschnitt 6
 	eqJSON(t, `{"s":"\"\\\/\b\f\n\r\t\u00ff","n":[-0,1E+2,1e-2,1E2,2.5e10]}`,
 		`"s":"\"\\\/\b\f\n\r\t\u00ff"`, `"n":[-0,1E+2,1e-2,1E2,2.5e10]`)
 }
