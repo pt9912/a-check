@@ -110,3 +110,74 @@ Herleitung tragen sonst.
 
 **Übergabe:** Findings an den Implementer; Finding-Klassen zusätzlich in die Closure §7 von
 slice-219. Dieser Report ist Lauf-Beleg und ersetzt keine Verifikation gegen die DoD.
+
+---
+
+## Delta-Review
+
+**Gegenstand:** `b9ea243..8218f4f` — `9bf0490` (Plan-Änderung zu F-1/F-2/F-7/F-8, vor dem Fix) und
+`8218f4f` (Fixes: Regel 5, Herleitung, Titel und `AGENTS.md` §5 Zeile 15, zwei `state.md`, Plan
+§6). Derselbe Reviewer-Kontext wie oben, gleicher Skill-Stand vor dem Diff; angewandt wurde der
+Stand danach.
+
+**Sonden:**
+
+- `make doc-check`: Exit 0, „726 Datei(en) geprüft, 0 Befund(e)" — Links und Anker.
+- `make doc-structure`: Exit 0, „0 Befund(e)" — Struktur-Invarianten; Prosa sieht es nicht.
+- Zählstellen des geänderten Titels, zwei Suchen (Wortlaut „einen Beleg schreibt" und „Zusage
+  über eine Prüfung") über das Repo ohne `done/`, Baseline und `docs/reviews/`: Der neue
+  Regel-Titel steht in `AGENTS.md:229`, `harness/rules/mess-regeln.md:1`/`:5` und im Skill. Die
+  alte Fassung steht nur noch in Titel und §1 Ziel des Slice-Plans (D-3). `mess-regeln.md:8`
+  („als Beleg schreibt") gehört zu Regel 1 und bleibt wahr.
+- Zitate gegen die Belege: slice-186 (indirekte Rede „benenne", Äquivalenz wie in der Evidence),
+  slice-220 (indirekte Rede, „seine Ausgabe" = die des Image-Tests, Report slice-220 F-4),
+  slice-218 (wortgetreu mit „läuft", Report slice-218 F-1).
+
+### Status der Findings
+
+| ID | Status | Beleg |
+|---|---|---|
+| F-1 | behoben. Die Regel fasst Eigenschafts-Zusagen ausdrücklich, und die Herleitung nennt slice-216 und slice-218 als solche. Damit decken Wortlaut und Belege einander. Die neue Reichweite öffnet D-1 | `harness/rules/mess-regeln.md:29-35`; `.harness/skills/reviewer.md:226-235` |
+| F-2 | behoben. „als Text oder als Zeiger auf die Stelle, die sie trägt"; Ausprägung 2 heißt „ohne Zeiger am Satz"; der Gate-Index-Zeiger ist als Erfüllung genannt. Damit decken sich Regel 5 und `AGENTS.md` §4 | Regel 5; Skill Ausprägung 2, Schlusssatz der Ausprägungen |
+| F-3 | behoben. slice-220 steht jetzt als indirekte Rede ohne Zitatzeichen und deckt sich mit dem Beleg; slice-218 ist wortgetreu | Skill Ausprägungen 1 und 3 |
+| F-4 | behoben. slice-186 ist als Äquivalenz *Slice vorhanden ⟺ Ruhe-Marker fehlt* wiedergegeben, mit dem Zusatz „nicht der Name" | Skill Ausprägung 1 |
+| F-5 | behoben. Regel und Herleitung decken jetzt beide den Fall „kein Lauf" („sagt der Satz das … oder er entfällt"). Zur Klammer siehe D-2 | Regel 5; Skill Prüf-Frage |
+| F-6 | behoben. „Sechs Belege." ist entfernt; der Nachbar sagt „Alle Belege liegen vor der Regel." (kein Zähler, gegen `evidence/` wahr) | beide `state.md` |
+| F-7 | behoben. Plan §6 sagt „fünf der sechs" und deckt sich mit der Evidence | Plan §6 |
+| F-8 | behoben. Titel, Einleitung und `AGENTS.md` §5 Zeile 15 nennen „Beleg oder eine Zusage" | Zählstellen oben |
+| F-9 | behoben. Die Herleitung nennt Regel 1 als Ursprung und die Lauf-Pflicht als Zusatz | Skill Regel 5, erster Absatz |
+| F-10 | übergeben. Die Begründung für den entfallenden CHANGELOG-Eintrag kommt laut Übergabe in die Closure; ohne weitere Aktion hier | — |
+
+### Neue Findings
+
+| ID | Kategorie | Befund | Quelle | Pfad | Verifizierbar | Klasse |
+|---|---|---|---|---|---|---|
+| D-1 | MEDIUM | Mit der Erweiterung auf „dass eine Eigenschaft gilt" in „Vertrag" reicht Regel 5 in die Spec-Straten: Jede Eigenschafts-Zusage in `spec/lastenheft.md`, `spec/spezifikation.md` und `spec/architecture.md` müsste den Lauf und seine Grenze am Satz nennen (Text oder Zeiger), sich als Absicht ausweisen oder entfallen. `spec/architecture.md` benennt laut `AGENTS.md` §3.4 Rollen statt Technologie und nennt heute keinen `make`-Lauf, `spec/spezifikation.md` ebenso wenig (je 0 Treffer); der Beleg einer `AC-*` folgt laut `harness/conventions.md` §Anforderungs-Anlege-Prozess „mit dem umsetzenden Slice", nicht am Satz. Die Regel grenzt die Spec-Straten weder aus noch sagt sie, welcher Zeiger dort zulässig ist; je nach Lesart sind die Straten großflächig nicht konform, oder die Regel verlangt dort einen Verweis, den §3.4 nicht vorsieht. Slice-Plan §1 schließt nur den *Nachzug* alter Zusagen aus, nicht die Geltung. | `AGENTS.md` §3.4; Regel 5 | `harness/rules/mess-regeln.md:29-35`; `.harness/skills/reviewer.md:227-229` | ja — `grep -c "make " spec/*.md` | Regel reicht weiter als ihre Belege |
+| D-2 | INFO | Die Klammer „(eine Absicht, noch nicht gehalten)" deutet den Fall ohne Lauf zeitlich. Dauerhaft vom Review getragene Zusagen erfüllen die Regel zwar durch „sagt der Satz das" (`AGENTS.md` §3.7 „Durchsetzung: keine"; die Mess-Regeln selbst „Kein Sensor"), die Klammer bezeichnet sie aber als „noch nicht gehalten". | Regel 5 | `harness/rules/mess-regeln.md:34-35` | nein — Lesart | Zusage und Herleitung weichen im Wortlaut ab |
+| D-3 | INFO | Titel und §1 *Ziel* des Slice-Plans nennen weiter „eine Zusage über eine Prüfung"; die Erweiterung steht nur in der Plan-Änderung darunter. Lesbar, weil die Plan-Änderung sie ausdrücklich trägt. | Slice-Plan §1 | `docs/plan/planning/in-progress/slice-219-zusage-nennt-lauf-und-grenze.md:1`, `:28` | ja — `grep` | — (Hinweis) |
+
+**Negativbefund (Delta):** Hard Rules §3.1–§3.6 sind ohne Befund: kein Code, keine ADR, Commit-Scope
+`(planning)` in `9bf0490` nur unter `docs/plan/planning/`, beide Messages nennen slice-219, und die
+Plan-Änderung liegt vor dem Fix. §3.7 in den geänderten Sätzen ist ohne Befund (Indikativ, keine
+Chronik). Für `state.md` gilt Paarung (a) weiter: Zielort und `seit slice-219` stehen unverändert.
+Außerhalb von §1 und der Plan-Änderung liegt nichts.
+
+### Summary (Delta)
+
+| Kategorie | Anzahl |
+|---|---|
+| HIGH | 0 |
+| MEDIUM | 1 |
+| LOW | 0 |
+| INFO | 2 |
+
+F-1 bis F-9 sind behoben, F-10 ist übergeben. Neue Finding-Klasse: keine. D-1 trägt *Regel reicht
+weiter als ihre Belege* (Report slice-215 F-4) — im Delta dieses Slice die Gegenrichtung von F-1.
+Der Fix hat die Reichweite über das Ziel hinaus verschoben. Gezählt wird das bei der Closure.
+
+### Verdikt (Delta)
+
+**Abnahme-blockierend:** ja, wegen D-1 (MEDIUM) — vor der Closure zu klären. Ob Regel 5 in den
+Spec-Straten gilt und mit welchem Zeiger, berührt `AGENTS.md` §3.4 und ist eine Architect-Frage.
+Widerspricht der Implementer, läuft der Konflikt-Pfad über den Architect. Die übrigen Fixes sind
+nachgefahren und bestätigt.
