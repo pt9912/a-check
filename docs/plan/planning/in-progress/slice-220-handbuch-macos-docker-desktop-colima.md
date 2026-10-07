@@ -48,8 +48,9 @@ leere Verzeichnis auf beide Laufzeiten; die Docker-Doku sagt für Docker Desktop
   existiert (Default schreibgeschützt); `colima start` bei laufender VM ändert nichts; eine eigene
   Mount-Liste ersetzt den Standard-Mount von `$HOME`; Konfigurationsort
   `~/.colima/default/colima.yaml`, sofern weder `XDG_CONFIG_HOME` noch `~/.config/colima` greift.
-- **Maintainer-Probe:** `v0.23.0` lief beim Maintainer erfolgreich auf macOS unter Colima
-  (Mitteilung 2026-10-07) — eine einmalige Probe, nicht Teil der Release-Pipeline.
+- **Maintainer-Probe:** `v0.23.0` lief beim Maintainer erfolgreich auf macOS unter Colima, und
+  `docker image inspect --format '{{.Architecture}}'` zeigte `arm64` (Mitteilung 2026-10-07) —
+  eine einmalige Probe, nicht Teil der Release-Pipeline.
 
 **Ausdrücklich NICHT in diesem Slice** — je Punkt mit Begründung:
 
