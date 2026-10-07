@@ -274,3 +274,33 @@ einen falschen Befund.
 wie F-2 aufgetreten und zählt für `BEO-GATE/testbeschreibung-weiter-als-assertion` nicht
 zusätzlich. D-4 gehört, falls eine Grenze in den Vertrag soll, als Frage an den Architect.
 Dieser Report ersetzt keine Verifikation.
+
+### Delta-Review 2 (Nachlauf 7876a5c~3..7876a5c)
+
+**Gegenstand:** `7df9980` (planning), `5f4ec43` (Spezifikation), `7876a5c` (Test). Gleicher
+Skill-Stand, gleicher frischer Kontext. **Sonden** in Klonen von `7876a5c` über `make test`:
+unmutiert Exit 0; V1, V2, V5 wie oben neu angelegt.
+
+| ID | Stand | Messung |
+|---|---|---|
+| D-1 | erledigt | Kopf nennt „Schritt 2 ‚Gültigkeit‘ geändert durch die Plan-Änderung in §1 (Spezifikation 0.38.0)“; der Ausschluss gilt „über die Plan-Änderung oben hinaus“. Beides deckt sich mit `268b185`. |
+| D-2 | erledigt | Schritt 2 ordnet die Liste unter 1 und das fehlende `:` unter 4 der Regel zu, die Objekt-Wurzel als Zusatzbedingung des Dialekts — gegen RFC 8259 §2 richtig. Die übrigen Fehler unter 4 (Inhalt nach der Wurzel, Klammern, leeres Mitglied) bleiben unzugeordnet; der Satz behauptet über sie nichts und ist damit nicht falsch. |
+| D-3 | erledigt | Kommentar sagt jetzt „jede aufgeführte … Form“ und „die aufgeführten gültigen Grenzfälle“. V1 rot: „zwei Exponent-Zeichen ("{\"a\":1e+-2}"): Fehler erwartet“; V5 rot: „doppeltes Minus ("{\"a\":--1}"): Fehler erwartet“; V2 rot: der neue Gültig-Fall mit allen Escapes aus §7 meldet „ungültige Escape-Folge“. |
+| D-4 | Ausgang angenommen | LOW; der Implementer begründet und trägt den Befund als Beobachtung ins Register (Closure). Die Begründung „eine Tiefengrenze wäre eine Vertragsänderung“ trifft die Benennung einer Grenze; der Befund selbst — eine unbenannte Grenze, gezogen von der Go-Laufzeit — bleibt bis dahin bestehen und ist im Register richtig aufgehoben. |
+| D-5 | erledigt | Der Konjunktiv-Nebensatz ist entfernt. |
+| D-6 | Ausgang angenommen | INFO, Notiz in der Closure. |
+
+**Neues Finding:**
+
+| ID | Kategorie | Befund | Quelle | Pfad | Verifizierbar | Klasse |
+|---|---|---|---|---|---|---|
+| D-7 | LOW | Der neue Kommentar vor dem zweiten Gültig-Fall lautet im Quelltext wörtlich „jede Escape-Folge aus §7 und jede Exponent-Form aus §6“ (Bytes geprüft) — gemeint ist „§7“ bzw. „§6“; ein Leser sieht eine Escape-Folge, keinen Abschnitts-Verweis. | Wording | `internal/adapter/driven/extract/json_shape_test.go:131` | nein | Wording |
+
+**Negativbefunde:** Spezifikation-Diff ohne ADR-/Slice-/Wellen-Kennung (`AGENTS.md` §3.4) ·
+Planning-Commit berührt nur `docs/plan/planning/` · drei Commit-Messages mit `slice-214` · der
+neue Gültig-Fall belegt `1E2` und `2.5e10` zusätzlich zu den Formen der ersten Zeile.
+
+**Summary (Delta 2):** HIGH 0 · MEDIUM 0 · LOW 1 (D-7) · INFO 0.
+
+**Verdikt (Delta 2):** nicht merge-blockierend. D-1, D-2, D-3, D-5 erledigt und gemessen; D-4 und
+D-6 haben einen angenommenen Ausgang; D-7 ist Wording.
