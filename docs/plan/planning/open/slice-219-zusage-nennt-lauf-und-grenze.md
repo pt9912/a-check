@@ -8,11 +8,12 @@ wechselt nur durch `git mv` (`make slice-mv`).
 
 **Bezug:** Lese-Schritt der welle-18-Closure für
 [`BEO-GATE/zusage-weiter-als-ihre-durchsetzung`](../observations/BEO-GATE/zusage-weiter-als-ihre-durchsetzung/observation.md)
-(slice-186, slice-187, slice-216, slice-217, slice-218 — 5×) — Ausgang *geplant* mit diesem Slice.
+(slice-186, slice-187, slice-216, slice-217, slice-218, slice-220 — 6×) — Ausgang *geplant* mit
+diesem Slice.
 
 **Berührte Spec-Stellen:** — · Der Slice berührt kein Spec-Stratum.
 
-**Verantwortlich:** —
+**Verantwortlich:** Claude — gesetzt beim Übergang nach `next/` (Maintainer: „machen wir weiter“, 2026-10-07).
 
 **Autor:** Claude. **Datum:** 2026-10-07.
 
@@ -27,20 +28,20 @@ nur teilweise hält" wird als Regel verkörpert, an die sich bindet, wer die Zus
 Zusage über eine Prüfung nennt den Lauf, der sie hält, und seine Grenze **am Satz** — nicht
 *„wird geprüft"*, sondern *„geprüft von X; Y nicht, weil …"*. Ort: als fünfte Regel in
 [`harness/rules/mess-regeln.md`](../../../../harness/rules/mess-regeln.md) oder als eigene Regel —
-das entscheidet der Plan beim Start; Herleitung mit den fünf Fällen im Reviewer-Skill.
+das entscheidet der Plan beim Start; Herleitung mit den sechs Fällen im Reviewer-Skill.
 
 **Ausdrücklich NICHT in diesem Slice** — je Punkt mit Begründung:
 
 - **Ein Sensor.** *Bestand bleibt bewusst stehen*: ob ein Prosa-Satz den Geltungsbereich seines
   Prüfers trifft, ist ein Urteil über zwei Formulierungen (AGENTS §3.7); der Register-Eintrag
   begründet das.
-- **Nachzug alter Zusagen.** *Ein anderer Vorgang*: die fünf Fälle sind behoben; ein Durchgang über
+- **Nachzug alter Zusagen.** *Ein anderer Vorgang*: die sechs Fälle sind behoben; ein Durchgang über
   alle Dokumente wäre eine Kampagne.
 
 ## 2. Definition of Done
 
 - [ ] Die Regel mit Herkunfts-Anker `seit slice-219` an ihrem Ort; Zählstellen nachgezogen.
-- [ ] Herleitung mit den fünf Fällen im Reviewer-Skill; Register-Stand *verkörpert*.
+- [ ] Herleitung mit den sechs Fällen im Reviewer-Skill; Register-Stand *verkörpert*.
 - [ ] Unabhängiger Review, Report unter [`docs/reviews/`](../../../reviews/README.md).
 - [ ] Closure-Notiz mit Steering-Loop-Lerneintrag.
 - [ ] Beobachtungs-Register fortgeschrieben (oder „keine Beobachtung" notiert).
@@ -80,7 +81,7 @@ DoD vollständig, `make gates` und `make verify` grün, Closure-Notiz mit Lernei
 **Vorgelagert — Sub-Area-Wahl prüfen:** `HARNESS` (Achsen 1, 2, 3 ✓).
 
 **Vorgelagert — offene Beobachtungen sichten** (2026-10-07):
-`BEO-GATE/zusage-weiter-als-ihre-durchsetzung` (5×) ist dieser Slice selbst;
+`BEO-GATE/zusage-weiter-als-ihre-durchsetzung` (6×) ist dieser Slice selbst;
 `BEO-GATE/umbau-verliert-pruefung-still` (2×) ist eine Nachbarklasse — ein dritter Beleg wäre
 eine eigene Lücke, kein Teil dieses Slice.
 
