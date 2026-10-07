@@ -60,7 +60,7 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
 | Slice | Titel | Bezug |
 |---|---|---|
 | [slice-216](done/slice-216-multi-arch-spec-first.md) | Spec-first: Messung, Lastenheft-CR, ADR zur Build-Strategie, Spezifikation — zur Abnahme | [AC-FA-DIST-001](../../../spec/lastenheft.md#ac-fa-dist-001--distribution-image---print-mk-a-checkmk), [AC-FA-DIST-002](../../../spec/lastenheft.md#ac-fa-dist-002) |
-| [slice-217](in-progress/slice-217-multi-arch-build.md) | Build für beide Plattformen (Dockerfile, Make-Target, lokaler Beleg) | dieselben |
+| [slice-217](done/slice-217-multi-arch-build.md) | Build für beide Plattformen (Dockerfile, Make-Target, lokaler Beleg) | dieselben |
 | [slice-218](open/slice-218-multi-arch-release.md) | Release-Pipeline: ein Bau, Test auf beiden Plattformen, Push, Spiegel | dieselben |
 
 **Reihenfolge ist Abhängigkeit:** slice-217 startet erst, wenn slice-216 in `done/` liegt und der
