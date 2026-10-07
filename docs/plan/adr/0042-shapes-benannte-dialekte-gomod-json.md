@@ -8,8 +8,10 @@
 
 **Bezug:** [AC-FA-RULE-012](../../../spec/lastenheft.md#ac-fa-rule-012),
 [ADR-0041](0041-shapes-sollform-je-datei.md) — **löst deren Punkt 10 ab** („Ein Dialekt:
-`kotlin`; der generische Dialekt wartet auf einen zweiten Konsumenten"); alle übrigen Punkte von
-ADR-0041 gelten unverändert fort,
+`kotlin`; der generische Dialekt wartet auf einen zweiten Konsumenten") und **ersetzt für die
+Dialekte `gomod` und `json` deren Punkte 3 und 4** (Normalisierung; Fortsetzungsregel) durch die
+Punkte 3 und 4 unten. Für `kotlin` gelten 3 und 4 unverändert, die übrigen Punkte für alle
+Dialekte; ADR-0041 selbst bleibt unverändert `Accepted`,
 [AC-QA-02](../../../spec/lastenheft.md#ac-qa-02--hermetik-und-ehrliche-heuristik-grenze)
 
 **Schärft:** [SPEC-CONF-001](../../../spec/spezifikation.md#spec-conf-001--konfigurationsschema)
@@ -30,10 +32,12 @@ entschieden und einen „generischen Dialekt mit konfigurierbaren Kommentar-, Ze
 Trennzeichen" als Folge benannt. Ausgelöst wird diese Folge durch Maintainer-Anweisung, nicht
 durch einen belegten zweiten Konsumenten.
 
-**Gemessen** an allen lokalen Repos mit `.a-check.yml`: 6 `go.mod` und 5 `package.json`.
+**Gemessen** an allen lokalen Repos mit `.a-check.yml`, a-check selbst eingeschlossen: 8 `go.mod`
+und 5 `package.json`.
 
-- `go.mod` nutzt nur `module`, `go`, `require`; Abhängigkeiten stehen in `require ( … )`-Blöcken,
-  **eine je Zeile**; alle 85 Kommentare sind `// indirect`; keine Backquote-Zeichenketten.
+- `go.mod` nutzt nur `module`, `go`, `require`. In 4 Dateien stehen die Abhängigkeiten in
+  `require ( … )`-Blöcken, **eine je Zeile**; eine Datei hat eine einzeilige `require`-Direktive,
+  drei haben keine. Alle 85 Kommentare sind `// indirect`; keine Backquote-Zeichenketten.
 - `package.json` ist **ein** Wurzel-Objekt; Abhängigkeiten stehen in den Mitgliedern
   `dependencies`, `devDependencies`, `peerDependencies`; daneben führt `scripts` beliebige Befehle aus.
 - Nebenbei: der ausgelieferte Kotlin-Dialekt zerlegte 82 reale `build.gradle.kts` ohne Fehler.
@@ -58,19 +62,28 @@ Wir wählen **benannte Dialekte mit fest verankerter, aus der Grammatik abgeleit
    wanderte mit.
 2. **Abgeleitet, nicht aufgezählt.** Jede Regel der Lexik nennt ihre Quelle in der Grammatik
    (Go-Modulreferenz für `gomod`, RFC 8259 für `json`). Wo die Quelle schweigt oder wo ein
-   Werkzeugverhalten nur erinnert wäre, ist der Fall **fail-closed** (Exit 2), nicht geraten:
-   ein Zeilenende in einer `gomod`-Zeichenkette, ein `//` direkt hinter einem Nicht-Leerraum-Zeichen,
-   ein `(` oder `)` innerhalb eines Tokens.
+   Werkzeugverhalten nur erinnert wäre, ist der Fall **fail-closed** (Exit 2), nicht geraten —
+   ebenso, wo die Quelle eine Form **verbietet** (`/*` in `go.mod`) oder wo zwei verschiedene
+   Quellen sonst auf dieselbe Normalform fielen (ein verklebtes `=>`, `;` außerhalb einer
+   Zeichenkette, Leerraum zwischen zwei JSON-Zahl-Zeichen). Das Go-Werkzeug selbst ist in
+   Einzelheiten großzügiger als die Referenz; der Vertrag folgt der Referenz und bleibt dort, wo
+   sie abweichen, fail-closed oder fail-safe.
 3. **Einheit `gomod`:** eine Direktive auf oberster Ebene; ein Block `Kopf ( Zeilen )` ist **eine**
    Anweisung, seine Zeilen darin durch `;` getrennt — dieselbe Form wie ein Kotlin-Block. Eine
-   zusätzliche Abhängigkeit ändert den Block und ist rot.
+   zusätzliche Abhängigkeit ändert den Block und ist rot. Anders als bei `kotlin` ist das
+   **Zeilenende Grammatik**: eine auf zwei Zeilen verteilte Direktive ist eine andere Folge.
 4. **Einheit `json`:** ein **Mitglied des Wurzel-Objekts** (Schlüssel und ganzer Wert). Eine
    zusätzliche Abhängigkeit ändert das Mitglied `dependencies` und ist rot; ein zusätzliches
    `scripts`-Mitglied ebenso. Eine Wurzel, die kein Objekt ist, ist Exit 2. Leerraum außerhalb
    von Zeichenketten entfällt vollständig — JSON braucht ihn nirgends zur Trennung.
-5. **Einzeilige Meldung für alle `shape-*`-Befunde:** ein Zeilenende in der Meldung wird als `\n`
-   geschrieben; verglichen wird die unveränderte Anweisung. Das gilt auch für `kotlin` (betroffen
-   sind Roh-Zeichenketten über mehrere Zeilen).
+5. **Einzeilige, umkehrbare Meldung für alle `shape-*`-Befunde:** Backslash als `\\`, `LF` als
+   `\n`, `CR` als `\r`; verglichen wird die unveränderte Anweisung. Umkehrbar muss sie sein, weil
+   sonst zwei verschiedene Anweisungen dieselbe Meldung trügen — `shape-differs` zeigte `X
+   (erwartet: X)`, und die Zusammenfassung byte-gleicher Befunde verschluckte einen. Das gilt auch
+   für `kotlin`: betroffen sind Anweisungen mit Backslash oder mehrzeiligen Roh-Zeichenketten.
+6. **`literal`-Einträge in Quellform:** ein `json`-Eintrag ist ein Mitglied und wird vor dem
+   Zerlegen in `{ }` eingeschlossen — so ist die Meldung eines `json`-Befunds wörtlich als Eintrag
+   übernehmbar; ein `gomod`-Block wird mehrzeilig geschrieben.
 
 ## Verglichene Alternativen
 
@@ -89,9 +102,11 @@ Wir wählen **benannte Dialekte mit fest verankerter, aus der Grammatik abgeleit
 - **Negativ:** Ein erlaubter `require`-Block bzw. ein erlaubtes `dependencies`-Mitglied muss
   vollständig genannt werden; jede Versions-Hebung ist eine Listen-Änderung — oder ein Regex-Eintrag
   mit der sicheren Klasse für Zeichenketten-Inhalt.
-- **Negativ:** Die Einzeiligkeit ändert die Ausgabe bestehender `kotlin`-Befunde mit mehrzeiligen
-  Roh-Zeichenketten. Wer Ausgaben byte-genau vergleicht, sieht die Änderung; gemessen ist kein
-  solcher Fall im Konsumenten-Bestand.
+- **Negativ:** Die einzeilige, umkehrbare Meldung ändert die Ausgabe bestehender `kotlin`-Befunde,
+  deren Anweisung einen Backslash oder eine mehrzeilige Roh-Zeichenkette trägt. Wer Ausgaben
+  byte-genau vergleicht, sieht die Änderung.
+- **Negativ:** In `gomod` ist das Zeilenende Grammatik; ein anders umbrochenes `go.mod` ist eine
+  andere Anweisungsfolge — anders als bei `kotlin`, wo Umbrüche das Urteil nicht ändern.
 - **Folgepflicht:** Spezifikation, Implementierung, Handbuch und `--print-config`.
 
 ## Fitness Function (falls maschinell prüfbar)

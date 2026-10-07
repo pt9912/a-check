@@ -323,43 +323,53 @@ Einstieg** der Extraktion, ohne Datei-Walk, und liegt damit auch dem no-scan-Pfa
 `--print-graph` zugrunde. Der Kern erhält die `literal`-Einträge normalisiert und liest selbst nichts.
 
 **Dialekt `gomod`** — abgeleitet aus der Go-Modulreferenz, Abschnitt *Lexical elements* der
-`go.mod`-Dateien. Wo die Referenz schweigt oder ein Verhalten des Go-Werkzeugs nur erinnert wäre,
-ist der Fall **fail-closed** (Fehler, Exit 2), nicht geraten.
+`go.mod`-Dateien. Wo die Referenz schweigt, eine Form verbietet oder ein Verhalten des
+Go-Werkzeugs nur erinnert wäre, ist der Fall **fail-closed** (Fehler, Exit 2), nicht geraten —
+das schließt auch aus, dass zwei verschiedene Quellen auf dieselbe Normalform fallen.
 
 1. **Lexik.** UTF-8; ein BOM am Dateianfang entfällt. **Leerraum** sind Leerzeichen, Tabulator,
    `CR` und `LF`; **nur `LF` ist signifikant** (ein Zeilenende, das Anweisungen trennt), ein `CR`
-   ist gewöhnlicher Leerraum. **Kommentar** ist `//` bis zum Zeilenende — und nur dort, wo ein
-   Token beginnen kann (am Zeilenanfang oder nach Leerraum); `/* */` ist **kein** Kommentar, `/`
-   und `*` sind gewöhnliche Zeichen. **Zeichenketten:** interpretiert `"…"` (ein Backslash maskiert
-   das nächste Zeichen) und roh `` `…` `` (ohne Maskierung). **Interpunktion** sind `(`, `)` und
-   `=>`; alle übrigen Folgen von Nicht-Leerraum-Zeichen sind **Bezeichner**. **Fehler:** ein
-   Zeilenende in einer Zeichenkette (beide Formen), eine nicht geschlossene Zeichenkette, ein `//`
-   direkt hinter einem Nicht-Leerraum-Zeichen außerhalb einer Zeichenkette, ein `(` oder `)`
-   innerhalb eines längeren Tokens.
+   ist gewöhnlicher Leerraum und zählt auch für die Zeilennummer nicht. **Kommentar** ist `//` bis
+   zum Zeilenende, wo ein Token beginnen kann (am Zeilenanfang oder nach Leerraum).
+   **Zeichenketten:** interpretiert `"…"` (ein Backslash maskiert das nächste Zeichen) und roh
+   `` `…` `` (ohne Maskierung); eine Zeichenkette beginnt nur, wo ein Token beginnen kann.
+   **Interpunktion** sind die Tokens `(`, `)` und `=>`; alle übrigen Folgen von
+   Nicht-Leerraum-Zeichen sind **Bezeichner**. **Fehler** — außerhalb von Zeichenketten: `/*`
+   (die Referenz verbietet Block-Kommentare); `;` (es ist das Trennzeichen der Normalform); ein
+   `//`, `"` oder `` ` `` direkt hinter einem Nicht-Leerraum-Zeichen; ein `(` oder `)` innerhalb
+   eines längeren Tokens, außer der leeren Klammer `()`; ein Token, das `=>` enthält, ohne `=>` zu
+   sein (`a=>b`, `==>`). In Zeichenketten: ein Zeilenende (beide Formen, auch direkt nach einem
+   Backslash) und eine nicht geschlossene Zeichenkette.
 2. **Normalisierung.** Kommentare entfallen; die Tokens einer Zeile werden durch **genau ein**
-   Leerzeichen getrennt; Zeichenketten bleiben byte-genau; `=>` ist immer ein eigenes Token
-   (`a=>b` und `a => b` normalisieren gleich).
+   Leerzeichen getrennt; Zeichenketten bleiben byte-genau.
 3. **Zerlegung.** Eine **Anweisung** ist eine Zeile mit mindestens einem Token auf oberster Ebene.
    Endet eine Zeile auf dem Token `(`, öffnet sie einen **Block**: der Kopf sind die Tokens davor
    (leer ⇒ Fehler), jede folgende Zeile mit Tokens ist ein **Eintrag**, bis eine Zeile, die nur
-   aus `)` besteht, den Block schließt. Ein Block ist **eine** Anweisung, normalisiert als
-   `<Kopf> (<Eintrag>;<Eintrag>;…)` — ohne Einträge `<Kopf> ()`. **Fehler:** ein `(` am Zeilenende
-   innerhalb eines Blocks (keine Schachtelung), eine `)`-Zeile außerhalb eines Blocks, ein am
-   Dateiende offener Block. Die **Original-Zeile** ist die Zeile des ersten Tokens.
+   aus `)` besteht, den Block schließt. Eine Zeile, die auf `( )` oder `()` endet, ist ein
+   **leerer Block**. Ein Block ist **eine** Anweisung, normalisiert als
+   `<Kopf> (<Eintrag>;<Eintrag>;…)`, leer als `<Kopf> ()`. **Fehler:** ein `(` am Zeilenende
+   innerhalb eines Blocks (keine Schachtelung), eine Zeile mit `)` außerhalb eines Blocks oder mit
+   weiteren Tokens neben dem schließenden `)`, ein am Dateiende offener Block. Die
+   **Original-Zeile** ist die Zeile des ersten Tokens; die **Zeilenzahl** zählt `LF`.
 
-**Dialekt `json`** — abgeleitet aus RFC 8259.
+Eine Zeile, die sich nur durch ihren **Umbruch** unterscheidet — eine `require`-Zeile auf zwei
+Zeilen verteilt —, ist in `gomod` eine **andere** Anweisungsfolge: Das Zeilenende ist dort
+Grammatik, nicht Formatierung.
+
+**Dialekt `json`** — abgeleitet aus RFC 8259; dieselbe fail-closed-Haltung.
 
 1. **Lexik.** UTF-8; ein BOM am Dateianfang entfällt. **Leerraum** sind Leerzeichen, Tabulator,
-   `LF` und `CR` (RFC 8259 §2); ein **Zeilenende** für die Zeilenzählung ist `LF`, `CRLF` oder ein
-   einzelnes `CR`. **Zeichenkette** ist `"…"`, ein Backslash maskiert das nächste Zeichen (RFC 8259
-   §7). **Strukturzeichen** sind `{ } [ ] : ,`. Außerhalb von Zeichenketten sind sonst nur die
-   Zeichen von Zahlen und Literalen zulässig (`0-9`, `+`, `-`, `.`, `e`, `E`, Buchstaben von
-   `true`/`false`/`null`) — JSON kennt **keine Kommentare**. **Fehler:** ein anderes Zeichen
-   außerhalb einer Zeichenkette (etwa `/`, `#`, `'` — Kommentar- oder JSON5-Schreibweisen), ein
-   unmaskiertes Steuerzeichen (U+0000–U+001F, also auch ein Zeilenende) in einer Zeichenkette,
+   `LF` und `CR` (RFC 8259 §2); ein **Zeilenende** für Zeilennummer und Zeilenzahl ist `LF`,
+   `CRLF` oder ein einzelnes `CR`. **Zeichenkette** ist `"…"`, ein Backslash maskiert das nächste
+   Zeichen (RFC 8259 §7). **Strukturzeichen** sind `{ } [ ] : ,`. Außerhalb von Zeichenketten sind
+   sonst nur die Zeichen von Zahlen und Literalen zulässig (`0-9`, `+`, `-`, `.`, `e`, `E` und die
+   Buchstaben von `true`, `false`, `null`) — JSON kennt **keine Kommentare**. **Fehler:** ein
+   anderes Zeichen außerhalb einer Zeichenkette (etwa `/`, `#`, `'`); **Leerraum zwischen zwei
+   Zahl- oder Literal-Zeichen** (`nu ll`, `1 2` — sonst fielen sie auf `null` bzw. `12`); ein
+   unmaskiertes Steuerzeichen (U+0000–U+001F, also auch ein Zeilenende) in einer Zeichenkette;
    eine nicht geschlossene Zeichenkette.
-2. **Normalisierung.** Leerraum außerhalb von Zeichenketten **entfällt vollständig** — JSON braucht
-   ihn nirgends zur Trennung; Zeichenketten bleiben byte-genau.
+2. **Normalisierung.** Leerraum außerhalb von Zeichenketten **entfällt** — die Lexik oben stellt
+   sicher, dass er nirgends zwei Tokens trennt; Zeichenketten bleiben byte-genau.
 3. **Zerlegung.** Die Wurzel muss ein **Objekt** sein. Eine **Anweisung** ist ein **Mitglied des
    Wurzel-Objekts** — Schlüssel, `:` und der ganze Wert —, getrennt durch die `,` auf Tiefe 1
    (Tiefe über `{`/`[`). `{}` hat null Anweisungen. **Fehler:** eine Wurzel, die kein Objekt ist;
@@ -369,8 +379,13 @@ ist der Fall **fail-closed** (Fehler, Exit 2), nicht geraten.
    ersten Zeichens des Mitglieds.
 
 Für beide Dialekte gilt die Zerlegung als **vollständige Zerlegung**, nicht als Fortsetzungsregel:
-Die Grammatik legt die Grenze fest, und was sie nicht trägt, ist ein Fehler. Die `literal`-Einträge
-werden mit dem Dialekt ihres Eintrags normalisiert und müssen genau **eine** Anweisung ergeben.
+Die Grammatik legt die Grenze fest, und was sie nicht trägt, ist ein Fehler.
+
+**`literal`-Einträge** werden mit dem Dialekt ihres Eintrags zerlegt und müssen genau **eine**
+Anweisung ergeben. Sie stehen in **Quellform**, nicht in Normalform: Ein `json`-Eintrag ist ein
+Mitglied (`"name": "x"`) und wird vor dem Zerlegen in `{ }` eingeschlossen; ein `gomod`-Block wird
+mehrzeilig geschrieben (in YAML etwa mit `|`). Eine Befund-Meldung ist darum nicht in jedem Fall
+wörtlich als Eintrag übernehmbar — bei `json` ist sie es, bei einem `gomod`-Block nicht.
 
 ## SPEC-RULE-001 — Regel-Auswertung
 
@@ -395,7 +410,7 @@ Meldung); ≥ 1 Befund ⇒ Exit-Code 1.
 | `construct-leak` | ein `constructs`-Muster (Substring oder RE2, je `match`) erscheint im **Roh-Quelltext** einer Datei außerhalb **aller** seiner Zonen (`adapter` als Pfad oder Pfad-Liste) — und außerhalb `composition_root`, sofern der Eintrag nicht `composition_root: forbid` deklariert. **Nicht** import-, sondern **datei**-bezogen: die Regel wertet die Konstrukt-Treffer je Datei aus (wie der konstrukt-basierte Zweig von `port-impurity`) und gilt **scan-weit**, auch für Dateien in **keinem** `layers`-Glob | [AC-FA-RULE-011](lastenheft.md#ac-fa-rule-011--konstrukt-monopol-regel-construct-leak) |
 | `shape-unlisted` | `mode: allow-statements`: eine Anweisung einer `shapes`-Datei ([SPEC-EXTRACT-001](#spec-extract-001--import-extraktion)) ist **keinem** `allow`-Eintrag gleich (`literal`: Zeichenketten-Gleichheit der normalisierten Formen; `regex`: voll verankerter Treffer). Je solcher Anweisung ein Befund (byte-gleiche Befundzeilen einmal, [SPEC-CONF-001](#spec-conf-001--konfigurationsschema)), Zeile = Original-Zeile, Meldung = die normalisierte Anweisung. **Mengen-Semantik:** Reihenfolge und Wiederholung erlaubter Anweisungen sind gleichgültig | [AC-FA-RULE-012](lastenheft.md#ac-fa-rule-012) |
 | `shape-differs` | `mode: exact`: die Anweisungsfolge der Datei ist nicht gleich der der `expect`-Datei (Anweisung für Anweisung, Zeichenketten-Gleichheit). **Genau ein** Befund je Eintrag und Datei (steht dieselbe Datei in zwei `exact`-Einträgen, prüft jeder für sich), an der **ersten** Position `i`, an der sich die Folgen unterscheiden: ist `i` in der Datei vorhanden, Zeile = Original-Zeile ihrer `i`-ten Anweisung und Meldung = diese Anweisung, gefolgt von ` (erwartet: <Sollform-Anweisung>)` oder ` (nicht in der Sollform)`; fehlt `i` in der Datei (sie ist kürzer), Zeile = Zeilenzahl der Datei ([SPEC-EXTRACT-001](#spec-extract-001--import-extraktion)) und Meldung = `fehlt: <Sollform-Anweisung>` | [AC-FA-RULE-012](lastenheft.md#ac-fa-rule-012) |
-| `shape-unused` | `mode: allow-statements` mit `unused: fail`: ein `allow`-Eintrag trifft in **keiner** Datei seines `shapes`-Eintrags. Ein Befund je solchem `allow`-Eintrag, verortet an der **`.a-check.yml`** und der Zeile des Eintrags dort, Meldung = der Eintrag in seiner deklarierten Form, einzeilig geschrieben: abschließende Zeilenenden entfallen, jedes innere Zeilenende (`LF`, `CRLF`, `CR`) wird zu den zwei Zeichen `\n`; ein `regex`-Eintrag trägt den Zusatz ` (regex)` | [AC-FA-RULE-012](lastenheft.md#ac-fa-rule-012) |
+| `shape-unused` | `mode: allow-statements` mit `unused: fail`: ein `allow`-Eintrag trifft in **keiner** Datei seines `shapes`-Eintrags. Ein Befund je solchem `allow`-Eintrag, verortet an der **`.a-check.yml`** und der Zeile des Eintrags dort, Meldung = der Eintrag in seiner deklarierten Form ohne abschließende Zeilenenden, geschrieben nach der Ausgabe-Regel unten (einzeilig, umkehrbar); ein `regex`-Eintrag trägt den Zusatz ` (regex)` | [AC-FA-RULE-012](lastenheft.md#ac-fa-rule-012) |
 
 Die Schicht einer Datei ergibt sich aus dem **spezifischsten** passenden `layers`-Glob
 (längster **literaler** Präfix vor dem ersten Wildcard-Segment, konsistent mit der
@@ -466,7 +481,7 @@ Roh-Text-Treffer einer Datei ([SPEC-EXTRACT-001](#spec-extract-001--import-extra
 Treffer außerhalb seiner Zone genau ein Befund. Treffen zwei `constructs`-Muster **dieselbe
 Zeile** und liegen beide außerhalb ihrer Zone, entstehen **zwei** Befunde; ihre Reihenfolge ist
 über die Totalordnung aus [SPEC-DET-001](#spec-det-001--determinismus-vertrag) festgelegt.
-**Die Meldung jedes `shape-*`-Befunds ist einzeilig:** jedes Zeilenende darin (`LF`, `CRLF`, `CR`) wird als die zwei Zeichen `\n` geschrieben — in der Anweisung eines `shape-unlisted`, in beiden Teilen eines `shape-differs` und im Eintrag eines `shape-unused`. Verglichen wird stets die **unveränderte** normalisierte Form; die Schreibweise betrifft nur die Ausgabe, damit ein Befund **ein** Datensatz bleibt ([SPEC-CLI-001](#spec-cli-001--aufruf-scan-wurzel-und-exit-codes)).
+**Die Meldung jedes `shape-*`-Befunds ist einzeilig und umkehrbar:** in der Anweisung eines `shape-unlisted`, in beiden Teilen eines `shape-differs` und im Eintrag eines `shape-unused` wird ein Backslash als `\\`, ein `LF` als `\n` und ein `CR` als `\r` geschrieben (ein `CRLF` also als `\r\n`) — die Abbildung ist eindeutig, zwei verschiedene Texte ergeben nie dieselbe Meldung. Verglichen wird stets die **unveränderte** normalisierte Form; die Schreibweise betrifft nur die Ausgabe, damit ein Befund **ein** Datensatz bleibt ([SPEC-CLI-001](#spec-cli-001--aufruf-scan-wurzel-und-exit-codes)).
 **Die drei `shape-*`-Befunde stehen ebenfalls außerhalb der Kette**: sie bewerten keine Importe
 und keinen Roh-Text, sondern die Anweisungsfolge der in `shapes` genannten Dateien
 ([SPEC-EXTRACT-001](#spec-extract-001--import-extraktion)), unabhängig von Schicht, Sprache und
@@ -716,7 +731,7 @@ Spec-Straten — welche ADR eine Festlegung schärft, deklariert die ADR aufwär
 | 0.17.0 | 2026-07-05 | `SPEC-CONF-001`: **datei-mengen-bewusste Mehr-Wurzel-Auflösung** (Stufe 2) — `fixed-root` mit ≥ 2 `roots` löst den FQN gegen die real gescannten Dateien auf (endungs-agnostisch, package==directory); Schicht am realen Kandidaten-Pfad, Phantom bleibt extern; der Ladezeit-Guard aus 0.16.0 entfällt. Gleicher FQN real in ≥ 2 Roots + **verschiedene** Schichten → Exit 2 **nach dem Scan** (distinct-layer; `expect`/`actual` same-layer löst sauber). Folgt [`AC-FA-CONF-001`](lastenheft.md#ac-fa-conf-001--konfigurationsdatei-a-checkyml) 0.17.0. |
 | 0.18.0 | 2026-07-06 | `SPEC-CONF-001`/`SPEC-EXTRACT-001`: **deklarations-bewusste Mehr-Wurzel-Auflösung** (Stufe 3) — bei `fixed-root` mit ≥ 2 `roots` gewinnt für ein deklarations-bewusstes Backend (Kotlin) die **reale Top-Level-Deklaration** über den bloßen Datei-Namens-Match (Evidenz-Rangfolge deklariert > Paketverzeichnis > keine); genau ein deklarierender Root ⇒ eindeutig, ≥ 2 deklarierende Roots verschiedener Schichten ⇒ Exit 2, kein Treffer ⇒ extern (fail-open). `SPEC-EXTRACT-001`: **Kotlin** liefert zusätzlich Top-Level-Deklarationen (`fun`/Extension/`val`/`class`/`object`/`interface`/`typealias`), übrige Backends no-op (leeres Set). Folgt [`AC-FA-CONF-001`](lastenheft.md#ac-fa-conf-001--konfigurationsdatei-a-checkyml)/[`AC-FA-EXTRACT-001`](lastenheft.md#ac-fa-extract-001--sprach-backends-für-die-import-extraktion) 0.18.0. |
 | 0.19.0 | 2026-07-09 | Neu `SPEC-CLI-002` (Graph-Renderer-Vertrag: Config-Modell→Mermaid **pur**; stabile interne IDs + escaptes Label je nutzergesteuertem Text; Kante je `edges`, abgesetzte `allow`-Kante; Dangling-/Composition-Root-/Adapter-Sink-Sonderknoten; `classDef` je effektiver Rolle via geteiltem Resolver; `direction`-Subgraphs; implizite Regeln als Legende; Escaping-Vertrag; Determinismus-Ordnung; `tech` v1 deferred). `SPEC-CLI-001` um den no-scan-`--print-graph`-Modus präzisiert (load-time/config-validation-Parität inkl. unbekannter Sprache; Restargument nach dem Pfad → Exit 2; **keine** scanzeitige Fehler-Parität). Folgt [`AC-FA-CLI-002`](lastenheft.md#ac-fa-cli-002--architektur-graph-ausgabe) 0.19.0. |
-| 0.36.0 | 2026-10-07 | `SPEC-CONF-001`/`SPEC-EXTRACT-001`/`SPEC-RULE-001` (`shapes`): zwei benannte Dialekte — **`gomod`** (Lexik nach der Go-Modulreferenz: nur `LF` signifikant, `//` nur am Token-Anfang, kein `/* */`, Zeichenketten `"…"` und `` `…` ``, `=>` als Token; Anweisung = Zeile, ein Block `Kopf ( … )` ist eine Anweisung mit `;`-getrennten Einträgen) und **`json`** (Lexik nach RFC 8259, keine Kommentare, Leerraum entfällt; Anweisung = Mitglied des Wurzel-Objekts). Wo die Quelle schweigt, fail-closed. Die Meldung jedes `shape-*`-Befunds ist einzeilig (Zeilenende als `\n`), verglichen wird unverändert. |
+| 0.36.0 | 2026-10-07 | `SPEC-CONF-001`/`SPEC-EXTRACT-001`/`SPEC-RULE-001` (`shapes`): zwei benannte Dialekte — **`gomod`** (Lexik nach der Go-Modulreferenz: nur `LF` signifikant, `//` nur am Token-Anfang; fail-closed bei `/*`, `;`, verklebtem `=>`, Klammer im Token, Zeilenende in Zeichenkette; Anweisung = Zeile, ein Block `Kopf ( … )` ist eine Anweisung mit `;`-getrennten Einträgen, `()` leerer Block) und **`json`** (Lexik nach RFC 8259, keine Kommentare, Leerraum entfällt, Leerraum zwischen Zahl-/Literal-Zeichen ist ein Fehler; Anweisung = Mitglied des Wurzel-Objekts). `literal`-Einträge in Quellform (`json`-Mitglied wird in `{ }` eingeschlossen). Die Meldung jedes `shape-*`-Befunds ist einzeilig und umkehrbar (`\\`, `\n`, `\r`); verglichen wird unverändert. |
 | 0.35.0 | 2026-10-06 | `SPEC-CONF-001`/`SPEC-RULE-001` (`shapes`, Modi `exact` und `unused`): ein `files`-Glob mit Symlink im literalen Präfix ist Exit 2 (die Suche folgte ihm sonst aus der Scan-Wurzel hinaus); die `expect`-Datei muss eine reguläre Datei sein, kein Bestandteil ihres Pfads darf ein Symlink sein (kein Verfolgen aus der Scan-Wurzel), und sie darf nicht dieselbe Datei sein wie eine von den `files` ihres Eintrags getroffene (lexikalisch normalisiert oder als Hardlink) — beides Exit 2, sonst bliebe der Eintrag still grün. `shape-differs` meldet genau einen Befund je Eintrag **und** Datei. Die `shape-unused`-Meldung ist einzeilig festgelegt (Zeilenenden als `\n`, Zusatz ` (regex)`). |
 | 0.34.0 | 2026-10-06 | `SPEC-EXTRACT-001`: die Kotlin-Lexik kennt die **Vorlage mit Backtick-Bezeichner** in Zeichenketten (`n` Zeichen `$` vor einem Backtick) — ein `"` im Bezeichner beendet die Zeichenkette nicht; vorher schloss sie zu früh, und ein späteres `/*` verschluckte Code. Zeichen-Literal: ein Zeilenende vor dem schließenden `'` ist auch direkt nach einem Backslash ein Fehler. `SPEC-CONF-001`/`SPEC-RULE-001`: ein führendes `./` in `files` wird entfernt; byte-gleiche `shape-*`-Befundzeilen werden generell einmal ausgegeben. |
 | 0.33.0 | 2026-10-06 | `SPEC-CONF-001`/`SPEC-EXTRACT-001`/`SPEC-RULE-001`: neuer Optionalblock **`shapes`** (Sollform je Datei) — Einträge `{files, dialect, mode}` mit `allow` (String oder `{pattern, match: literal\|regex}`) und optionalem `unused: fail` bei `allow-statements` bzw. `expect` bei `exact`; fail-closed beim Laden und beim Scan (Glob ohne Treffer, Widerspruch zu `exclude`, fehlende `expect`-Datei, nicht zerlegbare Datei → Exit 2). Eigene Vorbereitung für den Dialekt `kotlin`: Lexik (UTF-8, BOM, `LF`/`CRLF`/`CR`; verschachtelte Block-Kommentare, Roh-Zeichenketten, Dollar-Präfix `$$"…"`, `${…}`-Vorlagen über die Klammer-Tiefe mit vorwärts gezählter `$`-Folge (maskiertes `\$` ist Inhalt), Zeichen-Literale, Backtick-Bezeichner), Normalisierung (Kommentare weg, Zeichenketten byte-genau, Leerraum nur zwischen zwei Wort- oder zwei Operatorzeichen erhalten) und Zerlegung in Anweisungen auf oberster Ebene über eine Fortsetzungsregel; Grenzen innerhalb eines Blocks werden zu `;`. `literal`-Einträge werden wie die Datei normalisiert, `regex`-Einträge müssen für sich kompilieren und werden voll verankert (benannte Grenze: `.*` überspannt auch Code); `files` und `expect` bleiben in der Scan-Wurzel. Drei Befunde außerhalb der Erst-Treffer-Kette: `shape-unlisted` (Menge), `shape-differs` (erste Abweichung), `shape-unused` (Opt-in, verortet in der `.a-check.yml`). Folgt [`AC-FA-RULE-012`](lastenheft.md#ac-fa-rule-012)/[`AC-FA-CONF-001`](lastenheft.md#ac-fa-conf-001--konfigurationsdatei-a-checkyml) 0.28.0. |

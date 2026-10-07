@@ -17,9 +17,9 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
 ### Changed
 
-- **Die Meldung jedes `shape-*`-Befunds wird einzeilig** (Zeilenende als `\n`) — vorgeschlagen mit
+- **Die Meldung jedes `shape-*`-Befunds wird einzeilig und umkehrbar** (Backslash, Zeilenende, Wagenrücklauf maskiert) — vorgeschlagen mit
   [ADR-0042](docs/plan/adr/0042-shapes-benannte-dialekte-gomod-json.md); betrifft bei `kotlin`
-  Befunde mit mehrzeiligen Roh-Zeichenketten. Noch nicht implementiert.
+  Befunde mit Backslash oder mehrzeiligen Roh-Zeichenketten. Noch nicht implementiert.
 
 ## [0.21.0] - 2026-10-06
 
