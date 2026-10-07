@@ -21,8 +21,6 @@ Welle-Datei, nicht hier.
 
 - [welle-18-multi-arch-image](../welle-18-multi-arch-image.md) — Multi-Arch-Image (`linux/amd64` + `linux/arm64`)
 
-**Nichts in Arbeit.**
-
 **Woran gerade gearbeitet wird, sagt `ls docs/plan/planning/in-progress/` — nicht diese
 Datei.** Wellenlose Arbeit erscheint in der Roadmap nicht; ihr Zustand ist die
 Verzeichnis-Position (Baseline-Regelwerk `modul-06-roadmap.md` §Wann Arbeit eine Welle
