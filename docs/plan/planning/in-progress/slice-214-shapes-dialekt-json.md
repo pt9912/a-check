@@ -27,6 +27,14 @@ wechselt nur durch `git mv` (`make slice-mv`).
 Lexik nach RFC 8259, Anweisung = Mitglied des Wurzel-Objekts, `literal`-Einträge als Mitglied in
 Quellform (in `{ }` eingeschlossen) — jede Gegenprobe und jeder Exit-2-Fall als Test.
 
+**Plan-Änderung 2026-10-07 (Review F-1/F-3/F-5, vor dem Nachlauf-Code):** Die Spezifikation
+zählte nur einzelne Fehlerfälle auf; Formen, die RFC 8259 verbietet (`tru`, `01`, `"\x"`,
+fehlendes Komma zwischen Mitgliedern, abschließendes Komma in einem verschachtelten Objekt,
+ungültiges UTF-8), wurden angenommen — gegen [ADR-0042](../../adr/0042-shapes-benannte-dialekte-gomod-json.md)
+Entscheidung 2 („fail-closed, wo die Quelle eine Form verbietet“). Der Slice nimmt die
+Präzisierung mit: die Datei muss **gültiges JSON** sein (Spezifikation 0.38.0), geprüft von einem
+Grammatik-Prüfer über die Tokens.
+
 **Übernimmt:** den `json`-Teil von slice-213 (Teilung vor dem Start, weil die beiden Formate
 unabhängige Lexik tragen — §1 von slice-213 sah das vor).
 
