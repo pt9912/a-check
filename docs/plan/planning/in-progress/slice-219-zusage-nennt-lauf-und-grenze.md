@@ -30,6 +30,14 @@ Zusage über eine Prüfung nennt den Lauf, der sie hält, und seine Grenze **am 
 [`harness/rules/mess-regeln.md`](../../../../harness/rules/mess-regeln.md) oder als eigene Regel —
 das entscheidet der Plan beim Start; Herleitung mit den sechs Fällen im Reviewer-Skill.
 
+**Plan-Änderung 2026-10-07 (beim Start):** Ort ist **Regel 5** in
+[`harness/rules/mess-regeln.md`](../../../../harness/rules/mess-regeln.md) — eine Zusage über eine
+Prüfung ist eine Aussage über einen Beleg, und die Mess-Regeln binden jeden, der einen schreibt.
+Zählstellen, mit drei verschieden gebauten Suchen gefunden: [`AGENTS.md`](../../../../AGENTS.md)
+§5 Zeile 15; `mess-regeln.md` Titel, Einleitung und „alle vier"; Kopf und „Alle vier" in
+§Mess-Regeln des Reviewer-Skills; der Zustand von
+`BEO-GATE/testbeschreibung-weiter-als-assertion` („den drei übrigen") — er verliert die Zahl.
+
 **Ausdrücklich NICHT in diesem Slice** — je Punkt mit Begründung:
 
 - **Ein Sensor.** *Bestand bleibt bewusst stehen*: ob ein Prosa-Satz den Geltungsbereich seines
@@ -53,7 +61,8 @@ das entscheidet der Plan beim Start; Herleitung mit den sechs Fällen im Reviewe
 
 | Datei / Komponente | Änderungs-Art | Begründung |
 |---|---|---|
-| `harness/rules/` (Regel), `AGENTS.md` §5 (Zeiger) | update | die Regel |
+| `harness/rules/mess-regeln.md`, `AGENTS.md` §5 Zeile 15 | update | Regel 5, Zählstellen |
+| `docs/plan/planning/observations/BEO-GATE/…` (zwei `state.md`) | update | Ausgang *verkörpert*; Zahl aus dem Nachbar-Zustand |
 | `.harness/skills/reviewer.md` | update | Herleitung |
 
 ## 4. Trigger
