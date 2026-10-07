@@ -1,4 +1,4 @@
-# slice-213 — `shapes`-Dialekte `gomod` und `json`: Implementierung
+# slice-213 — `shapes`-Dialekt `gomod` und einzeilige Meldung: Implementierung
 
 **Lifecycle:** Der Zustand dieses Slice ist das Verzeichnis, in dem diese
 Datei liegt — eines von `open/`, `next/`, `in-progress/`, `done/`. Er
@@ -6,10 +6,8 @@ wechselt nur durch `git mv` (`make slice-mv`).
 
 **Welle:** welle-17 — [Welle-Plan](../welle-17-shapes-generischer-dialekt.md).
 
-**Bezug:** [AC-FA-RULE-012](../../../../spec/lastenheft.md#ac-fa-rule-012) in der Fassung aus
-slice-212, die dort entstehende Folge-ADR zu
-[ADR-0041](../../adr/0041-shapes-sollform-je-datei.md) (Kennung wird beim Übergang nach `next/`
-eingetragen).
+**Bezug:** [AC-FA-RULE-012](../../../../spec/lastenheft.md#ac-fa-rule-012) (Lastenheft 0.29.0),
+[ADR-0042](../../adr/0042-shapes-benannte-dialekte-gomod-json.md).
 
 **Berührte Spec-Stellen:** `spezifikation.md`
 §[SPEC-CONF-001](../../../../spec/spezifikation.md#spec-conf-001--konfigurationsschema),
@@ -27,13 +25,19 @@ eingetragen).
 
 ## 1. Ziel und Abgrenzung
 
-**Ziel:** `shapes` prüft `go.mod` und `package.json` nach dem in slice-212 abgenommenen Vertrag;
-jede Gegenprobe der Anforderung ist ein Test, jeder Fix hat eine Mutations-Gegenprobe.
+**Ziel:** `shapes` prüft `go.mod` mit `dialect: gomod` nach dem in slice-212 abgenommenen
+Vertrag, und die Meldung jedes `shape-*`-Befunds wird einzeilig und umkehrbar (mit Art-Präfix bei
+`shape-unused`); jede Gegenprobe ist ein Test, jeder Fix hat eine Mutations-Gegenprobe.
+
+**Plan-Änderung 2026-10-07 (vor dem Start):** der Vertrag trägt zwei Formate mit unabhängiger
+Lexik — nach dem Größen-Vorbehalt unten geteilt; `json` übernimmt slice-214.
 
 **Ausdrücklich NICHT in diesem Slice** — je Punkt mit Begründung:
 
 - **Vertragsänderungen.** *Schicht-Abgrenzung*: der Vertrag steht nach slice-212; eine Lücke geht
   als Plan-Änderung vor den Code, wie in welle-16 dreimal geübt.
+- **Der Dialekt `json`.** *Ein Folge-Slice übernimmt es*: slice-214 (Teilung nach dem
+  Größen-Vorbehalt).
 - **Ein zweiter Dateisuch-Pfad.** *Bestand bleibt bewusst stehen*: die Dateisuche samt
   Symlink-Prüfung aus welle-16 wird wiederverwendet, nicht neu gebaut — sie ist reviewt.
 
@@ -45,11 +49,12 @@ wird dieser Slice vor dem Start je Format geteilt (Rückführung `next`).
 Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
 §Ziel-Form: Slice — ≤ 3 Liefer-Punkte.
 
-- [ ] Lexik und Zerlegung der neuen Formate nach [SPEC-EXTRACT-001](../../../../spec/spezifikation.md#spec-extract-001--import-extraktion), mit Tests je Lexik-Form und
+- [ ] Lexik und Zerlegung von `gomod` nach [SPEC-EXTRACT-001](../../../../spec/spezifikation.md#spec-extract-001--import-extraktion), mit Tests je Lexik-Form und
       Mutations-Gegenprobe; nicht zerlegbare Dateien Exit 2.
-- [ ] Konfiguration und Auswertung (Schema aus [SPEC-CONF-001](../../../../spec/spezifikation.md#spec-conf-001--konfigurationsschema), Befundform aus [SPEC-RULE-001](../../../../spec/spezifikation.md#spec-rule-001--regel-auswertung)), die
-      Gegenprobe-Fälle der Anforderung je Format als End-to-End-Tests.
-- [ ] `--print-config`, Benutzerhandbuch, CHANGELOG `[Unreleased]`.
+- [ ] Einzeilige, umkehrbare Meldung aller `shape-*`-Befunde und `shape-unused`-Präfix nach [SPEC-RULE-001](../../../../spec/spezifikation.md#spec-rule-001--regel-auswertung); Konfiguration (Schema aus [SPEC-CONF-001](../../../../spec/spezifikation.md#spec-conf-001--konfigurationsschema), Befundform aus [SPEC-RULE-001](../../../../spec/spezifikation.md#spec-rule-001--regel-auswertung)), die
+      Gegenprobe-Fälle „Boundary (`gomod`)" als End-to-End-Tests an einem `go.mod` in realer Form.
+- [ ] `--print-config`, Benutzerhandbuch, CHANGELOG `[Unreleased]` (Vermerk „noch nicht
+      implementiert" für `gomod` und die Meldung umschreiben).
 - [ ] Unabhängiger Review, Report unter [`docs/reviews/`](../../../reviews/README.md).
 - [ ] Closure-Notiz mit Steering-Loop-Lerneintrag.
 - [ ] Beobachtungs-Register fortgeschrieben (oder „keine Beobachtung" notiert).
