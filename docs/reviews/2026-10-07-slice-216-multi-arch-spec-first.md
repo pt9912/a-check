@@ -112,3 +112,67 @@ der Closure, nicht hier.
 
 **Übergabe:** Findings an den Implementer; die Finding-Klassen zusätzlich in die Closure §7 von
 slice-216. Dieser Report ist Lauf-Beleg und ersetzt keine Verifikation gegen die DoD.
+
+---
+
+## Delta-Review
+
+**Gegenstand:** `6c08942..73efcaf` — `6c08942` (Plan-Änderung), `60b3964` (Lastenheft,
+Spezifikation, CHANGELOG), `c6256a0` (ADR-0043, weiter `Proposed`), `73efcaf` (Messung M4/M5,
+slice-217, slice-218, welle-18). Derselbe Reviewer-Kontext wie oben, gleicher Skill-Stand, gleiches
+Modell; der Delta-Gegenstand stammt vom Implementer.
+`make doc-check doc-structure gate-consistency`: Exit 0 (Ausgabe in Datei, Exit-Code getrennt).
+
+### Zuordnung der Findings
+
+| ID | Stand nach Delta | Beleg |
+|---|---|---|
+| F-1 | behoben — der Punkt „Reproduzierbar" ist aus SPEC-DIST-001 gestrichen; die Spezifikation sagt ausdrücklich, dass ein Neubau nicht denselben Digest zusagt; ADR-0043 Punkt 4 lautet „Keine Reproduzierbarkeits-Zusage", Kontext und §1b M4 nennen die Gegenmessung samt Mechanismus; die positive Konsequenz „lässt sich nachbauen" ist entfernt | `spec/spezifikation.md` SPEC-DIST-001; ADR-0043 Z. 41-44, Punkt 4; slice-216 §1b M4 |
+| F-2 | behoben — mit F-1 entfällt die Zusage ohne Lastenheft-Träger | wie F-1 |
+| F-3 | behoben — Ausgabe-Vergleich beider Plattformen in SPEC-DIST-001, ADR-0043 Punkt 5 (Bild-Tag erst nach Vergleich), Fitness-Zeile, DoD von slice-218 | siehe D-1 zur Reichweite |
+| F-4 | behoben — (a) `tools/image-test.sh` mit Bild-Referenz in DoD und §3 von slice-217; (b) `packaging/dockerhub/overview.md` und `README.md` in DoD und §3 von slice-218 | slice-217 §2/§3; slice-218 §2/§3 |
+| F-5 | behoben — `CHANGELOG.md` `[Unreleased]` trägt die Vertragsänderung, als „noch nicht implementiert" gekennzeichnet; §3 des Slice nennt die Datei | `CHANGELOG.md` Z. 9-19 |
+| F-6 | behoben — D neu beschrieben (job-lokale Registry, Upload danach), Contra nennt den ungetesteten Weg zum Konsumenten; E-Contra nennt den lokalen Bildspeicher auch für E | ADR-0043 §Verglichene Alternativen |
+| F-7 | behoben — Bezug nennt Punkt 1, das Wort in Punkt 2, §Konsequenzen und §Fitness Function | ADR-0043 Z. 12-17 |
+| F-8 | behoben — Trigger nennt Spezifikations-Änderung und Folge-ADR | ADR-0043 §Re-Evaluierungs-Trigger |
+| F-9 | behoben — als negative Konsequenz benannt und im Out-of-Scope von welle-18 | ADR-0043 §Konsequenzen; welle-18 §6 |
+| F-10 | behoben — „Versions-Tag `vX.Y.Z` in der Registry" bzw. „Bild-Tag" in Lastenheft, Spezifikation und ADR | `spec/lastenheft.md` Z. 704 |
+| F-11 | behoben — Out-of-Scope-Punkt gestrichen | `spec/lastenheft.md` Z. 744 |
+| F-12 | behoben — Geltungsbereich von M5 nennt `overlay2` gegen containerd-Bildspeicher | slice-216 §1b M5 |
+| F-13 | behoben — Gegenprobe nimmt den arm64-Lauf aus dem nativen Test-Job der Pipeline (Job-Log, Vergleichs-Schritt) und benennt, dass ein lokaler arm64-Lauf auf diesem Host nicht möglich ist | welle-18 §3 |
+
+### Neue Findings
+
+| ID | Kategorie | Befund | Quelle | Pfad | Verifizierbar | Klasse |
+|---|---|---|---|---|---|---|
+| D-1 | INFO | Die Spezifikation und ADR-0043 setzen den Vergleich an **einen** Scan einer festen Fixture; AC-FA-DIST-001 Boundary sagt Gleichheit für „denselben Scan" allgemein zu. Die Durchsetzung ist damit eine Stichprobe der Zusage — benannt in der Spezifikation („einer festen Fixture"), keine Lücke im Wortlaut, aber ihre Reichweite. | AC-FA-DIST-001; SPEC-DIST-001 | `spec/spezifikation.md` SPEC-DIST-001 (Getestet = veröffentlicht); `spec/lastenheft.md:703` | nein — Urteil über Reichweite | — (Hinweis) |
+| D-2 | INFO | Lastenheft 0.30.0 und Spezifikation 0.39.0 ändern Inhalt ohne Versions-Bump; die Historie-Zeile der Spezifikation ist nachgezogen, die des Lastenhefts nennt den gestrichenen Out-of-Scope-Punkt nicht. Beide Stände sind im selben Slice unveröffentlicht (`Draft`), und slice-212 (`5855129`) hielt es im Nachlauf ebenso. | Lastenheft §Historie | `spec/lastenheft.md` Historie 0.30.0 | nein | — (Hinweis) |
+| D-3 | INFO | Liefer-Punkt 3 von slice-218 bündelt jetzt vier Dokument-Familien (`releasing.md`, Benutzerhandbuch, Hub-Seite, CHANGELOG); die Größen-Regel zählt Punkte, nicht Dateien. Die Rückführung „zu groß" ist in §4 des Slice vorab benannt; Adressat ist der Planner beim Übergang nach `next/`. | `v6.13.0` · `regelwerk/modul-05-planning-harness.md` §Ziel-Form: Slice | `docs/plan/planning/open/slice-218-multi-arch-release.md` §2 | nein | — (Hinweis an den Planner) |
+
+### Negativbefunde (Delta)
+
+| Bereich | Ergebnis |
+|---|---|
+| Spezifikation — Abwärts-Referenzen in den geänderten Zeilen und der Historie-Zeile 0.39.0 | geprüft, ohne Befund (`AGENTS.md` §3.4) |
+| ADR-0043 — Rest-Verweise auf eine Reproduzierbarkeits-Zusage (`grep` nach `SOURCE_DATE_EPOCH`, „reproduzierbar") | geprüft: nur noch Kontext (Messung) und Option C (Contra), beide zutreffend; ohne Befund |
+| Lastenheft — AC-Form nach den Änderungen | geprüft, ohne Befund; `make doc-structure` Exit 0 |
+| slice-216 Plan-Änderung vor dem Fix (`AGENTS.md` §6 Schritt 4) | geprüft: Plan-Änderung `6c08942` liegt vor den Fix-Commits; ohne Befund |
+| slice-217 — Größen-Regel nach Aufnahme des Image-Tests | geprüft: drei Liefer-Punkte; ohne Befund |
+| Hard Rules §3.1–§3.6 im Delta | geprüft, ohne Befund |
+
+### Summary (Delta)
+
+| Kategorie | Anzahl |
+|---|---|
+| HIGH | 0 |
+| MEDIUM | 0 |
+| LOW | 0 |
+| INFO | 3 |
+
+Alle 13 Findings des ersten Laufs sind behoben. Neue Finding-Klassen: keine (nur Hinweise).
+
+### Verdikt (Delta)
+
+**Abnahme-blockierend:** nein. Der Vertrag kann dem Maintainer zur Abnahme vorgelegt werden;
+ADR-0043 bleibt bis dahin `Proposed`. D-1 bis D-3 sind Hinweise ohne erwartete Aktion in diesem
+Slice. Die Finding-Klassen des ersten Laufs gehen weiter in die Closure §7 von slice-216.
