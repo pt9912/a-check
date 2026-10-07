@@ -18,7 +18,7 @@ geändert durch die Plan-Änderung in §1 (Spezifikation 0.38.0).
 
 **Autor:** Claude. **Datum:** 2026-10-07.
 
-**Lerneintrag — Form:** wird bei Closure benannt.
+**Lerneintrag — Form:** benannte Spec-Lücke.
 
 ---
 
@@ -51,17 +51,17 @@ unabhängige Lexik tragen — §1 von slice-213 sah das vor).
 Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
 §Ziel-Form: Slice — ≤ 3 Liefer-Punkte.
 
-- [ ] Normalisierer `json` (Lexik, Zerlegung in Wurzel-Mitglieder, alle Exit-2-Fälle der
+- [x] Normalisierer `json` (Lexik, Zerlegung in Wurzel-Mitglieder, alle Exit-2-Fälle der
       Spezifikation) mit Tests je Fall und Mutations-Gegenprobe.
-- [ ] `literal`-Einträge in Quellform (Einschluss in `{ }`), End-to-End-Tests mit den
+- [x] `literal`-Einträge in Quellform (Einschluss in `{ }`), End-to-End-Tests mit den
       Gegenprobe-Fällen des Akzeptanzkriteriums „Boundary (`json`)" an einer `package.json` in
       realer Form.
-- [ ] `--print-config`, Benutzerhandbuch, CHANGELOG `[Unreleased]` (den Vermerk „noch nicht
+- [x] `--print-config`, Benutzerhandbuch, CHANGELOG `[Unreleased]` (den Vermerk „noch nicht
       implementiert" für `json` umschreiben).
-- [ ] Unabhängiger Review, Report unter [`docs/reviews/`](../../../reviews/README.md).
-- [ ] Closure-Notiz mit Steering-Loop-Lerneintrag.
-- [ ] Beobachtungs-Register fortgeschrieben (oder „keine Beobachtung" notiert).
-- [ ] Jedes Risiko aus §6 trägt einen Ausgang.
+- [x] Unabhängiger Review, Report unter [`docs/reviews/`](../../../reviews/README.md).
+- [x] Closure-Notiz mit Steering-Loop-Lerneintrag.
+- [x] Beobachtungs-Register fortgeschrieben (oder „keine Beobachtung" notiert).
+- [x] Jedes Risiko aus §6 trägt einen Ausgang.
 
 `make gates` grün.
 
@@ -90,12 +90,57 @@ Closure-Notiz mit Lerneintrag.
 
 - **Mitglieds-Grenze verrutscht:** ein Komma in einer Zeichenkette oder in einem verschachtelten
   Objekt als Mitglieds-Trenner gelesen, würde ein Mitglied zerteilen — fail-safe (rot), aber ein
-  Fehlalarm an realen Dateien. — **Ausgang:** *(bei Closure zuzuweisen: eingetreten / entfallen /
-  weiter offen)*
+  Fehlalarm an realen Dateien. — **Ausgang:** *entfallen* — gestrichen mit Begründung: die
+  Zerlegung läuft erst nach dem Grammatik-Prüfer, Kommas in Zeichenketten und verschachtelten
+  Werten sind getestet (`TestJSONStringsAndNesting`), und 233 reale `package.json` unter
+  `/Development` wurden ohne einen Fehlalarm zerlegt — 231 mit Befunden gegen eine leere Liste,
+  2 mit Exit 2 wegen einer Zeichenkette als Wurzel (gültiges JSON, vom Dialekt ausgeschlossen);
+  Pythons `json` hielt alle 233 für gültig. Der Delta-Review maß dasselbe und fuzzte 4·10^6
+  ASCII-Eingaben gegen `encoding/json` ohne ungewollte Abweichung.
 
 ## 7. Closure-Notiz
 
-*(folgt bei Closure)*
+**Lerneintrag — Form: benannte Spec-Lücke.** Der Vertrag des Dialekts zählte Fehlerfälle auf,
+statt Gültigkeit nach der Format-Quelle zu verlangen; was die Aufzählung nicht traf, nahm der Code
+an — gegen [ADR-0042](../../adr/0042-shapes-benannte-dialekte-gomod-json.md) Entscheidung 2.
+[SPEC-EXTRACT-001](../../../../spec/spezifikation.md#spec-extract-001--import-extraktion) verlangt
+seit 0.38.0 gültiges JSON nach RFC 8259; die bisherigen Fälle sind Beispiele dieser Regel. Neu im
+Register als `BEO-SPEC/fehlerfaelle-statt-grammatik-der-quelle` (1×).
+
+**Geliefert:** Dialekt `json`
+([AC-FA-RULE-012](../../../../spec/lastenheft.md#ac-fa-rule-012)): Lexik, Gültigkeitsprüfung,
+Zerlegung in Wurzel-Mitglieder, `literal`-Einträge in Quellform; Spezifikation 0.38.0,
+Handbuch 1.45, Gerüst, CHANGELOG `[Unreleased]`. Zwei Review-Läufe plus Delta-Bestätigung.
+
+**Was hat funktioniert:** Die Plan-Änderung vor dem Code statt eines Rückbaus der Zusagen: Statt
+CHANGELOG und Handbuch auf die Aufzählung zu kürzen, wurde der Vertrag auf die Quelle gehoben —
+damit wurden sechs Findings mit einer Regel erledigt, und die Doku-Sätze stimmen jetzt, weil das
+Verhalten ihnen folgt.
+
+**Was ging anders als geplant:** Die Abgrenzung „der Vertrag steht" hielt nicht — die erste
+Fassung des Dialekts war fail-safe, aber nicht fail-closed, und das merkte erst der Review. Der
+Nachlauf brachte zwei neue Wortlaut-Findings (Kopf des Plans, Zuordnung „Wurzel kein Objekt" zur
+RFC-Regel) und einen Testkommentar, der wieder mehr zusagte als prüfte. Die frühen Prüfungen
+(Mitglied ohne `:`, Leerraum zwischen Werten) sind nach dem Grammatik-Prüfer unerreichbar; ihre
+Mutationen sind äquivalent (Delta-Review D-6) — die Mutations-Gegenprobe der DoD gilt für den
+Prüfer, nicht für diese Zweige.
+
+**Steering-Loop-Eintrag:** benannte Spec-Lücke — verkörpert in Spezifikation 0.38.0 (Schritt 2
+„Gültigkeit"), nicht an einem Zielort mit Herkunfts-Anker.
+
+**Beobachtungs-Register (`../observations/`):**
+`BEO-GATE/testbeschreibung-weiter-als-assertion` → 4×, Ausgang bleibt *geplant* (slice-215);
+`BEO-SPEC/fehlerfaelle-statt-grammatik-der-quelle` neu (1×);
+`BEO-ADAPT/rekursiver-pruefer-ohne-tiefengrenze` neu (1×, Delta-Review D-4 — eine Tiefengrenze wäre
+eine Vertragsänderung, nicht Teil dieses Slice).
+
+**Folge-Slices:** keine neuen; slice-215 liegt in `open/`.
+
+**Risiken aus §6:** das eine Risiko trägt seinen Ausgang (*entfallen* mit Begründung).
+
+**Drei Paarungen:** getragen von der Closure von welle-17.
+
+**Trigger-Audit der aktiven MR:** [`MR-016`](../../../../harness/conventions.md#mr-016) [`MR-019`](../../../../harness/conventions.md#mr-019) [`MR-025`](../../../../harness/conventions.md#mr-025) [`MR-027`](../../../../harness/conventions.md#mr-027) [`MR-028`](../../../../harness/conventions.md#mr-028) [`MR-029`](../../../../harness/conventions.md#mr-029) [`MR-030`](../../../../harness/conventions.md#mr-030) — 0 offen (geprüft 2026-10-07).
 
 ## 8. Sub-Area-Prüfungen und Modus-Begründung
 
