@@ -12,7 +12,7 @@ wechselt nur durch `git mv` (`make slice-mv`).
 
 **Berührte Spec-Stellen:** — · Der Slice berührt kein Spec-Stratum; er beschreibt den Betrieb.
 
-**Verantwortlich:** —
+**Verantwortlich:** Claude — gesetzt beim Übergang nach `next/` (Maintainer: „ja, mach den Slice fürs Handbuch“, 2026-10-07).
 
 **Autor:** Claude. **Datum:** 2026-10-07.
 
