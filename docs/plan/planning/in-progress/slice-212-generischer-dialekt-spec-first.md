@@ -53,6 +53,52 @@ der Formate abgeleitet, als Lastenheft-Änderung, Folge-ADR zu
   hier nur, wenn die Einzeiligkeits-Entscheidung (Frage 3) ihn trifft — dann als benannte
   Plan-Änderung.
 
+## 1b. Messung (2026-10-07)
+
+**Gegenstand:** die Manifeste aller lokalen Repos, die eine `.a-check.yml` tragen (also
+nachweislich a-check-Konsumenten sind) — gefunden mit
+`find /Development -maxdepth 3 -name .a-check.yml`, Manifeste darunter mit `find … -name go.mod
+-o -name package.json -o -name build.gradle.kts`, ohne `node_modules`, `vendor`, `.git`,
+`testdata`, `build`. Gezählt mit `grep` (go.mod) bzw. einer JSON-Ladung (package.json); die
+Originale wurden nur gelesen.
+
+**`go.mod` — 6 Dateien** (d-check ×2, m-trace/apps/api, pg-change-feed, pgwire-recorder,
+claude-ai-harness-init):
+
+| Merkmal | Befund |
+|---|---|
+| Direktiven auf oberster Ebene | nur `module`, `go`, `require` (je Datei 2× `require`) |
+| Block-Form `verb ( … )` | 8 Blöcke, **eine Abhängigkeit je Zeile** |
+| Kommentare | 85 Zeilen-Kommentare, **alle** `// indirect` |
+| `replace`, `exclude`, `retract`, `tool`, `toolchain`, `godebug` | 0 |
+| Backquote-Zeichenketten | 0 |
+
+**`package.json` — 5 Dateien** (m-trace): Wurzel ist **ein** Objekt (Tiefe 2–3);
+Abhängigkeiten stehen in den Wurzel-Mitgliedern `dependencies`, `devDependencies`,
+`peerDependencies`; daneben `scripts` (beliebige Befehle) und Metadaten.
+
+**Nebenmessung Kotlin:** derselbe Bestand führt 82 `build.gradle.kts` (d-migrate, belief-agent,
+pg-change-feed). Mit dem in `v0.21.0` ausgelieferten Image, je Datei in eine Scratch-Kopie mit
+einem `shapes`-Eintrag (`allow: ["nie()"]`) gelegt: **82 zerlegt, 0× Exit 2, 292 Anweisungen**.
+
+**Was die Messung entscheidet:**
+
+1. **Benannte Dialekte, keine konfigurierbare Lexik.** Beide Formate haben eine kleine **formale
+   Grammatik** (Go-Modulreferenz §go.mod files; RFC 8259) — die Lexik lässt sich daraus
+   **ableiten** statt aufzählen, und genau das fehlte beim Kotlin-Dialekt (zwei Register-Belege).
+   Eine vom Konsumenten konfigurierte Lexik verschöbe dieses Risiko zu ihm; kein gemessener Fall
+   braucht sie. Vorschlag: `dialect: gomod` und `dialect: json`.
+2. **Zerlegungstiefe:** `go.mod` — Anweisung = Direktive auf oberster Ebene; ein Block `verb ( … )`
+   ist eine Anweisung, seine Zeilen sind darin durch `;` getrennt (dieselbe Form wie ein
+   Kotlin-Block). `json` — Anweisung = **Mitglied des Wurzel-Objekts** (Schlüssel und ganzer
+   Wert); eine zusätzliche Abhängigkeit ändert das Mitglied `dependencies` und ist rot. Eine
+   Wurzel, die kein Objekt ist, ist Exit 2.
+3. **Einzeiligkeit:** JSON-Zeichenketten können kein rohes Zeilenende enthalten (RFC 8259),
+   `go.mod`-Zeichenketten in der gemessenen Form auch nicht. Offen bleiben Kotlin-Roh-Strings und
+   die nicht gemessenen `go.mod`-Backquotes. Vorschlag: die **Meldung** jedes `shape-*`-Befunds
+   schreibt ein Zeilenende als `\n` (wie `shape-unused` seit Spezifikation 0.35.0) — der
+   Vergleich bleibt byte-genau, nur die Ausgabe wird einzeilig.
+
 ## 2. Definition of Done
 
 Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
