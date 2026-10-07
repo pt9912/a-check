@@ -13,7 +13,7 @@ wechselt nur durch `git mv` (`make slice-mv`).
 §[SPEC-DIST-001](../../../../spec/spezifikation.md#spec-dist-001--laufzeitform-und-distribution)
 (in slice-216 geschrieben, hier umgesetzt).
 
-**Verantwortlich:** —
+**Verantwortlich:** Claude — gesetzt beim Übergang nach `next/` (Maintainer: „ok“, 2026-10-07).
 
 **Autor:** Claude. **Datum:** 2026-10-07.
 
