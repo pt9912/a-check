@@ -16,7 +16,7 @@ wechselt nur durch `git mv` (`make slice-mv`).
 
 **Autor:** Claude. **Datum:** 2026-10-07.
 
-**Lerneintrag — Form:** wird bei Closure benannt (erwartet: geschärfte Regel).
+**Lerneintrag — Form:** geschärfte Regel.
 
 ---
 
@@ -54,14 +54,14 @@ Text der Einträge bleibt.
 
 ## 2. Definition of Done
 
-- [ ] Vierte Mess-Regel in `harness/rules/mess-regeln.md` (Wortlaut: jede Eigenschaft, die ein
-      Testkommentar nennt, belegt eine Assertion; eine Mutation, die genau diese Eigenschaft
-      bricht, macht den Test rot) mit Herkunfts-Anker `seit slice-215`.
-- [ ] Herleitung mit den vier Fällen im Reviewer-Skill §Mess-Regeln; Register-Stand *verkörpert*.
-- [ ] Unabhängiger Review, Report unter [`docs/reviews/`](../../../reviews/README.md).
-- [ ] Closure-Notiz mit Steering-Loop-Lerneintrag.
-- [ ] Beobachtungs-Register fortgeschrieben (oder „keine Beobachtung" notiert).
-- [ ] Jedes Risiko aus §6 trägt einen Ausgang.
+- [x] Vierte Mess-Regel in `harness/rules/mess-regeln.md` (Wortlaut seit Review F-5: für jede
+      Eigenschaft, die ein Testkommentar nennt, steht eine Assertion, die sie prüft; eine Mutation,
+      die genau diese Eigenschaft bricht, macht den Test rot) mit Herkunfts-Anker `seit slice-215`.
+- [x] Herleitung mit den vier Fällen im Reviewer-Skill §Mess-Regeln; Register-Stand *verkörpert*.
+- [x] Unabhängiger Review, Report unter [`docs/reviews/`](../../../reviews/README.md).
+- [x] Closure-Notiz mit Steering-Loop-Lerneintrag.
+- [x] Beobachtungs-Register fortgeschrieben (oder „keine Beobachtung" notiert).
+- [x] Jedes Risiko aus §6 trägt einen Ausgang.
 
 `make gates` und `make verify` grün.
 
@@ -88,11 +88,48 @@ DoD vollständig, `make gates` und `make verify` grün, Closure-Notiz mit Lernei
 ## 6. Risiken und offene Punkte
 
 - **Prosa ohne Wirkung:** eine vierte Mess-Regel wird gelesen wie die anderen drei — oder nicht.
-  — **Ausgang:** *(bei Closure zuzuweisen: eingetreten / entfallen / weiter offen)*
+  — **Ausgang:** *weiter offen* — getragen vom Beobachtungs-Register: ob die Regel wirkt, zeigt
+  erst ein Testkommentar, der nach ihr geschrieben wird. Ein neuer Beleg unter
+  `BEO-GATE/testbeschreibung-weiter-als-assertion` nach slice-215 ist genau dieser Fall.
 
 ## 7. Closure-Notiz
 
-*(folgt bei Closure)*
+**Lerneintrag — Form: geschärfte Regel.** Viermal sagte ein Testkommentar eine Eigenschaft zu,
+die keine Assertion prüfte. Die Regel steht jetzt als vierte Mess-Regel in
+[`harness/rules/mess-regeln.md`](../../../../harness/rules/mess-regeln.md) (`seit slice-215`),
+die Herleitung mit drei Ausprägungen im Reviewer-Skill §Mess-Regeln. Kein Sensor: ob ein Kommentar
+mehr behauptet, als seine Assertion prüft, ist ein Urteil über Text.
+
+**Geliefert:** Regel 4, Herleitung, Zählstellen nachgezogen ([`AGENTS.md`](../../../../AGENTS.md)
+§5 Zeile 15, Titel der Regel-Datei, Kopf des Skill-Abschnitts samt Verortung der Zusage); die
+`Stand:`-Zeilen der drei Geschwister-Einträge zeigen auf die Regel-Datei statt auf `AGENTS.md` §5.
+
+**Was hat funktioniert:** Die zweite Zählung (Mess-Regel 3) im Review fand die vierte Zählstelle
+im Skill-Kopf — nur die Suche nach Zahlwörtern traf sie, die Wortsuche nicht.
+
+**Was ging anders als geplant:** Der erste Wurf der Herleitung trug genau den Fehler, den die
+Regel beschreibt: „je drei Fälle“ für zwei Belege, von denen einer einen hatte, und ein Zitat, das
+keines war. Und die Verortung „Zusage in `AGENTS.md` §5“ war seit der Auslagerung der Regeln an
+vier Stellen stehen geblieben; drei davon fand erst der Review (Plan-Änderung F-7). Die
+Umschreibung zu slice-210 nennt nur die Zeichenketten-Hälfte der damaligen Zusage (Delta-Review
+D-2, INFO) — enger als der Beleg, nicht falsch.
+
+**Steering-Loop-Eintrag:** geschärfte Regel — liegt in
+[`harness/rules/mess-regeln.md`](../../../../harness/rules/mess-regeln.md) Regel 4 (`seit slice-215`).
+
+**Beobachtungs-Register (`../observations/`):** `BEO-GATE/testbeschreibung-weiter-als-assertion`
+→ *verkörpert* (4×, kein neuer Beleg durch diesen Slice — er schreibt keinen Test).
+`BEO-HARNESS/verortung-nach-auslagerung-stehen-geblieben` neu (1×).
+
+**Folge-Slices:** keine.
+
+**Risiken aus §6:** das eine Risiko trägt seinen Ausgang (*weiter offen*, Beobachtungs-Register).
+
+**Drei Paarungen:** Anker — `seit slice-215` steht im Zielort der Regel-Datei und im Skill;
+die drei Geschwister-Zielorte tragen `seit slice-179/181/193` · Folge-Slice — keiner · Register —
+beide genannten Pfade existieren mit nicht leerem `evidence/`.
+
+**Trigger-Audit der aktiven MR:** [`MR-016`](../../../../harness/conventions.md#mr-016) [`MR-019`](../../../../harness/conventions.md#mr-019) [`MR-025`](../../../../harness/conventions.md#mr-025) [`MR-027`](../../../../harness/conventions.md#mr-027) [`MR-028`](../../../../harness/conventions.md#mr-028) [`MR-029`](../../../../harness/conventions.md#mr-029) [`MR-030`](../../../../harness/conventions.md#mr-030) — 0 offen (geprüft 2026-10-07).
 
 ## 8. Sub-Area-Prüfungen und Modus-Begründung
 
