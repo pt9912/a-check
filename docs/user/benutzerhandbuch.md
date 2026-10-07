@@ -40,9 +40,11 @@ Docker und `make`; a-check-Interna müssen Sie nicht kennen.
 
 ### macOS: Docker Desktop und Colima
 
-a-check ist ein **Linux**-Container. Auf macOS starten Docker Desktop und Colima dafür eine
-Linux-VM; auf Apple Silicon läuft sie als `arm64`, und `docker run` zieht aus dem Image-Index
-das Bild **`linux/arm64`** — ohne Emulation. Ein natives macOS-Programm gibt es nicht.
+a-check ist ein **Linux**-Container; ein natives macOS-Programm gibt es nicht. Docker Desktop und
+Colima starten dafür eine Linux-VM. Auf Apple Silicon läuft sie standardmäßig als `arm64`, und
+`docker run` zieht aus dem Image-Index das Bild **`linux/arm64`** — ohne Emulation (siehe
+*Hinweis zum Image* oben). Ausnahme: eine Colima-VM, die mit `--arch x86_64` angelegt wurde
+(unten).
 
 **Welches Bild gezogen wurde**, zeigt nach dem ersten Lauf:
 
@@ -50,14 +52,17 @@ das Bild **`linux/arm64`** — ohne Emulation. Ein natives macOS-Programm gibt e
 docker image inspect --format '{{.Architecture}}' <a-check-image>   # Apple Silicon: arm64
 ```
 
-**Was dieses Projekt geprüft hat:** jedes Release läuft vor dem Versions-Tag auf einem nativen
-**Linux**-arm64-Rechner durch den Image-Test, und seine Ausgabe muss der auf `linux/amd64`
-gleichen. Auf macOS selbst testet das Projekt nicht; die Aussagen unten stützen sich auf die
-Dokumentation von Docker Desktop und Colima.
+**Was geprüft ist:** Jedes Release durchläuft, bevor das Bild seinen Versions-Tag auf GHCR erhält,
+den Image-Test auf einem nativen **Linux**-arm64-Rechner; ein Scan einer festen Test-Fixture muss
+dort dieselbe Ausgabe (stdout, stderr, Exit-Code) liefern wie auf `linux/amd64`. Auf macOS testet
+die Release-Pipeline nicht; `v0.23.0` lief beim Maintainer einmal erfolgreich unter Colima auf
+macOS mit Apple Silicon, und `docker image inspect` zeigte dabei `arm64`. Die Angaben zu Docker Desktop und Colima unten stützen sich auf deren Dokumentation bzw.
+Quelltext (Stand 2026-10-07).
 
 **Docker Desktop.** Die VM sieht standardmäßig `/Users`, `/Volumes`, `/private`, `/tmp` und
 `/var/folders` (*Settings → Resources → File sharing*). Ein Repository unter einem dieser Pfade
-funktioniert ohne Einstellung.
+funktioniert ohne Einstellung. Liegt es außerhalb, scheitert der Mount mit einem Fehler
+(„Mounts denied"); geben Sie den Pfad dann unter *File sharing* frei.
 
 **Colima.** Die Architektur der VM ist standardmäßig die des Hosts (`arch: host`), auf Apple
 Silicon also `aarch64`; `colima status` zeigt sie. Sie lässt sich **nach dem Anlegen der VM nicht
@@ -65,12 +70,16 @@ mehr ändern** — wer Colima einmal mit `--arch x86_64` gestartet hat, bekommt 
 `linux/amd64`-Bild unter Emulation, bis die VM neu angelegt ist (`colima delete`, dann
 `colima start`). Gemountet ist standardmäßig **nur `$HOME`**.
 
-> **Stolperstein: Repository außerhalb der freigegebenen Pfade.** a-check bekommt den Baum per
-> `-v "$PWD:/src:ro"`. Liegt `$PWD` außerhalb dessen, was die VM sieht — unter Colima etwa
-> unter `/opt` oder auf einem externen Laufwerk unter `/Volumes` —, sieht der Container ein **leeres** Verzeichnis. Geben Sie den Pfad
-> frei: bei Docker Desktop unter *File sharing*, bei Colima mit `colima start --mount <pfad>` oder
-> unter `mounts:` in `~/.colima/default/colima.yaml`. a-check liest nur; ein schreibgeschützter
-> Mount genügt.
+> **Stolperstein unter Colima: Repository außerhalb von `$HOME`.** a-check bekommt den Baum per
+> `-v "$PWD:/src:ro"`. Liegt `$PWD` außerhalb der Mounts — etwa unter `/opt` oder auf einem
+> externen Laufwerk unter `/Volumes` —, legt Docker die fehlende Quelle in der VM als **leeres**
+> Verzeichnis an, und a-check sieht einen leeren Baum. Abhilfe: den Pfad als Mount eintragen —
+> unter `mounts:` in der Colima-Konfiguration (Standardort `~/.colima/default/colima.yaml`;
+> mit `XDG_CONFIG_HOME` oder einem vorhandenen `~/.config/colima` liegt sie dort) oder mit
+> `colima start --mount <pfad>`. Beides wirkt erst beim **Start** der VM: eine laufende VM erst mit
+> `colima stop` anhalten. Eine eigene Mount-Liste **ersetzt** den Standard-Mount von `$HOME` —
+> nehmen Sie `$HOME` mit auf, wenn Sie ihn weiter brauchen. a-check liest nur; ein
+> schreibgeschützter Mount genügt.
 
 Das mitgelieferte `a-check.mk` läuft unter beiden unverändert: es ruft `$(DOCKER)` auf (Standard
 `docker`), und die Docker-CLI spricht mit der VM der jeweils aktiven Laufzeit.
@@ -1138,4 +1147,4 @@ und die [Spezifikation](../../spec/spezifikation.md); ein Überblick steht in de
 | 1.44 | 2026-10-07 | §4 „Sollform je Datei“: neuer Dialekt **`gomod`** (`go.mod`; Anweisung = Direktive, ein `require ( … )`-Block ist eine Anweisung; Zeilenumbrüche sind Grammatik; Exit 2 bei `/* */`, `;`, verklebtem `=>` u. a.) mit Beispiel; **Befundzeilen einzeilig und eindeutig** (`\\`, `\n`, `\r`); `shape-unused` mit Art-Präfix. Lastenheft 0.29.0, [ADR-0042](../plan/adr/0042-shapes-benannte-dialekte-gomod-json.md), slice-213. |
 | 1.45 | 2026-10-07 | §4 „Sollform je Datei“: neuer Dialekt **`json`** (`package.json` u. a.; Anweisung = Mitglied des Wurzel-Objekts, Einträge als Mitglied ohne äußere Klammern; die Datei muss gültiges JSON nach RFC 8259 sein, jede Abweichung ist Exit 2; ebenso eine Nicht-Objekt-Wurzel) mit Beispiel. Lastenheft 0.29.0, [ADR-0042](../plan/adr/0042-shapes-benannte-dialekte-gomod-json.md), slice-214. |
 | 1.46 | 2026-10-07 | §1 „Hinweis zum Image“: das Image gibt es für `linux/amd64` und `linux/arm64`, der Pin ist der Digest des Image-Index; §2 Schritt 2 nennt `imagetools inspect` als Quelle des Index-Digests. Lastenheft 0.30.0, [ADR-0043](../plan/adr/0043-multi-arch-ein-bau-getestet-dann-getaggt.md), slice-218. |
-| 1.47 | 2026-10-07 | §1 neuer Abschnitt „macOS: Docker Desktop und Colima“: gezogene Plattform (`linux/arm64` auf Apple Silicon) und wie man sie prüft, was das Projekt geprüft hat und was nicht, freigegebene Verzeichnisse beider Laufzeiten (leeres `/src` als Stolperstein), Colima-Architektur nach dem Anlegen fest. slice-220. |
+| 1.47 | 2026-10-07 | §1 neuer Abschnitt „macOS: Docker Desktop und Colima“: gezogene Plattform (`linux/arm64` auf Apple Silicon) und wie man sie prüft, was das Projekt geprüft hat und was nicht, freigegebene Verzeichnisse beider Laufzeiten (Docker Desktop: Mount-Fehler; Colima: leeres `/src`, Mount wirkt erst beim Start und ersetzt `$HOME`), Colima-Architektur nach dem Anlegen fest. slice-220. |

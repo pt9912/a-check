@@ -9,9 +9,10 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 ### Added
 
 - **Benutzerhandbuch: a-check auf macOS** mit Docker Desktop und Colima — welche Plattform
-  gezogen wird und wie man es prüft, welche Verzeichnisse die Linux-VM sieht (ein Repo außerhalb
-  erscheint im Container leer), und was das Projekt selbst geprüft hat: das arm64-Bild auf einem
-  Linux-arm64-Rechner, nicht auf macOS.
+  gezogen wird und wie man es prüft, welche Verzeichnisse die Linux-VM sieht (ein Repo außerhalb:
+  unter Docker Desktop ein Mount-Fehler, unter Colima ein leerer Baum) und was das Projekt geprüft
+  hat: das arm64-Bild in jedem Release auf einem Linux-arm64-Rechner, auf macOS nur eine einmalige
+  Probe unter Colima.
 
 ## [0.23.0] - 2026-10-07
 
