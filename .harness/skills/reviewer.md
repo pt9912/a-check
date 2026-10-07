@@ -223,24 +223,31 @@ braucht welche Artefaktklasse weist die **Urteilsgrundlage** der Skill-Datei zu.
   ausgeschöpft.
   Auslöser: [`BEO-GATE/testbeschreibung-weiter-als-assertion`](../../docs/plan/planning/observations/BEO-GATE/testbeschreibung-weiter-als-assertion/observation.md)
   (slice-210, slice-211, slice-213, slice-214 — 4×).
-- **Eine Zusage über eine Prüfung nennt den Lauf, der sie hält** (`seit slice-219`,
-  Register-Eintrag bei 6×): Wer schreibt, dass etwas geprüft, verglichen oder
-  durchgesetzt wird, nennt den Lauf und seine Grenze am selben Satz; gibt es den
-  Lauf noch nicht, sagt der Satz das.
+- **Eine Zusage nennt den Lauf, der sie hält** (`seit slice-219`, Register-Eintrag
+  bei 6×): Wer zusagt, dass etwas geprüft, verglichen oder durchgesetzt wird oder
+  dass eine Eigenschaft gilt, nennt den Lauf und seine Grenze am selben Satz — als
+  Text oder als Zeiger auf die Stelle, die sie trägt; gibt es keinen Lauf, sagt der
+  Satz das, oder er entfällt. Die Regel ist weiter als der Titel des
+  Register-Eintrags: zwei der sechs Belege (slice-216, slice-218) sagen keine Prüfung
+  zu, sondern eine Eigenschaft. Sie ist Regel 1 *(Geltungsbereich einer Messung)*,
+  von der einmaligen Messung auf die stehende Zusage übertragen, und verlangt dazu
+  den Lauf.
   **Drei Ausprägungen, alle belegt:** Der Satz **nennt einen weiteren Gegenstand**
-  als den, den der Prüfer sieht (slice-186: die Roadmap „benennt" den Slice —
-  geprüft wird nur, ob der Ruhe-Marker fehlt; slice-217: „keine weitere
-  Plattform" — ein Array-Feld ließ eine dritte durch; slice-220: „die Ausgabe des
-  Image-Tests" — verglichen wird ein Scan) · die **Grenze steht woanders** als die
-  Zusage (slice-186: im Konfigurations-Kommentar; slice-187: *„analog zur
+  als den, den der Prüfer sieht (slice-186: die Roadmap benenne den Slice —
+  geprüft wird nur die Äquivalenz *Slice vorhanden ⟺ Ruhe-Marker fehlt*, nicht der
+  Name; slice-217: „keine weitere Plattform" — ein Array-Feld ließ eine dritte durch;
+  slice-220: die Ausgabe des Image-Tests müsse der auf `linux/amd64` gleichen —
+  verglichen wird ein Scan) · die **Grenze steht woanders, ohne Zeiger am Satz**
+  (slice-186: nur im Konfigurations-Kommentar; slice-187: *„analog zur
   ADR-Immutabilität"*, die `paths`-Liste nennt die Datei nicht) · **den Lauf gibt
-  es nicht** oder nicht so (slice-216: Plattform-Gleichheit ohne Träger,
-  Reproduzierbarkeit durch Gegenmessung widerlegt; slice-217: der Gate-Index nannte
-  eine Pipeline-Verwendung vor der Pipeline; slice-218: „jeder Schritt über make
-  oder die Docker-CLI").
+  es nicht** oder nicht so (slice-216: gleiche Ausgabe beider Plattformen ohne
+  Träger, Reproduzierbarkeit durch Gegenmessung widerlegt; slice-217: der Gate-Index
+  nannte eine Pipeline-Verwendung vor der Pipeline; slice-218: „jeder Schritt läuft
+  über `make` oder die Docker-CLI"). Ein Zeiger wie „Grenzen: siehe Datei" im
+  Gate-Index (`AGENTS.md` §4) erfüllt die Regel.
   **Die Prüf-Frage ist nicht „stimmt der Satz?", sondern „welcher Lauf hält ihn —
   und was sieht dieser Lauf nicht?"** Findet sich kein Lauf, ist der Satz eine
-  Absicht und sagt es, oder er fällt.
+  Absicht und sagt es, oder er entfällt.
   **Kein Sensor:** Ob ein Prosa-Satz den Geltungsbereich seines Prüfers trifft, ist
   ein Urteil über zwei Formulierungen ([`AGENTS.md`](../../AGENTS.md) §3.7); ein
   Sensor darauf wäre selbst ein Exemplar der Klasse. Fünf der sechs Fälle fand der

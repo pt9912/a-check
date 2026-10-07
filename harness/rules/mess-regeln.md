@@ -1,8 +1,8 @@
-# Fünf Mess-Regeln binden jeden, der einen Beleg schreibt
+# Fünf Mess-Regeln binden jeden, der einen Beleg oder eine Zusage schreibt
 
 *Ausgelagert aus [`AGENTS.md`](../../AGENTS.md) §5, Regel 15 — seit slice-201; die Regeln 1–3 tragen den Wortlaut von dort, die Links sind der neuen Tiefe nachgeführt. Regel 4 steht seit slice-215, Regel 5 seit slice-219.*
 
-**Fünf Mess-Regeln binden jeden, der einen Beleg schreibt** — also auch den
+**Fünf Mess-Regeln binden jeden, der einen Beleg oder eine Zusage schreibt** — also auch den
   Implementer- und den Planner-Lauf, nicht nur den Review:
   1. *Geltungsbereich einer Messung* (`seit slice-179`): Wer eine Messung als
      Beleg schreibt — Slice-Plan, Closure-Notiz, Review-Report —, **nennt ihren
@@ -26,11 +26,13 @@
      „jede Form") gilt nur über eine Menge, die der Test aufzählt; sonst sagt
      der Kommentar „die aufgeführten".
 
-  5. *Eine Zusage über eine Prüfung nennt den Lauf, der sie hält* (`seit slice-219`):
-     Wer schreibt, dass etwas geprüft, verglichen oder durchgesetzt wird — in Doku,
-     Kommentar, Vertrag oder Gate-Index —, nennt den Lauf, der es tut, und dessen
-     Grenze **am selben Satz**: nicht *„wird geprüft"*, sondern *„geprüft von X;
-     Y nicht, weil …"*. Gibt es den Lauf noch nicht, sagt der Satz das.
+  5. *Eine Zusage nennt den Lauf, der sie hält* (`seit slice-219`): Wer in Doku,
+     Kommentar, Vertrag oder Gate-Index zusagt, dass etwas geprüft, verglichen oder
+     durchgesetzt wird **oder dass eine Eigenschaft gilt**, nennt den Lauf, der es
+     hält, und dessen Grenze **am selben Satz** — als Text oder als Zeiger auf die
+     Stelle, die sie trägt: nicht *„wird geprüft"*, sondern *„geprüft von X; Y nicht,
+     weil …"*. Gibt es keinen Lauf, sagt der Satz das (eine Absicht, noch nicht
+     gehalten), oder er entfällt.
 
   **Kein Sensor:** alle fünf sind ein Urteil über eine Absicht, einen Aufbau
   oder eine Zuordnung (§3.7). Die **Herleitung** und die gemessenen Fälle stehen im Reviewer-Skill

@@ -226,7 +226,7 @@ oder `verify` (DoD-/Closure-Fragen). Welche Targets das sind, sagt das
 | 12 | Steering-Loop: ab dem zweiten Vorfall Eintrag, ab dem dritten Lücke — Volltext: [`harness/rules/steering-loop.md`](harness/rules/steering-loop.md) | `harness/rules/steering-loop.md` |
 | 13 | Zitier-Form in einfrierenden Artefakten: Kennung statt Adresse — Volltext: [`harness/rules/zitier-form-einfrierende.md`](harness/rules/zitier-form-einfrierende.md) | `harness/rules/zitier-form-einfrierende.md` |
 | 14 | Slice-Form: aus der vendorten Ziel-Form, Anpassungen laut Planning-README — Volltext: [`harness/rules/slice-form.md`](harness/rules/slice-form.md) | `harness/rules/slice-form.md` |
-| 15 | Fünf Mess-Regeln binden jeden, der einen Beleg schreibt — Volltext: [`harness/rules/mess-regeln.md`](harness/rules/mess-regeln.md) | `harness/rules/mess-regeln.md` |
+| 15 | Fünf Mess-Regeln binden jeden, der einen Beleg oder eine Zusage schreibt — Volltext: [`harness/rules/mess-regeln.md`](harness/rules/mess-regeln.md) | `harness/rules/mess-regeln.md` |
 | 16 | CR-Texte an ein fremdes Werkzeug gehen erst nach einem Prüf-Durchgang hinaus — Volltext: [`harness/rules/cr-texte-fremdwerkzeug.md`](harness/rules/cr-texte-fremdwerkzeug.md) | `harness/rules/cr-texte-fremdwerkzeug.md` |
 | 17 | Closure-Pflicht: genau ein Closure-Abschnitt, ausgefüllt, mit Lerneintrag — Volltext: [`harness/rules/closure-pflicht.md`](harness/rules/closure-pflicht.md) | `harness/rules/closure-pflicht.md` |
 
