@@ -340,6 +340,15 @@ forbidden_constructs:
 #     dialect: kotlin             #   gleichen (nach Normalisierung); die erste Abweichung
 #     mode: exact                 #   ist ein Befund shape-differs.
 #     expect: sollform/app.build.gradle.kts
+#   - files: ["go.mod"]           # Dialekt gomod: Anweisung = Direktive, ein require-Block ist
+#     dialect: gomod              #   EINE Anweisung (Zeilen darin durch ; getrennt); Zeilen-
+#     mode: allow-statements      #   umbrueche zaehlen, Kommentare nicht.
+#     allow:
+#       - 'module example.com/svc'
+#       - |
+#         require (
+#           github.com/a/b v1.2.3
+#         )
 markers:
   ignore_symbols: []
 # resolution:                     # optional: Import-Symbol -> Schicht je Sprache (ADR-0016/ADR-0023)

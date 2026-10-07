@@ -194,7 +194,7 @@ func TestEvaluateShapesUnused(t *testing.T) {
 	f := ShapeFile{Entry: 0, Path: "x.kts", Lines: 1, Statements: []Statement{{Text: "a()", Line: 1}}}
 	scan := ShapeScan{Literals: [][]string{{"a()", "", "x{y()}"}}, Files: []ShapeFile{f}}
 	fs := EvaluateShapes(Model{Shapes: []Shape{on}}, scan, ".a-check.yml")
-	if len(fs) != 1 || fs[0].Path != ".a-check.yml" || fs[0].Line != 12 || fs[0].Rule != "shape-unused" || fs[0].Msg != `x {\n  y()\n}` {
+	if len(fs) != 1 || fs[0].Path != ".a-check.yml" || fs[0].Line != 12 || fs[0].Rule != "shape-unused" || fs[0].Msg != `literal: x {\n  y()\n}` {
 		t.Fatalf("unused: %+v", fs)
 	}
 	if fs := EvaluateShapes(Model{Shapes: []Shape{off}}, scan, ".a-check.yml"); len(fs) != 0 {
@@ -237,8 +237,55 @@ func TestEvaluateShapesUnusedFormAndFiles(t *testing.T) {
 			unused = append(unused, f.Msg)
 		}
 	}
-	// b() trifft nur in der ZWEITEN Datei und gilt als getroffen; q() ohne CR, r mit (regex)
-	if strings.Join(unused, "|") != `q()|r\(\) (regex)` {
+	// b() trifft nur in der ZWEITEN Datei und gilt als getroffen; q() ohne abschließendes CR,
+	// die Art als Präfix (ADR-0042 Punkt 5)
+	if strings.Join(unused, "|") != `literal: q()|regex: r\\(\\)` {
 		t.Fatalf("unused=%q all=%+v", unused, fs)
+	}
+}
+
+// SPEC-RULE-001 Ausgabe-Regel (ADR-0042 Punkt 5): einzeilig und umkehrbar — eine
+// rohes Zeilenende und ein wörtliches `\n` ergeben verschiedene Meldungen.
+func TestOneLineInjective(t *testing.T) {
+	cases := map[string]string{
+		"a\nb":   `a\nb`,
+		`a\nb`:   `a\\nb`,
+		"a\r\nb": `a\r\nb`,
+		`a\b`:    `a\\b`,
+		"plain": "plain",
+	}
+	seen := map[string]string{}
+	for in, want := range cases {
+		got := oneLine(in)
+		if got != want || strings.ContainsAny(got, "\r\n") {
+			t.Errorf("oneLine(%q) = %q, want %q", in, got, want)
+		}
+		if prev, dup := seen[got]; dup {
+			t.Errorf("%q und %q ergeben dieselbe Meldung %q", prev, in, got)
+		}
+		seen[got] = in
+	}
+}
+
+// shape-unlisted und shape-differs schreiben ihre Anweisungen einzeilig; zwei
+// Anweisungen, die sich nur in rohem Zeilenende vs. wörtlichem `\n` unterscheiden,
+// bleiben zwei Befunde (die Zusammenfassung byte-gleicher Zeilen greift nicht).
+func TestEvaluateShapesMessagesOneLine(t *testing.T) {
+	m := Model{Shapes: []Shape{mustShape(t, ShapeAllowSpec{Pattern: "a()"})}}
+	f := ShapeFile{Entry: 0, Path: "x.kts", Lines: 3, Statements: []Statement{
+		{Text: "s(\"\"\"x\ny\"\"\")", Line: 1}, {Text: `s("""x\ny""")`, Line: 1},
+	}}
+	fs := EvaluateShapes(m, ShapeScan{Literals: [][]string{{"a()"}}, Files: []ShapeFile{f}}, ".a-check.yml")
+	if len(fs) != 2 || fs[0].Msg == fs[1].Msg {
+		t.Fatalf("zwei verschiedene Anweisungen, zwei Befunde erwartet: %+v", fs)
+	}
+	for _, x := range fs {
+		if strings.ContainsAny(x.Msg, "\r\n") {
+			t.Fatalf("Meldung nicht einzeilig: %q", x.Msg)
+		}
+	}
+	d, ok := firstDifference(ShapeFile{Path: "x", Lines: 1, Statements: []Statement{{Text: "a\nb", Line: 1}}}, []Statement{{Text: `a\nb`, Line: 1}})
+	if !ok || d.Msg != `a\nb (erwartet: a\\nb)` {
+		t.Fatalf("shape-differs: %+v", d)
 	}
 }

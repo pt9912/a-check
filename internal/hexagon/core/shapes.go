@@ -228,7 +228,7 @@ func EvaluateShapes(m Model, s ShapeScan, configPath string) []Finding {
 		}
 		for _, st := range f.Statements {
 			if !markAllowed(sh, s.Literals[f.Entry], st.Text, hit[f.Entry]) {
-				fs = append(fs, Finding{Path: f.Path, Line: st.Line, Rule: "shape-unlisted", Msg: st.Text})
+				fs = append(fs, Finding{Path: f.Path, Line: st.Line, Rule: "shape-unlisted", Msg: oneLine(st.Text)})
 			}
 		}
 	}
@@ -260,11 +260,11 @@ func firstDifference(f ShapeFile, want []Statement) (Finding, bool) {
 	for i := 0; i < len(got) || i < len(want); i++ {
 		switch {
 		case i >= len(got):
-			return Finding{Path: f.Path, Line: f.Lines, Rule: "shape-differs", Msg: "fehlt: " + want[i].Text}, true
+			return Finding{Path: f.Path, Line: f.Lines, Rule: "shape-differs", Msg: "fehlt: " + oneLine(want[i].Text)}, true
 		case i >= len(want):
-			return Finding{Path: f.Path, Line: got[i].Line, Rule: "shape-differs", Msg: got[i].Text + " (nicht in der Sollform)"}, true
+			return Finding{Path: f.Path, Line: got[i].Line, Rule: "shape-differs", Msg: oneLine(got[i].Text) + " (nicht in der Sollform)"}, true
 		case got[i].Text != want[i].Text:
-			return Finding{Path: f.Path, Line: got[i].Line, Rule: "shape-differs", Msg: got[i].Text + " (erwartet: " + want[i].Text + ")"}, true
+			return Finding{Path: f.Path, Line: got[i].Line, Rule: "shape-differs", Msg: oneLine(got[i].Text) + " (erwartet: " + oneLine(want[i].Text) + ")"}, true
 		}
 	}
 	return Finding{}, false
@@ -272,8 +272,9 @@ func firstDifference(f ShapeFile, want []Statement) (Finding, bool) {
 
 // unusedFindings reports every allow entry of an `unused: fail` entry that
 // matched in none of its files (Opt-in, no warn level — ADR-0041 point 7). The
-// message is the entry in its declared form on ONE line: trailing line ends
-// drop, every inner one (LF, CRLF, CR) is written as `\n` (SPEC-RULE-001).
+// message is `literal: ` or `regex: ` plus the entry in its declared form,
+// trailing line ends dropped, written by oneLine (SPEC-RULE-001). The prefix
+// keeps the kind unambiguous for every literal text (ADR-0042 point 5).
 func unusedFindings(m Model, hit [][]bool, configPath string) []Finding {
 	var fs []Finding
 	for e, sh := range m.Shapes {
@@ -284,11 +285,11 @@ func unusedFindings(m Model, hit [][]bool, configPath string) []Finding {
 			if hit[e][i] {
 				continue
 			}
-			lf := strings.ReplaceAll(strings.ReplaceAll(a.Pattern, "\r\n", "\n"), "\r", "\n")
-			msg := strings.ReplaceAll(strings.TrimRight(lf, "\n"), "\n", `\n`)
+			kind := "literal: "
 			if a.Regex {
-				msg += " (regex)"
+				kind = "regex: "
 			}
+			msg := kind + oneLine(strings.TrimRight(a.Pattern, "\r\n"))
 			fs = append(fs, Finding{Path: configPath, Line: a.Line, Rule: "shape-unused", Msg: msg})
 		}
 	}
@@ -313,4 +314,13 @@ func dedupeSorted(fs []Finding) []Finding {
 		out = append(out, f)
 	}
 	return out
+}
+
+// oneLine writes a statement or entry for a finding message on ONE line, and
+// reversibly: backslash as `\\`, LF as `\n`, CR as `\r` (SPEC-RULE-001). The
+// mapping is injective — two different texts never share a message —, which the
+// dedupe of byte-identical findings relies on. Only the output is escaped;
+// comparisons use the raw text.
+func oneLine(s string) string {
+	return strings.NewReplacer(`\`, `\\`, "\n", `\n`, "\r", `\r`).Replace(s)
 }

@@ -19,7 +19,7 @@ type dialectFn func(src string) ([]core.Statement, int, error)
 // dialects is the registry of shapes dialects — the single source of the
 // supported set, like backends for languages. A new dialect is one entry.
 func dialects() map[string]dialectFn {
-	return map[string]dialectFn{"kotlin": normalizeKotlin}
+	return map[string]dialectFn{"kotlin": normalizeKotlin, "gomod": normalizeGomod}
 }
 
 // checkShapes validates the shapes block without reading a file: every dialect

@@ -1,6 +1,6 @@
 # Benutzerhandbuch: a-check
 
-**Handbuch-Version:** 1.43 · **Software-Version:** [aktuelles Release](../../version.md#aktuell) · **Stand:** 2026-10-06 ·
+**Handbuch-Version:** 1.44 · **Software-Version:** [aktuelles Release](../../version.md#aktuell) · **Stand:** 2026-10-06 ·
 **Autor:** pt9912 (Maintainer)
 
 ---
@@ -620,10 +620,42 @@ Eintrag meldet a-check jeden `allow`-Eintrag, der in **keiner** Datei des Eintra
 Befund `shape-unused` — verortet an seiner Zeile in der `.a-check.yml`:
 
 ```text
-.a-check.yml:14: shape-unused: apply(plugin = "nie-benutzt")
+.a-check.yml:14: shape-unused: literal: apply(plugin = "nie-benutzt")
 ```
 
 Ohne `unused: fail` bleibt ein solcher Eintrag still; ein Warn-Level gibt es nicht.
+
+**`go.mod` prüfen (`dialect: gomod`).** Für Go-Module gilt dieselbe Positivliste mit eigener,
+aus der Go-Modulreferenz abgeleiteter Lexik: Eine **Anweisung** ist eine Direktive; ein Block
+`require ( … )` ist **eine** Anweisung, seine Zeilen darin durch `;` getrennt. Kommentare
+(`// indirect`), Einrückung und Leerraum **innerhalb** einer Zeile zählen nicht — ein
+**Zeilenumbruch** dagegen schon: In `go.mod` trennt er Anweisungen.
+
+```yaml
+shapes:
+  - files: ["go.mod"]
+    dialect: gomod
+    mode: allow-statements
+    allow:
+      - 'module example.com/svc'
+      - {pattern: 'go 1\.[0-9]+(\.[0-9]+)?', match: regex}
+      - |
+        require (
+          github.com/a/b v1.2.3
+          golang.org/x/c v0.1.0
+        )
+```
+
+Eine weitere `require`-Zeile ändert den Block und meldet `shape-unlisted`, ebenso eine neue
+`replace`-Direktive. Exit-Code 2 statt eines stillen Grüns, wenn die Datei etwas enthält, das die
+Referenz verbietet oder das sich nicht eindeutig lesen lässt: `/* */`, ein `;` außerhalb einer
+Zeichenkette, ein Zeilenende in einer Zeichenkette, ein an Zeichen geklebtes `=>`, eine Klammer
+innerhalb eines Tokens, ein offener oder geschachtelter Block.
+
+**Befundzeilen sind einzeilig.** Jede `shape-*`-Meldung steht auf **einer** Zeile: ein Backslash
+erscheint als `\\`, ein Zeilenende als `\n`, ein Wagenrücklauf als `\r` — eindeutig, zwei
+verschiedene Anweisungen ergeben nie dieselbe Meldung. Verglichen wird immer der Originaltext.
+`shape-unused` nennt die Art des Eintrags als Präfix (`literal: …` bzw. `regex: …`).
 
 **Die ganze Datei festschreiben (`mode: exact`).** Statt einer Liste kann eine Datei auch einer
 **Sollform-Datei** gleichen müssen — Anweisung für Anweisung, in derselben Reihenfolge, nach
@@ -1033,3 +1065,4 @@ und die [Spezifikation](../../spec/spezifikation.md); ein Überblick steht in de
 | 1.41 | 2026-09-19 | §3.7: die Beispielstruktur nennt die Adapter-Rolle in **ihrem** Vokabular — `internal/adapters/{driving,driven}/…` statt `{inbound,outbound}`. `inbound`/`outbound` sind seit [ADR-0036](../plan/adr/0036-port-richtung-inbound-outbound.md) das **Port**-Vokabular; das Dokument führte für dieselbe Rolle zwei. Eine Stelle, mit zwei verschieden gebauten Zählern gemessen; die beiden anderen Dokumente unter `docs/user/` führen das Vokabular nicht. slice-195. |
 | 1.42 | 2026-10-06 | Lastenheft 0.28.0: neuer Optionalblock **`shapes`** und Befund **`shape-unlisted`** — in einer benannten Datei (Leitfall `build.gradle.kts` des Fachkern-Moduls) steht nur, was ausdrücklich erlaubt ist; alles andere ist ein Befund, gleich in welcher Schreibweise. Dialekt `kotlin`, Modus `allow-statements`. §4 um den Abschnitt „Sollform je Datei (`shapes`)" mit Beispiel, Normalisierungs-Regeln, der Regex-Grenze (Zeichenketten-Inhalt als Klasse, nie `.*`) und den Exit-2-Fällen; §3.4-Regeltabelle und Glossar. [ADR-0041](../plan/adr/0041-shapes-sollform-je-datei.md), slice-210. |
 | 1.43 | 2026-10-06 | §4 „Sollform je Datei“ um **`unused: fail`** (Befund `shape-unused`, verortet an der Zeile des Eintrags in der `.a-check.yml`; ohne Opt-in still, kein Warn-Level) und **`mode: exact`** (Datei gleich einer Sollform-Datei nach Normalisierung; erste Abweichung als `shape-differs`, fehlende Sollform-Datei Exit 2) ergänzt; §3.4-Regeltabelle und Glossar. [ADR-0041](../plan/adr/0041-shapes-sollform-je-datei.md), slice-211. |
+| 1.44 | 2026-10-07 | §4 „Sollform je Datei“: neuer Dialekt **`gomod`** (`go.mod`; Anweisung = Direktive, ein `require ( … )`-Block ist eine Anweisung; Zeilenumbrüche sind Grammatik; Exit 2 bei `/* */`, `;`, verklebtem `=>` u. a.) mit Beispiel; **Befundzeilen einzeilig und eindeutig** (`\\`, `\n`, `\r`); `shape-unused` mit Art-Präfix. Lastenheft 0.29.0, [ADR-0042](../plan/adr/0042-shapes-benannte-dialekte-gomod-json.md), slice-213. |

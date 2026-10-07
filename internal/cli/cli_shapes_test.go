@@ -184,7 +184,7 @@ func TestShapesUnusedEndToEnd(t *testing.T) {
 		"      - 'apply(plugin = \"nie-benutzt\")'\n"
 	code, out, errs := runShapes(t, goodGradle, map[string]string{".a-check.yml": c})
 	want := strings.Count(c[:strings.Index(c, "nie-benutzt")], "\n") + 1 // Zeile des Eintrags
-	if code != 1 || !strings.HasPrefix(out, fmt.Sprintf(".a-check.yml:%d: ", want)) || !strings.Contains(out, `shape-unused: apply(plugin = "nie-benutzt")`) || strings.Count(out, "\n") != 1 {
+	if code != 1 || !strings.HasPrefix(out, fmt.Sprintf(".a-check.yml:%d: ", want)) || !strings.Contains(out, `shape-unused: literal: apply(plugin = "nie-benutzt")`) || strings.Count(out, "\n") != 1 {
 		t.Fatalf("code=%d out=%q err=%q", code, out, errs)
 	}
 }
@@ -300,5 +300,55 @@ func TestShapesFilesGlobSymlinkPrefix(t *testing.T) {
 		if code := cli.Run([]string{dir}, &out, &errb); code != 2 || out.String() != "" || strings.Contains(errb.String(), "secretToken") {
 			t.Errorf("%s: code=%d out=%q err=%q", glob, code, out.String(), errb.String())
 		}
+	}
+}
+
+// AC-FA-RULE-012 Boundary (gomod): eine Liste, die module, go und den require-Block
+// mit genau den vorhandenen Abhängigkeiten erlaubt. Leerraum innerhalb von Zeilen,
+// `// indirect` und Einrückung ändern nichts; eine zusätzliche require-Zeile und
+// eine zusätzliche replace-Direktive sind je ein Befund.
+func TestShapesGomodEndToEnd(t *testing.T) {
+	c := cfg + `shapes:
+  - files: ["svc/go.mod"]
+    dialect: gomod
+    mode: allow-statements
+    allow:
+      - 'module example.com/svc'
+      - {pattern: 'go 1\.[0-9]+(\.[0-9]+)?', match: regex}
+      - |
+        require (
+          github.com/a/b v1.2.3
+          golang.org/x/c v0.1.0
+        )
+`
+	good := "module example.com/svc\n\ngo 1.27.0\n\nrequire (\n\tgithub.com/a/b v1.2.3\n\tgolang.org/x/c   v0.1.0 // indirect\n)\n"
+	run := func(gomod string) (int, string, string) {
+		var out, errb bytes.Buffer
+		dir := writeRepo(t, map[string]string{".a-check.yml": c, "svc/go.mod": gomod, "internal/core/c.go": "package core\n"})
+		code := cli.Run([]string{dir}, &out, &errb)
+		return code, out.String(), errb.String()
+	}
+	if code, out, errs := run(good); code != 0 || out != "" {
+		t.Fatalf("gruen: code=%d out=%q err=%q", code, out, errs)
+	}
+	extra := strings.Replace(good, "\tgolang.org/x/c   v0.1.0 // indirect\n", "\tgolang.org/x/c v0.1.0\n\tgithub.com/evil/lib v1.0.0\n", 1)
+	if code, out, _ := run(extra); code != 1 || out != "svc/go.mod:5: shape-unlisted: require (github.com/a/b v1.2.3;golang.org/x/c v0.1.0;github.com/evil/lib v1.0.0)\n" {
+		t.Fatalf("zusaetzliche require-Zeile: code=%d out=%q", code, out)
+	}
+	if code, out, _ := run(good + "replace github.com/a/b => github.com/evil/b v9.9.9\n"); code != 1 || !strings.Contains(out, "svc/go.mod:9: shape-unlisted: replace github.com/a/b => github.com/evil/b v9.9.9\n") {
+		t.Fatalf("zusaetzliche replace-Direktive: code=%d out=%q", code, out)
+	}
+	if code, out, errs := run(good + "/* versteckt */\n"); code != 2 || out != "" || !strings.Contains(errs, "nicht erlaubt") {
+		t.Fatalf("/* */: code=%d out=%q err=%q", code, out, errs)
+	}
+}
+
+// Die Meldung ist einzeilig: ein mehrzeiliger Kotlin-Roh-String erscheint als
+// EINE Befundzeile mit `\n` (SPEC-RULE-001 Ausgabe-Regel).
+func TestShapesMessageOneLineKotlin(t *testing.T) {
+	src := strings.Replace(goodGradle, `val note = "implementation(\"com.evil:lib:1.0\") steht nur im String"`, "val raw = \"\"\"a\nb\\c\"\"\"", 1)
+	code, out, _ := runShapes(t, src, nil)
+	if code != 1 || strings.Count(out, "\n") != 1 || !strings.Contains(out, `shape-unlisted: val raw="""a\nb\\c"""`) {
+		t.Fatalf("code=%d out=%q", code, out)
 	}
 }
