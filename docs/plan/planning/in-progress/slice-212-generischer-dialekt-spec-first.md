@@ -62,13 +62,17 @@ nachweislich a-check-Konsumenten sind) — gefunden mit
 `testdata`, `build`. Gezählt mit `grep` (go.mod) bzw. einer JSON-Ladung (package.json); die
 Originale wurden nur gelesen.
 
-**`go.mod` — 6 Dateien** (d-check ×2, m-trace/apps/api, pg-change-feed, pgwire-recorder,
-claude-ai-harness-init):
+**`go.mod` — 8 Dateien** (a-check ×2, d-check ×2, m-trace/apps/api, pg-change-feed,
+pgwire-recorder, claude-ai-harness-init). *Korrigiert nach Review F-1:* die erste Zählung schloss
+a-check selbst aus (`-not -path ./a-check/*`), obwohl es eine `.a-check.yml` trägt — 6 statt 8
+Dateien, und die einzige einzeilige `require`-Direktive fehlte.
 
 | Merkmal | Befund |
 |---|---|
-| Direktiven auf oberster Ebene | nur `module`, `go`, `require` (je Datei 2× `require`) |
-| Block-Form `verb ( … )` | 8 Blöcke, **eine Abhängigkeit je Zeile** |
+| Direktiven auf oberster Ebene | nur `module`, `go`, `require` |
+| `require` als Block `require ( … )` | 4 Dateien mit je 2 Blöcken, **eine Abhängigkeit je Zeile** |
+| `require` einzeilig | 1 Datei (a-check: `require gopkg.in/yaml.v3 v3.0.1`) |
+| ohne `require` | 3 Dateien (die beiden `tools/archive-wave` und claude-ai-harness-init) |
 | Kommentare | 85 Zeilen-Kommentare, **alle** `// indirect` |
 | `replace`, `exclude`, `retract`, `tool`, `toolchain`, `godebug` | 0 |
 | Backquote-Zeichenketten | 0 |

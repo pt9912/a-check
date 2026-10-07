@@ -19,8 +19,7 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-06-roadmap.md`
 
 Die Sollform je Datei ([AC-FA-RULE-012](../../../spec/lastenheft.md#ac-fa-rule-012)) prüft
 außer Kotlin auch die Build-Manifeste der übrigen Konsumenten-Sprachen — Leitfälle `go.mod` und
-`package.json` aus realen a-check-Konsumenten —, ohne für jede Sprache einen eigenen Lexer im Code
-zu führen. Gespiegelt an den Gegenprobe-Fällen der Anforderung, übertragen auf die neuen Formate:
+`package.json` aus realen a-check-Konsumenten. Gespiegelt an den Gegenprobe-Fällen der Anforderung, übertragen auf die neuen Formate:
 eine zusätzliche Abhängigkeit ist rot, gleich in welcher Schreibweise; Kommentar und Formatierung
 ändern das Urteil nicht; eine nicht zerlegbare Datei ist Exit 2.
 
@@ -85,8 +84,15 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-06-roadmap.md`
 - **Semantik der Manifeste.** Wie bei Kotlin: geprüft wird Text nach Normalisierung, keine
   Versions-Auflösung, kein Lockfile, kein Paketmanager
   ([AC-QA-02](../../../spec/lastenheft.md#ac-qa-02--hermetik-und-ehrliche-heuristik-grenze)).
-- **Änderungen am Kotlin-Dialekt.** Er ist geliefert und reviewt; der generische Dialekt steht
-  neben ihm, er ersetzt ihn nicht.
+- **Änderungen an der Lexik und Zerlegung des Kotlin-Dialekts.** Er ist geliefert und reviewt; die
+  neuen Dialekte stehen neben ihm. Die **Ausgabeform** der Befunde (einzeilige Meldung) betrifft
+  ihn dagegen mit — sie gilt für alle `shape-*`-Befunde.
+
+**Plan-Änderung 2026-10-07 (nach dem Review von slice-212, F-7):** Das Ziel hieß zuerst „ohne für
+jede Sprache einen eigenen Lexer im Code zu führen" und schloss Änderungen am Kotlin-Dialekt
+pauschal aus. Die Messung in slice-212 hat das Gegenteil begründet — **benannte** Dialekte mit je
+eigener, aus der Grammatik abgeleiteter Lexik, und eine einzeilige Meldung für alle Befunde. Ziel
+und Abgrenzung sind darauf nachgezogen.
 - **Ein Platzhalter für „genau eine Zeichenkette"** in Literal-Einträgen — in welle-16 als
   möglicher eigener Umfang benannt, nicht beauftragt.
 
