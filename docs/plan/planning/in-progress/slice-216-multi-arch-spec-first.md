@@ -53,6 +53,32 @@ Build-Strategie und in
 - **Weitere Plattformen, native Binaries, Signaturen.** *Ein anderer Vorgang*: Out-of-Scope der
   Welle (§6 des Welle-Plans).
 
+## 1b. Messung (2026-10-07)
+
+Alle Läufe lokal (Docker 29.8.2, buildx 0.37.1, Builder `docker-container`, Host `linux/amd64`
+**ohne** arm64-Emulation), mit einer Dockerfile-Variante im Scratchpad — das Repo-Dockerfile ist
+unverändert. Die Variante setzt `--platform=$BUILDPLATFORM` auf die `deps`-Stufe und
+`GOOS`/`GOARCH` aus `TARGETOS`/`TARGETARCH` im Kompilier-Schritt; die Laufzeit-Stufe führt keinen
+Befehl aus.
+
+| # | Frage | Ergebnis | Geltungsbereich |
+|---|---|---|---|
+| M1 | Tragen die gepinnten Basis-Images beide Plattformen? | ja — `golang@sha256:0ecdc2a9…` und `distroless/static-debian12@sha256:d093aa3e…` sind **Image-Indizes** mit `linux/amd64` und `linux/arm64/v8` | die zwei Pins im `Dockerfile`; `golangci-lint` nicht geprüft (Gate-Stufe, nicht im Release-Bild) |
+| M2 | Baut der Host beide Plattformen ohne Emulation? | ja — Index mit `linux/amd64` und `linux/arm64`; das extrahierte Binary ist je ein statisches ELF für x86-64 bzw. AArch64; Versions-Label auf beiden gesetzt | dieser Host; der Lauf beweist Cross-Compile, nicht Lauffähigkeit auf arm64 (kein Emulator, kein arm64-Rechner) |
+| M3 | Was legt buildx ungefragt dazu? | zwei Attestierungs-Manifeste (`unknown/unknown`, Provenance) im Index; mit `--provenance=false --sbom=false` enthält der Index **genau** die zwei Plattformen | Builder `docker-container`; der klassische `docker`-Treiber nicht gemessen |
+| M4 | Ist der Bau reproduzierbar? | ohne Vorkehrung **nein**: zweiter Lauf mit Cache gleich, ohne Cache anderer Index-Digest — das Binary ist bitgleich (`e47f8a3a…`), es unterscheiden sich nur die mtime im Laufzeit-Layer und der `created`-Zeitstempel. Mit `SOURCE_DATE_EPOCH` (Commit-Zeit) und `rewrite-timestamp=true` ist der Index-Digest mit und ohne Cache **identisch** (`256d2a69…`) | zwei Läufe je Variante auf diesem Host; ein Bau auf einem anderen Host (Runner) nicht gemessen |
+| M5 | Bleibt der Index-Digest beim Hochladen und Kopieren? | Hochladen per `skopeo copy --all`: Digest wie gebaut. Kopie Registry → Registry per `docker buildx imagetools create` und per `skopeo copy --all`: **derselbe** Index-Digest, beide Plattformen. Der heutige Spiegel-Weg `docker tag` + `docker push` liefert dagegen **ein Einzel-Manifest** (`linux/amd64`) mit neuem Digest — **arm64 ginge verloren** | zwei lokale `registry:2`; GHCR und Docker Hub nicht gemessen (erst am Tag) |
+| M6 | Gibt es arm64-Runner für dieses Repo? | das Repo ist **öffentlich**; GitHub bietet dafür `ubuntu-24.04-arm` an | Aussage der Plattform, nicht durch einen Lauf belegt — der erste Lauf ist Teil von slice-218 |
+| M7 | Läuft der Image-Test auf arm64 unverändert? | `tools/image-test.sh` ist reines Bash und extrahiert das Binary aus dem Bild; er nimmt heute nur `$(IMAGE):dev` und nimmt Host-Arch = Bild-Arch an — für arm64 braucht er eine Bild-Referenz von außen | Lesart des Skripts, kein Lauf |
+
+**Folgerungen für den Vertrag:** (a) der Pin ist der Index-Digest; (b) „getestet =
+veröffentlicht" heißt: **einmal** bauen, das Gebaute (per Digest) auf beiden Plattformen testen,
+dann taggen — ein zweiter Bau gäbe ohne M4-Vorkehrung ein anderes Bild; (c) der Spiegel muss den
+Index kopieren, nicht neu pushen (M5), und seine Gleichheits-Größe kann der **Index-Digest**
+werden — strenger als der Config-Digest aus
+[AC-FA-DIST-002](../../../../spec/lastenheft.md#ac-fa-dist-002), weil er alle Plattformen deckt;
+ob GHCR und Docker Hub ihn ebenfalls erhalten, zeigt erst der Tag (Risiko §6).
+
 ## 2. Definition of Done
 
 - [ ] Messung: Basis-Images als Index mit beiden Plattformen (Digest), Verfügbarkeit der
