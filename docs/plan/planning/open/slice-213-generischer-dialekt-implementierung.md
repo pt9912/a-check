@@ -15,7 +15,7 @@ wechselt nur durch `git mv` (`make slice-mv`).
 §[SPEC-RULE-001](../../../../spec/spezifikation.md#spec-rule-001--regel-auswertung)
 (in slice-212 geschrieben, hier umgesetzt).
 
-**Verantwortlich:** —
+**Verantwortlich:** Claude — gesetzt beim Übergang nach `next/` (Maintainer: „ja", 2026-10-07).
 
 **Autor:** Claude. **Datum:** 2026-10-07.
 
