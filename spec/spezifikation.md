@@ -1,6 +1,6 @@
 # Spezifikation — a-check
 
-**Version:** 0.37.0
+**Version:** 0.38.0
 
 **Status:** Draft
 
@@ -372,9 +372,15 @@ Grammatik, nicht Formatierung.
    auf `null`, `12` bzw. `"a""b"`); ein
    unmaskiertes Steuerzeichen (U+0000–U+001F, also auch ein Zeilenende) in einer Zeichenkette;
    eine nicht geschlossene Zeichenkette.
-2. **Normalisierung.** Leerraum außerhalb von Zeichenketten **entfällt** — die Lexik oben stellt
+2. **Gültigkeit.** Die Datei muss **gültiges JSON** nach RFC 8259 sein — jede Abweichung ist ein
+   Fehler: die Wert-Grammatik (Objekt, Array, Komma und Doppelpunkt an ihrer Stelle, kein
+   abschließendes Komma, auch nicht verschachtelt), Zahlen nach §6 (keine führende Null, kein
+   `+` am Anfang, kein `.5`), genau die Literale `true`, `false`, `null`, Escape-Folgen nach §7
+   (`\"` `\\` `\/` `\b` `\f` `\n` `\r` `\t` `\uXXXX`) und UTF-8 nach §8.1. Die Fehlerliste unter 1
+   und 4 sind Fälle dieser Regel, keine abschließende Aufzählung.
+3. **Normalisierung.** Leerraum außerhalb von Zeichenketten **entfällt** — die Lexik oben stellt
    sicher, dass er nirgends zwei Tokens trennt; Zeichenketten bleiben byte-genau.
-3. **Zerlegung.** Die Wurzel muss ein **Objekt** sein. Eine **Anweisung** ist ein **Mitglied des
+4. **Zerlegung.** Die Wurzel muss ein **Objekt** sein. Eine **Anweisung** ist ein **Mitglied des
    Wurzel-Objekts** — Schlüssel, `:` und der ganze Wert —, getrennt durch die `,` auf Tiefe 1
    (Tiefe über `{`/`[`). `{}` hat null Anweisungen. **Fehler:** eine Wurzel, die kein Objekt ist;
    Inhalt nach der schließenden Klammer der Wurzel; unpaarige oder falsch gepaarte Klammern; ein
@@ -738,6 +744,7 @@ Spec-Straten — welche ADR eine Festlegung schärft, deklariert die ADR aufwär
 | 0.17.0 | 2026-07-05 | `SPEC-CONF-001`: **datei-mengen-bewusste Mehr-Wurzel-Auflösung** (Stufe 2) — `fixed-root` mit ≥ 2 `roots` löst den FQN gegen die real gescannten Dateien auf (endungs-agnostisch, package==directory); Schicht am realen Kandidaten-Pfad, Phantom bleibt extern; der Ladezeit-Guard aus 0.16.0 entfällt. Gleicher FQN real in ≥ 2 Roots + **verschiedene** Schichten → Exit 2 **nach dem Scan** (distinct-layer; `expect`/`actual` same-layer löst sauber). Folgt [`AC-FA-CONF-001`](lastenheft.md#ac-fa-conf-001--konfigurationsdatei-a-checkyml) 0.17.0. |
 | 0.18.0 | 2026-07-06 | `SPEC-CONF-001`/`SPEC-EXTRACT-001`: **deklarations-bewusste Mehr-Wurzel-Auflösung** (Stufe 3) — bei `fixed-root` mit ≥ 2 `roots` gewinnt für ein deklarations-bewusstes Backend (Kotlin) die **reale Top-Level-Deklaration** über den bloßen Datei-Namens-Match (Evidenz-Rangfolge deklariert > Paketverzeichnis > keine); genau ein deklarierender Root ⇒ eindeutig, ≥ 2 deklarierende Roots verschiedener Schichten ⇒ Exit 2, kein Treffer ⇒ extern (fail-open). `SPEC-EXTRACT-001`: **Kotlin** liefert zusätzlich Top-Level-Deklarationen (`fun`/Extension/`val`/`class`/`object`/`interface`/`typealias`), übrige Backends no-op (leeres Set). Folgt [`AC-FA-CONF-001`](lastenheft.md#ac-fa-conf-001--konfigurationsdatei-a-checkyml)/[`AC-FA-EXTRACT-001`](lastenheft.md#ac-fa-extract-001--sprach-backends-für-die-import-extraktion) 0.18.0. |
 | 0.19.0 | 2026-07-09 | Neu `SPEC-CLI-002` (Graph-Renderer-Vertrag: Config-Modell→Mermaid **pur**; stabile interne IDs + escaptes Label je nutzergesteuertem Text; Kante je `edges`, abgesetzte `allow`-Kante; Dangling-/Composition-Root-/Adapter-Sink-Sonderknoten; `classDef` je effektiver Rolle via geteiltem Resolver; `direction`-Subgraphs; implizite Regeln als Legende; Escaping-Vertrag; Determinismus-Ordnung; `tech` v1 deferred). `SPEC-CLI-001` um den no-scan-`--print-graph`-Modus präzisiert (load-time/config-validation-Parität inkl. unbekannter Sprache; Restargument nach dem Pfad → Exit 2; **keine** scanzeitige Fehler-Parität). Folgt [`AC-FA-CLI-002`](lastenheft.md#ac-fa-cli-002--architektur-graph-ausgabe) 0.19.0. |
+| 0.38.0 | 2026-10-07 | `SPEC-EXTRACT-001` (`json`): die Datei muss **gültiges JSON** nach RFC 8259 sein (Wert-Grammatik, Zahlen, Literale, Escape-Folgen, UTF-8); jede Abweichung ist ein Fehler — die bisher aufgezählten Fälle sind Beispiele dieser Regel. Vorher wurden etwa `tru`, `01`, `"\x"` und ein fehlendes Komma angenommen. |
 | 0.37.0 | 2026-10-07 | `SPEC-EXTRACT-001` (`gomod`): die Fehlerliste nennt ausdrücklich ein `(`, `)` oder `()` als Token an jeder anderen als den beschriebenen Stellen und einen leeren Block ohne Kopf — beides war über die Generalklausel schon fail-closed. |
 | 0.36.0 | 2026-10-07 | `SPEC-CONF-001`/`SPEC-EXTRACT-001`/`SPEC-RULE-001` (`shapes`): zwei benannte Dialekte — **`gomod`** (Lexik nach der Go-Modulreferenz: nur `LF` signifikant, `//` nur am Token-Anfang; fail-closed bei `/*`, `;`, verklebtem `=>`, Klammer im Token, Zeilenende in Zeichenkette; Anweisung = Zeile, ein Block `Kopf ( … )` ist eine Anweisung mit `;`-getrennten Einträgen, `()` leerer Block) und **`json`** (Lexik nach RFC 8259, keine Kommentare, Leerraum entfällt, Leerraum zwischen Zahl-/Literal-Zeichen ist ein Fehler; Anweisung = Mitglied des Wurzel-Objekts). `literal`-Einträge in Quellform (`json`-Mitglied wird in `{ }` eingeschlossen). Die Meldung jedes `shape-*`-Befunds ist einzeilig und umkehrbar (`\\`, `\n`, `\r`); verglichen wird unverändert. `shape-unused` nennt die Art des Eintrags als Präfix (`literal: `/`regex: `) statt des Zusatzes ` (regex)`. JSON: Leerraum zwischen zwei Nicht-Strukturzeichen-Tokens ist ein Fehler; `()` nur als leerer Block am Ende einer Zeile auf oberster Ebene. |
 | 0.35.0 | 2026-10-06 | `SPEC-CONF-001`/`SPEC-RULE-001` (`shapes`, Modi `exact` und `unused`): ein `files`-Glob mit Symlink im literalen Präfix ist Exit 2 (die Suche folgte ihm sonst aus der Scan-Wurzel hinaus); die `expect`-Datei muss eine reguläre Datei sein, kein Bestandteil ihres Pfads darf ein Symlink sein (kein Verfolgen aus der Scan-Wurzel), und sie darf nicht dieselbe Datei sein wie eine von den `files` ihres Eintrags getroffene (lexikalisch normalisiert oder als Hardlink) — beides Exit 2, sonst bliebe der Eintrag still grün. `shape-differs` meldet genau einen Befund je Eintrag **und** Datei. Die `shape-unused`-Meldung ist einzeilig festgelegt (Zeilenenden als `\n`, Zusatz ` (regex)`). |
