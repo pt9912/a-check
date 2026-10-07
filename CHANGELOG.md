@@ -6,6 +6,8 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
+## [0.23.0] - 2026-10-07
+
 ### Added
 
 - **Multi-Arch-Image:** das Release-Image gibt es für `linux/amd64` **und** `linux/arm64`
