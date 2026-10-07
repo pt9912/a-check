@@ -1,6 +1,6 @@
 # ADR-0043: Multi-Arch-Image — ein Cross-Compile-Bau, je Plattform nativ getestet, dann getaggt; der Spiegel kopiert den Index
 
-**Status:** Proposed
+**Status:** Accepted
 
 **Datum:** 2026-10-07
 
@@ -132,6 +132,7 @@ Plattform auf einem nativen Runner, und erst danach den Bild-Tag** — im Einzel
 | Datum | Ereignis | Verweis |
 |---|---|---|
 | 2026-10-07 | Proposed | Maintainer-Anweisung; Messung lokal (Cross-Compile, Reproduzierbarkeit, Index-Kopie) |
+| 2026-10-07 | Accepted | Maintainer-Abnahme („ok“) nach unabhängigem Review samt Delta-Review |
 
 Nach `Accepted` wird diese Datei **nicht mehr inhaltlich überschrieben**.
 Spätere Korrekturen oder Schärfungen entstehen als neue ADR mit
