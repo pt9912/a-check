@@ -16,7 +16,7 @@ Re-Evaluierungs-Trigger, [AC-QA-02](../../../../spec/lastenheft.md#ac-qa-02--her
 §[SPEC-EXTRACT-001](../../../../spec/spezifikation.md#spec-extract-001--import-extraktion),
 §[SPEC-RULE-001](../../../../spec/spezifikation.md#spec-rule-001--regel-auswertung).
 
-**Verantwortlich:** —
+**Verantwortlich:** Claude — gesetzt beim Übergang nach `next/` (Maintainer: „machen wir weiter", 2026-10-07).
 
 **Autor:** Claude. **Datum:** 2026-10-07.
 
