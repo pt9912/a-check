@@ -19,7 +19,9 @@ ist **derivativ**: Der Zustand sind die flachen Welle-Dateien; woran gearbeitet 
 `Welle:`-Feld der Slices in `in-progress/`. Ziel, Trigger und Closure-Kriterien stehen in der
 Welle-Datei, nicht hier.
 
-*(Keine offene Welle.)* **Nichts in Arbeit.**
+- [welle-18-multi-arch-image](../welle-18-multi-arch-image.md) — Multi-Arch-Image (`linux/amd64` + `linux/arm64`)
+
+**Nichts in Arbeit.**
 
 **Woran gerade gearbeitet wird, sagt `ls docs/plan/planning/in-progress/` — nicht diese
 Datei.** Wellenlose Arbeit erscheint in der Roadmap nicht; ihr Zustand ist die
