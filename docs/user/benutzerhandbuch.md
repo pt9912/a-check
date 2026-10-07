@@ -55,8 +55,9 @@ docker image inspect --format '{{.Architecture}}' <a-check-image>   # Apple Sili
 **Was geprüft ist:** Jedes Release durchläuft, bevor das Bild seinen Versions-Tag auf GHCR erhält,
 den Image-Test auf einem nativen **Linux**-arm64-Rechner; ein Scan einer festen Test-Fixture muss
 dort dieselbe Ausgabe (stdout, stderr, Exit-Code) liefern wie auf `linux/amd64`. Auf macOS testet
-die Release-Pipeline nicht; `v0.23.0` lief beim Maintainer einmal erfolgreich unter Colima auf
-macOS mit Apple Silicon, und `docker image inspect` zeigte dabei `arm64`. Die Angaben zu Docker Desktop und Colima unten stützen sich auf deren Dokumentation bzw.
+die Release-Pipeline nicht. Der Maintainer hat `v0.23.0` einmal unter Colima auf macOS mit
+Apple Silicon ausgeführt — laut seiner Mitteilung erfolgreich, und `docker image inspect` zeigte
+`arm64`. Die Angaben zu Docker Desktop und Colima unten stützen sich auf deren Dokumentation bzw.
 Quelltext (Stand 2026-10-07).
 
 **Docker Desktop.** Die VM sieht standardmäßig `/Users`, `/Volumes`, `/private`, `/tmp` und
@@ -74,8 +75,7 @@ mehr ändern** — wer Colima einmal mit `--arch x86_64` gestartet hat, bekommt 
 > `-v "$PWD:/src:ro"`. Liegt `$PWD` außerhalb der Mounts — etwa unter `/opt` oder auf einem
 > externen Laufwerk unter `/Volumes` —, legt Docker die fehlende Quelle in der VM als **leeres**
 > Verzeichnis an, und a-check sieht einen leeren Baum. Abhilfe: den Pfad als Mount eintragen —
-> unter `mounts:` in der Colima-Konfiguration (Standardort `~/.colima/default/colima.yaml`;
-> mit `XDG_CONFIG_HOME` oder einem vorhandenen `~/.config/colima` liegt sie dort) oder mit
+> unter `mounts:` in der Colima-Konfiguration (in der Regel `~/.colima/default/colima.yaml`) oder mit
 > `colima start --mount <pfad>`. Beides wirkt erst beim **Start** der VM: eine laufende VM erst mit
 > `colima stop` anhalten. Eine eigene Mount-Liste **ersetzt** den Standard-Mount von `$HOME` —
 > nehmen Sie `$HOME` mit auf, wenn Sie ihn weiter brauchen. a-check liest nur; ein
