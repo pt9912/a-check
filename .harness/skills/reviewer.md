@@ -111,13 +111,13 @@ im selben Kontextfenster (Modul 8). Report-Ablage: ein Report pro Lauf unter
 
 ## Mess-Regeln (umgezogen aus `AGENTS.md` §5, slice-186)
 
-Vier Urteilsregeln über **Belege**: hier steht ihre **Herleitung** und der
+Fünf Urteilsregeln über **Belege**: hier steht ihre **Herleitung** und der
 gemessene Bestand, an dem sie hängen — die **Zusage** selbst steht in
 [`harness/rules/mess-regeln.md`](../../harness/rules/mess-regeln.md) (Zeiger aus
 [`AGENTS.md`](../../AGENTS.md) §5), weil sie den *Schreibenden* bindet und der
 diese Datei nicht liest ([`harness/README.md`](../../harness/README.md) §Guides:
 *„nicht Teil der Implementer-Eingabe"*). Zwei Adressaten, zwei Orte: Wer eine
-Messung schreibt, braucht den Satz; wer sie prüft, die Fälle darunter. Alle vier
+Messung schreibt, braucht den Satz; wer sie prüft, die Fälle darunter. Alle fünf
 sagen selbst „kein Sensor" — sie hängen am Review, und `modul-08` §Welche Rolle
 braucht welche Artefaktklasse weist die **Urteilsgrundlage** der Skill-Datei zu.
 
@@ -223,6 +223,31 @@ braucht welche Artefaktklasse weist die **Urteilsgrundlage** der Skill-Datei zu.
   ausgeschöpft.
   Auslöser: [`BEO-GATE/testbeschreibung-weiter-als-assertion`](../../docs/plan/planning/observations/BEO-GATE/testbeschreibung-weiter-als-assertion/observation.md)
   (slice-210, slice-211, slice-213, slice-214 — 4×).
+- **Eine Zusage über eine Prüfung nennt den Lauf, der sie hält** (`seit slice-219`,
+  Register-Eintrag bei 6×): Wer schreibt, dass etwas geprüft, verglichen oder
+  durchgesetzt wird, nennt den Lauf und seine Grenze am selben Satz; gibt es den
+  Lauf noch nicht, sagt der Satz das.
+  **Drei Ausprägungen, alle belegt:** Der Satz **nennt einen weiteren Gegenstand**
+  als den, den der Prüfer sieht (slice-186: die Roadmap „benennt" den Slice —
+  geprüft wird nur, ob der Ruhe-Marker fehlt; slice-217: „keine weitere
+  Plattform" — ein Array-Feld ließ eine dritte durch; slice-220: „die Ausgabe des
+  Image-Tests" — verglichen wird ein Scan) · die **Grenze steht woanders** als die
+  Zusage (slice-186: im Konfigurations-Kommentar; slice-187: *„analog zur
+  ADR-Immutabilität"*, die `paths`-Liste nennt die Datei nicht) · **den Lauf gibt
+  es nicht** oder nicht so (slice-216: Plattform-Gleichheit ohne Träger,
+  Reproduzierbarkeit durch Gegenmessung widerlegt; slice-217: der Gate-Index nannte
+  eine Pipeline-Verwendung vor der Pipeline; slice-218: „jeder Schritt über make
+  oder die Docker-CLI").
+  **Die Prüf-Frage ist nicht „stimmt der Satz?", sondern „welcher Lauf hält ihn —
+  und was sieht dieser Lauf nicht?"** Findet sich kein Lauf, ist der Satz eine
+  Absicht und sagt es, oder er fällt.
+  **Kein Sensor:** Ob ein Prosa-Satz den Geltungsbereich seines Prüfers trifft, ist
+  ein Urteil über zwei Formulierungen ([`AGENTS.md`](../../AGENTS.md) §3.7); ein
+  Sensor darauf wäre selbst ein Exemplar der Klasse. Fünf der sechs Fälle fand der
+  unabhängige Review, nicht der Schreibende — die Regel verlegt die Frage vor den
+  Review.
+  Auslöser: [`BEO-GATE/zusage-weiter-als-ihre-durchsetzung`](../../docs/plan/planning/observations/BEO-GATE/zusage-weiter-als-ihre-durchsetzung/observation.md)
+  (slice-186, slice-187, slice-216, slice-217, slice-218, slice-220 — 6×).
 
 ## Pflege (Steering-Loop)
 
