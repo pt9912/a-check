@@ -7,7 +7,11 @@ ARG GO_VERSION=1.27.0
 ARG GOLANGCI_LINT_VERSION=v2.13.2
 
 # ---- deps ------------------------------------------------------------------
-FROM golang:${GO_VERSION}@sha256:0ecdc2a9f6156af6451080bfe3d8382a662fcc4e209608c6f919e643453514c1 AS deps
+# Läuft auf der Plattform des Bau-Rechners ($BUILDPLATFORM), auch wenn das Ziel
+# eine andere ist: die build-Stufe kompiliert per GOOS/GOARCH für die
+# Ziel-Plattform, darum braucht der Mehr-Plattform-Bau keinen Emulator
+# (ADR-0043). Bei einem Bau für die eigene Plattform ist beides dieselbe.
+FROM --platform=$BUILDPLATFORM golang:${GO_VERSION}@sha256:0ecdc2a9f6156af6451080bfe3d8382a662fcc4e209608c6f919e643453514c1 AS deps
 WORKDIR /src
 ENV GOFLAGS="-mod=readonly -buildvcs=false" \
     GOMODCACHE=/go/pkg/mod \
@@ -57,9 +61,12 @@ RUN mkdir -p /out && \
     bash tools/coverage-gate.sh /out/coverage-func.txt "$COVERAGE_THRESHOLD"
 
 # ---- build -----------------------------------------------------------------
+# TARGETOS/TARGETARCH setzt BuildKit je Ziel-Plattform; die runtime-Stufe
+# darunter führt keinen Befehl aus und bleibt damit emulator-frei.
 FROM deps AS build
+ARG TARGETOS TARGETARCH
 COPY . .
-RUN CGO_ENABLED=0 go build -trimpath -ldflags="-s -w" -o /out/a-check ./cmd/a-check
+RUN CGO_ENABLED=0 GOOS=$TARGETOS GOARCH=$TARGETARCH go build -trimpath -ldflags="-s -w" -o /out/a-check ./cmd/a-check
 
 # ---- runtime ---------------------------------------------------------------
 FROM gcr.io/distroless/static-debian12:nonroot@sha256:d093aa3e30dbadd3efe1310db061a14da60299baff8450a17fe0ccc514a16639 AS runtime

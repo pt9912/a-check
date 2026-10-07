@@ -20,6 +20,11 @@ IMAGE                 ?= a-check
 # (make ci VERSION=…); lokal der dev-Default.
 VERSION               ?= 0.0.0-dev
 
+# Mehr-Plattform-Bau (ADR-0043): BuildKit-Image des eigenen Builders, digest-gepinnt
+# (AC-QA-03); Ausgabe ist EIN Image-Index als OCI-Archiv. `.build/` ist ignoriert.
+BUILDKIT_IMAGE ?= moby/buildkit:v0.33.1@sha256:cec9f139f45e93c5c69c60f8b07cfad9f43f4ef6b6a6cd917527fea5ff2e3dea
+MULTIARCH_OUT  ?= .build/a-check-multiarch.oci.tar
+
 # Kalibrierungs-Bindung (harness/README.md §Sensors): 90 % seit
 # 2026-06-21 (Bootstrap-Kalibrierung). Override: `make coverage-gate
 # THRESHOLD=…`; Senkung nur per ADR (AGENTS.md §3.6, ADR-0006).
@@ -51,7 +56,8 @@ NO_CACHE_FILTER_COV  := --no-cache-filter coverage
         gate-consistency guard-selftest ci-range-selftest record-gates gates image-test ci preflight \
         trace-check hooks suppression-check symlink-check dcheck-phrase-selftest regelwerk-check commit-scope-check \
         verify verify-risiko-ausgaenge verify-observations verify-review-haken verify-trigger-audit slice-mv image-scan \
-        doc-workflows doc-reviews doc-mentions version-coherence archive-wave-test archive-wave
+        doc-workflows doc-reviews doc-mentions version-coherence archive-wave-test archive-wave \
+        image-multiarch image-test-ref
 
 # Gates seriell: unter `make -j` liefen die Sub-Gates sonst parallel und die
 # Reihenfolge/der Abbruch bei rotem Gate wären nicht garantiert.
@@ -216,6 +222,21 @@ gates: lint test coverage-gate arch-check doc-check doc-targets doc-planning doc
 
 image-test: build ## AC-FA-DIST-001 + nativ==Container-Akzeptanz gegen das gebaute Image.
 	@IMAGE=$(IMAGE) bash tools/image-test.sh
+
+# Ohne `build`: geprüft wird das Bild hinter IMAGE_REF (Tag oder Digest, auch ein
+# Mehr-Plattform-Index), auf der Plattform des Hosts. So testet die Release-Pipeline
+# den einmal gebauten Digest auf jeder Plattform (ADR-0043).
+image-test-ref: ## image-test gegen eine uebergebene Bild-Referenz, ohne Bau, Plattform des Hosts (ADR-0043). IMAGE_REF=<tag|digest>
+	@test -n "$(IMAGE_REF)" || { echo "image-test-ref: IMAGE_REF=<tag|digest> fehlt" >&2; exit 2; }
+	@IMAGE_REF=$(IMAGE_REF) bash tools/image-test.sh
+
+# KEIN Bestandteil von `gates`/`ci`: die Gate-Stufen bleiben einplattformig, sie
+# pruefen Quelltext, nicht das Plattform-Bild (ADR-0043). Das Target baut den
+# Index fuer beide Plattformen und urteilt ueber das ARCHIV (Plattformen, Config,
+# ELF, Versions-Label) — ein Lauf auf arm64 ist es nicht.
+image-multiarch: ## Release-Bild fuer linux/amd64+linux/arm64 als EIN Image-Index (OCI-Archiv) bauen und pruefen (ADR-0043; nicht in gates). Ausgabe MULTIARCH_OUT.
+	@DOCKER=$(DOCKER) VERSION=$(VERSION) BUILDKIT_IMAGE=$(BUILDKIT_IMAGE) OUT=$(MULTIARCH_OUT) \
+	  GO_VERSION=$(GO_VERSION) GOLANGCI_LINT_VERSION=$(GOLANGCI_LINT_VERSION) bash tools/image-multiarch.sh
 
 ci: gates image-test ## CI-äquivalenter Lauf: gates + image-test (AC-FA-DIST-001).
 	@echo "[ci] gates + image-test grün"

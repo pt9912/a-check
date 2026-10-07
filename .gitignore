@@ -7,3 +7,6 @@
 /a-check
 *.test
 *.out
+
+# Ausgabe von `make image-multiarch` (OCI-Archiv des Mehr-Plattform-Index).
+/.build/

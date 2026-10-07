@@ -89,6 +89,8 @@ Lauf-Wahrheit pro Commit liegt in der CI, nicht in diesem Rang-9-Dokument.
 | `make suppression-check` | keine `//nolint`-Direktive in den Go-Quellen — `nolintlint` prüft nur Wohlgeformtheit, nicht Existenz | [`ADR-0005`](../docs/plan/adr/0005-lint-profil.md) ([`AGENTS.md` §3.2](../AGENTS.md#32-suppression-verbot)); slice-049 |
 | `make gates` | aggregiert die inneren Gates und schließt mit `record-gates`. **Welche genau, sagt das [`Makefile`](../Makefile)** — eine Liste hier wäre eine zweite Quelle | — (Aggregat) |
 | `make image-test` | Distributions-Akzeptanz (`--print-mk`/`--print-config`/`--print-graph`/unbekanntes Flag) + Fragment-Parität (committete [`a-check.mk`](../a-check.mk) == `--print-mk`-Output) + nativ==Container-Determinismus eines Scans gegen das gebaute Image | [`AC-FA-DIST-001`](../spec/lastenheft.md#ac-fa-dist-001--distribution-image---print-mk-a-checkmk)/[`AC-QA-02`](../spec/lastenheft.md#ac-qa-02--hermetik-und-ehrliche-heuristik-grenze); slice-006, Fragment-Parität slice-034 |
+| `make image-test-ref` | derselbe Image-Test gegen eine übergebene Bild-Referenz (`IMAGE_REF=` Tag oder Digest, auch ein Mehr-Plattform-Index), **ohne** Bau, auf der Plattform des Hosts — der Weg, auf dem die Release-Pipeline den einmal gebauten Digest je Plattform testet | [`ADR-0043`](../docs/plan/adr/0043-multi-arch-ein-bau-getestet-dann-getaggt.md), [`AC-FA-DIST-001`](../spec/lastenheft.md#ac-fa-dist-001--distribution-image---print-mk-a-checkmk); slice-217 |
+| `make image-multiarch` | baut das Release-Bild für `linux/amd64` und `linux/arm64` als **einen** Image-Index (OCI-Archiv, `.build/`) und urteilt über das **Archiv**: genau zwei Plattformen, Config-Architektur, ELF-Maschinentyp, Versions-Label. **Grenze:** kein Lauf auf arm64; **nicht** in `gates`/`ci` | [`ADR-0043`](../docs/plan/adr/0043-multi-arch-ein-bau-getestet-dann-getaggt.md); slice-217 |
 | `make ci` | CI-äquivalent: `gates` + `image-test` (Engine des Workflows `.github/workflows/ci.yml`) | — (Aggregat) |
 | [`make preflight`](../Makefile) | **Lokaler Pre-Flight**: `ci` **plus** die drei Range-Schritte des `ci`-Workflows über `origin/main..HEAD`. **Grenze:** nur der lokale `git`-Stand; eine **leere** Range wird als WARNUNG gemeldet, weil sie nichts prüft | [`AC-QA-02`](../spec/lastenheft.md#ac-qa-02--hermetik-und-ehrliche-heuristik-grenze); slice-198 |
 | `make trace-check` | Traceability via Modul `commits`: jede Commit-Message nennt `AC-*`/`ADR-*`/`MR-*`/`slice-NNN` (`MSGFILE=` Hook, `RANGE=` CI) | [`ADR-0021`](../docs/plan/adr/0021-commits-modul-trace-check.md); Harness-Prozess ([`AGENTS.md` §5](../AGENTS.md#5-dokumentations-regeln)); slice-006, Modul seit slice-030 |
@@ -121,8 +123,9 @@ der Zeile selbst.
 
 **Nicht hier, obwohl sie in keinem Aggregat hängen:** `make doc-tracked`,
 `make doc-commits`, `make commit-scope-check`, `make archive-wave-test`,
-`make preflight` und `make image-scan` stehen in der Tabelle **oben** — sie **urteilen** über einen
-Zustand (Getrackt-Status, Commit-Traceability, Commit-Scope, Testlage, CVE-Lage)
+`make preflight`, `make image-scan`, `make image-multiarch` und `make image-test-ref` stehen in der
+Tabelle **oben** — sie **urteilen** über einen Zustand (Getrackt-Status, Commit-Traceability,
+Commit-Scope, Testlage, CVE-Lage, Plattform-Bilder)
 und sind damit Gates, nur nicht aggregierte. Das Kriterium ist **urteilen** gegen
 *bewegen · messen · sagen*, nicht die Aggregat-Zugehörigkeit.
 

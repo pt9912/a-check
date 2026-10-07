@@ -15,11 +15,15 @@
 #
 # „Nativ" in einem Docker-only-Repo: das statische Binary wird aus dem Image
 # extrahiert (docker cp) und direkt ausgeführt — kein Host-Go (AGENTS §3.1).
-# Annahme: Host-Arch = Image-Arch (amd64); auf abweichenden Hosts bricht der
-# Nativ-Lauf laut ab.
+# Geprüft wird die Plattform des Hosts: das extrahierte Binary muss ein ELF für
+# die Host-Architektur sein (x86_64 oder aarch64), sonst bricht der Test vor dem
+# Nativ-Lauf mit einer Meldung ab.
+#
+# Bild: IMAGE_REF (Tag oder Digest, auch ein Mehr-Plattform-Index — Docker zieht
+# die Host-Plattform), sonst das lokal gebaute ${IMAGE}:dev (ADR-0043).
 set -euo pipefail
 
-IMG="${IMAGE:-a-check}:dev"
+IMG="${IMAGE_REF:-${IMAGE:-a-check}:dev}"
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"   # Repo-Wurzel (cwd-unabhängig)
 WORK="$(mktemp -d)"
 trap 'rm -rf "$WORK"' EXIT
@@ -31,6 +35,16 @@ cid="$(docker create "$IMG")"
 docker cp -q "$cid":/a-check "$WORK/a-check"
 docker rm "$cid" >/dev/null
 chmod +x "$WORK/a-check"
+
+# Plattform: ELF e_machine des Binarys gegen die Host-Architektur.
+machine="$(od -An -tu2 -j18 -N2 "$WORK/a-check" | tr -d ' ')"
+case "$(uname -m)" in
+  x86_64)        want=62 ;;
+  aarch64|arm64) want=183 ;;
+  *) fail "Host-Architektur $(uname -m) wird nicht getestet (linux/amd64, linux/arm64)" ;;
+esac
+[ "$machine" = "$want" ] || fail "Binary aus $IMG hat ELF e_machine $machine, Host $(uname -m) erwartet $want"
+echo "image-test: Bild $IMG — Binary passt zur Host-Plattform $(uname -m)"
 
 # --- (1) Happy: --print-mk nativ vs. Container ------------------------------
 mk_n=0; "$WORK/a-check" --print-mk >"$WORK/mk.n.out" 2>"$WORK/mk.n.err" || mk_n=$?
