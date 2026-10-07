@@ -97,3 +97,61 @@ der Satz direkt neben dem im Slice-Plan zitierten Quelltext widerlegt; sie steht
 **Übergabe:** Findings gehen an den Implementer; da F-1 auch slice-220 §1 *Ziel* trägt, ist es
 zugleich ein Plan-Defekt (Rückkante Review → Plan). Die Finding-Klassen gehen in die
 Slice-Closure §7. Dieser Report ersetzt keine Verifikation (DoD, `make gates`/`make verify`).
+
+---
+
+## Delta-Review
+
+**Gegenstand:** Commit-Range `28dbe90..29db5fe` — `d49debf` (Plan-Änderung nach Review), `9958530`
+(Maintainer-Probe im Plan), `29db5fe` (Handbuch-, Historie- und CHANGELOG-Fix).
+**Skill:** `.harness/skills/reviewer.md` @ `e6917e3` · <!-- d-check:ignore -->
+**Modell:** claude-opus-5-5 · **Datum:** 2026-10-07 · derselbe unabhängige Lauf wie oben.
+
+**Reihenfolge Plan vor Code** (`AGENTS.md` §6 Schritt 4): Die Plan-Änderung (§1 Ziel, Quellen)
+steht in `d49debf`/`9958530` vor dem Fix `29db5fe` — eingehalten.
+
+### Abgleich der Findings
+
+| Finding | Stand | Prüfung |
+|---|---|---|
+| F-1 HIGH | behoben | Docker Desktop: „scheitert der Mount mit einem Fehler („Mounts denied")" deckt sich mit der Settings-Doku; das leere Verzeichnis steht nur noch unter Colima und ist dort mit der *Bind mounts*-Doku begründet. Ziel §1, CHANGELOG und Historie-Zeile 1.47 nachgezogen. |
+| F-2 MEDIUM | behoben | „wirkt erst beim **Start** der VM: eine laufende VM erst mit `colima stop` anhalten" und „ersetzt den Standard-Mount von `$HOME`" entsprechen `cmd/start.go` („already running, ignoring") und `environment/vm/lima/yaml.go`. |
+| F-3 LOW | behoben, mit Rest D-1 | Quellenliste im Plan um Settings-Fortsetzung, *Bind mounts* und Colima-Quelltext ergänzt; der Handbuchsatz nennt jetzt „Dokumentation bzw. Quelltext (Stand 2026-10-07)". |
+| F-4 LOW | behoben | „bevor das Bild seinen Versions-Tag auf GHCR erhält" trifft `release.yml` (Git-Tag startet, Bild-Tag erst in `publish`); „ein Scan einer festen Test-Fixture … stdout, stderr, Exit-Code" trifft `tools/image-test.sh` Prüfung (4) (Verstoß-Fixture, `SCAN_OUT_DIR`) und den Hash in `release.yml`. |
+| F-5 LOW | behoben | „standardmäßig" plus „Ausnahme: eine Colima-VM, die mit `--arch x86_64` angelegt wurde" an der Aussage selbst. |
+| F-6 INFO | behoben | Querverweis „(siehe *Hinweis zum Image* oben)". |
+
+### Neue Findings im Delta
+
+| ID | Kategorie | Befund | Quelle | Pfad | Verifizierbar | Klasse |
+|---|---|---|---|---|---|---|
+| D-1 | LOW | „mit `XDG_CONFIG_HOME` oder einem vorhandenen `~/.config/colima` liegt sie dort" ist zu weit: Colima nimmt `~/.colima`, **sobald es existiert**, auch bei gesetztem `XDG_CONFIG_HOME` (dann nur mit Warnung, `config/files.go`); der XDG-Ort greift erst, wenn `~/.colima` fehlt. Die Formulierung in F-3 dieses Reports („ohne `XDG_CONFIG_HOME` bzw. ohne vorhandenes `~/.config/colima`") war ebenso unpräzise und ist die wahrscheinliche Vorlage; der Plan-Satz („sofern weder … greift") ist mit „greift" haltbar. | `harness/rules/mess-regeln.md` Regel 1; Fremdquelle Colima `config/files.go` | `docs/user/benutzerhandbuch.md:78-79` | nein — Gegenprobe ist die Colima-Quelle | Bedienanweisung für ein fremdes Werkzeug ohne Vorbedingung und Nebenwirkung |
+| D-2 | LOW | Die Maintainer-Probe („`v0.23.0` lief beim Maintainer einmal erfolgreich unter Colima …, `docker image inspect` zeigte `arm64`") steht im Handbuch als geprüfter Sachverhalt; ihr einziger Beleg ist die im Plan wiedergegebene Mitteilung. Was „erfolgreich" umfasst (welcher Aufruf, Pfad unter `$HOME` oder außerhalb), sagt keiner der beiden Texte. Die Einordnung als einmalige Probe außerhalb der Release-Pipeline ist korrekt und sichtbar. | `harness/rules/mess-regeln.md` Regel 1 (Geltungsbereich eines Belegs) | `docs/user/benutzerhandbuch.md:58-59`; slice-220 §1 *Maintainer-Probe* | nein | Beleg aus Mitteilung ohne benannten Geltungsbereich |
+| D-3 | INFO | Die Plan-Änderung trägt das Datum und den Anlass („Review F-1/F-2/F-3, vor dem Fix") im Plan-Text. In einem Slice-Plan, der mit dem Slice einfriert, ist das Herkunft der Änderung, keine Zustandszelle — kein Verstoß gegen `AGENTS.md` §3.7, nur zur Kenntnis. | `AGENTS.md` §3.7 | slice-220 §1 | nein | — |
+
+### Negativbefunde (Delta)
+
+| Bereich | Ergebnis |
+|---|---|
+| Handbuch §1 macOS-Abschnitt, alle neuen Werkzeug-Aussagen außer D-1 | gegen die oben gelesenen Quellen geprüft, ohne Befund |
+| CHANGELOG `[Unreleased]` | geprüft: Docker Desktop Mount-Fehler, Colima leerer Baum, „auf macOS nur eine einmalige Probe unter Colima" — konsistent mit dem Handbuch, ohne Befund |
+| Historie-Zeile 1.47 | geprüft: nachgezogen, Version unverändert 1.47 (Nachbesserung vor Release) — ohne Befund |
+| Plan-Abgrenzung §1 Out-of-Scope | geprüft: „Ein Test auf macOS" bleibt ausgeschlossen; die Maintainer-Probe ist als Mitteilung, nicht als Projekt-Test geführt — ohne Befund |
+| Hard Rules §3.1–§3.6, Commit-Traceability | geprüft: alle drei Commits nennen `slice-220`, `(planning)`-Commits berühren nur `docs/plan/planning/` — ohne Befund |
+
+### Summary (Delta)
+
+| Kategorie | Anzahl |
+|---|---|
+| HIGH | 0 |
+| MEDIUM | 0 |
+| LOW | 2 |
+| INFO | 1 |
+
+**Finding-Klassen des Delta-Laufs:** Bedienanweisung für ein fremdes Werkzeug ohne Vorbedingung und Nebenwirkung · Beleg aus Mitteilung ohne benannten Geltungsbereich
+
+### Verdikt (Delta)
+
+**Merge-blockierend:** nein. F-1 bis F-6 sind behoben; die zwei neuen LOW (D-1, D-2) liegen beim
+Implementer zur Annahme oder Begründung. Die Verifikation (DoD, `make gates`/`make verify`) bleibt
+beim Verifier.
