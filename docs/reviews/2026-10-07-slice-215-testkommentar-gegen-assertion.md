@@ -120,3 +120,67 @@ und Zählstellen sind korrekt nachgezogen.
 Plan §3; ob er hier mitgeht oder einen eigenen Vorgang bekommt, ist eine Plan-Frage. F-9 ist
 eine Lesart-Frage an den Architect. Die Finding-Klassen gehen in die Slice-Closure §7. Dieser
 Report ersetzt keine Verifikation; DoD-Konformität prüft der Verifier separat (Modul 11).
+
+---
+
+## Delta-Review (Nachlauf 058d585..e6917e3)
+
+**Gegenstand:** `058d585` (Plan-Änderung: F-7 in den Umfang, F-8-Begründung auf §6 Schritt 7)
+und `e6917e3` (Fixes). Gleicher Kontext wie der Erst-Lauf (frischer Subagent ohne `fork`, nicht
+Autor), gleicher Skill-Stand plus Delta.
+
+**Sonden:** `make doc-check` Exit 0 („700 Datei(en) geprüft, 0 Befund(e)“; Links und Anker, nicht
+Prosa); `make verify-observations` Exit 0 (Deckung, nicht Zielort). `grep Testname` über Regel,
+Skill und Register-Eintrag: 0 Treffer. `grep AGENTS` in den drei Geschwister-`state.md`: nur
+noch §3.7- und §4-Verweise im Fließtext, keiner als Zielort.
+
+### Stand der Erst-Findings
+
+| ID | Stand | Beleg |
+|---|---|---|
+| F-1 | erledigt | Skill nennt jetzt slice-213 „ein Fall fehlte“ und slice-214 „drei Fälle fehlten“ — deckt sich mit Evidence slice-213 und Report slice-213 F-2 (Backtick) bzw. slice-214 F-2 (M1–M3) und D-3 (V1, V5, V2). |
+| F-2 | erledigt | „Allquantor reicht weiter als die aufgezählten Fälle“ passt auf beide Belege und deckt sich mit dem Regel-Wortlaut („Menge, die der Test aufzählt“). |
+| F-3 | erledigt | Kein Pseudo-Zitat mehr; die Umschreibung („Zeichenkette einer erlaubten Anweisung … die Fixture trug das Muster nur in einer unerlaubten“) deckt sich mit Report slice-210 F-6. Die Kommentar-Hälfte des Original-Kommentars (`fe2f8b2`) nennt sie nicht mehr — siehe D-2. |
+| F-4 | erledigt | „oder Testname“ in Regel und Skill gestrichen; Reichweite = Plan §2 = Belege. |
+| F-5 | erledigt | „Für jede Eigenschaft, die ein Testkommentar nennt, steht eine Assertion, die sie prüft“ — Subjekt eindeutig, in Regel und Skill gleich. |
+| F-6 | erledigt | Skill: „Alle vier Belege liegen vor dieser Regel; die Prosa-Form gilt darum nicht als ausgeschöpft“ — Zustand statt Erzählung, kein deiktisches „jetzt“. `state.md`: „alle vor der Regel“. |
+| F-7 | erledigt | Plan-Änderung `058d585` vor dem Fix nimmt die drei Stand-Zeilen in den Umfang. Zielorte jetzt `harness/rules/mess-regeln.md` Regel 1/2/3; Nummerierung gegen die Datei geprüft (1 Geltungsbereich `seit slice-179`, 2 Mutations-Probe `seit slice-181`, 3 zweiter Zähler `seit slice-193`); Anker stehen dort — Paarung (a) erfüllt. Links Tiefe 6, `doc-check` grün. |
+| F-8 | erledigt | Plan begründet jetzt mit `AGENTS.md` §6 Schritt 7 („öffentlicher Vertrag“) statt mit der Präzedenz. Die Mehrdeutigkeit von „eine Regel“ in §6 Schritt 7 selbst bleibt — nicht Gegenstand dieses Slice. |
+| F-9 | erledigt | Fünftbeleg-Satz entfernt; `state.md` legt keine Baseline-Lesart mehr fest. |
+
+### Neue Findings
+
+| ID | Kategorie | Befund | Quelle | Pfad | Verifizierbar | Klasse |
+|---|---|---|---|---|---|---|
+| D-1 | INFO | Der DoD-Punkt in Plan §2 zitiert den Regel-Wortlaut noch in der alten Form („jede Eigenschaft, die ein Testkommentar nennt, belegt eine Assertion“); die gelieferte Regel lautet seit F-5 anders. Ob der DoD-Punkt damit erfüllt ist, ist eine Frage des Verifiers, nicht dieses Reviews. | Modul 11 (Abgrenzung Review/Verifikation) | `docs/plan/planning/in-progress/slice-215-testkommentar-gegen-assertion.md:57-59` | nein | Plan-Wortlaut nach Fix nicht nachgezogen |
+| D-2 | INFO | Die Umschreibung zu slice-210 nennt nur die Zeichenketten-Hälfte; der Original-Kommentar sagte die Kommentar-Hälfte ebenfalls zu, und Report slice-210 F-6 fand auch dort keine Fixture. Die Aussage ist nicht falsch, nur enger als der Beleg. | Mess-Regel 1 (Geltungsbereich) | `.harness/skills/reviewer.md:207-209` | nein | Paraphrase enger als ihr Beleg |
+
+### Negativbefunde (Delta)
+
+| Bereich | Ergebnis |
+|---|---|
+| Commit-Scope und Traceability | geprüft, ohne Befund. `058d585` `(planning)` berührt nur die Slice-Datei; beide Commits nennen `slice-215`. |
+| Plan-Änderung vor dem Fix | geprüft, ohne Befund. `058d585` liegt vor `e6917e3` und nennt den zusätzlichen Umfang (drei `Stand:`-Zeilen, übriger Text bleibt); der Fix hält sich daran (je eine Zeile). |
+| `observation.md` der vier Einträge | geprüft, ohne Befund. Unverändert. |
+| §3.7 in den geänderten Sätzen | geprüft, ohne Befund. Keine Chronik, kein Konjunktiv über eine verworfene Alternative. |
+| Hard Rules §3.1–§3.6 | geprüft, ohne Befund. Kein Code, kein Move, keine ADR, kein Gate. |
+
+### Summary (Delta)
+
+| Kategorie | Anzahl |
+|---|---|
+| HIGH | 0 |
+| MEDIUM | 0 |
+| LOW | 0 |
+| INFO | 2 |
+
+Erst-Findings: 9 von 9 erledigt.
+
+**Finding-Klassen (Delta):** Plan-Wortlaut nach Fix nicht nachgezogen · Paraphrase enger als ihr
+Beleg
+
+### Verdikt (Delta)
+
+**Merge-blockierend:** nein. F-1 bis F-9 sind erledigt und gegen Belege, Regel-Datei und Sensoren
+geprüft. D-1 gehört an den Verifier, D-2 ist ein Hinweis ohne erwartete Aktion. Dieser Report
+ersetzt keine Verifikation.
