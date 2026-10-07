@@ -6,6 +6,18 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
+### Changed
+
+- **Multi-Arch-Image (Vertrag, noch nicht implementiert):** das Release-Image soll es für
+  `linux/amd64` **und** `linux/arm64` geben (macOS mit Apple Silicon ohne Emulation), unter
+  **einem** Pin — dem Digest des Image-Index; veröffentlicht wird das auf jeder Plattform getestete
+  Bild. Der Docker-Hub-Spiegel kopiert den Index unverändert, die Gleichheits-Prüfung vergleicht den
+  Index-Digest statt des Config-Digests, und der GHCR-Digest löst damit auch auf Docker Hub auf.
+  Lastenheft 0.30.0
+  ([AC-FA-DIST-001](spec/lastenheft.md#ac-fa-dist-001--distribution-image---print-mk-a-checkmk),
+  [AC-FA-DIST-002](spec/lastenheft.md#ac-fa-dist-002)), Spezifikation 0.39.0,
+  [ADR-0043](docs/plan/adr/0043-multi-arch-ein-bau-getestet-dann-getaggt.md).
+
 ## [0.22.0] - 2026-10-07
 
 ### Added

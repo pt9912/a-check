@@ -701,7 +701,7 @@ digest-gepinnte `A_CHECK_IMAGE`-Variable — kein zweiter Digest, keine Skript-K
 - **Boundary:** Given `a-check --print-config`, when es läuft, then ein dekodierbares `.a-check.yml`-Gerüst, **schreibt nichts** (read-only).
 - **Negative:** Given `--print-mk` mit einem zusätzlichen unbekannten Flag, when aufgerufen, then Exit-Code 2.
 - **Boundary (Plattformen):** Given der veröffentlichte Index-Digest, when ihn ein Host mit `linux/amd64` und einer mit `linux/arm64` ziehen und denselben Scan ausführen, then läuft auf beiden dasselbe Release mit byte-identischer Ausgabe und gleichem Exit-Code; der Index nennt genau diese zwei Plattformen.
-- **Negative (Plattform-Test):** Given der Image-Test schlägt auf einer der zwei Plattformen fehl, when die Release-Pipeline läuft, then wird **kein** Versions-Tag gesetzt und das Release ist fehlgeschlagen — ein auf einer Plattform ungetestetes Bild trägt keine Version.
+- **Negative (Plattform-Test):** Given der Image-Test schlägt auf einer der zwei Plattformen fehl, when die Release-Pipeline läuft, then erhält das Bild **keinen** Versions-Tag `vX.Y.Z` in der Registry, und das Release ist fehlgeschlagen — ein auf einer Plattform ungetestetes Bild trägt keine Version.
 
 **Out-of-Scope:** Nicht-Docker-Distribution (Binary-Releases, auch native macOS- oder
 Windows-Binaries); weitere Plattformen (`linux/arm/v7`, `s390x`, `ppc64le`); Signaturen und
@@ -741,7 +741,7 @@ Zusage, der Beschreibungstext ist Präsentation.
 - **Negative:** Given ein Spiegeln, das fehlschlägt oder dessen Index-Digest abweicht, when die Pipeline läuft, then **Exit ≠ 0** und das Release gilt als fehlgeschlagen; die Meldung nennt den bereits veröffentlichten GHCR-Digest, damit der gültige Teilstand sichtbar bleibt.
 - **Negative (Darstellung):** Given der Metadaten-Upload wird abgelehnt (Token-Scope zu eng), when die Pipeline läuft, then bleibt das Release **grün**, und der Fehlschlag wird als Warnung mit wahrscheinlicher Ursache gemeldet — nicht verschwiegen.
 
-**Out-of-Scope:** Eine Docker-Hub-Kategorie per Automatik (die Upload-Action hat dafür keinen Input; sie bleibt eine Entscheidung im Web-UI und steht als Text im `packaging/`-README); ein Spiegel auf weitere Registries; Pin-Stellen dieses Repos auf den Hub-Digest umzustellen.
+**Out-of-Scope:** Eine Docker-Hub-Kategorie per Automatik (die Upload-Action hat dafür keinen Input; sie bleibt eine Entscheidung im Web-UI und steht als Text im `packaging/`-README); ein Spiegel auf weitere Registries.
 
 ## 4. Nichtfunktionale Anforderungen
 
