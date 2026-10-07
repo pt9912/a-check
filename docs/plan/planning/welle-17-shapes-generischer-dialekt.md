@@ -59,7 +59,7 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
 
 | Slice | Titel | Bezug |
 |---|---|---|
-| [slice-212](next/slice-212-generischer-dialekt-spec-first.md) | Spec-first: Messung an realen Manifesten, Lastenheft-CR, Folge-ADR, Spezifikation — zur Abnahme | [AC-FA-RULE-012](../../../spec/lastenheft.md#ac-fa-rule-012), [ADR-0041](../adr/0041-shapes-sollform-je-datei.md) Punkt 10 |
+| [slice-212](in-progress/slice-212-generischer-dialekt-spec-first.md) | Spec-first: Messung an realen Manifesten, Lastenheft-CR, Folge-ADR, Spezifikation — zur Abnahme | [AC-FA-RULE-012](../../../spec/lastenheft.md#ac-fa-rule-012), [ADR-0041](../adr/0041-shapes-sollform-je-datei.md) Punkt 10 |
 | [slice-213](open/slice-213-generischer-dialekt-implementierung.md) | Implementierung des abgenommenen Dialekt-Vertrags | Vertrag aus slice-212 |
 
 **Reihenfolge ist Abhängigkeit:** slice-213 startet erst, wenn slice-212 in `done/` liegt und
