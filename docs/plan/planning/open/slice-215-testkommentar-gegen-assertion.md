@@ -6,13 +6,13 @@ wechselt nur durch `git mv` (`make slice-mv`).
 
 **Welle:** ohne Welle — die Closure-Bedingung wäre die eigene DoD.
 
-**Bezug:** 3. Auflage von
+**Bezug:** 3. und 4. Auflage von
 [`BEO-GATE/testbeschreibung-weiter-als-assertion`](../observations/BEO-GATE/testbeschreibung-weiter-als-assertion/observation.md)
-(slice-210, slice-211, slice-213) — Ausgang *geplant* mit diesem Slice.
+(slice-210, slice-211, slice-213, slice-214) — Ausgang *geplant* mit diesem Slice.
 
 **Berührte Spec-Stellen:** — · Der Slice berührt kein Spec-Stratum.
 
-**Verantwortlich:** —
+**Verantwortlich:** Claude — gesetzt beim Übergang nach `next/` (Maintainer: „machen wir weiter“, 2026-10-07).
 
 **Autor:** Claude. **Datum:** 2026-10-07.
 
@@ -33,7 +33,7 @@ Reviewer-Skill.
 - **Ein Sensor.** *Bestand bleibt bewusst stehen*: ob ein Kommentar mehr behauptet als seine
   Assertion prüft, ist ein Urteil über den Text (AGENTS §3.7) — dieselbe Grenze wie bei den drei
   bestehenden Mess-Regeln.
-- **Nachzug alter Testkommentare.** *Ein anderer Vorgang*: die drei Fälle sind behoben; ein
+- **Nachzug alter Testkommentare.** *Ein anderer Vorgang*: die vier Fälle sind behoben; ein
   Durchgang über den ganzen Testbestand wäre eine Kampagne, kein Regel-Slice.
 
 ## 2. Definition of Done
@@ -41,7 +41,7 @@ Reviewer-Skill.
 - [ ] Vierte Mess-Regel in `harness/rules/mess-regeln.md` (Wortlaut: jede Eigenschaft, die ein
       Testkommentar nennt, belegt eine Assertion; eine Mutation, die genau diese Eigenschaft
       bricht, macht den Test rot) mit Herkunfts-Anker `seit slice-215`.
-- [ ] Herleitung mit den drei Fällen im Reviewer-Skill §Mess-Regeln; Register-Stand *verkörpert*.
+- [ ] Herleitung mit den vier Fällen im Reviewer-Skill §Mess-Regeln; Register-Stand *verkörpert*.
 - [ ] Unabhängiger Review, Report unter [`docs/reviews/`](../../../reviews/README.md).
 - [ ] Closure-Notiz mit Steering-Loop-Lerneintrag.
 - [ ] Beobachtungs-Register fortgeschrieben (oder „keine Beobachtung" notiert).
@@ -81,6 +81,9 @@ DoD vollständig, `make gates` und `make verify` grün, Closure-Notiz mit Lernei
 **Vorgelagert — Sub-Area-Wahl prüfen:** `HARNESS` (Achsen 1, 2, 3 ✓).
 
 **Vorgelagert — offene Beobachtungen sichten** (2026-10-07):
-`BEO-GATE/testbeschreibung-weiter-als-assertion` (3×) ist dieser Slice selbst.
+`BEO-GATE/testbeschreibung-weiter-als-assertion` (4×) ist dieser Slice selbst. Der vierte
+Beleg kam vor der Verkörperung — die Prosa-Form ist damit nicht ausgeschöpft, sondern noch nicht
+geschrieben; ein Sensor bleibt ausgeschlossen (§1). Weitere Treffer in `HARNESS`: keine offenen
+Einträge, die dieser Slice berührt.
 
 **Modus-Begründungsblock:** alle berührten Sub-Areas GF.
