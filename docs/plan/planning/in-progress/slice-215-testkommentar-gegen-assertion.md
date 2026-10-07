@@ -33,8 +33,16 @@ Reviewer-Skill.
 §Mess-Regeln im Reviewer-Skill zählt „zwei“ und verortet die Zusage in `AGENTS.md` §5, obwohl sie
 seit slice-201 in der Regel-Datei steht. Beides zieht dieser Slice mit nach — eine vierte Regel,
 neben der „drei“ stehen bleibt, wäre die Aufzählungs-Drift, die die Regel selbst meidet. Ein
-CHANGELOG-Eintrag entfällt wie bei den drei Vorgänger-Regeln: Mess-Regeln binden den
-Harness-Lauf, nicht den Konsumenten des Werkzeugs.
+CHANGELOG-Eintrag entfällt: [`AGENTS.md`](../../../../AGENTS.md) §6 Schritt 7 nennt den
+**öffentlichen Vertrag**; Mess-Regeln binden den Harness-Lauf, nicht den Konsumenten des
+Werkzeugs.
+
+**Plan-Änderung 2026-10-07 (Review F-7, vor dem Fix):** Dieselbe alte Verortung steht in den
+`Stand:`-Zeilen der drei Register-Einträge der Regeln 1–3
+(`BEO-PLAN/review-geltungsbereich-zu-eng`, `BEO-GATE/probe-liefert-den-gegenstand-mit`,
+`BEO-PLAN/kandidaten-klassifikation-groeber-als-der-kandidat`) — ihr Zielort `AGENTS.md` §5 trägt
+die Herkunfts-Anker nicht mehr. Die drei `Stand:`-Zeilen ziehen auf die Regel-Datei; der übrige
+Text der Einträge bleibt.
 
 **Ausdrücklich NICHT in diesem Slice** — je Punkt mit Begründung:
 
