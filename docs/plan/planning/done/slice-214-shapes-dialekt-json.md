@@ -4,7 +4,7 @@
 Datei liegt — eines von `open/`, `next/`, `in-progress/`, `done/`. Er
 wechselt nur durch `git mv` (`make slice-mv`).
 
-**Welle:** welle-17 — [Welle-Plan](../welle-17-shapes-generischer-dialekt.md).
+**Welle:** welle-17 — [Welle-Plan](welle-17-shapes-generischer-dialekt.md).
 
 **Bezug:** [AC-FA-RULE-012](../../../../spec/lastenheft.md#ac-fa-rule-012) (Lastenheft 0.29.0),
 [ADR-0042](../../adr/0042-shapes-benannte-dialekte-gomod-json.md).
