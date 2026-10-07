@@ -18,7 +18,7 @@ wechselt nur durch `git mv` (`make slice-mv`).
 
 **Autor:** Claude. **Datum:** 2026-10-07.
 
-**Lerneintrag — Form:** wird bei Closure benannt.
+**Lerneintrag — Form:** neuer Sensor.
 
 ---
 
@@ -46,20 +46,20 @@ für den Plattform-Vergleich ab. Dafür berührt der Slice `tools/image-multiarc
 
 ## 2. Definition of Done
 
-- [ ] `release.yml`: ein Bau für beide Plattformen, Test des gebauten Bilds auf beiden (arm64
+- [x] `release.yml`: ein Bau für beide Plattformen, Test des gebauten Bilds auf beiden (arm64
       nach ADR) samt Vergleich der Scan-Ausgabe beider Plattformen, Bild-Tag erst danach,
       Versions-Label je Plattform (im Image-Test, der es heute nicht prüft), Digest-Pin in Summary
       und GitHub-Release.
-- [ ] Spiegel-Schritt prüft die Gleichheit nach
+- [x] Spiegel-Schritt prüft die Gleichheit nach
       [AC-FA-DIST-002](../../../../spec/lastenheft.md#ac-fa-dist-002) in der abgenommenen Fassung,
       fail-closed.
-- [ ] `docs/user/releasing.md` (Ablauf, arm64-Runner unter Vorbedingungen), Benutzerhandbuch
+- [x] `docs/user/releasing.md` (Ablauf, arm64-Runner unter Vorbedingungen), Benutzerhandbuch
       (Plattformen, Pin), Hub-Seite `packaging/dockerhub/` (der GHCR-Digest löst dort auf;
       Index- statt Config-Digest), CHANGELOG `[Unreleased]`.
-- [ ] Unabhängiger Review, Report unter [`docs/reviews/`](../../../reviews/README.md).
-- [ ] Closure-Notiz mit Steering-Loop-Lerneintrag.
-- [ ] Beobachtungs-Register fortgeschrieben (oder „keine Beobachtung" notiert).
-- [ ] Jedes Risiko aus §6 trägt einen Ausgang.
+- [x] Unabhängiger Review, Report unter [`docs/reviews/`](../../../reviews/README.md).
+- [x] Closure-Notiz mit Steering-Loop-Lerneintrag.
+- [x] Beobachtungs-Register fortgeschrieben (oder „keine Beobachtung" notiert).
+- [x] Jedes Risiko aus §6 trägt einen Ausgang.
 
 `make gates` grün (`doc-workflows` prüft die `uses:`-Form).
 
@@ -91,13 +91,53 @@ DoD vollständig, `make gates` Exit 0, Closure-Notiz mit Lerneintrag.
 
 - **Erst am Tag geprüft:** Push, Spiegel und arm64-Test laufen nur in der Release-Pipeline; ein
   Fehler zeigt sich am ersten echten Tag (vgl. `BEO-GATE/ungelaufene-mechanik-docker-hub-spiegel`,
-  1×). — **Ausgang:** *(bei Closure zuzuweisen: eingetreten / entfallen / weiter offen)*
+  1×). — **Ausgang:** *weiter offen* — der erste Release-Tag der Welle prüft es; das
+  Beobachtungs-Register zählt die Klasse unter `BEO-GATE/ungelaufene-mechanik-docker-hub-spiegel`.
 - **Pre-Flight deckt die Pipeline nicht:** `make preflight` läuft die Release-Schritte nicht (vgl.
-  `BEO-GATE/preflight-deckt-den-ci-schritt-nicht`, 1×). — **Ausgang:** *(bei Closure zuzuweisen: eingetreten / entfallen / weiter offen)*
+  `BEO-GATE/preflight-deckt-den-ci-schritt-nicht`, 1×). — **Ausgang:** *weiter offen* — lokal
+  geprobt wurden die Schritte einzeln (Upload ohne Tag, Riegel, Tag, Spiegel gegen zwei
+  `registry:2`), nicht der Workflow; das Beobachtungs-Register führt die Klasse unter
+  `BEO-GATE/preflight-deckt-den-ci-schritt-nicht`.
 
 ## 7. Closure-Notiz
 
-*(folgt bei Closure)*
+**Lerneintrag — Form: neuer Sensor.** Die Release-Pipeline trägt drei neue Riegel, die vor dem
+Bild-Tag greifen: der hochgeladene Index-Digest muss gleich dem geprüften Archiv sein
+(`make image-multiarch PUSH_NAME=…`), die Scan-Ausgabe beider Plattformen muss je Strom gleich
+sein (Hash-Vergleich in `publish`), und ein Versions-Tag wird nie auf einen anderen Digest
+umgehängt. Dazu prüft `make image-test` das Versions-Label und verlangt mit `IMAGE_REF` ein
+ausdrückliches `VERSION`. Lokal je mit Gegenprobe; der Lauf am Tag steht aus.
+
+**Geliefert:** `release.yml` (build → test-amd64/test-arm64 → publish → hub-description),
+`tools/image-multiarch.sh` (Upload ohne Tag), `tools/image-test.sh` (Label, Scan-Ausgabe),
+`tools/multiarch-check.sh` (fünf OCI-Labels wieder geprüft), `releasing.md`, Handbuch 1.46,
+Hub-Seite, CHANGELOG `[Unreleased]`.
+
+**Was hat funktioniert:** Die Pipeline-Schritte einzeln gegen zwei lokale Registries zu proben —
+Upload ohne Tag, Tag per `imagetools`, Kopie in eine zweite Registry — hat die Annahmen
+(Digest bleibt, kein Tag entsteht) vor dem Tag belegt statt sie zu behaupten.
+
+**Was ging anders als geplant:** Der Umbau verlor die Prüfung von fünf OCI-Labels, ohne dass es
+jemand sagte (Review F-4) — dieselbe Klasse wie D-1 in slice-217, jetzt im Register. Die
+Umnummerierung in `releasing.md` hätte einen Verweis der unveränderlichen [ADR-0030](../../adr/0030-kein-digest-im-generierten-fragment.md) verschoben
+(F-7); der Re-Pin bleibt Schritt 6. Und ein Make-Riegel in der Voraussetzungsliste traf jedes
+Target, nicht nur `image-test` (D-2).
+
+**Steering-Loop-Eintrag:** neuer Sensor — liegt in `.github/workflows/release.yml` (Jobs
+`test-amd64`, `test-arm64`, `publish`). Auslöser:
+[ADR-0043](../../adr/0043-multi-arch-ein-bau-getestet-dann-getaggt.md), keine Register-Schwelle.
+
+**Beobachtungs-Register (`../observations/`):** `BEO-GATE/zusage-weiter-als-ihre-durchsetzung` →
+5× (Ausgang beim Lese-Schritt der welle-18-Closure); `BEO-GATE/umbau-verliert-pruefung-still`
+neu (2×: slice-217, slice-218).
+
+**Folge-Slices:** keine.
+
+**Risiken aus §6:** beide tragen ihren Ausgang (*weiter offen*, Beobachtungs-Register).
+
+**Drei Paarungen:** getragen von der Closure von welle-18.
+
+**Trigger-Audit der aktiven MR:** [`MR-016`](../../../../harness/conventions.md#mr-016) [`MR-019`](../../../../harness/conventions.md#mr-019) [`MR-025`](../../../../harness/conventions.md#mr-025) [`MR-027`](../../../../harness/conventions.md#mr-027) [`MR-028`](../../../../harness/conventions.md#mr-028) [`MR-029`](../../../../harness/conventions.md#mr-029) [`MR-030`](../../../../harness/conventions.md#mr-030) — 0 offen (geprüft 2026-10-07).
 
 ## 8. Sub-Area-Prüfungen und Modus-Begründung
 

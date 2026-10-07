@@ -1,4 +1,4 @@
-**Stand:** offen (4×) — Ausgang beim Lese-Schritt der welle-18-Closure
+**Stand:** offen (5×) — Ausgang beim Lese-Schritt der welle-18-Closure
 
 Unterhalb der Schwelle. Ein Sensor darauf wäre selbst ein Exemplar der Klasse: Ob ein Prosa-Satz
 den Geltungsbereich eines Moduls trifft, ist ein Urteil über zwei Formulierungen, kein Match
