@@ -41,7 +41,8 @@ abgenommenen Vertrag; `releasing.md` beschreibt den Ablauf.
 
 - [ ] `release.yml`: ein Bau für beide Plattformen, Test des gebauten Bilds auf beiden (arm64
       nach ADR) samt Vergleich der Scan-Ausgabe beider Plattformen, Bild-Tag erst danach,
-      Versions-Label je Plattform, Digest-Pin in Summary und GitHub-Release.
+      Versions-Label je Plattform (im Image-Test, der es heute nicht prüft), Digest-Pin in Summary
+      und GitHub-Release.
 - [ ] Spiegel-Schritt prüft die Gleichheit nach
       [AC-FA-DIST-002](../../../../spec/lastenheft.md#ac-fa-dist-002) in der abgenommenen Fassung,
       fail-closed.

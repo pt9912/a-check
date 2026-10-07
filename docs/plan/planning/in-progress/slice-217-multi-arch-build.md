@@ -17,7 +17,7 @@ wechselt nur durch `git mv` (`make slice-mv`).
 
 **Autor:** Claude. **Datum:** 2026-10-07.
 
-**Lerneintrag — Form:** wird bei Closure benannt.
+**Lerneintrag — Form:** neuer Sensor.
 
 ---
 
@@ -41,17 +41,17 @@ entfällt der Bau. Das zunächst gelieferte eigene Target `image-test-ref` entf�
 
 ## 2. Definition of Done
 
-- [ ] Dockerfile: Build-Stufe auf der Plattform des Runners, Ziel-Plattform aus den
+- [x] Dockerfile: Build-Stufe auf der Plattform des Runners, Ziel-Plattform aus den
       Build-Argumenten; Laufzeit-Stufe ohne `RUN`.
-- [ ] Make-Target für den Multi-Arch-Bau nach der ADR aus slice-216, im Gate-Index
+- [x] Make-Target für den Multi-Arch-Bau nach der ADR aus slice-216, im Gate-Index
       (`harness/README.md` §Sensors oder §Nicht-Gates) eingetragen.
-- [ ] Image-Test gegen eine übergebene Bild-Referenz (Tag oder Digest) statt fest
+- [x] Image-Test gegen eine übergebene Bild-Referenz (Tag oder Digest) statt fest
       `$(IMAGE):dev`, Plattform des Hosts geprüft; lokaler Beleg: beide Plattform-Bilder gebaut, das
       arm64-Binary ist ein arm64-ELF, das amd64-Bild besteht den Image-Test — mit Gegenprobe.
-- [ ] Unabhängiger Review, Report unter [`docs/reviews/`](../../../reviews/README.md).
-- [ ] Closure-Notiz mit Steering-Loop-Lerneintrag.
-- [ ] Beobachtungs-Register fortgeschrieben (oder „keine Beobachtung" notiert).
-- [ ] Jedes Risiko aus §6 trägt einen Ausgang.
+- [x] Unabhängiger Review, Report unter [`docs/reviews/`](../../../reviews/README.md).
+- [x] Closure-Notiz mit Steering-Loop-Lerneintrag.
+- [x] Beobachtungs-Register fortgeschrieben (oder „keine Beobachtung" notiert).
+- [x] Jedes Risiko aus §6 trägt einen Ausgang.
 
 `make gates` grün.
 
@@ -85,11 +85,53 @@ DoD vollständig, `make gates` Exit 0, Closure-Notiz mit Lerneintrag.
 ## 6. Risiken und offene Punkte
 
 - **Der lokale Build ist nicht der Release-Build:** was hier grün ist, belegt das Dockerfile, nicht
-  das veröffentlichte Bild. — **Ausgang:** *(bei Closure zuzuweisen: eingetreten / entfallen / weiter offen)*
+  das veröffentlichte Bild. — **Ausgang:** *weiter offen* — der Release-Bau ruft dasselbe Target
+  (slice-218), aber erst der Tag zeigt das veröffentlichte Bild; das Beobachtungs-Register zählt die
+  Klasse unter `BEO-GATE/ungelaufene-mechanik-docker-hub-spiegel`.
 
 ## 7. Closure-Notiz
 
-*(folgt bei Closure)*
+**Lerneintrag — Form: neuer Sensor.** `make image-multiarch` baut das Release-Bild für
+`linux/amd64` und `linux/arm64` als einen Image-Index und prüft das Archiv mit
+`tools/multiarch-check.sh`: genau zwei Einträge (zweimal verschieden gezählt), Plattform aus der
+Config, Index-Beschriftung gleich der Config, ELF-Maschinentyp des Binarys, Versions-Label. Jede
+dieser Eigenschaften hat eine Gegenprobe, die rot aus dem genannten Grund war: nur amd64,
+Attestierung, dritter Eintrag mit Array-Feld, Index nur mit amd64, vertauschte und fremde
+Beschriftung, Bau ohne Cross-Compile (amd64-Binary im arm64-Bild), falsche Version. Grenze: kein
+Lauf auf arm64 — den trägt der Image-Test auf einem arm64-Rechner (slice-218).
+
+**Geliefert:** Dockerfile per Cross-Compile ([ADR-0043](../../adr/0043-multi-arch-ein-bau-getestet-dann-getaggt.md) Punkt 2), `make image-multiarch`,
+`make image-test IMAGE_REF=…` (Bild-Referenz ohne Bau, Host-Plattform per ELF geprüft), Gate-Index,
+Guard-Liste; `make ci` unverändert grün.
+
+**Was hat funktioniert:** Die Gegenproben als Archive, die genau eine Eigenschaft brechen. Die
+teuerste — ein Bau ohne `GOOS`/`GOARCH` — ist der Fehler, vor dem der Cross-Compile schützt, und
+sie wurde rot an der Stelle, die ihn benennt.
+
+**Was ging anders als geplant:** Der Prüfer versprach in zwei Fassungen mehr, als er prüfte: erst
+ließ ein Array-Feld eine dritte Plattform durch, dann fiel beim Umbau die Index-Beschriftung weg
+(Review F-2, Delta D-1). Der Gate-Index beschrieb eine Pipeline-Verwendung, die es noch nicht gibt
+(F-1). Und das eigene Target `image-test-ref` wich von der Fitness Function der ADR ab, bis es
+entfiel (F-4). Die BuildKit-Pinnung trägt Tag und Digest nebeneinander; dass beide zusammengehören,
+prüft kein Sensor — die bekannte Grenze von `make version-coherence` (Wahrheit, nicht Divergenz,
+Review F-10). Der Builder-Container bleibt nach dem Lauf stehen. Benannte Grenze (Delta-Review 2, D2-1): fehlt dem letzten Eintrag die `platform`, liest das
+Skript eine Beschriftung, die außerhalb der Manifest-Liste stünde — ein Feld, das das OCI-Schema
+dort nicht kennt und BuildKit nicht schreibt.
+
+**Steering-Loop-Eintrag:** neuer Sensor — liegt in `Makefile:image-multiarch` (`tools/multiarch-check.sh`).
+Auslöser: [ADR-0043](../../adr/0043-multi-arch-ein-bau-getestet-dann-getaggt.md), keine Register-Schwelle.
+
+**Beobachtungs-Register (`../observations/`):** `BEO-GATE/zusage-weiter-als-ihre-durchsetzung` →
+4× (ein Vorgang, drei Funde; Ausgang beim Lese-Schritt der welle-18-Closure);
+`BEO-GATE/pipefail-bricht-pruefer-stumm-ab` neu (1×).
+
+**Folge-Slices:** slice-218 (in `open/`) — dort auch das Versions-Label im Image-Test (Review F-11).
+
+**Risiken aus §6:** das eine Risiko trägt seinen Ausgang (*weiter offen*, Beobachtungs-Register).
+
+**Drei Paarungen:** getragen von der Closure von welle-18.
+
+**Trigger-Audit der aktiven MR:** [`MR-016`](../../../../harness/conventions.md#mr-016) [`MR-019`](../../../../harness/conventions.md#mr-019) [`MR-025`](../../../../harness/conventions.md#mr-025) [`MR-027`](../../../../harness/conventions.md#mr-027) [`MR-028`](../../../../harness/conventions.md#mr-028) [`MR-029`](../../../../harness/conventions.md#mr-029) [`MR-030`](../../../../harness/conventions.md#mr-030) — 0 offen (geprüft 2026-10-07).
 
 ## 8. Sub-Area-Prüfungen und Modus-Begründung
 
