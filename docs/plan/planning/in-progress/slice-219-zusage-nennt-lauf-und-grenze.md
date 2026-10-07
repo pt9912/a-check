@@ -46,6 +46,13 @@ neben dem Beleg die Zusage. Ein **Zeiger am Satz** auf die Stelle, die die Grenz
 Gate-Index: „Grenzen: siehe Datei", `AGENTS.md` §4), erfüllt die Regel; die Ausprägung „Grenze
 steht woanders" meint die Grenze **ohne** Zeiger.
 
+**Plan-Änderung 2026-10-07 (Delta-Review D-1, vor dem Fix):** In den Spec-Straten (Lastenheft,
+Spezifikation, Architektur) ist eine Zusage der Vertrag selbst; ihren Lauf nennt der umsetzende
+Slice (Beleg-Pflicht, `harness/conventions.md` §Anforderungs-Anlege-Prozess), nicht der Satz —
+`spec/architecture.md` bleibt technologiefrei (`AGENTS.md` §3.4). Die Regel bindet dort den, der
+die Zusage hineinschreibt: keine Eigenschaft in den Vertrag, für die kein Lauf geplant ist (der Fall
+slice-216).
+
 **Ausdrücklich NICHT in diesem Slice** — je Punkt mit Begründung:
 
 - **Ein Sensor.** *Bestand bleibt bewusst stehen*: ob ein Prosa-Satz den Geltungsbereich seines
