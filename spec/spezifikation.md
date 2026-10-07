@@ -376,8 +376,9 @@ Grammatik, nicht Formatierung.
    Fehler: die Wert-Grammatik (Objekt, Array, Komma und Doppelpunkt an ihrer Stelle, kein
    abschließendes Komma, auch nicht verschachtelt), Zahlen nach §6 (keine führende Null, kein
    `+` am Anfang, kein `.5`), genau die Literale `true`, `false`, `null`, Escape-Folgen nach §7
-   (`\"` `\\` `\/` `\b` `\f` `\n` `\r` `\t` `\uXXXX`) und UTF-8 nach §8.1. Die Fehlerliste unter 1
-   und 4 sind Fälle dieser Regel, keine abschließende Aufzählung.
+   (`\"` `\\` `\/` `\b` `\f` `\n` `\r` `\t` `\uXXXX`) und UTF-8 nach §8.1. Die Fehlerliste unter 1 und
+   das fehlende `:` unter 4 sind Fälle dieser Regel, keine abschließende Aufzählung; die Wurzel als
+   Objekt (4) verlangt der Dialekt **zusätzlich** — RFC 8259 lässt jeden Wert als Wurzel zu.
 3. **Normalisierung.** Leerraum außerhalb von Zeichenketten **entfällt** — die Lexik oben stellt
    sicher, dass er nirgends zwei Tokens trennt; Zeichenketten bleiben byte-genau.
 4. **Zerlegung.** Die Wurzel muss ein **Objekt** sein. Eine **Anweisung** ist ein **Mitglied des
