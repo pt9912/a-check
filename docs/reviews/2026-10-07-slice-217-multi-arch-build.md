@@ -189,3 +189,51 @@ zweiten Mal in diesem Slice. Gezählt wird das bei der Closure, nicht hier.
 
 **Abnahme-blockierend:** ja, wegen D-1 (MEDIUM) — vor der Closure zu klären. Sonst ist die
 Übergabe nachgefahren und bestätigt.
+
+### Delta-Review 2
+
+**Gegenstand:** `9c70771` — Fix für D-1 in `tools/multiarch-check.sh`: je Digest wird die
+`platform`-Beschriftung des Index-Eintrags (Abschnitt zwischen diesem und dem nächsten
+`"digest"`-Schlüssel) gegen os/architecture der Config gehalten. Nur D-1 geprüft; derselbe
+Reviewer-Kontext, gleicher Skill-Stand.
+
+**Eigene Nachmessung** (Geltungsbereich wie oben; Archiv neu aus `make image-multiarch`,
+Mutationen handgebaut):
+
+| Probe | Ergebnis (Meldung) |
+|---|---|
+| Kontrolle `make image-multiarch VERSION=9.9.9-rev` | Exit 0 |
+| Plattform-Felder vertauscht | rot — „der Index beschriftet sha256:bd01… als 'linux/arm64', die Config sagt …" |
+| Beschriftung `linux/s390x` / `windows/386` | rot — „… als 'linux/s390x' …" |
+| `platform` **vor** `digest` in beiden Einträgen (unvertauscht) | rot — falsche Beschriftung gefunden; deckt den Kommentar „andere Reihenfolge … ist rot" |
+| dasselbe, vertauscht | rot — Beschriftung `'/'` |
+| arm64-Eintrag ohne `platform` | rot — Beschriftung `'/'` |
+| Feldreihenfolge `digest` vor `mediaType` · eingerückt · `variant: v8` | grün — korrekt |
+| alle früheren Fälle (nur amd64, Dublette, Attestierung, Fehlzeiger, Array + s390x, `subject`, Layer-Fehler, Binary vertauscht, falsche Version) | rot wie im Delta-Review |
+| arm64-Eintrag ohne `platform`, dafür ein **nicht-schematisches** Feld `"platform":{…arm64…}` auf der obersten Ebene des Index **nach** `manifests` | grün (D2-1) |
+
+### D-1
+
+**Bestätigt behoben.** Die Beschriftung im Index wird gelesen und gegen die Config gehalten; die
+beiden Fälle aus D-1 sind rot aus dem genannten Grund, und die Schlüssel-Reihenfolge, die der
+Kommentar als rot zusagt, ist rot.
+
+### Neue Findings
+
+| ID | Kategorie | Befund | Quelle | Pfad | Verifizierbar | Klasse |
+|---|---|---|---|---|---|---|
+| D2-1 | INFO | Für den **letzten** Eintrag reicht der gesuchte Abschnitt bis zum Ende des Index. Fehlt dort die eigene `platform`, greift ein `"platform":{…}` außerhalb der Manifest-Liste (gemessen mit einem Feld auf oberster Ebene). Das OCI-Schema kennt dort kein solches Feld, und BuildKit schreibt keines; der Fall ist konstruiert und hier nur benannt. | SPEC-DIST-001 | `tools/multiarch-check.sh` (Abschnitt `seg`) | ja — Mutations-Probe oben | — (Hinweis) |
+
+### Summary (Delta 2)
+
+| Kategorie | Anzahl |
+|---|---|
+| HIGH | 0 |
+| MEDIUM | 0 |
+| LOW | 0 |
+| INFO | 1 |
+
+### Verdikt (Delta 2)
+
+**Abnahme-blockierend:** nein. D-1 ist behoben; offen bleiben F-10/F-11 (übergeben) und der Hinweis
+D2-1. Dieser Report ist Lauf-Beleg und ersetzt keine Verifikation gegen die DoD.
