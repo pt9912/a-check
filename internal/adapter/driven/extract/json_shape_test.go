@@ -94,9 +94,9 @@ func TestJSONLiteralSource(t *testing.T) {
 	}
 }
 
-// Gültigkeit nach RFC 8259 (Spezifikation Schritt 2): jede Form, die die Quelle
-// verbietet, ist ein Fehler — auch die, die sonst fail-safe in eine Anweisung
-// fielen. Je Fall eine Zeile (Review slice-214 F-2/F-3/F-4/F-8/F-9).
+// Gültigkeit nach RFC 8259 (Spezifikation Schritt 2): jede aufgeführte, von der
+// Quelle verbotene Form ist ein Fehler; die aufgeführten gültigen Grenzfälle
+// bleiben gültig. Je Fall eine Zeile (Review slice-214 F-2/F-3/F-4/F-8/F-9, D-3).
 func TestJSONValidity(t *testing.T) {
 	for name, src := range map[string]string{
 		"tru":                    `{"a":tru}`,
@@ -106,6 +106,8 @@ func TestJSONValidity(t *testing.T) {
 		"punkt am Anfang":        `{"a":.5}`,
 		"punkt am Ende":          `{"a":1.}`,
 		"exponent ohne Ziffer":   `{"a":1e}`,
+		"zwei Exponent-Zeichen":  `{"a":1e+-2}`,
+		"doppeltes Minus":        `{"a":--1}`,
 		"ungueltiges Escape":     `{"a":"\x"}`,
 		"kurzes u-Escape":        `{"a":"\u12"}`,
 		"u-Escape kein Hex":      `{"a":"\u12G4"}`,
@@ -126,4 +128,7 @@ func TestJSONValidity(t *testing.T) {
 	}
 	// gültige Grenzfälle bleiben gültig
 	eqJSON(t, `{"a":0,"b":-0.5e-3,"c":"\u00e4\n\/","d":[],"e":{}}`, `"a":0`, `"b":-0.5e-3`, `"c":"\u00e4\n\/"`, `"d":[]`, `"e":{}`)
+	// jede Escape-Folge aus \u00a77 und jede Exponent-Form aus \u00a76
+	eqJSON(t, `{"s":"\"\\\/\b\f\n\r\t\u00ff","n":[-0,1E+2,1e-2,1E2,2.5e10]}`,
+		`"s":"\"\\\/\b\f\n\r\t\u00ff"`, `"n":[-0,1E+2,1e-2,1E2,2.5e10]`)
 }
