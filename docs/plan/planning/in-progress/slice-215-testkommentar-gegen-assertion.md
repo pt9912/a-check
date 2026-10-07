@@ -28,6 +28,14 @@ neben „eine Mutations-Probe belegt erst, wenn sie rot war" in
 [`harness/rules/mess-regeln.md`](../../../../harness/rules/mess-regeln.md), samt Herleitung im
 Reviewer-Skill.
 
+**Plan-Änderung 2026-10-07 (vor der Arbeit):** Die Zahl „drei Mess-Regeln“ steht auch in
+[`AGENTS.md`](../../../../AGENTS.md) §5 Zeile 15 und im Titel der Regel-Datei; der Kopf von
+§Mess-Regeln im Reviewer-Skill zählt „zwei“ und verortet die Zusage in `AGENTS.md` §5, obwohl sie
+seit slice-201 in der Regel-Datei steht. Beides zieht dieser Slice mit nach — eine vierte Regel,
+neben der „drei“ stehen bleibt, wäre die Aufzählungs-Drift, die die Regel selbst meidet. Ein
+CHANGELOG-Eintrag entfällt wie bei den drei Vorgänger-Regeln: Mess-Regeln binden den
+Harness-Lauf, nicht den Konsumenten des Werkzeugs.
+
 **Ausdrücklich NICHT in diesem Slice** — je Punkt mit Begründung:
 
 - **Ein Sensor.** *Bestand bleibt bewusst stehen*: ob ein Kommentar mehr behauptet als seine
@@ -54,7 +62,9 @@ Reviewer-Skill.
 | Datei / Komponente | Änderungs-Art | Begründung |
 |---|---|---|
 | `harness/rules/mess-regeln.md` | update | vierte Regel |
-| `.harness/skills/reviewer.md` | update | Herleitung, damit der Review sie prüft |
+| `.harness/skills/reviewer.md` | update | Herleitung, damit der Review sie prüft; Kopf zählt und verortet richtig |
+| `AGENTS.md` §5 Zeile 15 | update | Zahl der Mess-Regeln |
+| `docs/plan/planning/observations/BEO-GATE/testbeschreibung-weiter-als-assertion/state.md` | update | Ausgang *verkörpert* mit Herkunfts-Anker |
 
 ## 4. Trigger
 
