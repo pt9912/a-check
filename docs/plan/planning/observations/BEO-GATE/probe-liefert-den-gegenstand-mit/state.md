@@ -1,4 +1,4 @@
-**Stand:** verkörpert in [`AGENTS.md`](../../../../../../AGENTS.md) §5
+**Stand:** verkörpert in [`harness/rules/mess-regeln.md`](../../../../../../harness/rules/mess-regeln.md) Regel 2
 (*„Eine Mutations-Probe belegt erst, wenn sie rot war"*) `seit slice-181`.
 
 Drei Ausprägungen, alle drei belegt: die Probe mutiert das **Muster** statt der Kandidatenmenge

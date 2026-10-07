@@ -1,4 +1,4 @@
-**Stand:** verkörpert in [`AGENTS.md`](../../../../../../AGENTS.md) §5 (Regel *Geltungsbereich einer
+**Stand:** verkörpert in [`harness/rules/mess-regeln.md`](../../../../../../harness/rules/mess-regeln.md) Regel 1 (*Geltungsbereich einer
 Messung*) `seit slice-179` — zugewiesen im Lese-Schritt der Closure von
 [welle-15](../../../done/welle-15/welle-15-regelwerk-v650-migration.md).
 

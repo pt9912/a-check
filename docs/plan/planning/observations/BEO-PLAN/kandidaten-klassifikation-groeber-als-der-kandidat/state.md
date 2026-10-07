@@ -1,4 +1,4 @@
-**Stand:** verkörpert in [`AGENTS.md`](../../../../../../AGENTS.md) §5 (dritte Mess-Regel) und
+**Stand:** verkörpert in [`harness/rules/mess-regeln.md`](../../../../../../harness/rules/mess-regeln.md) Regel 3 und
 [`.harness/skills/reviewer.md`](../../../../../../.harness/skills/reviewer.md) §Mess-Regeln
 `seit slice-193` (3×)
 

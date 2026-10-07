@@ -20,8 +20,8 @@
      Unterschied der Befund — nicht die erste Zahl.
 
   4. *Ein Testkommentar sagt nicht mehr zu, als seine Assertion prüft*
-     (`seit slice-215`): Jede Eigenschaft, die ein Testkommentar oder ein
-     Testname nennt, belegt eine Assertion — eine Mutation, die genau diese
+     (`seit slice-215`): Für jede Eigenschaft, die ein Testkommentar nennt,
+     steht eine Assertion, die sie prüft — eine Mutation, die genau diese
      Eigenschaft bricht, macht den Test rot. Ein Allquantor („alle Fälle",
      „jede Form") gilt nur über eine Menge, die der Test aufzählt; sonst sagt
      der Kommentar „die aufgeführten".

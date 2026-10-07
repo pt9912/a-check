@@ -200,25 +200,27 @@ braucht welche Artefaktklasse weist die **Urteilsgrundlage** der Skill-Datei zu.
   Auslöser: [`BEO-GATE/probe-liefert-den-gegenstand-mit`](../../docs/plan/planning/observations/BEO-GATE/probe-liefert-den-gegenstand-mit/observation.md)
   (slice-169, slice-180, slice-181 — 3×).
 - **Ein Testkommentar sagt nicht mehr zu, als seine Assertion prüft**
-  (`seit slice-215`, Register-Eintrag bei 4×): Jede Eigenschaft, die ein
-  Testkommentar oder Testname nennt, belegt eine Assertion; eine Mutation, die
+  (`seit slice-215`, Register-Eintrag bei 4×): Für jede Eigenschaft, die ein
+  Testkommentar nennt, steht eine Assertion, die sie prüft; eine Mutation, die
   genau diese Eigenschaft bricht, macht den Test rot.
   **Drei Ausprägungen, alle belegt:** Die **Fixture enthält den Fall nicht**
-  (slice-210: „verbotenes Muster in Kommentar und Zeichenkette wird
-  mitgeprüft" — die Fixture hatte keines) · die **Assertion ist schwächer als
-  die Zusage** (slice-211: Präfix statt Zeilennummer; slice-213: `Contains`
-  statt Anzahl; slice-214: Fehler statt Exit-Code) · der **Allquantor geht
-  über eine offene Menge** (slice-213 und slice-214: „alle fail-closed-Fälle
-  der Spezifikation", „jede Form, die die Quelle verbietet" — je drei Fälle
-  fehlten, Mutationen überlebten die ganze Suite).
+  (slice-210: der Kommentar sagte zu, ein verbotenes Muster in der
+  Zeichenkette einer erlaubten Anweisung sei kein eigener Befund — die
+  Fixture trug das Muster nur in einer unerlaubten) · die **Assertion ist
+  schwächer als die Zusage** (slice-211: Präfix statt Zeilennummer;
+  slice-213: `Contains` statt Anzahl; slice-214: Fehler statt Exit-Code) ·
+  der **Allquantor reicht weiter als die aufgezählten Fälle** (slice-213:
+  „alle fail-closed-Fälle der Spezifikation" — ein Fall fehlte; slice-214:
+  dieselbe Zusage und „jede Form, die die Quelle verbietet" — drei Fälle
+  fehlten; die Mutationen überlebten jeweils die ganze Suite).
   **Die Prüf-Frage ist nicht „was sagt der Kommentar?", sondern „welche
   Mutation bricht genau diese Eigenschaft — und ist der Test dann rot?"** Sie
   ist die Mess-Regel über Mutations-Proben, auf den Kommentar statt auf den
   Prüfer angewandt.
   **Kein Sensor:** Ob ein Kommentar mehr behauptet als seine Assertion prüft,
-  ist ein Urteil über Text ([`AGENTS.md`](../../AGENTS.md) §3.7). Die vierte
-  Auflage kam vor der Verkörperung — die Prosa-Form ist damit nicht
-  ausgeschöpft, sondern erst jetzt geschrieben.
+  ist ein Urteil über Text ([`AGENTS.md`](../../AGENTS.md) §3.7). Alle vier
+  Belege liegen vor dieser Regel; die Prosa-Form gilt darum nicht als
+  ausgeschöpft.
   Auslöser: [`BEO-GATE/testbeschreibung-weiter-als-assertion`](../../docs/plan/planning/observations/BEO-GATE/testbeschreibung-weiter-als-assertion/observation.md)
   (slice-210, slice-211, slice-213, slice-214 — 4×).
 
