@@ -24,7 +24,8 @@ wechselt nur durch `git mv` (`make slice-mv`).
 
 **Ziel:** Das Benutzerhandbuch sagt einem macOS-Nutzer, wie a-check unter **Docker Desktop** und
 unter **Colima** läuft: welche Plattform gezogen wird, woran er das prüft, und welche Verzeichnisse
-die Linux-VM sieht — ein Repo außerhalb der freigegebenen Pfade erscheint im Container leer.
+die Linux-VM sieht — ein Repo außerhalb der freigegebenen Pfade erscheint unter Colima leer, unter
+Docker Desktop scheitert der Mount.
 Jede Aussage über ein Werkzeug stützt sich auf dessen Dokumentation; was dieses Projekt selbst
 nicht geprüft hat, sagt der Text.
 
@@ -35,6 +36,20 @@ nicht geprüft hat, sagt der Text.
   writable".
 - Docker Desktop, Doku *Settings*, File sharing auf Mac: „By default the `/Users`, `/Volumes`,
   `/private`, `/tmp` and `/var/folders` directory are shared."
+
+**Plan-Änderung 2026-10-07 (Review F-1/F-2/F-3, vor dem Fix):** Das Ziel verallgemeinerte das
+leere Verzeichnis auf beide Laufzeiten; die Docker-Doku sagt für Docker Desktop „Mounts denied"
+(Satz direkt nach dem zitierten). Die Quellenliste deckte nur zwei Aussagen; ergänzt sind:
+
+- Docker Desktop, *Settings*: „otherwise you may get Mounts denied or cannot start service errors
+  at runtime" (Fortsetzung des File-sharing-Absatzes).
+- Docker, *Bind mounts*: `-v` legt eine fehlende Quelle als Verzeichnis an.
+- Colima-Quelltext (`main`, laut Review): `colima status` gibt `arch:` aus; `--mount`/`-V`
+  existiert (Default schreibgeschützt); `colima start` bei laufender VM ändert nichts; eine eigene
+  Mount-Liste ersetzt den Standard-Mount von `$HOME`; Konfigurationsort
+  `~/.colima/default/colima.yaml`, sofern weder `XDG_CONFIG_HOME` noch `~/.config/colima` greift.
+- **Maintainer-Probe:** `v0.23.0` lief beim Maintainer erfolgreich auf macOS unter Colima
+  (Mitteilung 2026-10-07) — eine einmalige Probe, nicht Teil der Release-Pipeline.
 
 **Ausdrücklich NICHT in diesem Slice** — je Punkt mit Begründung:
 
