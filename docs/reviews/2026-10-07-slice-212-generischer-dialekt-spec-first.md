@@ -250,3 +250,59 @@ Vertragssatz sagt dort etwas zu, das die Ausgabe-Regel desselben Vertrags für r
 Strukturfrage. D-2 bis D-7 sind LOW. Sie können bleiben, wenn der Implementer sie begründet, oder
 als Testfälle in slice-213 gehen. Das HIGH aus dem ersten Lauf ist behoben. Einen
 Rollen-Widerspruch gibt es nicht, die Konflikt-Sequenz greift also nicht.
+
+## Kurz-Gegenprüfung
+
+**Gegenstand:** `d4b12bb` (Titel und Plan-Notizen, D-4) und `9e4b6ff` (Spezifikation, ADR-0042,
+Lastenheft und CHANGELOG für D-1 bis D-3 und D-5 bis D-7). Derselbe unabhängige Kontext, Skill
+@ `a6d19b6`, Modell `claude-opus-5-5`, 2026-10-07. Geprüft wurden nur D-1 bis D-7.
+
+| ID | Status | Beleg |
+|---|---|---|
+| D-1 | behoben | Zugesagt ist jetzt „**nach dem Entmaskieren**“ (`spec/spezifikation.md:389-393`, ADR-0042 `:87-88`). Gegenprobe: Die entmaskierte Meldung eines Mitglieds ist dessen leerraumfreie Normalform. In `{ }` eingeschlossen zerlegt sie sich wieder zu genau diesem Mitglied, ist also ein Fixpunkt. |
+| D-2 | behoben (Rest: Hinweis unten) | `shape-unused` trägt das Präfix `literal: ` bzw. `regex: ` (`spec/spezifikation.md:418`, ADR-0042 `:82-84`, `CHANGELOG.md:22-24`). Der Bruch gegenüber dem Format ` (regex)` aus `0.21.0` ist im CHANGELOG benannt. |
+| D-3 | behoben | Ein Eintrag, der schon `{…}` ist, ist ausdrücklich Exit 2 (`spec/spezifikation.md:389-390`). |
+| D-4 | behoben | Die Titel von Welle, Slice, Folge-Slice und Roadmap-Zeile lauten auf „benannte Dialekte“ (`welle-17-…md:1`, `slice-212-…md:1`). Die Plan-Änderung nennt Zustand und Anker und steht nach der Liste (`welle-17-…md:93-95`). Die Korrektur-Notiz in §1b ist ein Halbsatz mit Herkunft (`slice-212-…md:66`). Die Dateinamen tragen weiter `generischer-dialekt`. Das ist vertretbar, denn die Kennung ist die Adresse. |
+| D-5 | behoben | Das Lastenheft sagt jetzt „Zeilenumbrüche trennen in `go.mod` Anweisungen“ und widerspricht SPEC-EXTRACT-001 damit nicht mehr (`spec/lastenheft.md:420`). |
+| D-6 | behoben | Leerraum zwischen zwei Tokens, von denen keines ein Strukturzeichen ist, ist Exit 2 (`spec/spezifikation.md:368-370`). Damit fallen `"a" "b"`, `"x" 1` und `1 "x"` nicht mehr zusammen. |
+| D-7 | behoben | `()` ist nur noch als leerer Block am Ende einer Zeile **auf oberster Ebene** zulässig, an jeder anderen Stelle Exit 2 (`spec/spezifikation.md:348-350`). |
+
+**Adversarial: Fehlalarme durch die D-6-Regel?** Keine. Ich habe mein Modell um die Regel
+erweitert und zuerst rot gegengeprobt:
+
+- **Rot, wie erwartet:** `{"a" "b":1}`, `{"a":"x" 1}` und `{"a": nu ll}`, jeweils mit „Leerraum
+  zwischen Nicht-Struktur-Tokens“.
+- **Grün, wie erwartet:** `{ "a" : [ 1 , "x" ] , "b" : true }`.
+- **Bestand:** Danach liefen dieselben 3005 `package.json` (5 aus m-trace, 3000 aus
+  `node_modules`). Ergebnis: **0× Exit 2.**
+
+Laut RFC 8259 §2 steht zwischen zwei Werten oder Namen in gültigem JSON immer `:` oder `,`. Die
+Regel kann darum nur ungültiges JSON treffen.
+
+**Adversarial: stellt das Präfix die Injektivität her?** Für die Art und den deklarierten Text: ja.
+
+- `literal: ` und `regex: ` sind verschieden, und keines ist Präfix des anderen.
+- Der Rest wird nach der umkehrbaren Ausgabe-Regel geschrieben.
+- Ein Literal mit dem Text `regex: x` erscheint als `literal: regex: x`, also unterscheidbar.
+
+**Über mehrere Einträge auf einer YAML-Zeile:** nicht vollständig, aber ohne Verlust von
+Information über die Konfiguration. Zwei Fälle führen zu einer byte-gleichen Befundzeile und
+damit zu einem Befund:
+
+- Zwei **gleiche** `allow`-Einträge, also gleiche Art und gleicher Text, in **verschiedenen**
+  `shapes`-Einträgen auf derselben Zeile (Flow-Stil), die beide nicht treffen.
+- Zwei Einträge, deren deklarierte Form sich nur in abschließenden Zeilenenden unterscheidet.
+
+Die Meldung nennt den `shapes`-Eintrag nicht, und die Spalte ist nicht Teil der Ausgabe. Was
+verloren geht, ist nur die Anzahl, nicht der Inhalt. Der Konsument sieht Zeile, Art und Text.
+Das ist **INFO**, kein neues Finding. Klasse: Duplikat-Semantik bei überlappenden Globs offen.
+
+**Neue Findings:** keine.
+
+**Urteil zur Abnahmefähigkeit von ADR-0042:** **abnahmefähig.**
+
+- Aus beiden Vorläufen ist kein HIGH oder MEDIUM mehr offen: F-1 und D-1 sind behoben.
+- Die übrigen LOW-Funde sind behoben oder als Restgrenze benannt.
+- F-11 ist als Übergangszustand im CHANGELOG eine Folgepflicht von slice-213.
+- `Accepted` setzt der Maintainer, dieser Report setzt es nicht.
+- Den Gate-Lauf zum Abschluss (`make gates`/`make verify`) prüft der Verifier.
