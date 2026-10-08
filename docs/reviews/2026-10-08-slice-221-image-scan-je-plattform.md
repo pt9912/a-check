@@ -103,3 +103,83 @@ ein Kandidat für den dritten Beleg — die Zuordnung trifft die Closure.
 Implementer widerspricht, den Konflikt-Pfad über den Architect (`v6.13.0` ·
 `regelwerk/modul-08-agentenrollen.md` §Konflikt-Pfad als Rollen-Sequenz). Die Finding-Klassen
 gehen in die Closure §7. DoD-Konformität prüft der Verifier separat.
+
+---
+
+## Delta-Review
+
+**Gegenstand:** Commit-Range `df194a5..7d721e7` — `d01651b` (Plan-Änderung in slice-221 §1b, vor
+dem Fix) und `7d721e7` (`tools/image-scan.sh` von `2236547~1` neu aufgebaut, Sensor-Datei,
+Gate-Index-Zelle). **Review-Art:** Code. **Modell:** claude-opus-5-5 · **Datum:** 2026-10-08.
+Geprüft gegen dieselben Verträge wie oben; das Skript wurde gegen `2236547~1` gediffed, nicht nur
+gegen den ersten Wurf.
+
+**Eigene Läufe** (Arbeitsdateien nur im Scratchpad):
+
+| Lauf | Ergebnis |
+|---|---|
+| `bash tools/image-scan.sh --selftest` | Exit 0, 12× ok (sieben Zähl-Fixtures aus ADR-0037 unverändert, fünf Architektur-Fälle), „Fehlschlaege: 0" |
+| Mutation Anker (`'^FINDING '` → `'FINDING '`) | rot: „FAIL Marker nur am Zeilenende erwartet 0, war: 1" |
+| Mutation „Abgleich immer ok" (`if true`) | rot: „FAIL arm64 verlangt, amd64 gescannt erwartet abweichung, war: ok" (+ „Angabe fehlt", „erste Angabe gilt") |
+| Mutation `want="$1"` | rot: „FAIL arm64 verlangt, arm64 gescannt erwartet ok, war: abweichung" (+ amd64) |
+| Mutation „letzte statt erste Angabe" (`sed -n '$p'`) | rot: „FAIL erste Angabe gilt erwartet abweichung, war: ok" |
+| Mutation „gescannt = verlangt" (Extraktor umgangen) | rot: drei FAIL wie bei „Abgleich immer ok" |
+| Mutation `[ -n "${got}" ]` entfernt | **grün** — siehe D-3 |
+| `bash tools/image-scan.sh` gegen das Publizierte | Exit 0, 4× „OK … gescannt: amd64/arm64" |
+| `IMAGE_SCAN_REFS=ghcr.io/pt9912/a-check:v0.22.0` | Exit 2; amd64 OK; arm64: „Trivy hat die Architektur 'amd64' gescannt, verlangt war 'arm64' — GESCHEITERT (kein Nachweis fuer linux/arm64)." — für arm64 läuft **kein** Vollbericht mehr |
+| Befund-Pfad (Mutation `--severity UNKNOWN`, eine Referenz, arm64) | Exit 1; Zeile `UNKNOWN tzdata … -> fix … DLA-4792-1`; Marker „1 behebbare CRITICAL/HIGH-Befunde." |
+| `IMAGE_SCAN_PLATFORMS=" "` mit `TRIVY_CACHE` auf ein Scratch-Verzeichnis | Exit 2, Meldung „… ist leer …"; das Cache-Verzeichnis wird **nicht** angelegt |
+
+### Stand der Findings aus dem ersten Lauf
+
+| ID | Stand | Beleg |
+|---|---|---|
+| F-1 | behoben | Entscheidungslauf und Zähl-Fixtures wieder auf dem Stand von `2236547~1`; Anker-Mutation rot (oben) |
+| F-2 | behoben | Template-Entscheidung und die sieben Fixtures aus ADR-0037 §Fitness Function stehen wieder; JSON nur im zusätzlichen Architektur-Lauf; Plan-Änderung in §1b vor dem Fix (`d01651b`) |
+| F-3 | behoben | Abgleich in `architektur_ok`, im Selbsttest; Mutationen „immer ok", `want="$1"`, Extraktor umgangen je rot. Der Aufruf in der Schleife ist netzlos nicht testbar und wird von der Live-Gegenprobe gehalten |
+| F-4 | behoben | eingeschobener Satz entfernt, „Das" bezieht sich wieder auf die make-Normalisierung |
+| F-5 | behoben | Exit-2-Zeile nennt Architektur-Abweichung/fehlende Angabe und leere Prüfmenge |
+| F-6 | behoben | Bindung-Zelle: ADR-0037, ADR-0043; slice-124, slice-221 |
+| F-7 | behoben | Plattform-Sperre vor `mkdir -p "$CACHE"`; gemessen: kein Verzeichnis angelegt |
+| F-8 | entfallen | `befunde()` gibt es nicht mehr; die Anzeige kommt aus den `FINDING`-Zeilen wie vor dem Umbau |
+
+### Neue Findings
+
+| ID | Kategorie | Befund | Quelle | Pfad | Verifizierbar | Klasse |
+|---|---|---|---|---|---|---|
+| D-1 | LOW | Der Selbsttest-Kommentar endet mit „ohne den Abgleich waere ein reines amd64-Bild als arm64 grün" — ein Konjunktiv über den abwesenden Zustand neben einer gültigen Abgrenzung („der Ausgang von architektur_ok, nicht nur der Extraktor"). Der Kommentar trägt damit eine Klasse, aber zusätzlich den Satzteil, den §3.7 als Falsch-Form nennt. Dasselbe Muster stand im ersten Wurf („Ohne sie waere der Anker …") und ist im ersten Lauf unbenannt geblieben. | `AGENTS.md` §3.7 | `tools/image-scan.sh:146-147` | nein — Leseurteil | Konjunktiv über verworfene Alternative im Kommentar |
+| D-2 | INFO | Die OK-Zeile druckt `gescannt: ${plat#*/}`, also die verlangte Architektur; gemessen ist sie im Architektur-Lauf derselben Iteration, nicht im Entscheidungslauf, dessen Ergebnis die Zeile meldet. Die Sensor-Datei benennt das als Grenze 5 („Drei Läufe, ein Nachweis"; bei Tags wie dem Default `:latest` gilt sie). | Mess-Regel 5 | `tools/image-scan.sh:235` | nein | Ausgabe nennt abgeleiteten Wert als gemessen |
+| D-3 | INFO | Die Bedingung `[ -n "${got}" ]` in `architektur_ok` überlebt ihre Entfernung im Selbsttest: bei nicht leerem `want` scheitert die Gleichheit ohnehin. Wirksam wäre sie nur bei einer Plattform ohne Architektur-Segment (`want` leer). Die Zusage „fehlende Angabe ist KEIN Erfolg" ist durch den Fall „Angabe fehlt" gedeckt. | Mess-Regel 4 (Randfall) | `tools/image-scan.sh:110` | ja — Mutation + `--selftest` | Redundante Bedingung ohne eigene Probe |
+
+### Negativbefunde (Delta)
+
+| Bereich | Ergebnis |
+|---|---|
+| Zähl-Pfad, Template, sieben Fixtures gegen `2236547~1` | unverändert, ohne Befund |
+| Architektur-Lauf vor Vollbericht: Scheitern oder Abweichung → `errored=1`, `continue`, Marker „GESCHEITERT" | geprüft, ohne Befund |
+| Exit-Semantik 0/1/2, Marker für `.github/workflows/image-scan.yml` | live geprüft, ohne Befund |
+| Plan-Änderung `d01651b`: steht vor dem Fix-Commit, nennt die Änderung vor dem Code (`AGENTS.md` §6 Schritt 4); Commit-Scope `(planning)` nur `docs/plan/planning/` | geprüft, ohne Befund |
+| Sensor-Datei: Grenze 4 (Namen in beiden Ausgaben) und neue Grenze 5 nennen Lauf und Grenze (Mess-Regel 5) | geprüft, ohne Befund |
+| Gate-Index-Zelle (Vertrag unverändert, Bindung ergänzt) | geprüft, ohne Befund |
+| CHANGELOG-Zeile gegen den neuen Aufbau | trifft weiter zu, ohne Befund |
+| Hard Rules §3.1, §3.2, §3.5 (ADR-0037 nicht berührt), §3.6 | geprüft, ohne Befund |
+
+### Summary (Delta)
+
+| Kategorie | Anzahl |
+|---|---|
+| HIGH | 0 |
+| MEDIUM | 0 |
+| LOW | 1 |
+| INFO | 2 |
+
+**Finding-Klassen des Delta-Laufs:** Konjunktiv über verworfene Alternative im Kommentar ·
+Ausgabe nennt abgeleiteten Wert als gemessen · Redundante Bedingung ohne eigene Probe
+
+### Verdikt (Delta)
+
+**Merge-blockierend:** nein. F-1 bis F-7 sind behoben, F-8 ist entfallen; jede Behebung habe ich
+mit einer roten Mutation oder einem Live-Lauf nachgefahren. Offen bleiben ein LOW (D-1) und zwei
+INFO; der Implementer nimmt sie an oder begründet, warum nicht. Die Closure-Zuordnung von F-1 zu
+`BEO-GATE/umbau-verliert-pruefung-still` (der dritte Beleg) bleibt bestehen: Der Befund ist im
+Vorgang slice-221 aufgetreten, auch wenn er behoben ist.
