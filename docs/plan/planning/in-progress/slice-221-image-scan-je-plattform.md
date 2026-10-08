@@ -24,7 +24,7 @@ das publizierte Image), [ADR-0043](../../adr/0043-multi-arch-ein-bau-getestet-da
 
 **Ziel:** `make image-scan` scannt jede publizierte Referenz **je Plattform** (`linux/amd64`,
 `linux/arm64`) und prüft für jeden Lauf, dass Trivy wirklich die verlangte Architektur gescannt
-hat — fail-closed. Damit schließt sich die in ADR-0043 benannte Lücke, ohne eine neue zu öffnen.
+hat — fail-closed. Damit schließt sich die in [ADR-0043](../../adr/0043-multi-arch-ein-bau-getestet-dann-getaggt.md) benannte Lücke, ohne eine neue zu öffnen.
 
 ## 1b. Messung (2026-10-08)
 
@@ -50,9 +50,9 @@ und gegen die verlangte zu halten; Abweichung ist „GESCHEITERT", nicht grün.
   ([ADR-0043](../../adr/0043-multi-arch-ein-bau-getestet-dann-getaggt.md)); die Liste steht als
   eine Variable im Skript.
 - **Der Release-Workflow scannt.** *Ein anderer Vorgang*: der Scan bleibt der Nachtlauf gegen das
-  Publizierte (ADR-0037); ein Scan im Release wäre eine neue Entscheidung.
+  Publizierte ([ADR-0037](../../adr/0037-cve-scan-gegen-das-publizierte-image.md)); ein Scan im Release wäre eine neue Entscheidung.
 - **Behebung des `tzdata`-Befunds.** *Ein anderer Vorgang*: UNKNOWN, nicht handlungspflichtig nach
-  ADR-0037 Punkt 3; er gehört zur nächsten Hebung des Basis-Images.
+  [ADR-0037](../../adr/0037-cve-scan-gegen-das-publizierte-image.md) Punkt 3; er gehört zur nächsten Hebung des Basis-Images.
 
 ## 2. Definition of Done
 
