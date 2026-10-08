@@ -64,6 +64,8 @@ jobs:
           make commit-scope-check RANGE="$RANGE"
           echo "ADR-Immutabilität (vcs) über die Range:"
           make doc-immutable RANGE="$RANGE"
+          echo "Entfernte Prüfungen begründet (AGENTS §5 Regel 18) über die Range:"
+          make pruefung-entfernt-check RANGE="$RANGE"
 
       # Volle Gates + Image-Integrationstests (identische Engine wie lokal).
       - name: Gates + Image-Integrationstests (make ci)

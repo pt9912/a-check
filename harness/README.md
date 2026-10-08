@@ -53,8 +53,8 @@ Dockerfile-Stages (Muster d-check/u-boot, digest-gepinnte Bases); die Meta-/
 Harness-Gates laufen als Host-Bash. Die Durchsetzungsschicht deckt Tool-Call-,
 Handoff- und Meta-Gate ab; die PR-/Push-CI
 ([`.github/workflows/ci.yml`](../.github/workflows/ci.yml)) zieht auf jede Integration
-`make ci` **plus drei Schritte über die Commit-Range** (`make trace-check`,
-`make commit-scope-check`, `make doc-immutable`) und schließt die
+`make ci` **plus die Range-Schritte über die Commit-Range** (welche, sagt der Workflow; `make
+preflight` fährt dieselben) und schließt die
 Stop-Hook-„frischer-Klon"-Restlücke.
 
 <!--
@@ -91,7 +91,7 @@ Lauf-Wahrheit pro Commit liegt in der CI, nicht in diesem Rang-9-Dokument.
 | `make image-test` | Distributions-Akzeptanz (`--print-mk`/`--print-config`/`--print-graph`/unbekanntes Flag) + Fragment-Parität mit [`a-check.mk`](../a-check.mk) + nativ==Container-Scan; Bild: gebaut oder `IMAGE_REF=` mit `VERSION=` (ohne Bau, Host-Plattform) | [`AC-FA-DIST-001`](../spec/lastenheft.md#ac-fa-dist-001--distribution-image---print-mk-a-checkmk)/[`AC-QA-02`](../spec/lastenheft.md#ac-qa-02--hermetik-und-ehrliche-heuristik-grenze); slice-006, Fragment-Parität slice-034, `IMAGE_REF` slice-217 |
 | `make image-multiarch` | baut das Release-Bild für `linux/amd64` und `linux/arm64` als **einen** Image-Index (OCI-Archiv in `.build/`) und prüft das **Archiv**: Plattformen, Config, ELF, Versions-Label. Kein Lauf auf arm64; **nicht** in `gates`/`ci` | [`ADR-0043`](../docs/plan/adr/0043-multi-arch-ein-bau-getestet-dann-getaggt.md); slice-217 |
 | `make ci` | CI-äquivalent: `gates` + `image-test` (Engine des Workflows `.github/workflows/ci.yml`) | — (Aggregat) |
-| [`make preflight`](../Makefile) | **Lokaler Pre-Flight**: `ci` **plus** die drei Range-Schritte des `ci`-Workflows über `origin/main..HEAD`. **Grenze:** nur der lokale `git`-Stand; eine **leere** Range wird als WARNUNG gemeldet, weil sie nichts prüft | [`AC-QA-02`](../spec/lastenheft.md#ac-qa-02--hermetik-und-ehrliche-heuristik-grenze); slice-198 |
+| [`make preflight`](../Makefile) | **Lokaler Pre-Flight**: `ci` **plus** die Range-Schritte des `ci`-Workflows über `origin/main..HEAD`. **Grenze:** nur der lokale `git`-Stand; eine **leere** Range wird als WARNUNG gemeldet, weil sie nichts prüft | [`AC-QA-02`](../spec/lastenheft.md#ac-qa-02--hermetik-und-ehrliche-heuristik-grenze); slice-198 |
 | `make trace-check` | Traceability via Modul `commits`: jede Commit-Message nennt `AC-*`/`ADR-*`/`MR-*`/`slice-NNN` (`MSGFILE=` Hook, `RANGE=` CI) | [`ADR-0021`](../docs/plan/adr/0021-commits-modul-trace-check.md); Harness-Prozess ([`AGENTS.md` §5](../AGENTS.md#5-dokumentations-regeln)); slice-006, Modul seit slice-030 |
 | [`make verify-observations`](../harness/sensors/verify-observations.md) | Deckung des Beobachtungs-Registers: jeder in `done/` zitierte Pfad hat ein Verzeichnis, jedes Verzeichnis ein nicht leeres `evidence/`. Der Zähler wird abgeleitet, nicht geführt | Harness-Prozess (Regelwerk `modul-06` §Das Beobachtungs-Register); slice-102, Verzeichnisform slice-139 |
 | [`make verify-review-haken`](../harness/sensors/verify-review-haken.md) | Der abgehakte DoD-Punkt „Unabhängiger Review" in einem `in-progress/`-Slice braucht einen Report mit der Slice-Kennung unter `docs/reviews/`. Grenzen: siehe Datei | Harness-Prozess ([`AGENTS.md` §5](../AGENTS.md)); Antwort auf [`BEO-GATE/attestierung-vor-dem-vorgang`](../docs/plan/planning/observations/BEO-GATE/attestierung-vor-dem-vorgang/observation.md) bei 5×; slice-204 |
@@ -101,6 +101,7 @@ Lauf-Wahrheit pro Commit liegt in der CI, nicht in diesem Rang-9-Dokument.
 | [`make verify-risiko-ausgaenge`](../harness/sensors/verify-risiko-ausgaenge.md) | Jedes in §6 notierte Risiko trägt genau einen Ausgang aus der geschlossenen Dreier-Menge; geprüft in `done/` und in abschlussbereiten `in-progress/`-Slices | Harness-Prozess ([`AGENTS.md`](../AGENTS.md) §5); slice-102, slice-129 |
 | `make doc-commits` | Commit-Message-Traceability über eine Range (`d-check`-Modul `commits`; `RANGE=`) — dieselbe Prüfung wie `trace-check`, aber als eigenes Target aufrufbar | `DC-FA-COMMITS-001`; slice-030 |
 | `make doc-tracked` | Getrackt-Status auflösbarer Referenz-Ziele (`d-check`-Modul `tracked`): ein Verweis zeigt auf eine Datei, die `git` führt | `DC-FA-TRK-001` |
+| [`make pruefung-entfernt-check`](../harness/sensors/pruefung-entfernt-check.md) | Ein Commit, der unter `tools/` oder `.github/workflows/` eine Fehlerpunkt-Zeile entfernt und nicht wortgleich wieder einfügt, trägt `Entfernte-Pruefungen: <Grund>`; Hook, `preflight`, CI-Range. Grenzen: siehe Datei | Harness-Prozess ([`AGENTS.md`](../AGENTS.md) §5 Regel 18); Antwort auf [`BEO-GATE/umbau-verliert-pruefung-still`](../docs/plan/planning/observations/BEO-GATE/umbau-verliert-pruefung-still/observation.md) bei 3×; slice-222 |
 | `make commit-scope-check` | Commit-Scope `(planning)` berührt ausschließlich `docs/plan/planning/`; jeder Commit wird an der damals geltenden Fassung gemessen | Harness-Prozess ([`AGENTS.md`](../AGENTS.md) §5); slice-062 |
 | `make archive-wave-test` | Testsuite von `tools/archive-wave/` — eigenes `go.mod`, **nicht** Teil von `make test`, das nur das Hauptmodul deckt | Harness-Prozess; slice-145 |
 | `make verify` | **Verifikations-Schicht**, getrennt von `gates`: DoD- und Closure-Fragen statt Code-Fragen. **Welche genau, sagt das [`Makefile`](../Makefile)** | — (Aggregat) |
@@ -121,7 +122,7 @@ der Zeile selbst.
 | `make doc-trace` · `make doc-doctor` · `make doc-usage` · `make doc-help` | **sagen** — Traceability-Matrix, Diagnose mit Fix-Kandidaten, Aufruf-Hilfe, Target-Liste | `kein Gate`; advisory, verfügbar aber nicht als Gate behauptet |
 
 **Nicht hier, obwohl sie in keinem Aggregat hängen:** `make doc-tracked`,
-`make doc-commits`, `make commit-scope-check`, `make archive-wave-test`,
+`make doc-commits`, `make commit-scope-check`, `make pruefung-entfernt-check`, `make archive-wave-test`,
 `make preflight`, `make image-scan` und `make image-multiarch` stehen in der
 Tabelle **oben** — sie **urteilen** über einen Zustand (Getrackt-Status, Commit-Traceability,
 Commit-Scope, Testlage, CVE-Lage, Plattform-Bilder)

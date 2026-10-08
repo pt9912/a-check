@@ -57,7 +57,7 @@ NO_CACHE_FILTER_COV  := --no-cache-filter coverage
         trace-check hooks suppression-check symlink-check dcheck-phrase-selftest regelwerk-check commit-scope-check \
         verify verify-risiko-ausgaenge verify-observations verify-review-haken verify-trigger-audit slice-mv image-scan \
         doc-workflows doc-reviews doc-mentions version-coherence archive-wave-test archive-wave \
-        image-multiarch
+        image-multiarch pruefung-entfernt-check
 
 # Gates seriell: unter `make -j` liefen die Sub-Gates sonst parallel und die
 # Reihenfolge/der Abbruch bei rotem Gate wären nicht garantiert.
@@ -121,6 +121,10 @@ verify-trigger-audit: ## Closure ab slice-208 belegt die Sichtung der aktiven MR
 
 verify-review-haken: ## Review-DoD-Haken in in-progress/ an Report-Existenz binden (AGENTS §5, ab slice-204).
 	@bash tools/verify-review-haken.sh
+
+pruefung-entfernt-check: ## Ein Commit, der unter tools/ oder .github/workflows/ eine Fehlerpunkt-Zeile entfernt, traegt 'Entfernte-Pruefungen: <Grund>' (AGENTS §5 Regel 18). MSGFILE=<datei> (Hook), RANGE=a..b (CI), sonst HEAD~1..HEAD.
+	@bash tools/pruefung-entfernt-check.sh --selftest > /dev/null || { bash tools/pruefung-entfernt-check.sh --selftest; exit 2; }
+	@MSGFILE="$(MSGFILE)" RANGE="$(RANGE)" bash tools/pruefung-entfernt-check.sh
 
 commit-scope-check: ## Commit-Scope (planning) beruehrt nur docs/plan/planning/ (AGENTS §5, SL-003). MSGFILE=<datei> (Hook, prueft den Index VOR dem Commit), RANGE=a..b (CI), sonst HEAD~1..HEAD.
 	@MSGFILE="$(MSGFILE)" RANGE="$(RANGE)" bash tools/commit-scope-check.sh
@@ -244,8 +248,8 @@ ci: gates image-test ## CI-äquivalenter Lauf: gates + image-test (AC-FA-DIST-00
 	@echo "[ci] gates + image-test grün"
 
 # `make ci` ist NICHT die ganze CI: der Workflow .github/workflows/ci.yml faehrt
-# darueber hinaus drei Schritte ueber die COMMIT-RANGE (Schritt "Traceability +
-# ADR-Immutabilitaet"). Lokal ist das die Range, die der naechste Push ENTHAELT
+# darueber hinaus Schritte ueber die COMMIT-RANGE (Schritt "Traceability +
+# ADR-Immutabilitaet"; welche, sagt der Workflow — preflight unten faehrt dieselben). Lokal ist das die Range, die der naechste Push ENTHAELT
 # (die CI prueft bei einem bestehenden Branch `before..HEAD`; lokal ist die
 # Menge also gleich oder groesser) -- deshalb ein eigenes Target und KEINE
 # Erweiterung von `ci`:
@@ -253,16 +257,17 @@ ci: gates image-test ## CI-äquivalenter Lauf: gates + image-test (AC-FA-DIST-00
 # Push-Range" die Release-Range (slice-198).
 PREFLIGHT_RANGE ?= $(shell git merge-base origin/main HEAD 2>/dev/null)..HEAD
 
-preflight: ci ## Lokaler Pre-Flight: ci PLUS die drei Range-Schritte des ci-Workflows (AGENTS §6 Schritt 6; AC-QA-02).
+preflight: ci ## Lokaler Pre-Flight: ci PLUS die Range-Schritte des ci-Workflows (AGENTS §6 Schritt 6; AC-QA-02).
 	@case "$(PREFLIGHT_RANGE)" in ..HEAD) echo "make preflight: origin/main nicht aufloesbar — erst git fetch origin fahren." >&2; exit 2;; esac
 	@echo "[preflight] Range: $(PREFLIGHT_RANGE)"
 	@n=$$(git rev-list --count $(PREFLIGHT_RANGE) 2>/dev/null || echo 0); \
 	if [ "$$n" = "0" ]; then \
-	  echo "[preflight] WARNUNG: die Range ist LEER — die drei Range-Schritte pruefen NICHTS (typisch direkt nach einem Push)." >&2; \
+	  echo "[preflight] WARNUNG: die Range ist LEER — die Range-Schritte pruefen NICHTS (typisch direkt nach einem Push)." >&2; \
 	else echo "[preflight] $$n Commit(s) in der Range"; fi
 	@$(MAKE) --no-print-directory trace-check RANGE=$(PREFLIGHT_RANGE)
 	@$(MAKE) --no-print-directory commit-scope-check RANGE=$(PREFLIGHT_RANGE)
 	@$(MAKE) --no-print-directory doc-immutable RANGE=$(PREFLIGHT_RANGE)
+	@$(MAKE) --no-print-directory pruefung-entfernt-check RANGE=$(PREFLIGHT_RANGE)
 	@echo "[preflight] ci + Range-Schritte gruen"
 
 # FOCUS_COMMITS wählt alle übrigen .d-check.yml-Module ab, sodass nur `commits`

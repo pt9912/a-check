@@ -229,6 +229,7 @@ oder `verify` (DoD-/Closure-Fragen). Welche Targets das sind, sagt das
 | 15 | Fünf Mess-Regeln binden jeden, der einen Beleg oder eine Zusage schreibt — Volltext: [`harness/rules/mess-regeln.md`](harness/rules/mess-regeln.md) | `harness/rules/mess-regeln.md` |
 | 16 | CR-Texte an ein fremdes Werkzeug gehen erst nach einem Prüf-Durchgang hinaus — Volltext: [`harness/rules/cr-texte-fremdwerkzeug.md`](harness/rules/cr-texte-fremdwerkzeug.md) | `harness/rules/cr-texte-fremdwerkzeug.md` |
 | 17 | Closure-Pflicht: genau ein Closure-Abschnitt, ausgefüllt, mit Lerneintrag — Volltext: [`harness/rules/closure-pflicht.md`](harness/rules/closure-pflicht.md) | `harness/rules/closure-pflicht.md` |
+| 18 | Ein Commit, der unter `tools/` oder `.github/workflows/` eine Fehlerpunkt-Zeile entfernt, trägt `Entfernte-Pruefungen: <Grund>` in der Message — Volltext: [`harness/rules/entfernte-pruefungen.md`](harness/rules/entfernte-pruefungen.md) | `harness/rules/entfernte-pruefungen.md` |
 
 ## 6. Minimal Agent Workflow
 

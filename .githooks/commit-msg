@@ -1,11 +1,14 @@
 #!/usr/bin/env bash
-# commit-msg-Hook — die beiden Pending-Prüfungen, die einen Commit VOR seiner
+# commit-msg-Hook — die drei Pending-Prüfungen, die einen Commit VOR seiner
 # Entstehung betreffen:
 #
 #   1. Traceability (ADR-0021, slice-030): mindestens eine AC-/ADR-/MR-/slice-ID
 #      in der Message, via d-check-Modul `commits`.
 #   2. Commit-Scope (AGENTS.md §5, SL-003, slice-072): ein `(planning)`-Scope
 #      berührt nur `docs/plan/planning/` — geprüft gegen den git-INDEX.
+#   3. Entfernte Prüfungen (AGENTS.md §5 Regel 18, slice-222): entfernt der Index
+#      eine Fehlerpunkt-Zeile unter tools/ oder .github/workflows/, trägt die
+#      Message `Entfernte-Pruefungen: <Grund>`.
 #
 # WARUM BEIDE HIER. Ein Sensor, der erst in der CI greift, meldet korrekt und
 # trotzdem zu spät: nach dem Push ist die Korrektur ein Rebase auf
@@ -13,7 +16,7 @@
 # 31301467076) — drei `(planning)`-Commits, alle mit grünem `make gates` davor,
 # weil `commit-scope-check` in keinem lokalen Aggregat hing.
 #
-# BEIDE LAUFEN IMMER, auch wenn die erste rot ist. Wer zwei Verstöße hat, soll
+# ALLE LAUFEN IMMER, auch wenn die erste rot ist. Wer zwei Verstöße hat, soll
 # beide sehen statt zweimal committen zu müssen (dieselbe Disziplin wie
 # `make verify`, Review 2026-07-26 R-052-F4).
 #
@@ -29,4 +32,5 @@ cd "$(git rev-parse --show-toplevel)"
 fail=0
 make trace-check       MSGFILE="$1" || fail=1
 make commit-scope-check MSGFILE="$1" || fail=1
+make pruefung-entfernt-check MSGFILE="$1" || fail=1
 exit "$fail"

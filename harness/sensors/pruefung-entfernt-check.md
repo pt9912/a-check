@@ -1,0 +1,42 @@
+# `make pruefung-entfernt-check` — eine entfernte Prüfung braucht eine Begründung
+
+## Vertrag
+
+Entfernt ein Commit unter `tools/` oder `.github/workflows/` eine **Fehlerpunkt-Zeile** —
+`fail "`, `::error::`, `exit 1`/`exit 2`, `probe "`, `assert ` — und steht dieselbe Zeile
+(nach Trim) im selben Commit nicht wieder da, muss seine Message eine Zeile
+`Entfernte-Pruefungen: <Grund>` mit nicht leerem Grund tragen. Sonst rot, mit den entfernten
+Zeilen in der Ausgabe. Regel: [`harness/rules/entfernte-pruefungen.md`](../rules/entfernte-pruefungen.md).
+
+Drei Aufrufer, eine Wahrheit: der `commit-msg`-Hook (`MSGFILE=`, gegen den Index, **vor** dem
+Commit), `make preflight` und der CI-Workflow (`RANGE=`). Ohne Argument prüft der Lauf
+`HEAD~1..HEAD`. Vor jedem Lauf fährt das Target den Selbsttest (`--selftest`, netzlos bis auf ein
+Wegwerf-Repo im Temp-Verzeichnis).
+
+## Grenze — was das Grün nicht abdeckt
+
+1. **Ob die Prüfung verloren ist.** Der Sensor zeigt die entfernten Zeilen und verlangt einen
+   Grund; ob die Prüfung ersetzt oder verloren ist, entscheidet der Autor, und der Review hält es
+   gegen den Diff.
+2. **Andere Formen und Orte.** Nur die fünf Muster, nur `tools/` und `.github/workflows/`: ein
+   `return 1` ohne Meldung, ein Go-Testfall, eine Prüfung in `.claude/hooks/` sieht er nicht.
+3. **Umformuliert zählt als entfernt.** Eine geänderte Meldung derselben Prüfung braucht ebenfalls
+   die Zeile — gemessen im Bestand: 12 von 94 Werkzeug-Commits, darunter alle drei Belege.
+4. **Altbestand.** Ein Commit, dessen `AGENTS.md` den Anker `Entfernte-Pruefungen:` noch nicht
+   trägt, wird übersprungen (Grandfathering wie bei `commit-scope-check`).
+5. **Der Hook ist opt-in pro Klon** (`make hooks`); die klon-unabhängige Kontrolle ist der
+   CI-Range-Schritt.
+
+## Ausgänge
+
+| Exit | Bedeutung |
+|---|---|
+| 0 | kein Commit entfernt eine Fehlerpunkt-Zeile ohne Begründung |
+| 1 | mindestens einer — die Zeilen stehen in der Ausgabe |
+| 2 | Range nicht auflösbar, oder der Selbsttest schlägt fehl |
+
+## Bindung
+
+[`AGENTS.md`](../../AGENTS.md) §5 Regel 18 · Antwort auf
+[`BEO-GATE/umbau-verliert-pruefung-still`](../../docs/plan/planning/observations/BEO-GATE/umbau-verliert-pruefung-still/observation.md)
+bei 3× · slice-222.
