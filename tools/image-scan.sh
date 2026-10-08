@@ -143,8 +143,9 @@ FINDING HIGH a v1 -> fix 2 CVE-1'                                               
   # Befund. Wer hier 0 erwartete, verwechselte fehlende Metadaten mit fehlendem
   # Fund.
   probe "Feldnamen leer gerendert"   'FINDING    ->  fix  '                            '1'
-  # Architektur-Abgleich (slice-221): der Ausgang von architektur_ok, nicht nur
-  # der Extraktor — ohne den Abgleich waere ein reines amd64-Bild als arm64 grün.
+  # Architektur-Abgleich (slice-221): geprueft wird der Ausgang von
+  # architektur_ok, nicht nur der Extraktor — er entscheidet, ob ein Lauf fuer
+  # die verlangte Plattform als Nachweis gilt.
   archprobe() {
     local name="$1" plat="$2" eingabe="$3" erwartet="$4" got
     if architektur_ok "$plat" "$eingabe" >/dev/null; then got=ok; else got=abweichung; fi
@@ -201,6 +202,7 @@ for ref in ${IMAGE_SCAN_REFS}; do
     errored=1
     continue
   fi
+  gescannt="$(architektur "${meta}")"
   if ! msg="$(architektur_ok "${plat}" "${meta}")"; then
     echo "image-scan: ${ref} (${plat}): ${msg} — GESCHEITERT (kein Nachweis fuer ${plat})."
     errored=1
@@ -232,7 +234,7 @@ for ref in ${IMAGE_SCAN_REFS}; do
 
   count="$(zaehle "${out}")"
   if [ "${count}" = "0" ]; then
-    echo "OK — keine behebbaren CRITICAL/HIGH in ${ref} (${plat}, gescannt: ${plat#*/})."
+    echo "OK — keine behebbaren CRITICAL/HIGH in ${ref} (${plat}, gescannt: ${gescannt})."
   else
     printf '%s\n' "${out}" | grep '^FINDING ' | sed 's/^FINDING /  /'
     echo "image-scan: ${ref} (${plat}): ${count} behebbare CRITICAL/HIGH-Befunde."
