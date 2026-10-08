@@ -75,10 +75,16 @@ regel_galt() {  # $1 = sha
   git show "$1:AGENTS.md" 2>/dev/null | grep -qF "$MARKER"
 }
 
-check_commit() {  # $1 = sha
-  local sha="$1" weg
+check_commit() {  # $1 = sha; 0 ok, 1 Befund, 2 nicht pruefbar
+  local sha="$1" weg diff
   regel_galt "$sha" || return 0          # grandfathered
-  weg="$(git show --no-color --format='' "$sha" -- "${PFADE[@]}" | entfernte_fehlerpunkte | sort -u)"
+  # Laeuft im `||`-Kontext der Schleife, also ohne errexit: ein gescheitertes
+  # `git show` (fehlendes Objekt) muss ausdruecklich zum Fehler werden.
+  if ! diff="$(git show --no-color --format='' "$sha" -- "${PFADE[@]}")"; then
+    echo "$sha: git show gescheitert — der Commit ist nicht pruefbar."
+    return 2
+  fi
+  weg="$(printf '%s\n' "$diff" | entfernte_fehlerpunkte | sort -u)"
   [ -n "$weg" ] || return 0
   git log -1 --format=%B "$sha" | hat_begruendung && return 0
   melde "$(git log -1 --format='%h %s' "$sha")" "$weg"
@@ -173,11 +179,16 @@ if ! shas="$(git rev-list "$RANGE" 2>/dev/null)"; then
   echo "pruefung-entfernt-check: FAIL — Range '$RANGE' nicht aufloesbar." >&2
   exit 2
 fi
-fail=0; n=0
+fail=0; err=0; n=0
 for sha in $shas; do
   n=$((n + 1))
-  check_commit "$sha" || fail=1
+  rc=0; check_commit "$sha" || rc=$?
+  case "$rc" in 0) ;; 2) err=1 ;; *) fail=1 ;; esac
 done
+if [ "$err" -ne 0 ]; then
+  echo "pruefung-entfernt-check: FAIL — mindestens ein Commit ist nicht pruefbar (Befundstand unbekannt)." >&2
+  exit 2
+fi
 if [ "$fail" -ne 0 ]; then
   echo "pruefung-entfernt-check: FAIL — mindestens ein Commit entfernt Fehlerpunkte ohne Begruendung." >&2
   exit 1

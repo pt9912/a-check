@@ -24,8 +24,8 @@ git bei `commit -a` einen absoluten `GIT_INDEX_FILE`, und der Selbsttest berühr
    `return 1` ohne Meldung, ein Go-Testfall, eine Prüfung in `.claude/hooks/` sieht er nicht.
 3. **Umformuliert oder in eine andere Datei verschoben zählt als entfernt**; ein nacktes `exit 1`,
    das in derselben Datei an anderer Stelle neu entsteht, gleicht ein entferntes aus. Gemessen im
-   Bestand (Fassung vor der Datei-Bindung): 12 von 94 Werkzeug-Commits hätten die Zeile gebraucht,
-   darunter alle drei Belege.
+   Bestand: 12 von 94 Werkzeug-Commits hätten die Zeile gebraucht (vor und nach der Datei-Bindung
+   gleich), darunter alle drei Belege.
 4. **Altbestand.** Ein Commit, dessen `AGENTS.md` den Anker `Entfernte-Pruefungen:` noch nicht
    trägt, wird übersprungen (Grandfathering wie bei `commit-scope-check`).
 5. **Der Hook ist opt-in pro Klon** (`make hooks`); die klon-unabhängige Kontrolle ist der
@@ -37,7 +37,7 @@ git bei `commit -a` einen absoluten `GIT_INDEX_FILE`, und der Selbsttest berühr
 |---|---|
 | 0 | kein Commit entfernt eine Fehlerpunkt-Zeile ohne Begründung |
 | 1 | mindestens einer — die Zeilen stehen in der Ausgabe |
-| 2 | Range nicht auflösbar, `git diff --cached` gescheitert (Hook), oder der Selbsttest schlägt fehl |
+| 2 | Range nicht auflösbar, `git diff --cached` (Hook) oder `git show` (Range) gescheitert, oder der Selbsttest schlägt fehl |
 
 ## Bindung
 
