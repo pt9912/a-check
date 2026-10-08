@@ -11,7 +11,7 @@ wechselt nur durch `git mv` (`make slice-mv`).
 
 **Berührte Spec-Stellen:** — · Der Slice berührt kein Spec-Stratum.
 
-**Verantwortlich:** —
+**Verantwortlich:** Claude — gesetzt beim Übergang nach `next/` (Maintainer: „jetzt ein Release“, 2026-10-08).
 
 **Autor:** Claude. **Datum:** 2026-10-08.
 
