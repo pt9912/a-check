@@ -15,7 +15,7 @@ wechselt nur durch `git mv` (`make slice-mv`).
 
 **Autor:** Claude. **Datum:** 2026-10-08.
 
-**Lerneintrag — Form:** wird bei Closure benannt.
+**Lerneintrag — Form:** geschärfte Regel.
 
 ---
 
@@ -35,11 +35,11 @@ READMEs nicht.
 
 ## 2. Definition of Done
 
-- [ ] `README.md` und `README.de.md`: Distributions-Punkt nennt die Plattformen, den einen Digest und
+- [x] `README.md` und `README.de.md`: Distributions-Punkt nennt die Plattformen, den einen Digest und
       verlinkt den macOS-Abschnitt des Handbuchs; CHANGELOG `[Unreleased]`.
-- [ ] Closure-Notiz mit Steering-Loop-Lerneintrag.
-- [ ] Beobachtungs-Register fortgeschrieben (oder „keine Beobachtung" notiert).
-- [ ] Jedes Risiko aus §6 trägt einen Ausgang.
+- [x] Closure-Notiz mit Steering-Loop-Lerneintrag.
+- [x] Beobachtungs-Register fortgeschrieben (oder „keine Beobachtung" notiert).
+- [x] Jedes Risiko aus §6 trägt einen Ausgang.
 
 `make gates` und `make verify` grün. Ein unabhängiger Review ist für diesen Slice nicht vorgesehen
 ([MR-019](../../../../harness/conventions.md#mr-019): Opt-in) — zwei Sätze Doku je Sprache.
@@ -62,11 +62,35 @@ DoD vollständig, `make gates` und `make verify` grün, Closure-Notiz mit Lernei
 
 ## 6. Risiken und offene Punkte
 
-- **Keine.** *(Kein Risiko notiert.)*
+Kein Risiko notiert — zwei Sätze Doku je Sprache, ohne Code.
 
 ## 7. Closure-Notiz
 
-*(folgt bei Closure)*
+**Lerneintrag — Form: geschärfte Regel.** Eine Vertragsänderung, die Nutzer sehen, endet nicht beim
+Handbuch: die READMEs tragen dieselbe Aussage in Kurzform. Die DoD von slice-218 zählte Handbuch,
+`releasing.md`, Hub-Seite und CHANGELOG auf — die READMEs fehlten, und erst die Frage des
+Maintainers vor dem Release fand es. Gezählt, nicht verkörpert: neu im Register (1×).
+
+**Geliefert:** Distributions-Punkt in `README.md` und `README.de.md` (Plattformen, ein Digest,
+Verweis auf den macOS-Abschnitt), CHANGELOG `[Unreleased]`.
+
+**Was hat funktioniert:** die Prüfung vor dem Release als Frage, nicht als Annahme.
+
+**Was ging anders als geplant:** nichts im Slice selbst; die Lücke lag im Vorgänger.
+
+**Steering-Loop-Eintrag:** geschärfte Regel — gezählt, nicht verkörpert.
+
+**Beobachtungs-Register (`../observations/`):** neu
+`BEO-USER/readme-hinkt-der-vertragsaenderung-nach` (1×).
+
+**Folge-Slices:** keine.
+
+**Risiken aus §6:** kein Risiko notiert.
+
+**Drei Paarungen:** Anker — kein `liegt in`-Feld · Folge-Slice — keiner · Register — der genannte
+Pfad existiert mit nicht leerem `evidence/`.
+
+**Trigger-Audit der aktiven MR:** [`MR-016`](../../../../harness/conventions.md#mr-016) [`MR-019`](../../../../harness/conventions.md#mr-019) [`MR-025`](../../../../harness/conventions.md#mr-025) [`MR-027`](../../../../harness/conventions.md#mr-027) [`MR-028`](../../../../harness/conventions.md#mr-028) [`MR-029`](../../../../harness/conventions.md#mr-029) [`MR-030`](../../../../harness/conventions.md#mr-030) — 0 offen (geprüft 2026-10-08).
 
 ## 8. Sub-Area-Prüfungen und Modus-Begründung
 
