@@ -6,6 +6,13 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
+### Changed
+
+- **`make image-scan` prüft jede Plattform:** der CVE-Scan des publizierten Images läuft je
+  Referenz für `linux/amd64` **und** `linux/arm64` und weist die gescannte Architektur nach — Trivy
+  fällt bei `--platform` sonst still auf die vorhandene Plattform zurück. Bisher war das
+  arm64-Bild ungescannt.
+
 ### Added
 
 - **Benutzerhandbuch: a-check auf macOS** mit Docker Desktop und Colima — welche Plattform
