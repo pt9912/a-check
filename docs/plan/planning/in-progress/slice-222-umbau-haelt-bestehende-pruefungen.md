@@ -16,7 +16,7 @@ wechselt nur durch `git mv` (`make slice-mv`).
 
 **Autor:** Claude. **Datum:** 2026-10-08.
 
-**Lerneintrag — Form:** wird bei Closure benannt (erwartet: neuer Sensor oder geschärfte Regel).
+**Lerneintrag — Form:** neuer Sensor.
 
 ---
 
@@ -78,15 +78,15 @@ als Multimenge, nicht als Menge über den ganzen Commit. Die Zählstellen der Ra
 
 ## 2. Definition of Done
 
-- [ ] Messung: welche Prüf-Orte im Repo benannte Fälle tragen (Selbsttests in `tools/*.sh`,
+- [x] Messung: welche Prüf-Orte im Repo benannte Fälle tragen (Selbsttests in `tools/*.sh`,
       Go-Tests), und ob ihr Verschwinden über eine Commit-Range mechanisch erkennbar ist — mit
       Geltungsbereich und Gegenprobe an den drei Belegen.
-- [ ] Verkörperung: Sensor (wenn messbar) und/oder Regel mit Herkunfts-Anker `seit slice-222`;
+- [x] Verkörperung: Sensor (wenn messbar) und/oder Regel mit Herkunfts-Anker `seit slice-222`;
       Register-Stand *verkörpert*.
-- [ ] Unabhängiger Review, Report unter [`docs/reviews/`](../../../reviews/README.md).
-- [ ] Closure-Notiz mit Steering-Loop-Lerneintrag.
-- [ ] Beobachtungs-Register fortgeschrieben (oder „keine Beobachtung" notiert).
-- [ ] Jedes Risiko aus §6 trägt einen Ausgang.
+- [x] Unabhängiger Review, Report unter [`docs/reviews/`](../../../reviews/README.md).
+- [x] Closure-Notiz mit Steering-Loop-Lerneintrag.
+- [x] Beobachtungs-Register fortgeschrieben (oder „keine Beobachtung" notiert).
+- [x] Jedes Risiko aus §6 trägt einen Ausgang.
 
 `make gates` und `make verify` grün.
 
@@ -113,11 +113,52 @@ DoD vollständig, `make gates` und `make verify` grün, Closure-Notiz mit Lernei
 ## 6. Risiken und offene Punkte
 
 - **Ein Sensor auf Proben-Namen trifft nur die benannte Hälfte:** der Fall slice-218 (eine Prüfung
-  im Ablauf, keine benannte Probe) bliebe unsichtbar. — **Ausgang:** *(bei Closure zuzuweisen: eingetreten / entfallen / weiter offen)*
+  im Ablauf, keine benannte Probe) bliebe unsichtbar. — **Ausgang:** *entfallen* — gestrichen mit
+  Begründung: der Sensor sucht nicht Proben-Namen, sondern Fehlerpunkt-Zeilen; die verlorene
+  OCI-Label-Prüfung aus slice-218 ist eine `::error::`-Zeile und fällt darunter (Messung M4, mit
+  abgeschaltetem Grandfathering an `bd68b1c` rot).
 
 ## 7. Closure-Notiz
 
-*(folgt bei Closure)*
+**Lerneintrag — Form: neuer Sensor.** `make pruefung-entfernt-check` macht den Verlust einer Prüfung
+beim Commit sichtbar: entfernt ein Commit unter `tools/` oder `.github/workflows/` eine
+Fehlerpunkt-Zeile, die er nicht in derselben Datei wieder einfügt, verlangt er
+`Entfernte-Pruefungen: <Grund>` — im `commit-msg`-Hook vor dem Commit, in `make preflight` und im
+CI-Workflow über die Range. Alle drei Belege (slice-217, slice-218, slice-221) wären rot gewesen,
+mit der verlorenen Prüfung in der Ausgabe. Regel 18 in `AGENTS.md` §5.
+
+**Geliefert:** Sensor mit Selbsttest (20 Fälle, Wegwerf-Repo ohne die git-Umgebung des Aufrufers),
+Regel-Datei, Sensor-Datei, Gate-Index, Hook, `preflight`, CI-Schritt; Zählstellen der
+Range-Schritte ohne Zahl.
+
+**Was hat funktioniert:** Messen, bevor entschieden wurde, ob ein Sensor möglich ist — die
+naheliegende Zählung (vorher/nachher) fing 1 von 3, die entfernten Zeilen 3 von 3. Und der Sensor
+hat seinen eigenen Fix-Commit gefangen: die ersetzten Selbsttest-Fälle trugen die Muster als Text;
+der Commit kam mit Begründung durch.
+
+**Was ging anders als geplant:** Der erste Wurf beschädigte bei `git commit -a` den Index des echten
+Repos (Review F-1, HIGH): git setzt im Hook einen absoluten `GIT_INDEX_FILE`, und das Wegwerf-Repo
+des Selbsttests erbte ihn. Meine Live-Probe hatte nur den gestagten Weg gedeckt. Dazu „verschoben"
+als Menge über den ganzen Commit (F-2) und ein Range-Modus, der ein gescheitertes `git show` als
+grün las (D-1). Offen als benannte Grenze: ein Amend, der nur die Begründung streicht, passiert den
+Hook — die CI-Range fängt es (F-10). Kein CHANGELOG-Eintrag: die Regel bindet den Harness-Lauf,
+nicht den Konsumenten (F-11, wie bei den Mess-Regeln).
+
+**Steering-Loop-Eintrag:** neuer Sensor — liegt in `Makefile:pruefung-entfernt-check`.
+Auslöser: `BEO-GATE/umbau-verliert-pruefung-still` (slice-217, slice-218, slice-221 — 3×).
+
+**Beobachtungs-Register (`../observations/`):** `BEO-GATE/umbau-verliert-pruefung-still` →
+*verkörpert* (`seit slice-222`). Eine neue Beobachtung: keine — der Index-Schaden ist ein Fall von
+„Selbsttest berührt den Aufrufer" und steht hier als benannter Fund, nicht gezählt (ein Vorgang).
+
+**Folge-Slices:** keine.
+
+**Risiken aus §6:** das eine Risiko trägt seinen Ausgang (*entfallen*, mit Begründung).
+
+**Drei Paarungen:** Anker — `seit slice-222` steht in der Regel-Datei (Zielort) · Folge-Slice —
+keiner · Register — der genannte Pfad existiert mit nicht leerem `evidence/`.
+
+**Trigger-Audit der aktiven MR:** [`MR-016`](../../../../harness/conventions.md#mr-016) [`MR-019`](../../../../harness/conventions.md#mr-019) [`MR-025`](../../../../harness/conventions.md#mr-025) [`MR-027`](../../../../harness/conventions.md#mr-027) [`MR-028`](../../../../harness/conventions.md#mr-028) [`MR-029`](../../../../harness/conventions.md#mr-029) [`MR-030`](../../../../harness/conventions.md#mr-030) — 0 offen (geprüft 2026-10-08).
 
 ## 8. Sub-Area-Prüfungen und Modus-Begründung
 
