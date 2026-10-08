@@ -16,7 +16,7 @@ das publizierte Image), [ADR-0043](../../adr/0043-multi-arch-ein-bau-getestet-da
 
 **Autor:** Claude. **Datum:** 2026-10-08.
 
-**Lerneintrag — Form:** wird bei Closure benannt.
+**Lerneintrag — Form:** neuer Sensor.
 
 ---
 
@@ -63,15 +63,15 @@ Funktion, die `--selftest` deckt (verlangte gegen gescannte Architektur, fehlend
 
 ## 2. Definition of Done
 
-- [ ] `tools/image-scan.sh`: je Referenz und Plattform ein Lauf; die gescannte Architektur wird aus
+- [x] `tools/image-scan.sh`: je Referenz und Plattform ein Lauf; die gescannte Architektur wird aus
       Trivys Ausgabe gelesen und gegen die verlangte gehalten (Abweichung oder fehlende Angabe ⇒
       „GESCHEITERT", Exit 2); Gegenprobe gegen ein reines amd64-Image (rot mit Meldung).
-- [ ] `--selftest` deckt die neue Auswertung (Architektur-Abgleich) netzlos ab.
-- [ ] Sensor-Datei `harness/sensors/image-scan.md`, Gate-Index-Zelle; CHANGELOG `[Unreleased]`.
-- [ ] Unabhängiger Review, Report unter [`docs/reviews/`](../../../reviews/README.md).
-- [ ] Closure-Notiz mit Steering-Loop-Lerneintrag.
-- [ ] Beobachtungs-Register fortgeschrieben (oder „keine Beobachtung" notiert).
-- [ ] Jedes Risiko aus §6 trägt einen Ausgang.
+- [x] `--selftest` deckt die neue Auswertung (Architektur-Abgleich) netzlos ab.
+- [x] Sensor-Datei `harness/sensors/image-scan.md`, Gate-Index-Zelle; CHANGELOG `[Unreleased]`.
+- [x] Unabhängiger Review, Report unter [`docs/reviews/`](../../../reviews/README.md).
+- [x] Closure-Notiz mit Steering-Loop-Lerneintrag.
+- [x] Beobachtungs-Register fortgeschrieben (oder „keine Beobachtung" notiert).
+- [x] Jedes Risiko aus §6 trägt einen Ausgang.
 
 `make gates` und `make verify` grün; `make image-scan` einmal gegen das Publizierte gelaufen.
 
@@ -97,11 +97,52 @@ DoD vollständig, `make gates` und `make verify` grün, Closure-Notiz mit Lernei
 ## 6. Risiken und offene Punkte
 
 - **Doppelte Laufzeit des Nachtlaufs:** vier Plattform-Läufe statt zwei Referenz-Läufe, je mit
-  Vollbericht und Entscheidungslauf. — **Ausgang:** *(bei Closure zuzuweisen: eingetreten / entfallen / weiter offen)*
+  Vollbericht und Entscheidungslauf. — **Ausgang:** *entfallen* — gestrichen mit Begründung: die
+  Zahl der Läufe ist gestiegen (je Referenz und Plattform drei: Architektur, Vollbericht,
+  Entscheidung), der befürchtete Schaden nicht — der Lauf gegen das Publizierte brauchte lokal
+  wenige Minuten bei einer Vuln-DB im Cache, das Zeitlimit des Workflows sind 30 Minuten.
 
 ## 7. Closure-Notiz
 
-*(folgt bei Closure)*
+**Lerneintrag — Form: neuer Sensor.** `make image-scan` scannt jede publizierte Referenz je
+Plattform und weist vor dem Entscheidungslauf die **gescannte Architektur** nach
+(`architektur_ok`, gedeckt von `--selftest`). Gemessen vor dem Code: Trivy fällt bei
+`--platform` still auf die vorhandene Plattform zurück — ein `--platform` allein hätte einen
+arm64-Scan behauptet und amd64 geprüft. Gegenprobe am reinen amd64-Image `v0.22.0`: rot mit
+„Trivy hat die Architektur 'amd64' gescannt, verlangt war 'arm64'"; ohne den Abgleich grün.
+
+**Geliefert:** `tools/image-scan.sh` (Plattform-Schleife, Architektur-Lauf, Selbsttest mit
+sieben Zähl- und fünf Architektur-Fällen), Sensor-Datei, Gate-Index, CHANGELOG `[Unreleased]`.
+Lauf gegen das Publizierte: vier Scans sauber, gescannt amd64 bzw. arm64.
+
+**Was hat funktioniert:** Die Messung vor dem Code (M3) — sie hat die Falle gefunden, bevor ein
+Satz über „arm64 gescannt" geschrieben war. Mess-Regel 5 hat hier vorab gegriffen.
+
+**Was ging anders als geplant:** Der erste Wurf stellte die Entscheidung auf JSON um und verlor
+dabei still die Anker-Probe des Selbsttests — der dritte Beleg für
+`BEO-GATE/umbau-verliert-pruefung-still`. Die Antwort war Zurücksetzen und Ergänzen statt Flicken;
+der Entscheidungslauf bleibt beim Template aus [ADR-0037](../../adr/0037-cve-scan-gegen-das-publizierte-image.md).
+
+**Steering-Loop-Eintrag:** neuer Sensor — liegt in `Makefile:image-scan` (`tools/image-scan.sh`,
+Architektur-Abgleich). Auslöser: [ADR-0043](../../adr/0043-multi-arch-ein-bau-getestet-dann-getaggt.md)
+§Konsequenzen (benannte Lücke), keine Register-Schwelle.
+
+**Lese-Schritt (wellenlos, vor dem `git mv`):** `BEO-GATE/umbau-verliert-pruefung-still` erreicht
+mit diesem Slice 3× — Ausgang *geplant*: slice-222 (in `open/`) misst, ob ein Sensor auf das
+Verschwinden benannter Proben möglich ist, und verkörpert die Klasse.
+
+**Beobachtungs-Register (`../observations/`):** `BEO-GATE/umbau-verliert-pruefung-still` → 3×,
+*geplant* (slice-222).
+
+**Folge-Slices:** slice-222 (Umbau hält bestehende Prüfungen) — in `open/`.
+
+**Risiken aus §6:** das eine Risiko trägt seinen Ausgang (*entfallen*, mit Begründung).
+
+**Drei Paarungen:** Anker — der Zielort `Makefile:image-scan` existiert, kein `seit`-Anker verlangt
+(Auslöser ist eine ADR, keine Register-Schwelle) · Folge-Slice — slice-222 existiert in `open/` ·
+Register — der genannte Pfad existiert mit nicht leerem `evidence/`.
+
+**Trigger-Audit der aktiven MR:** [`MR-016`](../../../../harness/conventions.md#mr-016) [`MR-019`](../../../../harness/conventions.md#mr-019) [`MR-025`](../../../../harness/conventions.md#mr-025) [`MR-027`](../../../../harness/conventions.md#mr-027) [`MR-028`](../../../../harness/conventions.md#mr-028) [`MR-029`](../../../../harness/conventions.md#mr-029) [`MR-030`](../../../../harness/conventions.md#mr-030) — 0 offen (geprüft 2026-10-08).
 
 ## 8. Sub-Area-Prüfungen und Modus-Begründung
 
