@@ -44,6 +44,13 @@ Lauf-Fehler, den das Skript schon heute als „GESCHEITERT" meldet.
 behauptete arm64 und prüfte amd64. Die gescannte Architektur ist darum aus Trivys Ergebnis zu lesen
 und gegen die verlangte zu halten; Abweichung ist „GESCHEITERT", nicht grün.
 
+**Plan-Änderung 2026-10-08 (Review F-1/F-2/F-3, vor dem Fix):** Der Entscheidungslauf bleibt beim
+**Template**-Format mit den Fixtures, die
+[ADR-0037](../../adr/0037-cve-scan-gegen-das-publizierte-image.md) §Fitness Function nennt — der
+erste Wurf hatte ihn auf JSON umgestellt und dabei die Anker-Probe still verloren. Den Nachweis der
+gescannten Architektur trägt ein **eigener** JSON-Lauf je Plattform; der Abgleich ist eine
+Funktion, die `--selftest` deckt (verlangte gegen gescannte Architektur, fehlende Angabe).
+
 **Ausdrücklich NICHT in diesem Slice** — je Punkt mit Begründung:
 
 - **Weitere Plattformen.** *Bestand bleibt bewusst stehen*: das Image hat genau zwei
