@@ -12,7 +12,7 @@ das publizierte Image), [ADR-0043](../../adr/0043-multi-arch-ein-bau-getestet-da
 
 **Berührte Spec-Stellen:** — · Der Slice berührt kein Spec-Stratum.
 
-**Verantwortlich:** —
+**Verantwortlich:** Claude — gesetzt beim Übergang nach `next/` (Maintainer: „ja angehen“, 2026-10-08).
 
 **Autor:** Claude. **Datum:** 2026-10-08.
 
