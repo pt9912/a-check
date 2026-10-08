@@ -33,16 +33,17 @@
 # PLATTFORMEN: jede Referenz wird je Plattform gescannt (IMAGE_SCAN_PLATFORMS,
 # ADR-0043). Trivys `--platform` ist dabei KEIN Nachweis: gemessen faellt Trivy
 # bei einem Bild ohne die verlangte Plattform STILL auf die vorhandene zurueck
-# (Exit 0, gescannt amd64 statt arm64; slice-221). Darum liest der
-# Entscheidungslauf die gescannte Architektur aus Trivys JSON und haelt sie gegen
-# die verlangte; Abweichung oder fehlende Angabe heisst GESCHEITERT.
+# (Exit 0, gescannt amd64 statt arm64; slice-221). Darum liest ein eigener
+# Lauf je Plattform die gescannte Architektur aus Trivys JSON und haelt sie
+# gegen die verlangte (Funktion `architektur_ok`, gedeckt von --selftest);
+# Abweichung oder fehlende Angabe heisst GESCHEITERT. Der Entscheidungslauf
+# bleibt beim Template (ADR-0037 §Fitness Function).
 #
-# GRENZE: der Zaehl-Pfad zaehlt Zeilen mit dem Schluessel "VulnerabilityID" in
-# Trivys JSON, und die Architektur steht unter "architecture" — benennt Trivy
-# die Schluessel um, zaehlt er nichts bzw. findet keine Architektur. Das zweite
-# ist rot (GESCHEITERT), das erste saehe aus wie ein sauberes Bild. Der
-# Digest-Pin haelt das still, solange er steht; --selftest deckt die Auswertung,
-# nicht die Schluessel.
+# GRENZE: der Zaehl-Pfad prueft, ob Trivys Template ZEILEN liefert — nicht, ob
+# die Feldnamen (.Vulnerabilities, .Severity, .FixedVersion) noch heissen wie
+# hier notiert. Benennt Trivy sie um, rendert das Template nichts, und das
+# saehe aus wie ein sauberes Bild. Der Digest-Pin haelt das still, solange er
+# steht; --selftest deckt die Auswertung, nicht die Feldnamen.
 #
 # Exit-Codes: 0 = keine behebbaren CRITICAL/HIGH, 1 = solche gefunden,
 #             2 = Scan gescheitert oder Pruefmenge leer.
@@ -70,40 +71,47 @@ TRIVY_DIGEST="${TRIVY_DIGEST:-sha256:62b1e65e8869bc4b4c6aa4fa2b21595256c7c2f6018
 # Inhalts-Gleichheit da.
 IMAGE_SCAN_REFS="${IMAGE_SCAN_REFS:-ghcr.io/pt9912/a-check:latest pt9912/a-check:latest}"
 
-# Die Plattformen des Image-Index (ADR-0043). Jede Referenz wird je Plattform
-# gescannt; die gescannte Architektur wird nachgeprueft (siehe Kopf).
+# Die Plattformen des Image-Index (ADR-0043).
 IMAGE_SCAN_PLATFORMS="${IMAGE_SCAN_PLATFORMS:-linux/amd64 linux/arm64}"
 
 # Cache ausserhalb des Repos: der Arbeitsbaum bleibt sauber, und `git status`
 # meldet keine Werkzeug-Artefakte. XDG_CACHE_HOME wird geehrt.
 CACHE="${TRIVY_CACHE:-${XDG_CACHE_HOME:-$HOME/.cache}/a-check/trivy}"
 
-# Der Entscheidungslauf liefert Trivys JSON (eingerueckt, ein Schluessel je
-# Zeile). Ausgewertet wird es mit grep/sed statt eines JSON-Parsers — ein
-# Fremd-Interpreter waere eine vierte Toolchain (AGENTS.md §3.1).
+# Eine Zeile je Befund plus ein zaehlbarer Marker — Trivys eigenes
+# Template-Format statt eines JSON-Parsers. Ein Fremd-Interpreter waere eine
+# vierte Toolchain (AGENTS.md §3.1).
+TPL='{{ range . }}{{ range .Vulnerabilities }}FINDING {{ .Severity }} {{ .PkgName }} {{ .InstalledVersion }} -> fix {{ .FixedVersion }} {{ .VulnerabilityID }}
+{{ end }}{{ end }}'
 
-# Die Auswertung als eigene Funktionen, damit sie NETZLOS pruefbar ist. Ohne
+# Die Auswertung als eigene Funktion, damit sie NETZLOS pruefbar ist. Ohne
 # diesen Einstieg waere die Semantik nur mit Netz zu pruefen und damit
 # praktisch gar nicht (ADR-0037 §Fitness Function).
 zaehle() {
-  # Ein Befund = eine Zeile, die mit dem Schluessel "VulnerabilityID" BEGINNT
-  # (nach Einrueckung). `grep -c` liefert 1, wenn nichts passt — deshalb
-  # `|| true`, sonst risse der Zaehl-Pfad den Lauf ab und ein SAUBERES Image
-  # saehe aus wie ein Fehler.
-  printf '%s' "$1" | grep -cE '^[[:space:]]*"VulnerabilityID":' || true
+  # `grep -c` liefert 1, wenn nichts passt — deshalb `|| true`, sonst risse der
+  # Zaehl-Pfad den Lauf ab und ein SAUBERES Image saehe aus wie ein Fehler.
+  printf '%s' "$1" | grep -c '^FINDING ' || true
 }
 
+# Gescannte Architektur aus Trivys JSON: die erste "architecture"-Angabe
+# (Metadata.ImageConfig) oder leer — nie ein Abbruch.
 architektur() {
-  # Erste "architecture"-Angabe (Metadata.ImageConfig) oder leer — nie ein
-  # Abbruch: leer erreicht die Pruefung, die es als GESCHEITERT meldet.
   printf '%s' "$1" | grep -oE '"architecture":[[:space:]]*"[^"]*"' | sed -n 1p \
     | sed 's/.*"\([^"]*\)"$/\1/' || true
 }
 
-befunde() {
-  # Lesbare Zeile je Befund: ID und Paket, aus den Schluesseln des JSON.
-  printf '%s' "$1" | grep -E '^[[:space:]]*"(VulnerabilityID|PkgName)":' \
-    | sed 's/^[[:space:]]*"[A-Za-z]*":[[:space:]]*"\([^"]*\)".*/\1/' | paste -d' ' - - || true
+# architektur_ok <plattform> <trivy-json> — 0, wenn die gescannte Architektur der
+# verlangten entspricht (linux/arm64 -> arm64); sonst 1 und eine Meldung auf
+# stdout. Eine fehlende Angabe ist KEIN Erfolg.
+architektur_ok() {
+  local want got
+  want="${1#*/}"
+  got="$(architektur "$2")"
+  if [ -n "${got}" ] && [ "${got}" = "${want}" ]; then
+    return 0
+  fi
+  echo "Trivy hat die Architektur '${got:-<keine Angabe>}' gescannt, verlangt war '${want}'"
+  return 1
 }
 
 if [ "${1:-}" = "--selftest" ]; then
@@ -122,34 +130,37 @@ if [ "${1:-}" = "--selftest" ]; then
   probe "leere Ausgabe"              ''                                                '0'
   probe "nur Leerzeile"              '
 '                                                                                      '0'
-  probe "ein Befund"                 '      "VulnerabilityID": "CVE-1",'              '1'
-  probe "zwei Befunde"               '      "VulnerabilityID": "CVE-1",
-      "VulnerabilityID": "CVE-2",'                                                     '2'
-  # Die eigentliche Probe des Ankers: der Schluessel MITTEN in einem Text (etwa
-  # einer Beschreibung) ist kein Befund. Ohne sie waere der Anker `^` nicht von
-  # einem `grep VulnerabilityID` zu unterscheiden.
-  probe "Schluessel nur im Text"     '      "Description": "see \"VulnerabilityID\": x",' '0'
-  probe "Warnzeile dazwischen"       'WARN irgendwas
-      "VulnerabilityID": "CVE-1",'                                                     '1'
-  # Ein leerer Wert zaehlt MIT: die Zeile existiert, also gab es einen Befund.
-  # Wer hier 0 erwartete, verwechselte fehlende Metadaten mit fehlendem Fund.
-  probe "ID leer"                    '      "VulnerabilityID": "",'                   '1'
-  arch() {
-    local name="$1" eingabe="$2" erwartet="$3" got
-    got="$(architektur "$eingabe")"
+  probe "ein Befund"                 'FINDING HIGH x/net v0.1 -> fix 0.2 CVE-1'         '1'
+  probe "zwei Befunde"               'FINDING HIGH a v1 -> fix 2 CVE-1
+FINDING CRITICAL b v3 -> fix 4 CVE-2'                                                  '2'
+  # Die eigentliche Probe des Ankers: ein Marker MITTEN in der Zeile ist kein
+  # Befund. Ohne sie waere `grep FINDING` von `grep '^FINDING '` nicht zu
+  # unterscheiden.
+  probe "Marker nur am Zeilenende"   'xx FINDING HIGH a v1 -> fix 2 CVE-1'             '0'
+  probe "Trivy-Warnzeile dazwischen" 'WARN irgendwas
+FINDING HIGH a v1 -> fix 2 CVE-1'                                                      '1'
+  # Leer gerenderte Felder zaehlen MIT: die Zeile existiert, also gab es einen
+  # Befund. Wer hier 0 erwartete, verwechselte fehlende Metadaten mit fehlendem
+  # Fund.
+  probe "Feldnamen leer gerendert"   'FINDING    ->  fix  '                            '1'
+  # Architektur-Abgleich (slice-221): der Ausgang von architektur_ok, nicht nur
+  # der Extraktor — ohne den Abgleich waere ein reines amd64-Bild als arm64 grün.
+  archprobe() {
+    local name="$1" plat="$2" eingabe="$3" erwartet="$4" got
+    if architektur_ok "$plat" "$eingabe" >/dev/null; then got=ok; else got=abweichung; fi
     if [ "$got" = "$erwartet" ]; then
-      printf '  ok   %-34s %s\n' "$name" "${erwartet:-<leer>}"
+      printf '  ok   %-34s %s\n' "$name" "$erwartet"
     else
-      printf '  FAIL %-34s erwartet %s, war: %s\n' "$name" "${erwartet:-<leer>}" "${got:-<leer>}"
+      printf '  FAIL %-34s erwartet %s, war: %s\n' "$name" "$erwartet" "$got"
       fails=$((fails + 1))
     fi
   }
-  arch "Architektur arm64"           '      "architecture": "arm64",'                  'arm64'
-  arch "Architektur amd64"           '"architecture":"amd64"'                           'amd64'
-  # Fehlt die Angabe, ist das Ergebnis LEER — und leer ist im Lauf GESCHEITERT.
-  arch "Architektur fehlt"           '      "os": "linux",'                            ''
-  arch "erste Angabe gilt"           '      "architecture": "arm64",
-      "architecture": "amd64",'                                                         'arm64'
+  archprobe "arm64 verlangt, arm64 gescannt" linux/arm64 '      "architecture": "arm64",' ok
+  archprobe "arm64 verlangt, amd64 gescannt" linux/arm64 '      "architecture": "amd64",' abweichung
+  archprobe "amd64 verlangt, amd64 gescannt" linux/amd64 '"architecture":"amd64"'        ok
+  archprobe "Angabe fehlt"                   linux/arm64 '      "os": "linux",'           abweichung
+  archprobe "erste Angabe gilt"              linux/arm64 '      "architecture": "amd64",
+      "architecture": "arm64",'                                                     abweichung
   echo
   echo "== Fehlschlaege: $fails"
   [ "$fails" -eq 0 ]
@@ -164,6 +175,10 @@ if [ -z "$(printf '%s' "${IMAGE_SCAN_REFS}" | tr -d '[:space:]')" ]; then
   echo "image-scan: IMAGE_SCAN_REFS ist leer — nichts zu pruefen ist KEIN gruener Befundstand." >&2
   exit 2
 fi
+if [ -z "$(printf '%s' "${IMAGE_SCAN_PLATFORMS}" | tr -d '[:space:]')" ]; then
+  echo "image-scan: IMAGE_SCAN_PLATFORMS ist leer — nichts zu pruefen ist KEIN gruener Befundstand." >&2
+  exit 2
+fi
 
 mkdir -p "$CACHE"
 
@@ -174,23 +189,29 @@ trivy() {
     image --no-progress --scanners vuln --exit-code 0 "$@"
 }
 
-if [ -z "$(printf '%s' "${IMAGE_SCAN_PLATFORMS}" | tr -d '[:space:]')" ]; then
-  echo "image-scan: IMAGE_SCAN_PLATFORMS ist leer — nichts zu pruefen ist KEIN gruener Befundstand." >&2
-  exit 2
-fi
-
 findings=0
 errored=0
 
 for ref in ${IMAGE_SCAN_REFS}; do
  for plat in ${IMAGE_SCAN_PLATFORMS}; do
-  want="${plat#*/}"
+  # Erst der Nachweis, WELCHES Bild Trivy fuer diese Plattform liest; ohne ihn
+  # gelten die zwei Laeufe darunter nicht als Befund fuer ${plat}.
+  if ! meta="$(trivy --platform "${plat}" --severity CRITICAL --format json "${ref}")"; then
+    echo "image-scan: Architektur-Lauf fuer ${ref} (${plat}) ist GESCHEITERT."
+    errored=1
+    continue
+  fi
+  if ! msg="$(architektur_ok "${plat}" "${meta}")"; then
+    echo "image-scan: ${ref} (${plat}): ${msg} — GESCHEITERT (kein Nachweis fuer ${plat})."
+    errored=1
+    continue
+  fi
+
   echo "=============================================================="
   echo "== Vollbericht (alle Schweregrade): ${ref} (${plat})"
   echo "=============================================================="
   # Faellt nie an Befunden — beantwortet "was steckt gerade drin", auch wenn
-  # nichts davon behebbar ist. Welche Architektur er zeigt, weist der
-  # Entscheidungslauf darunter nach.
+  # nichts davon behebbar ist.
   if ! trivy --platform "${plat}" --severity CRITICAL,HIGH,MEDIUM,LOW,UNKNOWN --format table "${ref}"; then
     echo "image-scan: Scan von ${ref} (${plat}) ist GESCHEITERT (nicht: Befunde gefunden)."
     errored=1
@@ -203,24 +224,17 @@ for ref in ${IMAGE_SCAN_REFS}; do
   echo "--------------------------------------------------------------"
   # Nur DIESER Lauf entscheidet ueber rot (ADR-0037 Punkt 3).
   if ! out="$(trivy --platform "${plat}" --severity CRITICAL,HIGH --ignore-unfixed \
-               --format json "${ref}")"; then
+               --format template --template "${TPL}" "${ref}")"; then
     echo "image-scan: Entscheidungslauf fuer ${ref} (${plat}) ist GESCHEITERT."
-    errored=1
-    continue
-  fi
-
-  got="$(architektur "${out}")"
-  if [ "${got}" != "${want}" ]; then
-    echo "image-scan: ${ref} (${plat}): Trivy hat die Architektur '${got:-<keine Angabe>}' gescannt, verlangt war '${want}' — GESCHEITERT (kein Nachweis fuer ${plat})."
     errored=1
     continue
   fi
 
   count="$(zaehle "${out}")"
   if [ "${count}" = "0" ]; then
-    echo "OK — keine behebbaren CRITICAL/HIGH in ${ref} (${plat}, gescannt: ${got})."
+    echo "OK — keine behebbaren CRITICAL/HIGH in ${ref} (${plat}, gescannt: ${plat#*/})."
   else
-    befunde "${out}" | sed 's/^/  /'
+    printf '%s\n' "${out}" | grep '^FINDING ' | sed 's/^FINDING /  /'
     echo "image-scan: ${ref} (${plat}): ${count} behebbare CRITICAL/HIGH-Befunde."
     findings=1
   fi
