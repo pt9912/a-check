@@ -232,3 +232,94 @@ Konflikt-Pfad über den Architect (`modul-08`).
 
 **Übergabe:** an den Implementer. Dieser Report ist Lauf-Beleg, keine Verifikation — DoD-/Spec-
 Konformität prüft der Verifier separat (Modul 11).
+
+---
+
+## Delta-Review
+
+**Gegenstand:** `b1b27d9..6086b87` — `d280cc7` (Plan-Änderung nach Review), `6086b87` (Fix).
+**Review-Art:** unabhängiger Lauf, derselbe Reviewer-Kontext wie oben, frischer Klon im
+Scratchpad auf `6086b87` · **Modell:** claude-opus-5-5 · **Datum:** 2026-10-08
+
+### Stand der Findings
+
+| Finding | Stand | Beleg (selbst gefahren) |
+|---|---|---|
+| F-1 HIGH | **behoben** | Klon mit echtem Hook (`core.hooksPath .githooks`): `git commit -a` nur README → entstanden, `git status` leer, `git fsck` ohne Fehler; `commit -a` mit entferntem `exit 2` (`tools/ci-commit-range.sh`) ohne Trailer → abgelehnt, genau diese Zeile gemeldet, Index intakt; Teil-Commit `git commit -- <datei>` ohne Trailer → abgelehnt, Index intakt; mit Trailer → entstanden, 2 Dateien im Commit, Status leer, fsck sauber |
+| F-2 MEDIUM | **behoben**, Rest als Grenze benannt | Probe B (Prüfung in `x.sh` weg, nacktes `exit 1` in `y.sh` neu) → jetzt Exit 1 mit `exit 1` gemeldet; Probe B2 (neues `exit 1` in **derselben** Datei) → Exit 0 — so in Skript-Kopf, Sensor-Datei §Grenze 3 und Regel-Datei benannt |
+| F-3 MEDIUM | **behoben** | `d280cc7`: Namen, Hook und Zählstellen-Dateien in §1b und §3 |
+| F-4 LOW | **behoben** | `color.ui=always` → Exit 1 (vorher 0); zusätzlich `diff.noprefix` und `diff.mnemonicPrefix` → je Exit 1 |
+| F-5 LOW | **behoben** | YAML-Zeile `- run: echo "::error::kaputt"` in Spalte 0 → Exit 1 (vorher 0); Selbsttest-Fall „Inhalt beginnt mit -" |
+| F-6 LOW | **behoben** | Anker-Probe ohne `set -e`-Abbruch (`anker=1; grep … && anker=0`) |
+| F-7 LOW | **behoben** | „WARUM ALLE HIER" |
+| F-8 LOW | **behoben** | Exit-2-Zeile nennt `git diff --cached`; der Pfad ist jetzt fail-closed mit Meldung |
+| F-9 INFO | angenommen | `exit [12]([^0-9]|$)`, Kommentarzeilen (`^#`) ausgenommen; Selbsttest-Fälle `exit 10`, Kommentar |
+| F-10/F-11 INFO | in die Closure verwiesen | — |
+
+**Weiter ohne Befund geprüft:** Selbsttest 20 Fälle `ok`, Exit 0 · die drei Belege mit
+abgeschaltetem Grandfathering je Exit 1 (6/6/5 Zeilen), die verlorene Prüfung jeweils dabei
+(„Config sagt", „OCI-Label … ist leer", „Marker nur am Zeilenende") · Bestand mit der **neuen**
+Fassung nachgemessen: **12 von 94** Werkzeug-Commits vor `4c07156` — gleich der alten Zahl ·
+auskommentierte Prüfung, gelöschte Datei, Umbenennung mit entfernter Prüfung → je Exit 1;
+reine Umbenennung → Exit 0; Dateiname mit Leerzeichen, Prüfung in andere Datei verschoben →
+Exit 1 · `make pruefung-entfernt-check RANGE=b1b27d9..6086b87` Exit 0 (der Fix-Commit trägt den
+Trailer) · `make doc-check`, `doc-structure`, `doc-targets`, `doc-mentions` je Exit 0.
+
+### Neue Findings
+
+#### D-1 — Range-Modus meldet „ok", wenn `git show` scheitert
+
+- `kategorie`: LOW
+- `quelle`: Sensor-Datei §Ausgänge (Exit 2 für einen nicht prüfbaren Gegenstand); Mess-Regel 3
+- `pfad`: `tools/pruefung-entfernt-check.sh:81,179`
+- `befund`: `check_commit` läuft als `check_commit "$sha" || fail=1`, also ohne `errexit`; ein
+  scheiterndes `git show` in `weg="$(git show … | …)"` ergibt leere Ausgabe und `return 0`.
+  Probe: Wegwerf-Repo, Blob der entfernten Fassung gelöscht → `git show` Exit 128, der Sensor
+  druckt `fatal: unable to read …` und danach „ok: 1 Commit(s) … geprueft", Exit 0. Der
+  Pending-Modus ist für denselben Fall seit `6086b87` fail-closed, der Range-Modus nicht.
+  Auslöser im Betrieb selten (fehlende Objekte); die CI holt `fetch-depth: 0`.
+- `verifizierbar`: ja — Wegwerf-Repo, ein Objekt löschen, `make`-Lauf.
+- `klasse`: Prüfer-Fehlschlag im Range-Modus als grün gewertet
+
+#### D-2 — Bestandszahl als „Fassung vor der Datei-Bindung" eingeschränkt, obwohl sie für die neue gilt
+
+- `kategorie`: INFO
+- `quelle`: Mess-Regel 1
+- `pfad`: `harness/sensors/pruefung-entfernt-check.md` §Grenze 3; `tools/pruefung-entfernt-check.sh:14-15`
+- `befund`: Die Sensor-Datei schränkt „12 von 94" auf die alte Fassung ein, der Skript-Kopf
+  nennt die Zahl ohne Einschränkung. Nachgemessen mit `6086b87`: ebenfalls 12 von 94 — beide
+  Sätze stimmen, sie sagen es nur verschieden.
+- `verifizierbar`: ja — Schleife über `git rev-list 4c07156~1 -- tools .github/workflows`.
+- `klasse`: Messwert an eine engere Aussage gehängt
+
+#### D-3 — Der Sensor verlangte für seinen eigenen Fix den Trailer
+
+- `kategorie`: INFO
+- `quelle`: Plan §1b (Kosten)
+- `pfad`: `6086b87` (Message)
+- `befund`: Selbsttest-Fixtures tragen die Muster (`fail "`, `exit 1`) als Text; jedes
+  Umschreiben der Fixtures eines Werkzeugs unter `tools/` löst die Regel aus. Das ist von der
+  Grenze „Kommentarzeilen zählen nicht" nicht gedeckt und als Reibung zu erwarten — ein
+  Datenpunkt für die Closure, kein Defekt.
+- `verifizierbar`: ja — `make pruefung-entfernt-check RANGE=6086b87~1..6086b87` ohne Trailer
+  wäre rot.
+- `klasse`: Muster trifft Nicht-Fehlerpunkte
+
+### Summary (Delta)
+
+| Kategorie | Anzahl |
+|---|---|
+| HIGH | 0 |
+| MEDIUM | 0 |
+| LOW | 1 |
+| INFO | 2 |
+
+**Finding-Klassen des Delta:** Prüfer-Fehlschlag im Range-Modus als grün gewertet · Messwert
+an eine engere Aussage gehängt · Muster trifft Nicht-Fehlerpunkte
+
+### Verdikt (Delta)
+
+**Merge-blockierend: nein.** F-1 bis F-8 sind behoben und gegen Proben nachgefahren. F-1 ist
+mit dem echten Hook in einem frischen Klon über drei Commit-Wege ausgeschlossen, Index und
+`fsck` sind sauber. Offen ist D-1 (LOW). Implementer entscheidet: annehmen oder begründen.
+Kein Konflikt-Pfad nötig.
