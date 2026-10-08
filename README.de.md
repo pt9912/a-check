@@ -72,6 +72,9 @@ Mechanismen, dieselben sieben Regeln. a-check ersetzt sie durch **ein** Tool:
 - **Ein Distributionsweg:** digest-gepinntes Container-Image plus
   mitgeliefertes `a-check.mk` statt n gepflegter Kopien
   ([AC-FA-DIST-001](spec/lastenheft.md#ac-fa-dist-001--distribution-image---print-mk-a-checkmk)).
+  Das Image gibt es für **`linux/amd64` und `linux/arm64`** unter **einem** Digest; auf macOS mit
+  Apple Silicon laufen Docker Desktop und Colima das arm64-Bild nativ
+  ([Handbuch, macOS](docs/user/benutzerhandbuch.md#macos-docker-desktop-und-colima)).
 
 Es ist das **Architektur-Gegenstück zu `d-check`** (Doku-Referenzen):
 dieselbe Gründungslogik (eine Familie driftender Skripte durch ein Werkzeug

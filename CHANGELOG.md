@@ -15,6 +15,8 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
 ### Added
 
+- **README (de/en): Plattformen und macOS** — der Distributions-Punkt nennt `linux/amd64` und
+  `linux/arm64` unter einem Digest und verweist auf den macOS-Abschnitt des Handbuchs.
 - **Benutzerhandbuch: a-check auf macOS** mit Docker Desktop und Colima — welche Plattform
   gezogen wird und wie man es prüft, welche Verzeichnisse die Linux-VM sieht (ein Repo außerhalb:
   unter Docker Desktop ein Mount-Fehler, unter Colima ein leerer Baum) und was das Projekt geprüft

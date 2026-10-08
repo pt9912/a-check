@@ -71,6 +71,9 @@ mechanisms, the same seven rules. a-check replaces them with **one** tool:
 - **One distribution path:** a digest-pinned container image plus a shipped `a-check.mk`
   instead of N maintained copies
   ([AC-FA-DIST-001](spec/lastenheft.md#ac-fa-dist-001--distribution-image---print-mk-a-checkmk)).
+  The image is built for **`linux/amd64` and `linux/arm64`** under **one** digest; on macOS with
+  Apple Silicon, Docker Desktop and Colima run the arm64 image natively
+  ([handbook, macOS](docs/user/benutzerhandbuch.md#macos-docker-desktop-und-colima)).
 
 It is the **architecture counterpart to `d-check`** (doc references): the same founding logic
 (replace a family of drifting scripts with one tool), one abstraction level higher.
