@@ -55,9 +55,16 @@ Präzision im Bestand: 3 echte Verluste unter 12 Treffern; Kosten: eine Zeile in
 Werkzeug-Commit.
 
 **Plan-Änderung 2026-10-08 (nach der Messung, vor dem Code):** Verkörpert wird als **Sensor**
-`make verify-pruefung-entfernt` (Range-Prüfung wie `commit-scope-check`, im `preflight` und im
-CI-Workflow über die Commit-Range) plus die Regel-Datei, die den Trailer beschreibt. Eine
+`make pruefung-entfernt-check` (Range-Prüfung wie `commit-scope-check`, im `commit-msg`-Hook gegen
+den Index, im `preflight` und im CI-Workflow über die Commit-Range) plus die Regel-Datei, die den Trailer beschreibt. Eine
 Prosa-Regel daneben entfällt — M4 zeigt, dass der Sensor auch die unbenannte Hälfte trifft.
+
+**Plan-Änderung 2026-10-08 (Review F-1/F-2/F-3, vor dem Fix):** Der Selbsttest, der vor jedem
+Lauf startet, darf den Index des aufrufenden Repos nicht berühren — im Hook setzt git bei
+`commit -a`/`commit <pfad>` einen absoluten `GIT_INDEX_FILE`; das Wegwerf-Repo läuft darum ohne
+die git-Umgebung des Aufrufers. „Verschoben" heißt **dieselbe Zeile in derselben Datei**, gezählt
+als Multimenge, nicht als Menge über den ganzen Commit. Die Zählstellen der Range-Schritte in
+`releasing.md`, `harness/README.md` und einem `state.md` gehören dazu (AGENTS §4).
 
 **Ausdrücklich NICHT in diesem Slice** — je Punkt mit Begründung:
 
@@ -87,9 +94,10 @@ Prosa-Regel daneben entfällt — M4 zeigt, dass der Sensor auch die unbenannte 
 
 | Datei / Komponente | Änderungs-Art | Begründung |
 |---|---|---|
-| `tools/verify-pruefung-entfernt.sh` | neu | Sensor mit Selbsttest (synthetisches Repo) |
-| `Makefile`, `.github/workflows/ci.yml`, `.claude/hooks/pretooluse-command-guard.sh` | update | Target, Range-Schritt in CI und `preflight`, Guard-Liste |
-| `harness/rules/entfernte-pruefungen.md`, `AGENTS.md` §5, `harness/README.md`, `harness/sensors/verify-pruefung-entfernt.md` | neu / update | Regel, Zeiger, Gate-Index, Sensor-Datei |
+| `tools/pruefung-entfernt-check.sh` | neu | Sensor mit Selbsttest (Wegwerf-Repo ohne git-Umgebung des Aufrufers) |
+| `Makefile`, `.github/workflows/ci.yml`, `.githooks/commit-msg`, `.claude/hooks/pretooluse-command-guard.sh` | update | Target, Range-Schritt in CI und `preflight`, Hook, Guard-Liste |
+| `harness/rules/entfernte-pruefungen.md`, `AGENTS.md` §5, `harness/README.md`, `harness/sensors/pruefung-entfernt-check.md` | neu / update | Regel, Zeiger, Gate-Index, Sensor-Datei |
+| `docs/user/releasing.md`, `harness/README.md`, `BEO-GATE/preflight-deckt-den-ci-schritt-nicht/state.md` | update | Zählstellen der Range-Schritte ohne Zahl |
 
 ## 4. Trigger
 
