@@ -10,7 +10,7 @@
 #      eine Fehlerpunkt-Zeile unter tools/ oder .github/workflows/, trägt die
 #      Message `Entfernte-Pruefungen: <Grund>`.
 #
-# WARUM BEIDE HIER. Ein Sensor, der erst in der CI greift, meldet korrekt und
+# WARUM ALLE HIER. Ein Sensor, der erst in der CI greift, meldet korrekt und
 # trotzdem zu spät: nach dem Push ist die Korrektur ein Rebase auf
 # veröffentlichter Historie. Am 2026-08-09 real aufgetreten (CI-Run
 # 31301467076) — drei `(planning)`-Commits, alle mit grünem `make gates` davor,

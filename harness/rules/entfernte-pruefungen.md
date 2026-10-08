@@ -4,7 +4,7 @@
 
 **Entfernt ein Commit unter `tools/` oder `.github/workflows/` eine Fehlerpunkt-Zeile** —
 `fail "`, `::error::`, `exit 1`/`exit 2`, `probe "`, `assert ` — und steht dieselbe Zeile im
-selben Commit nicht wieder da, trägt seine Message eine Zeile
+selben Commit nicht in derselben Datei wieder da, trägt seine Message eine Zeile
 
 ```text
 Entfernte-Pruefungen: <ersetzt durch …> | <entfällt, weil …>
