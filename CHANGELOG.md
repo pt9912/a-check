@@ -6,6 +6,8 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
+## [0.23.1] - 2026-10-08
+
 ### Changed
 
 - **`make image-scan` prüft jede Plattform:** der CVE-Scan des publizierten Images läuft je
