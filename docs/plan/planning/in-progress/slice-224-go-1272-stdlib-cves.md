@@ -26,8 +26,8 @@ entscheiden behebbare CRITICAL/HIGH), [ADR-0038](../../adr/0038-dependabot-als-h
 **Ziel:** Das Release-Image wird mit Go **1.27.2** gebaut; die zwei behebbaren HIGH-Befunde aus dem
 Nachtlauf `image-scan` vom 2026-10-09 (Lauf 37918923676) entfallen:
 `CVE-2026-78667` (`net/http`, DoS) und `CVE-2026-97031` (`crypto/tls`, DoS), beide in `stdlib`
-`v1.27.0`, behoben in 1.26.9 / 1.27.2. Die Mindestversion im `go.mod` beider Module steht auf
-`1.27.2` (Maintainer: „Go ≥ 1.27.2").
+`v1.27.0`, behoben in 1.26.9 / 1.27.2. Gebaut wird beide Module mit Go 1.27.2 (Maintainer:
+„Go ≥ 1.27.2").
 
 **Ausdrücklich NICHT in diesem Slice** — je Punkt mit Begründung:
 
@@ -35,6 +35,12 @@ Nachtlauf `image-scan` vom 2026-10-09 (Lauf 37918923676) entfallen:
   Release; nach der Incident-Klausel in `releasing.md` ist das ein Fix-Forward-Patch-Release
   (`v0.23.2`) und folgt unmittelbar auf diesen Slice (Maintainer-Wort 2026-10-10: „Bitte auch ein
   Release erstellen").
+- **Die `go`-Direktive in den `go.mod`.** *Bestand bleibt bewusst stehen* (Plan-Änderung vor dem
+  Code-Commit, 2026-10-10): sie nennt die Mindest-Sprachversion, nicht die Build-Toolchain — die
+  setzt das digest-gepinnte Basis-Image. Gemessen: mit `go 1.27.2` lädt der Lint-Container
+  (golangci-lint `v2.13.2` mit Go 1.27.0; auch `v2.14.0` bringt nur 1.27.1) eine Toolchain aus dem
+  Netz nach, und die Typprüfung bricht (`export data version 5 is greater than maximum supported
+  version 4`). Für den CVE-Fix zählt allein, womit das ausgelieferte Binary gebaut wird.
 - **`golangci-lint`-Image.** *Bestand bleibt bewusst stehen*: es baut nicht das ausgelieferte
   Binary; der Scan betrifft das Release-Bild.
 - **Warum Dependabot den Hub nicht gemeldet hat.** *Ein anderer Vorgang*: nach dem Release prüfen,
@@ -43,7 +49,7 @@ Nachtlauf `image-scan` vom 2026-10-09 (Lauf 37918923676) entfallen:
 ## 2. Definition of Done
 
 - [ ] `golang`-Basis auf `1.27.2` mit Index-Digest in `Dockerfile` und `tools/archive-wave/Dockerfile`;
-      `GO_VERSION` in beiden Makefiles; `go`-Direktive `1.27.2` in beiden `go.mod`.
+      `GO_VERSION` in beiden Makefiles.
 - [ ] Beleg vor dem Release: Trivy gegen das lokal gebaute Multi-Arch-Archiv (`--input`) zeigt
       beide CVEs nicht mehr, je Plattform; Gegenprobe: das Archiv mit 1.27.0 zeigt sie.
 - [ ] CHANGELOG `[Unreleased]`.
@@ -59,8 +65,8 @@ eine Versions-Hebung mit Messung vorher und nachher.
 
 | Datei / Komponente | Änderungs-Art | Begründung |
 |---|---|---|
-| `Dockerfile`, `Makefile`, `go.mod` | update | Toolchain 1.27.2 |
-| `tools/archive-wave/Dockerfile`, `tools/archive-wave/Makefile`, `tools/archive-wave/go.mod` | update | dasselbe für das Werkzeug |
+| `Dockerfile`, `Makefile` | update | Toolchain 1.27.2 |
+| `tools/archive-wave/Dockerfile`, `tools/archive-wave/Makefile` | update | dasselbe für das Werkzeug |
 | `CHANGELOG.md` | update | Sicherheits-Hebung, für Konsumenten sichtbar |
 
 ## 4. Trigger
