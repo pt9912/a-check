@@ -6,6 +6,8 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
+## [0.23.2] - 2026-10-10
+
 ### Security
 
 - **Go-Toolchain 1.27.2:** das Binary im Image wird mit Go 1.27.2 gebaut (Basis-Image per
