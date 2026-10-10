@@ -18,7 +18,7 @@ Sensor, dessen Befund keinen Weg nach oben hatte), [ADR-0030](../../adr/0030-kei
 
 **Autor:** Claude. **Datum:** 2026-10-10.
 
-**Lerneintrag — Form:** wird bei Closure benannt.
+**Lerneintrag — Form:** neuer Sensor.
 
 ---
 
@@ -75,19 +75,19 @@ das so.
 
 ## 2. Definition of Done
 
-- [ ] [ADR-0044](../../adr/0044-dependabot-docker-woertliche-tags.md) `Accepted`, [ADR-0038](../../adr/0038-dependabot-als-hebungskanal.md) `Superseded by [ADR-0044`](../../adr/0044-dependabot-docker-woertliche-tags.md), ADR-Index nachgezogen.
-- [ ] `.github/dependabot.yml`: `docker` für `/` und `/tools/archive-wave`, Präfix mit der Kennung
-      der neuen ADR (Trace-Gate gemessen: ohne Kennung rot, mit Kennung grün).
-- [ ] Beide Dockerfiles: wörtliche Tags, keine Versions-`ARG`; Makefiles, `tools/image-multiarch.sh`
-      und `tools/archive-wave/Makefile` ohne die Variablen; Dockerfile-Zeilen **gebaut** (`make ci`).
-- [ ] Gegenprobe der Wirkung: Dependabots Regex gegen die neuen `FROM`-Zeilen ergibt für **alle**
-      Basis-Images eine Abhängigkeit (Messung wie in §1, hier mit Ergebnis ins Closure).
-- [ ] `make version-coherence`: Regel (3) mit Selbsttest in beiden Richtungen; Gegenprobe am echten
-      Dockerfile (`${…}` einbauen, Befund sehen, zurücknehmen).
-- [ ] slice-225 §2/§6 nachgezogen (kein `GOLANGCI_LINT_VERSION` mehr; Wächter benannt).
-- [ ] Sensor-Datei und Gate-Index-Zeile von `version-coherence` nachgezogen.
-- [ ] Closure-Notiz mit Steering-Loop-Lerneintrag; Register fortgeschrieben.
-- [ ] Jedes Risiko aus §6 trägt einen Ausgang.
+- [x] **Kanal:** [ADR-0044](../../adr/0044-dependabot-docker-woertliche-tags.md) `Accepted`,
+      [ADR-0038](../../adr/0038-dependabot-als-hebungskanal.md) `Superseded`, Index nachgezogen;
+      `.github/dependabot.yml` mit `docker` für `/` und `/tools/archive-wave`, Präfix mit der Kennung
+      (Trace-Gate gemessen: ohne Kennung rot, mit Kennung grün); Gegenprobe der Wirkung: Dependabots
+      Regex ergibt für alle Basis-Image-Zeilen eine Abhängigkeit.
+- [x] **Ein Ort je Version:** wörtliche Tags in beiden Dockerfiles, keine Versions-`ARG`; Makefiles,
+      `tools/image-multiarch.sh` und `tools/archive-wave/Makefile` ohne die Variablen; gebaut
+      (`make ci`, Mehr-Plattform-Bau); slice-225 und `docs/user/releasing.md` nachgezogen.
+- [x] **Gate für die Form:** `make version-coherence` Regel (3) mit Selbsttest in beiden Richtungen
+      und Gegenprobe am echten Dockerfile (Befund gesehen); Sensor-Datei und Gate-Index nachgezogen.
+- [x] Closure-Notiz mit Steering-Loop-Lerneintrag.
+- [x] Beobachtungs-Register fortgeschrieben.
+- [x] Jedes Risiko aus §6 trägt einen Ausgang.
 
 `make ci`, `make archive-wave-test`, `make gates` und `make verify` grün. Ein unabhängiger Review
 ist nicht vorgesehen ([MR-019](../../../../harness/conventions.md#mr-019): Opt-in); die Messungen
@@ -121,14 +121,58 @@ DoD vollständig, `make ci`/`gates`/`verify` grün, Closure-Notiz mit Lerneintra
 ## 6. Risiken und offene Punkte
 
 - **Dependabot schreibt den Index-Digest eines Multi-Arch-Tags falsch oder gar nicht fort:** die
-  Regex-Messung belegt nur das Erkennen der Zeile, nicht die Fortschreibung. — **Ausgang:** *(bei
-  Closure zuzuweisen: eingetreten / entfallen / weiter offen)*
+  Regex-Messung belegt nur das Erkennen der Zeile, nicht die Fortschreibung. — **Ausgang:** *weiter
+  offen* — Beobachtungs-Register: `BEO-GATE/hebungskanal-haengt-an-repo-externen-schaltern` (2×).
 - **PR-Rauschen:** drei Basis-Images in zwei Dockerfiles können wöchentlich bis zu sechs PRs
-  öffnen. — **Ausgang:** *(bei Closure zuzuweisen: eingetreten / entfallen / weiter offen)*
+  öffnen. — **Ausgang:** *weiter offen* — Beobachtungs-Register:
+  `BEO-GATE/hebungskanal-haengt-an-repo-externen-schaltern` (2×); ob das Limit von fünf trägt,
+  zeigt erst die PR-Menge.
 
 ## 7. Closure-Notiz
 
-*(folgt bei Closure)*
+**Lerneintrag — Form: neuer Sensor.** `make version-coherence` prüft Regel (3): eine `FROM`-Zeile
+mit `@sha256:` trägt einen wörtlichen Tag. Der Grund ist eine Messung am fremden Parser, nicht eine
+Annahme: Dependabot verwirft `golang:${GO_VERSION}@sha256:…` ohne Meldung, ein `docker`-Eintrag in
+`dependabot.yml` wäre also grün geblieben und hätte nur `distroless` gesehen. Ohne den Sensor könnte
+ein späterer Umbau (zurück zu einer Variable) den Kanal still abschalten.
+
+**Geliefert:** [ADR-0044](../../adr/0044-dependabot-docker-woertliche-tags.md) (ersetzt
+[ADR-0038](../../adr/0038-dependabot-als-hebungskanal.md)); `docker`-Eintrag für `/` und
+`/tools/archive-wave`; wörtliche Tags in beiden Dockerfiles, Versions-`ARG`, Makefile-Variablen und
+`--build-arg`-Weitergabe entfallen; Sensor-Regel (3) mit Selbsttest in beiden Richtungen.
+
+**Messung:** Dependabots Regex (aus der Quelle, Stand `dc25739e`) gegen die Dockerfiles: vorher nur
+`distroless` als Abhängigkeit, nachher alle fünf Basis-Image-Zeilen. Gegenprobe der Sensor-Regel an
+Kopien des echten Dockerfile: Variable im Tag → Befund im Text, Digest ohne Tag → Befund im Text.
+Trace-Gate: Botschaft ohne Kennung Exit 2, mit der Kennung im Präfix Exit 0. Der Mehr-Plattform-Bau liefert
+denselben Index-Digest wie vor dem Umbau (`sha256:ac0ef8f5…`) — das Image ändert sich nicht.
+
+**Was hat funktioniert:** die Frage des Maintainers („warum bewusst nicht?") als Auslöser, und das
+Messen des fremden Parsers, bevor die Konfiguration geschrieben wurde: Der naheliegende Slice
+(„`docker` in `dependabot.yml` aufnehmen") wäre wirkungslos gewesen.
+
+**Was ging anders als geplant:** Der Slice wurde größer als eine Konfigurationszeile: ein Ort je
+Version war nötig, weil ein Dependabot-PR nur die `FROM`-Zeile ändert und `version-coherence` sonst
+an jedem solchen PR rot wäre. Regel (2) dieses Sensors verliert damit ihren heutigen Gegenstand
+(bleibt für künftige Doppel-Deklarationen, mit Selbsttest). slice-225 wurde nachgezogen: die Version
+des Lint-Images steht nur noch in der `FROM`-Zeile, der Wächter ist der Dependabot-PR.
+
+**Steering-Loop-Eintrag:** neuer Sensor — liegt in `Makefile:version-coherence`
+(`tools/verify-versions-kohaerent.sh`, Regel 3, `seit slice-226`).
+
+**Beobachtungs-Register (`../observations/`):**
+`BEO-GATE/hebungskanal-haengt-an-repo-externen-schaltern` bekommt einen zweiten Beleg (2×): der
+Kanal hängt auch an Dependabots Parser. Unter der Schwelle, Stand `offen`.
+
+**Folge-Slices:** slice-225 (Lint-Pin und `go`-Direktive; wartet auf ein golangci-lint-Release mit
+Go ≥ 1.27.2).
+
+**Risiken aus §6:** beide tragen den Ausgang *weiter offen* (Register).
+
+**Drei Paarungen:** Anker — `seit slice-226` steht im Sensor (Zielort) · Folge-Slice — slice-225
+existiert im Lifecycle · Register — der genannte Pfad existiert mit nicht leerem `evidence/`.
+
+**Trigger-Audit der aktiven MR:** [`MR-016`](../../../../harness/conventions.md#mr-016) [`MR-019`](../../../../harness/conventions.md#mr-019) [`MR-025`](../../../../harness/conventions.md#mr-025) [`MR-027`](../../../../harness/conventions.md#mr-027) [`MR-028`](../../../../harness/conventions.md#mr-028) [`MR-029`](../../../../harness/conventions.md#mr-029) [`MR-030`](../../../../harness/conventions.md#mr-030) — 0 offen (geprüft 2026-10-10).
 
 ## 8. Sub-Area-Prüfungen und Modus-Begründung
 
