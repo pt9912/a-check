@@ -14,7 +14,7 @@ Sensor, dessen Befund keinen Weg nach oben hatte), [ADR-0030](../../adr/0030-kei
 
 **Berührte Spec-Stellen:** — · Betriebs-/Prozess-Entscheidung, kein Spec-Stratum.
 
-**Verantwortlich:** —
+**Verantwortlich:** Claude
 
 **Autor:** Claude. **Datum:** 2026-10-10.
 
