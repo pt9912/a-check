@@ -9,9 +9,9 @@ include d-check.mk
 # Diese beiden gehen als --build-arg ins Dockerfile und stechen dort den
 # ARG-Default. WIRKSAM ist keine von beiden: neben dem Tag steht ein Digest, und
 # der sticht den Tag. Die Zahl benennt also, was im gepinnten Image liegt —
-# gemessen 1.27.0 bzw. 2.13.2 — und `make version-coherence` haelt sie gegen die
+# gemessen 1.27.2 bzw. 2.13.2 — und `make version-coherence` haelt sie gegen die
 # ARG-Defaults, damit die beiden Orte nicht auseinanderlaufen (slice-131).
-GO_VERSION            ?= 1.27.0
+GO_VERSION            ?= 1.27.2
 GOLANGCI_LINT_VERSION ?= v2.13.2
 IMAGE                 ?= a-check
 

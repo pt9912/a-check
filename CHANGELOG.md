@@ -6,6 +6,13 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
+### Security
+
+- **Go-Toolchain 1.27.2:** das Binary im Image wird mit Go 1.27.2 gebaut (Basis-Image per
+  Index-Digest gepinnt). Damit entfallen drei behebbare HIGH-Befunde der Standardbibliothek, die der
+  nächtliche CVE-Scan am publizierten `v0.23.1` auf beiden Plattformen meldete: `CVE-2026-78667`
+  (`net/http`, DoS), `CVE-2026-78669` und `CVE-2026-97031` (`crypto/tls`, DoS).
+
 ## [0.23.1] - 2026-10-08
 
 ### Changed

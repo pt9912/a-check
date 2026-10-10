@@ -3,7 +3,7 @@
 # Jede Gate ist eine Stage (`docker build --target …`); Bases sind
 # digest-gepinnt (AC-QA-03 Reproduzierbarkeit). Das Laufzeit-Image ist
 # statisch gelinkt auf distroless/static (AC-QA-02, AC-FA-DIST-001).
-ARG GO_VERSION=1.27.0
+ARG GO_VERSION=1.27.2
 ARG GOLANGCI_LINT_VERSION=v2.13.2
 
 # ---- deps ------------------------------------------------------------------
@@ -11,7 +11,7 @@ ARG GOLANGCI_LINT_VERSION=v2.13.2
 # eine andere ist: die build-Stufe kompiliert per GOOS/GOARCH für die
 # Ziel-Plattform, darum braucht der Mehr-Plattform-Bau keinen Emulator
 # (ADR-0043). Bei einem Bau für die eigene Plattform ist beides dieselbe.
-FROM --platform=$BUILDPLATFORM golang:${GO_VERSION}@sha256:0ecdc2a9f6156af6451080bfe3d8382a662fcc4e209608c6f919e643453514c1 AS deps
+FROM --platform=$BUILDPLATFORM golang:${GO_VERSION}@sha256:5bc7f572bbaa98885a3a1fd9c0aa76b59e3e14e8628bfc316bbfd0c701e4818c AS deps
 WORKDIR /src
 ENV GOFLAGS="-mod=readonly -buildvcs=false" \
     GOMODCACHE=/go/pkg/mod \

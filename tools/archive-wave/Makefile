@@ -8,7 +8,7 @@
 # tools/archive-wave <target>` aus dem Wurzel-Makefile eines
 # aufrufenden Repos — beide Wege landen auf denselben Targets.
 
-GO_VERSION    ?= 1.27.0
+GO_VERSION    ?= 1.27.2
 IMAGE         ?= archive-wave
 PROGRESS_FLAG ?=
 # abspath: `docker run -v` verlangt einen absoluten Host-Pfad, ein
