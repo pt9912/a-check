@@ -1,4 +1,4 @@
-# slice-224 — Go-Toolchain auf 1.27.2: zwei behebbare HIGH-CVEs der Standardbibliothek
+# slice-224 — Go-Toolchain auf 1.27.2: behebbare HIGH-CVEs der Standardbibliothek
 
 **Lifecycle:** Der Zustand dieses Slice ist das Verzeichnis, in dem diese
 Datei liegt — eines von `open/`, `next/`, `in-progress/`, `done/`. Er
@@ -23,9 +23,10 @@ entscheiden behebbare CRITICAL/HIGH), [ADR-0038](../../adr/0038-dependabot-als-h
 
 ## 1. Ziel und Abgrenzung
 
-**Ziel:** Das Release-Image wird mit Go **1.27.2** gebaut; die zwei behebbaren HIGH-Befunde aus dem
+**Ziel:** Das Release-Image wird mit Go **1.27.2** gebaut; die behebbaren HIGH-Befunde aus dem
 Nachtlauf `image-scan` vom 2026-10-09 (Lauf 37918923676) entfallen:
-`CVE-2026-78667` (`net/http`, DoS) und `CVE-2026-97031` (`crypto/tls`, DoS), beide in `stdlib`
+`CVE-2026-78667` (`net/http`, DoS) und `CVE-2026-97031` (`crypto/tls`, DoS) — der lokale Lauf am
+2026-10-10 zeigt dazu `CVE-2026-78669` —, alle in `stdlib`
 `v1.27.0`, behoben in 1.26.9 / 1.27.2. Gebaut wird beide Module mit Go 1.27.2 (Maintainer:
 „Go ≥ 1.27.2").
 
@@ -51,7 +52,8 @@ Nachtlauf `image-scan` vom 2026-10-09 (Lauf 37918923676) entfallen:
 - [ ] `golang`-Basis auf `1.27.2` mit Index-Digest in `Dockerfile` und `tools/archive-wave/Dockerfile`;
       `GO_VERSION` in beiden Makefiles.
 - [ ] Beleg vor dem Release: Trivy gegen das lokal gebaute Multi-Arch-Archiv (`--input`) zeigt
-      beide CVEs nicht mehr, je Plattform; Gegenprobe: das Archiv mit 1.27.0 zeigt sie.
+      die CVEs nicht mehr, je Plattform; Gegenprobe: das publizierte, mit 1.27.0 gebaute Image zeigt
+      sie.
 - [ ] CHANGELOG `[Unreleased]`.
 - [ ] Closure-Notiz mit Steering-Loop-Lerneintrag.
 - [ ] Beobachtungs-Register fortgeschrieben (oder „keine Beobachtung" notiert).
