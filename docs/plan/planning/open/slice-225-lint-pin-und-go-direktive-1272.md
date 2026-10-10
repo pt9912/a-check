@@ -7,7 +7,7 @@ wechselt nur durch `git mv` (`make slice-mv`).
 **Welle:** ohne Welle — die Closure-Bedingung wäre die eigene DoD.
 
 **Bezug:** [ADR-0005](../../adr/0005-lint-profil.md) (Lint-Profil),
-[ADR-0038](../../adr/0038-dependabot-als-hebungskanal.md) (Hebung als bewusster Commit),
+[ADR-0044](../../adr/0044-dependabot-docker-woertliche-tags.md) (der Kanal; Dependabot hebt die Basis-Images),
 [AC-QA-03](../../../../spec/lastenheft.md#ac-qa-03--reproduzierbarkeit) (digest-gepinnte Basis).
 
 **Berührte Spec-Stellen:** — · Der Slice berührt kein Spec-Stratum.
@@ -42,8 +42,9 @@ supported version 4`). Auch `v2.14.0`, Stand 2026-10-10 das neueste Tag, bringt 
 
 ## 2. Definition of Done
 
-- [ ] `GOLANGCI_LINT_VERSION` in `Makefile` und `Dockerfile` auf das neue Tag, Digest im `FROM`
-      gehoben; gemessen: Programm **und** Image-Go ≥ 1.27.2.
+- [ ] Die `FROM`-Zeile der `lint`-Stage im `Dockerfile` auf das neue Tag samt Digest gehoben (der
+      Dependabot-PR dafür, sobald das Release erscheint, oder von Hand); gemessen: Programm **und**
+      Image-Go ≥ 1.27.2. Die Version steht nur dort — kein Makefile, keine `ARG`.
 - [ ] `go 1.27.2` in `go.mod` und `tools/archive-wave/go.mod`; `make lint` lädt keine Toolchain
       nach (Lint-Lauf ohne `toolchain`-Download in der Ausgabe).
 - [ ] CHANGELOG `[Unreleased]`, falls die Mindestversion für Konsumenten sichtbar ist (Bau aus
@@ -60,14 +61,14 @@ Versions-Hebung mit Messung vorher und nachher.
 
 | Datei / Komponente | Änderungs-Art | Begründung |
 |---|---|---|
-| `Makefile`, `Dockerfile` | update | Lint-Pin (Tag + Digest) |
+| `Dockerfile` | update | Lint-Pin (Tag + Digest in der `FROM`-Zeile) |
 | `go.mod`, `tools/archive-wave/go.mod` | update | `go 1.27.2` |
 | `CHANGELOG.md` | update | nur falls für Konsumenten sichtbar |
 
 ## 4. Trigger
 
 **Start** (`open` → `next`): ein golangci-lint-Release ist auf Docker Hub, dessen Programm mit
-Go ≥ 1.27.2 gebaut ist — prüfbar mit `golangci-lint version` im Image („built with go1.27.2" oder
+Go ≥ 1.27.2 gebaut ist — der Wächter ist der Dependabot-PR für das Lint-Image (`build(docker)`) — prüfbar mit `golangci-lint version` im Image („built with go1.27.2" oder
 höher). Stand 2026-10-10 nicht erfüllt (`v2.14.0`: built with go1.27.0).
 
 **Rückführungen:** `in-progress` → `open` (blockiert): das neue golangci-lint meldet Befunde, die
@@ -81,8 +82,9 @@ DoD vollständig, Gates grün, Closure-Notiz mit Lerneintrag.
 
 - **Das neue golangci-lint meldet neue Befunde:** ein Minor-Sprung bringt oft neue Prüfungen in
   aktivierten Linter mit. — **Ausgang:** *(bei Closure zuzuweisen: eingetreten / entfallen / weiter offen)*
-- **Der Trigger hat keinen Wächter:** Dependabot führt das Ökosystem `docker` bewusst nicht; ohne
-  Nachsehen bleibt der Slice liegen. — **Ausgang:** *(bei Closure zuzuweisen: eingetreten / entfallen / weiter offen)*
+- **Der Trigger hat einen Wächter, aber der PR sagt nichts über die Go-Version des Programms:**
+  Dependabot meldet ein neues Tag, nicht womit golangci-lint gebaut ist; die Messung im Image
+  bleibt Handarbeit. — **Ausgang:** *(bei Closure zuzuweisen: eingetreten / entfallen / weiter offen)*
 
 ## 7. Closure-Notiz
 
@@ -94,7 +96,7 @@ DoD vollständig, Gates grün, Closure-Notiz mit Lerneintrag.
 
 **Vorgelagert — offene Beobachtungen sichten** (2026-10-10):
 `BEO-GATE/versionsangabe-neben-digest-ungeprueft` (verkörpert) — Tag und Digest zusammen heben,
-`make version-coherence` hält `GOLANGCI_LINT_VERSION` zwischen Makefile und Dockerfile;
+`make version-coherence` hält die `FROM`-Zeile lesbar (Regel 3, [`ADR-0044`](../../adr/0044-dependabot-docker-woertliche-tags.md));
 `BEO-GATE/hebungskanal-haengt-an-repo-externen-schaltern` (1×) — berührt das zweite Risiko.
 
 **Modus-Begründungsblock:** alle berührten Sub-Areas GF.
