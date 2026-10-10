@@ -6,13 +6,9 @@
 
 include d-check.mk
 
-# Diese beiden gehen als --build-arg ins Dockerfile und stechen dort den
-# ARG-Default. WIRKSAM ist keine von beiden: neben dem Tag steht ein Digest, und
-# der sticht den Tag. Die Zahl benennt also, was im gepinnten Image liegt —
-# gemessen 1.27.3 bzw. 2.13.2 — und `make version-coherence` haelt sie gegen die
-# ARG-Defaults, damit die beiden Orte nicht auseinanderlaufen (slice-131).
-GO_VERSION            ?= 1.27.3
-GOLANGCI_LINT_VERSION ?= v2.13.2
+# Die Versionen der Basis-Images stehen genau einmal: woertlich in den
+# FROM-Zeilen der Dockerfiles (ADR-0044). Eine Variable hier waere ein zweiter Ort,
+# und ein Dependabot-PR aenderte nur die FROM-Zeile.
 IMAGE                 ?= a-check
 
 # VERSION fließt ins OCI-Label org.opencontainers.image.version (Dockerfile
@@ -37,9 +33,7 @@ PROGRESS_FLAG ?=
 # nur nie auf `run` ausgedehnt. Dogfooding: was a-check seinen Konsumenten
 # liefert, gilt hier auch.
 DOCKER ?= docker
-DOCKER_BUILD := $(DOCKER) build $(PROGRESS_FLAG) \
-    --build-arg GO_VERSION=$(GO_VERSION) \
-    --build-arg GOLANGCI_LINT_VERSION=$(GOLANGCI_LINT_VERSION)
+DOCKER_BUILD := $(DOCKER) build $(PROGRESS_FLAG)
 
 # Gate-Stages werden bewusst nicht gecacht (sonst „grün" aus altem Layer).
 NO_CACHE_FILTER_LINT := --no-cache-filter lint
@@ -242,7 +236,7 @@ image-test: $(if $(IMAGE_REF),,build) ## AC-FA-DIST-001 + nativ==Container-Akzep
 # ELF, Versions-Label) — ein Lauf auf arm64 ist es nicht.
 image-multiarch: ## Release-Bild fuer linux/amd64+linux/arm64 als EIN Image-Index (OCI-Archiv) bauen und pruefen (ADR-0043; nicht in gates). Ausgabe MULTIARCH_OUT; mit PUSH_NAME=<repo> zusaetzlich Upload ohne Tag.
 	@DOCKER=$(DOCKER) VERSION=$(VERSION) BUILDKIT_IMAGE=$(BUILDKIT_IMAGE) OUT=$(MULTIARCH_OUT) PUSH_NAME=$(PUSH_NAME) \
-	  GO_VERSION=$(GO_VERSION) GOLANGCI_LINT_VERSION=$(GOLANGCI_LINT_VERSION) bash tools/image-multiarch.sh
+	  bash tools/image-multiarch.sh
 
 ci: gates image-test ## CI-äquivalenter Lauf: gates + image-test (AC-FA-DIST-001).
 	@echo "[ci] gates + image-test grün"
@@ -288,8 +282,8 @@ hooks: ## git-Hooks installieren (core.hooksPath -> .githooks; commit-msg Tracea
 # per README-Zusage, kein Import aus einem d-check-internen Paket). Eigenes
 # go.mod, darum eigenes Test-Target statt Teil von `make test`.
 archive-wave-test: ## archive-wave-Testsuite (eigenes go.mod, nicht Teil von `make test`).
-	$(MAKE) -C tools/archive-wave test GO_VERSION=$(GO_VERSION) PROGRESS_FLAG='$(PROGRESS_FLAG)'
+	$(MAKE) -C tools/archive-wave test PROGRESS_FLAG='$(PROGRESS_FLAG)'
 
 archive-wave: ## Welle oder wellenlosen Slice archivieren: make archive-wave WELLE=welle-NN|SLICE=slice-NNN|REVIEW=datei.md [APPLY=1].
 	$(MAKE) -C tools/archive-wave run WELLE=$(WELLE) SLICE=$(SLICE) REVIEW=$(REVIEW) APPLY=$(APPLY) ROOT=$(CURDIR) \
-	    GO_VERSION=$(GO_VERSION) PROGRESS_FLAG='$(PROGRESS_FLAG)'
+	    PROGRESS_FLAG='$(PROGRESS_FLAG)'

@@ -3,15 +3,15 @@
 # Jede Gate ist eine Stage (`docker build --target …`); Bases sind
 # digest-gepinnt (AC-QA-03 Reproduzierbarkeit). Das Laufzeit-Image ist
 # statisch gelinkt auf distroless/static (AC-QA-02, AC-FA-DIST-001).
-ARG GO_VERSION=1.27.3
-ARG GOLANGCI_LINT_VERSION=v2.13.2
 
 # ---- deps ------------------------------------------------------------------
 # Läuft auf der Plattform des Bau-Rechners ($BUILDPLATFORM), auch wenn das Ziel
 # eine andere ist: die build-Stufe kompiliert per GOOS/GOARCH für die
 # Ziel-Plattform, darum braucht der Mehr-Plattform-Bau keinen Emulator
 # (ADR-0043). Bei einem Bau für die eigene Plattform ist beides dieselbe.
-FROM --platform=$BUILDPLATFORM golang:${GO_VERSION}@sha256:f20d83a83e18dbd2a4714b8ffd4b30b287b6243962dd75608e86abcc63ba4efc AS deps
+# Tag und Digest stehen woertlich in der FROM-Zeile: Dependabot liest nur eine
+# woertliche Version (ADR-0044), und die Zeile ist der einzige Ort der Zahl.
+FROM --platform=$BUILDPLATFORM golang:1.27.3@sha256:f20d83a83e18dbd2a4714b8ffd4b30b287b6243962dd75608e86abcc63ba4efc AS deps
 WORKDIR /src
 ENV GOFLAGS="-mod=readonly -buildvcs=false" \
     GOMODCACHE=/go/pkg/mod \
@@ -26,7 +26,7 @@ COPY . .
 RUN CGO_ENABLED=0 go build -o /tmp/a-check ./cmd/a-check
 
 # ---- lint ------------------------------------------------------------------
-FROM golangci/golangci-lint:${GOLANGCI_LINT_VERSION}@sha256:ba07dffad130794ae79ebaa0056809d18c0168f3f846480ffd3eb6c04578b83d AS lint
+FROM golangci/golangci-lint:v2.13.2@sha256:ba07dffad130794ae79ebaa0056809d18c0168f3f846480ffd3eb6c04578b83d AS lint
 WORKDIR /src
 ENV GOFLAGS="-buildvcs=false"
 COPY --from=deps /go/pkg/mod /go/pkg/mod

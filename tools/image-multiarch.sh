@@ -24,8 +24,6 @@ set -euo pipefail
 : "${VERSION:?VERSION fehlt}"
 : "${BUILDKIT_IMAGE:?BUILDKIT_IMAGE fehlt}"
 : "${OUT:?OUT fehlt}"
-: "${GO_VERSION:?GO_VERSION fehlt}"
-: "${GOLANGCI_LINT_VERSION:?GOLANGCI_LINT_VERSION fehlt}"
 
 digest="${BUILDKIT_IMAGE##*@sha256:}"
 [ "$digest" != "$BUILDKIT_IMAGE" ] || { echo "image-multiarch: BUILDKIT_IMAGE ist nicht digest-gepinnt: $BUILDKIT_IMAGE" >&2; exit 2; }
@@ -48,8 +46,6 @@ fi
   --target runtime \
   --provenance=false --sbom=false \
   --build-arg VERSION="$VERSION" \
-  --build-arg GO_VERSION="$GO_VERSION" \
-  --build-arg GOLANGCI_LINT_VERSION="$GOLANGCI_LINT_VERSION" \
   -o "type=oci,dest=$OUT" "${push_out[@]}" .
 
 bash tools/multiarch-check.sh "$OUT" "$VERSION"

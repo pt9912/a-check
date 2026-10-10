@@ -8,7 +8,6 @@
 # tools/archive-wave <target>` aus dem Wurzel-Makefile eines
 # aufrufenden Repos — beide Wege landen auf denselben Targets.
 
-GO_VERSION    ?= 1.27.3
 IMAGE         ?= archive-wave
 PROGRESS_FLAG ?=
 # abspath: `docker run -v` verlangt einen absoluten Host-Pfad, ein
@@ -21,11 +20,11 @@ help: ## Targets anzeigen
 	@grep -E '^[a-zA-Z_-]+:.*##' $(MAKEFILE_LIST) | sort
 
 test: ## Testsuite fahren (Docker, kein Host-Go)
-	docker build $(PROGRESS_FLAG) --build-arg GO_VERSION=$(GO_VERSION) \
+	docker build $(PROGRESS_FLAG) \
 	    --target test -f Dockerfile -t $(IMAGE):test .
 
 build: ## Binary-Image bauen
-	docker build $(PROGRESS_FLAG) --build-arg GO_VERSION=$(GO_VERSION) \
+	docker build $(PROGRESS_FLAG) \
 	    -f Dockerfile -t $(IMAGE):latest .
 
 run: build ## Welle, wellenlosen Slice oder eigenstaendigen Review archivieren: make run WELLE=welle-NN|SLICE=slice-NNN|REVIEW=datei.md [ROOT=/pfad] [APPLY=1].
