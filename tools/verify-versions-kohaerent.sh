@@ -19,6 +19,11 @@
 #       Tag-Kommentar (Vorfall 1+2)
 #   (2) Pin-Deklarations-Kohaerenz — eine Versions-Variable, die Makefile UND
 #       Dockerfile fuehren, hat an beiden Orten denselben Wert (Vorfall 3)
+#   (3) Lesbare FROM-Zeile — eine FROM-Zeile mit @sha256: traegt einen
+#       WOERTLICHEN Tag (ADR-0044). Dependabot macht aus einer Zeile nur dann eine
+#       Abhaengigkeit, wenn der Tag im Text steht; `golang:${GO_VERSION}@sha256:…`
+#       verwirft er ohne Meldung, und der docker-Eintrag in dependabot.yml bliebe
+#       gueltig und wirkungslos.
 #
 # NICHT GEPRUEFT, und das ist die Grenze: ob eine Angabe der WAHRHEIT
 # entspricht. Zwei uebereinstimmend falsche Werte bleiben gruen. Der Sensor
@@ -35,6 +40,8 @@ cd "$(dirname "$0")/.."
 WF_DIR="${WF_DIR:-.github/workflows}"
 MAKEFILE="${MAKEFILE_PATH:-Makefile}"
 DOCKERFILE="${DOCKERFILE_PATH:-Dockerfile}"
+# Regel (3) liest jede Datei dieser Liste; Regel (2) nur $DOCKERFILE.
+FROM_DATEIEN="${FROM_DATEIEN:-Dockerfile tools/archive-wave/Dockerfile}"
 
 # ---------------------------------------------------------------- Regel (1) --
 # Ausgabe je Fund: "<sha> <tag> <datei>:<zeile>". Der Tag-Kommentar ist das
@@ -92,6 +99,34 @@ check_pins() {
   return "$fail"
 }
 
+# ---------------------------------------------------------------- Regel (3) --
+# Ausgabe je FROM-Zeile mit Digest: "<datei>:<zeile> <referenz>" — die Referenz ist
+# das Wort mit "@sha256:" (nicht die --platform-Option, die ebenfalls "$" tragen darf).
+from_refs() {
+  local f
+  for f in $FROM_DATEIEN; do
+    [ -f "$f" ] || continue
+    awk -v F="$f" '
+      /^[[:space:]]*[Ff][Rr][Oo][Mm][[:space:]]/ {
+        for (i = 1; i <= NF; i++) if ($i ~ /@sha256:/) { print F ":" FNR " " $i; break }
+      }' "$f"
+  done
+}
+
+check_from() {
+  local fail=0 ort ref name
+  while read -r ort ref; do
+    [ -n "$ort" ] || continue
+    name="${ref%%@*}"
+    case "$name" in
+      *'$'*) echo "versions-kohaerenz: FAIL — $ort: Tag nicht woertlich ('$name'); Dependabot verwirft die Zeile (ADR-0044)" >&2; fail=1 ;;
+      *:*) ;;
+      *)    echo "versions-kohaerenz: FAIL — $ort: Digest ohne Tag ('$name'); es gibt nichts zu heben (ADR-0044)" >&2; fail=1 ;;
+    esac
+  done <<< "$(from_refs)"
+  return "$fail"
+}
+
 # ----------------------------------------------------------------- Selbsttest --
 # Beide Richtungen JEDER Regel. Die gute Fixture ist die wichtigere: ein Sensor,
 # der immer feuert, ist von einem korrekten nicht zu unterscheiden — dieselbe
@@ -141,6 +176,30 @@ self_test() {
   fi
 
   MAKEFILE="$MK_SAVE"; DOCKERFILE="$DF_SAVE"
+
+  # (3a) Variable im Tag, Digest ohne Tag -> je ein Befund
+  local FD_SAVE="$FROM_DATEIEN" sha_d='sha256:0000000000000000000000000000000000000000000000000000000000000000'
+  FROM_DATEIEN="$tmp/Df.var"
+  printf 'FROM golang:${GO_VERSION}@%s AS deps\n' "$sha_d" > "$tmp/Df.var"
+  if check_from >/dev/null 2>&1; then
+    echo "verify-versions-kohaerent: Selbsttest FEHLGESCHLAGEN — Variable im Tag nicht erkannt" >&2
+    FROM_DATEIEN="$FD_SAVE"; rm -rf "$tmp"; exit 2
+  fi
+  FROM_DATEIEN="$tmp/Df.notag"
+  printf 'FROM golang@%s AS deps\n' "$sha_d" > "$tmp/Df.notag"
+  if check_from >/dev/null 2>&1; then
+    echo "verify-versions-kohaerent: Selbsttest FEHLGESCHLAGEN — Digest ohne Tag nicht erkannt" >&2
+    FROM_DATEIEN="$FD_SAVE"; rm -rf "$tmp"; exit 2
+  fi
+
+  # (3b) woertlicher Tag; --platform mit Variable; Stage-Verweis ohne Digest -> schweigt
+  FROM_DATEIEN="$tmp/Df.ok"
+  printf 'FROM --platform=$BUILDPLATFORM golang:1.27.2@%s AS deps\nFROM deps AS test\n' "$sha_d" > "$tmp/Df.ok"
+  if ! check_from >/dev/null 2>&1; then
+    echo "verify-versions-kohaerent: Selbsttest FEHLGESCHLAGEN — woertlicher Tag als Befund gemeldet" >&2
+    FROM_DATEIEN="$FD_SAVE"; rm -rf "$tmp"; exit 2
+  fi
+  FROM_DATEIEN="$FD_SAVE"
   rm -rf "$tmp"
 }
 
@@ -149,12 +208,14 @@ self_test
 fail=0
 check_uses || fail=1
 check_pins || fail=1
+check_from || fail=1
 if [ "$fail" -ne 0 ]; then
-  echo "versions-kohaerenz: FEHLGESCHLAGEN — dieselbe Angabe steht an zwei Orten verschieden (BEO-026)." >&2
+  echo "versions-kohaerenz: FEHLGESCHLAGEN — eine Angabe steht an zwei Orten verschieden (BEO-026) oder eine FROM-Zeile ist fuer Dependabot unlesbar (ADR-0044)." >&2
   exit 1
 fi
 
 n_uses="$(uses_paare | awk '{print $1}' | sort -u | grep -c . || true)"
 n_pins="$(mk_vars | while read -r n _; do df_args | awk -v x="$n" '$1==x {print x}'; done | sort -u | grep -c . || true)"
-echo "versions-kohaerenz ok: $n_uses gepinnte SHA(s) mit einheitlichem Tag-Kommentar, $n_pins doppelt deklarierte Pin-Variable(n) einig (Selbsttest gefeuert)."
+n_from="$(from_refs | grep -c . || true)"
+echo "versions-kohaerenz ok: $n_uses gepinnte SHA(s) mit einheitlichem Tag-Kommentar, $n_pins doppelt deklarierte Pin-Variable(n) einig, $n_from FROM-Zeile(n) mit woertlichem Tag (Selbsttest gefeuert)."
 echo "  NICHT geprueft: ob eine Angabe WAHR ist — zwei gleich falsche Werte bleiben gruen (Netz, ADR-0037)."
