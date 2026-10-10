@@ -1,4 +1,4 @@
-# Dependabot als HEBENDER Kanal (ADR-0038).
+# Dependabot als HEBENDER Kanal (ADR-0044).
 #
 # ZUSAGE: was `make image-scan` meldet, bekommt hier einen Weg, der nicht daran
 # haengt, dass jemand hinsieht. Der Sensor (ADR-0037) fand beim ersten Lauf
@@ -11,7 +11,7 @@
 # echte Gate:
 #   "build(deps): bump gopkg.in/yaml.v3 from 3.0.1 to 3.0.2"   -> Exit 2,
 #                                                                 commit-untraceable
-#   dieselbe Zeile mit [ADR-0038] im Praefix                   -> Exit 0
+#   dieselbe Zeile mit [ADR-0044] im Praefix                   -> Exit 0
 # Deshalb traegt jeder `commit-message.prefix` unten die Kennung DIESES
 # Entscheids -- die ADR, die Dependabot erlaubt, ist der ehrliche Anker fuer die
 # Commits, die daraus entstehen. `commits.exempt-pattern` in .d-check.yml bleibt
@@ -49,7 +49,7 @@ updates:
     open-pull-requests-limit: 5
     commit-message:
       # Die Kennung ist Pflicht, nicht Zierde -- siehe Kopf.
-      prefix: build(deps) [ADR-0038]
+      prefix: build(deps) [ADR-0044]
 
   # GitHub Actions. Fremde Actions laufen mit den Zugangsdaten dieses
   # Repositories; ihre Aktualisierungen sind sicherheitsrelevant.
@@ -68,17 +68,36 @@ updates:
       timezone: Europe/Berlin
     open-pull-requests-limit: 5
     commit-message:
-      prefix: build(ci) [ADR-0038]
+      prefix: build(ci) [ADR-0044]
 
-# BEWUSST NICHT AUFGENOMMEN -- `docker`.
-#
-# Ein Digest-Hoist ist ein BEWUSSTER COMMIT, kein Auto-Update (ADR-0030). Die
-# beiden Hebungen vom 2026-08-30 -- Toolchain und Lint-Pin -- liefen genau so:
-# Digest aus zwei Quellen belegt, Gates gelesen, Wirkung gemessen.
-#
-# Der Trivy-Pin (tools/image-scan.sh), der Schwester-Tool-Pin (d-check.mk) und
-# der Baseline-Pin fallen ohnehin heraus: sie leben in keinem Manifest, das
-# Dependabot liest.
+  # Basis-Images beider Dockerfiles (Toolchain, Lint, Laufzeit).
+  #
+  # KOPPLUNG: Dependabot macht aus einer FROM-Zeile nur dann eine Abhaengigkeit,
+  # wenn der Tag im Text steht. `golang:${GO_VERSION}@sha256:...` verwirft er ohne
+  # Meldung -- der Eintrag bliebe gueltig und wirkungslos. Darum tragen die
+  # FROM-Zeilen woertliche Tags, und `make version-coherence` haelt das (Regel 3).
+  # Der Merge bleibt ein Akt (ADR-0030): `make ci` prueft, der PR ist ein
+  # Commit-Entwurf.
+  #
+  # GRENZE: belegt ist, dass die Zeilen ERKANNT werden (Dependabots Regex, gegen
+  # beide Dockerfiles gefahren). Dass der Index-Digest eines Multi-Arch-Tags
+  # (ADR-0043) richtig fortgeschrieben wird, zeigt erst der erste PR.
+  - package-ecosystem: docker
+    directories:
+      - /
+      - /tools/archive-wave
+    schedule:
+      interval: weekly
+      day: monday
+      time: "05:00"
+      timezone: Europe/Berlin
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: build(docker) [ADR-0044]
+
+# NICHT ERREICHT -- Pins, die in keinem Manifest stehen, das Dependabot liest:
+# der Trivy-Pin (tools/image-scan.sh), der Schwester-Tool-Pin (d-check.mk) und der
+# Baseline-Pin. Sie bleiben bewusste Commits.
 #
 # KEINE `labels:` -- absichtlich. Sind sie gesetzt, ERSETZEN sie die
 # Default-Labels, und nicht im Repo existierende werden still ignoriert; das
