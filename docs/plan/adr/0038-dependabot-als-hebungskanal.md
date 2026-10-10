@@ -1,6 +1,6 @@
 # ADR-0038 — Dependabot als Hebungs-Kanal: gate-konform statt ausgenommen, ohne Automerge
 
-- **Status:** Accepted
+- **Status:** Superseded by ADR-0044
 - **Datum:** 2026-08-30
 - **Autor:** pt9912
 - **Bezug:** [`AGENTS.md`](../../../AGENTS.md) §5 (Traceability-Pflicht je Commit), §4 (`make trace-check`, `make image-scan`); [ADR-0037](0037-cve-scan-gegen-das-publizierte-image.md) (der Sensor, der meldet); [ADR-0030](0030-kein-digest-im-generierten-fragment.md) (Digest-Hebung als bewusster Commit)
