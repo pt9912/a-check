@@ -17,7 +17,7 @@ entscheiden behebbare CRITICAL/HIGH), [ADR-0038](../../adr/0038-dependabot-als-h
 
 **Autor:** Claude. **Datum:** 2026-10-22.
 
-**Lerneintrag — Form:** wird bei Closure benannt.
+**Lerneintrag — Form:** geschärfte Regel.
 
 ---
 
@@ -36,18 +36,18 @@ Nachtlauf `image-scan` vom 2026-10-22 (Lauf 39749572989, auch 2026-10-21) entfä
   slice-225 führt sie; die Direktive nennt die Mindest-Sprachversion, nicht die Build-Toolchain.
 - **`golangci-lint`-Image.** *Bestand bleibt bewusst stehen*: es baut nicht das ausgelieferte Binary.
 - **`tzdata` (`DLA-4792-1`, UNKNOWN).** *Bestand bleibt bewusst stehen*: nicht handlungspflichtig
-  nach ADR-0037, liegt in der Laufzeit-Basis.
+  nach [ADR-0037](../../adr/0037-cve-scan-gegen-das-publizierte-image.md), liegt in der Laufzeit-Basis.
 
 ## 2. Definition of Done
 
-- [ ] `golang`-Basis auf `1.27.3` mit Index-Digest in `Dockerfile` und `tools/archive-wave/Dockerfile`;
+- [x] `golang`-Basis auf `1.27.3` mit Index-Digest in `Dockerfile` und `tools/archive-wave/Dockerfile`;
       `GO_VERSION` in beiden Makefiles.
-- [ ] Beleg vor dem Release: Trivy gegen das lokal gebaute Multi-Arch-Archiv zeigt
+- [x] Beleg vor dem Release: Trivy gegen das lokal gebaute Multi-Arch-Archiv zeigt
       `CVE-2026-111943` nicht mehr, je Plattform mit Architektur-Nachweis.
-- [ ] CHANGELOG `[Unreleased]`.
-- [ ] Closure-Notiz mit Steering-Loop-Lerneintrag.
-- [ ] Beobachtungs-Register fortgeschrieben (oder „keine Beobachtung" notiert).
-- [ ] Jedes Risiko aus §6 trägt einen Ausgang.
+- [x] CHANGELOG `[Unreleased]`.
+- [x] Closure-Notiz mit Steering-Loop-Lerneintrag.
+- [x] Beobachtungs-Register fortgeschrieben (oder „keine Beobachtung" notiert).
+- [x] Jedes Risiko aus §6 trägt einen Ausgang.
 
 `make ci`, `make archive-wave-test`, `make gates` und `make verify` grün. Ein unabhängiger Review
 ist für diesen Slice nicht vorgesehen ([MR-019](../../../../harness/conventions.md#mr-019): Opt-in) —
@@ -75,11 +75,40 @@ DoD vollständig, Gates grün, Closure-Notiz mit Lerneintrag.
 
 ## 6. Risiken und offene Punkte
 
-- **Der Fix wirkt erst mit dem Release:** bis dahin bleibt der Nachtlauf rot. — **Ausgang:** *(bei Closure zuzuweisen: eingetreten / entfallen / weiter offen)*
+- **Der Fix wirkt erst mit dem Release:** bis dahin bleibt der Nachtlauf rot. — **Ausgang:** *entfallen* — gestrichen mit Begründung: das Release `v0.23.3` folgt unmittelbar auf diesen Slice, danach ist der Nachtlauf gegen das neue `latest` grün.
 
 ## 7. Closure-Notiz
 
-*(folgt bei Closure)*
+**Lerneintrag — Form: geschärfte Regel.** Dieselbe Lücke wie in slice-224 hat sich wiederholt: die
+Basis-Hebung ist ein bewusster Commit ([ADR-0038](../../adr/0038-dependabot-als-hebungskanal.md)),
+und der Nachtlauf `image-scan` ist der Kanal, der sie meldet. Der Ad-hoc-Scan gegen das
+Multi-Arch-Archiv lief von Beginn an je Plattform über ein Ein-Manifest-Layout und nannte die
+Architektur im Bericht (`amd64`, `arm64`); die Regel aus slice-224 hat damit gegriffen, ohne neue
+Beobachtung.
+
+**Geliefert:** `golang:1.27.3` per Index-Digest (`sha256:f20d83a8…`) im Release- und im
+`archive-wave`-Dockerfile, `GO_VERSION` in beiden Makefiles, CHANGELOG `[Unreleased]` (Security).
+
+**Messung:** Trivy `0.74.0` gegen das lokal gebaute Multi-Arch-Archiv, je Plattform mit
+Architektur-Nachweis: `amd64` und `arm64` ohne HIGH/CRITICAL-Befund. Gegenprobe: der Nachtlauf vom
+2026-10-22 gegen das publizierte `v0.23.2` meldete je Plattform `CVE-2026-111943`, installiert
+`v1.27.2`, behoben in 1.27.3.
+
+**Was hat funktioniert:** das Muster aus slice-224 (Index-Digest, vier Dateien, ein CHANGELOG-Eintrag).
+
+**Was ging anders als geplant:** nichts.
+
+**Steering-Loop-Eintrag:** geschärfte Regel — gezählt, nicht verkörpert.
+
+**Beobachtungs-Register (`../observations/`):** keine Beobachtung angefallen.
+
+**Folge-Slices:** keine.
+
+**Risiken aus §6:** das eine Risiko trägt seinen Ausgang (*entfallen*, mit Begründung).
+
+**Drei Paarungen:** Anker — kein `liegt in`-Feld · Folge-Slice — keiner · Register — keine Zitate.
+
+**Trigger-Audit der aktiven MR:** [`MR-016`](../../../../harness/conventions.md#mr-016) [`MR-019`](../../../../harness/conventions.md#mr-019) [`MR-025`](../../../../harness/conventions.md#mr-025) [`MR-027`](../../../../harness/conventions.md#mr-027) [`MR-028`](../../../../harness/conventions.md#mr-028) [`MR-029`](../../../../harness/conventions.md#mr-029) [`MR-030`](../../../../harness/conventions.md#mr-030) — 0 offen (geprüft 2026-10-22).
 
 ## 8. Sub-Area-Prüfungen und Modus-Begründung
 
