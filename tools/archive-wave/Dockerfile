@@ -13,10 +13,10 @@
 # Repo-Wurzel -- siehe das `archive-wave`-Target im Wurzel-Makefile.
 # ---------------------------------------------------------------------------
 
-ARG GO_VERSION=1.27.2
+ARG GO_VERSION=1.27.3
 
 # ---- deps -------------------------------------------------------------------
-FROM golang:${GO_VERSION}@sha256:5bc7f572bbaa98885a3a1fd9c0aa76b59e3e14e8628bfc316bbfd0c701e4818c AS deps
+FROM golang:${GO_VERSION}@sha256:f20d83a83e18dbd2a4714b8ffd4b30b287b6243962dd75608e86abcc63ba4efc AS deps
 
 WORKDIR /src
 ENV GOFLAGS="-mod=readonly -buildvcs=false" \
