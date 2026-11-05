@@ -69,7 +69,7 @@ COPY . .
 RUN CGO_ENABLED=0 GOOS=$TARGETOS GOARCH=$TARGETARCH go build -trimpath -ldflags="-s -w" -o /out/a-check ./cmd/a-check
 
 # ---- runtime ---------------------------------------------------------------
-FROM gcr.io/distroless/static-debian12:nonroot@sha256:d093aa3e30dbadd3efe1310db061a14da60299baff8450a17fe0ccc514a16639 AS runtime
+FROM gcr.io/distroless/static-debian12:nonroot@sha256:afa5c872c891853ca7fcf1f12c3edb23f7eeef36189728842dd51042ff57f7ab AS runtime
 # VERSION fließt ins OCI-Label org.opencontainers.image.version; die spätere
 # Release-Pipeline (welle-05-release) setzt sie aus dem Git-Tag und verifiziert
 # die Übereinstimmung (make build VERSION=…). Default für lokale Builds.
