@@ -1,4 +1,4 @@
-**Vorgang:** slice-226
+**Vorgang:** slice-227
 
 **Fund (2026-10-10):** Der `docker`-Eintrag, den [ADR-0038](../../../../../adr/0038-dependabot-als-hebungskanal.md) ausgeschlossen hatte, wäre ohne Umbau
 **gültig und wirkungslos** gewesen: Dependabots `FROM`-Parser verwirft

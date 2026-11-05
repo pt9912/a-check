@@ -1,7 +1,7 @@
-# slice-226 — Dependabot hebt auch die Docker-Basen: wörtliche Tags, ein Ort je Version
+# slice-227 — Dependabot hebt auch die Docker-Basen: wörtliche Tags, ein Ort je Version
 
 > **ARCHIVIERT** — Volltext:
-> `unzip -p done/wellenlos/slice-226-archiv.zip <pfad-im-archiv>`
+> `unzip -p done/wellenlos/slice-227-archiv.zip <pfad-im-archiv>`
 
 **Welle:** ohne Welle — die Closure-Bedingung wäre die eigene DoD.
 **Archiviert:** <manuell auszufuellen> (eigene Closure)
