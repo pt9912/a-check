@@ -1,6 +1,6 @@
 # Lastenheft — a-check
 
-**Version:** 0.30.0
+**Version:** 0.31.0
 
 **Status:** Draft
 
@@ -587,7 +587,8 @@ ist **entweder** eine Glob-Liste (`name: [globs]`, Rolle per Namens-Inferenz)
 **oder** ein Objekt `{globs: [...], role: domain|app|port|adapter, direction: …}`. Die
 Richtung ist optional und ihr Wertebereich **rollen-abhängig**: an `role: port`
 `inbound|outbound`, an `role: adapter` `driving|driven`; jede andere Kombination ist ein
-Konfigurationsfehler (Exit-Code 2)
+Konfigurationsfehler (Exit-Code 2); ein `port`-Objekt darf zusätzlich die Port-Scope-Meldung je Schicht
+quittieren ([AC-FA-CONF-002](#ac-fa-conf-002--port-scope-meldung-je-schicht-quittieren))
 ([AC-FA-RULE-006](#ac-fa-rule-006--schicht-rollen-generische-regel-anwendung), [AC-FA-RULE-008](#ac-fa-rule-008--richtungs-dimension-regel-port-direction-mismatch)).
 Ein `tech`-Eintrag ist `{pattern, adapter}` — `adapter` als Pfad **oder**
 Pfad-**Liste** (Symbol in jedem gelisteten Adapter erlaubt; leere Liste
@@ -743,6 +744,61 @@ Zusage, der Beschreibungstext ist Präsentation.
 
 **Out-of-Scope:** Eine Docker-Hub-Kategorie per Automatik (die Upload-Action hat dafür keinen Input; sie bleibt eine Entscheidung im Web-UI und steht als Text im `packaging/`-README); ein Spiegel auf weitere Registries.
 
+### AC-FA-CONF-002 — Port-Scope-Meldung je Schicht quittieren
+
+<a id="ac-fa-conf-002"></a>
+
+**Verfeinert:** [AC-FA-CONF-001](#ac-fa-conf-001--konfigurationsdatei-a-checkyml) um einen
+Schlüssel am Schicht-Objekt und [AC-FA-RULE-010](#ac-fa-rule-010--port-lokalität-regel-port-locality)
+um den Umgang mit der Port-Scope-Diagnose. Anlass ist ein Konsument, dessen app-weite Ports die
+Meldung dauerhaft und erwartbar auslösen: eine Meldung, die jeder Lauf wiederholt und die niemand
+mehr liest, verdeckt die eine neue, die zählt.
+
+**Beschreibung:** Ein `layers`-Eintrag in Objekt-Form mit `role: port` darf die **Port-Scope-Diagnose**
+([AC-FA-RULE-010](#ac-fa-rule-010--port-lokalität-regel-port-locality), advisory auf stderr)
+für **diese Schicht** quittieren. Der Schlüssel `acknowledge` ist eine Map **Meldung → Begründung**;
+zugelassen ist genau ein Schlüssel, `port-scope`, und sein Wert ist eine **nicht leere** Begründung
+(ein Satz, kein Ticket-Verweis allein). Die Form ist als Map angelegt, damit sich weitere Meldungen
+später am selben Schlüssel quittieren lassen; **zugesagt** ist das nicht — heute meldet ein einziger
+Konsument das Rauschen einer einzigen Meldung.
+
+Die Quittierung macht die Meldung **kürzer, nicht stumm**: an die Stelle der Zeilen je Port-Glob
+dieser Schicht tritt **eine** Zeile, die die **Schicht**, die **Begründung**, die Zahl der Port-Globs
+und deren **Ursache** nennt. Die Abhilfe-Zeilen entfallen für eine quittierte Schicht. Löst eine
+Schicht die Meldung gar nicht aus, obwohl sie `acknowledge` trägt, ist das eine **überflüssige
+Quittierung**: sie wird als eigene Zeile gemeldet (Schicht und Begründung genannt), damit sie nicht
+unbemerkt veraltet. Die Quittierung betrifft **nur** die Meldung — `port-locality` prüft weiter
+genau so viel wie vorher, und der Exit-Code ändert sich durch sie nie.
+
+**Akzeptanzkriterien:**
+
+- **Happy:** Given eine Port-Schicht, deren Port-Globs die Port-Scope-Meldung auslösen, und
+  `acknowledge: {port-scope: "app-weite Ports, bewusst"}` an dieser Schicht, when `a-check` läuft,
+  then steht auf stderr **eine** Zeile für diese Schicht mit Schichtname, Begründung, Zahl der
+  Port-Globs und Ursache, **keine** Zeile je Port-Glob und keine Abhilfe-Zeile für sie; Exit-Code und
+  Befunde sind **gleich** denen ohne die Quittierung.
+- **Boundary:** Given zwei Port-Schichten, die die Meldung auslösen, und eine Quittierung nur an der
+  ersten, when `a-check` läuft, then ist die erste Schicht in einer Zeile quittiert und die zweite
+  mit ihren Zeilen je Port-Glob und der Abhilfe gemeldet (die Quittierung gilt je Schicht, nicht für
+  die Meldung insgesamt); given eine Quittierung an einer Schicht, die die Meldung **nicht**
+  auslöst, then meldet `a-check` eine Zeile „Quittierung ohne Anlass" mit Schichtname und Begründung,
+  Exit-Code unverändert.
+- **Negative:** Given `acknowledge` an einer Schicht **ohne** `role: port`, mit leerer oder fehlender
+  Begründung, mit einem anderen Schlüssel als `port-scope` oder an einer Schicht in der Listen-Form
+  (ohne Objekt), when `a-check` läuft, then Exit-Code **2** mit einer Meldung, die Schicht und
+  Fehler nennt — wie jeder Verstoß des strikten Schemas; ein **älterer** `a-check`, der den Schlüssel
+  nicht kennt, lehnt dieselbe Konfiguration ebenso mit Exit-Code 2 ab.
+- **Determinismus:** Given dieselbe Konfiguration und derselbe Quellbaum, when `a-check` zweimal
+  läuft, then ist die Ausgabe byte-identisch, die Zeilen stehen in der Reihenfolge der Schichten
+  ([AC-QA-01](#ac-qa-01--determinismus)).
+
+**Out-of-Scope:** das Quittieren der übrigen Diagnosen (Abdeckung, Grenze, Auflösung) — ohne zweiten
+Beleg wäre ein verallgemeinerter Entwurf geraten; ein **stummes** Quittieren und ein Schalter für alle
+Hinweise (ein Schweigen verdeckte, was die Meldung sichtbar macht); eine Quittierung je Port-Glob
+oder je Befund (die Schicht ist die Einheit, in der ein Konsument das Rauschen kennt); eine Änderung
+von `port-locality` und der Scope-Ableitung; eine Übergangsform für ältere Versionen (a-check kennt
+kein Warn-Level für unbekannte Schlüssel, [AC-FA-CONF-001](#ac-fa-conf-001--konfigurationsdatei-a-checkyml)).
+
 ## 4. Nichtfunktionale Anforderungen
 
 ### AC-QA-01 — Determinismus
@@ -852,3 +908,4 @@ eine Zeile hier (Baseline-Regelwerk `grundlagen-source-precedence.md` §Spec-Str
 | 0.28.0 | 2026-10-06 | **CR „Positivliste von Anweisungen je Datei (Sollform)"** — neu **`AC-FA-RULE-012`** (`shapes`): in einer benannten Datei steht nur, was ausdrücklich erlaubt ist; alles Unbekannte ist ein Befund (fail-safe statt Verbotsliste). Die Datei wird je Dialekt normalisiert (Kommentare weg, Zeichenketten unverändert, Leerraum gefaltet) und in Anweisungen auf oberster Ebene zerlegt; ein Block ist eine Anweisung und wird als Ganzes verglichen. Zwei Modi: `allow-statements` (Befund `shape-unlisted`, mit `unused: fail` zusätzlich `shape-unused`) und `exact` gegen eine Sollform-Datei (Befund `shape-differs`, erste Abweichung). Dialekt `kotlin`; unabhängig von `layers`/`languages`; fehlende Datei, Widerspruch zu `exclude` und nicht zerlegbare Datei sind Exit 2. `AC-FA-CONF-001` um den Block und seine fail-closed-Fälle erweitert. **§5 präzisiert:** die Heuristik arbeitet auf drei Ebenen — Importe, Roh-Text, normalisierte Anweisungsfolge benannter Dateien —, keine wertet Sprach- oder Build-Semantik aus. Anlass: ein Adopter will das Fachkern-Modul gegen Fremdabhängigkeiten und Plugins sichern; Gradle kennt zu viele gleichwertige Schreibweisen für eine Verbotsliste in `constructs`. |
 | 0.29.0 | 2026-10-07 | `AC-FA-RULE-012` um zwei **benannte** Dialekte erweitert: **`gomod`** (Anweisung = Direktive; ein Block `verb ( … )` ist eine Anweisung, seine Zeilen darin getrennt) und **`json`** (Anweisung = Mitglied des Wurzel-Objekts; Wurzel kein Objekt ⇒ Exit 2). Die Lexik ist fest im Werkzeug und aus der Grammatik der Formate abgeleitet, **nicht** vom Konsumenten konfigurierbar — das Out-of-Scope nennt die konfigurierbare Lexik jetzt ausdrücklich, statt „generischer Dialekt“. Die Meldung jedes `shape-*`-Befunds ist einzeilig und umkehrbar (Backslash, Zeilenende, Wagenrücklauf maskiert). Zwei neue Akzeptanzkriterien (Boundary `gomod`, Boundary `json`). Anlass: Maintainer-Anweisung; gemessen an den `go.mod`- und `package.json`-Dateien realer a-check-Konsumenten. |
 | 0.30.0 | 2026-10-07 | **Multi-Arch-Image:** `AC-FA-DIST-001` verteilt das Bild für **`linux/amd64` und `linux/arm64`**; der veröffentlichte Digest ist der des **Image-Index** (ein Pin, beide Plattformen), und veröffentlicht wird das auf jeder Plattform getestete Bild. Zwei neue Akzeptanzkriterien (Boundary Plattformen, Negative Plattform-Test); Out-of-Scope um weitere Plattformen, native Binaries und Attestierungen geschärft. `AC-FA-DIST-002`: der Spiegel kopiert den Index unverändert, die Gleichheits-Größe ist der **Index-Digest** statt des Config-Digests — er deckt alle Plattformen, und der GHCR-Digest löst damit auch auf dem Spiegel auf. Anlass: Maintainer-Anweisung (macOS mit Apple Silicon); gemessen an lokalen Builds und zwei lokalen Registries. |
+| 0.31.0 | 2026-11-05 | **CR „Port-Scope-Meldung je Schicht quittieren“** (GitHub-Issue #7) — neu **`AC-FA-CONF-002`**: ein `port`-Schicht-Objekt trägt optional `acknowledge: {port-scope: <Begründung>}`; die Meldung bleibt sichtbar, wird aber je quittierter Schicht **eine** Zeile mit Schichtname, Begründung, Zahl der Port-Globs und Ursache; eine **überflüssige** Quittierung wird gemeldet; Exit-Code und `port-locality` bleiben unverändert. Leere Begründung, fremder Schlüssel, fehlendes `role: port` und die Listen-Form sind Exit 2; ein älterer `a-check` lehnt den neuen Schlüssel ebenso ab (kein Warn-Level, keine Übergangsform). Nur die Port-Scope-Meldung; weitere Diagnosen ausdrücklich nicht zugesagt. `AC-FA-CONF-001` verweist auf den Schlüssel. |
