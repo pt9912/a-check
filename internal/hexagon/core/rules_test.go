@@ -1589,6 +1589,23 @@ func TestInertPortScopesCoarseAppGlobIsNotADirectionProblem(t *testing.T) { // A
 	}
 }
 
+func TestInertPortScopesNonDirectionSegmentIsNotADirectionProblem(t *testing.T) { // AC-FA-RULE-010, Review F-1: der Schnitt um zwei Segmente erreicht den App-Baum, das letzte Segment ist aber keine Richtung
+	m := Model{
+		Layers: []Layer{
+			{Name: "app", Globs: []string{"src/app/**"}, Role: "app"},
+			{Name: "ports", Globs: []string{"src/app/order/ports/**"}, Role: "port"},
+		},
+		Edges: []Edge{{From: "app", To: "ports"}},
+	}
+	got := InertPortScopes(m)
+	if len(got) != 1 || got[0].Scope != "src/app/order" {
+		t.Fatalf("der Port-Glob ist inert, Scope src/app/order, got %v", got)
+	}
+	if got[0].Cause != InertCoarseApp {
+		t.Fatalf("das Segment ports ist keine Richtung — direction geben hilft nicht, got %q", got[0].Cause)
+	}
+}
+
 func TestInertPortScopesPerSlicePortsNeedPerSliceAppGlobs(t *testing.T) { // AC-FA-RULE-010: die Abhilfe (App-Glob je Slice) wirkt nur bei Ports je Slice
 	m := sliceDirectionModel() // Ports je Slice, direction passend, App-Globs je Slice: still
 	if got := InertPortScopes(m); len(got) != 0 {

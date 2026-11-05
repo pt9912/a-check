@@ -185,14 +185,17 @@ Hinweis: 1 Port-Glob(s) erreichen den App-Baum nicht — port-locality bleibt da
 
 Der Hinweis nennt je Glob die **Ursache**, und die entscheidet über die Abhilfe:
 
-- **Ursache `direction`** — die `direction` der Port-Schicht fehlt oder passt nicht zum letzten Segment
-  des Globs. Die Abhilfe in der Meldung wirkt.
-- **Ursache `App-Glob ist groeber als der Scope`** — ein App-Glob umfasst mehr als der Scope, etwa ein
-  einziges Glob für ein ganzes Gradle-Modul (`src/hexagon/application/**`) mit den Ports darunter. Der
-  Scope liegt dann **unterhalb** des App-Präfixes, und auch ein `direction`-Schnitt erreicht ihn nicht:
-  **Eine gesetzte, passende `direction` beseitigt den Hinweis hier nicht.** Wirksam ist ein App-Glob
-  unterhalb des Scopes, je Slice einer — das setzt Ports je Slice voraus. Liegen die Ports app-weit
-  (`…/application/port/**`), hat `port-locality` für sie keine Aussage, und der Hinweis ist zu erwarten.
+- **Ursache `direction`** — das letzte Segment des Globs ist eine Richtung (`inbound`/`outbound`), und
+  die `direction` der Port-Schicht fehlt oder passt nicht dazu. Die Abhilfe in der Meldung wirkt.
+- **Ursache `App-Glob ist groeber als der Scope`** — der Scope liegt **unterhalb** des App-Präfixes,
+  etwa bei einem einzigen Glob für ein ganzes Gradle-Modul (`src/hexagon/application/**`) mit den Ports
+  darunter, oder das letzte Segment des Port-Globs ist gar keine Richtung. Ein `direction`-Schnitt
+  erreicht den App-Baum dann nicht: **Eine gesetzte, passende `direction` beseitigt den Hinweis hier
+  nicht.** Wirksam ist ein App-Glob **auf oder unterhalb** des Scopes, je Slice einer — das setzt Ports
+  je Slice voraus. Bei einem groben App-Glob und app-weiten Ports (`…/application/port/**`) gibt es
+  keinen engeren Scope, den `port-locality` prüfen könnte; der Hinweis ist dort zu erwarten. Liegt der
+  Port-Ordner dagegen direkt unter dem App-Glob, entspricht der Scope dem App-Präfix: kein Hinweis,
+  aber auch kein Befund.
 
 Auch das ist **kein Befund** — der Exit-Code bleibt unberührt. Der Hinweis trennt „geprüft" von
 „nicht geprüft": Für diesen Port kann `port-locality` gar nicht greifen, und kein Import darauf wird

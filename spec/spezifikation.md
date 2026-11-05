@@ -1,6 +1,6 @@
 # Spezifikation — a-check
 
-**Version:** 0.39.0
+**Version:** 0.40.0
 
 **Status:** Draft
 
@@ -595,12 +595,18 @@ Präzisiert [AC-FA-CLI-001](lastenheft.md#ac-fa-cli-001--aufruf-scan-wurzel-und-
   ([SPEC-DET-001](#spec-det-001--determinismus-vertrag)); **Exit-Code unberührt**, Meldung auch bei
   **null** Befunden.
 - **Port-Scope-Diagnose** (advisory, auf stderr **nach** der Auflösungs-Diagnose): Nennt je `port`-
-  Glob eine Zeile `<glob> -> Scope <verzeichnis>`, wenn das **Verzeichnis** des Globs im App-Baum
-  liegt, der daraus abgeleitete **Scope** ihn aber **nicht** erreicht — die Konfigurationsform, in
-  der [`port-locality`](#spec-rule-001--regel-auswertung) still bleibt, obwohl Lokalität für diesen
-  Port sinnvoll wäre. Das Kriterium ist der **Defekt, nicht seine Ursache**: Ein Glob auf einem
-  Richtungssegment ist der gemessene Anlass; ein Tippfehler oder eine anders benannte
-  Richtungsebene sehen von hier aus gleich aus.
+  Glob eine Zeile `<glob> -> Scope <verzeichnis> (Ursache: <ursache>)`, wenn das **Verzeichnis** des
+  Globs im App-Baum liegt, der daraus abgeleitete **Scope** ihn aber **nicht** erreicht — die
+  Konfigurationsform, in der [`port-locality`](#spec-rule-001--regel-auswertung) still bleibt,
+  obwohl Lokalität für diesen Port sinnvoll wäre. Das **Kriterium** ist der **Defekt, nicht seine
+  Ursache**; die Ursache wählt nur die Abhilfe und ist eine von zwei: **`direction`** — das letzte
+  Segment des Globs ist eine Richtung (`inbound`/`outbound`), und ein Schnitt um dieses und das
+  Port-Ordner-Segment erreichte den App-Baum; die Richtung der Schicht fehlt oder passt nicht zum
+  Segment (ein Tippfehler oder eine anders benannte Richtungsebene sehen von hier aus gleich aus).
+  **`App-Glob ist groeber als der Scope`** — sonst: der Scope liegt unterhalb des App-Präfixes
+  (etwa ein einziges App-Glob für ein ganzes Modul), oder das letzte Segment ist keine Richtung;
+  **keine** Richtung ändert das, und eine gesetzte, passende Richtung beseitigt die Meldung nicht.
+  Je vorkommender Ursache folgt **eine** Abhilfe-Zeile.
 
   **Geschwister-Ports werden nicht gemeldet** — ihre Verzeichnisse liegen schon außerhalb des
   App-Baums, und ihre Inertheit ist
@@ -760,6 +766,7 @@ Spec-Straten — welche ADR eine Festlegung schärft, deklariert die ADR aufwär
 | 0.17.0 | 2026-07-05 | `SPEC-CONF-001`: **datei-mengen-bewusste Mehr-Wurzel-Auflösung** (Stufe 2) — `fixed-root` mit ≥ 2 `roots` löst den FQN gegen die real gescannten Dateien auf (endungs-agnostisch, package==directory); Schicht am realen Kandidaten-Pfad, Phantom bleibt extern; der Ladezeit-Guard aus 0.16.0 entfällt. Gleicher FQN real in ≥ 2 Roots + **verschiedene** Schichten → Exit 2 **nach dem Scan** (distinct-layer; `expect`/`actual` same-layer löst sauber). Folgt [`AC-FA-CONF-001`](lastenheft.md#ac-fa-conf-001--konfigurationsdatei-a-checkyml) 0.17.0. |
 | 0.18.0 | 2026-07-06 | `SPEC-CONF-001`/`SPEC-EXTRACT-001`: **deklarations-bewusste Mehr-Wurzel-Auflösung** (Stufe 3) — bei `fixed-root` mit ≥ 2 `roots` gewinnt für ein deklarations-bewusstes Backend (Kotlin) die **reale Top-Level-Deklaration** über den bloßen Datei-Namens-Match (Evidenz-Rangfolge deklariert > Paketverzeichnis > keine); genau ein deklarierender Root ⇒ eindeutig, ≥ 2 deklarierende Roots verschiedener Schichten ⇒ Exit 2, kein Treffer ⇒ extern (fail-open). `SPEC-EXTRACT-001`: **Kotlin** liefert zusätzlich Top-Level-Deklarationen (`fun`/Extension/`val`/`class`/`object`/`interface`/`typealias`), übrige Backends no-op (leeres Set). Folgt [`AC-FA-CONF-001`](lastenheft.md#ac-fa-conf-001--konfigurationsdatei-a-checkyml)/[`AC-FA-EXTRACT-001`](lastenheft.md#ac-fa-extract-001--sprach-backends-für-die-import-extraktion) 0.18.0. |
 | 0.19.0 | 2026-07-09 | Neu `SPEC-CLI-002` (Graph-Renderer-Vertrag: Config-Modell→Mermaid **pur**; stabile interne IDs + escaptes Label je nutzergesteuertem Text; Kante je `edges`, abgesetzte `allow`-Kante; Dangling-/Composition-Root-/Adapter-Sink-Sonderknoten; `classDef` je effektiver Rolle via geteiltem Resolver; `direction`-Subgraphs; implizite Regeln als Legende; Escaping-Vertrag; Determinismus-Ordnung; `tech` v1 deferred). `SPEC-CLI-001` um den no-scan-`--print-graph`-Modus präzisiert (load-time/config-validation-Parität inkl. unbekannter Sprache; Restargument nach dem Pfad → Exit 2; **keine** scanzeitige Fehler-Parität). Folgt [`AC-FA-CLI-002`](lastenheft.md#ac-fa-cli-002--architektur-graph-ausgabe) 0.19.0. |
+| 0.40.0 | 2026-11-05 | `SPEC-CLI-001` (Port-Scope-Diagnose): jede Zeile trägt ihre **Ursache** — `direction` (das letzte Segment des Globs ist eine Richtung, und die Richtung der Schicht fehlt oder passt nicht dazu) oder `App-Glob ist groeber als der Scope` (der Scope liegt unterhalb des App-Präfixes, oder das letzte Segment ist keine Richtung) — und die Abhilfe-Zeile folgt der Ursache; eine gesetzte, passende Richtung beseitigt die zweite nicht. Kriterium (Defekt, nicht Ursache), Sortierung, Kürzung und Exit-Code unverändert. |
 | 0.39.0 | 2026-10-07 | `SPEC-DIST-001`: **Multi-Arch** — Plattformen `linux/amd64` und `linux/arm64` per Cross-Compile, der Pin ist der **Index-Digest**, getestet je Plattform nativ gegen den hochgeladenen Digest samt Ausgabe-Vergleich beider Plattformen und erst danach getaggt (ein Neubau ist nicht als reproduzierbar zugesagt); der Spiegel kopiert den Index unverändert, Gleichheit = Index-Digest und Plattform-Menge. Präzisiert die Lastenheft-Fassung 0.30.0 von [AC-FA-DIST-001](lastenheft.md#ac-fa-dist-001--distribution-image---print-mk-a-checkmk) und [AC-FA-DIST-002](lastenheft.md#ac-fa-dist-002). |
 | 0.38.0 | 2026-10-07 | `SPEC-EXTRACT-001` (`json`): die Datei muss **gültiges JSON** nach RFC 8259 sein (Wert-Grammatik, Zahlen, Literale, Escape-Folgen, UTF-8); jede Abweichung ist ein Fehler — die bisher aufgezählten Fälle sind Beispiele dieser Regel. Vorher wurden etwa `tru`, `01`, `"\x"` und ein fehlendes Komma angenommen. |
 | 0.37.0 | 2026-10-07 | `SPEC-EXTRACT-001` (`gomod`): die Fehlerliste nennt ausdrücklich ein `(`, `)` oder `()` als Token an jeder anderen als den beschriebenen Stellen und einen leeren Block ohne Kopf — beides war über die Generalklausel schon fail-closed. |

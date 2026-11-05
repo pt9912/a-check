@@ -362,25 +362,34 @@ type InertPortScope struct {
 	Cause string
 }
 
-// Remedy classes of an inert port scope. They are told apart by one question:
-// would cutting the direction segment off the port glob reach the app tree?
+// Remedy classes of an inert port scope. They are told apart by two conditions
+// that must both hold for the first class: the glob's last segment IS a port
+// direction (inbound|outbound), and cutting it off — together with the port
+// folder above it — reaches the app tree.
 const (
-	// InertDirection: it would — the layer's direction is missing, or does not
+	// InertDirection: both hold — the layer's direction is missing, or does not
 	// equal the glob's last segment.
 	InertDirection = "direction"
-	// InertCoarseApp: it would not — an app glob is coarser than every scope the
-	// port glob can derive (one app glob for a whole module), so the scope lies
-	// BELOW the app prefix and no direction changes that. Only app globs below
-	// the scope (one per use case) make port-locality decidable.
+	// InertCoarseApp: otherwise — the scope lies BELOW every app prefix that
+	// could contain it (one app glob for a whole module), or the glob's last
+	// segment is no direction at all, so no direction changes anything. Only an
+	// app glob ON or below the scope makes port-locality decidable.
 	InertCoarseApp = "coarse-app"
 )
 
 // inertCause classifies a port glob prefix p whose scope missed the app tree.
 func inertCause(m Model, p string) string {
-	if inner := parentOf(parentOf(p)); inner != "" && appTreeContains(m, inner) {
-		return InertDirection
+	if isPortDirection(lastSegment(p)) {
+		if inner := parentOf(parentOf(p)); inner != "" && appTreeContains(m, inner) {
+			return InertDirection
+		}
 	}
 	return InertCoarseApp
+}
+
+// isPortDirection reports whether a path segment is a port direction value.
+func isPortDirection(seg string) bool {
+	return seg == "inbound" || seg == "outbound"
 }
 
 // InertPortScopes returns the port globs that keep port-locality silent even

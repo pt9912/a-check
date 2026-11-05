@@ -185,7 +185,7 @@ func writePortScopeNotice(errw io.Writer, scopes []core.InertPortScope) {
 		_, _ = fmt.Fprintln(errw, "  Abhilfe bei Ursache direction: Port-Glob auf den Port-Ordner schneiden (…/ports/**) oder der Schicht ihre direction geben — sie muss dem letzten Segment des Globs entsprechen.")
 	}
 	if coarse {
-		_, _ = fmt.Fprintln(errw, "  Bei Ursache App-Glob: port-locality kann dort nicht entscheiden, eine direction ändert das nicht. Wirksam ist ein App-Glob unterhalb des Scopes (je Slice einer, Ports je Slice); liegen die Ports app-weit, hat die Regel für sie keine Aussage.")
+		_, _ = fmt.Fprintln(errw, "  Bei Ursache App-Glob: port-locality kann dort nicht entscheiden, eine direction ändert das nicht. Wirksam ist ein App-Glob auf oder unterhalb des Scopes (je Slice einer, Ports je Slice).")
 	}
 }
 
