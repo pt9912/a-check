@@ -110,11 +110,11 @@ entschieden) lautet: Text korrigieren, Quittier-Weg als eigener Wunsch.
 - **Die Ursache liegt in der Anforderung, nicht im Code:** die Konfiguration des Melders ist
   nach [AC-FA-RULE-010](../../../../spec/lastenheft.md#ac-fa-rule-010--port-lokalität-regel-port-locality) legitim inert (App-Glob gröber als der Scope), und nur der Hinweistext
   ist falsch — die Lesung des Codes spricht dafür, gemessen ist sie nicht. — **Ausgang:**
-  *entfallen* — gemessen durch den Reproduktions-Test: die Konfiguration des Melders ist nach der
-  Anforderung inert, die Anforderung trägt und bleibt unverändert; falsch war nur der Hinweistext,
-  und der ist korrigiert.
+  *entfallen*, gestrichen mit Begründung: gemessen durch den Reproduktions-Test ist die
+  Konfiguration des Melders nach der Anforderung inert, die Anforderung trägt und bleibt
+  unverändert; falsch war nur der Hinweistext, und der ist korrigiert.
 - **Eine Änderung der Auslöse-Logik könnte Hinweise bei Bestands-Konfigurationen verschwinden
-  lassen** und damit eine Lücke verdecken. — **Ausgang:** *entfallen* — das Auslöse-Kriterium
+  lassen** und damit eine Lücke verdecken. — **Ausgang:** *entfallen*, gestrichen mit Begründung: das Auslöse-Kriterium
   (`InertPortScopes`: Port-Ordner im App-Baum, Scope außerhalb) ist unverändert, nur das Feld
   `Cause` ist hinzugekommen; die Bestands-Tests (aufgelöste Konfiguration still, Geschwister-Ports
   still, Kürzung) sind grün.
@@ -123,7 +123,7 @@ entschieden) lautet: Text korrigieren, Quittier-Weg als eigener Wunsch.
 
 **Lerneintrag — Form: benannte Spec-Lücke.** Die Port-Scope-Diagnose wies eine Abhilfe aus, die
 nur für **eine** von zwei Ursachen wirkt, *weil* das Kriterium bewusst der Defekt und nicht die
-Ursache ist (ADR-0040) — und die Abhilfe-Zeile stillschweigend die gemessene Ursache annahm. Die
+Ursache ist ([ADR-0040](../../adr/0040-portscope-richtungssegment.md)) — und die Abhilfe-Zeile stillschweigend die gemessene Ursache annahm. Die
 Lücke ist in der Spezifikation benannt: [SPEC-CLI-001](../../../../spec/spezifikation.md#spec-cli-001--aufruf-scan-wurzel-und-exit-codes)
 (Spezifikation 0.40.0) sagt jetzt die Ursache je Zeile zu und hält ausdrücklich fest, dass ein
 **Quittieren** der Meldung nicht zugesagt ist — ein Wunsch des Melders, der als eigenes Issue
