@@ -1556,3 +1556,38 @@ func TestPortScopeNoticeCapNamesRemainder(t *testing.T) { // ADR-0040: Kuerzung 
 		t.Fatalf("die Kuerzung muss ihre Groesse nennen: %q", e)
 	}
 }
+
+func TestPortScopeNoticeCoarseAppGlobNamesTheRightRemedy(t *testing.T) { // AC-FA-RULE-010, Issue 4: direction gesetzt und passend — die Abhilfe darf nicht "direction geben" heissen
+	cfg := strings.Replace(portScopeCfg,
+		"      - \"internal/hexagon/application/order/createorder/**\"\n      - \"internal/hexagon/application/order/cancelorder/**\"\n",
+		"      - \"internal/hexagon/application/**\"\n", 1)
+	cfg = strings.Replace(cfg, "  ports:\n", "  ports:\n    direction: outbound\n", 1)
+	dir := writeRepo(t, map[string]string{".a-check.yml": cfg, portFile: "package outbound\n"})
+	var out, errb bytes.Buffer
+	if code := cli.Run([]string{dir}, &out, &errb); code != 0 {
+		t.Fatalf("der Hinweis darf den Exit-Code nicht aendern, got %d", code)
+	}
+	e := errb.String()
+	if !strings.Contains(e, "erreichen den App-Baum nicht") {
+		t.Fatalf("der grobe App-Glob laesst port-locality inert — der Hinweis bleibt: %q", e)
+	}
+	if strings.Contains(e, "direction geben") {
+		t.Fatalf("direction ist gesetzt; diese Abhilfe wirkt hier nicht und darf nicht genannt werden: %q", e)
+	}
+	if !strings.Contains(e, "App-Glob ist groeber als der Scope") {
+		t.Fatalf("die Ursache gehoert in den Hinweis: %q", e)
+	}
+}
+
+func TestPortScopeNoticeUndeclaredDirectionKeepsDirectionRemedy(t *testing.T) { // ADR-0040: der bekannte Fall behaelt seine Abhilfe
+	dir := writeRepo(t, map[string]string{".a-check.yml": portScopeCfg, portFile: "package outbound\n"})
+	var out, errb bytes.Buffer
+	cli.Run([]string{dir}, &out, &errb)
+	e := errb.String()
+	if !strings.Contains(e, "direction geben") {
+		t.Fatalf("fehlende direction: die Abhilfe nennt sie weiterhin: %q", e)
+	}
+	if strings.Contains(e, "App-Glob ist groeber") {
+		t.Fatalf("hier ist der App-Glob nicht die Ursache: %q", e)
+	}
+}

@@ -179,9 +179,20 @@ daraus abgeleiteter Scope erreicht sie aber nicht, nennt a-check Glob und Scope:
 
 ```text
 Hinweis: 1 Port-Glob(s) erreichen den App-Baum nicht — port-locality bleibt dafür ungeprueft:
-  internal/hexagon/application/order/createorder/ports/outbound/** -> Scope internal/hexagon/application/order/createorder/ports
-  Abhilfe: Port-Glob auf den Port-Ordner schneiden (…/ports/**) oder der Schicht ihre direction geben.
+  internal/hexagon/application/order/createorder/ports/outbound/** -> Scope internal/hexagon/application/order/createorder/ports (Ursache: direction)
+  Abhilfe bei Ursache direction: Port-Glob auf den Port-Ordner schneiden (…/ports/**) oder der Schicht ihre direction geben — sie muss dem letzten Segment des Globs entsprechen.
 ```
+
+Der Hinweis nennt je Glob die **Ursache**, und die entscheidet über die Abhilfe:
+
+- **Ursache `direction`** — die `direction` der Port-Schicht fehlt oder passt nicht zum letzten Segment
+  des Globs. Die Abhilfe in der Meldung wirkt.
+- **Ursache `App-Glob ist groeber als der Scope`** — ein App-Glob umfasst mehr als der Scope, etwa ein
+  einziges Glob für ein ganzes Gradle-Modul (`src/hexagon/application/**`) mit den Ports darunter. Der
+  Scope liegt dann **unterhalb** des App-Präfixes, und auch ein `direction`-Schnitt erreicht ihn nicht:
+  **Eine gesetzte, passende `direction` beseitigt den Hinweis hier nicht.** Wirksam ist ein App-Glob
+  unterhalb des Scopes, je Slice einer — das setzt Ports je Slice voraus. Liegen die Ports app-weit
+  (`…/application/port/**`), hat `port-locality` für sie keine Aussage, und der Hinweis ist zu erwarten.
 
 Auch das ist **kein Befund** — der Exit-Code bleibt unberührt. Der Hinweis trennt „geprüft" von
 „nicht geprüft": Für diesen Port kann `port-locality` gar nicht greifen, und kein Import darauf wird

@@ -354,10 +354,33 @@ func UncoveredFiles(m Model, files []FileImports) []string {
 // InertPortScope is a port glob whose scope derivation does not reach the app
 // tree although the port directory lies inside it — the configuration shape in
 // which port-locality is silently inert (ADR-0040). Glob is the configured
-// pattern, Scope the directory the derivation produced from it.
+// pattern, Scope the directory the derivation produced from it, Cause the
+// remedy class (InertDirection or InertCoarseApp).
 type InertPortScope struct {
 	Glob  string
 	Scope string
+	Cause string
+}
+
+// Remedy classes of an inert port scope. They are told apart by one question:
+// would cutting the direction segment off the port glob reach the app tree?
+const (
+	// InertDirection: it would — the layer's direction is missing, or does not
+	// equal the glob's last segment.
+	InertDirection = "direction"
+	// InertCoarseApp: it would not — an app glob is coarser than every scope the
+	// port glob can derive (one app glob for a whole module), so the scope lies
+	// BELOW the app prefix and no direction changes that. Only app globs below
+	// the scope (one per use case) make port-locality decidable.
+	InertCoarseApp = "coarse-app"
+)
+
+// inertCause classifies a port glob prefix p whose scope missed the app tree.
+func inertCause(m Model, p string) string {
+	if inner := parentOf(parentOf(p)); inner != "" && appTreeContains(m, inner) {
+		return InertDirection
+	}
+	return InertCoarseApp
 }
 
 // InertPortScopes returns the port globs that keep port-locality silent even
@@ -392,7 +415,7 @@ func InertPortScopes(m Model) []InertPortScope {
 				continue
 			}
 			seen[g] = true
-			out = append(out, InertPortScope{Glob: g, Scope: sc})
+			out = append(out, InertPortScope{Glob: g, Scope: sc, Cause: inertCause(m, p)})
 		}
 	}
 	sort.Slice(out, func(i, j int) bool { return out[i].Glob < out[j].Glob })

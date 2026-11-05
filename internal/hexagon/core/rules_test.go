@@ -1551,6 +1551,59 @@ func TestInertPortScopesReportsUndeclaredDirection(t *testing.T) { // ADR-0040: 
 	if got[0].Scope != "src/hexagon/application/order/createorder/ports" {
 		t.Fatalf("die Meldung nennt den abgeleiteten Scope, got %q", got[0].Scope)
 	}
+	for _, s := range got {
+		if s.Cause != InertDirection {
+			t.Fatalf("ein direction-Schnitt erreicht den App-Baum — die Abhilfe ist die direction, got %q", s.Cause)
+		}
+	}
+}
+
+// coarseAppModel is the Gradle shape of the reported case: ONE app glob covers a
+// whole module, the port layers sit below it and carry a direction that equals
+// their glob's last segment. Every scope the port globs can derive lies BELOW
+// the app prefix, so no cut reaches it.
+func coarseAppModel() Model {
+	const kt = "src/hexagon/application/src/main/kotlin/pkg/application/port/"
+	return Model{
+		Layers: []Layer{
+			{Name: "application", Globs: []string{"src/hexagon/application/**"}, Role: "app"},
+			{Name: "ports_in", Globs: []string{kt + "inbound/**"}, Role: "port", Direction: "inbound"},
+			{Name: "ports_out", Globs: []string{kt + "outbound/**"}, Role: "port", Direction: "outbound"},
+		},
+		Edges: []Edge{{From: "application", To: "ports_in"}, {From: "application", To: "ports_out"}},
+	}
+}
+
+func TestInertPortScopesCoarseAppGlobIsNotADirectionProblem(t *testing.T) { // AC-FA-RULE-010, Issue 4: direction gesetzt UND passend, der Scope bleibt trotzdem aussen
+	got := InertPortScopes(coarseAppModel())
+	if len(got) != 2 {
+		t.Fatalf("beide Port-Globs erreichen den App-Baum nicht, got %v", got)
+	}
+	for _, s := range got {
+		if s.Cause != InertCoarseApp {
+			t.Fatalf("der App-Glob ist groeber als der Scope — keine direction hilft, got %q fuer %s", s.Cause, s.Glob)
+		}
+	}
+	if got[0].Scope != "src/hexagon/application/src/main/kotlin/pkg/application/port" {
+		t.Fatalf("der Scope bleibt der Port-Ordner, got %q", got[0].Scope)
+	}
+}
+
+func TestInertPortScopesPerSlicePortsNeedPerSliceAppGlobs(t *testing.T) { // AC-FA-RULE-010: die Abhilfe (App-Glob je Slice) wirkt nur bei Ports je Slice
+	m := sliceDirectionModel() // Ports je Slice, direction passend, App-Globs je Slice: still
+	if got := InertPortScopes(m); len(got) != 0 {
+		t.Fatalf("Ausgangslage ist aufgeloest, got %v", got)
+	}
+	m.Layers[2].Globs = []string{"src/hexagon/application/**"} // ein App-Glob fuers Ganze
+	got := InertPortScopes(m)
+	if len(got) != 2 {
+		t.Fatalf("ein grober App-Glob macht beide Port-Globs inert, obwohl die direction stimmt, got %v", got)
+	}
+	for _, s := range got {
+		if s.Cause != InertCoarseApp {
+			t.Fatalf("Ursache ist der grobe App-Glob, got %q", s.Cause)
+		}
+	}
 }
 
 func TestInertPortScopesResolvedConfigSilent(t *testing.T) { // ADR-0040: kein Rauschen im Normalfall

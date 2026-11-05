@@ -157,24 +157,44 @@ func scan(root string, m core.Model) ([]core.FileImports, []core.Finding, error)
 // Advisory on stderr, after the resolution notice, exit code untouched, capped
 // like its elders (ADR-0029, ADR-0035, ADR-0032).
 //
-// The criterion is deliberately the defect and not its cause: a port glob ending
-// on a direction segment is the measured cause, but a typo or a differently
-// named direction level look the same from here. Classic sibling ports have
-// their directory OUTSIDE the app tree and stay unreported — the documented
-// inertness of AC-FA-RULE-010 is not a gap.
+// The criterion is the defect, not its cause: whether the port directory lies
+// inside the app tree while the scope does not. The cause only picks the remedy,
+// and it is one of two (core.InertDirection, core.InertCoarseApp) — a typo or a
+// differently named direction level classify as InertDirection, because from
+// here they look the same. Classic sibling ports have their directory OUTSIDE
+// the app tree and stay unreported — the documented inertness of AC-FA-RULE-010
+// is not a gap.
 func writePortScopeNotice(errw io.Writer, scopes []core.InertPortScope) {
 	if len(scopes) == 0 {
 		return
 	}
 	_, _ = fmt.Fprintf(errw, "Hinweis: %d Port-Glob(s) erreichen den App-Baum nicht — port-locality bleibt dafür ungeprueft:\n", len(scopes))
+	var direction, coarse bool
 	for i, s := range scopes {
-		if i == noticeLimit {
-			_, _ = fmt.Fprintf(errw, "  … und %d weitere\n", len(scopes)-noticeLimit)
-			break
+		direction = direction || s.Cause == core.InertDirection
+		coarse = coarse || s.Cause == core.InertCoarseApp
+		if i >= noticeLimit {
+			continue
 		}
-		_, _ = fmt.Fprintf(errw, "  %s -> Scope %s\n", s.Glob, s.Scope)
+		_, _ = fmt.Fprintf(errw, "  %s -> Scope %s (Ursache: %s)\n", s.Glob, s.Scope, causeLabel(s.Cause))
 	}
-	_, _ = fmt.Fprintln(errw, "  Abhilfe: Port-Glob auf den Port-Ordner schneiden (…/ports/**) oder der Schicht ihre direction geben.")
+	if len(scopes) > noticeLimit {
+		_, _ = fmt.Fprintf(errw, "  … und %d weitere\n", len(scopes)-noticeLimit)
+	}
+	if direction {
+		_, _ = fmt.Fprintln(errw, "  Abhilfe bei Ursache direction: Port-Glob auf den Port-Ordner schneiden (…/ports/**) oder der Schicht ihre direction geben — sie muss dem letzten Segment des Globs entsprechen.")
+	}
+	if coarse {
+		_, _ = fmt.Fprintln(errw, "  Bei Ursache App-Glob: port-locality kann dort nicht entscheiden, eine direction ändert das nicht. Wirksam ist ein App-Glob unterhalb des Scopes (je Slice einer, Ports je Slice); liegen die Ports app-weit, hat die Regel für sie keine Aussage.")
+	}
+}
+
+// causeLabel spells the remedy class of an inert port scope for the notice.
+func causeLabel(cause string) string {
+	if cause == core.InertCoarseApp {
+		return "App-Glob ist groeber als der Scope"
+	}
+	return "direction"
 }
 
 // writeResolutionNotice reports the fully-green-fully-blind configuration:

@@ -6,6 +6,14 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
+### Fixed
+
+- **Port-Scope-Hinweis nennt die Ursache:** der Hinweis „Port-Glob(s) erreichen den App-Baum nicht"
+  empfahl auch dann „der Schicht ihre `direction` geben", wenn die `direction` schon gesetzt und
+  passend war — etwa bei einem einzigen App-Glob für ein ganzes Modul, dessen Scope unterhalb des
+  App-Präfixes liegt. Jeder Glob trägt jetzt seine Ursache (`direction` oder „App-Glob ist groeber als
+  der Scope"), und die Abhilfe folgt ihr. Verhalten der Regel und Exit-Code ändern sich nicht.
+
 ## [0.23.3] - 2026-10-22
 
 ### Security
