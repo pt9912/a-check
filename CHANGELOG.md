@@ -6,6 +6,8 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
+## [0.23.4] - 2026-11-05
+
 ### Fixed
 
 - **Port-Scope-Hinweis nennt die Ursache:** der Hinweis „Port-Glob(s) erreichen den App-Baum nicht"
