@@ -30,4 +30,4 @@ Dependabot macht aus einer Zeile nur dann eine Abhängigkeit, wenn der Tag im Te
 
 slice-131 · Antwort auf
 [`BEO-GATE/versionsangabe-neben-digest-ungeprueft`](../../docs/plan/planning/observations/BEO-GATE/versionsangabe-neben-digest-ungeprueft/observation.md)
-bei 3× · Regel (3) seit slice-226 ([`ADR-0044`](../../docs/plan/adr/0044-dependabot-docker-woertliche-tags.md)) · im `gates`-Aggregat.
+bei 3× · Regel (3) seit slice-227 ([`ADR-0044`](../../docs/plan/adr/0044-dependabot-docker-woertliche-tags.md)) · im `gates`-Aggregat.
