@@ -783,7 +783,7 @@ genau so viel wie vorher, und der Exit-Code ändert sich durch sie nie.
   then steht auf stderr **eine** Zeile für diese Schicht mit Schichtname, Begründung, Zahl der
   Port-Globs und Ursache, **keine** Zeile je Port-Glob und keine Abhilfe-Zeile für sie; Exit-Code und
   Befunde sind **gleich** denen ohne die Quittierung.
-- **Boundary (je Schicht):** Given zwei Port-Schichten, die die Meldung auslösen, und eine
+- **Boundary:** *(je Schicht)* Given zwei Port-Schichten, die die Meldung auslösen, und eine
   Quittierung nur an der ersten, when `a-check` läuft, then ist die erste Schicht in einer Zeile
   quittiert und die zweite mit ihren Zeilen je Port-Glob und der Abhilfe gemeldet (die Quittierung
   gilt je Schicht, nicht für die Meldung insgesamt); löst nur **ein Teil** der Port-Globs einer
