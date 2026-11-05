@@ -54,23 +54,36 @@ Versions-Kopplung des strikten Schemas.
      Schicht ports: quittiert — <Begründung> (<n> Port-Glob(s), Ursache: <Ursache>)
    ```
 
-   Sie nennt Schicht, Begründung, Zahl und Ursache — nicht nur eine Zahl. Die Abhilfe-Zeile einer
-   Ursache entfällt, wenn **alle** Schichten mit dieser Ursache quittiert sind. Die Zeilen stehen in
-   der Reihenfolge der Schichten; jede Zeile zählt gegen den Deckel der Diagnose.
+   Sie nennt Schicht, Begründung, Zahl und Ursache — nicht nur eine Zahl. Gezählt und benannt werden
+   nur die **auslösenden** Port-Globs der Schicht; tragen sie verschiedene Ursachen, stehen alle,
+   nach Name sortiert (`Ursache: direction, App-Glob ist groeber als der Scope`). Die Ausgabe ist:
+   Kopfzeile, dann die Zeilen der quittierten Schichten **in der Reihenfolge der Schichten**, dann die
+   Zeilen je Port-Glob der nicht quittierten Schichten, **nach Glob sortiert** wie bisher, dann die
+   Restzahl und die Abhilfe-Zeilen. Die **Kopfzeile zählt alle** auslösenden Port-Globs, auch die
+   quittierten — die Zahl bleibt die des Defekts. Der **Deckel** (`noticeLimit`) und die Restzahl
+   „… und n weitere“ gelten für die Glob-Zeilen der **nicht** quittierten Schichten; die Zeile einer
+   quittierten Schicht (höchstens eine je Schicht) zählt nicht mit. Die Abhilfe-Zeile einer Ursache
+   steht, solange **mindestens ein nicht quittierter** Port-Glob sie trägt.
 3. **Eine überflüssige Quittierung wird gemeldet, nicht abgelehnt.** Löst die Schicht die Meldung
-   nicht aus — keiner ihrer Port-Globs erscheint in der Diagnose, **vor** der Quittierung gemessen —,
-   steht eine eigene Zeile:
+   nicht aus — keiner ihrer Port-Globs erscheint in der Diagnose, **vor** der Quittierung und **je
+   Schicht** gemessen —, steht eine eigene Zeile mit eigenem Präfix, **auch wenn sonst keine Meldung
+   entsteht** (die frühe Rückkehr bei null Treffern entfällt dafür):
 
    ```text
-     Schicht ports: Quittierung ohne Anlass — die Schicht löst die Port-Scope-Meldung nicht aus (Begründung: <Begründung>)
+   Hinweis: Schicht ports: Quittierung ohne Anlass — die Schicht löst die Port-Scope-Meldung nicht aus (Begründung: <Begründung>)
    ```
 
-   Sie ist advisory wie die Diagnose selbst: stderr, Exit-Code unberührt.
+   Teilen zwei Schichten denselben Port-Glob, rechnet die Messung ihn **jeder** Schicht zu, die ihn
+   trägt; die bestehende Entdoppelung je Glob gilt für die Zeilen der Meldung, nicht für diese
+   Zuordnung — sonst gälte die zweite Schicht fälschlich als überflüssig. Die Zeile ist advisory wie
+   die Diagnose selbst: stderr, Exit-Code unberührt.
 4. **Konfigurationsfehler sind Exit 2**, wie jeder Verstoß des strikten Schemas
    ([AC-FA-CONF-001](../../../spec/lastenheft.md#ac-fa-conf-001--konfigurationsdatei-a-checkyml)):
-   `acknowledge` an einer Schicht ohne `role: port` oder in der Listen-Form, ein anderer Schlüssel
-   als `port-scope`, eine leere oder fehlende (nur Leerraum gilt als leer) Begründung. Die Meldung
-   nennt Schicht und Fehler.
+   `acknowledge` an einer Schicht, deren **effektive Rolle** nicht `port` ist (explizit oder per
+   Namens-Inferenz, wie der Decoder sie bestimmt), oder in der Listen-Form; ein anderer Schlüssel
+   als `port-scope`; ein `acknowledge`, das keine Map, eine leere Map oder ein doppelter Schlüssel
+   ist; eine Begründung, die fehlt, `null` oder kein String ist oder nur aus Leerraum besteht. Die
+   Meldung nennt Schicht und Fehler.
 5. **Keine Übergangsform für ältere Versionen.** Ein `a-check`, der den Schlüssel nicht kennt, lehnt
    die Konfiguration mit Exit 2 ab — das ist das bestehende Verhalten des strikten Schemas und gilt
    für jeden neuen Schlüssel. Wer das Image pinnt, hebt den Pin **vor** der Konfiguration; das Handbuch
@@ -104,17 +117,19 @@ Versions-Kopplung des strikten Schemas.
 ## Konsequenzen
 
 - **Ein neuer Schlüssel im strikten Schema.** Eine Konfiguration mit `acknowledge` läuft erst ab
-  der Version, die ihn kennt; ältere melden Exit 2. Das ist die Versions-Kopplung, die der Melder
-  mitbedenken sollte, und sie steht im Handbuch.
+  der Version, die ihn kennt; ältere melden Exit 2. Das ist eine Eigenschaft des bestehenden
+  strikten Dekodierens, die dieses Repo nicht gegen eine ältere Version testen kann; sie ist die
+  Versions-Kopplung, die der Melder mitbedenken sollte, und sie steht im Handbuch.
 - **Eine Quittierung kann einen später entstandenen echten Fehler verdecken**, weil sie für **alle**
-  Port-Globs der Schicht gilt. Sie verdeckt ihn nur in der Meldung: Die Zeile bleibt sichtbar und
-  nennt die Zahl der Port-Globs; ein zusätzlicher Glob ändert die Zahl, und `port-locality` meldet,
-  was es entscheiden kann, unverändert.
+  Port-Globs der Schicht. Sie verdeckt ihn nur in der Meldung: Die Zeile bleibt sichtbar und
+  nennt die Zahl der Port-Globs, und `port-locality` meldet, was es entscheiden kann, unverändert.
+  **Benannte Grenze:** Die Quittierung trägt keinen Soll-Wert; ein hinzukommender Glob ändert die
+  Zahl in der Zeile, ohne dass ein Lauf darauf anschlägt.
 - **Die Diagnose bekommt eine Schicht-Zuordnung.** Die Meldung kennt bisher Globs; sie muss die
   Schicht nennen, aus der ein Glob stammt. Das ist eine Erweiterung der Daten, die der Kern liefert,
   keine Änderung der Regel.
-- **Die Meldung bleibt gedeckelt** und zählt die neuen Zeilen mit; die Restzahl nennt weiter, was
-  nicht gezeigt wurde.
+- **Die Meldung bleibt gedeckelt**, und zwar dort, wo sie das Rauschen trägt: bei den Glob-Zeilen
+  der nicht quittierten Schichten; die Restzahl nennt weiter, was nicht gezeigt wurde.
 
 ## Fitness Function
 

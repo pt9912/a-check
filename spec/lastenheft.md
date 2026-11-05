@@ -754,19 +754,25 @@ um den Umgang mit der Port-Scope-Diagnose. Anlass ist ein Konsument, dessen app-
 Meldung dauerhaft und erwartbar auslösen: eine Meldung, die jeder Lauf wiederholt und die niemand
 mehr liest, verdeckt die eine neue, die zählt.
 
-**Beschreibung:** Ein `layers`-Eintrag in Objekt-Form mit `role: port` darf die **Port-Scope-Diagnose**
-([AC-FA-RULE-010](#ac-fa-rule-010--port-lokalität-regel-port-locality), advisory auf stderr)
-für **diese Schicht** quittieren. Der Schlüssel `acknowledge` ist eine Map **Meldung → Begründung**;
-zugelassen ist genau ein Schlüssel, `port-scope`, und sein Wert ist eine **nicht leere** Begründung
-(ein Satz, kein Ticket-Verweis allein). Die Form ist als Map angelegt, damit sich weitere Meldungen
-später am selben Schlüssel quittieren lassen; **zugesagt** ist das nicht — heute meldet ein einziger
-Konsument das Rauschen einer einzigen Meldung.
+**Beschreibung:** Ein `layers`-Eintrag in Objekt-Form, dessen **effektive Rolle** `port` ist
+(explizit oder per Namens-Inferenz,
+[AC-FA-RULE-006](#ac-fa-rule-006--schicht-rollen-generische-regel-anwendung)), darf die
+**Port-Scope-Diagnose** ([AC-FA-RULE-010](#ac-fa-rule-010--port-lokalität-regel-port-locality),
+advisory auf stderr) für **diese Schicht** quittieren. Der Schlüssel `acknowledge` ist eine Map
+**Meldung → Begründung**; zugelassen ist genau ein Schlüssel, `port-scope`, und sein Wert ist eine
+Begründung als String, die nach Entfernen von Leerraum **nicht leer** ist. Die Form ist als Map
+angelegt, damit sich weitere Meldungen später am selben Schlüssel quittieren lassen; **zugesagt** ist
+das nicht — heute meldet ein einziger Konsument das Rauschen einer einzigen Meldung.
 
-Die Quittierung macht die Meldung **kürzer, nicht stumm**: an die Stelle der Zeilen je Port-Glob
-dieser Schicht tritt **eine** Zeile, die die **Schicht**, die **Begründung**, die Zahl der Port-Globs
-und deren **Ursache** nennt. Die Abhilfe-Zeilen entfallen für eine quittierte Schicht. Löst eine
-Schicht die Meldung gar nicht aus, obwohl sie `acknowledge` trägt, ist das eine **überflüssige
-Quittierung**: sie wird als eigene Zeile gemeldet (Schicht und Begründung genannt), damit sie nicht
+Eine Schicht **löst die Meldung aus**, wenn mindestens einer ihrer Port-Globs in der Diagnose
+steht. Die Quittierung macht die Meldung **kürzer, nicht stumm**: an die Stelle der Zeilen je
+Port-Glob dieser Schicht tritt **eine** Zeile, die die **Schicht**, die **Begründung**, die Zahl
+ihrer auslösenden Port-Globs und deren **Ursache(n)** nennt; gezählt und benannt werden nur die
+auslösenden Globs. Die Abhilfe-Zeile einer Ursache steht, solange **mindestens ein nicht
+quittierter** Port-Glob diese Ursache trägt. Die Kopfzeile zählt **alle** auslösenden Port-Globs,
+auch die quittierten — die Zahl bleibt die des Defekts. Löst eine Schicht die Meldung gar nicht aus,
+obwohl sie `acknowledge` trägt, ist das eine **überflüssige Quittierung**: sie wird als eigene Zeile
+gemeldet (Schicht und Begründung genannt), auch wenn sonst keine Meldung entsteht, damit sie nicht
 unbemerkt veraltet. Die Quittierung betrifft **nur** die Meldung — `port-locality` prüft weiter
 genau so viel wie vorher, und der Exit-Code ändert sich durch sie nie.
 
@@ -777,27 +783,34 @@ genau so viel wie vorher, und der Exit-Code ändert sich durch sie nie.
   then steht auf stderr **eine** Zeile für diese Schicht mit Schichtname, Begründung, Zahl der
   Port-Globs und Ursache, **keine** Zeile je Port-Glob und keine Abhilfe-Zeile für sie; Exit-Code und
   Befunde sind **gleich** denen ohne die Quittierung.
-- **Boundary:** Given zwei Port-Schichten, die die Meldung auslösen, und eine Quittierung nur an der
-  ersten, when `a-check` läuft, then ist die erste Schicht in einer Zeile quittiert und die zweite
-  mit ihren Zeilen je Port-Glob und der Abhilfe gemeldet (die Quittierung gilt je Schicht, nicht für
-  die Meldung insgesamt); given eine Quittierung an einer Schicht, die die Meldung **nicht**
-  auslöst, then meldet `a-check` eine Zeile „Quittierung ohne Anlass" mit Schichtname und Begründung,
-  Exit-Code unverändert.
-- **Negative:** Given `acknowledge` an einer Schicht **ohne** `role: port`, mit leerer oder fehlender
-  Begründung, mit einem anderen Schlüssel als `port-scope` oder an einer Schicht in der Listen-Form
-  (ohne Objekt), when `a-check` läuft, then Exit-Code **2** mit einer Meldung, die Schicht und
-  Fehler nennt — wie jeder Verstoß des strikten Schemas; ein **älterer** `a-check`, der den Schlüssel
-  nicht kennt, lehnt dieselbe Konfiguration ebenso mit Exit-Code 2 ab.
+- **Boundary (je Schicht):** Given zwei Port-Schichten, die die Meldung auslösen, und eine
+  Quittierung nur an der ersten, when `a-check` läuft, then ist die erste Schicht in einer Zeile
+  quittiert und die zweite mit ihren Zeilen je Port-Glob und der Abhilfe gemeldet (die Quittierung
+  gilt je Schicht, nicht für die Meldung insgesamt); löst nur **ein Teil** der Port-Globs einer
+  quittierten Schicht aus, then nennt ihre Zeile nur diese.
+- **Boundary (überflüssig):** Given eine Quittierung an einer Schicht, die die Meldung **nicht**
+  auslöst — auch dann, wenn sonst **keine** Meldung entsteht —, when `a-check` läuft, then meldet
+  `a-check` eine Zeile „Quittierung ohne Anlass“ mit Schichtname und Begründung, Exit-Code
+  unverändert; teilen zwei Schichten denselben Port-Glob, then wird er **jeder** Schicht zugerechnet,
+  die ihn trägt, und keine der beiden gilt deshalb als überflüssig.
+- **Negative:** Given `acknowledge` an einer Schicht, deren effektive Rolle **nicht** `port` ist, an
+  einer Schicht in der Listen-Form (ohne Objekt), mit einem anderen Schlüssel als `port-scope`, mit
+  einer Begründung, die fehlt, `null` oder kein String ist oder nur aus Leerraum besteht, oder mit
+  einem `acknowledge`, das keine Map, eine leere Map oder ein doppelter Schlüssel ist, when
+  `a-check` läuft, then Exit-Code **2** mit einer Meldung, die Schicht und Fehler nennt — wie jeder
+  Verstoß des strikten Schemas.
 - **Determinismus:** Given dieselbe Konfiguration und derselbe Quellbaum, when `a-check` zweimal
-  läuft, then ist die Ausgabe byte-identisch, die Zeilen stehen in der Reihenfolge der Schichten
-  ([AC-QA-01](#ac-qa-01--determinismus)).
+  läuft, then ist die Ausgabe byte-identisch ([AC-QA-01](#ac-qa-01--determinismus)).
 
 **Out-of-Scope:** das Quittieren der übrigen Diagnosen (Abdeckung, Grenze, Auflösung) — ohne zweiten
 Beleg wäre ein verallgemeinerter Entwurf geraten; ein **stummes** Quittieren und ein Schalter für alle
 Hinweise (ein Schweigen verdeckte, was die Meldung sichtbar macht); eine Quittierung je Port-Glob
 oder je Befund (die Schicht ist die Einheit, in der ein Konsument das Rauschen kennt); eine Änderung
-von `port-locality` und der Scope-Ableitung; eine Übergangsform für ältere Versionen (a-check kennt
-kein Warn-Level für unbekannte Schlüssel, [AC-FA-CONF-001](#ac-fa-conf-001--konfigurationsdatei-a-checkyml)).
+von `port-locality` und der Scope-Ableitung; eine Übergangsform für ältere Versionen — ein `a-check`,
+der den Schlüssel nicht kennt, lehnt ihn wie jeden unbekannten Schlüssel ab
+([AC-FA-CONF-001](#ac-fa-conf-001--konfigurationsdatei-a-checkyml)); **gedeckt** ist die Quittierung
+nicht gegen einen später **hinzukommenden** Port-Glob derselben Schicht — sie gilt für alle Globs der
+Schicht, und die Zeile nennt nur ihre Zahl.
 
 ## 4. Nichtfunktionale Anforderungen
 
