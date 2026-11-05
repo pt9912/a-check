@@ -15,7 +15,7 @@ wechselt nur durch `git mv` (`make slice-mv`).
 [SPEC-CONF-001](../../../../spec/spezifikation.md#spec-conf-001--konfigurationsschema) und
 [SPEC-CLI-001](../../../../spec/spezifikation.md#spec-cli-001--aufruf-scan-wurzel-und-exit-codes) werden vom Folge-Slice nachgezogen, nicht hier.
 
-**Verantwortlich:** —
+**Verantwortlich:** Claude
 
 **Autor:** Claude. **Datum:** 2026-11-05.
 
