@@ -6,7 +6,7 @@ wechselt nur durch `git mv` (`make slice-mv`).
 
 **Welle:** ohne Welle — die Closure-Bedingung wäre die eigene DoD.
 
-**Bezug:** GitHub-Issue #7, [slice-229](../in-progress/slice-229-port-scope-meldung-quittieren-anforderung.md)
+**Bezug:** GitHub-Issue #7, [slice-229](../done/slice-229-port-scope-meldung-quittieren-anforderung.md)
 (Anforderung und ADR — die Vorlage dieses Slice),
 [ADR-0040](../../adr/0040-portscope-richtungssegment.md) (Port-Scope-Diagnose).
 
@@ -60,7 +60,7 @@ Ausgabe.
 
 ## 4. Trigger
 
-**Start** (`open` → `next`): [slice-229](../in-progress/slice-229-port-scope-meldung-quittieren-anforderung.md)
+**Start** (`open` → `next`): [slice-229](../done/slice-229-port-scope-meldung-quittieren-anforderung.md)
 liegt in `done/`.
 
 **Rückführungen:** `in-progress` → `next` (zu groß): Schema, Kern und Ausgabe sprengen eine
