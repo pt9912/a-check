@@ -13,7 +13,7 @@ GitHub-Issue #4.
 **Berührte Spec-Stellen:** [AC-FA-RULE-010](../../../../spec/lastenheft.md#ac-fa-rule-010--port-lokalität-regel-port-locality) ·
 der Hinweistext ist Ausgabe-Vertrag; ob die Spezifikation ihn zusagt, klärt §3.
 
-**Verantwortlich:** —
+**Verantwortlich:** Claude
 
 **Autor:** Claude. **Datum:** 2026-11-05.
 
