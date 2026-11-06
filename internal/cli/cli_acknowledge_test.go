@@ -117,3 +117,32 @@ func TestAcknowledgeIsDeterministic(t *testing.T) { // AC-QA-01
 		t.Fatalf("zwei Laeufe, zwei Ausgaben:\n%q\n%q", a, b)
 	}
 }
+
+func TestAcknowledgeMixedLayersKeepRemedyAndCapOfTheOpenOnes(t *testing.T) { // ADR-0045 Punkt 2: Deckel, Restzahl und Abhilfe folgen den nicht quittierten Globs
+	var globs strings.Builder
+	for i := 0; i < 12; i++ {
+		fmt.Fprintf(&globs, "      - \"internal/hexagon/application/order/cancelorder/ports/p%02d/**\"\n", i)
+	}
+	cfg := strings.Replace(portScopeCfg, "  domain:\n",
+		"  ports2:\n    globs:\n"+globs.String()+"    role: port\n  domain:\n", 1)
+	_, _, e := runAck(t, withAck(cfg, "ports", "bewusst"))
+	if !strings.Contains(e, "Hinweis: 13 Port-Glob(s)") {
+		t.Fatalf("Kopfzeile zaehlt alle 13: %q", e)
+	}
+	if !strings.Contains(e, "… und 2 weitere") {
+		t.Fatalf("12 offene Globs, Deckel 10: die Restzahl zaehlt nur sie, got %q", e)
+	}
+	if !strings.Contains(e, "Bei Ursache App-Glob") {
+		t.Fatalf("die offene Ursache behaelt ihre Abhilfe: %q", e)
+	}
+	if strings.Contains(e, "direction geben") {
+		t.Fatalf("die Ursache direction tragen nur quittierte Globs — keine Abhilfe dafuer: %q", e)
+	}
+}
+
+func TestAcknowledgeReasonIsOneLine(t *testing.T) { // SPEC-CLI-001: ein Block-Scalar bricht die Zeile je Schicht nicht
+	_, _, e := runAck(t, withAck(portScopeCfg, "ports", `erste\nzweite`))
+	if !strings.Contains(e, "quittiert — erste zweite (1 Port-Glob(s)") {
+		t.Fatalf("Leerraum zusammengezogen erwartet: %q", e)
+	}
+}

@@ -355,9 +355,10 @@ func UncoveredFiles(m Model, files []FileImports) []string {
 // tree although the port directory lies inside it — the configuration shape in
 // which port-locality is silently inert (ADR-0040). Glob is the configured
 // pattern, Scope the directory the derivation produced from it, Cause the
-// remedy class (InertDirection or InertCoarseApp). Layers names EVERY layer
-// whose own derivation leaves the glob inert, in declaration order — a glob two
-// layers share belongs to both (AC-FA-CONF-002).
+// remedy class (InertDirection or InertCoarseApp), both taken from the first
+// layer that leaves the glob inert. Layers names EVERY port layer carrying the
+// glob, in declaration order — a glob two layers share belongs to both
+// (AC-FA-CONF-002).
 type InertPortScope struct {
 	Glob   string
 	Scope  string
@@ -426,19 +427,30 @@ func InertPortScopes(m Model) []InertPortScope {
 			if sc == "" || appTreeContains(m, sc) {
 				continue
 			}
-			i, ok := at[g]
-			if !ok {
-				i = len(out)
-				at[g] = i
+			if _, ok := at[g]; !ok {
+				at[g] = len(out)
 				out = append(out, InertPortScope{Glob: g, Scope: sc, Cause: inertCause(m, p)})
-			}
-			if !containsString(out[i].Layers, l.Name) {
-				out[i].Layers = append(out[i].Layers, l.Name)
 			}
 		}
 	}
+	for i := range out {
+		out[i].Layers = portLayersCarrying(m, out[i].Glob)
+	}
 	sort.Slice(out, func(i, j int) bool { return out[i].Glob < out[j].Glob })
 	return out
+}
+
+// portLayersCarrying names every port layer that carries the glob, in
+// declaration order. Once a glob is in the diagnosis it belongs to ALL of them,
+// whatever their own direction derives (AC-FA-CONF-002).
+func portLayersCarrying(m Model, glob string) []string {
+	var names []string
+	for _, l := range m.Layers {
+		if EffectiveRole(l) == "port" && containsString(l.Globs, glob) {
+			names = append(names, l.Name)
+		}
+	}
+	return names
 }
 
 // AckedLayer is a layer that acknowledges the port-scope notice (AC-FA-CONF-002):

@@ -579,9 +579,9 @@ const ackKeyPortScope = "port-scope"
 
 // decodeAcknowledge validates a layer's `acknowledge` value and returns its
 // port-scope reason ("" when the key is absent). Every violation is an error —
-// exit 2 like any strict-schema violation — naming layer and defect. The map
-// form is checked on the raw node: a decoded map would hide a duplicate key, a
-// null and a non-string value.
+// exit 2 like any strict-schema violation — naming layer and defect. The value
+// is checked on the raw node because only there a duplicate key, a null and a
+// non-string value are still visible.
 func decodeAcknowledge(layer, val yaml.Node, effRole, name, path string) (string, error) {
 	present := false
 	for i := 0; i+1 < len(layer.Content); i += 2 {

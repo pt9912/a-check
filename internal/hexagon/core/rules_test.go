@@ -2151,3 +2151,23 @@ func TestPortScopeAcksOnlyTriggeringGlobsCount(t *testing.T) { // AC-FA-CONF-002
 		t.Fatalf("beide Ursachen, direction zuerst, got %v", acked[0].Causes)
 	}
 }
+
+func TestPortScopeAcksSharedGlobWithOwnDirectionStillCounts(t *testing.T) { // AC-FA-CONF-002: der Glob steht in der Diagnose, also gehoert er jeder tragenden Schicht — auch der, deren eigene direction ihn aufloest
+	const g = "src/app/a/ports/inbound/**"
+	m := Model{
+		Layers: []Layer{
+			{Name: "app", Globs: []string{"src/app/**"}, Role: "app"},
+			{Name: "ports_a", Globs: []string{g}, Role: "port", AckPortScope: "a"},
+			{Name: "ports_b", Globs: []string{g}, Role: "port", Direction: "inbound", AckPortScope: "b"},
+		},
+		Edges: []Edge{{From: "app", To: "ports_a"}, {From: "app", To: "ports_b"}},
+	}
+	scopes := InertPortScopes(m)
+	if len(scopes) != 1 || len(scopes[0].Layers) != 2 {
+		t.Fatalf("ein Glob, beide Schichten tragen ihn, got %+v", scopes)
+	}
+	acked, redundant, _ := PortScopeAcks(m, scopes)
+	if len(acked) != 2 || len(redundant) != 0 {
+		t.Fatalf("keine der beiden gilt als ueberfluessig, got %+v %+v", acked, redundant)
+	}
+}

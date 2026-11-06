@@ -1,6 +1,6 @@
 # Benutzerhandbuch: a-check
 
-**Handbuch-Version:** 1.48 · **Software-Version:** [aktuelles Release](../../version.md#aktuell) · **Stand:** 2026-10-07 ·
+**Handbuch-Version:** 1.48 · **Software-Version:** [aktuelles Release](../../version.md#aktuell) · **Stand:** 2026-11-06 ·
 **Autor:** pt9912 (Maintainer)
 
 ---
