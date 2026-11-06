@@ -76,7 +76,7 @@ Drei Liefer-Punkte, je einer pro Schicht; die Reihenfolge ist Config → Kern �
    auslösenden Globs; dann die Zeilen der quittierten Schichten, dann die Glob-Zeilen aus `Open`
    mit Deckel und „… und n weitere“, dann die Abhilfe-Zeilen nur für Ursachen in `Open`; die
    Zeile „Hinweis: Schicht … Quittierung ohne Anlass …“ steht auch dann, wenn sonst keine Meldung
-   entsteht (frühe Rückkehr bei null Treffern entfällt dafür). Wortlaut aus ADR-0045 Punkt 2/3.
+   entsteht (frühe Rückkehr bei null Treffern entfällt dafür). Wortlaut aus [ADR-0045](../../adr/0045-port-scope-meldung-quittieren.md) Punkt 2/3.
 
 **Tests (vor/mit dem Code, je Mutations-Probe auf den Befund, nicht den Exit-Code):**
 Config: jeder Fehlerfall aus ADR Punkt 4 und der Happy-Fall. Kern: zwei Schichten mit einer
@@ -85,7 +85,7 @@ sonstige Meldung. CLI: Wortlaut, Reihenfolge, Deckel nur für nicht quittierte, 
 alles, Abhilfe nur bei offener Ursache; derselbe Baum mit und ohne Quittierung ergibt gleiche
 Befunde und gleichen Exit-Code; Determinismus über zwei Läufe.
 
-**Doku:** SPEC-CONF-001 (Schlüssel, Fehler), SPEC-CLI-001 (Zeilenformen), Spez-Bump mit
+**Doku:** [SPEC-CONF-001](../../../../spec/spezifikation.md#spec-conf-001--konfigurationsschema) (Schlüssel, Fehler), [SPEC-CLI-001](../../../../spec/spezifikation.md#spec-cli-001--aufruf-scan-wurzel-und-exit-codes) (Zeilenformen), Spez-Bump mit
 Historie-Zeile; Benutzerhandbuch dort, wo der Port-Scope-Hinweis steht (inkl. Pin-Hinweis: Pin erst
 mit dem Release heben, das den Schlüssel kennt), Handbuch-Historie; CHANGELOG `[Unreleased]`
 (`### Added`).
