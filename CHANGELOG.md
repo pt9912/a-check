@@ -6,6 +6,8 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
+## [0.24.0] - 2026-11-06
+
 ### Added
 
 - **Port-Scope-Hinweis je Schicht quittieren:** eine Port-Schicht kann den Hinweis „Port-Glob(s)
@@ -16,6 +18,13 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
   Exit-Code ändern sich nicht; ein Konfigurationsfehler (leere Begründung, Schicht ohne Port-Rolle,
   anderer Schlüssel) ist Exit 2. Ein älteres a-check lehnt den Schlüssel ab — den Pin vor der
   Konfiguration heben. Lastenheft 0.31.0 (AC-FA-CONF-002), Spezifikation 0.41.0.
+
+### Changed
+
+- **Basis-Images aktualisiert:** die Laufzeit-Basis (`distroless/static-debian12`) und das
+  Lint-Image (`golangci-lint`) sind auf neuere, digest-gepinnte Stände gehoben (Dependabot,
+  [ADR-0044](docs/plan/adr/0044-dependabot-docker-woertliche-tags.md)). Verhalten von a-check
+  unverändert.
 
 ## [0.23.4] - 2026-11-05
 

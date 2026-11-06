@@ -15,7 +15,7 @@
 #   - `docker image inspect --format '{{index .RepoDigests 0}}' <image>:<tag>`
 #     auf dem Host, der das Image gezogen hat.
 # Die Pin-Hebung ist ein bewusster Commit (AC-QA-03).
-A_CHECK_IMAGE ?= ghcr.io/pt9912/a-check@sha256:3b9b6d5d79109a25b8e43ac2f072a2d8094cfeab8e99e82687bfee3810ac227e
+A_CHECK_IMAGE ?= ghcr.io/pt9912/a-check@sha256:188ae45c307b1fe56e4c5373c0f103eb7088ce062aa9eee8bce3625bc18777d7
 
 # Container-Runtime ueber eine Indirektion, damit ein Repo mit podman/nerdctl
 # oder einem docker-Wrapper nicht die Haelfte seiner Targets anders faehrt als
