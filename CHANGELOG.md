@@ -6,6 +6,17 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
+### Added
+
+- **Port-Scope-Hinweis je Schicht quittieren:** eine Port-Schicht kann den Hinweis „Port-Glob(s)
+  erreichen den App-Baum nicht" mit `acknowledge: {port-scope: "<Begründung>"}` am Schicht-Objekt
+  quittieren — gedacht für app-weite Ports, bei denen er der Dauerzustand ist. Die Meldung wird
+  **kürzer, nicht stumm**: eine Zeile je quittierter Schicht mit Schichtname, Begründung, Zahl der
+  Port-Globs und Ursache. Eine überflüssige Quittierung meldet eine eigene Zeile. Befunde und
+  Exit-Code ändern sich nicht; ein Konfigurationsfehler (leere Begründung, Schicht ohne Port-Rolle,
+  anderer Schlüssel) ist Exit 2. Ein älteres a-check lehnt den Schlüssel ab — den Pin vor der
+  Konfiguration heben. Lastenheft 0.31.0 (AC-FA-CONF-002), Spezifikation 0.41.0.
+
 ## [0.23.4] - 2026-11-05
 
 ### Fixed

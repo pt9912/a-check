@@ -1,6 +1,6 @@
 # Benutzerhandbuch: a-check
 
-**Handbuch-Version:** 1.47 · **Software-Version:** [aktuelles Release](../../version.md#aktuell) · **Stand:** 2026-10-07 ·
+**Handbuch-Version:** 1.48 · **Software-Version:** [aktuelles Release](../../version.md#aktuell) · **Stand:** 2026-10-07 ·
 **Autor:** pt9912 (Maintainer)
 
 ---
@@ -202,6 +202,41 @@ Auch das ist **kein Befund** — der Exit-Code bleibt unberührt. Der Hinweis tr
 beurteilt. **Geschwister-Ports bleiben ungemeldet** (klassisches Hexagonal, `hexagon/ports/**` neben
 `hexagon/services/**`) — dort ist die Inertheit zugesagt, kein Defekt. Ab zehn Globs wird gekürzt
 und die Restzahl genannt; ein Baum ohne solche Globs erzeugt keine Ausgabe.
+
+**Den Hinweis je Schicht quittieren.** Bei app-weiten Ports ist der Hinweis der Dauerzustand — es gibt
+keinen engeren Scope. Eine Port-Schicht kann ihn dann mit Begründung quittieren:
+
+```yaml
+layers:
+  ports:
+    globs: ["src/app/ports/**"]
+    role: port
+    acknowledge:
+      port-scope: "app-weite Ports: ein Scope unterhalb des App-Präfixes existiert nicht"
+```
+
+Die Meldung wird dadurch **kürzer, nicht stumm**: Statt der Zeile je Glob steht eine Zeile je
+quittierter Schicht mit Schichtname, Begründung, Zahl der Port-Globs und Ursache; die Abhilfe-Zeile
+einer Ursache steht weiter, solange ein nicht quittierter Glob sie trägt.
+
+```text
+  Schicht ports: quittiert — app-weite Ports: ein Scope unterhalb des App-Präfixes existiert nicht (1 Port-Glob(s), Ursache: App-Glob ist groeber als der Scope)
+```
+
+- Die Quittierung gilt **je Schicht** und braucht eine nicht leere Begründung. Zugelassen ist heute
+  genau der Schlüssel `port-scope`, und nur an einer Schicht, deren Rolle `port` ist (explizit oder
+  aus dem Namen abgeleitet). Alles andere — leere Begründung, andere Rolle, anderer Schlüssel — ist
+  ein Konfigurationsfehler mit Exit-Code 2.
+- Löst die Schicht den Hinweis **gar nicht** aus (etwa weil ein Umbau den Scope behoben hat), meldet
+  a-check eine eigene Zeile `Hinweis: Schicht …: Quittierung ohne Anlass …` — auch wenn sonst nichts
+  gemeldet wird. Räumen Sie die Quittierung dann auf. Das ist kein Fehler, der Exit-Code bleibt.
+- Befunde, Exit-Code und `port-locality` ändern sich durch die Quittierung nicht. Sie deckt auch
+  **alle später hinzukommenden** Port-Globs derselben Schicht; die Zeile nennt dafür die Zahl, ein
+  Anstieg fällt dort auf, löst aber nichts aus.
+- **Versions-Kopplung:** Ein `a-check`, der den Schlüssel nicht kennt, lehnt die Konfiguration wie
+  jeden unbekannten Schlüssel mit Exit-Code 2 ab; eine Übergangsform gibt es nicht. Wer das Image
+  pinnt, hebt den Pin **zuerst** auf das Release, das den Schlüssel kennt, und nimmt ihn danach in
+  die Konfiguration auf.
 
 ## 3. Aufgaben
 
@@ -1162,3 +1197,4 @@ und die [Spezifikation](../../spec/spezifikation.md); ein Überblick steht in de
 | 1.45 | 2026-10-07 | §4 „Sollform je Datei“: neuer Dialekt **`json`** (`package.json` u. a.; Anweisung = Mitglied des Wurzel-Objekts, Einträge als Mitglied ohne äußere Klammern; die Datei muss gültiges JSON nach RFC 8259 sein, jede Abweichung ist Exit 2; ebenso eine Nicht-Objekt-Wurzel) mit Beispiel. Lastenheft 0.29.0, [ADR-0042](../plan/adr/0042-shapes-benannte-dialekte-gomod-json.md), slice-214. |
 | 1.46 | 2026-10-07 | §1 „Hinweis zum Image“: das Image gibt es für `linux/amd64` und `linux/arm64`, der Pin ist der Digest des Image-Index; §2 Schritt 2 nennt `imagetools inspect` als Quelle des Index-Digests. Lastenheft 0.30.0, [ADR-0043](../plan/adr/0043-multi-arch-ein-bau-getestet-dann-getaggt.md), slice-218. |
 | 1.47 | 2026-10-07 | §1 neuer Abschnitt „macOS: Docker Desktop und Colima“: gezogene Plattform (`linux/arm64` auf Apple Silicon) und wie man sie prüft, was das Projekt geprüft hat und was nicht, freigegebene Verzeichnisse beider Laufzeiten (Docker Desktop: Mount-Fehler; Colima: leeres `/src`, Mount wirkt erst beim Start und ersetzt `$HOME`), Colima-Architektur nach dem Anlegen fest. slice-220. |
+| 1.48 | 2026-11-06 | §2: **Port-Scope-Hinweis je Schicht quittieren** — `acknowledge: {port-scope: <Begründung>}` am Schicht-Objekt macht den Hinweis kürzer statt stumm (eine Zeile je Schicht), eine überflüssige Quittierung wird gemeldet, Konfigurationsfehler sind Exit 2, ein älteres a-check lehnt den Schlüssel ab. Lastenheft 0.31.0 ([AC-FA-CONF-002](../../spec/lastenheft.md#ac-fa-conf-002--port-scope-meldung-je-schicht-quittieren)), Spez 0.41.0, slice-230. |
