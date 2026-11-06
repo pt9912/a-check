@@ -2068,3 +2068,86 @@ func TestPortDirectionPaarung(t *testing.T) {
 		}
 	}
 }
+
+// ackModel: two port layers that both trigger the notice (ports_a, ports_b),
+// nested in one app layer — neither carries a direction.
+func ackModel() Model {
+	return Model{
+		Layers: []Layer{
+			{Name: "app", Globs: []string{"src/app/**"}, Role: "app"},
+			{Name: "ports_a", Globs: []string{"src/app/a/ports/**"}, Role: "port"},
+			{Name: "ports_b", Globs: []string{"src/app/b/ports/**"}, Role: "port"},
+		},
+		Edges: []Edge{{From: "app", To: "ports_a"}, {From: "app", To: "ports_b"}},
+	}
+}
+
+func TestPortScopeAcksIsPerLayer(t *testing.T) { // AC-FA-CONF-002: die Quittierung gilt je Schicht, nicht fuer die Meldung insgesamt
+	m := ackModel()
+	m.Layers[1].AckPortScope = "bewusst"
+	scopes := InertPortScopes(m)
+	acked, redundant, open := PortScopeAcks(m, scopes)
+	if len(acked) != 1 || acked[0].Layer != "ports_a" || len(acked[0].Scopes) != 1 || acked[0].Reason != "bewusst" {
+		t.Fatalf("nur ports_a ist quittiert, got %+v", acked)
+	}
+	if len(redundant) != 0 {
+		t.Fatalf("ports_a loest aus, keine ueberfluessige Quittierung, got %+v", redundant)
+	}
+	if len(open) != 1 || open[0].Glob != "src/app/b/ports/**" {
+		t.Fatalf("ports_b bleibt mit seinem Glob offen, got %+v", open)
+	}
+}
+
+func TestPortScopeAcksRedundantWhenLayerDoesNotTrigger(t *testing.T) { // AC-FA-CONF-002: ueberfluessig, auch ohne sonstige Meldung
+	m := sliceDirectionModel() // aufgeloest: keine Diagnose
+	for i := range m.Layers {
+		if EffectiveRole(m.Layers[i]) == "port" {
+			m.Layers[i].AckPortScope = "veraltet"
+			break
+		}
+	}
+	scopes := InertPortScopes(m)
+	if len(scopes) != 0 {
+		t.Fatalf("Ausgangslage ohne Diagnose, got %v", scopes)
+	}
+	acked, redundant, open := PortScopeAcks(m, scopes)
+	if len(acked) != 0 || len(open) != 0 || len(redundant) != 1 || redundant[0].Reason != "veraltet" {
+		t.Fatalf("genau eine ueberfluessige Quittierung, got %+v %+v %+v", acked, redundant, open)
+	}
+}
+
+func TestPortScopeAcksSharedGlobCountsForEveryLayer(t *testing.T) { // AC-FA-CONF-002: ein geteilter Glob wird jeder tragenden Schicht zugerechnet
+	m := ackModel()
+	m.Layers[2].Globs = m.Layers[1].Globs // beide tragen denselben Glob
+	m.Layers[1].AckPortScope = "a"
+	m.Layers[2].AckPortScope = "b"
+	scopes := InertPortScopes(m)
+	if len(scopes) != 1 || len(scopes[0].Layers) != 2 {
+		t.Fatalf("ein Glob, zwei Schichten, got %+v", scopes)
+	}
+	acked, redundant, open := PortScopeAcks(m, scopes)
+	if len(acked) != 2 || len(redundant) != 0 {
+		t.Fatalf("keine der beiden Schichten ist ueberfluessig, got %+v %+v", acked, redundant)
+	}
+	if len(open) != 0 {
+		t.Fatalf("beide tragenden Schichten quittieren — der Glob ist nicht offen, got %+v", open)
+	}
+	m.Layers[2].AckPortScope = ""
+	_, _, open = PortScopeAcks(m, scopes)
+	if len(open) != 1 {
+		t.Fatalf("eine nicht quittierende Schicht haelt den Glob offen, got %+v", open)
+	}
+}
+
+func TestPortScopeAcksOnlyTriggeringGlobsCount(t *testing.T) { // AC-FA-CONF-002: gezaehlt werden nur die ausloesenden Globs; Ursachen: direction vor App-Glob
+	m := ackModel()
+	m.Layers[1].Globs = []string{"src/app/a/ports/**", "src/app/a/inbound/**", "elsewhere/ports/**"}
+	m.Layers[1].AckPortScope = "x"
+	acked, _, _ := PortScopeAcks(m, InertPortScopes(m))
+	if len(acked) != 1 || len(acked[0].Scopes) != 2 {
+		t.Fatalf("der Glob ausserhalb des App-Baums loest nicht aus, got %+v", acked)
+	}
+	if len(acked[0].Causes) != 2 || acked[0].Causes[0] != InertDirection || acked[0].Causes[1] != InertCoarseApp {
+		t.Fatalf("beide Ursachen, direction zuerst, got %v", acked[0].Causes)
+	}
+}

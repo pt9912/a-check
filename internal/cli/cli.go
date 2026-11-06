@@ -11,6 +11,7 @@ import (
 	"fmt"
 	"io"
 	"path/filepath"
+	"strings"
 
 	"github.com/pt9912/a-check/internal/adapter/driven/config"
 	"github.com/pt9912/a-check/internal/adapter/driven/extract"
@@ -123,7 +124,7 @@ func Run(args []string, out, errw io.Writer) int {
 	writeCoverageNotice(errw, core.UncoveredFiles(m, files))
 	writeLimitNotice(errw, core.HeuristicLimits(m, files))
 	writeResolutionNotice(errw, core.LayerResolutions(m, files))
-	writePortScopeNotice(errw, core.InertPortScopes(m))
+	writePortScopeNotice(errw, core.InertPortScopes(m), m)
 	return code
 }
 
@@ -164,30 +165,51 @@ func scan(root string, m core.Model) ([]core.FileImports, []core.Finding, error)
 // here they look the same. Classic sibling ports have their directory OUTSIDE
 // the app tree and stay unreported — the documented inertness of AC-FA-RULE-010
 // is not a gap.
-func writePortScopeNotice(errw io.Writer, scopes []core.InertPortScope) {
-	if len(scopes) == 0 {
-		return
-	}
-	_, _ = fmt.Fprintf(errw, "Hinweis: %d Port-Glob(s) erreichen den App-Baum nicht — port-locality bleibt dafür ungeprueft:\n", len(scopes))
-	var direction, coarse bool
-	for i, s := range scopes {
-		direction = direction || s.Cause == core.InertDirection
-		coarse = coarse || s.Cause == core.InertCoarseApp
-		if i >= noticeLimit {
-			continue
+func writePortScopeNotice(errw io.Writer, scopes []core.InertPortScope, m core.Model) {
+	acked, redundant, open := core.PortScopeAcks(m, scopes)
+	if len(scopes) > 0 {
+		_, _ = fmt.Fprintf(errw, "Hinweis: %d Port-Glob(s) erreichen den App-Baum nicht — port-locality bleibt dafür ungeprueft:\n", len(scopes))
+		// An acknowledged layer shrinks to ONE line (AC-FA-CONF-002, ADR-0045):
+		// shorter, not silent — layer, reason, count and cause stay on stderr.
+		for _, a := range acked {
+			causes := make([]string, len(a.Causes))
+			for i, c := range a.Causes {
+				causes[i] = causeLabel(c)
+			}
+			_, _ = fmt.Fprintf(errw, "  Schicht %s: quittiert — %s (%d Port-Glob(s), Ursache: %s)\n",
+				a.Layer, oneLine(a.Reason), len(a.Scopes), strings.Join(causes, ", "))
 		}
-		_, _ = fmt.Fprintf(errw, "  %s -> Scope %s (Ursache: %s)\n", s.Glob, s.Scope, causeLabel(s.Cause))
+		// The cap and the remainder count only the globs of unacknowledged layers,
+		// and a remedy line stays while one of THOSE globs carries its cause.
+		var direction, coarse bool
+		for i, s := range open {
+			direction = direction || s.Cause == core.InertDirection
+			coarse = coarse || s.Cause == core.InertCoarseApp
+			if i >= noticeLimit {
+				continue
+			}
+			_, _ = fmt.Fprintf(errw, "  %s -> Scope %s (Ursache: %s)\n", s.Glob, s.Scope, causeLabel(s.Cause))
+		}
+		if len(open) > noticeLimit {
+			_, _ = fmt.Fprintf(errw, "  … und %d weitere\n", len(open)-noticeLimit)
+		}
+		if direction {
+			_, _ = fmt.Fprintln(errw, "  Abhilfe bei Ursache direction: Port-Glob auf den Port-Ordner schneiden (…/ports/**) oder der Schicht ihre direction geben — sie muss dem letzten Segment des Globs entsprechen.")
+		}
+		if coarse {
+			_, _ = fmt.Fprintln(errw, "  Bei Ursache App-Glob: port-locality kann dort nicht entscheiden, eine direction ändert das nicht. Wirksam ist ein App-Glob auf oder unterhalb des Scopes (je Slice einer, Ports je Slice).")
+		}
 	}
-	if len(scopes) > noticeLimit {
-		_, _ = fmt.Fprintf(errw, "  … und %d weitere\n", len(scopes)-noticeLimit)
-	}
-	if direction {
-		_, _ = fmt.Fprintln(errw, "  Abhilfe bei Ursache direction: Port-Glob auf den Port-Ordner schneiden (…/ports/**) oder der Schicht ihre direction geben — sie muss dem letzten Segment des Globs entsprechen.")
-	}
-	if coarse {
-		_, _ = fmt.Fprintln(errw, "  Bei Ursache App-Glob: port-locality kann dort nicht entscheiden, eine direction ändert das nicht. Wirksam ist ein App-Glob auf oder unterhalb des Scopes (je Slice einer, Ports je Slice).")
+	// A stale acknowledgement is told even when nothing else is reported: the
+	// notice it silenced may have gone, and the line is the reminder.
+	for _, r := range redundant {
+		_, _ = fmt.Fprintf(errw, "Hinweis: Schicht %s: Quittierung ohne Anlass — die Schicht löst die Port-Scope-Meldung nicht aus (Begründung: %s)\n", r.Layer, oneLine(r.Reason))
 	}
 }
+
+// oneLine collapses a reason to one line: a YAML block scalar must not break the
+// line-per-layer form of the notice.
+func oneLine(s string) string { return strings.Join(strings.Fields(s), " ") }
 
 // causeLabel spells the remedy class of an inert port scope for the notice.
 func causeLabel(cause string) string {

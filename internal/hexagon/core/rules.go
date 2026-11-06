@@ -355,11 +355,14 @@ func UncoveredFiles(m Model, files []FileImports) []string {
 // tree although the port directory lies inside it — the configuration shape in
 // which port-locality is silently inert (ADR-0040). Glob is the configured
 // pattern, Scope the directory the derivation produced from it, Cause the
-// remedy class (InertDirection or InertCoarseApp).
+// remedy class (InertDirection or InertCoarseApp). Layers names EVERY layer
+// whose own derivation leaves the glob inert, in declaration order — a glob two
+// layers share belongs to both (AC-FA-CONF-002).
 type InertPortScope struct {
-	Glob  string
-	Scope string
-	Cause string
+	Glob   string
+	Scope  string
+	Cause  string
+	Layers []string
 }
 
 // Remedy classes of an inert port scope. They are told apart by two conditions
@@ -409,7 +412,7 @@ func isPortDirection(seg string) bool {
 // where this notice is the only thing separating "clean" from "not looked at".
 func InertPortScopes(m Model) []InertPortScope {
 	var out []InertPortScope
-	seen := map[string]bool{}
+	at := map[string]int{}
 	for _, l := range m.Layers {
 		if EffectiveRole(l) != "port" {
 			continue
@@ -420,15 +423,96 @@ func InertPortScopes(m Model) []InertPortScope {
 				continue
 			}
 			sc := scopeFor(m, p, l.Direction)
-			if sc == "" || appTreeContains(m, sc) || seen[g] {
+			if sc == "" || appTreeContains(m, sc) {
 				continue
 			}
-			seen[g] = true
-			out = append(out, InertPortScope{Glob: g, Scope: sc, Cause: inertCause(m, p)})
+			i, ok := at[g]
+			if !ok {
+				i = len(out)
+				at[g] = i
+				out = append(out, InertPortScope{Glob: g, Scope: sc, Cause: inertCause(m, p)})
+			}
+			if !containsString(out[i].Layers, l.Name) {
+				out[i].Layers = append(out[i].Layers, l.Name)
+			}
 		}
 	}
 	sort.Slice(out, func(i, j int) bool { return out[i].Glob < out[j].Glob })
 	return out
+}
+
+// AckedLayer is a layer that acknowledges the port-scope notice (AC-FA-CONF-002):
+// Scopes are the layer's triggering port globs (stably sorted by glob), Causes
+// their remedy classes, deduplicated, direction before coarse-app (the order of
+// the remedy lines).
+type AckedLayer struct {
+	Layer  string
+	Reason string
+	Scopes []InertPortScope
+	Causes []string
+}
+
+// PortScopeAcks splits the port-scope diagnosis by acknowledgement
+// (AC-FA-CONF-002, ADR-0045). Acked lists, in layer order, every acknowledging
+// layer that triggers the notice; Redundant every acknowledging layer that does
+// not — measured per layer, BEFORE acknowledging, so a glob two layers share
+// counts for both and neither is redundant on its account. Open keeps the globs
+// that not EVERY carrying layer acknowledges, in the diagnosis order. Only the
+// notice depends on it: findings and exit code never read acknowledgements.
+func PortScopeAcks(m Model, scopes []InertPortScope) (acked, redundant []AckedLayer, open []InertPortScope) {
+	ackedBy := map[string]bool{}
+	for _, l := range m.Layers {
+		if l.AckPortScope == "" {
+			continue
+		}
+		ackedBy[l.Name] = true
+		if a := ackedLayerOf(l, scopes); len(a.Scopes) == 0 {
+			redundant = append(redundant, a)
+		} else {
+			acked = append(acked, a)
+		}
+	}
+	for _, s := range scopes {
+		if !allAcked(s.Layers, ackedBy) {
+			open = append(open, s)
+		}
+	}
+	return acked, redundant, open
+}
+
+// ackedLayerOf collects the triggering globs of one acknowledging layer.
+func ackedLayerOf(l Layer, scopes []InertPortScope) AckedLayer {
+	a := AckedLayer{Layer: l.Name, Reason: l.AckPortScope}
+	for _, s := range scopes {
+		if !containsString(s.Layers, l.Name) {
+			continue
+		}
+		a.Scopes = append(a.Scopes, s)
+		if !containsString(a.Causes, s.Cause) {
+			a.Causes = append(a.Causes, s.Cause)
+		}
+	}
+	sort.Slice(a.Causes, func(i, j int) bool { return a.Causes[i] == InertDirection && a.Causes[j] != InertDirection })
+	return a
+}
+
+// allAcked reports whether every named layer acknowledges.
+func allAcked(layers []string, ackedBy map[string]bool) bool {
+	for _, name := range layers {
+		if !ackedBy[name] {
+			return false
+		}
+	}
+	return true
+}
+
+func containsString(list []string, v string) bool {
+	for _, x := range list {
+		if x == v {
+			return true
+		}
+	}
+	return false
 }
 
 // LayerResolution is how much of ONE layer's extracted import symbols actually

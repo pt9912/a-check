@@ -96,6 +96,10 @@ type Layer struct {
 	Globs     []string
 	Role      string
 	Direction string
+	// AckPortScope is the reason with which the layer acknowledges the
+	// port-scope notice (AC-FA-CONF-002); empty means not acknowledged. It
+	// shapes the notice only — no rule reads it.
+	AckPortScope string
 }
 
 // Edge is a directed, allowed dependency between layers (from imports to).

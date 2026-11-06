@@ -69,6 +69,9 @@ type yamlLayer struct {
 	Globs     []string `yaml:"globs"`
 	Role      string   `yaml:"role"`
 	Direction string   `yaml:"direction"`
+	// Acknowledge is decoded raw: the strict shape (a mapping with exactly the
+	// key port-scope and a string reason) is checked by hand, see decodeAcknowledge.
+	Acknowledge yaml.Node `yaml:"acknowledge"`
 }
 
 type yamlConfig struct {
@@ -504,46 +507,53 @@ func decodeLayers(node yaml.Node, path string) ([]core.Layer, error) {
 			return nil, fmt.Errorf("%s: Schicht %q mehrfach deklariert", path, name)
 		}
 		seen[name] = true
-		globs, role, direction, lerr := decodeLayer(*node.Content[i+1], name, path)
+		dl, lerr := decodeLayer(*node.Content[i+1], name, path)
 		if lerr != nil {
 			return nil, lerr
 		}
-		layers = append(layers, core.Layer{Name: name, Globs: globs, Role: role, Direction: direction})
+		layers = append(layers, core.Layer{Name: name, Globs: dl.globs, Role: dl.role, Direction: dl.direction, AckPortScope: dl.ack})
 	}
 	return layers, nil
 }
 
-func decodeLayer(node yaml.Node, name, path string) ([]string, string, string, error) {
+// decodedLayer is what a layers entry yields: its globs, the explicit role, the
+// optional direction and the acknowledgement reason (AC-FA-CONF-002; empty = none).
+type decodedLayer struct {
+	globs               []string
+	role, direction, ack string
+}
+
+func decodeLayer(node yaml.Node, name, path string) (decodedLayer, error) {
 	switch node.Kind {
 	case yaml.SequenceNode:
 		var globs []string
 		if err := node.Decode(&globs); err != nil {
-			return nil, "", "", fmt.Errorf("%s: Schicht %q: %w", path, name, err)
+			return decodedLayer{}, fmt.Errorf("%s: Schicht %q: %w", path, name, err)
 		}
-		return globs, "", "", nil
+		return decodedLayer{globs: globs}, nil
 	case yaml.MappingNode:
 		return decodeLayerObject(node, name, path)
 	default:
-		return nil, "", "", fmt.Errorf("%s: Schicht %q: erwarte Glob-Liste oder {globs, role, direction}", path, name)
+		return decodedLayer{}, fmt.Errorf("%s: Schicht %q: erwarte Glob-Liste oder {globs, role, direction, acknowledge}", path, name)
 	}
 }
 
-// decodeLayerObject decodes the strict object form {globs, role, direction}. It
-// is strict by hand — KnownFields(true) on the decoder is NOT inherited by
-// yaml.Node.Decode, so unknown keys and invalid enums are rejected explicitly
-// (SPEC-CONF-001).
-func decodeLayerObject(node yaml.Node, name, path string) ([]string, string, string, error) {
+// decodeLayerObject decodes the strict object form {globs, role, direction,
+// acknowledge}. It is strict by hand — KnownFields(true) on the decoder is NOT
+// inherited by yaml.Node.Decode, so unknown keys and invalid enums are rejected
+// explicitly (SPEC-CONF-001).
+func decodeLayerObject(node yaml.Node, name, path string) (decodedLayer, error) {
 	for i := 0; i+1 < len(node.Content); i += 2 {
 		if k := node.Content[i].Value; !knownLayerKey(k) {
-			return nil, "", "", fmt.Errorf("%s: Schicht %q: unbekannter Schlüssel %q", path, name, k)
+			return decodedLayer{}, fmt.Errorf("%s: Schicht %q: unbekannter Schlüssel %q", path, name, k)
 		}
 	}
 	var yl yamlLayer
 	if err := node.Decode(&yl); err != nil {
-		return nil, "", "", fmt.Errorf("%s: Schicht %q: %w", path, name, err)
+		return decodedLayer{}, fmt.Errorf("%s: Schicht %q: %w", path, name, err)
 	}
 	if !validRole(yl.Role) {
-		return nil, "", "", fmt.Errorf("%s: Schicht %q: ungültige role %q (domain|app|port|adapter)", path, name, yl.Role)
+		return decodedLayer{}, fmt.Errorf("%s: Schicht %q: ungültige role %q (domain|app|port|adapter)", path, name, yl.Role)
 	}
 	// Die Richtung wird gegen das Vokabular der EFFEKTIVEN Rolle geprueft:
 	// fehlt `role`, gilt die Namens-Inferenz (AC-FA-RULE-006). Sonst kaeme
@@ -554,13 +564,69 @@ func decodeLayerObject(node yaml.Node, name, path string) ([]string, string, str
 		effRole = core.InferRole(name)
 	}
 	if !validDirectionFor(effRole, yl.Direction) {
-		return nil, "", "", fmt.Errorf("%s: Schicht %q: ungültige direction %q an role %q (%s)",
+		return decodedLayer{}, fmt.Errorf("%s: Schicht %q: ungültige direction %q an role %q (%s)",
 			path, name, yl.Direction, effRole, dirVocabList(effRole))
 	}
-	return yl.Globs, yl.Role, yl.Direction, nil
+	ack, err := decodeAcknowledge(node, yl.Acknowledge, effRole, name, path)
+	if err != nil {
+		return decodedLayer{}, err
+	}
+	return decodedLayer{globs: yl.Globs, role: yl.Role, direction: yl.Direction, ack: ack}, nil
 }
 
-func knownLayerKey(k string) bool { return k == "globs" || k == "role" || k == "direction" }
+// ackKeyPortScope is the one notice a layer may acknowledge (AC-FA-CONF-002).
+const ackKeyPortScope = "port-scope"
+
+// decodeAcknowledge validates a layer's `acknowledge` value and returns its
+// port-scope reason ("" when the key is absent). Every violation is an error —
+// exit 2 like any strict-schema violation — naming layer and defect. The map
+// form is checked on the raw node: a decoded map would hide a duplicate key, a
+// null and a non-string value.
+func decodeAcknowledge(layer, val yaml.Node, effRole, name, path string) (string, error) {
+	present := false
+	for i := 0; i+1 < len(layer.Content); i += 2 {
+		if layer.Content[i].Value == "acknowledge" {
+			present = true
+		}
+	}
+	if !present {
+		return "", nil
+	}
+	fail := func(format string, a ...any) (string, error) {
+		return "", fmt.Errorf("%s: Schicht %q: acknowledge: %s", path, name, fmt.Sprintf(format, a...))
+	}
+	if effRole != "port" {
+		return fail("zulässig nur an einer Schicht mit der Rolle port, diese hat %q", roleLabel(effRole))
+	}
+	if val.Kind != yaml.MappingNode || len(val.Content) == 0 {
+		return fail("erwarte eine nicht leere Map {%s: <Begründung>}", ackKeyPortScope)
+	}
+	reason := ""
+	seenKey := false
+	for i := 0; i+1 < len(val.Content); i += 2 {
+		k := val.Content[i].Value
+		if k != ackKeyPortScope {
+			return fail("unbekannter Schlüssel %q (zugelassen: %s)", k, ackKeyPortScope)
+		}
+		if seenKey {
+			return fail("Schlüssel %q mehrfach", k)
+		}
+		seenKey = true
+		v := val.Content[i+1]
+		if v.Kind != yaml.ScalarNode || v.Tag != "!!str" {
+			return fail("%s: erwarte eine Begründung als String", k)
+		}
+		if strings.TrimSpace(v.Value) == "" {
+			return fail("%s: die Begründung ist leer", k)
+		}
+		reason = v.Value
+	}
+	return reason, nil
+}
+
+func knownLayerKey(k string) bool {
+	return k == "globs" || k == "role" || k == "direction" || k == "acknowledge"
+}
 
 // dirVocab nennt die fuer eine Rolle gueltige Richtungs-Menge (AC-FA-RULE-008,
 // ADR-0036). DIE EINE TABELLE der Config-Seite: sie speist die Validierung UND
