@@ -13,7 +13,7 @@ wechselt nur durch `git mv` (`make slice-mv`).
 **Berührte Spec-Stellen:** [SPEC-CONF-001](../../../../spec/spezifikation.md#spec-conf-001--konfigurationsschema) (Schema) und
 [SPEC-CLI-001](../../../../spec/spezifikation.md#spec-cli-001--aufruf-scan-wurzel-und-exit-codes) (Port-Scope-Diagnose) — beide werden hier nachgezogen.
 
-**Verantwortlich:** —
+**Verantwortlich:** pt9912
 
 **Autor:** Claude. **Datum:** 2026-11-05.
 
@@ -27,9 +27,10 @@ wechselt nur durch `git mv` (`make slice-mv`).
 ADR aus slice-229 festlegen: Schema-Schlüssel mit Pflicht-Begründung, kurze Meldungszeile mit
 Schichtnamen, Hinweis auf eine überflüssige Quittierung, Exit-Code unberührt.
 
-Der Slice ist **nicht planbar, bevor slice-229 in `done/` liegt**: Form, Schlüsselname und
-Fehlerverhalten stehen erst dort. §3 und die DoD werden beim `open` → `next` an die ADR
-angepasst — das ist die Plan-Änderung, die AGENTS §6 vor den Code stellt.
+Form, Schlüsselname und Fehlerverhalten stehen in
+[ADR-0045](../../adr/0045-port-scope-meldung-quittieren.md) und
+[AC-FA-CONF-002](../../../../spec/lastenheft.md#ac-fa-conf-002--port-scope-meldung-je-schicht-quittieren);
+§3 leitet den Plan daraus ab.
 
 **Ausdrücklich NICHT in diesem Slice** — je Punkt mit Begründung:
 
@@ -56,7 +57,38 @@ Ausgabe.
 
 ## 3. Plan (vor Code)
 
-*(wird beim `open` → `next` aus der ADR von slice-229 abgeleitet)*
+Drei Liefer-Punkte, je einer pro Schicht; die Reihenfolge ist Config → Kern → Ausgabe.
+
+1. **Config-Adapter** (`internal/adapter/driven/config/config.go`): `yamlLayer` und `knownLayerKey`
+   kennen `acknowledge`; `decodeLayerObject` validiert es gegen die **effektive** Rolle (Decoder-
+   Inferenz) und liefert die Begründung. Fehler (alle Exit 2, Meldung nennt Schicht und Fehler):
+   Rolle nicht `port`; kein Mapping, leeres Mapping, doppelter Schlüssel, anderer Schlüssel als
+   `port-scope`; Begründung fehlt, `null`, kein String (YAML-Tag `!!str`) oder nur Leerraum.
+   `core.Layer` bekommt das Feld `AckPortScope string`.
+2. **Kern** (`internal/hexagon/core/rules.go`): `InertPortScope` bekommt `Layers []string` — alle
+   Schichten, die den Glob tragen, in Deklarationsreihenfolge; die Entdoppelung je Glob bleibt für
+   die Zeilen, die Zuordnung läuft vor ihr. Neue reine Funktion `PortScopeAcks(m, scopes)` liefert
+   `Acked` (Schicht, Begründung, auslösende Globs, Ursachen sortiert, in Schicht-Reihenfolge),
+   `Redundant` (quittierte Schichten ohne auslösenden Glob) und `Open` (Globs, die **nicht jede**
+   tragende Schicht quittiert — nach Glob sortiert). `port-locality`, Befunde und Exit-Code werden
+   nicht berührt.
+3. **Ausgabe** (`internal/cli/cli.go`, `writePortScopeNotice`): Kopfzeile zählt alle
+   auslösenden Globs; dann die Zeilen der quittierten Schichten, dann die Glob-Zeilen aus `Open`
+   mit Deckel und „… und n weitere“, dann die Abhilfe-Zeilen nur für Ursachen in `Open`; die
+   Zeile „Hinweis: Schicht … Quittierung ohne Anlass …“ steht auch dann, wenn sonst keine Meldung
+   entsteht (frühe Rückkehr bei null Treffern entfällt dafür). Wortlaut aus ADR-0045 Punkt 2/3.
+
+**Tests (vor/mit dem Code, je Mutations-Probe auf den Befund, nicht den Exit-Code):**
+Config: jeder Fehlerfall aus ADR Punkt 4 und der Happy-Fall. Kern: zwei Schichten mit einer
+Quittierung; Teil-Auslösung; geteilter Glob (keine Schicht gilt als überflüssig); überflüssig ohne
+sonstige Meldung. CLI: Wortlaut, Reihenfolge, Deckel nur für nicht quittierte, Kopfzeile zählt
+alles, Abhilfe nur bei offener Ursache; derselbe Baum mit und ohne Quittierung ergibt gleiche
+Befunde und gleichen Exit-Code; Determinismus über zwei Läufe.
+
+**Doku:** SPEC-CONF-001 (Schlüssel, Fehler), SPEC-CLI-001 (Zeilenformen), Spez-Bump mit
+Historie-Zeile; Benutzerhandbuch dort, wo der Port-Scope-Hinweis steht (inkl. Pin-Hinweis: Pin erst
+mit dem Release heben, das den Schlüssel kennt), Handbuch-Historie; CHANGELOG `[Unreleased]`
+(`### Added`).
 
 ## 4. Trigger
 
