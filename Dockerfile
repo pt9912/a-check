@@ -11,7 +11,7 @@
 # (ADR-0043). Bei einem Bau für die eigene Plattform ist beides dieselbe.
 # Tag und Digest stehen woertlich in der FROM-Zeile: Dependabot liest nur eine
 # woertliche Version (ADR-0044), und die Zeile ist der einzige Ort der Zahl.
-FROM --platform=$BUILDPLATFORM golang:1.27.3@sha256:f20d83a83e18dbd2a4714b8ffd4b30b287b6243962dd75608e86abcc63ba4efc AS deps
+FROM --platform=$BUILDPLATFORM golang:1.27.3@sha256:e519d3b0a5b285e5aa53ab9eef02bc6bbb9cb04608389b743a136a9ce75f0d1e AS deps
 WORKDIR /src
 ENV GOFLAGS="-mod=readonly -buildvcs=false" \
     GOMODCACHE=/go/pkg/mod \
